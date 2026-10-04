@@ -17,6 +17,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   검증·권한·잠금·저장 처리를 호출한다. 같은 session registry에서는 작업 큐도 공유한다.
 - Electron: renderer → preload IPC → 공통 서비스 → SQLite.
 - 브라우저: renderer → browser bridge HTTP → 공통 서비스 → SQLite.
+- 편집 창이 포커스를 잃거나 최소화되어도 적용·저장은 진행한다(2026-10-04).
+  로컬 창과 팀 참여 창은 `backgroundThrottling:false`를 쓴다. 저장 패치 비교의
+  양보는 `src/util/yieldToTask.ts`의 메시지 태스크이며 프레임·짧은 타이머를 기다리지 않는다.
+  앱 종료·브라우저 freeze/discard·기기 절전 뒤 실행 보장은 별도 작업 큐의 범위다.
 - `electron/local-store/team.ts`: `workspace_team`, `workspace_members` 보조 테이블을 기존
   프로젝트 DB에 추가한다. 프로젝트 JSON/내보내기 게임 스키마와 분리된다.
   기존 폴더는 최초 오픈에 1인 팀이 만들어진다. 토큰은 SHA-256 해시만 저장한다.

@@ -822,6 +822,12 @@ export class AssistantSession {
   /** Capture before application/proof awaits; a later run never inherits this authority. */
   getRunOperation(): RunOperation { return this.runOperation; }
 
+  /** Current user request only; automatic continuation never carries navigation. */
+  allowsViewNavigation(): boolean {
+    return !this.turnIsDriverContinue && this.turnIntent?.source === "llm"
+      && this.turnIntent.viewNavigation === true;
+  }
+
   retireRun(): TurnResult | undefined {
     const owner = this.runResult;
     if (this.cancelPendingRun && !owner.settled) return this.cancelPendingRun();

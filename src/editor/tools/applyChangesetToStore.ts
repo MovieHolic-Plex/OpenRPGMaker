@@ -368,7 +368,7 @@ export interface ApplyProposedProjectOptions {
    */
   readonly rebase?: { readonly lineage: Project };
   /**
-   * 적용 뒤 화면을 그 맵으로 데려갈까. 기본 "follow". "visible-only" 는 보고 있는 맵일 때만 강조·재생하고
+   * 적용 뒤 화면을 그 맵으로 데려갈까. 기본 "visible-only". "visible-only" 는 보고 있는 맵일 때만 강조·재생하고
    * 맵을 바꾸거나 카메라를 옮기지 않는다 — 다른 맵에서 도는 백그라운드 실행이 사용자를 끌고 다니지 않게.
    */
   readonly focus?: "follow" | "visible-only";
@@ -538,7 +538,7 @@ export async function applyProposedProject(
   const commitProject = options.resetProject === true
     ? store.replaceProject(appliedProject, { ...change, projectSwitch: false }, onApplied)
     : store.replace(appliedProject, { change, onApplied, ...(renderCells ? { renderCells } : {}) });
-  if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject, { follow: options.focus !== "visible-only" });
+  if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject, { follow: options.focus === "follow" });
   const commitInput: CommitLogInput = {
     project: appliedProject,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
