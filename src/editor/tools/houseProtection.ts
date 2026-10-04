@@ -178,7 +178,7 @@ function isExactRoofResize(before: HouseSnapshot, after: HouseSnapshot, project:
   const oldKit = ts.structureKits?.find(k => k.id === old.kitId), nextKit = ts.structureKits?.find(k => k.id === next.kitId);
   const oldWalls = oldKit?.parts?.find(p => p.id === "walls"), nextWalls = nextKit?.parts?.find(p => p.id === "walls");
   if (!oldWalls || !nextWalls || old.x + oldWalls.dx !== next.x + nextWalls.dx || old.y + oldWalls.dy !== next.y + nextWalls.dy
-    || oldWalls.w !== nextWalls.w || oldWalls.h !== nextWalls.h || old.h !== next.h) return false;
+    || oldWalls.w !== nextWalls.w || oldWalls.h !== nextWalls.h) return false;
   for (const c of before.cells) if (c.y >= old.y + oldWalls.dy) {
     const i = c.y * map.width + c.x;
     if (layerTileAt(map, 1, i) !== c.lower || layerTileAt(map, 2, i) !== c.lowerOverlay
@@ -194,7 +194,8 @@ function isExactRoofResize(before: HouseSnapshot, after: HouseSnapshot, project:
   }
   const at = { x: old.x, y: old.y };
   const plan = planQuickHouseDrag(expected, ts, { mapId: map.id, start: at, end: at },
-    { style: quickHouseStyles(ts)[0]!, width: old.w, stories: 1, resize: "roof", roofWidth: next.w });
+    { style: quickHouseStyles(ts)[0]!, width: old.w, stories: 1, resize: "roof", roofWidth: next.w,
+      roofForm: next.kitId.endsWith("_gable") ? "gable" : "hip" });
   if (!plan.ok || !plan.apply || plan.kit?.id !== next.kitId || plan.x !== next.x || plan.y !== next.y) return false;
   plan.apply(expected);
   const rebuilt = expected.structurePlacements?.find(p => p.id === old.id);

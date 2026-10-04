@@ -1,0 +1,530 @@
+{
+  "packagedEditor": true,
+  "projectId": "3422b7dc-4b8d-4f56-b611-f921f561b6c9",
+  "states": [
+    {
+      "name": "01-gable",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "x": 19,
+        "y": 38,
+        "w": 11,
+        "h": 9
+      },
+      "stats": {
+        "builds": 1,
+        "frames": 320,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "02-hip",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x3",
+        "x": 19,
+        "y": 39,
+        "w": 11,
+        "h": 8
+      },
+      "stats": {
+        "builds": 2,
+        "frames": 640,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7,
+            "base": 0,
+            "x": 19,
+            "y": 45,
+            "w": 11,
+            "d": 2,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "03-gable-controls",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x3",
+        "x": 19,
+        "y": 39,
+        "w": 11,
+        "h": 8
+      },
+      "stats": {
+        "builds": 2,
+        "frames": 640,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7,
+            "base": 0,
+            "x": 19,
+            "y": 45,
+            "w": 11,
+            "d": 2,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "03-gable",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "x": 19,
+        "y": 38,
+        "w": 11,
+        "h": 9
+      },
+      "stats": {
+        "builds": 3,
+        "frames": 960,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "04-low-sun",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "x": 19,
+        "y": 38,
+        "w": 11,
+        "h": 9
+      },
+      "stats": {
+        "builds": 4,
+        "frames": 1280,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 35,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "05-short-sun",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "x": 19,
+        "y": 38,
+        "w": 11,
+        "h": 9
+      },
+      "stats": {
+        "builds": 5,
+        "frames": 1600,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "06-reloaded",
+      "house": {
+        "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "x": 19,
+        "y": 38,
+        "w": 11,
+        "h": 9
+      },
+      "stats": {
+        "builds": 1,
+        "frames": 87,
+        "pending": 0,
+        "visible": 84,
+        "textures": 87,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "canonicalReload": true,
+  "wallTilesUnchanged": true,
+  "nativeRoofControl": true,
+  "finalAltitude": 65,
+  "revision": 11
+}

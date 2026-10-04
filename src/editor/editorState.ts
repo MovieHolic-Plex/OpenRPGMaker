@@ -104,6 +104,7 @@ export interface EditorState {
   terrainHouseWidth: number;
   terrainHouseResize: "house" | "roof";
   terrainHouseRoofWidth: number;
+  terrainHouseRoofForm: "auto" | import("./beodeulQuickHouse").BeodeulRoofForm;
   terrainHouseStories: 1 | 2;
   terrainHouseDrag: import("./quickHouse").QuickHouseDrag | null;
   terrainUnlock: boolean;
@@ -186,7 +187,7 @@ class EditorStateStore {
     terrainRoadDrag: false,
     terrainHouseStyle: "beodeul-manor-a", terrainHouseWidth: 7, terrainHouseStories: 1,
     terrainHouseKitId: "bd-out-cabin",
-    terrainHouseResize: "house", terrainHouseRoofWidth: 7,
+    terrainHouseResize: "house", terrainHouseRoofWidth: 7, terrainHouseRoofForm: "auto",
     terrainHouseDrag: null,
     terrainUnlock: false,
     terrainStampId: null,

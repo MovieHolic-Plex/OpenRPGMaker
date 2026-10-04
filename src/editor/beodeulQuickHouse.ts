@@ -9,13 +9,14 @@ export const BEODEUL_HOUSE_STYLES = {
   "beodeul-log-red": "버들항 통나무 집 · 붉은 문",
 } as const;
 export type BeodeulHouseStyle = keyof typeof BEODEUL_HOUSE_STYLES;
+export type BeodeulRoofForm = "gable" | "hip";
 export function isBeodeulHouseStyle(style: string): style is BeodeulHouseStyle { return Object.hasOwn(BEODEUL_HOUSE_STYLES, style); }
 export function beodeulHouseMinWidth(style: BeodeulHouseStyle): number { return style.startsWith("beodeul-manor-") ? 7 : 5; }
 
 function partsFor(style: BeodeulHouseStyle): string[] {
   if (style.startsWith("beodeul-manor-")) {
     const variant = style.slice("beodeul-manor-".length);
-    return ["bd-mpart-roof-l", "bd-mpart-roof-m", "bd-mpart-roof-r", "bd-mpart-door-bay",
+    return ["bd-mpart-roof-l", "bd-mpart-roof-m", "bd-mpart-roof-r", "bd-mpart-gable", "bd-mpart-door-bay",
       ...["l", "r"].flatMap(side => [`bd-mpart-bay-plain-${side}`, `bd-mpart-bay-win-${variant}-${side}`])];
   }
   return ["bd-out-roof-hl", "bd-out-roof-m", "bd-out-roof-m2", "bd-out-roof-hr", "bd-out-log-l", "bd-out-log-r",
@@ -35,15 +36,16 @@ export function beodeulHouseStyles(tileset: TilesetDef): BeodeulHouseStyle[] {
 
 const cache = new WeakMap<TilesetDef, Map<string, SectionStructureKitDef>>();
 /** Repeat whole native floor bands; roof ends, arch windows and the ground-floor door keep their original pixels. */
-export function quickBeodeulHouse(tileset: TilesetDef, options: { style: BeodeulHouseStyle; width: number; stories: number; height?: number; roofWidth?: number; roofRows?: number }): SectionStructureKitDef | undefined {
+export function quickBeodeulHouse(tileset: TilesetDef, options: { style: BeodeulHouseStyle; width: number; stories: number; height?: number; roofWidth?: number; roofRows?: number; roofForm?: BeodeulRoofForm }): SectionStructureKitDef | undefined {
   if (!beodeulHouseStyles(tileset).includes(options.style)) return undefined;
   const manor = options.style.startsWith("beodeul-manor-"), wallWidth = Math.max(beodeulHouseMinWidth(options.style), Math.min(24, Math.round(options.width)));
   const width = Math.max(wallWidth, Math.min(24, Math.round(options.roofWidth ?? wallWidth))), wallX = Math.floor((width - wallWidth) / 2);
-  const roofRows = Math.max(3, Math.min(12, Math.round(options.roofRows ?? 3)));
+  const gabled = manor && options.roofForm !== "hip";
+  const roofRows = Math.max(gabled ? 4 : 3, Math.min(12, Math.round(options.roofRows ?? (gabled ? 4 : 3))));
   const groundRows = manor ? 3 : 2, floorRows = 2;
   const stories = Math.max(1, Math.min(9, options.height === undefined ? options.stories : 1 + Math.round((options.height - roofRows - groundRows) / floorRows)));
   const height = roofRows + groundRows + (stories - 1) * floorRows;
-  const id = `quick_house_${options.style}_${wallWidth}_${stories}${width === wallWidth && roofRows === 3 ? "" : `_roof${width}x${roofRows}`}`;
+  const id = `quick_house_${options.style}_${wallWidth}_${stories}${width === wallWidth && roofRows === 3 ? "" : `_roof${width}x${roofRows}`}${gabled ? "_gable" : ""}`;
   let entries = cache.get(tileset); if (!entries) { entries = new Map(); cache.set(tileset, entries); }
   const old = entries.get(id); if (old) return old;
   const source = new Map(tileset.structureKits!.map(p => [p.id, p]));
@@ -60,11 +62,14 @@ export function quickBeodeulHouse(tileset: TilesetDef, options: { style: Beodeul
     }
   };
   const doorColumn = Math.floor(wallWidth / 2), doorX = wallX + doorColumn;
-  const roofSourceRows = [0, ...Array<number>(roofRows - 2).fill(1), 2];
+  const roofOffset = gabled ? 1 : 0;
+  const roofSourceRows = [0, ...Array<number>(roofRows - roofOffset - 2).fill(1), 2];
   if (manor) {
-    stampRows("bd-mpart-roof-l", 0, 0, roofSourceRows);
-    for (let x = 3; x < width - 3; x++) stampRows("bd-mpart-roof-m", x, 0, roofSourceRows);
-    stampRows("bd-mpart-roof-r", width - 3, 0, roofSourceRows);
+    stampRows("bd-mpart-roof-l", 0, roofOffset, roofSourceRows);
+    for (let x = 3; x < width - 3; x++) stampRows("bd-mpart-roof-m", x, roofOffset, roofSourceRows);
+    stampRows("bd-mpart-roof-r", width - 3, roofOffset, roofSourceRows);
+    // Native pointed front gable. Keep its complete four-row artwork, never stretch the triangle.
+    if (gabled) stampRows("bd-mpart-gable", Math.max(0, Math.min(width - 5, doorX - 2)), roofRows - 4);
     const variant = options.style.slice("beodeul-manor-".length);
     for (let floor = 0; floor < stories; floor++) {
       const ground = floor === stories - 1, sourceRows = ground ? [2, 3, 4] : [0, 1], y = roofRows + floor * floorRows;
@@ -86,7 +91,7 @@ export function quickBeodeulHouse(tileset: TilesetDef, options: { style: Beodeul
         : x % 2 === 0 ? "bd-out-log-window-box" : "bd-out-log-window-shut", wallX + x, y);
     }
   }
-  const kit: SectionStructureKitDef = { id, kind: "section", name: `${BEODEUL_HOUSE_STYLES[options.style]} · 벽 ${wallWidth}칸 ${stories}층 · 지붕 ${width}×${roofRows}칸`,
+  const kit: SectionStructureKitDef = { id, kind: "section", name: `${BEODEUL_HOUSE_STYLES[options.style]} · 벽 ${wallWidth}칸 ${stories}층 · ${gabled ? "박공" : "모임"} 지붕 ${width}×${roofRows}칸`,
     width, height, rows, tileSize: tileset.tileSize, learnedFrom: "db-authored", createdAt: "2026-10-03T00:00:00.000Z",
     parts: [{ id: "roof", kind: "anchor", dx: 0, dy: 0, w: width, h: roofRows },
       { id: "walls", kind: "anchor", dx: wallX, dy: roofRows, w: wallWidth, h: height - roofRows },

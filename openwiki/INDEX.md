@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4841KB / 약 1,406,064 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4844KB / 약 1,406,846 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,6 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
+| `openwiki/beodeul-city.md` | 51KB | 5KB | 369 | ~15,173 |
 | `openwiki/editor-ai-panel.md` | 606KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3788 | ~176,700 |
 | `openwiki/editor-ai-tools.md` | 324KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~93,639 |
 | `openwiki/editor-database.md` | 413KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2457 | ~120,993 |
@@ -61,7 +62,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
-| `openwiki/charset-actor-harness.md` | 43 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `delivery.py`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `recipes.py`, `shared-library-error.json`, `sheet_rgba.png`, `verify_production.py`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
+| `openwiki/charset-actor-harness.md` | 40 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/delayed-tooltip.md` | 1 | `src/styles/editor/delayed-tooltip.css` |
 | `openwiki/editor-ai-panel.md` | 81 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `07-wide-compact.png`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `DRAFT_20260706_auth_rls.sql`, `after/measure.json`, `ai-tool-usage-YYYY-MM-DD.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiTemperatureMenu.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-activity-levels/06-wide.png`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-menu/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/ai-team-budget.mjs`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `stampPlace.ts`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiActivityLiveRow.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/mode-switch-camera-stability.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `verify-shots/feature16-ai/01-library.png`, `verify-shots/first-core-opening/SUMMARY.md`, `verify-shots/preset-first-team-e2e/SUMMARY.json`, `writer-wire.json` |
@@ -297,37 +298,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 50KB · 368줄 · ~14,957 토큰
+### `openwiki/beodeul-city.md` — 51KB · 369줄 · ~15,173 토큰 · 통째읽기 잘림
 
 - `L8` 기본 타일셋 (2026-09-30)
   - `L24` 빠른 집·도로 도구 (2026-10-03)
-  - `L37` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L63` 무엇이 어디에 있나
-- `L83` 칸 자르기 규칙
-- `L95` 정본 저장·재로드 (2026-09-28)
-- `L103` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L114` 결과 (2026-09-28, 두 번)
-- `L134` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L138` 무엇을 더했나
-  - `L151` 예시 배치 둘과 배치 자
-  - `L162` 참고문서 (v7)
-  - `L168` 정본 (v7)
-  - `L172` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L194` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L199` 무엇을 더했나
-  - `L215` 배우며 찾은 것
-  - `L223` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L243` 정본 (v8)
-- `L247` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L265` 남은 것
-- `L276` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L287` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L300` 칸·키트
-  - `L323` 기존 프로젝트
-  - `L329` 참고문서 (조수)
-  - `L336` 화면 증거
-  - `L340` 남은 것
-- `L345` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L38` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L64` 무엇이 어디에 있나
+- `L84` 칸 자르기 규칙
+- `L96` 정본 저장·재로드 (2026-09-28)
+- `L104` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L115` 결과 (2026-09-28, 두 번)
+- `L135` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L139` 무엇을 더했나
+  - `L152` 예시 배치 둘과 배치 자
+  - `L163` 참고문서 (v7)
+  - `L169` 정본 (v7)
+  - `L173` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L195` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L200` 무엇을 더했나
+  - `L216` 배우며 찾은 것
+  - `L224` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L244` 정본 (v8)
+- `L248` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L266` 남은 것
+- `L277` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L288` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L301` 칸·키트
+  - `L324` 기존 프로젝트
+  - `L330` 참고문서 (조수)
+  - `L337` 화면 증거
+  - `L341` 남은 것
+- `L346` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
 
 ### `openwiki/bgm-catalog.md` — 23KB · 338줄 · ~5,974 토큰
 
@@ -379,29 +380,29 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` 그림의 접촉점
 - `L50` 저장과 증거
 
-### `openwiki/charset-actor-harness.md` — 49KB · 400줄 · ~15,391 토큰
+### `openwiki/charset-actor-harness.md` — 50KB · 404줄 · ~15,578 토큰
 
 - `L3` GIF 공방: AI 자유 저작과 사람 선택 (2026-10-04)
   - `L22` 남긴 픽셀을 기준으로 한 반복 생산 (2026-10-04)
-  - `L43` 기본 제작을 원본 격자 변형으로 복귀 (2026-10-04 사용자 피드백)
-  - `L51` 좌표 부분 수정 비교 실험 (2026-10-04)
-  - `L73` 픽셀 참고 이미지 첨부 실험 (2026-10-04)
-  - `L85` 모델이 걷기까지 전부 저작 (2026-10-04 사용자 변경 지시)
-  - `L105` 버튼 반응과 저장 (2026-10-04)
-  - `L121` 한 캐릭터 검토 화면 (2026-10-04)
-  - `L129` 적대적 alpha QA와 검사 정책 2 (2026-10-04)
-  - `L147` 이전 걷기 전파 v2: 새 면의 픽셀 전달 (2026-10-04)
-  - `L166` 남김 → 공용 캐릭터와 설명 (2026-10-04)
-- `L179` 진입점과 저장 대상
-- `L194` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
-- `L218` 묶음 저작과 에디터용 내보내기
-  - `L220` 2026-10-04 신뢰성 감사와 v3
-- `L273` 이전 걸음 전파 계약 (2026-10-03)
-- `L291` 재개 당시 근거
-- `L299` GPT high 원샷 비교 (2026-10-03 사용자 요청)
-- `L317` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
-- `L340` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
-- `L368` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
+  - `L47` 기본 제작을 원본 격자 변형으로 복귀 (2026-10-04 사용자 피드백)
+  - `L55` 좌표 부분 수정 비교 실험 (2026-10-04)
+  - `L77` 픽셀 참고 이미지 첨부 실험 (2026-10-04)
+  - `L89` 모델이 걷기까지 전부 저작 (2026-10-04 사용자 변경 지시)
+  - `L109` 버튼 반응과 저장 (2026-10-04)
+  - `L125` 한 캐릭터 검토 화면 (2026-10-04)
+  - `L133` 적대적 alpha QA와 검사 정책 2 (2026-10-04)
+  - `L151` 이전 걷기 전파 v2: 새 면의 픽셀 전달 (2026-10-04)
+  - `L170` 남김 → 공용 캐릭터와 설명 (2026-10-04)
+- `L183` 진입점과 저장 대상
+- `L198` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
+- `L222` 묶음 저작과 에디터용 내보내기
+  - `L224` 2026-10-04 신뢰성 감사와 v3
+- `L277` 이전 걸음 전파 계약 (2026-10-03)
+- `L295` 재개 당시 근거
+- `L303` GPT high 원샷 비교 (2026-10-03 사용자 요청)
+- `L321` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
+- `L344` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
+- `L372` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
 
 ### `openwiki/community-site.md` — 20KB · 178줄 · ~5,235 토큰
 
@@ -1226,7 +1227,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 공간 제작에서의 공용 재료 사용
 - `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 35KB · 325줄 · ~10,837 토큰
+### `openwiki/harnesses/super-harness.md` — 36KB · 334줄 · ~11,100 토큰
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1245,6 +1246,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L235` 칩 검수 피드백 → 자동 재생성 루프 (2026-10-04)
   - `L271` 표본 도면과 공간 전체의 품질 관문 v2
   - `L293` 반복 실패 재설계·시점 표본·전후 비교 v3 (2026-10-04)
+  - `L326` 시점 표본 합격 후 저장 오류 복구 (2026-10-04)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -2200,11 +2202,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/sunlight-shadows.md` — 5KB · 61줄 · ~1,619 토큰
+### `openwiki/sunlight-shadows.md` — 6KB · 62줄 · ~1,735 토큰
 
 - `L3` 저작과 저장
-- `L13` 공통 계산과 그리기
-- `L50` 조수와 검수
+- `L14` 공통 계산과 그리기
+- `L51` 조수와 검수
 
 ### `openwiki/teaching-assistant-tilesets.md` — 44KB · 369줄 · ~13,309 토큰
 
