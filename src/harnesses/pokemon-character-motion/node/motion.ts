@@ -160,8 +160,8 @@ export function checkClip(source:RgbaImage,meta:ClipMetadata){
   return {pass:errors.length===0,errors,frames,normalized,paletteUnion:colors.size};
 }
 
-/** Generated opening atlas -> actual drawn native strip. Source alpha only; no painted masks or poses. */
-export function importGeneratedClip(source:RgbaImage,options:{columns:number;rows:number;frameWidth:number;frameHeight:number;block?:number;sourceRects?:Box[];alphaThreshold?:number;maxColors?:number}){
+export type GeneratedClipOptions={columns:number;rows:number;frameWidth:number;frameHeight:number;block?:number;sourceRects?:Box[];alphaThreshold?:number;maxColors?:number;sampling?:"grid"|"raster"};
+function generatedClipSource(source:RgbaImage,options:GeneratedClipOptions){
   const {columns,rows,frameWidth,frameHeight}=options;
   if(![columns,rows,frameWidth,frameHeight].every(v=>Number.isInteger(v)&&v>0)||columns*rows<2||columns*rows>64||frameWidth<4||frameHeight<4)throw Error("generated clip layout invalid");
   const alphaThreshold=options.alphaThreshold??128;
@@ -172,6 +172,13 @@ export function importGeneratedClip(source:RgbaImage,options:{columns:number;row
   if(options.sourceRects){rects=options.sourceRects;if(rects.length!==columns*rows||rects.some(r=>![r.x,r.y,r.width,r.height].every(Number.isInteger)||r.x<0||r.y<0||r.width<1||r.height<1||r.x+r.width>source.width||r.y+r.height>source.height))throw Error("generated source crop count/bounds");}
   else{const py=new Array(source.height).fill(0);for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(visible.data[(y*source.width+x)*4+3])py[y]++;
     const ys=ranges(py,rows);rects=[];ys.forEach(y=>{const px=new Array(source.width).fill(0);for(let yy=y.start;yy<y.end;yy++)for(let x=0;x<source.width;x++)if(visible.data[(yy*source.width+x)*4+3])px[x]++;ranges(px,columns).forEach(x=>rects.push({x:x.start,y:y.start,width:x.end-x.start,height:y.end-y.start}));});}
+  return {visible,rects,alphaThreshold};
+}
+/** Generated opening atlas -> actual drawn native strip. Source alpha only; no painted masks or poses. */
+export function importGeneratedClip(source:RgbaImage,options:GeneratedClipOptions){
+  if(options.sampling==="raster")return importGeneratedClipRaster(source,options);
+  if(options.sampling&&options.sampling!=="grid")throw Error("--sampling grid|raster");
+  const {frameWidth,frameHeight}=options,{visible,rects,alphaThreshold}=generatedClipSource(source,options);
   const crops=rects.map(r=>cropImage(visible,r));const inferred=options.block===undefined?crops.map(c=>extractGrid(c,{minBlock:2}).block):[];
   const block=options.block??Math.round([...inferred].sort((a,b)=>a-b)[Math.floor(inferred.length/2)]!);
   const grids=crops.map(c=>extractGrid(c,{block}).cells),scale=Math.min(1,(frameWidth-4)/Math.max(...grids.map(g=>g.width)),(frameHeight-4)/Math.max(...grids.map(g=>g.height)));
@@ -181,6 +188,33 @@ export function importGeneratedClip(source:RgbaImage,options:{columns:number;row
   const image=createImage(frameWidth*frames.length,frameHeight);frames.forEach((f,i)=>{for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)setPixel(image,i*frameWidth+x,y,pixelAt(f,x,y));});
   const maxColors=options.maxColors??15;if(!Number.isInteger(maxColors)||maxColors<1||maxColors>24)throw Error("clip palette ceiling1..24");const palette=quantizePalette(image,maxColors);
   return {image,rects,block,inferredBlocks:inferred,scale,palette,alphaThreshold,frameCount:frames.length};
+}
+
+/** Portrait raster path: preserve common source rows, real drawn pixels, one scale and fixed phase. */
+export function importGeneratedClipRaster(source:RgbaImage,options:GeneratedClipOptions){
+  const {frameWidth,frameHeight,columns}=options,{visible,rects,alphaThreshold}=generatedClipSource(source,options);
+  const ink=rects.map(r=>{const b=opaqueBounds(cropImage(visible,r));if(!b)throw Error("empty generated clip source frame");return b;});
+  const origins=rects.map((_,i)=>Math.min(...rects.slice(Math.floor(i/columns)*columns,Math.floor(i/columns)*columns+columns).map(r=>r.y)));
+  const heightScale=(frameHeight-4)/Math.max(...ink.map((b,i)=>rects[i]!.y+b.y+b.height-origins[i]!)),widthScale=(frameWidth-4)/Math.max(...ink.map(b=>b.width));
+  let scale=Math.min(1,heightScale,widthScale);
+  const iterations:{scale:number;leftScale:number;rightScale:number}[]=[];
+  let fit:{skullCenter:number;leftExtent:number;rightExtent:number;sourceRowOriginY:number;sourceHeadTop:number;sourceFeetBottom:number;sourceInk:Box}[]=[];
+  for(let iteration=0;iteration<16;iteration++){
+    fit=rects.map((r,i)=>{const b=ink[i]!,rows=skullRows(r.width,b.y,Math.min(r.height,b.y+6/scale),(x,y)=>pixelAt(visible,r.x+x,r.y+y)[3]>0);if(!rows.length)throw Error("empty generated clip source head");const skullCenter=median(rows.map(row=>row.center));return {skullCenter,leftExtent:skullCenter-b.x+.5,rightExtent:b.x+b.width-.5-skullCenter,sourceRowOriginY:origins[i]!,sourceHeadTop:r.y+b.y,sourceFeetBottom:r.y+b.y+b.height,sourceInk:{x:r.x+b.x,y:r.y+b.y,width:b.width,height:b.height}};});
+    const leftScale=((frameWidth-4)/2)/Math.max(...fit.map(f=>f.leftExtent)),rightScale=((frameWidth-4)/2)/Math.max(...fit.map(f=>f.rightExtent));iterations.push({scale,leftScale,rightScale});const next=Math.min(scale,leftScale,rightScale);if(Math.abs(next-scale)<1e-10)break;scale=next;if(iteration===15)throw Error("generated clip common source skull/extent scale did not converge");
+  }
+  const commonScaleFit={anchorX:(frameWidth-1)/2,anchorY:2,halfWidth:(frameWidth-4)/2,fitInkHeight:frameHeight-4,heightScale,widthScale,scale,iterations,frames:fit};
+  const frames=rects.map((r,i)=>{
+    const f=fit[i]!,out=createImage(frameWidth,frameHeight),endY=Math.ceil((f.sourceFeetBottom-f.sourceRowOriginY)*scale)+3;
+    for(let y=2;y<endY;y++)for(let x=-frameWidth;x<frameWidth*2;x++){
+      const sx=Math.floor(f.skullCenter+(x-(frameWidth-1)/2)/scale),sy=f.sourceRowOriginY+Math.floor((y-2+.5)/scale);
+      if(sx<0||sx>=r.width||sy<r.y||sy>=r.y+r.height)continue;const pixel=pixelAt(visible,r.x+sx,sy);if(!pixel[3])continue;
+      if(x<1||x>=frameWidth-1||y<1||y>=frameHeight-1)throw Error("generated clip aligned source raster clips; common fit="+JSON.stringify(commonScaleFit));setPixel(out,x,y,pixel);
+    }return out;
+  });
+  const image=createImage(frameWidth*frames.length,frameHeight);frames.forEach((f,i)=>{for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)setPixel(image,i*frameWidth+x,y,pixelAt(f,x,y));});
+  const maxColors=options.maxColors??15;if(!Number.isInteger(maxColors)||maxColors<1||maxColors>24)throw Error("clip palette ceiling1..24");const palette=quantizePalette(image,maxColors);
+  return {image,rects,block:null,inferredBlocks:[] as number[],scale,palette,alphaThreshold,frameCount:frames.length,sampling:"common-source-raster" as const,phase:.5,headBandRows:6,headAlignment:"source dominant contiguous skull-row median before sampling",commonScaleFit,sourceFrameMetrics:fit.map((f,i)=>({...f,sourceHeadCenterX:rects[i]!.x+f.skullCenter,outputInk:opaqueBounds(frames[i]!)}))};
 }
 
 /** Preserve frame coherence: align source silhouettes before shared nearest sampling. */

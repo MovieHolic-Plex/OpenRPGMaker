@@ -119,7 +119,7 @@ npm run harness -- pokemon-character-motion clip-import --sandbox /path/review \
 # 반환후보에 같은 check/preview/review/gate/build를 사용한다.
 ```
 
-실제6개 포즈(깜빡임·말하기·설명 손·orb·초대 손)를 공통 격자/배율/팔레트로 가져온다. default64×64/15색이며 `--frame-width 64 --frame-height 96`으로 범용64×96을 명시할 수 있다. `--max-colors`/clip-spec.paletteUnionMax로1~24색을 명시할 수 있지만 Emeraldprofile기준은15색이다. field 규격과 별개다. alpha128을 유지하며 원본 손/눈/입을 그리거나 정적 그림에서 가짜 새 포즈를 만들지 않는다.
+실제6개 포즈(깜빡임·말하기·설명 손·orb·초대 손)를 공통 격자/배율/팔레트로 가져온다. default64×64/15색이며 `--frame-width 64 --frame-height 96`으로 범용64×96을 명시할 수 있다. `--max-colors`/clip-spec.paletteUnionMax로1~24색을 명시할 수 있지만 Emeraldprofile기준은15색이다. field 규격과 별개다. `--sampling raster`는 extractGrid를 거치지 않고 row 공통원점·전체포즈 공통 source 배율·고정phase0.5로 원본을 직접 nearest 샘플링한다. source 머리6행 중심을 샘플 전에 정렬하고 좌우 extent 및 높이 상한을 모든 포즈에 공유한다. sourceFrameMetrics/commonScaleFit에 source/output잉크상자·발baseline·머리중심·배율근거를 기록한다. 원본에서 달라진 몸/발 좌표를 숨기거나 포즈별 stretch/crop으로 맞추지 않는다. 구 grid 경로에서 포즈별 inferred7/8 블록으로 같은457px높이를57~60px로 재격자화한 실패를 source raster로 막는다. alpha128을 유지하며 원본 손/눈/입을 그리거나 정적 그림에서 가짜 새 포즈를 만들지 않는다.
 
 `--clip-spec JSON`에는 columns/rows/frameWidth/frameHeight/id/fps/frameOrder/durationsMs/kind/paletteUnionMax 및 원본 sourceRects를 저작할 수 있다. 명시 crop이 없으면 alpha 여백을 읽는다. 원본 crop count/bounds를 검증한다. `--frame-order 0,1,2,0,3,4,5`처럼 순서를 명시한다. 모든 원본 프레임이 포함돼야 한다. 프레임 수2~64, fps0초과60이하, 지속시간16~10000ms, 이진alpha·잘림·palette합집합·최소4px의미변경을 검사한다. 잉크상자 정규화 후 모두 같으면 kind:drawn(translation-only) 주장을 거부한다. 실제 blink/talk/gesture가 읽히는지는 재생 검수에서 판정한다.
 
