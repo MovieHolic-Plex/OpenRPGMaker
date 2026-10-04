@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **135쪽 / 4609KB / 약 1,334,576 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **135쪽 / 4609KB / 약 1,334,634 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1152,12 +1152,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 화면
 - `L65` 운영
 
-### `openwiki/harnesses/worldmap-icons.md` — 3KB · 46줄 · ~1,010 토큰
+### `openwiki/harnesses/worldmap-icons.md` — 4KB · 47줄 · ~1,068 토큰
 
 - `L6` 입구
 - `L20` 사람 선택만 굽기
-- `L33` 에디터·조수
-- `L41` 2026-10-04 근거
+- `L34` 에디터·조수
+- `L42` 2026-10-04 근거
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 

@@ -24,6 +24,7 @@ npm run harness -- worldmap-icons check
 - pick은 자기 아이콘의 완료된 판·시도만 허용한다. 새 결정은 그림 SHA256·후보 시도 번호를 함께 기록한다.
   기존 결정은 첫 굽기의 `slots.json.selections`에 그림 SHA256을 고정한다. 그림이 바뀌면 새 선택 없이 굽지 못한다.
 - 원본 사본·현재 선택 사전은 `tiledata/worldmap-kit/selected/`, 칸 위치·해시 고정은 `harness-data/worldmap-icons/slots.json`.
+- 재작성 검수에도 판의 교정 지시를 전달한다. 명시적으로 바꾼 색·소품은 옛 설명보다 우선하되 시점·지도 1배 식별 검사는 유지한다.
 - 칸은 덧붙이기 전용이다. 미선택으로 돌아간 옛 칸은 비워 두고 번호를 다른 아이콘에 재사용하지 않는다.
 - `--snapshot`은 커밋한 사람 선택·PNG 사본으로 재현한다. SQLite에 쓰지 않는다.
 - 결과: `public/assets/worldmap-icons/worldmap-selected.png`, `src/assets/worldmapSelectedSheet.json`, `worldmapSelectedReferences.json`.
@@ -42,4 +43,4 @@ npm run harness -- worldmap-icons check
 
 79개(원본72·선택후보7), 1,620칸. `verify-shots/worldmap-selected/`에 새·기존 SQLite 저장·재로드, 칸 누락 검출,
 위층 충돌 거부, 바닥 보존·36칸 이식 재사용, 캐릭터 크기 UI 저장·브라우저 재로드 근거를 남긴다.
-미선택267개는 공용 선택 시트에 들어가지 않는다. 스팀펑크 교정 판 r61~64는 사람 선택 대기다.
+미선택267개는 공용 선택 시트에 들어가지 않는다. 스팀펑크 교정 판 r61~65는 사람 선택 대기다.
