@@ -26,6 +26,12 @@ const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
   const ids = collectProjectStrings(project);
+  // These backgrounds are selected by battleBackdrop at runtime, so they need
+  // not appear in an authored troop or terrain row. Export their real bytes.
+  if (project.system.battleUiStyle === "pokemon") ids.add("battle-skin-pokemon-backdrop");
+  if (Object.values(project.maps).some((map) => map.climate?.mode === "fixed" && map.climate.weather === "snow")) {
+    ids.add("scarloxy-backdrop-ice");
+  }
   // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
   for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);

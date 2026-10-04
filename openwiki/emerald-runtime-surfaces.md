@@ -38,6 +38,17 @@ The previous revision25 portable file failed before title because17 authored bat
 
 ## Shipping icon dependencies
 
+The web export collector also includes the Pokemon fallback backdrop and the
+snow climate backdrop selected by `battleBackdrop.ts`. Neither ID has to appear
+in a troop row. The compiled campaign probe exposed a forest-backdrop 404;
+exporting these implicit dependencies fixes the offline player without changing
+the authored terrain, troop or combat rules.
+
+The shop probe supports both source and built player HTML. Built inline BOOT
+is replaced with the private fixture/namespace/observation configuration; native
+Continue is selected explicitly before loading the genuine predecessor slot.
+Failures preserve their original error even when runtime hooks are unavailable.
+
 `collectProjectStrings` in `webExportAssets.ts` includes an existing uploaded
 `_front` → `_icon` sibling for every Emerald species. The menu derives that ID at
 runtime, so ordinary direct-string scanning otherwise prunes all60icons. Missing
