@@ -1,19 +1,20 @@
 // Download the shipping ZIP through the editor menu, from the same saved project.
-import { firefox } from 'playwright';
+import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
 const initial = JSON.parse(readFileSync(out + '/generation.json', 'utf8'));
 const completion = existsSync(out + '/completion.json') ? JSON.parse(readFileSync(out + '/completion.json', 'utf8')) : null;
-const generation = completion?.passed ? completion : initial;
+const recovered = existsSync(out + '/reloaded.json') ? JSON.parse(readFileSync(out + '/reloaded.json', 'utf8')) : null;
+const generation = completion?.passed ? completion : recovered?.passed ? recovered : initial;
 if (!generation.generationPrerequisitePassed && !completion?.passed) throw Error('Live generation or explicit repair, plus canonical reload, must pass first');
 const report = { projectId: generation.afterReload.projectId, revision: generation.afterReload.revision,
-  generationMode: completion?.passed ? 'explicit completion after unfinished automatic build' : 'automatic first build',
+  generationMode: completion?.passed ? 'explicit completion after unfinished automatic build' : recovered?.passed ? 'automatic first build; observation recovered by ordinary reload' : 'automatic first build',
   projectUrl: generation.projectUrl, started: new Date().toISOString(), errors: [] };
 report.networkFailures = [];
 const save = () => writeFileSync(out + '/export.json', JSON.stringify(report, null, 2) + '\n');
-const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.changed': false } });
+const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce', acceptDownloads: true });
 page.on('pageerror', e => { report.errors.push(e.message); save(); });
 page.on('crash', () => { report.crashed = true; save(); });

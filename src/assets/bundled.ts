@@ -685,11 +685,18 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (strings.has(asset.id) || cropAssetIds.has(asset.id)) keys.add(asset.id);
   }
+  const objectIds = spatialGraphicResourceIds(project);
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (event.sprite?.id) objectIds.add(event.sprite.id);
+      for (const page of event.pages ?? []) if (page.graphic.sprite?.id) objectIds.add(page.graphic.sprite.id);
+    }
+  }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
-    if (spatialGraphicResourceIds(project).has(asset.id)) keys.add(asset.id);
+    if (objectIds.has(asset.id)) keys.add(asset.id);
   }
   for (const asset of CC0_ICON_ASSETS) {
-    if (strings.has(asset.id)) keys.add(asset.id);
+    if (objectIds.has(asset.id)) keys.add(asset.id);
   }
   // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
   // so they are not always present as project strings even when rocks/trees exist in session.

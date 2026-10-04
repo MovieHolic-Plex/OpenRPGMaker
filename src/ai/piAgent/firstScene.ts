@@ -7,8 +7,8 @@ import { CC0_ICON_ASSETS } from '../../assets/cc0IconAssets';
 /** A finite, real catalog lets entry authoring write instead of searching forever. */
 export function firstSceneObjectCatalog(): unknown {
   return {
-    staticObjects: CC0_ICON_ASSETS.map(asset => ({id:asset.id,label:asset.name,
-      nativeGraphic:{sprite:{type:'bundled',id:asset.id},pattern:0}})),
+    staticObjects: CC0_ICON_ASSETS.filter(asset => asset.id.startsWith('cc0-jetrel-') && !asset.id.includes('-gen'))
+      .map(asset => ({label:asset.name,nativeGraphic:{sprite:{type:'bundled',id:asset.id},pattern:0}})),
     charsetObjects: CHARSET_SEMANTICS.filter(asset => /_object[12]$/.test(asset.textureKey))
       .map(asset => ({label:asset.label,tags:asset.tags,nativeGraphic:{sprite:{type:'bundled',id:asset.textureKey},
         pattern:charsetFrameIndex({characterIndex:asset.characterIndex,direction:'down',pattern:1})}})),

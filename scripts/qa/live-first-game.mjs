@@ -142,7 +142,9 @@ try {
   await page.getByTestId('project-interview-concept').fill('서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.');
   await page.getByTestId('project-interview-begin').click();
   for (let i = 0; i < 8 && !(await page.getByTestId('project-interview-summary').count()); i++) {
-    report.questions.push({ question: await page.locator('#project-interview-question').innerText(),
+    const question = await page.locator('#project-interview-question').count()
+      ? page.locator('#project-interview-question') : page.locator('#project-interview-title');
+    report.questions.push({ question: await question.innerText(),
       options: await page.locator('[data-testid^="project-interview-option-"]').allInnerTexts() });
     await page.getByTestId('project-interview-option-0').click();
     await page.getByTestId('project-interview-next').click();

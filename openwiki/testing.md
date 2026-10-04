@@ -2040,8 +2040,15 @@ parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코�
 
 `waitForText`는 DOM의 실제 typewriter 문구가 완성되기를 기다린다. 선택 직후 고정 Enter를
 누르면 짧은 결과 대사가 이미 끝난 경우 다음 대사로 넘어가 잘못된 실패를 만든다.
+페이지네이터가 삽입한 실제 줄바꿈은 `visibleText`와 같이 공백 하나로 정규화한다.
 `live-first-game-player.mjs`는 자연 motion·오프닝 전체·정상 키보드·충돌 기반 경로로 두 선택을
 확인하고 SQLite 정본의 4층 타일/대상 이벤트가 내보내기에 보존됐는지 비교한다.
+
+브라우저 관측기가 끊겨도 원래 서버 실행이 정상 종료됐다면 `live-first-game-reload.mjs`로
+같은 실행의 종료·핵심/장면 검수 기록을 읽고 같은 SQLite 프로젝트를 Chromium에서 재로드한다.
+추가 AI POST는 0이어야 한다. 원래 실패한 `generation.json`은 그대로 두고 `reloaded.json`을
+따로 기록한다. 이는 게임을 고치는 후속 제작이 아니며, 내보내기/플레이 성공을 뜻하지 않는다.
+출하 ZIP 다운로드와 두 선택의 실제 키보드 플레이도 Chromium으로 수행한다.
 
 ### Maker repair and click-first startup (2026-10-04)
 
@@ -2067,4 +2074,3 @@ Committed evidence and its limitations: `verify-shots/maker-click-first/README.m
 The live maker task finished and saved/reloaded, but its observer composite is
 FAIL because of one framebuffer error; the subsequent read-only resize probe and
 dedicated exported player passed. Do not describe this as all browser checks green.
-

@@ -127,6 +127,9 @@ describe('first playable creation boundary', () => {
           await places.execute('places-report', { report: '두 장소 구조' });
         } else if (scene) {
           order.push('scene');
+          expect(options.toolNames).not.toContain('list_resources');
+          expect(options.toolNames).not.toContain('find_tools');
+          expect(request.task).toContain('cc0-jetrel-clock');
           request.project.system.opening = { enabled: false, skippable: true, scenes: [] };
           const page = request.project.maps[request.project.startMapId]!.events.find(e => e.id === 'ev_segment_starter')!.pages![0]!;
           request.project.maps[request.project.startMapId]!.events.push({ id: 'intro', x: 0, y: 0, trigger: { kind: 'auto' }, commands: [], pages: [

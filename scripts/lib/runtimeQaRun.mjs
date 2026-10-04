@@ -418,7 +418,10 @@ async function applyOp(page, op, runState) {
     case "waitForText":
       if (typeof op.text !== 'string' || !op.text.length) throw new Error('waitForText requires nonempty text');
       await page.waitForFunction(([testid, text]) =>
-        document.querySelector(`[data-testid="${testid}"]`)?.textContent?.includes(text),
+        // Pagination inserts real newlines. Compare the same visible whitespace
+        // used by snapshot.visibleText, while still waiting for every character.
+        document.querySelector(`[data-testid="${testid}"]`)?.textContent?.replace(/\s+/g, ' ').trim()
+          .includes(text.replace(/\s+/g, ' ').trim()),
         [op.testid, op.text], { timeout: op.timeoutMs ?? 30_000 });
       return;
     case "pointerClick": {

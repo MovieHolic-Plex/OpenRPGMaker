@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { resolve, extname, sep, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
-import { firefox } from 'playwright';
+import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
 import { runRuntimeQa } from '../lib/runtimeQaRun.mjs';
 
@@ -15,7 +15,10 @@ const root = resolve(process.env.LIVE_GAME_PACKAGE_OUT ?? 'output/qa/live-first-
 const projectPath = resolve(root, 'project.json');
 const json = await readFile(projectPath, 'utf8'), project = JSON.parse(json);
 const completionPath = resolve(out, 'completion.json');
-const completion = JSON.parse(await readFile(existsSync(completionPath) ? completionPath : resolve(out, 'generation.json'), 'utf8'));
+const completionCandidate = existsSync(completionPath) ? JSON.parse(await readFile(completionPath, 'utf8')) : null;
+const recoveredPath = resolve(out, 'reloaded.json');
+const recovered = existsSync(recoveredPath) ? JSON.parse(await readFile(recoveredPath, 'utf8')) : null;
+const completion = completionCandidate?.passed ? completionCandidate : recovered?.passed ? recovered : JSON.parse(await readFile(resolve(out, 'generation.json'), 'utf8'));
 assert(completion.passed || completion.generationPrerequisitePassed, 'The live-model result must be saved and reloaded first');
 const db = new DatabaseSync(resolve(completion.afterReload.dir, 'project.sqlite'), { readOnly: true });
 let canonical;
@@ -67,7 +70,7 @@ const server = createServer(async (req, res) => {
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 const url = 'http://127.0.0.1:' + server.address().port;
 const result = { projectId: canonical.projectId, title: project.meta.title, canonicalContentMatched: true,
-  automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && !completion.passed),
+  automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && (completion.automaticGeneration || !completion.passed)),
   projectJsonSha256: createHash('sha256').update(json).digest('hex'),
   projectJsonBytes: (await stat(projectPath)).size, openingSkipped:false, reducedMotion:false, normalKeyboardOnly:true,
   recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], paths, choices: choice.options.map(o => o.text), branches: [] };
@@ -95,7 +98,7 @@ const introduction = opening?.enabled && opening.scenes?.length ? opening.scenes
 const advance = { kind: 'pressUntil', key: 'Enter', testid: 'dialogue-box', state: 'absent', maxPresses: 18, timeoutMs: 350 };
 try {
   for (const [index, name] of ['keep', 'release'].entries()) {
-    const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.changed': false } });
+    const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
     const context = await browser.newContext({viewport:{width:1280,height:900}, reducedMotion:'no-preference',
       ...(index===0?{recordVideo:{dir:resolve(out,'video'),size:{width:1280,height:900}}}:{})});
     const recordingStarted = Date.now();
@@ -154,8 +157,11 @@ try {
           { kind: 'waitForAttr', testid: 'runtime-state-json', attr: 'data-live-flags',
             value: `${route.id}|${arrival.x}|${arrival.y}|true|false` },
           ...walk(route.id, paths.ending), ...investigate(paths.ending),
-          { kind: 'pressUntil', key: 'Enter', testid: 'ending-screen', state: 'present', maxPresses: 18, timeoutMs: 350 }],
-          expect: { testidPresent: ['ending-screen'] }, shot: true },
+          { kind: 'pressUntil', key: 'Enter', testid: 'ending-screen', state: 'present', maxPresses: 18, timeoutMs: 350 },
+          { kind: 'waitForAttr', testid: 'ending-screen', attr: 'data-phase', value: 'epilogue', timeoutMs: 30000 },
+          { kind: 'waitForVisible', testid: 'ending-screen' },
+          { kind: 'waitForText', testid: 'ending-screen', text: project.endings[0].name }],
+          expect: { testidPresent: ['ending-screen'], visibleText: { 'ending-screen': project.endings[0].name } }, shot: true },
       ] };
     const started = Date.now();
     try {
