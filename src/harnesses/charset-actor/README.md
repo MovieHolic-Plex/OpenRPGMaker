@@ -58,6 +58,24 @@ API 시작과 선택 저장 뒤 자동 등록하며 위 `publish-shared` 명령�
 `bulk.py`의 외부 manifest도 각 행에 `reviewMode: "human"`, `strength: "free"`를 넣으면 같은 자유 저작 계약을 사용한다.
 그 경우 최상위 manifest에도 `reviewMode: "human"`을 넣어 내보내기에서 사람 선택만 사용하게 한다.
 
+## 선택적인 좌표 저작 비교 실험
+
+`bulk` manifest의 캐릭터에 `authoringMode: "pixel-patches-v1"`을 넣으면 `pixel-worker.md`를 사용한다.
+생략하거나 `"grid"`이면 기존 `free-worker.md`를 그대로 사용한다. 비교 실행은 `--batch-size 1`로 방법별 작업 폴더를 분리한다.
+두 방식 모두 GPT 6.1 sol high가 정지·걷기 12장을 직접 저작하며 초기 이미지 첨부는 기존 opt-in 계약을 따른다.
+
+`pixel_ops.py inspect GRID --frame down 1`은 현재 SHA256·팔레트·좌표를 보여준다.
+작업자는 `{version:1, sourceSha256, palette:{Z:"#704028"}, ops:[{frame:"down 1",x:8,y:18,pixels:"ZZZ"}]}`
+형식의 JSON을 직접 작성하고 `pixel_ops.py apply GRID PATCH.json`으로 해당 픽셀만 적용한다.
+`before`로 기존 글자열도 확인할 수 있다. 범위 초과·없는 색·투명 키 색·옛 해시를 거절하며 자동 전파·구멍 채우기는 하지 않는다.
+원본을 그대로 복사한 `out.chr.txt`에서 시작하고 `pixel-edits.json`에 모든 명령과 해시를 보존한다.
+`pixel_ops.py verify GRID`는 원본부터 명령을 재적용해 최종 격자와 바이트 단위로 대조하고 12장 모두 직접 수정했는지 확인한다.
+모델 종료 뒤 동일 검사를 수행하여 `model-frames.json.pixelEdits`에 결부한다. 기록 없는 직접 덮어쓰기는 게시하지 않는다.
+
+2026-10-04 첫 실험은 같은 원본·콘셉트 3쌍, 총 6명이다. 방법 이름은 검토 카드에 추가하지 않고,
+짝과 순서는 저장소 밖 실행 폴더의 `experiment.json`에 보존한다. 기술 검사를 통과한 실제 GIF의 남김/폐기는 사람이 결정한다.
+3쌍 결과만으로 일반적인 품질 향상을 주장하지 않는다. 업로드 원본·후보·선택은 Git에 넣지 않는다.
+
 ## 이전 지시 기반 저작과 독립 모델 검수
 
 아래는 기존 실행을 재현하는 절차다. 자유 저작의 현재 선택 계약은 위 절을 따른다.

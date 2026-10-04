@@ -20,6 +20,9 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 새 제작은 `animationMode: model-12`이며 모델이 납품한 걷기를 그대로 렌더한다. `model-frames.json`에 12장 각각의 실제 픽셀 해시와 변경 수·모델을 기록한다.
 `bulk` 기본은 원본 ASCII 격자를 바탕으로 12장을 직접 변형하는 방식이다. 초기 PNG 첨부·남김/폐기 참고·추가 조형 지시는 기본 제작에 넣지 않는다(2026-10-04 사용자 피드백). manifest에 `visualReferences`를 명시한 실험만 원본 시트와 참고를 첫 입력에 첨부한다. `visual-inputs.json`/meta는 기본 `[]`, 실험은 첨부 파일 순서·SHA256을 기록한다.
 `audit`가 저작 기록/현재 그림 binding과 PNG/GIF를 다시 읽는다. `walk-qa`는 이전 전파 실행의 비교용이다.
+좌표 부분 수정 비교는 캐릭터 행에 `authoringMode: "pixel-patches-v1"`을 지정하고 `bulk --batch-size 1`로 실행한다.
+기본은 기존 `grid` 저작이다. `pixel_ops.py`가 명시한 좌표·색만 적용하고 원본부터 명령을 다시 적용해 최종 격자와 12장 직접 수정 기록을 검증한다.
+명령 기록은 `pixel-edits.json`, 게시 binding은 `model-frames.json.pixelEdits`에 보존한다. 걷기 합성·미감 선별은 추가하지 않는다.
 현재 그림의 해시가 바뀌면 사람의 선택도 다시 확인한다. 사용자 선택·산출·원본은 `CHR_HARNESS_DATA` 아래 보존한다.
 사람이 남긴 그림과 설명은 사용자 공용 SQLite의 `charset-actor-kept`에 자동 등록한다. 에디터를 새로고침하면 새/기존 프로젝트와 AI NPC 검색에서 쓴다.
 폐기/되돌리기는 공용 목록에서 제외하고 기존 프로젝트 그림을 보존한다. 과거 모델 검수 모드는 이전 실행 재현용으로 유지한다.

@@ -157,8 +157,14 @@ def produce_batch(run, rows, index):
     if pending:
         write_json(batch / 'pending.json', pending)
         human = all(r.get('reviewMode') == 'human' for r in pending)
-        prompt = (H.HERE / ('free-worker.md' if human else 'bulk-worker.md')).read_text(encoding='utf-8')
+        modes = {r.get('authoringMode', 'grid') for r in pending}
+        if len(modes) != 1:
+            raise ValueError('좌표 저작 비교 실행은 --batch-size 1로 방법을 분리합니다')
+        mode = next(iter(modes))
+        worker = 'pixel-worker.md' if mode == 'pixel-patches-v1' else ('free-worker.md' if human else 'bulk-worker.md')
+        prompt = (H.HERE / worker).read_text(encoding='utf-8')
         prompt = prompt.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
+        prompt = prompt.replace('{PIXEL_TOOL}', f'python3 {H.HERE / "pixel_ops.py"}')
         prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
         visuals = visual_inputs(run, batch, pending)
@@ -171,7 +177,7 @@ def produce_batch(run, rows, index):
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
                                             strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None,
-                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals))
+                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals, authoringMode=mode))
         log(f'batch {index}: GPT high 12프레임 직접 저작 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')
@@ -225,6 +231,10 @@ def main(args):
             raise ValueError('잘못된 key/강도')
         if row['strength'] == 'free' and row.get('reviewMode') != 'human':
             raise ValueError('자유 저작은 사람 검토를 사용해야 함')
+        if row.get('authoringMode', 'grid') not in ('grid', 'pixel-patches-v1'):
+            raise ValueError('지원하지 않는 픽셀 저작 방식입니다')
+        if row.get('authoringMode') == 'pixel-patches-v1' and row.get('reviewMode') != 'human':
+            raise ValueError('좌표 저작 실험은 사람 검토로 진행합니다')
         H.norm_base(row['base'])
     root = H.run_dir(run)
     root.mkdir(parents=True, exist_ok=True)
