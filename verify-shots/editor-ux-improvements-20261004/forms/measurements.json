@@ -1,0 +1,196 @@
+{
+  "commit": "8eb5aa1ad9bd024140001527ef3c34c71d7e0b89",
+  "viewport": "1440×900",
+  "conditions": "native database and event modal; disposable fixture; no model/host saves; inputToTwoRafMs includes automation and two rAF waits",
+  "errors": [],
+  "rows": [
+    {
+      "name": "items:25:description:0",
+      "inputToTwoRafMs": 213,
+      "longTasks": [
+        104
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:description:1",
+      "inputToTwoRafMs": 150,
+      "longTasks": [
+        112
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:description:2",
+      "inputToTwoRafMs": 161,
+      "longTasks": [
+        51
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:search",
+      "inputToTwoRafMs": 94,
+      "longTasks": [],
+      "addedRows": 10,
+      "removedRows": 25,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "items:250:description:0",
+      "inputToTwoRafMs": 140,
+      "longTasks": [
+        59
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:description:1",
+      "inputToTwoRafMs": 139,
+      "longTasks": [
+        51
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:description:2",
+      "inputToTwoRafMs": 144,
+      "longTasks": [],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:search",
+      "inputToTwoRafMs": 74,
+      "longTasks": [],
+      "addedRows": 10,
+      "removedRows": 21,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "items:1000:description:0",
+      "inputToTwoRafMs": 116,
+      "longTasks": [],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:description:1",
+      "inputToTwoRafMs": 160,
+      "longTasks": [],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:description:2",
+      "inputToTwoRafMs": 148,
+      "longTasks": [],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 21,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:search",
+      "inputToTwoRafMs": 88,
+      "longTasks": [],
+      "addedRows": 10,
+      "removedRows": 21,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "event:100:open",
+      "inputToTwoRafMs": 555,
+      "longTasks": [
+        326,
+        118,
+        56
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 0,
+      "focused": "event-editor-name",
+      "dom": {
+        "commands": 100,
+        "totalNodes": 5130,
+        "count": "100개"
+      }
+    },
+    {
+      "name": "event:1000:open",
+      "inputToTwoRafMs": 2153,
+      "longTasks": [
+        805,
+        822,
+        463
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 0,
+      "focused": "event-editor-name",
+      "dom": {
+        "commands": 1000,
+        "totalNodes": 32130,
+        "count": "1000개"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "description focus, retained renamed row, reveal, type, subtype and gallery/list",
+      "passed": true
+    },
+    {
+      "name": "1000-item bottom scroll and last-record selection",
+      "passed": true,
+      "renderedRows": 21,
+      "scrollTop": 36937,
+      "maxScroll": 36937,
+      "rowHeight": 36
+    },
+    {
+      "name": "keyboard Home crosses virtual windows and Enter selects",
+      "passed": true
+    },
+    {
+      "name": "1000-command list/story/flow, selection and search",
+      "passed": true
+    },
+    {
+      "name": "story-first and flow defer list until search; native selection survives",
+      "passed": true
+    }
+  ],
+  "windowingExpected": true,
+  "profiling": false,
+  "productionSources": {
+    "src/editor/panels/databaseInventoryCatalog.ts": "7997e1ca004a5ffb9223516ed9498e45ac4d3495dc4d278729cf0b297436e27b",
+    "src/styles/database/modern/equipment-items.css": "d6f9b9be5cf017110d85caa73efb3a4d5234db19d80c8086a44050d0018a1383",
+    "src/editor/panels/eventEditor/content.ts": "4fe4ebdec188930f9a0d75c99b05f839192e7bb6c6b9fb9f25c7fcc462b197ac",
+    "src/editor/panels/eventEditor/aiAssist.ts": "4e1c272963f07094efe4df8a3af094b3cd76daaa47d13d86289b6cbcec1b7c04"
+  }
+}

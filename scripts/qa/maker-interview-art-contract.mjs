@@ -35,6 +35,7 @@ const begin=()=>p.evaluate(async()=>{document.querySelector('#start-app')?.remov
 await begin();
 const waitPending=async count=>{for(let i=0;i<80&&pending.length<count;i++)await p.waitForTimeout(50);if(pending.length<count)throw Error('Request not observed');};
 const fulfill=async(route,data)=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({image:{dataUrl:data,mimeType:'image/png'}})}).catch(()=>{});
+await p.getByTestId('project-interview-genre-romance').click();
 await waitPending(1);await p.getByTestId('project-interview-genre-monster').click();await waitPending(2);
 await fulfill(pending[1],nextPng);
 await p.waitForFunction(()=>document.querySelector('.cinematic-interview')?.dataset.artState==='accepted');

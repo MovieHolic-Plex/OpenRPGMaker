@@ -27,7 +27,7 @@ import type { PiAgentThinkingLevel } from "./protocol";
 
 export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
 /** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
-export const DEFAULT_PI_TEAM = false;
+export { DEFAULT_PI_TEAM } from "./executionDefaults";
 
 /**
  * 옛 blob 호환 어휘. 경로 enum 이 있던 시절 `executionRoute` 키가 저장돼 있다:
@@ -35,7 +35,7 @@ export const DEFAULT_PI_TEAM = false;
  * 쓰지 않는다 — 읽는 곳은 `loadAiConfig` 의 승격 한 곳뿐이다(옛 값을 지우면 사용자의 팀 설정이
  * 조용히 사라지고, 남겨 두면 두 어휘가 살아 있는 것처럼 보인다).
  */
-export const LEGACY_PI_TEAM_ROUTE = "pi-team";
+export { LEGACY_PI_TEAM_ROUTE } from "./executionDefaults";
 /** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
 export interface PiRunPlan {
   /** Request-local location guidance, declared from the user's instruction. */

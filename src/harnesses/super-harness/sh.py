@@ -31,6 +31,8 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 import store  # noqa: E402
 import gates  # noqa: E402
+import planning_details  # noqa: E402
+import art_execution  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -44,7 +46,7 @@ BRIEF = os.path.join(ROOT, 'scripts/qa-game/briefs/ember-mine-jrpg.json')
 CODEX_TIMEOUT = int(os.environ.get('SUPER_HARNESS_CODEX_TIMEOUT', str(50 * 60)))
 PROBE_TIMEOUT = int(os.environ.get('SUPER_HARNESS_PROBE_TIMEOUT', str(30 * 60)))
 PROBE_RUNS = 2   # 전/후 각 2판
-ENV = dict(os.environ, PATH=os.pathsep.join([os.path.dirname(BUN), os.path.dirname(CODEX), os.path.expanduser('~/.local/bin'),
+ENV = dict(os.environ, SUPER_HARNESS_CODEX_BIN=CODEX, PATH=os.pathsep.join([os.path.dirname(BUN), os.path.dirname(CODEX), os.path.expanduser('~/.local/bin'),
                                               '/usr/local/bin', '/usr/bin', '/bin', os.environ.get('PATH', '')]))
 
 PROCS = {}   # job id → (Popen, deadline, meta)
@@ -375,7 +377,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -478,6 +480,7 @@ def on_plan(meta, code, result):
     if code != 0 or not report['ok']:
         reject_planning(cid, report['problems'] or ['기획 작업 비정상 종료'])
         return
+    planning_details.render(cdir(cid))
     with open(cdir(cid, 'planning.md'), 'w') as f:
         f.write(gates.planning_markdown(cdir(cid)))
     store.update_concept(cid, stage='plan-review', status='queued', reasons=[], note='텍스트 도면 기계 확인 완료 — 적대적 기획 검수 대기')
@@ -489,6 +492,7 @@ def start_plan_reviews(c):
     if not report['ok']:
         reject_planning(cid, report['problems'])
         return
+    planning_details.render(cdir(cid))
     with open(cdir(cid, 'planning.md'), 'w') as f:
         f.write(gates.planning_markdown(cdir(cid)))
     for label, focus in (('A', '공간의 정체성·시대·활동·구역 구성'), ('B', '텍스트 도면의 동선·경계·축척·필수 재료')):
@@ -599,8 +603,11 @@ def start_art(c):
         subprocess.run(['git', 'worktree', 'add', '--detach', wt, 'HEAD'], cwd=ROOT, check=True, capture_output=True)
     if not os.path.exists(os.path.join(wt, 'node_modules')):
         subprocess.run(['npm', 'run', 'wt', '--', 'adopt', 'super-art-' + cid, '--path', wt], cwd=ROOT, check=True, capture_output=True)
+    previous = cdir(cid, 'art-result.json')
+    if os.path.isfile(previous):
+        os.replace(previous, cdir(cid, 'art-result.previous.json'))
     prompt = fill(prompt_template('art.md'), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c))
-    start_codex(cid, 'art', 'candidates', prompt, cdir(cid, 'art-result.json'), write_root=wt)
+    start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
     store.update_concept(cid, status='running', note='전용 하네스로 칩 후보 제작 중')
 
 
@@ -608,6 +615,26 @@ def on_art(meta, code, result):
     cid = meta['concept']
     wt = os.path.realpath(os.path.join(DATA, 'art-worktrees', cid))
     result = result if isinstance(result, dict) else {}
+    if code == 0 and result.get('execution') and meta.get('tag') != 'collect':
+        try:
+            request = dict(result['execution'])
+            # Models are chosen by the user/supervisor, never by a preparation worker.
+            request.pop('modelOverride', None)
+            override = json.loads(store.setting('art_model_overrides') or '{}').get(cid)
+            if override:
+                request['modelOverride'] = override
+            art_execution.prepare(wt, request)
+            request_path = cdir(cid, 'art-execution.json')
+            write_json(request_path, request)
+            native_result = cdir(cid, 'art-execution-result.json')
+            if os.path.exists(native_result): os.remove(native_result)
+            start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
+                       wt, request_path, native_result], ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
+                       {'result': native_result})
+            store.update_concept(cid, status='running', note='전용 하네스 직접 실행 — 후보 제작·독립 검수')
+        except (OSError, ValueError, TypeError) as error:
+            store.update_concept(cid, stage='blocked', status='idle', note='그림 실행 준비 오류', reasons=[str(error)])
+        return
     candidates = result.get('candidates') or []
     valid = code == 0 and isinstance(candidates, list) and bool(candidates)
     if not isinstance(candidates, list):
@@ -644,6 +671,18 @@ def on_art(meta, code, result):
     else:
         store.update_concept(cid, stage='blocked', status='idle', note='칩 제작 미완료 — 하네스 결과·그림 근거 없음', reasons=(result or {}).get('reasons') or ['art-result.json에 실제 후보와 하네스 검사 근거가 필요함'])
     store.log(cid, '칩 제작 결과 — ' + ('사람 선택 대기' if valid else '미완료'))
+
+
+def on_art_native(meta, code, result):
+    cid = meta['concept']
+    wt = os.path.join(DATA, 'art-worktrees', cid)
+    if code != 0 or not isinstance(result, dict) or result.get('exitCode') != 0:
+        store.update_concept(cid, stage='blocked', status='idle', note='그림 하네스 실행 실패',
+                             reasons=[f'실행 종료 {code}; logs/art-native.log 확인'])
+        return
+    prompt = fill(prompt_template('art-collect.md'), ROOT=wt, CDIR=cdir(cid))
+    start_codex(cid, 'art', 'collect', prompt, cdir(cid, 'art-result.json'), write_root=wt)
+    store.update_concept(cid, status='running', note='실제 후보 그림·검수 결과 정리 중')
 
 
 def start_build(c):
@@ -893,7 +932,7 @@ def tick():
         start_discover()
 
     for c in store.concepts("stage='art' AND status='queued'"):
-        if len(running(['art'])) >= int(store.setting('max_art')) or not codex_free():
+        if len(running(['art', 'art-native'])) >= int(store.setting('max_art')) or not codex_free():
             break
         start_art(c)
 
@@ -1082,15 +1121,55 @@ def concept_about(c, card):
     return card.get('summary') or c['why']
 
 
+def verified_images(root, refs, label, kind):
+    root = os.path.realpath(root)
+    images = []
+    if not isinstance(refs, list):
+        return images
+    for ref in refs:
+        try:
+            path = os.path.realpath(os.path.join(root, ref['path']))
+            if path.startswith(root + os.sep) and os.path.isfile(path) and gates.digest(path) == ref.get('sha256'):
+                images.append({'path': os.path.relpath(path, DATA), 'label': ref.get('label') or label,
+                               'kind': kind, 'v': int(os.path.getmtime(path))})
+        except (OSError, TypeError, KeyError):
+            continue
+    return images
+
+
+def planning_images(cid):
+    manifest = read_json(cdir(cid, 'planning-visual.json'), {}) or {}
+    if not isinstance(manifest, dict) or manifest.get('fingerprint') != gates.planning_report(cdir(cid), approved=False)['fingerprint']:
+        return []
+    return verified_images(cdir(cid), manifest.get('images'), '기획도', '기획도')
+
+
+def candidate_images(cid):
+    result = read_json(cdir(cid, 'art-result.json'), {}) or {}
+    if not isinstance(result, dict) or not isinstance(result.get('candidates'), list):
+        return []
+    root = os.path.join(DATA, 'art-worktrees', cid)
+    return [image for candidate in result['candidates'] if isinstance(candidate, dict)
+            for image in verified_images(root, candidate.get('images'), '칩 후보 · 선택 전', '칩 후보')]
+
+
+def before_build(c):
+    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') or (
+        c['stage'] == 'blocked' and not gates.material_report(cdir(c['id']))['ok'])
+
+
 def gallery_list():
     items = []
     for c in store.concepts():
         card = read_json(cdir(c['id'], 'card.json'), {}) or {}
-        imgs = example_images(c['id'])
+        if before_build(c):
+            imgs = candidate_images(c['id']) or planning_images(c['id'])
+        else:
+            imgs = example_images(c['id'])
         items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
                       'running': c['status'] == 'running', 'status': plain_status(c),
                       'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
-                      'thumb': imgs[0] if imgs and c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else None, 'pr': c['pr'], 'parent': c.get('parent')})
+                      'thumb': imgs[0] if imgs else None, 'pr': c['pr'], 'parent': c.get('parent')})
     paused = store.setting('paused') == '1'
     return {'paused': paused, 'items': items}
 
@@ -1100,7 +1179,7 @@ def gallery_detail(cid):
     if not c:
         return None
     card = read_json(cdir(cid, 'card.json'), {}) or {}
-    imgs = example_images(cid) if c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else []
+    imgs = example_images(cid) if not before_build(c) else []
     # 조수에게 실제로 시킨 결과(카드 붙여서) — 마지막 시도.
     tried = []
     for run in sorted(glob.glob(cdir(cid, 'probe', f'a{c["attempt"]}-*'))):
@@ -1109,7 +1188,7 @@ def gallery_detail(cid):
             path = os.path.join(run, 'score', m['png']) if os.path.exists(os.path.join(run, 'score', m['png'])) else os.path.join(run, m['png'])
             if os.path.exists(path):
                 tried.append({'path': os.path.relpath(path, DATA), 'label': f'조수가 지은 맵 · {m.get("width", "")}×{m.get("height", "")}', 'v': int(os.path.getmtime(path))})
-    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
+    if before_build(c):
         tried = []
     orders = [g['item'] for g in store.gaps() if g['concept'] == cid and g.get('item')]
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
@@ -1140,24 +1219,25 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
-    L += [gates.planning_markdown(cdir(cid)), '']
-    plan = read_json(cdir(cid, 'materials.json'), {}) or {}
-    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
-        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 기획·도면과 재료 준비가 승인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
-    for variant in plan.get('variants', []):
-        L += [f'## 재료 준비 — {variant.get("id", "")}', '', '| 필요한 재료 | 준비 | 역할 |', '|---|---|---|']
-        L += [f'| {md_cell(r.get("what"))} | {"재고 근거 있음" if r.get("available") else "제작 필요"} | {md_cell(r.get("role"))} |' for r in variant.get('requirements', [])] + ['']
     art = read_json(cdir(cid, 'art-result.json'), {}) or {}
     if art:
         L += ['## 칩 제작 결과', '']
         for candidate in art.get('candidates', []):
             L += [f'- 담당: **{md_cell(candidate.get("harness"))}** · 후보: {md_cell(candidate.get("selection"))}']
-            for ref in candidate.get('images', []):
-                rel = os.path.join('art-worktrees', cid, ref.get('path', ''))
-                full = os.path.realpath(os.path.join(DATA, rel))
-                if full.startswith(os.path.realpath(os.path.join(DATA, 'art-worktrees', cid)) + os.sep) and os.path.isfile(full):
-                    L += ['', md_img({'label': '칩 후보 · 사람 선택 전', 'path': rel, 'v': int(os.path.getmtime(full))}), '']
+            for image in verified_images(os.path.join(DATA, 'art-worktrees', cid), candidate.get('images'), '칩 후보 · 사람 선택 전', '칩 후보'):
+                L += ['', md_img(image), '']
         L += [f'- 남은 일: {text}' for text in art.get('remaining', [])] + ['']
+    diagrams = planning_images(cid)
+    if diagrams:
+        L += ['## 기획 도면 이미지', '', '> 구역·연결을 보여주는 기획도입니다. 실제 칩으로 시공한 맵 그림은 다음 단계에서 별도로 만듭니다.', '']
+        L += [md_img(im) for im in diagrams] + ['']
+    L += [gates.planning_markdown(cdir(cid)), '']
+    plan = read_json(cdir(cid, 'materials.json'), {}) or {}
+    if before_build(c):
+        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 기획·도면과 재료 준비가 승인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
+    for variant in plan.get('variants', []):
+        L += [f'## 재료 준비 — {variant.get("id", "")}', '', '| 필요한 재료 | 준비 | 역할 |', '|---|---|---|']
+        L += [f'| {md_cell(r.get("what"))} | {"재고 근거 있음" if r.get("available") else "제작 필요"} | {md_cell(r.get("role"))} |' for r in variant.get('requirements', [])] + ['']
     if c['reasons']:
         L += ['## 지금 고치는 이유', ''] + [f'- {w}' for w in c['reasons']] + ['']
     if d['images']:
@@ -1165,7 +1245,7 @@ def concept_markdown(cid):
     if d['tried']:
         L += ['## 조수에게 「만들어줘」라고 시켜 본 결과', ''] + [md_img(im) for im in d['tried']] + ['']
     for v in card.get('variants', []):
-        prefix = '이전 초안 변형' if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else '변형'
+        prefix = '이전 초안 변형' if before_build(c) else '변형'
         L += [f'## {prefix} — {v.get("title", "")}', '']
         meta = [v.get('worldview'), v.get('size') and f'크기 {v["size"]}', v.get('tilesetId') and f'칩셋 `{v["tilesetId"]}`']
         L += ['· '.join(m for m in meta if m), '']

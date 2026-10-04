@@ -194,14 +194,21 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   beginEventViewSession(`${mapId}:${ev.id}`);
   const storyboardMode = currentStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
-  renderCommandList(cmdList, activePage.commands, [], actions, {
-    selectionScope: selectionKey,
-    issues: activePageIssues,
-    pickerContext: "map",
-    openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
-  });
-  cmdList.querySelector(".empty-hint")?.remove();
-  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id, activePage.id));
+  let listRendered = false;
+  const ensureCommandList = (): void => {
+    if (listRendered) return;
+    listRendered = true;
+    renderCommandList(cmdList, activePage.commands, [], actions, {
+      selectionScope: selectionKey,
+      issues: activePageIssues,
+      pickerContext: "map",
+      openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
+    });
+    if (activePage.commands.length === 0) cmdList.querySelector(".empty-hint")?.remove();
+    cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, eventId, activePage.id));
+    // The list renderer registers itself; other views still share this selection scope.
+    setCommandSelectionSurface(section);
+  };
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -272,7 +279,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       },
       selectedPath: selectedCommandPath(),
     });
-  let storyboardEl = makeStoryboard();
+  // Keep an inexpensive mount until Story is requested. The AI dock also calls
+  // applyViewMode during setup, so repeated calls must not rebuild the same tree.
+  let storyboardEl: HTMLElement = el("div");
+  let storyboardRendered = false;
   const changeMode = (next: StoryboardMode): void => {
     currentMode = next;
     setStoryboardMode(next);
@@ -295,6 +305,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     const isStoryboard = currentMode === "storyboard";
     const isFlow = currentMode === "flow";
     refreshCommandCount();
+    setCommandSelectionSurface(section);
+    if (!isStoryboard && !isFlow) ensureCommandList();
     cmdList.hidden = isStoryboard || isFlow;
     storyboardEl.hidden = !isStoryboard;
     flowHost.hidden = !isFlow;
@@ -303,27 +315,31 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
     if (restoreTabFocus) viewToggle.querySelector<HTMLElement>('[aria-selected="true"]')?.focus();
-    if (isStoryboard) {
+    if (isStoryboard && !storyboardRendered) {
       const fresh = makeStoryboard();
       storyboardEl.replaceWith(fresh);
       storyboardEl = fresh;
+      storyboardRendered = true;
       storyboardEl.hidden = false;
       // 재렌더/보기 전환 뒤에도 선택한 명령이 인스펙터에 남아 있어야 한다.
       const restored = selectedCommandPath();
       if (restored) selectStoryboardCommand([...restored], true);
-    } else {
+    } else if (!isStoryboard && storyboardRendered) {
       storyboardEl.replaceChildren();
+      storyboardRendered = false;
     }
     // 플로우는 미리보기가 마지막으로 보던 단계를 짚는다. 미리보기에서 넘어온 직후에
     // 다시 그려야 그 단계가 반영되므로 보기 전환마다 새로 만든다.
-    if (isFlow) {
+    if (isFlow && flowHost.childNodes.length === 0) {
       flowHost.replaceChildren(renderEventPageFlow({
         mapId,
         eventId,
         page: activePage,
         onSelect: selectStoryboardCommand,
       }));
-    } else {
+      const restored = selectedCommandPath();
+      if (restored) selectStoryboardCommand([...restored], true);
+    } else if (!isFlow) {
       flowHost.replaceChildren();
     }
     syncToolbarState();
@@ -371,6 +387,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     eventId: ev.id,
     page: activePage,
     cmdList,
+    selectionPath: selectedCommandPath,
     stagedHost,
     refreshListVisibility: () => applyViewMode(),
     replaceAll: (commands) => commandHistory.replaceAll(commands),
@@ -386,6 +403,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     aiDock: aiAssist,
     currentMode: () => currentMode,
     storyboardEl: () => storyboardEl,
+    ensureCommandList,
   });
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
   syncToolbarState = commandToolbar.sync;
@@ -493,6 +511,7 @@ type CommandToolbarOptions = {
   readonly aiDock?: HTMLDetailsElement;
   readonly currentMode: () => StoryboardMode;
   readonly storyboardEl: () => HTMLElement;
+  readonly ensureCommandList: () => void;
 };
 
 type CommandToolbar = {
@@ -718,6 +737,9 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     commandSearch.disabled = isPreview;
     commandSearch.title = isPreview ? "미리보기에서는 검색할 수 없습니다. 목록이나 스토리로 바꾸세요." : "명령 검색";
     searchClear.hidden = query.length === 0;
+    // Flow's existing match count uses list summaries; create that surface only
+    // when a nonempty search actually needs it.
+    if (query.length > 0 && options.currentMode() === "flow") options.ensureCommandList();
     const listMatches = filterCommandSurface(cmdList, query);
     const storyMatches = filterCommandSurface(options.storyboardEl(), query);
     if (query.length === 0 || isPreview) {

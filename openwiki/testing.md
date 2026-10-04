@@ -65,6 +65,14 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 몰리면 힙 바닥(3584MB)을 넘겨 cgroup 이 프로세스를 죽인다. 대응: `test:parity` 에 `--maxWorkers=2
 --minWorkers=1` 고정 (`test:quarantine`·게이트 browser 스테이지와 같은 패턴). 로컬(상한 없음)에는 영향 없다.
 
+## ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
+
+`ci-full.slice` 가 12GiB 이고 러너 서비스 `NODE_OPTIONS` 가 `--max-old-space-size=4096` 이면
+`withHeapOption` 이 그 힙을 유지한다. 오버커밋이 워커 3을 고르면 3×4096MB 가 memory.max 와 같아
+피크 12.00GiB, OOM kill 1 로 JSON 리포트가 안 남는다(run 37183989815).
+`cgroupBudget` 은 후보 워커 수를 고른 뒤 `워커 × 실제 힙` 이 usable(memory.max 의 75%)을 넘으면
+워커를 줄인다. 이 슬라이스에서는 2×4096MB 다. 워커당 바닥 3584MB 는 그대로다.
+
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
 **워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.

@@ -2,6 +2,22 @@
 
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
+## 작은 타일 편집의 undo/redo 경로 (2026-10-04)
+
+`mapEditHistory.restoredTileCells`는 맵 크기와 lowerTiles/upperTiles 이외의 모든 값이 같은 경우에만
+최대 4,096개의 정확한 변경 칸을 계산한다. 타일셋 복원, 이벤트 초안 보관함, 잠긴 지형이 있으면 적용하지 않는다.
+이 경로는 기존 `store.updateMapTiles`의 쓰기 시 복제와 칸 단위 통지를 사용한다. 다른 맵이나 저장 기준본을
+고치지 않으며 일반 맵/프로젝트 스냅샷은 기존 `store.replace` 복원·초안 병합·정규화 계약을 유지한다.
+
+`hasEventDraftVaultEntries`는 살아 있는 초안뿐 아니라 화면에서 잠시 사라진 보관 초안도 감지한다.
+보관 초안을 복구하는 적용을 타일 통지만으로 표시하면 이벤트 그림이 갱신되지 않으므로 반드시 전체 경로로 보낸다.
+잠긴 칸 복원도 칠하기의 잠금 검사에 막히지 않도록 전체 경로를 사용한다.
+
+화면 증거와 같은 조건의 비교는 `verify-shots/editor-ux-improvements-20261004/README.md`에 있다.
+`scripts/qa/editor-ux-audit.mjs`는 실제 Ctrl+Z/Ctrl+Y의 타일 결과, 두 레이어, 다른 맵 정체성,
+덧그림/그림자/스택, 크기, 이벤트, 새 초안과 보관함에만 있는 초안, 잠긴 지형, 프로젝트 복원을 확인한다.
+전체 테스트·게이트·typecheck는 이번 세션의 실행 제한에 따라 돌리지 않았다.
+
 ## 되돌리기 복원의 공용 자산 복제 (2026-10-03)
 
 높이 붓 확인 중 Ctrl+Z 뒤 Ctrl+Y에서 Chromium 탭이 죽었고, 바닥 붓 한 칸도 같은 순서로 죽었다.
@@ -672,3 +688,14 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 projectSwitch:false로 알리며 undo와 진행 중 AI 의도를 폐기하지 않는다.
 해시 계산 뒤에는 generation/lineage/대상/dirty/in-flight를 재확인한다. 실제 자산·맵·기획
 변경이나 잘못된 해시는 기존 projectSwitch와 충돌 검사를 그대로 통과해야 한다.
+||||||| 751d19c160
+
+
+
+## 편집기 UX 지연 조사 (2026-10-04)
+
+`verify-shots/editor-ux-audit-20261004/README.md`는 main `d7a3f0136e` 기준 10명 조사와
+59개 네이티브 UI 측정 구간이다. 자료집 설명 입력의 전체 행 재구성, Ctrl+Z의 복사·project 범위
+재구성, 긴 이벤트의 활성/비활성 보기 생성이 우선 후보다. 시간은 자동화 입력→두 rAF이며
+실제 픽셀 표시 시점이나 Electron 출하 성능이 아니다. 나머지 코드 후보, 독립 검토의 과장 정정,
+원본 수치와 재현 스크립트는 보고서에 있다. 이 감사 자체가 대응 수정의 완료를 뜻하지 않는다.

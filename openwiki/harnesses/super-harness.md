@@ -142,3 +142,42 @@
 실행 중 기획자가 자체 하위 검수자를 호출하는 중복을 관측해, 기획자는 파일 작성 후 종료하고
 별도 A/B 호출은 하네스만 하도록 기획/검수 지시문을 명확히 했다.
 근거: `verify-shots/super-harness-planning-gate/pilot/`의 도면 Markdown·판정 해시·운영 화면.
+
+### 큰 공간의 세부 도면·기획 이미지
+
+cellScale>1 또는 한 변>60인 전체 도면은 1타일 축척의 `details` 두 구역 이상이 필요하다.
+각 상세도의 origin은 전체 지도 타일 좌표이며 직사각형 범위는 겹치지 않는다. parentZones로 전체 구역을 빠짐없이 연결한다.
+ports는 side/offset/width/kind/level/connectsTo를 갖는다. 양쪽 포트의 실제 좌표·방향·폭·높이·용도가 맞아야 하며,
+모든 상세 구역을 이은 그래프가 연결되어야 한다. 외부 출입구는 전체 도면의 E/X에만 연결한다.
+기획 검수 A/B는 각 details의 6항목과 전체 connections를 따로 승인한다. 기획 파일 전체의 해시에 판정이 묶인다.
+`planning_details.py`는 도면을 색상 구역 PNG로도 렌더링한다. 이는 **기획도**이며 칩을 써서 만든 맵 그림/칩 검수 근거가 아니다.
+개념 화면 상단에 현재 기획 해시와 일치하는 전체/세부 이미지만 표시한다. 실제 칩 후보는 별도의 칩 제작 결과에 표시한다.
+
+
+### 실제 후보 표시와 참고자료 연결
+
+갤러리는 제작 전 단계에서 현재 해시의 기획도, 후보가 있으면 칩 후보를 보여 주고 종류 배지를 붙인다.
+재료가 준비되지 않아 blocked가 된 경우에도 이전 예제 맵을 완성 그림처럼 내보내지 않는다.
+상세 화면은 칩 후보를 기획 문서보다 먼저 보여 준다. 후보 PNG의 경로/해시를 확인하며, 상세 화면의
+새로고침은 입력 중인 교정 지시를 유지한다. 전체 큐를 멈추고 특정 개념만 실행할 때 상태의 '멈춤'은 새 작업 투입 중지를 뜻한다.
+
+칩 작업에 `concepts/<id>/reference-source.json`을 제공할 수 있다. 여기에는 정본 project id/폴더/읽은 revision을
+기록한 provenance 파일과 `export-tileset-references.mjs`로 추출한 INDEX.json 디렉터리 경로를 넣는다.
+작업자는 해당 용도 MD와 실제 이미지를 읽는다. 참고자료 출처 프로젝트는 읽기 전용이며 후보의 설치 대상과 같다는 뜻은 아니다.
+정본 SQLite의 tileset이 `$blob`이면 `tileset_blobs`를 읽어 펼치고, `referenceDocumentsOwner=bundle`이면
+실제 호스트 판본의 소유 번들 문서를 `referenceOwnership.ts`와 같은 계약으로 복원한 뒤 추출한다.
+이 표지를 '참고자료 없음'으로 오판하지 않는다. 자료를 임의로 생성하거나 정본 DB에 다시 쓰지 않는다.
+
+### 그림 실행은 감독이 직접 한다
+
+중첩 Codex 실행은 설정 폴더 쓰기 오류, 중첩 Claude 실행은 네트워크 EPERM으로 후보 0장이 된 실측이 있다.
+`art` 준비 작업자는 시드·격리 판을 만들고 art-result.json에 execution 요청을 반환한다.
+`art-native`는 감독 프로세스에서 interior-props pool 또는 modern-chipset _run을 실행한다. 임의 명령/외부 경로는 받지 않는다.
+종료 후 별도 결과 수집 작업자가 실제 PNG·검사 JSON을 art-result.json에 기록한다.
+하위 작업의 종료를 관리하며, art와 art-native를 합쳐 동시 칩 제작 개념 상한을 적용한다.
+조선/jp-city의 직접 실행 어댑터는 아직 없으므로 준비 단계에서 명시적으로 막힌다.
+
+사용자가 특정 개념의 모델 변경을 승인하면 settings.art_model_overrides에 개념 id별
+`{backend, model, effort}`를 기록한다. 감독이 이 설정만 실행 요청에 넣으며, 준비 작업자의 modelOverride는 무시한다.
+2026-10-04 주차장 파일럿은 Sonnet 공급자의 4계정 한도 소진으로 사용자가 Codex(gpt-6.1-sol medium) 전환을 승인했다.
+이 변경은 해당 개념에만 적용하며 현대 하네스의 기본 Sonnet 설정을 바꾸지 않는다.

@@ -14,7 +14,7 @@ import {
   type WelcomeGenrePresetId,
 } from "@/editor/welcomeGenrePresets";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
-import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { normalizeGameDesignBrief, type GameDesignBrief } from "@/project/gameDesignBrief";
 import { projectRepository } from "@/project/persistence/repository";
 import { isLocalTarget } from "@/project/persistence/target";
 import { store } from "@/project/store";
@@ -67,7 +67,10 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
   if (!intent) return null;
   const mode = projectStartMode(intent.choiceId, intent.startMode);
   try {
+    const brief = intent.gameDesignBrief === undefined ? undefined : normalizeGameDesignBrief(intent.gameDesignBrief);
+    if (brief && (mode !== "ai" || brief.presetId !== intent.choiceId)) throw new Error("게임 기획과 시작 장르가 다릅니다.");
     const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize);
+    if (brief) seed.gameDesignBrief = { ...brief, generationPending: true };
     store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("새 게임을 폴더에 저장하지 못했습니다.");
@@ -76,8 +79,11 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
     throw error;
   }
   focusProjectStartMap();
-  const presetId = mode === "ai" && welcomeGenrePresetById(intent.choiceId ?? undefined) ? intent.choiceId as WelcomeGenrePresetId : null;
-  const prompt = mode === "ai" ? startScreenPrompt(intent) : null;
+  // A confirmed launcher plan is consumed once by the existing saved-brief execution route.
+  // Legacy launcher payloads still open their interview after boot.
+  const confirmed = intent.gameDesignBrief !== undefined;
+  const presetId = !confirmed && mode === "ai" && welcomeGenrePresetById(intent.choiceId ?? undefined) ? intent.choiceId as WelcomeGenrePresetId : null;
+  const prompt = !confirmed && mode === "ai" ? startScreenPrompt(intent) : null;
   let autoSend = false;
   if (prompt) {
     try {
