@@ -2049,6 +2049,8 @@ parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코�
 추가 AI POST는 0이어야 한다. 원래 실패한 `generation.json`은 그대로 두고 `reloaded.json`을
 따로 기록한다. 이는 게임을 고치는 후속 제작이 아니며, 내보내기/플레이 성공을 뜻하지 않는다.
 출하 ZIP 다운로드와 두 선택의 실제 키보드 플레이도 Chromium으로 수행한다.
+엔딩은 루트 DOM의 생성만으로 통과시키지 않는다. `data-phase=epilogue`와 실제 엔딩 제목을
+확인하고 `waitForVisible`의 `descendant: '.ending-heading', minAlpha: 0.95`로 자식 페이드까지 기다린다.
 
 ### Maker repair and click-first startup (2026-10-04)
 

@@ -159,7 +159,7 @@ try {
           ...walk(route.id, paths.ending), ...investigate(paths.ending),
           { kind: 'pressUntil', key: 'Enter', testid: 'ending-screen', state: 'present', maxPresses: 18, timeoutMs: 350 },
           { kind: 'waitForAttr', testid: 'ending-screen', attr: 'data-phase', value: 'epilogue', timeoutMs: 30000 },
-          { kind: 'waitForVisible', testid: 'ending-screen' },
+          { kind: 'waitForVisible', testid: 'ending-screen', descendant: '.ending-heading', minAlpha: 0.95 },
           { kind: 'waitForText', testid: 'ending-screen', text: project.endings[0].name }],
           expect: { testidPresent: ['ending-screen'], visibleText: { 'ending-screen': project.endings[0].name } }, shot: true },
       ] };
