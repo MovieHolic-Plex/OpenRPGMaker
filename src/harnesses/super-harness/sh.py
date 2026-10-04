@@ -1102,6 +1102,7 @@ def plain_status(c):
             choices = art_choices.view(DATA, c['id'])
         except (ValueError, OSError, KeyError, TypeError):
             return '선택 자료 확인 필요'
+        if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'내 선택 필요 · {choices["selectedCount"]}/{choices["total"]} 선택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
         orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
@@ -1181,7 +1182,7 @@ def gallery_list():
         else:
             imgs = example_images(c['id'])
         status = plain_status(c)
-        group = 'wait' if c['stage'] == 'art-review' and status.startswith('선택 완료') else GROUP.get(c['stage'], 'work')
+        group = 'stop' if status.startswith('후보 수정 필요') else 'wait' if c['stage'] == 'art-review' and status.startswith('선택 완료') else GROUP.get(c['stage'], 'work')
         items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': group,
                       'running': c['status'] == 'running', 'status': status,
                       'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
