@@ -7,6 +7,7 @@ import art_choices
 import store
 import art_layout
 import art_repair
+import art_acceptance
 
 CHECKS = art_layout.SCENE_CHECKS
 
@@ -50,6 +51,9 @@ def review_input(data, cid):
             prior = contexts.get(group['id'], {}).get(c['id'], {})
             reviewed = (prior.get('fingerprint') == art_choices.fingerprint(c) and prior.get('gateVersion') == art_layout.VERSION
                         and all(k in prior.get('checks', {}) for k in CHECKS))
+            if reviewed:
+                try: art_acceptance.validate(prior, art_acceptance.contract(folder), CHECKS)
+                except (ValueError, KeyError, TypeError): reviewed = False
             if not reviewed and not visible['stale'] and group.get('requiresContextReview'):
                 candidates.append(dict(c, fingerprint=art_choices.fingerprint(c)))
         if candidates: groups.append({'id': group['id'], 'title': group['title'], 'candidates': candidates})
@@ -65,7 +69,8 @@ def review_input(data, cid):
             'previousFeedback': previous, 'previousImages': previous_images,
             'comparisonObligations': art_repair.obligations(previous),
             'repairBrief': read(folder / 'parking-repair-brief.json', {}),
-            'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION}
+            'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION,
+            'acceptance': art_acceptance.contract(folder)}
 
 
 def validate_review(data, cid, result, request):
@@ -93,6 +98,10 @@ def validate_review(data, cid, result, request):
                     raise ValueError(f'조립 검수 {key} 관찰 근거 필요')
             failed = any(checks[k]['verdict'] == 'FAIL' for k in CHECKS)
             if failed != (r['verdict'] == 'FAIL'): raise ValueError('세부 판정과 전체 판정 불일치')
+            current_acceptance = art_acceptance.contract(directory(data, cid))
+            if current_acceptance != request.get('acceptance'):
+                raise ValueError('검수 중 고정 합격 기준이 변경됨')
+            art_acceptance.validate(r, current_acceptance, CHECKS)
             art_repair.validate_comparison(r, request, group['id'])
             if failed:
                 fixes = r.get('fixes')

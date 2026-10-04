@@ -64,8 +64,10 @@ def validate_comparison(verdict, request, group_id):
     for key, obligation in expected.items():
         item = comparisons[key]
         status = item.get('status')
-        if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred'):
+        if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred', 'advisory'):
             raise ValueError('실패 전후 비교 상태 오류')
+        if status == 'advisory' and not request.get('acceptance'):
+            raise ValueError('고정 합격 계약이 있어야 이전 의견을 권고로 분리할 수 있습니다.')
         if any(len(str(item.get(k, '')).strip()) < 20 for k in ('before', 'after', 'evidence')):
             raise ValueError('실패 전후의 좌표·형태와 판정 근거가 필요합니다.')
         if status == 'unresolved' and verdict['verdict'] == 'PASS':

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import store
 import art_layout
+import art_acceptance
 
 
 def digest(path):
@@ -176,6 +177,11 @@ def view(data, cid):
                     all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
                         and len(str(checks[k].get('evidence', '')).strip()) >= 12
                         for k in art_layout.SCENE_CHECKS))
+                if context_ok:
+                    try:
+                        art_acceptance.validate(context, art_acceptance.contract(Path(data) / 'concepts' / cid), art_layout.SCENE_CHECKS)
+                    except (ValueError, KeyError, TypeError):
+                        context_ok = False
                 if not context_ok:
                     explanation = context.get('reasons', []) if matches else []
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])

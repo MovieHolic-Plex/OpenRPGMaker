@@ -129,6 +129,7 @@ def main():
             'fingerprint': approved['fingerprint'],
             'layout': request['layout'],
             'report': json.loads(Path(request['layoutApproval']).read_text()),
+            'acceptance': approved.get('acceptance'),
         }, ensure_ascii=False)
     code = subprocess.call(command, cwd=root, env=env)
     result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code}, ensure_ascii=False))

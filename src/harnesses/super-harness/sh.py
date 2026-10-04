@@ -38,6 +38,7 @@ import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
 import art_repair  # noqa: E402
 import art_layout  # noqa: E402
+import art_acceptance  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -624,6 +625,9 @@ def start_art(c):
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_LAYOUT_MODULE=os.path.join(HERE, 'art_layout.py'),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
+    acceptance = art_acceptance.contract(cdir(cid))
+    if acceptance:
+        prompt += '\n고정 합격 계약이 이전 반려 의견보다 우선합니다. 필수 결함을 수정하고 권고만으로 재설계 범위를 늘리지 마세요. 계약 파일을 변경하지 마세요. 준비 결과 형식은 그대로 유지합니다.\n' + json.dumps(acceptance, ensure_ascii=False)
     start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
     store.update_concept(cid, status='running', note='형태·시점 명세와 제작 주문서 준비 중')
 
@@ -646,6 +650,7 @@ def on_art(meta, code, result):
             override = json.loads(store.setting('art_model_overrides') or '{}').get(cid)
             if override:
                 request['modelOverride'] = override
+            art_acceptance.bind(wt, cdir(cid), request)
             art_execution.prepare(wt, request)
             request_path = cdir(cid, 'art-execution.json')
             write_json(request_path, request)
@@ -737,6 +742,7 @@ def start_art_context_review(c):
     if os.path.exists(output_path): os.remove(output_path)
     prompt = fill(prompt_template('art-context-review.md'), CDIR=cdir(cid), INPUT=input_path,
                   OUTPUT=output_path, ROOT=request['root'])
+    prompt += art_acceptance.instructions(request.get('acceptance'))
     jid = start_codex(cid, 'art-context-review', f'r{c.get("art_revision", 0)}-v{attempt}', prompt, output_path)
     PROCS[jid][2]['context_input'] = request
     store.update_concept(cid, status='running', art_review_attempt=attempt, note='조립 예시 독립 검수 중')
@@ -749,6 +755,10 @@ def on_art_context_review(meta, code, result):
         if code != 0: raise ValueError(f'조립 검수 작업 종료 {code}')
         request = meta.get('context_input') or read_json(cdir(cid, 'art-context-input.json'))
         report = art_feedback.validate_review(DATA, cid, result, request)
+        if meta.get('adjudication'):
+            for candidates in report['groups'].values():
+                for candidate in candidates.values():
+                    art_acceptance.validate(candidate, request.get('acceptance'), art_layout.SCENE_CHECKS, True)
     except (ValueError, OSError, KeyError, TypeError) as error:
         c = store.concept(cid)
         retry = (c.get('art_review_attempt') or 0) < 2
@@ -756,7 +766,22 @@ def on_art_context_review(meta, code, result):
                              note='조립 검수 결과 재확인 대기' if retry else '조립 검수 실행 오류 — 2회 실패', reasons=[str(error)])
         store.log(cid, str(error))
         return
+    if request.get('acceptance') and not meta.get('adjudication') and any(
+            r['verdict'] == 'FAIL' for candidates in report['groups'].values() for r in candidates.values()):
+        first = cdir(cid, 'art-context-first-verdict.json')
+        write_json(first, report)
+        write_json(cdir(cid, 'art-context-history', request['manifestSha256'] + f'-first-{time.time_ns()}.json'), report)
+        output = cdir(cid, 'art-context-adjudication.json')
+        if os.path.exists(output): os.remove(output)
+        dispute = {'firstVerdict': report, 'approvedLayoutVerdict': read_json(cdir(cid, 'art-layout-review.json'))}
+        prompt = fill(prompt_template('art-context-review.md'), CDIR=cdir(cid), INPUT=cdir(cid, 'art-context-input.json'),
+                      OUTPUT=output, ROOT=request['root']) + art_acceptance.instructions(request['acceptance'], dispute)
+        jid = start_codex(cid, 'art-context-review', 'adjudicate', prompt, output)
+        PROCS[jid][2].update(context_input=request, adjudication=True)
+        store.update_concept(cid, note='최종 반려 독립 재판정 — 고정 합격 조건 대조 중')
+        return
     art_feedback.write(cdir(cid, 'art-context-history', request['manifestSha256'] + '.json'), report)
+    write_json(cdir(cid, 'art-context-result.json'), report)
     current = read_json(cdir(cid, 'art-context-review.json'), {}) or {}
     merged = current.setdefault('groups', {})
     for gid, candidates in report['groups'].items(): merged.setdefault(gid, {}).update(candidates)
@@ -777,6 +802,8 @@ def start_art_layout_review(c):
     wt = os.path.join(DATA, 'art-worktrees', cid)
     try:
         layout = art_layout.build_input(wt, request)
+        if art_acceptance.contract(cdir(cid)) != layout.get('acceptance'):
+            raise ValueError('현재 고정 합격 계약으로 실행 요청을 다시 준비해야 합니다.')
     except (OSError, ValueError, TypeError, KeyError) as error:
         store.update_concept(cid, stage='blocked', status='idle', note='제작 전 도면 입력 변경/오류', reasons=[str(error)])
         return
@@ -785,6 +812,9 @@ def start_art_layout_review(c):
     if os.path.exists(output): os.remove(output)
     prompt = fill(prompt_template('art-layout-review.md'), INPUT=cdir(cid, 'art-layout-input.json'), OUTPUT=output,
                   FEEDBACK=read_json(cdir(cid, 'art-feedback.json'), {}), ROOT=wt)
+    prior = art_acceptance.prior_layout_pass(cdir(cid), layout)
+    prompt += art_acceptance.instructions(layout.get('acceptance'))
+    if prior: prompt += '\n동일 도면의 기존 합격 근거: ' + json.dumps(prior, ensure_ascii=False)
     start_codex(cid, 'art-layout-review', 'layout', prompt, output)
     store.update_concept(cid, status='running', note='제작 전 도면의 비례·여백·구성 검수 중')
 
@@ -797,7 +827,24 @@ def on_art_layout_review(meta, code, result):
         wt = os.path.join(DATA, 'art-worktrees', cid)
         layout = art_layout.build_input(wt, request)
         art_layout.validate_verdict(result, layout['fingerprint'], art_layout.LAYOUT_CHECKS)
-        write_json(cdir(cid, 'art-layout-history', layout['fingerprint'] + '.json'), result)
+        art_acceptance.validate(result, layout.get('acceptance'), art_layout.LAYOUT_CHECKS, meta.get('adjudication', False))
+        prior = art_acceptance.prior_layout_pass(cdir(cid), layout)
+        if prior and result['verdict'] == 'FAIL' and not meta.get('adjudication'):
+            first = cdir(cid, 'art-layout-first-verdict.json')
+            write_json(first, result)
+            write_json(cdir(cid, 'art-layout-history', layout['fingerprint'] + f'-first-{time.time_ns()}.json'), result)
+            output = cdir(cid, 'art-layout-adjudication.json')
+            if os.path.exists(output): os.remove(output)
+            prompt = fill(prompt_template('art-layout-review.md'), INPUT=cdir(cid, 'art-layout-input.json'),
+                          OUTPUT=output, FEEDBACK=read_json(cdir(cid, 'art-feedback.json'), {}), ROOT=wt)
+            prompt += art_acceptance.instructions(layout['acceptance'], {'priorPass': prior, 'newFailure': result})
+            jid = start_codex(cid, 'art-layout-review', 'adjudicate', prompt, output)
+            PROCS[jid][2]['adjudication'] = True
+            store.update_concept(cid, note='동일 도면 PASS 번복 — 독립 재판정 중')
+            return
+        result['semanticFingerprint'] = art_acceptance.semantic_fingerprint(layout['layout'])
+        write_json(cdir(cid, 'art-layout-review.json'), result)
+        write_json(cdir(cid, 'art-layout-history', layout['fingerprint'] + f'-{time.time_ns()}.json'), result)
         if result['verdict'] == 'FAIL':
             history = read_json(cdir(cid, 'art-layout-rejections.json'), [])
             history.append(result)
