@@ -387,7 +387,7 @@ function renderPick() {
   const par = (it.set && it.set.parent) || it.parent;
   let h = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code>
       ${canDerive(it) ? ` · <button class="chip" id="dvBtn" title="이 기물의 방향 4·상태·움직임·큰 판을 뽑는다 (D)">＋ 파생 만들기</button>` : ''}</span>
-      ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고른 프레임 띠는 묶음에 남는다(칩셋 굽기는 다음 단계)' : ''}</span>` : ''}</div>
+      ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고르면 원본과 별개의 움직이는 기물이 된다' : ''}</span>` : ''}</div>
     <div class="meta" style="color:var(--dim)">${it.isNew ? '<b class="nb">새</b> ' : ''}${esc(it.desc)}${it.use && it.use.length ? ` <span class="chip">쓰임 ${esc(it.use.join(' · '))}</span>` : ''}</div>
     <div class="rounds">` + it.rounds.map(x => `<button data-r="${x.id}" class="${x.id === r.id ? 'on' : ''}">판 h${x.id}${x.decided ? (x.decided.verdict === 'keep' ? ' · 그대로' : ' · ' + pickName(x.decided.cand)) : ''}</button>`).join('') + `</div>`;
   if (r.note) h += `<div class="rnote">메모: ${esc(r.note)}</div>`;
@@ -605,7 +605,7 @@ async function openDerive(id) {
     <div class="made">체크는 쓰임새(${esc(g.use.join(' · ') || '없음')})로 고른 제안이다. 고친 뒤 「주문」. 묶음은 작업자 한 명이 원본 칸을 두고 나머지 칸을 한 판에 그린다 — 고르면 칸을 잘라 각 기물에 넣는다.</div>
     ${row('facing', g.facing.checked, g.facing.ok, '방향 4 (남·동·북·서)', g.facing.ok ? (g.facing.siblings.length ? ` 짝 기물 ${g.facing.siblings.map(f => esc(g.id.replace(/ [SENW]$/, ' ' + f))).join(' · ')} 에 들어간다` : ' 새 기물 3개(동·북·서)가 생긴다') : ' ' + esc(g.facing.why))}
     ${row('state', g.state.checked, g.state.ok, '상태 전환', ' 원본 + 다른 상태 한 칸. 이벤트가 그림을 바꾼다', ` <input type="text" id="dvState" value="${esc(g.state.label)}" title="상태 이름(열림·켬·깨짐…)">`)}
-    ${row('loop', g.loop.checked, g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 칩셋 굽기는 다음 단계`)}
+    ${row('loop', g.loop.checked, g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 고른 움직임은 칩셋에 따로 추가`)}
     ${row('size', g.size.checked, g.size.ok, '큰 판', ' 원본을 출발 그림으로 새 칸 수에 다시 그린다(늘리기 금지)', ` <input type="number" id="dvW" min="1" max="8" value="${g.size.w}">×<input type="number" id="dvH" min="1" max="8" value="${g.size.h}">칸`)}
     <textarea id="dvNote" placeholder="작업자에게 줄 메모(모든 파생에 같이 간다) — 예: 열린 상자 안에 금화가 보이게"></textarea>
     ${had.length ? `<div class="made">이미 만든 파생: ${had.map(x => esc(x.name)).join(' · ')} — 같은 것을 다시 주문하면 원본의 지금 그림으로 새 판을 연다</div>` : ''}

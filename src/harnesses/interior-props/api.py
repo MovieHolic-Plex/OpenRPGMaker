@@ -269,13 +269,15 @@ def decide(body):
     if choice == 'keep':
         store.add_feedback(i, 'keep', rnd, '', [], note)
     else:
+        children = None
+        if objects_by_id()[i].get('set'):
+            import derive
+            children = [dict(id=c, name=n) for c, n in derive.slice_pick(i, choice, rnd)]
         picks_db.apply(i, {'choice': choice}, 'web')
         try: picks_db.export()
         except Exception as e: print('picks.json 내보내기 실패:', repr(e), flush=True)
         store.add_feedback(i, 'pick', rnd, choice, [], note)
-        if objects_by_id()[i].get('set'):   # 파생 묶음: 칸을 잘라 자식 기물(의자 동·북·서 …)의 고른 그림으로
-            import derive
-            return dict(ok=True, children=[dict(id=c, name=n) for c, n in derive.slice_pick(i, choice, rnd)])
+        if children is not None: return dict(ok=True, children=children)
     return dict(ok=True)
 
 

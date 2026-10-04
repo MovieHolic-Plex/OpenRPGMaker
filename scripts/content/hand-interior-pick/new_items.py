@@ -23,8 +23,14 @@ def new_f(o, im):
     return f
 
 
-def register(kit4, o, im):
-    kit4.OBJ[o['id']] = (o['category'], lambda o=o, im=im: new_f(o, im))
+def register(kit4, o, im, frames=None, ms=None):
+    def make():
+        f = new_f(o, im)
+        if frames:
+            f.frames = frames
+            f.frame_ms = ms
+        return f
+    kit4.OBJ[o['id']] = (o['category'], make)
 
 
 def meta_entry(o):

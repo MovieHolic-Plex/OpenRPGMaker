@@ -7,14 +7,14 @@
   variant_meta(META) 「함께 쓰기」 변형(<원 id>#2 …)의 메타 항목을 META['objects'] 에 덧붙이고,
                      크기를 바꾼 기물의 이름·설명 속 옛 칸 수(「(2×2, …)」「1칸」)를 새 칸 수로 고친다.
   새 기물(new/items.json) 선택이 있으면 install() 이 kit4.OBJ 에 새로 등록하고(new_items.register), variant_meta 가 meta 항목을 덧붙인다.
-                     선택이 없으면 시트·메타는 한 바이트도 바뀌지 않는다. 새 기물은 크기 변경(resize.json)·변형을 받지 않는다.
+                     선택이 없으면 시트·메타는 한 바이트도 바뀌지 않는다. 새 기물은 크기 변경(resize.json)·변형을 받지 않는다. 모션 파생 자식은 고른 프레임 띠를 함께 등록한다.
   REPORT             넣은 것·건너뛴 것(이유) — build_tileset 이 pickedFrom 으로 남긴다. 새 기물이 들어가면 REPORT['newItems'] 가 생긴다.
 
 정본 v5(tiledata/hand-interior/v5)는 읽기만 한다. 끄려면 HAND_INTERIOR_PICKS=0.
 건너뛰는 것: 선택 없음·v5 유지, 후보 파일 없음, 그림 크기가 칸 자리(또는 resize.json 캔버스)와 다른 것(크기를 바꾸라는 메모 뒤
 아직 새 크기 후보를 고르지 않은 경우), 크기를 바꾼 애니메이션 기물. 애니메이션 기물은 몸통만 고른 그림이고 움직이는 화소는 v5 프레임(_animated).
 """
-import copy, json, os, re, sys
+import copy, hashlib, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CAND, PICK, PXGRID, geom, objects_by_id, objects_by_slug, slug  # noqa: E402
 import outline_select  # noqa: E402
@@ -24,6 +24,25 @@ from PIL import Image  # noqa: E402
 REPORT = {'applied': [], 'resized': [], 'variants': [], 'skipped': []}
 _PLAN = None
 _NEWS = {}   # 새 기물 id → (후보 그림, 선택 글자, 가짜 객체). _plan 이 채운다
+_LOOPS = {}  # 움직임 자식 id → (프레임 그림, 프레임 간격 ms)
+_SELECTED_SETS = {}
+
+
+def _loop_frames(o, choice, body):
+    """고른 모션의 모든 프레임을 재로드한다. 빠진 띠를 정지 그림으로 굽지 않는다."""
+    base = os.path.join(CAND, slug(o['id']), choice)
+    with open(base + '.loop.json', encoding='utf-8') as f: m = json.load(f)
+    n, ms = m['frames'], m['ms']
+    if m.get('version') != 1 or type(n) is not int or not 2 <= n <= 12 or type(ms) is not int or ms <= 0:
+        raise ValueError('모션 프레임 수·간격이 올바르지 않다')
+    if (m['width'], m['height']) != body.size or o.get('animation') != {'frames': n, 'ms': ms}:
+        raise ValueError('모션 명세와 캔버스가 다르다')
+    with Image.open(base + '.loop.png') as source: strip = source.convert('RGBA')
+    if strip.size != (body.width * n, body.height) or hashlib.sha256(strip.tobytes()).hexdigest() != m['sha256']:
+        raise ValueError('모션 띠의 크기·해시가 다르다')
+    frames = [strip.crop((k * body.width, 0, (k + 1) * body.width, body.height)) for k in range(n)]
+    if frames[0].tobytes() != body.tobytes(): raise ValueError('모션 첫 프레임과 선택 그림이 다르다')
+    return frames, ms
 
 
 def _png(s, choice):
@@ -47,6 +66,8 @@ def _plan():
     by = objects_by_id()
     same, resized, variants = {}, {}, []
     _NEWS.clear()
+    _LOOPS.clear()
+    _SELECTED_SETS.clear()
     for i, p in sorted(picks.items()):
         ch = (p or {}).get('choice')
         skip = lambda why: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': why})
@@ -54,11 +75,17 @@ def _plan():
         if not ch or ch == 'v5': skip('v5 유지' if ch == 'v5' else '선택 없음'); continue
         o, s = by[i], slug(i)
         if not os.path.exists(os.path.join(CAND, s, outline_select.split(ch)[0] + '.pxg')): skip('후보 파일 없음'); continue
-        if o.get('set'): skip('파생 묶음 그림 — 칸을 잘라 자식 기물에 넣었다(derive.slice_pick), 묶음 자체는 안 굽는다'); continue
+        if o.get('set'):
+            _SELECTED_SETS[i] = o['set']
+            skip('파생 묶음 그림 — 칸을 잘라 자식 기물에 넣었다(derive.slice_pick), 묶음 자체는 안 굽는다'); continue
         im, G = _png(s, ch), geom(o)
-        if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형·애니메이션 없음
+        if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형 없음(모션 파생은 별도 띠)
             if G['resized']: skip('새 기물은 resize.json 을 받지 않는다 — new/items.json 의 canvas·footprint 를 고친다'); continue
             if list(im.size) != G['canvas']: skip(f"그림 {im.size[0]}×{im.size[1]} 이 캔버스 {G['canvas'][0]}×{G['canvas'][1]} 와 다름"); continue
+            if o.get('derive') == 'loop':
+                try: _LOOPS[i] = _loop_frames(o, ch, im)
+                except (OSError, ValueError, KeyError, TypeError) as e:
+                    skip(f'움직임 프레임을 읽을 수 없음: {e}'); continue
             if (p or {}).get('variants'): REPORT['skipped'].append({'id': f'{i}#2', 'choice': ch, 'why': '새 기물은 「함께 쓰기」 변형을 받지 않는다'})
             _NEWS[i] = (im, ch, o); continue
         if o['atlas']['frames'] > 1 and (not os.path.exists(os.path.join(CAND, s, 'anim-mask.png'))
@@ -141,9 +168,11 @@ def install():
     same, _, variants = _plan()
     for i, (im, ch, o) in _NEWS.items():   # 새 기물: v5 표에 없던 이름을 새로 등록한다(고르지 않았으면 이 루프는 비어 있다)
         if i in kit4.OBJ: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': 'kit4.OBJ 에 이미 있는 이름'}); continue
-        new_items.register(kit4, o, im)
+        frames, ms = _LOOPS.get(i, (None, None))
+        new_items.register(kit4, o, im, frames, ms)
         REPORT.setdefault('newItems', []).append({'id': i, 'choice': ch, 'kind': o['kind'], 'footprint': [o['footprint']['w'], o['footprint']['h']]})
         REPORT['applied'].append({'id': i, 'choice': ch, 'new': True})
+        if frames: REPORT.setdefault('loops', []).append({'id': i, 'choice': ch, 'frames': len(frames), 'ms': ms})
     for i, (im, ch) in same.items():
         if i not in kit4.OBJ: REPORT['skipped'].append({'id': i, 'choice': ch, 'why': 'kit4.OBJ 에 없음'}); continue
         _wrap(kit4, i, lambda f, im=im: _same_size(f, im))
@@ -266,6 +295,19 @@ def variant_meta(meta):
     for n in REPORT.get('newItems', []):   # 새 기물 메타(v5 항목과 같은 모양). 그림이 아니라 items.json 이 정본
         if n['id'] in by: continue
         e = new_items.meta_entry(_NEWS[n['id']][2]); meta['objects'].append(e); by[e['id']] = e
+    sets = []
+    for sid, s in _SELECTED_SETS.items():
+        slots = []
+        for slot in s['slots']:
+            cid = slot.get('child')
+            if s['derive'] == 'loop': cid = f'{s["parent"]} ~motion'
+            if cid not in by: continue
+            slots.append({'key': slot['key'], 'id': cid, 'locked': bool(slot['locked'])})
+            if not slot['locked'] or s['derive'] == 'loop':
+                by[cid].update(parent=s['parent'], derive=s['derive'], setId=sid,
+                               slot='loop' if s['derive'] == 'loop' else slot['key'])
+        if slots: sets.append({'id': sid, 'parent': s['parent'], 'derive': s['derive'], 'slots': slots, 'ms': s.get('ms')})
+    if sets: meta['derivationSets'] = sets
     for v in REPORT['variants']:
         o = by.get(v['variantOf'])
         if not o or v['id'] in by: continue

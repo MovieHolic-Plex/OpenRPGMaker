@@ -94,18 +94,18 @@ class Sheet:
     def _pad_to_strip(s):
         while len(s.cells) % N:
             s.cells.append(None); s.info.append(None)
-    def key(s, frames, pc):
-        return (tuple(f.tobytes() for f in frames), pc)
-    def add(s, frames, pc, label, role, desc='', tags=()):
+    def key(s, frames, pc, fps=FPS):
+        return (tuple(f.tobytes() for f in frames), pc, fps if len(frames) > 1 else None)
+    def add(s, frames, pc, label, role, desc='', tags=(), fps=FPS):
         frames = [f.convert('RGBA') for f in frames]
         if len(frames) > 1 and all(f.tobytes() == frames[0].tobytes() for f in frames[1:]): frames = frames[:1]
-        k = s.key(frames, pc)
+        k = s.key(frames, pc, fps)
         if k in s.index: return s.index[k]
         if len(frames) > 1:
             s._pad_to_strip(); base = len(s.cells)
             for i, f in enumerate(frames):
-                s.cells.append([f]); s.info.append(dict(pc=pc, label=label + (f' (프레임 {i + 1}/{N})' if i else ''), role=role, desc=desc, tags=list(tags), frame=i))
-            s.strips.append({'baseTile': base, 'frames': len(frames), 'fps': FPS})
+                s.cells.append([f]); s.info.append(dict(pc=pc, label=label + (f' (프레임 {i + 1}/{len(frames)})' if i else ''), role=role, desc=desc, tags=list(tags), frame=i))
+            s.strips.append({'baseTile': base, 'frames': len(frames), 'fps': fps})
             s.index[k] = base
             return base
         tid = len(s.cells)
@@ -113,10 +113,10 @@ class Sheet:
         s.cells.append(frames); s.info.append(dict(pc=pc, label=label, role=role, desc=desc, tags=list(tags)))
         s.index[k] = tid
         return tid
-    def find(s, frames, pc):
+    def find(s, frames, pc, fps=FPS):
         frames = [f.convert('RGBA') for f in frames]
         if len(frames) > 1 and all(f.tobytes() == frames[0].tobytes() for f in frames[1:]): frames = frames[:1]
-        return s.index.get(s.key(frames, pc))
+        return s.index.get(s.key(frames, pc, fps))
 
 SH = Sheet()
 BLANK = SH.add([Image.new('RGBA', (16, 16))], 'blank', '빈 칸', 'empty', '투명 빈 칸. 쓰지 않는다.')
@@ -237,11 +237,14 @@ for n, (cat, bf) in OBJ.items():
     cells = []
     for (cx, cy), (pcs, pc) in sorted(pieces.items(), key=lambda kv: (kv[0][1], kv[0][0])):
         role = {'flat': 'decor', 'star': 'furniture', 'solid': 'furniture', 'stair': 'stairs'}[pc]
-        tid = SH.add(pcs, pc, f'{ko} ({cx},{cy})', role, desc, (cko,) if cko else ())
+        tid = SH.add(pcs, pc, f'{ko} ({cx},{cy})', role, desc, (cko,) if cko else (),
+                     fps=1000 / f.frame_ms if getattr(f, 'frame_ms', None) else FPS)
         cells.append([cx, cy, tid, PC_LAYER[pc]])
     e = {'ko': ko, 'category': cat, 'category_ko': cko, 'kind': f.kind, 'w': f.fw, 'h': f.fh, 'up': f.up, 'cells': cells}
     if getattr(f, 'surf', None): e['surface'] = list(f.surf)
     if getattr(f, 'frames', None): e['animated'] = True
+    for key in ('parent', 'derive', 'slot', 'setId', 'animation'):
+        if key in OBJ_META.get(n, {}): e[key] = OBJ_META[n][key]
     if is_stairs(f): e['stairs'] = 'up' if n.startswith('stairs up') else 'down'
     if getattr(f, 'cells', None): e['footprint'] = [list(c) for c in f.cells]
     OBJECTS[n] = e
@@ -622,6 +625,7 @@ if PICKS:
     os.makedirs('tiledata/hand-interior/pick/out', exist_ok=True)
     json.dump(dict(PICKED, **R), open('tiledata/hand-interior/pick/out/baked.json', 'w'), ensure_ascii=False, indent=1)
 spec = {'version': 1, 'source': 'tiledata/hand-interior/v5', **({'picked': PICKED} if PICKED else {}), 'tileSize': 16, 'blank': BLANK, 'void': VOID_TILE,
+        **({'derivationSets': META['derivationSets']} if META.get('derivationSets') else {}),
         'floors': {n: {'ko': FLOOR_KO.get(n, n), 'cols': FCOLS[n], 'rows': FROWS[n], 'tiles': FLOOR[n]} for n in FLOORS},
         'walls': {w: {'ko': WALL_KO.get(w, w), 'cols': WCOLS[w], 'tiles': WALL[w]} for w in WALLS},
         'ceilings': {st: CEIL[st] for st in CEIL_STYLES},

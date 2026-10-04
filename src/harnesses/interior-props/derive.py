@@ -10,7 +10,7 @@
 묶음 그림의 원본 칸은 고정이다(seed.png 그대로 — 검사가 화소를 잰다). 사용자가 묶음 후보를 고르면 칸을 잘라
 자식 기물(new/items.json, 또는 이미 있는 짝 chair E 등)의 고른 그림으로 넣는다. 칩셋 메타에는 parent·derive·slot 이 남는다.
 """
-import json, os, sys, time
+import hashlib, json, os, sys, time
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -147,6 +147,16 @@ def _child_entry(o, cid, slot, derive, canvas, foot, extra=''):
                 tags=list(o.get('tags') or []), use=sorted(_use(o['id'], o)), refs=[o['id']],
                 contextRoom=o.get('contextRoom'), parent=o['id'], derive=derive, slot=slot['key'],
                 **({'place': o['place']} if o.get('place') else {}), **({'pair': o['pair']} if o.get('pair') else {}))
+
+
+def loop_child(sid, parent, s):
+    """움직임은 원본과 별개의 기물이다. 후보 선택 전에는 등록하지 않는다."""
+    slot = s['slots'][0]
+    ent = _child_entry(parent, f'{s["parent"]} ~motion', dict(key='loop', label='움직임'),
+                       'loop', (slot['w'], slot['h']), slot['foot'])
+    ent['setId'] = sid
+    ent['animation'] = {'frames': len(s['slots']), 'ms': s['ms']}
+    return ent
 
 
 def make_set(i, derive, label='', note=''):
@@ -330,12 +340,29 @@ def slice_pick(sid, choice, rnd):
     if not s or choice == 'keep': return []
     im = Image.open(brief.cand_png(sid, choice)).convert('RGBA')
     name = choice.split('.')[0]; out = []
-    if s['derive'] == 'loop':   # 움직임은 아직 자식 기물이 없다 — 고른 프레임 띠를 묶음 기록에 남긴다(굽기는 다음 단계)
+    if list(im.size) != list(s['canvas']): raise ValueError('묶음 후보의 캔버스 크기가 다르다')
+    if s['derive'] == 'loop':
+        ent = loop_child(sid, by[s['parent']], s)
+        W, H = ent['canvas']
+        if any((x['w'], x['h']) != (W, H) for x in s['slots']): raise ValueError('모션 프레임의 크기가 서로 다르다')
+        parts = [im.crop((x['x'], x['y'], x['x'] + W, x['y'] + H)) for x in s['slots']]
+        strip = Image.new('RGBA', (W * len(parts), H))
+        for k, part in enumerate(parts): strip.paste(part, (k * W, 0))
+        _add_items([ent])
+        c = ent['id']; d = os.path.join(CAND, slug(c)); os.makedirs(d, exist_ok=True)
+        strip.save(os.path.join(d, name + '.loop.png'))
+        atomic_write(os.path.join(d, name + '.loop.json'), json.dumps(dict(
+            version=1, frames=len(parts), ms=s['ms'], width=W, height=H,
+            sha256=hashlib.sha256(strip.tobytes()).hexdigest()), ensure_ascii=False) + '\n')
+        _write_pick_image(d, name, parts[0], sid, choice, 'f0')
+        picks_db.apply(c, {'choice': name, 'note': f'파생 묶음 {sid} h{rnd} 에서'}, 'web')
+        store.add_feedback(c, 'pick', None, name, [], f'파생 묶음 {sid} 에서 움직임 저장')
         sets = load_sets()
         for e in sets:
-            if e['id'] == sid: e['picked'] = dict(choice=choice, at=time.strftime('%Y-%m-%dT%H:%M:%S'))
+            if e['id'] == sid: e['picked'] = dict(choice=choice, child=c, at=time.strftime('%Y-%m-%dT%H:%M:%S'))
         _save_sets(sets)
-        return [(sid, f"{o['name_ko']} (프레임 띠 — 칩셋 굽기는 아직)")]
+        picks_db.export()
+        return [(c, ent['name_ko'])]
     for x in s['slots']:
         if x['locked'] or not x['child']: continue
         c = x['child']; co = by.get(c)
@@ -343,15 +370,19 @@ def slice_pick(sid, choice, rnd):
         brief.ensure_folder(c)
         d = os.path.join(CAND, slug(c)); part = im.crop((x['x'], x['y'], x['x'] + x['w'], x['y'] + x['h']))
         if list(part.size) != list(geom(co)['canvas']): continue
-        pal, rows = _pal_and_rows(part)
-        atomic_write(os.path.join(d, name + '.pal'), pal)
-        atomic_write(os.path.join(d, name + '.pxg'), '\n'.join([
-            f'// 파생 묶음 「{o["name_ko"]}」({sid}) 의 후보 {choice} 에서 칸 `{x["key"]}` 을 잘라 냈다(derive.slice_pick).',
-            f'@size {part.width} {part.height}', '@cell 16', f'@palette {name}.pal', '@block 0 0'] + rows) + '\n')
-        part.save(os.path.join(d, name + '.png'))   # pxg 보다 나중 — 굽기가 다시 그리지 않는다
+        _write_pick_image(d, name, part, sid, choice, x['key'])
         picks_db.apply(c, {'choice': name, 'note': f'파생 묶음 {sid} h{rnd} 에서'}, 'web')
         store.add_feedback(c, 'pick', None, name, [], f'파생 묶음 {sid} 에서 자름')
         out.append((c, co['name_ko']))
     try: picks_db.export()
     except Exception as e: print('picks.json 내보내기 실패:', repr(e), flush=True)
     return out
+
+
+def _write_pick_image(d, name, part, sid, choice, key):
+    pal, rows = _pal_and_rows(part)
+    atomic_write(os.path.join(d, name + '.pal'), pal)
+    atomic_write(os.path.join(d, name + '.pxg'), '\n'.join([
+        f'// 파생 묶음 {sid} 의 후보 {choice} 에서 칸 `{key}` 을 잘라 냈다(derive.slice_pick).',
+        f'@size {part.width} {part.height}', '@cell 16', f'@palette {name}.pal', '@block 0 0'] + rows) + '\n')
+    part.save(os.path.join(d, name + '.png'))

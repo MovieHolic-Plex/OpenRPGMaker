@@ -48,7 +48,7 @@ def new_item_object(it):
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
             'new': True, 'contextRoom': it.get('contextRoom'),
-            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout', 'parent', 'derive', 'slot') if it.get(k)}}
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout', 'parent', 'derive', 'slot', 'setId', 'animation') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""
