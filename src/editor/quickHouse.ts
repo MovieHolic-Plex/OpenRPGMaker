@@ -3,7 +3,7 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import { layerTileAt } from "@/project/mapLayers";
 import { terrainHeight, terrainSightObstacle } from "@/project/terrainGameplay";
-import { appendStructurePlacement, captureStructureTiles, structurePlacementsOf } from "@/project/structurePlacements";
+import { appendStructurePlacement, captureStructureTiles, structurePlacementsOf, structurePlacementAt, structurePlacementIsOverpainted, restoreStructurePlacementTiles, removeStructurePlacement, cellsOwnedByLaterPlacements } from "@/project/structurePlacements";
 import { HOUSE_KITS, houseKitForTileset, mixableHouseKitIds, rectHouseHeight, stampRectHouseKit, type HouseKitId } from "./houseKit";
 import { structureKitFromMapRegion } from "./harnessSuggestion/structureKitModel";
 import { terrainEditable, type TerrainDesignPlan } from "./terrainDesignPlans";
@@ -12,7 +12,11 @@ import { BEODEUL_HOUSE_STYLES, beodeulHouseStyles, beodeulHouseMinWidth, isBeode
 import type { TerrainPoint } from "./terrainDesignGeometry";
 
 export type QuickHouseStyle = HouseKitId | BeodeulHouseStyle;
-export interface QuickHouseOptions { style: QuickHouseStyle; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number; height?: number }
+export interface QuickHouseOptions { style: QuickHouseStyle; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number; height?: number; resize?: "house" | "roof"; roofWidth?: number }
+export function quickHouseOptions(s: Pick<import("./editorState").EditorState, "terrainHouseStyle" | "terrainHouseWidth" | "terrainHouseStories" | "terrainHouseKitId" | "terrainHouseResize" | "terrainHouseRoofWidth">): QuickHouseOptions {
+  return { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId, resize: s.terrainHouseResize,
+    ...(s.terrainHouseResize === "roof" ? { roofWidth: s.terrainHouseRoofWidth } : {}) };
+}
 export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
   return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width <= 24 && k.height <= 24
@@ -50,16 +54,57 @@ export function quickHouseKit(tileset: TilesetDef, options: QuickHouseOptions): 
   kit.parts = [{ id: "door", kind: "entrance", dx: door.x, dy: door.y - 1, w: 1, h: 2 }];
   kits.set(id, kit); return kit;
 }
-export interface QuickHousePlan extends TerrainDesignPlan { kit?: SectionStructureKitDef; x: number; y: number }
+export interface QuickHousePlan extends TerrainDesignPlan { kit?: SectionStructureKitDef; x: number; y: number; resizedPlacementId?: string }
 /** A click keeps the door anchor; a rectangle uses its top left and repeats authored house parts. */
 export function planQuickHouseDrag(map: GameMap, tileset: TilesetDef, drag: QuickHouseDrag, options: QuickHouseOptions): QuickHousePlan {
-  if (drag.start.x === drag.end.x && drag.start.y === drag.end.y) return planQuickHouse(map, tileset, drag.start, options);
-  const width = Math.abs(drag.end.x - drag.start.x) + 1, height = Math.abs(drag.end.y - drag.start.y) + 1;
+  const single = drag.start.x === drag.end.x && drag.start.y === drag.end.y;
+  const width = single ? options.roofWidth ?? options.width : Math.abs(drag.end.x - drag.start.x) + 1;
+  const height = Math.abs(drag.end.y - drag.start.y) + 1;
+  if (options.resize === "roof" && tileset.id === "beodeul_city") {
+    const existing = structurePlacementAt(map, drag.start.x, drag.start.y);
+    if (existing) {
+      const original = tileset.structureKits?.find(k => k.id === existing.kitId);
+      const parsed = /^quick_house_(beodeul-(?:manor-(?:a|b|lit)|log-(?:green|blue|red)))_(\d+)_(\d+)/.exec(existing.kitId);
+      const oldRoof = original?.parts?.find(p => p.id === "roof"), oldWalls = original?.parts?.find(p => p.id === "walls");
+      const roofHeight = oldRoof?.h ?? 3;
+      const rejected: QuickHousePlan = { ok: false, reason: "조립식 집의 지붕에서 끌어 주세요", indices: [], x: existing.x, y: existing.y };
+      if (!original || !parsed || drag.start.y >= existing.y + roofHeight) return rejected;
+      if (structurePlacementIsOverpainted(map, existing)) { rejected.reason = "직접 덧칠한 집은 보호합니다. 구조물에서 먼저 수정해 주세요"; return rejected; }
+      const later = cellsOwnedByLaterPlacements(map, existing.id);
+      for (let y = existing.y; y < existing.y + existing.h; y++) for (let x = existing.x; x < existing.x + existing.w; x++) if (later.has(y * map.width + x)) {
+        rejected.reason = "다른 구조물이 겹친 집은 지붕을 바꿀 수 없습니다"; return rejected;
+      }
+      const style = parsed[1] as BeodeulHouseStyle, wallWidth = oldWalls?.w ?? Number(parsed[2]);
+      const wallHeight = oldWalls?.h ?? existing.h - roofHeight, wallX = existing.x + (oldWalls?.dx ?? 0), wallY = existing.y + roofHeight;
+      const newRoofRows = roofHeight;
+      const resized = { ...options, kitId: null, style, width: wallWidth, roofWidth: width, roofRows: newRoofRows, height: newRoofRows + wallHeight };
+      const oldDoor = original.parts?.find(p => p.kind === "entrance"); if (!oldDoor) return rejected;
+      const anchor = { x: existing.x + oldDoor.dx, y: existing.y + oldDoor.dy + oldDoor.h - 1 };
+      const restored: GameMap = { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles], structurePlacements: [...structurePlacementsOf(map)],
+        lowerTileStacks: map.lowerTileStacks && { ...map.lowerTileStacks }, upperTileStacks: map.upperTileStacks && { ...map.upperTileStacks },
+        events: map.events.filter(e => !(e.x >= wallX && e.x < wallX + wallWidth && e.y >= wallY && e.y < wallY + wallHeight)) };
+      restoreStructurePlacementTiles(restored, existing); removeStructurePlacement(restored, existing.id);
+      const plan = planQuickHouse(restored, tileset, anchor, resized), apply = plan.apply;
+      plan.resizedPlacementId = existing.id;
+      for (let y = existing.y; y < existing.y + existing.h; y++) for (let x = existing.x; x < existing.x + existing.w; x++) plan.indices.push(y * map.width + x);
+      plan.indices = [...new Set(plan.indices)];
+      if (plan.ok && apply) {
+        plan.reason = "지붕 크기 변경 · 벽·창·문 위치 유지";
+        plan.apply = draft => { const position = structurePlacementsOf(draft).findIndex(p => p.id === existing.id); restoreStructurePlacementTiles(draft, existing); removeStructurePlacement(draft, existing.id); apply(draft); const replacement = draft.structurePlacements!.pop()!; replacement.id = existing.id; draft.structurePlacements!.splice(position, 0, replacement); };
+      }
+      return plan;
+    }
+    if (single) return planQuickHouse(map, tileset, drag.start, options);
+    const sized = { ...options, kitId: null, roofWidth: width }, kit = quickHouseKit(tileset, sized), door = kit?.parts?.find(p => p.kind === "entrance");
+    return planQuickHouse(map, tileset, { x: Math.min(drag.start.x, drag.end.x) + (door?.dx ?? 0), y: Math.min(drag.start.y, drag.end.y) + (door ? door.dy + door.h - 1 : 0) }, sized);
+  }
+  if (single) return planQuickHouse(map, tileset, drag.start, options);
   const wallAndCaps = rectHouseHeight({ kitId: isBeodeulHouseStyle(options.style) ? "blue-stone" : options.style, stories: options.stories, roofBodyRows: 1 }) - 1;
   const sized = { ...options, width, height, roofBodyRows: height - wallAndCaps }, kit = quickHouseKit(tileset, sized), door = kit?.parts?.find(p => p.kind === "entrance");
   const x = Math.min(drag.start.x, drag.end.x), y = Math.min(drag.start.y, drag.end.y);
   return planQuickHouse(map, tileset, { x: x + (door?.dx ?? 0), y: y + (door ? door.dy + door.h - 1 : 0) }, sized);
 }
+
 /** Anchor is the front door, so the road approach remains the next cell south. */
 export function planQuickHouse(map: GameMap, tileset: TilesetDef, anchor: TerrainPoint, options: QuickHouseOptions): QuickHousePlan {
   const kit = quickHouseKit(tileset, options), door = kit?.parts?.find(p => p.kind === "entrance");

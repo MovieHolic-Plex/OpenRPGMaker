@@ -66,6 +66,7 @@ import { applyProjectWithHistory } from "@/editor/mapEditHistory";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 import { offerConstructionLogs } from "@/editor/agentConstructionReveal";
+import { describeMergeConflicts } from "@/project/projectMerge";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -241,6 +242,14 @@ export interface PiCommandSurface {
   readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
   /** 이번 실행이 쓴 턴·토큰. 패널이 대화 합계로 쌓아 입력줄에 짧게 보여 준다. */
   readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
+  /** 적용 뒤 화면을 그 맵으로 데려갈까(기본 follow). 다른 맵의 백그라운드 실행은 "visible-only". */
+  readonly focus?: "follow" | "visible-only";
+  /**
+   * 다른 맵에서 같이 도는 백그라운드 실행(aiMapRunQueue). 패널 공용 활동 버스(팀 레일·작업 탭 검토 스트립)에
+   * 게시하지 않는다 — 앞에서 도는 실행의 표시를 덮지 않게. 진행은 onActivity 로만 받는다.
+   */
+  readonly background?: boolean;
+  readonly onActivity?: (state: TeamBoardState) => void;
 }
 
 export async function runPiCommand(
@@ -414,11 +423,14 @@ export async function runPiCommand(
 
   let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task, store.getProjectIdentity().id);
   const board = createTeamBoard(boardState, { externalReview: Boolean(surface.appendReviewPrompt) });
-  setTeamReviewActions(null);
+  const background = surface.background === true;
+  if (!background) setTeamReviewActions(null);
   surface.appendCard(board.root);
   const sync = (): void => {
     if (boardState.trace) boardState = { ...boardState, trace: activityPhase(boardState.trace, boardState.phase) };
-    board.update(boardState); publishTeamActivity(boardState);
+    board.update(boardState);
+    surface.onActivity?.(boardState);
+    if (!background) publishTeamActivity(boardState);
   };
   const push = (event: PiAgentEvent): void => {
     boardState = reduceTeamBoard(boardState, event);
@@ -925,6 +937,9 @@ ${contractReleased.message}`);
     snapshotLabel: `Pi ${team ? "팀" : "에이전트"} ${scopeText}`,
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
+    // 실행 중 사람·다른 맵의 실행이 고친 것은 병합으로 살린다(겹친 자리는 지금 값).
+    rebase: { lineage: publication.count ? publication.project : base },
+    ...(surface.focus ? { focus: surface.focus } : {}),
   }));
     if (!appliedResult.ok) {
       const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
@@ -937,6 +952,8 @@ ${contractReleased.message}`);
       return false;
     }
     applied = true;
+    const mergeNote = "merge" in appliedResult ? appliedResult.merge : undefined;
+    if (mergeNote?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(mergeNote)}`);
     publishFinalOutcome();
     const spillNotice = spilledKeys.length > 0 ? `, 범위 밖 ${spilledKeys.length}건 버림(${spilledKeys.map((key) => `\`${key}\``).join(", ")})` : "";
     const appliedText = team
@@ -947,7 +964,7 @@ ${contractReleased.message}`);
       if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
       board.update(boardState);
       // Do not replace a newer run in the live team rail.
-      if (currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
+      if (!background && currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
@@ -1030,7 +1047,7 @@ ${contractReleased.message}`);
   // 로그 카드의 적용/버리기와 작업 탭 검토 스트립이 **같은 클로저**를 부른다 — 두 경로, 한 동작.
   let applying = false;
   let settled = false;
-  const clearReview = (): void => { settled = true; prompt.root.remove(); board.setReview(null); setTeamReviewActions(null); surface.onReviewResolved?.(applied); };
+  const clearReview = (): void => { settled = true; prompt.root.remove(); board.setReview(null); if (!background) setTeamReviewActions(null); surface.onReviewResolved?.(applied); };
   const applyReviewed = (): void => {
     if (applying || settled) return;
     applying = true;
@@ -1068,7 +1085,7 @@ ${contractReleased.message}`);
     onApply: applyReviewed,
     onDiscard: discardReviewed,
   });
-  setTeamReviewActions({
+  if (!background) setTeamReviewActions({
     apply: applyReviewed,
     discard: discardReviewed,
     ...(reviewInput ? { openReport: () => { openWideChangeViewer(reviewInput); } } : {}),

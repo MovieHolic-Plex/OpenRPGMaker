@@ -25,6 +25,6 @@ export function drawQuickHousePreview(scene: Phaser.Scene, layer: Phaser.GameObj
   }
   layer.add(g);
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent<ReliefDoodadHoverDetail>(RELIEF_DOODAD_HOVER_EVENT, {
-    detail: { ok: plan.ok, reason: `${plan.kit ? `${plan.kit.width}×${plan.kit.height}칸 · ` : ""}${plan.reason} · 놓기: 배치 · Esc: 취소`, label: "집 외관" },
+    detail: { ok: plan.ok, reason: `${plan.kit ? `${plan.kit.width}×${plan.kit.height}칸 · ` : ""}${plan.reason} · ${plan.resizedPlacementId ? "놓기: 지붕 변경" : "놓기: 배치"} · Esc: 취소`, label: "집 외관" },
   }));
 }

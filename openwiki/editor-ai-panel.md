@@ -2,6 +2,42 @@
 
 # Editor AI Panel & Tools
 
+## 핵심 플레이를 먼저 작성하는 첫 제작 (2026-10-04)
+
+`piTeamRuntime`의 프리셋 첫 생성 중 기존 첫 구간 뼈대가 있는 세 장르(몬스터 수집·JRPG·스토리)는
+팀장이 장식 작업을 배정하기 전에 핵심 플레이 담당을 직렬 실행한다. 별도 authoring 하네스는
+자기 계약을 사용한다. 이 단계는 `src/ai/piAgent/firstPlay.ts`의 고정 도구 목록으로 실행한다.
+`initialToolNames`나 도메인 선별만 바꾸는 것이 아니라 `RunPiAgentOptions.toolNames`로
+발견·미노출 호출 폴백까지 제한하므로 stamp/copy/마을 생성/그림 생성으로 우회할 수 없다.
+기존 맵의 이벤트·필수 DB·주인공 이름을 먼저 쓰고 모든 쓰기는 호스트 ACK 체크포인트를 거친다.
+
+`report_first_play`는 interaction/resolution 이벤트 ID를 제출한다. 실행 명령이 기본 샘플 그대로인
+보고, 빈 선택 결과, 서로 같은 선택 결과는 거부한다. 종료 후 반환 프로젝트에도 같은 검사를 한다.
+기존 첫 구간 자동 플레이도 통과해야 한다. 그 뒤 읽기 전용 담당이 원문 기획과 실제 이벤트를
+대조하여 요청한 선택/결과 누락을 검사한다. 구조 검사는 의미 판단을 대신하지 않는다.
+`first_play.core_ready`와 `first_play.review_passed` 상태가 이 순서를 기록한다.
+
+핵심 담당은 32턴, 요구 확인은 12턴, 이후 배정은 최대 3회·각 24턴, 팀장은 32턴이다.
+요구 대조에서 실패하면 같은 제한 도구로 남은 문제만 한 번(16턴) 자동 수정하고 다시 검사한다.
+검사 도구의 `blockers`는 누락/실패, `evidence`는 확인 근거다. 성공 근거를 남은 오류로 취급하지 않는다.
+기존 사용자 상한이 더 작으면 보존한다. 실패한 배정 호출은 후속 배정 예산을 쓰지 않는다.
+팀장은 이미 만든 핵심 플레이의 보고를 받고 남은 장면 마무리만 맡긴다. finish에서 핵심 명령을
+다시 검사하며 이벤트가 바뀌면 요구 대조를 다시 한다. 검증된 finish가 없으면 첫 제작 완료를
+반환하지 않는다. 실패해도 이미 정본에 ACK된 쓰기는 보존한다.
+
+실제 자동 제작 검증은 `scripts/qa/live-first-game.mjs`를 사용한다. 요청 task 원문을 따로 보존하고,
+SQLite 재로드와 요청한 두 선택의 다른 결과까지 검사한다. 전용 플레이어 하네스는 실제 다운로드한
+ZIP의 player.html에서 두 선택을 각각 완주한다. `LIVE_GAME_OUT`, `LIVE_GAME_ROOT`,
+`LIVE_GAME_HOST`, `LIVE_GAME_PACKAGE_OUT`으로 이전 미완료 실험과 증거를 분리한다.
+회귀 테스트 `test/piFirstPlay.test.ts`는 추가했으며 세션 규칙에 따라 Vitest/전체 게이트는 실행하지 않았다.
+
+실제 내보내기는 기본 뼈대의 `create_map` BGM 자동 추천 결함도 드러냈다. `기억의 길`이 파일이
+없는 `cc0-bgm-rtp-emo-002`를 고르고, 전체 제작이 끝난 뒤 ZIP 의존 파일 검사에서 실패했다.
+`bgmThemeRecommendation`의 모든 후보/폴백 경로가 `isCatalogBgmAvailable`을 확인한다.
+팩이 하나도 없으면 코어 배포에 포함된 `easyrpg-music-field-1`을 사용한다. 명시적 맵 BGM 쓰기도
+미설치 카탈로그 곡을 거부하고 `recommend_bgm`으로 다음 행동을 안내한다. 기존 기획이나 파일을
+수동으로 고쳐 자동 생성 성공으로 주장하지 않는다. 회귀는 `test/installedBgmRuntime.test.ts`에 추가했다.
+
 ## 실제 첫 제작의 워커 준비와 사본 (2026-10-03)
 
 `scripts/lib/piWorkerSharedContent.ts`가 공용 SQLite 카탈로그 설치를 판본별로 재사용한다.
@@ -3508,7 +3544,12 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 - **배선:** 워커 `toolAdapter.ts` 가 쓰기 도구를 `withConstructionLog` 로 감싸 `PiToolCallRecord.constructionLogs` 에 싣는다(모델이 읽는 도구 결과에는 안 들어간다) →
   `piAgentRuntime.ts` `recordCall` 이 들고 있다가 바로 다음 `checkpoint()` 의 `PiProjectCheckpoint.constructionLogs` 로 보낸다(저장 안 함) →
   편집기 `aiPiAgentCommand.ts` onCheckpoint 가 `offerConstructionLogs` 로 맡긴다 → 적용 뒤 `focusAcceptedAgentChanges` 의 `planConstructionReveal` 이 그 맵 id 의 기록을 한 번 꺼내 쓴다(2분 지나면 버림).
-  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다(다른 시공 도구는 아직 기록을 안 남긴다).
+  **기록이 없는 적용은 재생하지 않는다** — 지어낸 순서는 보이지 않고 기존 「✓ 반영됨」 강조로 간다.
+- **모든 쓰기 도구(2026-10-04, 사용자 「마을뿐 아니라 다른 명령도 실시간으로」):** 스스로 기록을 안 남기는 쓰기 도구(칠하기·소품·집 하나·새 맵…)는
+  `toolAdapter.ts` 가 도구 직후 `synthesizeToolConstructionLogs(도구, 적용 전, 적용 후)` 로 **그 도구가 실제로 바꾼 칸**을 기록 한 벌로 만든다(`synthetic: true`).
+  나누는 것은 예전 밑그림과 같은 층 순서뿐 — ① 아래층(바닥·길·물; 위층은 아직 이전 값) ② 위층이 바뀐 칸(물체·나무·지붕, 작으면 `stamp` 괄호) — 칸은 왼쪽 열부터.
+  시작 덮개(`initial`)는 바뀐 칸의 적용 전 값이다. 도구가 스스로 기록한 맵(마을)은 건드리지 않고, 4만 칸 넘게 바뀐 도구는 재생하지 않는다.
+  재생 시간은 칸 수에 맞춘다(단계당 140ms + 칸×6ms, 260~1400ms). 체크포인트 사이 쓰기가 여럿이면 `recordCall` 이 `mergeConstructionLogs` 로 같은 맵 기록을 순서대로 잇는다.
 - **재생 시간:** 계획 구역 380ms · 칠하기 520ms · 큰 키트 210ms · 작은 키트 28ms(찍기 전체 5.2초 상한, 넘으면 같은 비율로 당김) · 다듬기 320ms,
   단계 종류가 바뀔 때 200ms 쉼, 끝에 500ms 머문 뒤 320ms 에 덮개가 걷힌다. 강가 마을 ≈ 12.6초.
 - **그리기:** ① 계획 격자 — 칸당 8px `RenderTexture` 에 분류 색(물 파랑·길 황토·광장 연한 돌·건물 자리 갈색 눈금·소품·밭) ② 칠하기·찍기 — 타일 크기 `RenderTexture` 에
@@ -3521,6 +3562,31 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
   연출 시계는 프레임당 120ms 상한이다(긴 메인 스레드 막힘에 단계를 건너뛰지 않게). 48ms 였을 때 부하 큰 박스에서 12초 계획이 50초로 늘어졌다.
 - 실제 칸은 이미 스토어에 있다. 재생은 다음 도구·ACK·입력을 막지 않고 저장·적용 증거가 아니다. 다른 맵으로 옮기면 그 자리에서 끝난다.
   대상 맵 그림이 한 변 4096px 를 넘거나 동작 줄이기·「맵에 시공 보이기」 꺼짐이면 재생하지 않는다.
+
+### 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
+
+- 왜(사용자 2026-10-03): 「맵당 AI 하나, 맵마다 대기열, 여러 맵에서는 여러 AI 를 동시에. 그래도 충돌이 나면 merge」.
+  예전 채팅은 실행 슬롯이 하나라 두 번째 요청은 「진행 중인 응답이 끝난 뒤 다시 시도하세요」로 버려졌고,
+  실시간 적용은 「출발점 이후 아무것도 안 바뀌었다」를 요구해 다른 맵을 고쳐도 다음 체크포인트가 stale-base 로 거절됐다.
+- **대기열(`aiMapRunQueue.ts`, 모듈 싱글턴):** 실행은 보낸 순간 보고 있던 맵 하나를 잡는다(`mapKey`). 같은 맵은 FIFO, 다른 맵은
+  동시에(최대 `MAP_RUN_CONCURRENCY`=3). 팀 모드·장르 프리셋처럼 맵을 특정할 수 없는 실행은 `exclusive` 로 모든 맵을 잡는다.
+  `force` 는 패널의 앞 턴이 「이미 비어 있음을 확인했다」며 표에만 올리는 자리다 — 같은 맵의 다음 요청이 그 뒤에 줄 서게.
+- **전송(`aiChatPanel.send`):** 앞 턴이 돌고 있거나(`turnBusy`) 그 맵을 다른 실행이 잡고 있으면 거절하지 않고 `enqueueMapRun` 으로 보낸다.
+  그 실행은 채팅 로그의 맵별 카드(`aiMapRunCard`: 맵 이름·대기 사유/앞 수·최근 5단계·조수 말·빼기/중단)를 갖고
+  `runPiCommand(..., { background: true, focus: "visible-only" })` 로 돈다. 비어 있으면 예전처럼 앞 턴(상태줄·작업 카드·캔버스 카드)으로 돈다.
+  보내기 버튼은 도는 중에도 잠기지 않는다 — 입력이 있으면 중단 버튼 옆에 다시 선다(`assistant-deck.part-3.css`).
+- **background 표면:** 팀 보드·검토 단추(`publishTeamActivity`·`setTeamReviewActions`)는 패널 전역 자리라 같이 도는 실행이 건드리지 않는다.
+  `focus: "visible-only"` 는 보고 있는 맵이면 재생·강조만 하고 화면을 다른 맵으로 끌고 가지 않는다(`agentFocus.focusAcceptedAgentChanges`).
+- **병합(`projectMerge.mergeProjectThreeWay`):** 체크포인트·최종 적용은 `applyProposedProject({ rebase: { lineage } })` 를 쓴다. 같은 프로젝트에서
+  내용만 움직였으면 키·타일 칸·`id` 항목 단위로 합친다. 한쪽만 바꾼 값은 그쪽, 같은 자리를 둘 다 바꿨으면 **이미 스토어에 있는 값**을 남기고
+  충돌로 작업 과정에 한 줄(`describeMergeConflicts`). `spatialAuthoring` 은 쪼개지 않는다(계층 증거는 `authorMergedSpatialProposal`).
+- **접기:** 다음 요청을 보내면 직전 턴이 접히는데(`aiConversationLog.markPriorTurns`), 돌거나 기다리는 맵별 카드가 든 턴은 펼친 채 둔다.
+- **QA:** `scripts/qa/map-run-queue.mjs` — 맵1 앞 턴 A, 도는 중 맵2 B(바로 같이), 맵1 C(「이 맵 앞에 1개」 → A 뒤). 세 실행의 칸이 다 남는지 본다.
+  대본 워커는 실제 워커처럼 무거운 키를 빼고(`slimProjectForWire`/`slimDoneEvent`) 해시만 온 blob 은 받아 둔 사본을 쓴다 —
+  프로젝트 통째를 세 실행이 주고받으면 렌더러가 죽었다. 이 상자에서는 `unshare -rn` netns 안에서 dev 서버와 같이 돌린다(ERR_NETWORK_CHANGED).
+  `scripts/qa/village-live-build.mjs` 의 `FOREIGN=1` 은 실행 중 사람 편집과 마을이 둘 다 남는지 본다.
+- 남은 것: 앞 턴 외의 입구(`handleAiAssist` 킥오프·브리지 `pendingSends`)는 아직 표에 오르지 않는다. 다른 맵 실행이 끝나도 그 맵 실행 취소(되돌리기)는
+  스냅숏 하나라 맵별로 갈리지 않는다.
 
 ### 조수창
 

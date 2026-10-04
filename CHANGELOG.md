@@ -5,6 +5,110 @@
 
 <!-- releases -->
 
+## 0.112.0 — 2026-10-04
+
+### 기능
+
+- 자유 캐릭터 저작과 사람의 GIF 선택 공방 (`6f8cd25`)
+
+### 수정
+
+- 캐릭터 선택 단축키를 현재 GIF에 한정 (`345ceb7`)
+
+### 문서
+
+- GIF 캐릭터 공방 위키 색인 갱신 (`326cd2d`)
+
+## 0.111.1 — 2026-10-04
+
+### 수정
+
+- 첫 자동 제작에서 핵심 플레이를 먼저 완성 (#2015) (`ce89668`)
+
+## 0.111.0 — 2026-10-04
+
+### 기능
+
+- simplify terrain dock and add a modal creation guide (`dfac859`)
+
+### 수정
+
+- **harness** — include upstream character credits in exported packs (`ea39b71`)
+
+## 0.110.0 — 2026-10-04
+
+### 기능
+
+- **ai** — 맵별 조수 실행 대기열 — 같은 맵은 차례대로, 다른 맵은 동시에 (`67e36aa`)
+- add pixel cinematic dialogue and evidence based romance art review (`39ba2d5`)
+- resize Beodeul roofs independently and soften terrain visibility (`49081eb`)
+- **harness** — register charset workflow and enforce sprite contracts in CI (`30d2dae`)
+- **harness** — continue character batches with verified output provenance and discard gates (`400e8ad`)
+- **harness** — 캐릭터 칩 — 그림 넣어 고치기(약함·보통·강함) + 조수용 설명(desc.json) (`71ddfb3`)
+- **harness** — 걸음 전파 — 작업자는 서 있는 자세만, 걸음 0·2 는 뼈대 움직임대로 자동 생성 + 돌출 픽셀 검수 (`1fc905c`)
+- **harness** — 캐릭터 칩은 실루엣을 뼈대 그대로 — 소지품·모자 추가 금지, 실루엣 변화 150px 검수, 색 구성 지시 18명 (`9118b18`)
+- **harness** — 캐릭터 칩 뼈대를 Actor1~4·People1~5 로 넓힘 — 짝 얼굴 정본 매핑, 뼈대 대비 검수, 새 지시 16명 (`cff72fe`)
+- **harness** — 생성 얼굴 자르기를 원본 구도에 맞춤(align_crop) + --reuse 재판정 (`c8ecefb`)
+- **harness** — 생성 얼굴 v3 — 생김새는 자유, 보는 각도만 잠그고 각도 전용 검수자로 판정 (`f6616b7`)
+- **harness** — 생성 얼굴 v2 — 손 도트 얼굴을 참고로 손질만, 각도 점수로 재시도 (`6012036`)
+- **harness** — 캐릭터 칩 얼굴을 이미지 생성으로(gen-faces) — 사용자 결정, 칩은 손 도트 유지 (`f3ff2c7`)
+- **harness** — 캐릭터 칩 짝 얼굴(48×48)과 비포/애프터 화면 (`5ccbf84`)
+- **harness** — 캐릭터 칩 받기/버리기 화면(18314)과 지시 16명, 원샷 묶음 실행(--par) (`491c418`)
+- **harness** — 캐릭터 칩 고치기 루프 — GPT 가 고치고 Sonnet 이 검수, 남·여 지시 추가 (`60408d0`)
+- **harness** — 캐릭터 칩 하네스에 Opus 5.5 high 엔진과 수정 작업(--src·--fix-notes) (`5afa53e`)
+- **harness** — 캐릭터 칩 하네스 — Actor1 뼈대에 작업자가 격자를 직접 찍고 GIF 로 비교 (`7440c00`)
+
+### 수정
+
+- **harness** — report interrupted production batches as failures (`60b956a`)
+- **harness** — preserve stable clothing pixels when propagating walking frames (`3d8c8b4`)
+- explicitly default optional terrain vision to off (`a12b9e2`)
+- **harness** — guide artists to keep clothing readable across walking frames (`ca6b21a`)
+- **harness** — avoid rewriting unchanged user decisions on export (`f58144e`)
+- **harness** — require fresh review after repairing previously discarded sprites (`78cb686`)
+- **harness** — 걸음 전파 뒤 외톨이 점·1px 구멍 정리(뼈대에 없던 결함만, 원본 자기 재현 100% 유지) (`590f952`)
+- **harness** — 생성 얼굴이 참고 그림의 투구·두건을 지우지 않게(칩과 어긋남) (`bda6cbb`)
+- **harness** — 캐릭터 칩 작업자 — 처음부터 다시 그리지 말고 바꿀 부위만 고친다 (`a29d202`)
+- **harness** — 캐릭터 칩 작업자가 작업 폴더 밖(claude-viz)에 쓰지 않게 (`be907ed`)
+- **harness** — 캐릭터 칩 검수에 걸음 동작량 — 1px 내리기+발끝만 바꾼 걸음을 거른다 (`99e581d`)
+
+### 문서
+
+- **agents** — 캐릭터 칩 하네스 한 줄 갱신 (`471960a`)
+- **agents** — 캐릭터 칩 하네스 받기/버리기 주소 (`2aff4a1`)
+
+### 테스트
+
+- **qa** — 마을이 아닌 쓰기 도구(길·타일·물체)도 맵 위에서 재생되는지 보는 시험 (`be7d6bc`)
+
+### 잡무
+
+- **harness** — 캐릭터 칩 루프 기본을 원샷(1판)으로 — 사용자 판단 (`cf711d3`)
+
+## 0.109.0 — 2026-10-04
+
+### 기능
+
+- **super-harness** — replace the heavy kanban with a light picture gallery (`a8a5e39`)
+- **ai** — 실행 중 다른 편집이 들어와도 체크포인트를 3-way 병합으로 적용한다 (`834e4a2`)
+- **ai** — 마을뿐 아니라 모든 쓰기 도구의 실제 변경을 맵 위에서 다시 튼다 (`4c66fa4`)
+- **ai** — 마을 시공은 도구가 실제로 밟은 단계를 기록해 그 순서대로 다시 튼다 (`9c64279`)
+- **ai** — 큰 조수 적용은 예전 밑그림처럼 — 종이·집 자리 테두리·연필이 왼쪽부터 깔고 집을 차례로 놓는다 (`f3b2caa`)
+- **ai** — 큰 조수 적용에 시공 연출, 조수창 즉시 반영, 마을 노트 먼저 보이게 (`094640e`)
+
+### 수정
+
+- **electron** — 앱 시작 즉시 죽던 worldmapBuild 최상위 import.meta.url 을 지연 평가 (`4a762d5`)
+- **ai** — 시공 연출 덮개 지우기(dirty 함정)·프레임 시계·나무 칸은 바닥과 함께, 새 맵은 전체가 보이게 줌 (`a53b6a6`)
+- **ai** — 마을 요청의 그래픽 선택 창과 Pi 경로의 쓰이지 않는 커버리지 감사 콜 제거 (`dfa361c`)
+
+### 테스트
+
+- **qa** — 실행 중 사람 편집 병합 증거 (`f64f91e`)
+- **qa** — 실행 중 사람 편집과 AI 시공이 둘 다 남는지 보는 FOREIGN=1 모드 (`bf57dfa`)
+- **qa** — 밑그림 시공 화면 증거 갱신 (`4d2ac63`)
+- **qa** — 마을 바로 시공 화면 시험 증거(report·단계 띠) (`d90eb77`)
+
 ## 0.108.0 — 2026-10-04
 
 ### 기능

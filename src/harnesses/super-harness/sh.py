@@ -734,24 +734,132 @@ def action(body):
     return {'ok': True}
 
 
+# ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
+THUMBS = os.path.join(DATA, 'thumbs')
+GROUP = {'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+
+
+def first_sentence(text, limit=90):
+    text = re.sub(r'\s+', ' ', str(text or '')).strip()
+    m = re.match(r'(.+?[.。!?]|.+?다\.)(\s|$)', text)
+    text = m.group(1) if m else text
+    return text if len(text) <= limit else text[:limit - 1] + '…'
+
+
+def plain_status(c):
+    stage, n = c['stage'], c['attempt'] or 1
+    if stage == 'discovered':
+        return '차례 기다림'
+    if stage == 'waiting':
+        names = [(store.concept(r) or {}).get('title', r) for r in c['requires']]
+        return f'「{"」「".join(names)}」 먼저 만드는 중'
+    if stage == 'art':
+        orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
+        return f'그림 {len(orders)}건 주문 — 그림 기다림'
+    if stage == 'build':
+        return f'고치는 중 ({n}번째)' if c['reasons'] or n > 1 else '만드는 중'
+    return {'review': '검수 중', 'probe': '조수에게 시켜 보는 중', 'bake': '에디터에 넣는 중', 'unbake': '에디터에서 빼는 중',
+            'done': '완성 · 에디터에 들어감', 'blocked': '막힘 — 봐 주세요', 'discarded': '폐기'}.get(stage, stage)
+
+
+def example_images(cid):
+    check = read_json(cdir(cid, 'examples', 'check.json'), {}) or {}
+    out = []
+    for ex in check.get('examples', []):
+        for m in ex.get('maps', []):
+            path = cdir(cid, 'examples', m['png'])
+            if os.path.exists(path):
+                out.append({'path': os.path.relpath(path, DATA), 'label': f'{ex.get("title", "")} · {m.get("width")}×{m.get("height")}',
+                            'v': int(os.path.getmtime(path))})
+    return out
+
+
+def gallery_list():
+    items = []
+    for c in store.concepts():
+        card = read_json(cdir(c['id'], 'card.json'), {}) or {}
+        imgs = example_images(c['id'])
+        items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
+                      'running': c['status'] == 'running', 'status': plain_status(c),
+                      'about': first_sentence(card.get('summary') or c['why']), 'updated': c['updated'],
+                      'thumb': imgs[0] if imgs else None, 'pr': c['pr'], 'parent': c.get('parent')})
+    paused = store.setting('paused') == '1'
+    return {'paused': paused, 'items': items}
+
+
+def gallery_detail(cid):
+    c = store.concept(cid)
+    if not c:
+        return None
+    card = read_json(cdir(cid, 'card.json'), {}) or {}
+    imgs = example_images(cid)
+    # 조수에게 실제로 시킨 결과(카드 붙여서) — 마지막 시도.
+    tried = []
+    for run in sorted(glob.glob(cdir(cid, 'probe', f'a{c["attempt"]}-*'))):
+        score = read_json(os.path.join(run, 'score', 'score.json'), {}) or {}
+        for m in score.get('maps', [])[:2]:
+            path = os.path.join(run, 'score', m['png']) if os.path.exists(os.path.join(run, 'score', m['png'])) else os.path.join(run, m['png'])
+            if os.path.exists(path):
+                tried.append({'path': os.path.relpath(path, DATA), 'label': f'조수가 지은 맵 · {m.get("width", "")}×{m.get("height", "")}', 'v': int(os.path.getmtime(path))})
+    orders = [g['item'] for g in store.gaps() if g['concept'] == cid and g.get('item')]
+    variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
+    kids = [{'id': k['id'], 'title': k['title']} for k in store.concepts('parent=?', (cid,))]
+    return {'id': cid, 'title': c['title'], 'status': plain_status(c), 'stage': c['stage'],
+            'about': card.get('summary') or c['why'], 'variants': variants, 'images': imgs[:8], 'tried': tried[:4],
+            'why': [re.sub(r'^\[[AB]\]\s*', '', r) for r in (c['reasons'] or [])][:3],
+            'orders': [{'ko': o.get('ko') or o.get('id'), 'size': f'{o["w"]}×{o["h"]}칸' if o.get('w') and o.get('h') else '', 'desc': first_sentence(o.get('desc'), 120)} for o in orders][:20],
+            'feedback': [f['text'] for f in c['feedback']][-3:], 'pr': c['pr'],
+            'parent': (store.concept(c['parent']) or {}).get('title') if c.get('parent') else None, 'children': kids}
+
+
+def thumb_bytes(rel, width):
+    src = os.path.realpath(os.path.join(DATA, rel))
+    if not src.startswith(os.path.realpath(DATA)) or not os.path.isfile(src):
+        return None
+    width = max(120, min(int(width or 360), 1600))
+    key = re.sub(r'[^A-Za-z0-9_.-]', '_', rel) + f'.{width}.{int(os.path.getmtime(src))}.png'
+    out = os.path.join(THUMBS, key)
+    if not os.path.exists(out):
+        from PIL import Image
+        os.makedirs(THUMBS, exist_ok=True)
+        with Image.open(src) as im:
+            im = im.convert('RGB')
+            if im.width > width:
+                im = im.resize((width, max(1, round(im.height * width / im.width))), Image.Resampling.BOX)
+            im.save(out + '.tmp.png', optimize=True)
+        os.replace(out + '.tmp.png', out)
+    with open(out, 'rb') as f:
+        return f.read()
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass
 
-    def send(self, code, body, ctype='application/json; charset=utf-8'):
+    def send(self, code, body, ctype='application/json; charset=utf-8', cache=None):
         data = body if isinstance(body, bytes) else (json.dumps(body, ensure_ascii=False) if not isinstance(body, str) else body).encode()
         self.send_response(code)
         self.send_header('Content-Type', ctype)
         self.send_header('Content-Length', str(len(data)))
-        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Cache-Control', cache or 'no-store')
         self.end_headers()
         self.wfile.write(data)
 
     def do_GET(self):
         url = urlparse(self.path)
-        if url.path in ('/', '/index.html'):
-            with open(os.path.join(HERE, 'web', 'index.html'), 'rb') as f:
+        if url.path in ('/', '/index.html', '/detail'):
+            page = 'gallery.html' if url.path != '/detail' else 'index.html'
+            with open(os.path.join(HERE, 'web', page), 'rb') as f:
                 return self.send(200, f.read(), 'text/html; charset=utf-8')
+        q = parse_qs(url.query)
+        if url.path == '/api/list':
+            return self.send(200, gallery_list())
+        if url.path == '/api/concept':
+            d = gallery_detail(q.get('id', [''])[0])
+            return self.send(200 if d else 404, d or {'error': 'not found'})
+        if url.path == '/thumb':
+            data = thumb_bytes(unquote(q.get('p', [''])[0]), q.get('w', ['360'])[0])
+            return self.send(200, data, 'image/png', 'public, max-age=86400') if data else self.send(404, {'error': 'not found'})
         if url.path == '/api/state':
             return self.send(200, state())
         if url.path == '/api/joblog':

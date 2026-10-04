@@ -1,0 +1,36 @@
+{
+  "projectId": "9044a710-a187-4926-8fef-c62694bc7135",
+  "store": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/roof-fog-store",
+  "revision": 1,
+  "tileset": "beodeul_city",
+  "houses": 4,
+  "houseSizes": [
+    [
+      11,
+      6
+    ],
+    [
+      10,
+      8
+    ],
+    [
+      11,
+      7
+    ],
+    [
+      11,
+      6
+    ]
+  ],
+  "roads": 0,
+  "gameplay": {
+    "visionBlocking": true,
+    "highGroundVision": true,
+    "projectileHeight": false,
+    "visionRadius": 20,
+    "visionGain": 1,
+    "eyeHeight": 1
+  },
+  "canonicalReload": true,
+  "isolatedQAFixture": true
+}

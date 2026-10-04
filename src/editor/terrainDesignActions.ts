@@ -8,7 +8,7 @@ import { symmetryVariants, type TerrainPoint } from "./terrainDesignGeometry";
 import { planTerrainFeature } from "./terrainFeatures";
 import { planTerrainFinish } from "./terrainFinish";
 import { toast } from "@/util/toast";
-import { planQuickHouseDrag } from "./quickHouse";
+import { planQuickHouseDrag, quickHouseOptions } from "./quickHouse";
 import { registerStructureKit } from "./harnessSuggestion/structureKitActions";
 
 export const TERRAIN_DESIGN_TOOLS: readonly [TerrainDesignTool, string][] = [["contour", "절벽 윤곽"], ["road", "길"], ["house", "집 외관"], ["ridge", "능선"], ["valley", "계곡"], ["lake", "호수·해안"], ["mix", "재질 혼합"], ["mixedCluster", "혼합 군집"], ["stamp", "지형 도장"], ["lock", "영역 잠금"], ["route", "경로 검사"], ["finish", "지형 다듬기"]];
@@ -124,7 +124,7 @@ export function commitQuickHouseDrag(): void {
   const map = store.getCurrent().maps[drag.mapId], tileset = map && store.getCurrent().tilesets[map.tilesetId];
   if (!map || !tileset) return;
   if (!canEditMap(drag.mapId)) { toastMapEditLockNotice(drag.mapId); return; }
-  const plan = planQuickHouseDrag(map, tileset, drag, { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId });
+  const plan = planQuickHouseDrag(map, tileset, drag, quickHouseOptions(s));
   if (plan.ok && plan.kit) { const registered = registerStructureKit(map.tilesetId, plan.kit); plan.kit = { ...plan.kit, id: registered.id }; }
-  applyTerrainDesignPlan(drag.mapId, plan, "집 외관 배치");
+  applyTerrainDesignPlan(drag.mapId, plan, plan.resizedPlacementId ? "집 지붕 크기 변경" : "집 외관 배치");
 }

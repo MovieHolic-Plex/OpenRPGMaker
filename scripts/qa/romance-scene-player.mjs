@@ -11,6 +11,7 @@ if (!file) throw Error('Usage: node scripts/qa/romance-scene-player.mjs <project
 const project = JSON.parse(fs.readFileSync(file)), map = project.maps[project.startMapId];
 const npc = map.events.find(e => e.id === 'ev_romance_partner');assert(npc);
 const proof = {project:resolve(file),playerRoute:true,packaged:process.env.ROMANCE_QA_PACKAGED==='1',noStateInjection:true,branches:[],errors:[],warnings:[]};
+if(process.env.ROMANCE_QA_ART==='1') proof.art=[];
 let route;let activePage;let diagnosticTimer;
 await withTsModule('src/project/collision.ts','collision.mjs',async ({canMove})=>{
  const q=[{...project.startPos,path:[]}],seen=new Set();
@@ -33,9 +34,14 @@ try {
   assert(!boot.errors.length && !boot.beats.some(b=>b.failures.length),JSON.stringify(boot));
   for(const step of route.path){await page.evaluate(d=>window.__oprnInput.dir(d),step.dir);await page.waitForFunction(([x,y])=>{const s=window.__oprnDebug.readState();return s.x===x&&s.y===y;},[step.x,step.y]);await page.evaluate(()=>window.__oprnInput.dir(null));}
   await page.evaluate(d=>window.__oprnInput.face(d),route.x<npc.x?'right':route.x>npc.x?'left':route.y<npc.y?'down':'up');
-  const shot=async name=>{if(await page.getByTestId('dialogue-box').count()&&!await page.getByTestId('runtime-choices').count()){await page.getByTestId('dialogue-box').waitFor();const box=page.getByTestId('dialogue-box');if(!await box.evaluate(n=>n.classList.contains('page-ready')))await page.keyboard.press('Enter');await page.waitForFunction(()=>document.querySelector('[data-testid="dialogue-box"]')?.classList.contains('page-ready'));}await page.screenshot({path:resolve(out,'branch-'+branch,name+'.png')});};
+  const shot=async name=>{if(await page.getByTestId('dialogue-box').count()&&!await page.getByTestId('runtime-choices').count()){await page.getByTestId('dialogue-box').waitFor();const box=page.getByTestId('dialogue-box');if(!await box.evaluate(n=>n.classList.contains('page-ready')))await page.keyboard.press('Enter');await page.waitForFunction(()=>document.querySelector('[data-testid="dialogue-box"]')?.classList.contains('page-ready'));}
+   if(proof.art && name!=='ended'){
+    const art=await page.evaluate(()=>{const box=document.querySelector('[data-testid="dialogue-box"]'),overlay=box.closest('.dialogue-overlay'),css=getComputedStyle(box),canvas=document.querySelector('canvas'),r=box.getBoundingClientRect(),c=canvas.getBoundingClientRect();return {style:overlay.dataset.dialogueStyle,heightRatio:r.height/c.height,background:css.backgroundColor,font:getComputedStyle(box.querySelector('.body,.choice-prompt-row')).fontFamily,radius:css.borderTopLeftRadius,choices:[...box.querySelectorAll('.choice-btn')].map(b=>({text:b.textContent,clipped:b.scrollHeight>b.clientHeight+1})),textClipped:box.querySelector('.dialogue-text-column')?box.querySelector('.dialogue-text-column').scrollHeight>box.querySelector('.dialogue-text-column').clientHeight+1:false};});
+    assert.equal(art.style,'pixel-cinematic');assert(art.heightRatio<=0.28,JSON.stringify(art));assert.equal(art.radius,'0px');assert(art.font.includes('Galmuri9'));assert(!art.textClipped&&!art.choices.some(c=>c.clipped),JSON.stringify(art));proof.art.push({branch:branch+1,name,...art});
+   }
+   await page.screenshot({path:resolve(out,'branch-'+branch,name+'.png')});};
   const action=async()=>{await performObservedAction(page,()=>page.evaluate(()=>window.__oprnInput.action()),90000);};
-  const toChoices=async()=>{for(let i=0;i<16;i++){if(await page.getByTestId('runtime-choices').count())return;await page.keyboard.press('Enter');await page.waitForTimeout(160);}throw Error('No choices');};
+  const toChoices=async()=>{for(let i=0;i<48;i++){const phase=await page.evaluate(()=>{const box=document.querySelector('[data-testid="dialogue-box"]');if(box?.dataset.dialoguePhase==='exit')return 'exit';return document.querySelector('[data-testid="runtime-choices"]')?'choices':'text';});if(phase==='choices'){await page.getByTestId('runtime-choices').locator('button').first().waitFor({state:'visible'});return;}if(phase==='text')await page.keyboard.press('Enter');await page.waitForTimeout(180);}throw Error('No active choices');};
   const closeText=async()=>{for(let i=0;i<16;i++){if(!await page.getByTestId('dialogue-box').count())return;await page.keyboard.press('Enter');await page.waitForTimeout(160);}throw Error('Dialogue never closed');};
   const state=()=>page.evaluate(()=>window.__oprnDebug.readState());
   // Input action returns only after dialogue resolves; do not await its receipt before answering.

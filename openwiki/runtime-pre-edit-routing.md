@@ -1,3 +1,5 @@
+- **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 긴 선택지는 내부 리스트에서 줄바꿈/스크롤하며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
+
 - **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.
   회귀는 `test/runtimeLagFixes.test.ts`(예전 구현과 같은 답을 내는지 대조한다).
   - QA 상태 미러(`runtime-state-json`)는 **읽을 때만** 만든다(`RuntimeDomOverlay.syncRuntimeStateSource`).
