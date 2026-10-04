@@ -242,60 +242,60 @@ export function playCinematicSequence(options: {
       const startVisibleScene = (): void => {
         const visibleFrame = frame;
         if (!alive || settled || !visibleFrame) return;
-      visibleFrame.style.opacity = '1';
-      const legacy = scene.kind === 'image' ? scene.direction?.transition : undefined;
-      const enter = reducedMotion ? 'cut' : presentation?.transition.enter ?? legacy?.kind ?? 'cut';
-      const enterMs = Math.min(presentation?.transition.enterMs ?? legacy?.durationMs ?? 0, scene.durationMs > 0 ? scene.durationMs / 2 : 5000);
-      if (previous && (enter !== 'dissolve' || enterMs <= 0)) disposeShot(previous);
-      if (enter !== 'cut' && enterMs > 0) {
-        if (previous && enter === 'dissolve') {
-          previous.dataset.previousFrame = 'true';
-          const oldShot = previous.querySelector<HTMLElement>('.cinematic-shot');
-          if (oldShot) oldShot.dataset.previousShot = 'true';
-          visibleFrame.before(previous);
-          const fade = previous.animate([{ opacity: 1 }, { opacity: 0 }], { duration: enterMs, fill: 'forwards' });
-          animations.push(fade);
-          void fade.finished.then(() => disposeShot(previous), () => disposeShot(previous));
-        }
-        const frames = enter === 'wipe'
-          ? [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }]
-          : enter === 'iris'
-            ? [{ clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(80% at 50% 50%)' }]
-            : enter === 'flash'
-              ? [{ filter: 'brightness(2.3)', opacity: 0.6 }, { filter: 'brightness(1)', opacity: 1 }]
-              : [{ opacity: 0 }, { opacity: 1 }];
-        animations.push(visibleFrame.animate(frames, { duration: enterMs, fill: 'both', easing: 'ease-in-out' }));
-      }
-      if (previous && !previous.isConnected) disposeShot(previous);
-      if (scene.presentation) {
-        textPlayback = animateCinematicText({ element: narration, presentation: scene.presentation, durationMs: scene.durationMs, reducedMotion });
-        revealText = textPlayback.reveal;
-        const deferToGame = Boolean(options.onFrame && scene.kind === 'image' && index === sequence.scenes.length - 1);
-        const exitMs = reducedMotion || deferToGame ? 0 : Math.min(presentation!.transition.exitMs, scene.durationMs / 3);
-        if (scene.durationMs > 0 && exitMs > 0) exitTimer = setTimeout(() => {
-          if (alive && frame) {
-            root.dataset.transitionState = 'exiting';
-            animations.push(visibleFrame.animate([{ opacity: 1 }, { opacity: 0 }], { duration: exitMs, fill: 'forwards' }));
+        visibleFrame.style.opacity = '1';
+        const legacy = scene.kind === 'image' ? scene.direction?.transition : undefined;
+        const enter = reducedMotion ? 'cut' : presentation?.transition.enter ?? legacy?.kind ?? 'cut';
+        const enterMs = Math.min(presentation?.transition.enterMs ?? legacy?.durationMs ?? 0, scene.durationMs > 0 ? scene.durationMs / 2 : 5000);
+        if (previous && (enter !== 'dissolve' || enterMs <= 0)) disposeShot(previous);
+        if (enter !== 'cut' && enterMs > 0) {
+          if (previous && enter === 'dissolve') {
+            previous.dataset.previousFrame = 'true';
+            const oldShot = previous.querySelector<HTMLElement>('.cinematic-shot');
+            if (oldShot) oldShot.dataset.previousShot = 'true';
+            visibleFrame.before(previous);
+            const fade = previous.animate([{ opacity: 1 }, { opacity: 0 }], { duration: enterMs, fill: 'forwards' });
+            animations.push(fade);
+            void fade.finished.then(() => disposeShot(previous), () => disposeShot(previous));
           }
-        }, scene.durationMs - exitMs);
-      }
-      root.dataset.transitionState = 'playing';
-      if (scene.kind === 'image' && visual) {
-        const direction = scene.direction;
-        if (direction?.camera && !reducedMotion) {
-          const transform = ([x, y, zoom]: [number, number, number]): string => `scale(${zoom}) translate(${(0.5-x)*(zoom-1)/zoom*100}%, ${(0.5-y)*(zoom-1)/zoom*100}%)`;
-          for (const layer of visual.children) if (layer instanceof HTMLElement) {
-            animations.push(layer.animate([{ transform: transform(direction.camera.from) }, { transform: transform(direction.camera.to) }], { duration: scene.durationMs || 8000, easing: 'ease-in-out', fill: 'both' }));
-          }
+          const frames = enter === 'wipe'
+            ? [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }]
+            : enter === 'iris'
+              ? [{ clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(80% at 50% 50%)' }]
+              : enter === 'flash'
+                ? [{ filter: 'brightness(2.3)', opacity: 0.6 }, { filter: 'brightness(1)', opacity: 1 }]
+                : [{ opacity: 0 }, { opacity: 1 }];
+          animations.push(visibleFrame.animate(frames, { duration: enterMs, fill: 'both', easing: 'ease-in-out' }));
         }
-        const delay = scene.presentation ? 0 : direction?.narrationDelayMs ?? 0;
-        if (delay > 0) { narration.hidden = true; narrationTimer = setTimeout(() => { if (alive) narration.hidden = false; }, delay); }
-        if (direction?.soundResourceId) { const audio = el('audio', {}); root.append(audio); addMedia(audio, direction.soundResourceId); }
-      }
-      if (scene.narrationAudioResourceId && mediaActive) {
-        const audio = el('audio', {}); root.append(audio); addMedia(audio, scene.narrationAudioResourceId);
-      }
-      if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
+        if (previous && !previous.isConnected) disposeShot(previous);
+        if (scene.presentation) {
+          textPlayback = animateCinematicText({ element: narration, presentation: scene.presentation, durationMs: scene.durationMs, reducedMotion });
+          revealText = textPlayback.reveal;
+          const deferToGame = Boolean(options.onFrame && scene.kind === 'image' && index === sequence.scenes.length - 1);
+          const exitMs = reducedMotion || deferToGame ? 0 : Math.min(presentation!.transition.exitMs, scene.durationMs / 3);
+          if (scene.durationMs > 0 && exitMs > 0) exitTimer = setTimeout(() => {
+            if (alive && frame) {
+              root.dataset.transitionState = 'exiting';
+              animations.push(visibleFrame.animate([{ opacity: 1 }, { opacity: 0 }], { duration: exitMs, fill: 'forwards' }));
+            }
+          }, scene.durationMs - exitMs);
+        }
+        root.dataset.transitionState = 'playing';
+        if (scene.kind === 'image' && visual) {
+          const direction = scene.direction;
+          if (direction?.camera && !reducedMotion) {
+            const transform = ([x, y, zoom]: [number, number, number]): string => `scale(${zoom}) translate(${(0.5-x)*(zoom-1)/zoom*100}%, ${(0.5-y)*(zoom-1)/zoom*100}%)`;
+            for (const layer of visual.children) if (layer instanceof HTMLElement) {
+              animations.push(layer.animate([{ transform: transform(direction.camera.from) }, { transform: transform(direction.camera.to) }], { duration: scene.durationMs || 8000, easing: 'ease-in-out', fill: 'both' }));
+            }
+          }
+          const delay = scene.presentation ? 0 : direction?.narrationDelayMs ?? 0;
+          if (delay > 0) { narration.hidden = true; narrationTimer = setTimeout(() => { if (alive) narration.hidden = false; }, delay); }
+          if (direction?.soundResourceId) { const audio = el('audio', {}); root.append(audio); addMedia(audio, direction.soundResourceId); }
+        }
+        if (scene.narrationAudioResourceId && mediaActive) {
+          const audio = el('audio', {}); root.append(audio); addMedia(audio, scene.narrationAudioResourceId);
+        }
+        if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
       };
       // Establish the new composition before its clock/letter animation consumes any time.
       // A software GPU or a heavy previous title can otherwise swallow a short prologue.

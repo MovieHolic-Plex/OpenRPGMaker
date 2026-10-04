@@ -1,0 +1,19 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "revision": 45,
+  "generationMode": "actual assistant authored opening; editor timing changed and restored; final ordinary canonical reload",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "started": "2026-10-04T10:56:28.891Z",
+  "errors": [],
+  "networkFailures": [
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "exportStarted": "2026-10-04T10:56:58.587Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/opening-typography/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 55.228,
+  "passed": true
+}
