@@ -32,7 +32,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor validation: `openwiki/editor-validation.md`
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
-   - 캐릭터 칩 저작 하네스(이미지 입력·강도·걸음 전파·결손 폐기 게이트·검수 팩): `openwiki/charset-actor-harness.md`
+   - 캐릭터 GIF 공방(GPT 자유 저작·결손 검사·사람의 남김/폐기·선택 팩): `openwiki/charset-actor-harness.md`
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`

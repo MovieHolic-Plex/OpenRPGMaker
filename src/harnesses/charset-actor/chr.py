@@ -224,6 +224,7 @@ def stats(pal, frames):
 # 수정 강도(2026-10-03 사용자: 그림을 넣으면 「약함·보통·강함」으로 얼마나 고칠지 정한다).
 # 약함 = 색만(실루엣 그대로), 보통 = 머리 모양·옷 무늬까지(소지품 금지), 강함 = 머리·옷 실루엣과 작은 장신구까지(큰 무기·날개 금지).
 STRENGTH = {
+    'free': dict(label='자유 저작'),
     'weak': dict(label='약함', protrude_frame_max=0, protrude_sum_max=0, silhouette_max=30, changed_min=0.15, redrawn_min=0),
     'normal': dict(label='보통', protrude_frame_max=10, protrude_sum_max=60, silhouette_max=None, changed_min=0.20, redrawn_min=0.15),
     'strong': dict(label='강함', protrude_frame_max=20, protrude_sum_max=160, silhouette_max=None, changed_min=0.30, redrawn_min=0.25),
@@ -352,6 +353,14 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
     fatal = opacity_defects(pal, frames, base)
     fails.extend(it['what'] for it in fatal)
     m['opacity_defects'] = len(fatal)
+    if strength == 'free':
+        # 자유 저작에서는 미감/원본 변화율/소품 크기를 숫자로 심사하지 않는다.
+        # 손상된 파일·색 키·머리/몸체 결손·빈 프레임만 자동 차단한다.
+        for k, rows in frames.items():
+            if not _opaque(rows):
+                fatal.append(dict(code='empty_frame', frame=f'{k[0]} {k[1]}', what=f'{k}: 빈 프레임'))
+        return dict(version=GATE_VERSION, ok=not fatal, discard=bool(fatal), fatal=fatal,
+                    fails=[it['what'] for it in fatal], warns=[], metrics=m)
     used = {}
     for k, rows in frames.items():
         for r in rows:

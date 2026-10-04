@@ -119,6 +119,18 @@ def run_lock(root):
             fcntl.flock(lock, fcntl.LOCK_UN)
 
 
+@contextmanager
+def data_lock(name):
+    import fcntl
+    DATA.mkdir(parents=True, exist_ok=True)
+    with (DATA / f'.{name}.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
 LOCAL_BRIEFS = DATA / 'briefs-local.json'   # 화면에서 올린 그림으로 만든 지시(저장소 밖 — 남의 그림일 수 있다)
 INPUTS = DATA / 'inputs'                     # 올린 칩 그림(배경 키 색으로 정규화한 288×256)
 
@@ -436,8 +448,37 @@ def read_verdict(w, gate=None):
     return v
 
 
+def human_review(w):
+    return json.loads((w / 'meta.json').read_text()).get('reviewMode') == 'human'
+
+
+def effective_decision(w, record, gate=None):
+    if not record:
+        return None
+    if human_review(w) and (not (w / 'out.chr.txt').exists() or record.get('inspected') != binding(gate or current_gate(w))):
+        return None  # 수정된 그림에 이전 사람의 선택을 재사용하지 않는다.
+    return record['decision']
+
+
+def human_ready(w, gate):
+    try:
+        return (not _alive(json.loads((w / 'meta.json').read_text()).get('pid'))
+                and json.loads((w / 'published.json').read_text()) == binding(gate) and views_fresh(w, gate))
+    except (OSError, ValueError):
+        return False
+
+
 def quality(w, decision=None, gate=None, review=None):
     gate = current_gate(w) if gate is None else gate
+    if human_review(w):
+        reasons = list(gate['fails'])
+        if decision == 'reject':
+            reasons.append('사용자 폐기')
+        fresh = human_ready(w, gate)
+        if not fresh:
+            reasons.append('현재 격자의 GIF 렌더 미완료')
+        return dict(eligible=not reasons, discard=bool(gate.get('discard')),
+                    pending=bool(gate['ok'] and not fresh and decision != 'reject'), reasons=reasons)
     review = read_verdict(w, gate) if review is None else review
     reasons = []
     if not gate['ok']:
@@ -1028,7 +1069,7 @@ def _items():
             if has:
                 gate = current_gate(w)
             review = read_verdict(w, gate) if has else None
-            q = quality(w, decisions.get(f'{rd.name}/{w.name}', {}).get('decision'), gate, review) if has else None
+            q = quality(w, effective_decision(w, decisions.get(f'{rd.name}/{w.name}'), gate), gate, review) if has else None
             if q and q['discard']:
                 continue  # 폐기 대상은 선택 후보에 올리지 않는다.
             out.append(dict(id=f'{rd.name}/{w.name}', run=rd.name, dir=w.name, brief=m['brief'], name=b.get('name', m['brief']),
@@ -1036,8 +1077,8 @@ def _items():
                             has_face=face_ref(m['base']) is not None, label=m['label'],
                             strength=m.get('strength') or b.get('strength', 'normal'), upload=b.get('source') == 'upload',
                             desc=_desc(w),
-                            status='running' if _alive(m['pid']) else ('done' if has and views_fresh(w, gate) else 'failed'),
-                            gate=gate, review=review, quality=q,
+                            status='running' if _alive(m['pid']) else ('done' if has and (human_ready(w, gate) if human_review(w) else views_fresh(w, gate)) else 'failed'),
+                            gate=gate, review=review, quality=q, review_mode='human' if human_review(w) else 'legacy',
                             render_fresh=views_fresh(w, gate) if has else False,
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
@@ -1079,12 +1120,21 @@ def _decisions():
 
 def export_decisions():
     cur = _decisions()
+    mirrored = []
+    for record in cur.values():
+        run, candidate = record['id'].split('/', 1)
+        manifest = run_dir(run) / 'manifest.json'
+        w = run_dir(run) / candidate
+        if ((manifest.exists() and json.loads(manifest.read_text()).get('reviewMode') == 'human')
+                or ((w / 'meta.json').exists() and human_review(w))):
+            continue  # 자유 공방의 사람 선택은 외부 journal에만 보존한다.
+        mirrored.append(record)
     try:
         previous = json.loads(EXPORT.read_text()).get('decisions')
     except (OSError, ValueError):
         previous = None
-    if previous != list(cur.values()):
-        write_json_atomic(EXPORT, dict(updated=now(), decisions=list(cur.values())))
+    if previous != mirrored:
+        write_json_atomic(EXPORT, dict(updated=now(), decisions=mirrored))
     # 받은 것은 격자·1배 시트를 저장소로 옮긴다(작은 글자 파일 — 다음 단계 번들 등록의 원본)
     # 설명(desc.json)은 <stem>.json 으로 — 조수가 NPC 를 고를 때 읽을 것(label·attributes 는 sharedCharacterGraphics 형식).
     keep = set()
@@ -1103,6 +1153,8 @@ def export_decisions():
             continue
         gate = current_gate(w)
         review = read_verdict(w, gate)
+        if effective_decision(w, d, gate) != 'accept':
+            continue
         if not quality(w, 'accept', gate, review)['eligible']:
             if not gate.get('discard') and not (review and not review.get('stale') and (review.get('discard') or review.get('fatal'))):
                 keep.add(stem)  # 옛 검수 갱신 대기 때문에 이미 받은 사본을 지우지 않는다.
@@ -1110,7 +1162,7 @@ def export_decisions():
         keep.add(stem)
         m = json.loads((w / 'meta.json').read_text())
         b = bs.get(m['brief'], {})
-        dest = ACCEPTED_LOCAL if b.get('source') == 'upload' else ACCEPTED
+        dest = ACCEPTED_LOCAL if human_review(w) or b.get('source') == 'upload' else ACCEPTED
         dest.mkdir(parents=True, exist_ok=True)
         shutil.copy(w / 'out.chr.txt', dest / f'{stem}.chr.txt')
         shutil.copy(w / 'views' / 'sheet.png', dest / f'{stem}.png')
@@ -1129,6 +1181,8 @@ def cmd_serve(a):
     from urllib.parse import unquote
     web = HERE / 'web' / 'index.html'
     root = (DATA / 'runs').resolve()
+    import threading
+    decisions_lock = threading.Lock()
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x):
@@ -1152,8 +1206,17 @@ def cmd_serve(a):
                 dec = _decisions()
                 items = _items()
                 for it in items:
-                    it['decision'] = dec.get(it['id'])
-                return self._send(200, json.dumps(dict(items=items, reasons=REASONS), ensure_ascii=False))
+                    rec = dec.get(it['id'])
+                    it['decision'] = rec if effective_decision(root / it['id'], rec, it['gate']) else None
+                    it['decision_stale'] = bool(rec and not it['decision'])
+                import studio
+                return self._send(200, json.dumps(dict(items=items, reasons=REASONS, runs=studio.runs(items)), ensure_ascii=False))
+            if path.startswith('/downloads/'):
+                downloads = (DATA / 'downloads').resolve()
+                f = (downloads / path.removeprefix('/downloads/')).resolve()
+                if f.parent != downloads or not f.is_file():
+                    return self._send(404, 'not found', 'text/plain')
+                return self._send(200, f.read_bytes(), 'application/zip')
             if path.startswith('/in/'):
                 f = (INPUTS / path[4:]).resolve()
                 if INPUTS.resolve() not in f.parents or not f.is_file():
@@ -1173,25 +1236,43 @@ def cmd_serve(a):
             d = json.loads(self.rfile.read(n) or b'{}')
             if self.path == '/api/new':
                 return self._new(d)
+            if self.path in ('/api/produce', '/api/pause', '/api/resume', '/api/export'):
+                import studio
+                try:
+                    if self.path == '/api/produce':
+                        result = studio.create(d)
+                    elif self.path == '/api/export':
+                        with decisions_lock, data_lock('decisions'):
+                            result = studio.export_kept(d.get('run', 'all'))
+                    else:
+                        result = studio.control(d.get('run'), self.path == '/api/resume')
+                    return self._send(200, json.dumps(result, ensure_ascii=False))
+                except (ValueError, TypeError, OSError, RuntimeError) as error:
+                    return self._send(409, json.dumps(dict(error=str(error)), ensure_ascii=False))
             if self.path != '/api/decide':
                 return self._send(404, '{}')
             if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
                 return self._send(400, '{"error":"bad"}')
+            w = root / d['id']
+            if not w.is_dir() or root not in w.resolve().parents:
+                return self._send(404, '{"error":"candidate missing"}')
+            gate = current_gate(w)
+            if d.get('inspected') != binding(gate):
+                return self._send(409, json.dumps(dict(error='그림이 변경되었습니다. 새 GIF를 확인해 주세요.'), ensure_ascii=False))
             if d['decision'] == 'accept':
-                w = root / d['id']
-                if not w.is_dir() or root not in w.resolve().parents:
-                    return self._send(404, '{"error":"candidate missing"}')
-                gate = current_gate(w)
                 review = read_verdict(w, gate)
                 if not quality(w, 'accept', gate, review)['eligible']:
                     return self._send(409, json.dumps(dict(error='결손/검사 실패 결과는 받을 수 없습니다',
                                                          fails=gate['fails']), ensure_ascii=False))
-            rec = dict(id=d['id'], decision=d['decision'], reasons=d.get('reasons') or [], note=d.get('note') or '',
+            rec = dict(id=d['id'], decision=d['decision'], inspected=binding(gate), reasons=d.get('reasons') or [], note=d.get('note') or '',
                        client='web', at=now())
             DATA.mkdir(parents=True, exist_ok=True)
-            with open(DECISIONS, 'a', encoding='utf-8') as fh:
-                fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
-            export_decisions()
+            with decisions_lock, data_lock('decisions'):
+                with open(DECISIONS, 'a', encoding='utf-8') as fh:
+                    fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
+                    fh.flush()
+                    os.fsync(fh.fileno())
+                export_decisions()
             return self._send(200, json.dumps(rec, ensure_ascii=False))
 
         def _new(self, d):
@@ -1199,7 +1280,7 @@ def cmd_serve(a):
             import io
             try:
                 raw = base64.b64decode(str(d.get('image', '')).split(',', 1)[-1])
-                strengths = [x for x in d.get('strengths') or [] if x in C.STRENGTH] or ['normal']
+                strengths = [x for x in d.get('strengths') or [] if x in STRENGTH_RULES] or ['normal']
                 name = (d.get('name') or '올린 그림').strip()[:40]
                 up = DATA / 'uploads'
                 up.mkdir(parents=True, exist_ok=True)

@@ -113,6 +113,8 @@ notes나 작업자 로그는 보지 않는다. 다른 파일에는 쓰지 않는
 
 
 def produce_batch(run, rows, index):
+    if (H.run_dir(run) / 'pause-request.json').exists():
+        return  # 진행 중인 작업은 마치고 다음 묶음부터 멈춘다.
     batch, assignments = prepare_batch(run, rows, index)
     active = [r['key'] for r in assignments if (batch / r['folder'] / 'meta.json').exists()
               and H._alive(json.loads((batch / r['folder'] / 'meta.json').read_text()).get('pid'))]
@@ -121,9 +123,11 @@ def produce_batch(run, rows, index):
     pending = [r for r in assignments if not (batch / r['folder'] / 'views' / 'gate.json').exists()
                or not (batch / r['folder'] / 'out.chr.txt').exists()]
     if pending:
-        prompt = (H.HERE / 'bulk-worker.md').read_text(encoding='utf-8')
+        write_json(batch / 'pending.json', pending)
+        human = all(r.get('reviewMode') == 'human' for r in pending)
+        prompt = (H.HERE / ('free-worker.md' if human else 'bulk-worker.md')).read_text(encoding='utf-8')
         prompt = prompt.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
-        prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES[s] for s in sorted({r['strength'] for r in pending})))
+        prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
         (batch / 'prompt.md').write_text(prompt, encoding='utf-8')
         process = H._spawn('gpt', batch, batch / 'prompt.md', batch / 'worker.log')
@@ -131,24 +135,37 @@ def produce_batch(run, rows, index):
             w = batch / row['folder']
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
-                                            strength=row['strength'], batch=index, src=None))
+                                            strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None))
         log(f'batch {index}: GPT high 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')
     ready = []
+    output_errors = []
     for row in assignments:
         w = batch / row['folder']
         try:
+            if row.get('reviewMode') == 'human' and (w / 'out.chr.txt').exists():
+                gate = H.current_gate(w)
+                if H.human_ready(w, gate):
+                    if gate['ok']:
+                        ready.append(row)
+                    continue  # 공개한 GIF와 사람의 선택은 재개할 때 그대로 보존한다.
+                (w / 'published.json').unlink(missing_ok=True)
             H.propagate_file(w / 'out.chr.txt', row['base'])
             gate = H.make_views(w / 'out.chr.txt', w / 'views', row['base'], row['strength'])
+            if row.get('reviewMode') == 'human':
+                H.write_json_atomic(w / 'published.json', H.binding(gate))
             if gate['ok']:
                 ready.append(row)
             log(f'{row["key"]}: 그림 저장, 기계 검사={gate["ok"]}')
         except Exception as error:
             log(f'{row["key"]}: 산출 실패 {error!r}')
-    unreviewed = [r for r in ready if not (batch / r['folder'] / 'desc.json').exists()
+            output_errors.append(f'{row["key"]}: {error!r}')
+    if output_errors:
+        raise RuntimeError('; '.join(output_errors))
+    unreviewed = [r for r in ready if r.get('reviewMode') != 'human' and (not (batch / r['folder'] / 'desc.json').exists()
                   or not H.read_verdict(batch / r['folder'])
-                  or H.read_verdict(batch / r['folder']).get('stale')]
+                  or H.read_verdict(batch / r['folder']).get('stale'))]
     if unreviewed:
         log(f'batch {index}: Sonnet 검수·관찰 설명 시작 ({len(unreviewed)}명)')
         review_batch(batch, unreviewed)
@@ -164,8 +181,10 @@ def main(args):
     if not 1 <= args.par <= 6 or not 1 <= args.batch_size <= 8:
         raise ValueError('동시 작업 1~6, 묶음 크기 1~8')
     for row in rows:
-        if '/' in row['key'] or row['strength'] not in H.STRENGTH_RULES:
+        if '/' in row['key'] or row['key'] in ('.', '..') or (row['strength'] not in H.STRENGTH_RULES and row['strength'] != 'free'):
             raise ValueError('잘못된 key/강도')
+        if row['strength'] == 'free' and row.get('reviewMode') != 'human':
+            raise ValueError('자유 저작은 사람 검토를 사용해야 함')
         H.norm_base(row['base'])
     root = H.run_dir(run)
     root.mkdir(parents=True, exist_ok=True)
@@ -182,12 +201,13 @@ def main(args):
     if snapshot.exists() and json.loads(snapshot.read_text()) != manifest:
         raise ValueError('기존 실행의 manifest를 변경할 수 없음')
     write_json(snapshot, manifest)
-    local = json.loads(H.LOCAL_BRIEFS.read_text()) if H.LOCAL_BRIEFS.exists() else {}
-    for row in rows:
-        if row['key'] in local and local[row['key']] != row:
-            raise ValueError(f'기존 지시 충돌: {row["key"]}')
-        local[row['key']] = row
-    write_json(H.LOCAL_BRIEFS, local)
+    with H.data_lock('briefs'):
+        local = json.loads(H.LOCAL_BRIEFS.read_text()) if H.LOCAL_BRIEFS.exists() else {}
+        for row in rows:
+            if row['key'] in local and local[row['key']] != row:
+                raise ValueError(f'기존 지시 충돌: {row["key"]}')
+            local[row['key']] = row
+        write_json(H.LOCAL_BRIEFS, local)
     errors = []
     with ThreadPoolExecutor(max_workers=args.par) as pool:
         tasks = [pool.submit(produce_batch, run, rows[i:i + args.batch_size], i // args.batch_size + 1)
@@ -207,7 +227,7 @@ def main(args):
         if not (w / 'out.chr.txt').exists():
             continue
         gate = H.current_gate(w)
-        decision = H._decisions().get(f'{run}/{w.name}', {}).get('decision')
+        decision = H.effective_decision(w, H._decisions().get(f'{run}/{w.name}'), gate)
         if not H.quality(w, decision, gate)['eligible']:
             continue
         catalog.append(dict(key=row['key'], name=row['name'], genre=row.get('genre'), folder=w.name,
@@ -215,6 +235,7 @@ def main(args):
                             gate=gate,
                             review=H.read_verdict(w), description=H._desc(w)))
     write_json(root / 'catalog.json', dict(run=run, expected=len(rows), count=len(catalog), characters=catalog))
+    write_json(root / 'production-state.json', dict(phase='paused' if (root / 'pause-request.json').exists() else 'completed', at=H.now()))
     log(f'전체 저장 {len(catalog)}/{len(rows)}')
 
 
@@ -237,4 +258,9 @@ if __name__ == '__main__':
         print(f'생산 드라이버 pid={child.pid}: {root / "production.log"}')
         sys.exit(0)
     with H.run_lock(H.run_dir(run)):
-        main(args)
+        write_json(H.run_dir(run) / 'production-state.json', dict(phase='running', at=H.now()))
+        try:
+            main(args)
+        except Exception as error:
+            write_json(H.run_dir(run) / 'production-state.json', dict(phase='failed', error=str(error), at=H.now()))
+            raise

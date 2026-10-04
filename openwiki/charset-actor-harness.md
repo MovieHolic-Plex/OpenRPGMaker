@@ -1,5 +1,23 @@
 # 캐릭터 칩 저작 하네스
 
+## GIF 공방: AI 자유 저작과 사람 선택 (2026-10-04)
+
+사용자의 현재 계약은 **AI가 자유롭게 제작하고 사람이 GIF를 보고 남기기/폐기만 결정**하는 것이다.
+`studio.py`/`produce` → `free-worker.md`(GPT 6.1 sol high) → 결손 검사 → GIF 대기열 → 사람 선택 → 선택 팩이다.
+기존 Sonnet 미감 점수로 새로운 자유 후보를 선별하지 않는다. `reviewMode: human`, `strength: free`를 manifest/각 행/후보 meta에 남긴다.
+
+- `chr.gate(free)`는 구조·빈 프레임·색 키·내부 투명 결손·머리 내부 큰 삭제·경계 잘림만 자동 차단한다. 원본 변화율/모자·소품 돌출량/윤곽 명암은 사람에게 맡긴다.
+- `human_ready`는 저작자 종료·현재 published/render binding을 확인한다. 부분 렌더를 사람 선택 대상으로 공개하지 않는다.
+- `effective_decision`은 사람의 남김과 폐기를 본 그림 해시에 묶는다. 파일이 바뀌면 선택을 무효화하고 다시 검토한다.
+- UI는 네 방향 걷기 GIF 카드, 한 번의 남기기/폐기, 선택 되돌리기, 하나씩 보기의 A/R, 생성 개수/참고 시트, 진행·일시 정지/재개, 남김 ZIP을 제공한다. 주기 갱신은 기존 GIF DOM을 보존한다.
+- `studio` 잠금으로 생성/재개/driver 기록을 직렬화하고 `briefs` 잠금으로 지시 목록의 동시 쓰기를 막는다. 산출 누락은 완료로 기록하지 않는다.
+- 재개는 공개된 현재 GIF를 그대로 둔다. 일시 정지는 현재 묶음을 끝낸 다음 적용한다. 실패는 상태 파일에 남기며 자동 미감 재시도는 하지 않는다.
+- `export_kept`는 사람의 최신 남김만 패킹하고 PNG를 에디터 색 키 ±8로 재읽는다. ZIP에는 GIF/격자/선택 해시/참고 원본/라이선스가 함께 간다. 작업자 설명은 독립 검수 설명과 구분한다.
+- 자유 산출과 accepted는 저장소 밖이다. 사용자 선택을 대신하거나 과거 폐기 후보를 복구하지 않는다. 프로젝트 DB/공용 라이브러리 설치는 별도 작업이다.
+
+화면 http://mdc-server:18314/ · 실행 `npm run harness -- charset-actor produce --count 100 [--reference /absolute/file.png]`.
+이하 Sonnet PASS/FAIL과 자동 검수 팩 기록은 이전 지시 기반 모드의 계약/실측이다.
+
 ## 진입점과 저장 대상
 
 - `src/harnesses/charset-actor/harness.py`: 이미지 입력·강도·작업자/검수자·설명·받기/버리기 서버.

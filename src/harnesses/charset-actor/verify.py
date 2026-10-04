@@ -145,6 +145,58 @@ def verify():
         record = dict(key='fixture', dir=w.name, archive=str(H.DATA / 'quarantine' / w.name), state='pending')
         export.finish_discard(root, record)
         check('pending-discard-recovers', record['state'] == 'complete' and not w.exists() and Path(record['archive']).exists())
+        import studio as S
+        root = H.run_dir('human-fixture')
+        w = root / 'human__gpt-r1'; w.mkdir(parents=True)
+        (w / 'out.chr.txt').write_text(C.dump(q, {}, f))
+        H.write_json_atomic(w / 'meta.json', dict(base='Actor1:0', brief='human', strength='free', reviewMode='human',
+                                                model='gpt-6.1-sol', effort='high', label='GPT high', pid=0))
+        H.write_json_atomic(root / 'manifest.json', dict(reviewMode='human', characters=[dict(key='human')]))
+        gate = H.make_views(w / 'out.chr.txt', w / 'views', 'Actor1:0', 'free')
+        check('human-unpublished-not-selectable', not H.quality(w)['eligible'])
+        H.write_json_atomic(w / 'published.json', H.binding(gate))
+        check('human-ready-without-model-review', H.quality(w)['eligible'])
+        H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='FAIL', score=0, discard=True, fatal=['model dislike'], issues=[]))
+        H.bind_review(w, gate)
+        check('human-aesthetics-not-model-cull', H.quality(w)['eligible'] and not H.quality(w)['discard'])
+        check('human-unsafe-key-still-blocked', C.gate(unsafe, f, (p, f), strength='free')['discard'])
+        blank = copy.deepcopy(f); blank['right', 0] = ['.'*24]*32
+        check('human-empty-frame-blocked', C.gate(p, blank, (p, f), strength='free')['discard'])
+        cut_head = copy.deepcopy(f); cut_head['down', 1] = ['.'*24 if y <= cut else row for y,row in enumerate(f['down',1])]
+        check('human-cut-head-still-blocked', C.gate(p, cut_head, (p, f), strength='free')['discard'])
+        empty_rejected = False
+        try:
+            S.export_kept('human-fixture')
+        except ValueError:
+            empty_rejected = True
+        check('human-undecided-not-exported', empty_rejected)
+        rec = dict(id='human-fixture/'+w.name, decision='accept', inspected=H.binding(gate), at=H.now())
+        H.DECISIONS.write_text(json.dumps(rec)+'\n')
+        H.export_decisions()
+        check('human-accepted-outside-repo', (H.ACCEPTED_LOCAL / 'human__gpt-r1__human-fixture.png').exists() and not list(H.ACCEPTED.glob('human*')))
+        check('human-decision-not-mirrored-into-repo', not json.loads(H.EXPORT.read_text())['decisions'])
+        result = S.export_kept('human-fixture')
+        import zipfile
+        with zipfile.ZipFile(H.DATA / result['url'].removeprefix('/')) as archive:
+            check('human-kept-only-ZIP', result['count']==1 and archive.testzip() is None and 'licenses/easyrpg/AUTHORS.md' in archive.namelist())
+            catalog = json.loads(archive.read('characters.json'))
+            check('human-ZIP-contains-decision-binding', catalog['characters'][0]['acceptance']['inspected']==H.binding(gate))
+        (w / 'out.chr.txt').write_text(C.dump(q, {}, f, header='updated human candidate'))
+        check('human-old-accept-not-reused', H.effective_decision(w, rec) is None)
+        rejected = dict(rec, decision='reject')
+        check('human-old-reject-not-reused', H.effective_decision(w, rejected) is None)
+        H.export_decisions()
+        check('human-stale-accepted-copy-removed', not (H.ACCEPTED_LOCAL / 'human__gpt-r1__human-fixture.png').exists())
+        # 재개가 사람이 이미 본 현재 GIF를 다시 굽지 않는다.
+        gate = H.make_views(w / 'out.chr.txt', w / 'views', 'Actor1:0', 'free')
+        H.write_json_atomic(w / 'published.json', H.binding(gate))
+        row = dict(key='human', name='human', brief='', base='Actor1:0', strength='free', reviewMode='human')
+        batch = root / '_batches' / '01'; batch.mkdir(parents=True)
+        assigned = dict(row, folder='../../'+w.name)
+        before = (w / 'views' / 'walk.gif').stat().st_mtime_ns
+        with patch.object(B, 'prepare_batch', return_value=(batch,[assigned])), patch.object(B, 'review_batch', side_effect=AssertionError('model review forbidden')):
+            B.produce_batch('human-fixture',[row],1)
+        check('human-resume-preserves-published-GIF', (w / 'views' / 'walk.gif').stat().st_mtime_ns==before)
     return evidence
 
 

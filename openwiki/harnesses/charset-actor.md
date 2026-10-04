@@ -1,17 +1,18 @@
-# RM2000 캐릭터 칩 하네스
+# RM2000 캐릭터 GIF 공방
 
-24×32 프레임 × 3걸음 × 4방향의 에디터용 캐릭터를 만든다. 생성 이미지 대신 GPT 6.1 sol high가 원본 격자를 직접 편집한다.
-원샷 저작 → 12프레임 픽셀 검사 → Sonnet medium 독립 검수 → 사용자 선택 → 검수 팩 순서다.
+GPT 6.1 sol high가 자유롭게 24×32 캐릭터 도트를 만든다. 사용자는 걷는 GIF를 보고 남기기/폐기만 결정한다.
+머리/몸체 결손·색 키·프레임 구조만 자동 차단하며 별도 모델의 미감 점수를 선택 관문으로 사용하지 않는다.
 
 ```bash
-npm run harness -- charset-actor bulk /path/to/manifest.json --par 2 --batch-size 4 --detach
-npm run harness -- charset-actor verify --output /path/to/evidence.json
-npm run harness -- charset-actor export RUN --discard-failed
+npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png
+npm run harness -- charset-actor serve --port 18314
+npm run harness -- charset-actor export RUN
 ```
 
-결손·검수 실패는 합격 팩에 넣지 않는다. 검수 갱신 대기는 영구 폐기하지 않는다. API 받기·렌더·판정은 현재 격자 해시에 결부한다.
-원본 첨부와 업로드 파생물은 `CHR_HARNESS_DATA`(기본 `~/.local/share/oprn/charset-actor-harness/`)에 둔다.
-이 단계는 후보 자산 저작이며 프로젝트/공용 자산에 자동 설치하지 않는다.
+`produce`는 작업을 터미널과 독립적으로 시작한다. 화면에서도 개수·선택적인 전체 방향·참고 그림을 넣어 시작할 수 있다.
+완성된 네 방향 GIF마다 한 번의 남기기/폐기, 선택 되돌리기, 일시 정지/재개, 실제 남긴 캐릭터만 ZIP 다운로드한다.
+현재 그림의 해시가 바뀌면 사람의 선택도 다시 확인한다. 사용자 선택·산출·원본은 `CHR_HARNESS_DATA` 아래 보존한다.
+프로젝트 DB나 공용 자산에 자동 설치하지 않는다. 과거 모델 검수 모드는 이전 실행 재현용으로 유지한다.
 
-상세 구조·픽셀 검사·재개/폐기 계약·실측 근거는 [캐릭터 칩 저작 하네스](../charset-actor-harness.md)와
-[실행 지침](../../src/harnesses/charset-actor/README.md)에 있다. 후보 화면은 http://mdc-server:18314/ 이다.
+상세 계약은 [캐릭터 하네스](../charset-actor-harness.md), 명령과 저장 구조는
+[실행 지침](../../src/harnesses/charset-actor/README.md). 화면 http://mdc-server:18314/.
