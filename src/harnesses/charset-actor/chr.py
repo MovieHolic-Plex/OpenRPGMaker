@@ -29,6 +29,8 @@ DIR_KO = {'up': '위', 'right': '오른쪽', 'down': '아래', 'left': '왼쪽'}
 KEY = (0, 147, 146)          # Actor1 배경 키 색. 칩 안에서는 쓰지 못한다.
 TRANSPARENT = '.'
 GATE_VERSION = 3
+ALPHA_POLICY_VERSION = 2  # 검사 정책만 갱신한다. 같은 픽셀의 렌더/사용자 선택 binding은 유지한다.
+ALPHA_PREVIEW_VERSION = 1
 KEY_TOLERANCE = 8  # 편집기의 투명색 판정과 동일하다.
 
 
@@ -315,9 +317,9 @@ def opacity_defects(pal, frames, base=None):
     for k, rows in frames.items():
         op = _opaque(rows)
         reference = _opaque(base[1][k]) if base else None
-        # 원본부터 투명한 팔/옷자락 사이 공간을 옷이 둘러쌌다면 몸체 삭제로 보지 않는다.
         holes = _enclosed(op)
-        missing = holes & reference if reference is not None else holes
+        # 새 옷 밖의 원본 배경도 이제 옷 안이면 구멍이다. 원본의 이미 닫힌 공간만 보존한다.
+        missing = ((holes & reference) | (holes - _enclosed(reference))) if reference is not None else holes
         if missing:
             defects.append(dict(code='internal_transparency', frame=f'{k[0]} {k[1]}',
                                 pixels=sorted(missing), what=f'{DIR_KO[k[0]]} {k[1]}: 몸체 내부 투명 결손 {len(missing)}px'))
@@ -330,6 +332,14 @@ def opacity_defects(pal, frames, base=None):
         if reference is not None:
             core = _head_core(reference)
             lost = core - op
+            # 바깥으로 열린 좁은 틈은 flood fill에서 사라진다. 원본 머리 면에서
+            # 윤곽 여유를 한 번 더 제외한 깊은 면은 1px도 투명하게 지우지 않는다.
+            deep_core = {(x, y) for x, y in core if all((x + dx, y + dy) in core
+                                                       for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+            slit = (lost - holes) & deep_core
+            if slit:
+                defects.append(dict(code='open_head_transparency', frame=f'{k[0]} {k[1]}', pixels=sorted(slit),
+                                    what=f'{DIR_KO[k[0]]} {k[1]}: 머리 내부로 열린 투명 틈 {len(slit)}px'))
             # 1px 윤곽 조절을 허용하되 깊은 머리 면의 20% 이상 삭제는 폐기한다.
             if len(lost) >= max(4, (len(core) + 4) // 5):
                 defects.append(dict(code='head_core_loss', frame=f'{k[0]} {k[1]}', pixels=sorted(lost),
@@ -345,7 +355,7 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
     fails, warns, m = [], [], {}
     se = structural_errors(pal, frames)
     if se:
-        return dict(version=GATE_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=s) for s in se[:20]],
+        return dict(version=GATE_VERSION, alphaPolicy=ALPHA_POLICY_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=s) for s in se[:20]],
                     fails=se[:20], warns=[], metrics={})
     pal, frames = _canonical_colors(pal, frames)
     if base is not None:
@@ -359,7 +369,7 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
         for k, rows in frames.items():
             if not _opaque(rows):
                 fatal.append(dict(code='empty_frame', frame=f'{k[0]} {k[1]}', what=f'{k}: 빈 프레임'))
-        return dict(version=GATE_VERSION, ok=not fatal, discard=bool(fatal), fatal=fatal,
+        return dict(version=GATE_VERSION, alphaPolicy=ALPHA_POLICY_VERSION, ok=not fatal, discard=bool(fatal), fatal=fatal,
                     fails=[it['what'] for it in fatal], warns=[], metrics=m)
     used = {}
     for k, rows in frames.items():
@@ -462,11 +472,21 @@ def gate(pal, frames, base=None, check_changed=True, strength='normal'):
             fails.append(f'뼈대 실루엣 밖(+{L["protrude_margin"]}px)으로 튀어나온 픽셀 프레임당 최대 {m["protrusion_max"]}'
                          f'({DIR_KO[worst[0]]} {worst[1]})·합 {m["protrusion_sum"]} (≤{L["protrude_frame_max"]}·≤{L["protrude_sum_max"]})'
                          ' — 이 강도에서 허용하는 것보다 몸 밖으로 많이 튀어나왔다(소지품·모자·날개)')
-    return dict(version=GATE_VERSION, ok=not fails, discard=bool(fatal), fatal=fatal, fails=fails, warns=warns, metrics=m)
+    return dict(version=GATE_VERSION, alphaPolicy=ALPHA_POLICY_VERSION, ok=not fails, discard=bool(fatal), fatal=fatal, fails=fails, warns=warns, metrics=m)
 
 
 # ─────────────────────────────── 검수용 그림 ───────────────────────────────
-def _bg(w, h, lawn):
+def _bg(w, h, lawn, background='lawn'):
+    if background in ('white', 'black'):
+        return Image.new('RGBA', (w, h), background)
+    if background == 'checker':
+        im = Image.new('RGBA', (w, h), (45, 48, 57, 255))
+        draw = ImageDraw.Draw(im)
+        for y in range(0, h, 4):
+            for x in range(0, w, 4):
+                if (x // 4 + y // 4) % 2:
+                    draw.rectangle((x, y, x + 3, y + 3), fill=(225, 65, 210, 255))
+        return im
     if lawn and Path(lawn).exists():
         t = Image.open(lawn).convert('RGBA')
         im = Image.new('RGBA', (w, h))
@@ -481,17 +501,31 @@ def up(im, s):
     return im.resize((im.width * s, im.height * s), Image.NEAREST)
 
 
-def gif_walk(pal, frames, out, scale=4, lawn=None, ms=170):
-    """네 방향을 나란히, 걸음 0-1-2-1. 잔디 위."""
+def gif_walk(pal, frames, out, scale=4, lawn=None, ms=170, background='lawn'):
+    """네 방향을 나란히, 걸음 0-1-2-1. 동일 RGBA를 선택한 배경 위에 합성한다."""
     seq = (0, 1, 2, 1)
     W, H = FW * 4 + 8 * 3, FH + 8
     imgs = []
     for f in seq:
-        bg = _bg(W, H, lawn)
+        bg = _bg(W, H, lawn, background)
         for di, d in enumerate(DIRS):
             bg.alpha_composite(frame_rgba(pal, frames[(d, f)]), (di * (FW + 8), 4))
         imgs.append(up(bg.convert('RGB'), scale))
     _save_gif(imgs, out, ms)
+
+
+def alpha_views(pal, frames, out):
+    """키 색 PNG/GIF와 별도로 실제 alpha와 고대비 12프레임을 드러낸다."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    sheet = sheet_rgba(pal, frames)
+    sheet.save(out / 'sheet_rgba.png')
+    sheet.getchannel('A').save(out / 'alpha.png')
+    bg = _bg(sheet.width, sheet.height, None, 'checker')
+    bg.alpha_composite(sheet)
+    up(bg.convert('RGB'), 6).save(out / 'alpha_sheet.png')
+    for background in ('checker', 'white', 'black'):
+        gif_walk(pal, frames, out / f'walk_{background}.gif', background=background)
 
 
 def gif_turn(pal, frames, out, scale=4, lawn=None, ms=420):

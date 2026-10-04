@@ -58,6 +58,25 @@ def verify():
     check('cut-head', C.gate(p, bad, (p, f), check_changed=False)['discard'])
     unsafe = dict(p); unsafe[next(c for c in p if c != '.')] = (3, 143, 150)
     check('editor-key-tolerance', C.gate(unsafe, f, (p, f), check_changed=False)['discard'])
+    # 새 옷으로 둘러싼 원본 배경은 투명 무늬로 빠져나갈 수 없다.
+    added = copy.deepcopy(f)
+    color = next(c for c in p if c != '.')
+    for y in range(2, 7):
+        row = list(added['left', 2][y])
+        for x in range(1, 6):
+            row[x] = '.' if (x, y) == (3, 4) else color
+        added['left', 2][y] = ''.join(row)
+    g = C.gate(p, added, (p, f), strength='free')
+    check('new-clothing-hole-outside-original-mask', any(d['code']=='internal_transparency' and [3,4] in [list(pt) for pt in d['pixels']] for d in g['fatal']))
+    check('original-enclosed-negative-space-preserved', C.gate(p, added, (p, added), strength='free')['ok'])
+    # 머리 중앙에서 옆 배경까지 1px 통로를 내면 enclosed 검사를 우회한다.
+    slit = copy.deepcopy(f)
+    op = C._opaque(f['down', 1]); core = C._head_core(op)
+    deep = {(x,y) for x,y in core if all((x+dx,y+dy) in core for dx,dy in ((1,0),(-1,0),(0,1),(0,-1)))}
+    x,y = min(deep)
+    row = list(slit['down', 1][y]); row[:x+1] = ['.']*(x+1); slit['down', 1][y] = ''.join(row)
+    check('open-head-slit-not-enclosed', (x,y) not in C._enclosed(C._opaque(slit['down', 1])))
+    check('open-head-slit-blocked', any(d['code']=='open_head_transparency' for d in C.gate(p,slit,(p,f),strength='free')['fatal']))
     aliases = dict(p)
     mapping = {}
     available = [c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@%^&*()_+=[]{}' if c not in p]
@@ -156,6 +175,22 @@ def verify():
         check('human-unpublished-not-selectable', not H.quality(w)['eligible'])
         H.write_json_atomic(w / 'published.json', H.binding(gate))
         check('human-ready-without-model-review', H.quality(w)['eligible'])
+        cached = dict(gate, alphaPolicy=0)
+        H.write_json_atomic(w / 'views' / 'gate.json', cached)
+        updated = H.current_gate(w)
+        check('alpha-policy-invalidates-cached-PASS', updated['alphaPolicy']==C.ALPHA_POLICY_VERSION)
+        check('alpha-policy-preserves-image-binding', H.binding(updated)==H.binding(cached) and H.human_ready(w,updated))
+        check('alpha-previews-bound-to-current-grid', H.alpha_views_fresh(w,updated))
+        # GIF 배경 교체는 색/alpha/걸음 프레임 자체를 바꾸지 않아야 한다.
+        from PIL import Image, ImageChops
+        for background in ('checker','white','black'):
+            gif = Image.open(w / 'views' / f'walk_{background}.gif')
+            for i, step in enumerate((0,1,2,1)):
+                gif.seek(i)
+                expected = C._bg(120,40,None,background)
+                for di,d in enumerate(C.DIRS):
+                    expected.alpha_composite(C.frame_rgba(q,f[d,step]),(di*32,4))
+                check(f'alpha-GIF-pixel-parity:{background}:{step}:{i}', ImageChops.difference(gif.convert('RGB'),C.up(expected.convert('RGB'),4)).getbbox() is None)
         H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='FAIL', score=0, discard=True, fatal=['model dislike'], issues=[]))
         H.bind_review(w, gate)
         check('human-aesthetics-not-model-cull', H.quality(w)['eligible'] and not H.quality(w)['discard'])
@@ -237,6 +272,15 @@ def verify():
             check('shared-publication-idempotent', H.publish_shared_library()['revision']==published['revision'])
             with H.DECISIONS.open('a') as file: file.write(json.dumps(dict(kept, decision='reject', mutationId='shared-reject-fixture'))+'\n')
             check('discard-withdraws-from-shared-library', H.publish_shared_library()['count']==0)
+        (w / 'out.chr.txt').write_text(C.dump(q, {}, added))
+        bad_gate = H.make_views(w / 'out.chr.txt', w / 'views', 'Actor1:0', 'free')
+        H.write_json_atomic(w / 'published.json', H.binding(bad_gate))
+        blocked_record = dict(kept, inspected=H.binding(bad_gate))
+        H.DECISIONS.write_text(json.dumps(blocked_record)+'\n')
+        H.sync_human_decision(w, blocked_record)
+        check('blocked-accept-cannot-recreate-accepted-copy', not (H.ACCEPTED_LOCAL / 'human__gpt-r1__human-fixture.png').exists())
+        check('blocked-accept-excluded-from-shared-publication', not H.prepare_shared_library()['characters'])
+        check('alpha-cull-preserves-human-journal', H._decisions()[blocked_record['id']]==blocked_record)
     return evidence
 
 
