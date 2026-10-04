@@ -1,0 +1,20 @@
+{
+  "assemblyVerdict": "PASS",
+  "facilityVerdict": "INCOMPLETE",
+  "hardIssues": [],
+  "visualLimitations": [
+    "Columns, overhead lights, full side/south walls, ramp, barrier and fire door are missing. The short northwest wall return and open cutaway edges do not establish a complete enclosed facility.",
+    "Uniform concrete dominates the enlarged footprint. Repeated identical cars, stops and bay markings make it look like an expanded parking-chip demonstration rather than a finished garage.",
+    "The two north-wall light features leave the middle and southern areas without visible lighting infrastructure.",
+    "Two broad longitudinal aisles and a southern connector are visually legible, but lack circulation cues and a defined entrance. Their apparent clearance does not prove vehicle turning, door clearance or engine walking."
+  ],
+  "evidence": [
+    "Viewed tiledata/modern-city/parking-wide/scene.png and parking-approved/scene.png directly; read harness-data/modern-chipset/parking-wide/plan.md. This verdict independently assesses the new arrangement.",
+    "The 416×288 expansion visibly contains two banks of six bays, with three occupied bays per bank: six cars and six empty spaces.",
+    "North-wall panels form a continuous band. Bay separators and terminal lines align; no conspicuous broken joins, floor patch seams or repeated internal wall/return artifacts are visible.",
+    "Occupied bays preserve the small scene's car-to-stop relationship: the right-facing car meets and partly occludes the stop area. No obvious new floating gap or displaced stop is visible; occupied stops are partly hidden.",
+    "Cars retain visible roof surfaces and side profiles, consistent with the north wall's raised face and the source scene's shallow 3/4 presentation. No rotated or differently scaled car disrupts that perspective.",
+    "The plan specifies 96px longitudinal aisles and a 48px southern connector. The image shows these as continuous open floor regions, supporting a coherent static pedestrian layout.",
+    "Parking identity is immediate from cars, white bay lines and stops. Underground or enclosed-garage identity remains weak because structural enclosure and supporting fixtures are absent. Runtime traversability requires a separate supervisor check."
+  ]
+}
