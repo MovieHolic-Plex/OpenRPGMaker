@@ -1,0 +1,89 @@
+{
+  "isolatedFixture": true,
+  "canonicalContentChanged": false,
+  "aiRecords": {
+    "conversationTombstones": 0,
+    "conversations": 0,
+    "runCheckpoints": 0
+  },
+  "icons": [
+    {
+      "id": "terrain-tool-height",
+      "label": "높이",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-tool-surface",
+      "label": "표면",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-tool-river",
+      "label": "강",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-tool-group",
+      "label": "군집 선택",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-tool-house",
+      "label": "집",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-tool-road",
+      "label": "도로",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "relief-doodad-toggle",
+      "label": "지형지물 (D)",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-design-toggle",
+      "label": "지형 설계",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-reachability",
+      "label": "통행 미리보기",
+      "text": "",
+      "svg": 1
+    },
+    {
+      "id": "terrain-help-toggle",
+      "label": "지형 도움말",
+      "text": "",
+      "svg": 1
+    }
+  ],
+  "nativeHouseStyles": 6,
+  "relief": {
+    "raised": 497,
+    "levels": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "road": 1,
+  "film": {
+    "browser": "firefox",
+    "recorded": false
+  },
+  "compactLayout": true,
+  "errors": []
+}

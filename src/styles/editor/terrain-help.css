@@ -1,0 +1,22 @@
+.terrain-help-window { width: min(760px, calc(100vw - 32px)); }
+.terrain-help-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 16px; border-bottom: 1px solid var(--border-subtle); }
+.terrain-help-nav .help-modal-nav-item { padding: 8px 12px; }
+.terrain-help-nav .help-modal-nav-item::before { display: none; }
+.terrain-help-body { flex: 1; min-height: 0; padding: 16px 20px; }
+.terrain-help-body .help-modal-note { color: var(--text-1); }
+.terrain-help-intro { margin: 0 0 18px; color: var(--text-2); font-size: 13px; line-height: 1.6; }
+.terrain-help-steps { display: grid; gap: 18px; margin: 0 0 20px; padding: 0; list-style: none; }
+.terrain-help-steps li { display: flex; align-items: flex-start; gap: 14px; }
+.terrain-help-steps h3 { margin: 0 0 5px; font-size: 14px; }
+.terrain-help-steps p { margin: 0; color: var(--text-2); font-size: 13px; line-height: 1.7; }
+.terrain-help-picture { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; color: var(--accent); background: var(--accent-muted, var(--bg-inset)); }
+.terrain-help-picture svg { width: 25px; height: 25px; }
+.terrain-help-shortcuts { font-size: 11px; color: var(--text-2); line-height: 1.6; }
+.terrain-help-window .help-modal-footer { justify-content: space-between; gap: 16px; }
+@media (max-width: 600px) {
+  .terrain-help-nav { padding: 8px; gap: 2px; }
+  .terrain-help-nav .help-modal-nav-item { padding: 7px 9px; font-size: 12px; }
+  .terrain-help-body { padding: 14px; }
+  .terrain-help-steps li { gap: 10px; }
+  .terrain-help-shortcuts { max-width: 65%; }
+}
