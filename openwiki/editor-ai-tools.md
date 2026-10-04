@@ -1,5 +1,34 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 대화 초상 선택과 게임 글꼴 (2026-10-04)
+
+초상을 잘 고르지 못한 경로: `FACE_SCHEMA`가 얼굴 낱장 48×48만 안내했고,
+`make_villager`는 실행 코드에서 읽는 `face`를 도구 스키마에 노출하지 않았다.
+`list_resources(kind:faceset,query:'*')`의 첫 20개도 작은 얼굴만 반환했다.
+저수준 `upsert_event`에는 `place_npc`의 얼굴 자동 삽입이 적용되지 않는다.
+
+- 얼굴 스키마는 낱장·흉상·전신을 안내한다. `make_villager.face`도 같은 스키마를 쓴다.
+- `list_resources.portraitMode=face|bust|full`로 모양별 검색·페이지 이동한다. 전체 둘러보기는
+  낱장과 공용 기본 표정 초상을 섞어 보여 주고 중복 id를 제거한다.
+- `list_npc_graphics.portraitOptions`는 검토된 짝 얼굴과 **같은 표정 세트**의 큰 초상만 알려 준다.
+  맞는 큰 초상이 없는 걷기 그림에는 임의로 비슷한 초상을 추천하지 않는다.
+- 기존 주민에 `make_villager({mapId,id,name,home,face})`로 대사 없이 초상을 주면 첫 초상을 갱신하고 대사·조건·퀘스트 분기를 보존한다.
+  페이지별 실제 걷기 그림과 번들 얼굴의 짝 검사는 유지한다.
+- 조수 지침은 초상을 선택하고 저수준 대사 앞에 실제 `changeFace`를 넣도록 안내한다.
+  `eventResourceCatalog`의 공용 흉상·전신 예시도 프롬프트 맨 앞에 둔다.
+- 표시 모드의 공통 소유자는 `project/facePresentation.ts`다. 검색·편집기 미리보기·플레이어가
+  같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
+
+`set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
+`battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
+대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.
+내보낸 플레이어도 저장된 공통 글꼴을 문서 루트에 적용한다.
+
+회귀 계약은 `test/dialoguePortraitDiscovery.test.ts`. 이 세션은 AGENTS에 따라 Vitest/전체 게이트를
+실행하지 않았다. 직접 도구 실행·JSON 재로드·출하 플레이어의 브라우저 근거는
+`docs/experiments/dialogue-portraits-20261004/`에 기록한다. 실제 모델이 항상 적절한 초상을 고른다는 보장은 아니다.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.

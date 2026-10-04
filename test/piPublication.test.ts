@@ -17,7 +17,7 @@ vi.mock("@/editor/tools/applyChangesetToStore", () => ({
 }));
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 vi.mock("@/editor/tools/spatialToolState", () => ({ adoptSpatialToolProof() {} }));
-vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => { h.confirms++; return h.confirm; } }));
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => { h.confirms++; return h.confirm; } }));
 vi.mock("@/editor/panels/aiChangePreview", () => ({ openWideChangeViewer() {} }));
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: (actions: any) => {
   h.prompt = actions;

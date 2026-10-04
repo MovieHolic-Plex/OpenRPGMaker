@@ -14,7 +14,7 @@
 | 단계 | 하는 일 | 쓰는 기존 도구 | 시간 |
 |---|---|---|---|
 | `palette` | 팔레트 잠금 검사: `allowed` == 램프 합집합 ∪ 그림자, 시드 색 수 일치, 옛 잠금 보존. **파일을 쓰지 않는다.** | `harness/palette.json` | 1초 |
-| `validate [--deep]` | 시드가 가리키는 파일·지도 크기·조각 메타 분류·`gate.py`/`verdict.py`/`adversarial.py` 와의 시드 대조·지도 관문 임계 4프로필 대조·바람의나라 스크린샷 추적 여부. `--deep` 은 카탈로그와 판정 목록 대조 | `mapgate.py` 를 프로필별로 import | 1초 / 20초 |
+| `validate [--deep]` | 시드가 가리키는 파일·지도 크기·조각 메타 분류·`gate.py`/`verdict.py`/`adversarial.py` 와의 시드 대조·지도 관문 임계 8프로필(default·village20·gungnae·gungnae_full·field·cave·interior_b·palace_int) 대조·바람의나라 스크린샷 추적 여부. `--deep` 은 카탈로그와 판정 목록 대조 | `mapgate.py` 를 프로필별로 import | 1초 / 20초 |
 | `list [pieces\|maps]` | 조각(분류·**기록된** 판정·적대 리뷰 기록)·지도(크기·산출물). `--class` `--status` `--adv` 로 거름 | `pieces_meta.json` `verdicts.json` `adversarial.json` | 1초 |
 | `gate` | 조각 관문 P·E·T·L·S·A·K·TR·V. `--candidate` 는 A 만 건너뜀, `--sheets` 는 기준 옆 검수 시트, `--piece a,b` 로 좁힘, `--all` 은 ok 줄도 | `harness/gate.py` 의 `run()` | 20초 |
 | `verdict <조각> <상태> "<한 줄>"` | 시트를 눈으로 본 뒤 한 줄 판정을 **현재 그림 해시**에 묶어 기록. 기록은 ledger 에도 남는다. `--dry` 는 쓰지 않음 | `harness/verdict.py` | 17초 |

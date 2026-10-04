@@ -391,7 +391,7 @@ def cmd_list(argv):
             d = P(m['out'])
             mj = jload(os.path.join(d, 'map.json')) or {}
             have = [t.replace('{stem}', m['stem']) for t in sd['mapFiles'] if os.path.exists(os.path.join(d, t.replace('{stem}', m['stem'])))]
-            print(f'{m["id"]:13s} {m["name"]}  {mj.get("width", "?")}x{mj.get("height", "?")}칸  시트순번 {m["sheetOrder"]}  프로필 {m["profile"]}  산출 {len(have)}/{len(sd["mapFiles"])}  빌더 {os.path.basename(m["builder"])}')
+            print(f'{m["id"]:20s} {m["name"]}  {mj.get("width", "?")}x{mj.get("height", "?")}칸  시트순번 {m["sheetOrder"]}  프로필 {m["profile"]}  산출 {len(have)}/{len(sd["mapFiles"])}  빌더 {os.path.basename(m["builder"])}')
     return 0
 
 

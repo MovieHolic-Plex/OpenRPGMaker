@@ -10,13 +10,14 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
-ACTIVE = ('build', 'review', 'probe', 'bake', 'unbake')
+STAGES = ['discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+ACTIVE = ('plan', 'plan-review', 'survey', 'material-review', 'build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {
     'paused': '0',
     'max_active': '8',          # 동시에 만드는 개념 수 (2026-10-03 사용자 「큐 늘려서 빠르게 많이」)
     'max_codex': '16',          # 동시에 도는 codex 작업 수
+    'max_art': '1',            # 칩 제작은 격리 워크트리 하나씩, 후보 선택은 사람
     'max_probe': '4',           # 동시에 도는 조수 시험(qa:game gen) 수 — 판마다 메모리 2~3GB
     'min_waiting': '8',         # 발견 칸에 이만큼 쌓여 있지 않으면 낱말을 더 찾는다
     'max_attempts': '3',        # 만들기 재시도 상한 — 넘으면 막힘
@@ -63,6 +64,19 @@ def init():
             con.execute('ALTER TABLE gaps ADD COLUMN item TEXT')
         if 'children_spawned' not in cols:
             con.execute('ALTER TABLE concepts ADD COLUMN children_spawned INTEGER DEFAULT 0')
+        version = con.execute("SELECT value FROM settings WHERE key='material_gate_version'").fetchone()
+        if not version or version[0] != '2':
+            # 기존 초안·그림은 보존하고, 배포 전의 모든 개념을 새 재료 관문 앞으로 옮긴다.
+            con.execute("UPDATE concepts SET stage='survey', status='queued', note='재료 관문 재확인 — 이전 초안은 보존됨' WHERE stage NOT IN ('done','discarded','unbake')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('material_gate_version','2')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('paused','1')")
+        if 'plan_attempt' not in cols:
+            con.execute('ALTER TABLE concepts ADD COLUMN plan_attempt INTEGER DEFAULT 1')
+        planning = con.execute("SELECT value FROM settings WHERE key='planning_gate_version'").fetchone()
+        if not planning or planning[0] != '1':
+            con.execute("UPDATE concepts SET stage='plan', status='queued', note='기획·텍스트 도면 관문 재확인 — 이전 초안 보존' WHERE stage NOT IN ('done','discarded','unbake')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('planning_gate_version','1')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('paused','1')")
         # 폐기한 하루 상한은 기존 저장소에서도 제거한다.
         con.execute("DELETE FROM settings WHERE key IN ('budget_codex_day', 'budget_probe_day')")
         for k, v in DEFAULT_SETTINGS.items():

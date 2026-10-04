@@ -6,6 +6,7 @@ import { playerTextDelay } from '@/player/playerPreferences';
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { dialogueFaceForEmotion, findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
@@ -1650,20 +1651,7 @@ function cancelChoiceIndex(
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
   if (!face?.resourceId) return "face";
-  if (face.presentation) return face.presentation;
-  const id = face.resourceId.trim().toLowerCase();
-  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
-    return "full";
-  }
-  if (
-    id.includes("-bust")
-    || id.includes("-portrait")
-    || id.startsWith("generated-face-")
-    || id.endsWith("/bust")
-  ) {
-    return "bust";
-  }
-  return "face";
+  return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
 function renderFace(face: FaceGraphic): HTMLElement {

@@ -8,6 +8,7 @@ import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
@@ -140,6 +141,32 @@ function resolvePlaceNpcFaceArg(
   return undefined;
 }
 const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
+
+/** Change this NPC's first portrait while retaining authored dialogue, conditions, and quest branches. */
+function updateNpcPagePortrait(project: Project, page: EventPage, template: Extract<Command, { kind: "changeFace" }> | undefined, warnings: string[]): void {
+  const hasDialogue = (commands: readonly Command[]): boolean => commands.some(command =>
+    DIALOGUE_COMMAND_KINDS.has(command.kind) || nestedCommandLists(command).some(hasDialogue));
+  if (!hasDialogue(page.commands)) return;
+  let face = template ? { ...template } : undefined;
+  const graphic = page.graphic ? resolveEventAppearanceGraphic(project, page.graphic) : undefined;
+  if (face?.resourceId && graphic?.sprite?.type === "bundled") {
+    const checked = reconcileFaceWithCharset(face.resourceId, graphic.sprite.id, decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex);
+    if (checked.warning) warnings.push(checked.warning);
+    face = checked.faceResourceId ? { ...face, resourceId: checked.faceResourceId } : undefined;
+  }
+  const replaceFirst = (commands: Command[]): boolean => {
+    for (let i = 0; i < commands.length; i += 1) {
+      const command = commands[i]!;
+      if (command.kind === "changeFace") {
+        commands.splice(i, 1, ...(face ? [face] : []));
+        return true;
+      }
+      for (const branch of nestedCommandLists(command)) if (replaceFirst(branch as Command[])) return true;
+    }
+    return false;
+  };
+  if (!replaceFirst(page.commands) && face) page.commands.unshift(face);
+}
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
 const PLACE_NPC_OBJECT_GIMMICK_HINT = "보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_storage_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요.";
 const DIRS: readonly Dir[] = ["down", "left", "right", "up"];
@@ -1425,6 +1452,7 @@ const makeVillager: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       home: COORD_SCHEMA,
+      face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·대화 거점→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
       schedule: npcScheduleSchema,
       dailyRoutine: {
@@ -1610,6 +1638,13 @@ const makeVillager: ToolDefinition = {
         event.pages = pages;
       } else if (args.graphic !== undefined) {
         for (const page of event.pages ?? []) page.graphic = structuredClone(graphic);
+      }
+      if (!replacesDialoguePages && args.face !== undefined) {
+        const requestedFace = resolvePlaceNpcFaceArg(args.face);
+        if (requestedFace === undefined) throw new ToolError("face에는 resourceId 또는 검토된 textureKey/characterIndex가 필요합니다.", { code: "invalid-args" });
+        const template = requestedFace ? { kind: "changeFace" as const, ...requestedFace } : undefined;
+        for (const page of event.pages ?? []) updateNpcPagePortrait(draft, page, template, warnings);
+        warnings.push("초상 갱신 → 기존 대사·조건·퀘스트 분기 유지");
       }
       if (shopStock) setShopStockOnEvent(event, shopStock);
       event.characterId = characterId;

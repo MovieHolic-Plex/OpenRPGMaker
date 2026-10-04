@@ -152,7 +152,7 @@ export function createTilesetChangeCard(
     dataset: { testid: "ai-tileset-change-card", toFamily: question.toFamily },
     attrs: { "aria-label": "타일 느낌 변경 확인" },
     children: [
-      el("span", { class: "ai-tileset-change-eyebrow", text: "확인이 필요해요" }),
+      el("span", { class: "ai-tileset-change-eyebrow", text: "답변 필요" }),
       el("h3", { text: "타일 느낌이 바뀌어요" }),
       el("p", { class: "ai-tileset-change-reason", text: question.reason }),
       el("p", { class: "ai-tileset-change-detail", text: `지금 맵은 「${fromName}」(${question.fromLabel}) 타일이에요. 조수는 「${toName}」(${question.toLabel}) 타일을 쓰려고 해요.` }),
