@@ -43,6 +43,12 @@ The previous revision25 portable file failed before title because17 authored bat
 runtime, so ordinary direct-string scanning otherwise prunes all60icons. Missing
 icons retain the authored front fallback; exports never invent a resource.
 
+Native combat revealed the normal Pokemon skin's110px enemy base variables
+overriding the128px Emerald canvas. Emerald image selectors also include the
+resolved skin attribute and set both base variables to128px. Static original
+sprites disable the generic fractional `battler-breathe` scale; registered idle
+strips and container attack/hit motion remain available.
+
 ## Genuine predecessor Continue evidence (2026-10-04)
 
 `emerald-continue-native.probe.mjs` copies the actual predecessor slot's exact

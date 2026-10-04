@@ -4,6 +4,7 @@ import { configureEmeraldMonsterStyle, EMERALD_MONSTER_AUTHORING_GUIDE } from '@
 import { configureEmeraldMonsterOpening } from '@/project/emeraldMonsterOpening';
 import { configureEmeraldMonsterCast } from '@/project/emeraldMonsterCast';
 import { configureEmeraldMonsterTiles } from '@/project/emeraldMonsterTiles';
+import { configureEmeraldMonsterCreatureArt } from '@/project/emeraldMonsterCreatureArt';
 import { configureMonsterPresentation } from '@/project/monsterPresentation';
 import { repairExpeditionNpcLayout } from '@/project/examples/monsterExpedition/npcLayout';
 import { repairExpeditionResidents } from '@/project/examples/monsterExpedition/residents';
@@ -26,7 +27,7 @@ function isBlankDestination(p: Project): boolean {
 
 export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
   {name:'configure_monster_style',description:'에메랄드 참고 프로필을 실제 저작 설정에 적용. 맵·종·스토리·플레이 세션은 유지. 전체 게임 제작은 build_monster_game로 실행한다.',mode:'write',preservesAuthoredRaster:true,parameters:{type:'object',additionalProperties:false,required:['reference'],properties:{reference:{type:'string',enum:['emerald']}}},run(p){configureMonsterPresentation(p);configureEmeraldMonsterStyle(p);return {summary:'에메랄드 참고 설정을 적용했습니다. 전체 게임과 출하 플레이 검증은 별도입니다.',data:{...reviewMonsterGame(p),guide:EMERALD_MONSTER_AUTHORING_GUIDE}};}},
-  {name:'build_monster_game',description:'실제 전체72맵/60종/8체육관/리그/엔딩/후일담 몬스터 게임. create는 공용 원작 캠페인으로 빈 프로젝트를 생성. 기존 저작 게임 전체 폐기를 사용자가 명시한 경우에만 replace:true. repair는 현재 캠페인을 재생성하지 않고 프로필/안전한 원본 NPC/가격 보수, 세션·타일·로스터·사용자 오프닝 보존. 제작 후 read/review_monster_game 필요.',mode:'write',domains:['system','world','database'],preservesAuthoredRaster:true,allowsTilesetChange:true,prepare:async args=>{if(args.mode!=='create')return;try{campaignBuilder=(await import('@/project/examples/monsterExpedition')).createMonsterExpedition;campaignLoadError='';}catch(e){campaignLoadError=String(e);throw e;}},parameters:{type:'object',additionalProperties:false,required:['mode'],properties:{mode:{type:'string',enum:['create','repair']},replace:{type:'boolean',description:'create에만 허용. 기존 프로젝트 전체 교체가 명시적으로 요청된 경우만 true.'},title:{type:'string',maxLength:120},replaceOpening:{type:'boolean',description:'repair에서 기존 오프닝 교체가 명시적으로 요청된 경우만 true.'}}},run(p,args){
+  {name:'build_monster_game',description:'실제 전체72맵/60종/8체육관/리그/엔딩/후일담 몬스터 게임. create는 공용 원작 캠페인으로 빈 프로젝트를 생성. 기존 저작 게임 전체 폐기를 사용자가 명시한 경우에만 replace:true. repair는 현재 캠페인을 재생성하지 않고 프로필/안전한 원본 NPC/가격 보수, 세션·타일·로스터·사용자 오프닝 보존. 제작 후 read/review_monster_game 필요.',mode:'write',domains:['system','world','database'],preservesAuthoredRaster:true,allowsTilesetChange:true,prepare:async args=>{if(args.mode!=='create')return;try{campaignBuilder=(await import('@/project/examples/monsterExpedition')).createMonsterExpedition;campaignLoadError='';}catch(e){campaignLoadError=String(e);throw e;}},parameters:{type:'object',additionalProperties:false,required:['mode'],properties:{mode:{type:'string',enum:['create','repair']},replace:{type:'boolean',description:'create에만 허용. 기존 프로젝트 전체 교체가 명시적으로 요청된 경우만 true.'},title:{type:'string',maxLength:120},replaceOpening:{type:'boolean',description:'repair에서 기존 오프닝 교체가 명시적으로 요청된 경우만 true.'},replaceCreatureArt:{type:'boolean',description:'repair에서 공용 원작 캠페인의 몬스터 그림 교체가 요청된 경우만 true. 기본은 기존 그림 보존, 빠진 공용 아이콘만 등록.'}}},run(p,args){
     const mode=args.mode;
     if(mode==='repair'){
       if(args.replace===true)throw new ToolError('repair는 전체 교체를 허용하지 않습니다.',{code:'monster-repair-replace'});
@@ -38,9 +39,10 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       if(p.system.monsterCampaign.id==='starlight-islands'){repairExpeditionResidents(p);repairExpeditionShopPrices(p);}
       configureEmeraldMonsterCast(p);
       configureEmeraldMonsterTiles(p);
+      const updatedCreatureAssets = configureEmeraldMonsterCreatureArt(p, args.replaceCreatureArt === true).length;
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
       if(JSON.stringify(p.session)!==session||JSON.stringify([p.startMapId,p.startPos])!==start)throw new ToolError('보수 중 세션/시작 위치가 바뀌었습니다.',{code:'monster-repair-state'});
-      return {summary:'기존 전체 캠페인을 재생성하지 않고 에메랄드 프로필과 안전한 보수를 적용했습니다.',data:{...reviewMonsterGame(p),mode,sessionPreserved:true,movedEvents:moved}};
+      return {summary:'기존 전체 캠페인을 재생성하지 않고 에메랄드 프로필과 안전한 보수를 적용했습니다.',data:{...reviewMonsterGame(p),mode,sessionPreserved:true,movedEvents:moved,updatedCreatureAssets}};
     }
     if(!isBlankDestination(p)&&args.replace!==true)throw new ToolError('기존 저작 맵을 보존했습니다. 현재 캠페인은 mode:repair, 전체 폐기가 명시된 요청만 create+replace:true로 처리하세요.',{code:'monster-create-authored-project'});
     if(!campaignBuilder)throw new ToolError('캠페인 재료를 불러오지 못했습니다. runToolAsync/prepareTool 생성 경로를 사용하세요. '+campaignLoadError,{code:'monster-builder-not-prepared'});

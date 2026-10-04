@@ -74,3 +74,10 @@ game at load. `legacyPixelEffectAssets.ts` preserves those IDs in the normal
 builtin resource catalog, without replacing animation records or disabling
 validation. The campaign exporter also collects actual battle animation resource
 IDs and copies each resolved local file, rather than relying on a stale manifest.
+
+`configureEmeraldMonsterCreatureArt` registers only the shared original pack
+resources actually referenced by species, plus optional32px menu icons. Campaign
+repair preserves existing art by default. Explicit `replaceCreatureArt:true`
+refreshes that known pack's front/back/icon bytes without modifying any species,
+stats, moves, evolution, encounters or saved monster instances. Unrelated custom
+resource IDs never match. Fresh campaigns already register the same shared pack.
