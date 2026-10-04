@@ -34,7 +34,7 @@ def run_check(journey, world, out_path=None, verbose=True):
     import journey_check_v9 as C
     P.configure(journey)
     lay = getattr(world, 'layout', None)
-    C.MIN_SEA_GAP[0] = int((lay or {}).get('min_sea_gap', C.MIN_SEA_GAP[0])) if isinstance(lay, dict) else C.MIN_SEA_GAP[0]
+    C.MIN_SEA_GAP[0] = int(lay.get('min_sea_gap', 4)) if isinstance(lay, dict) else 4
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         _, bad, info = C.run(verbose=True, w=world, out_path=out_path)

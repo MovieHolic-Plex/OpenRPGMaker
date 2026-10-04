@@ -221,10 +221,11 @@ const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
 function townArtHint(theme: string): string {
   const tilesets = THEME_TOWN_TILESETS[theme] ?? [];
   const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
-  if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라.`;
-  return `마을·실내는 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
+  const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.";
+  if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
+  return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
-    + `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.`;
+    + `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }
 
 function slug(text: string, i: number): string {
@@ -343,7 +344,7 @@ const editWorldTerrain: ToolDefinition = {
     "세계 지도의 지형 자체를 바꾼다 — 대륙을 바다로 갈라 섬나라로, 섬을 더하고, 산줄기·고개·강·숲·고원을 놓고, 지역의 바닥(사막·설원·늪…)을 바꾸고, 장소를 옮긴다. "
     + "base=generate 면 대륙 구조를 아예 새로 만든다(20조각 대륙·고리 대륙·초대륙·군도·은하) — 여정 장소는 키트가 자동으로 다시 놓는다. "
     + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. "
-    + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. 결과 data.townArt 가 이 테마의 마을·실내 칩셋과 완성 마을을 알려 준다 — 마을을 깔기 전에 따르라. "
+    + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. 결과 data.townArt 가 이 테마의 야외 마을 칩셋·완성 마을과 공용 실내 칩셋을 알려 준다 — 마을을 깔기 전에 따르라. "
     + "좌표는 먼저 read_world_terrain 의 글자 지도로 고른다. 장소 발자국이 물이 되거나 길이 막히면 실패하고 이유를 돌려준다 — 그 문장대로 작업을 고쳐 다시 부른다. "
     + "preview=true 는 저장하지 않고 몇 초 만에 도식 그림만 본다(도식은 바닥 종류 색이라 테마 팔레트와 다르다 — themeNote 를 보라). 실제 빌드는 처음 2분 남짓, 같은 지형은 캐시. "
     + OP_HELP,

@@ -89,6 +89,26 @@ describe("칩셋 계열 검사", () => {
     expect(result.issues?.[0]?.message).toContain("프로젝트에서 칠한 맵 map_field");
   });
 
+  it.each(["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const)("(h'') %s 에만 저작한 기본 맵도 그림체 기준으로 남는다", (key) => {
+    const project = createBlankProject();
+    const map = project.maps[MAP_ID]!;
+    map[key] = new Array<number>(map.width * map.height).fill(key === "shadowBits" ? 0 : -1);
+    map[key]![0] = 1;
+    const result = runTool({ project, currentMapId: MAP_ID }, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("tileset-family-change");
+  });
+
+  it("(h''') 높이만 저작한 기본 맵도 그림체 기준으로 남는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[MAP_ID]!;
+    map.relief = { width: map.width, height: map.height, levels: new Array<number>(map.width * map.height).fill(0) };
+    map.relief.levels[0] = 1;
+    const result = runTool({ project, currentMapId: MAP_ID }, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("tileset-family-change");
+  });
+
   it("(d) currentMapId 없음 → 옛 동작(검사 없음)", () => {
     const ctx: ToolContext = { project: uploadedProject() };
     const result = dungeon(ctx);

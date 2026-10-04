@@ -189,10 +189,11 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 - `ToolDefinition.defaultTilesetId(project)`(create_map 만): tilesetId 없이 불리고 이 기본값이 지금 보는 맵과 다른 계열이면 실행기가 인자에
   지금 보는 맵의 tilesetId 를 넣는다. 같은 계열이면 도구 기본값(숲마을) 그대로.
 - 기준 맵은 `familyBaselineMap`(2026-10-04): 보는 맵이 세계 지도(`worldmapSource` + `worldmap_<mapId>` 칩셋)거나 **손대지 않은 빈 기본 시작 맵**
-  (`DEFAULT_TILESET_ID` 한 가지 타일·이벤트 없음·위층 없음)이면 그 칩셋은 사용자가 고른 그림체가 아니다 — 프로젝트에서 칠한 맵 중 가장 많은 계열의 맵이 기준,
+  (`DEFAULT_TILESET_ID` 한 가지 타일·이벤트 없음·2/3/4층·그림자·높이·기물 없음)이면 그 칩셋은 사용자가 고른 그림체가 아니다 — 프로젝트에서 칠한 맵 중 가장 많은 계열의 맵이 기준,
   그런 맵이 없으면 검사 안 함. 검사와 create_map 기본 칩셋 채우기 둘 다 이 기준을 쓴다. 세계 지도를 만들거나 다시 빌드하는 변경 자체도 검사하지 않는다.
   실측(2026-10-03 조선 시험): 빈 버들항 시작 맵 때문에 한양 고을을 로마풍 버들항으로 깔았다. 업로드 칩셋을 고른 빈 맵은 선택이므로 기준으로 남는다.
-  그림체를 알려 주는 쪽은 `edit_world_terrain` 결과 `data.townArt`(테마 → 같은 문화권 칩셋·완성 마을, `THEME_TOWN_TILESETS`)와 장소별 「입구 x,y」.
+  그림체를 알려 주는 쪽은 `edit_world_terrain` 결과 `data.townArt`(테마 → 같은 문화권 야외 칩셋·완성 마을, `THEME_TOWN_TILESETS`)와 장소별 「입구 x,y」.
+  실내는 테마별 야외 칩셋을 쓰지 않고 `build_hand_interior_room` + `atlas_biome_interior`(손 도트 v5), 배·던전은 `atlas_biome_dungeon` 안내를 함께 준다.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
   data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널

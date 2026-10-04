@@ -61,6 +61,9 @@ function isWorldmapKitMap(map: GameMap): boolean {
  */
 function isBlankCanvasMap(map: GameMap): boolean {
   if (map.tilesetId !== DEFAULT_TILESET_ID || map.events.length > 0 || map.upperTiles.some((t) => t >= 0)) return false;
+  if (EXTRA_LAYER_KEYS.some((key) => map[key]?.some((t) => key === "shadowBits" ? t !== 0 : t >= 0))) return false;
+  if (map.relief?.levels.some((level) => level !== 0) || map.relief?.ramps?.some((ramp) => ramp !== 0)
+    || map.relief?.wallDecor?.length || map.doodadGroups?.length) return false;
   const first = map.lowerTiles[0];
   return map.lowerTiles.every((t) => t === first);
 }

@@ -76,6 +76,7 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
     강 = 이름난 강 중 긴 것 6줄(바다 쪽 끝을 어귀로). 가장 큰 사막 = 4막 사구 바다(없으면 시작 땅 내륙), 지어낸 산줄기·강은 끈다(`hint_auto=0`).
     맞춤 쪽 조정(실제 지리일 때만): 시작 땅 = `home` 가까운 땅(`home_pole`, 일본이면 혼슈), 배 장벽 깎기 4.6 → 2.6칸(`home_gap`),
     바다 장벽 최소 폭 4 → 2칸(`journey_check_v9.MIN_SEA_GAP` — 영국 해협 같은 실제 해협), 사구는 작은 것부터(`dune_small`), 장소 둘레 바닥 무리 없음(적도 아프리카 눈밭).
+    저장된 지도의 재검사는 `layout.min_sea_gap` 를 읽고, 없는 옛 지도는 매번 4칸으로 되돌린다(직전 실제 지리 검사의 2칸 기준이 다른 지도에 남지 않는다).
     지역 프리셋 20개(`REGIONS`, TS `WORLDMAP_REGIONS`) — 미리보기 스윕 20/20 통과(`kit/tools/sweep_real.sh`).
     한계: `beyond`(2막 쪽)·`sands`(사구 자리)는 선호일 뿐 — 「첫 화면(20×15)에 시작·관문·항구·탑」 규칙이 앞서서 무시될 수 있다(무협은 맞춤이 고른 내몽골 장성,
     전국은 서국·혼슈 북단으로 여정 글을 맞췄다). 배로 갈 실제 땅이 모자라면(남미·호주·아이슬란드) 가상 섬 5개를 띄우고 layout.notes 에 적는다.
@@ -87,6 +88,14 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 - `edit_world_terrain.characterScale`(0.25~1): 빌드한 세계 지도의 `map.characterScale` 을 같이 정한다 — 「월드맵에서 캐릭터 작게」.
 - 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
 - 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
+
+## 후속 조수 실행·SQLite 재로드 (2026-10-04)
+
+근거:
+[`verify-shots/worldmap-real-geography/README.md`](../verify-shots/worldmap-real-geography/README.md).
+조선은 조수가 `joseon_baram` 한양 고을을 가져와 성문 `(27,25)`에 연결했고,
+프리셋 없는 유카탄은 조수가 실제 경도·위도 범위를 골랐다. 기존 실행물은 별도 SQLite 폴더에 저장한 뒤
+닫고 다시 열어 지도·이벤트·시작 위치·원본 PNG의 일치를 확인했다. 전체 게임 엔딩은 검증 범위 밖이다.
 
 ## 지형 경계 v9 (2026-10-03)
 
