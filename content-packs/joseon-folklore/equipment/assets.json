@@ -1,0 +1,90 @@
+[
+  {
+    "resourceId": "jf-icon-warrior-weapon-1",
+    "path": "assets/joseon-folklore/equipment/warrior-weapon-1.png",
+    "sourcePath": "icons/warrior-weapon-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
+    "rgbaSha256": "d65d1640b1dc845818a6b7693b27b67fb4d04ddea5c4c79323267529cc15e46c",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-warrior-body-1",
+    "path": "assets/joseon-folklore/equipment/warrior-body-1.png",
+    "sourcePath": "icons/warrior-body-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
+    "rgbaSha256": "cda1a7fd89528d94ee368420dd475e2e88667176da62df5991bb650c6a44fa45",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-rogue-weapon-1",
+    "path": "assets/joseon-folklore/equipment/rogue-weapon-1.png",
+    "sourcePath": "icons/rogue-weapon-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
+    "rgbaSha256": "45f4d18b9fc985f64c98f4fcdb1be8f02f47c27566ff8e11a2581e59de835e52",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-rogue-body-1",
+    "path": "assets/joseon-folklore/equipment/rogue-body-1.png",
+    "sourcePath": "icons/rogue-body-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "47543c9fb1d7c7468cc0bd603118b53a06a6355cf8f893fb26793ab7db2e8f1f",
+    "rgbaSha256": "af5e0dde5895f71004b51991f964ef66a19e3af40a45b17675eb974932a95178",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-shaman-weapon-1",
+    "path": "assets/joseon-folklore/equipment/shaman-weapon-1.png",
+    "sourcePath": "icons/shaman-weapon-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
+    "rgbaSha256": "b426683b280760f549c4384db5d5912539c9353d4fb800723d11859104db80de",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-shaman-body-1",
+    "path": "assets/joseon-folklore/equipment/shaman-body-1.png",
+    "sourcePath": "icons/shaman-body-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "01d5f6046df1ed20cfdaf54750223d207529ed57a602d9fe73a8d33e3bd99cb6",
+    "rgbaSha256": "22466d590fd36f353c57beb701c07d5c8cd29721d0986c15be7ec812e9d2a210",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-taoist-weapon-1",
+    "path": "assets/joseon-folklore/equipment/taoist-weapon-1.png",
+    "sourcePath": "icons/taoist-weapon-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
+    "rgbaSha256": "3d4f806ef99d412faf768ca9d7b57ea04f2c8d04cd1d5d3b337cb8d908a55d82",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  },
+  {
+    "resourceId": "jf-icon-taoist-body-1",
+    "path": "assets/joseon-folklore/equipment/taoist-body-1.png",
+    "sourcePath": "icons/taoist-body-1.png",
+    "width": 32,
+    "height": 32,
+    "sha256": "25c62c701f320e47545ac8108ea4a9fabfb5a1340053da80970b67554da27135",
+    "rgbaSha256": "4a5127c47239ca4024a4d4ba0f88a5caed308580a27f3cb6b86a1aae422dbe34",
+    "origin": "original integer-grid code art: equipment/draw.py",
+    "copiedThirdPartyPixels": false
+  }
+]

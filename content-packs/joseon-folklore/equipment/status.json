@@ -1,0 +1,31 @@
+{
+  "phase": "pilot",
+  "ready": true,
+  "counts": {
+    "equipment": 8,
+    "icons": 8,
+    "fullTarget": 36
+  },
+  "reviewFiles": [
+    "review/pilot-contact.png",
+    "data.json",
+    "design.json",
+    "assets.json",
+    "review/smoke.json",
+    "review/visual-review.json",
+    "review/reproducibility.json",
+    "README.md"
+  ],
+  "readinessMeaning": "첫 샘플 파일 인계 준비 여부. 사용자 승인·게임 통합·실전 검수 합격을 뜻하지 않음.",
+  "userApproved": false,
+  "canonicalStoreWritten": false,
+  "publicAssetsRegistered": false,
+  "verification": {
+    "normalizationAndSerializationReload": true,
+    "classAndEquipTransitions": 32,
+    "originalPngDecodedAndReviewed": 8,
+    "pngRegenerationByteIdentical": true,
+    "userVisualReview": "pending",
+    "actualGameIntegration": "supervisor pending"
+  }
+}

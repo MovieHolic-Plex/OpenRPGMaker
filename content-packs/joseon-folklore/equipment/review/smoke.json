@@ -1,0 +1,64 @@
+{
+  "scope": "saved local pilot files and actual engine normalizer/equipment rules; no live writes",
+  "equipmentCount": 8,
+  "iconsCount": 8,
+  "serializationReload": true,
+  "normalizationStable": true,
+  "permissionMatrix": {
+    "warrior": {
+      "equip_jf_warrior_weapon_1": true,
+      "equip_jf_warrior_body_1": true,
+      "equip_jf_rogue_weapon_1": false,
+      "equip_jf_rogue_body_1": false,
+      "equip_jf_shaman_weapon_1": false,
+      "equip_jf_shaman_body_1": false,
+      "equip_jf_taoist_weapon_1": false,
+      "equip_jf_taoist_body_1": false
+    },
+    "rogue": {
+      "equip_jf_warrior_weapon_1": false,
+      "equip_jf_warrior_body_1": false,
+      "equip_jf_rogue_weapon_1": true,
+      "equip_jf_rogue_body_1": true,
+      "equip_jf_shaman_weapon_1": false,
+      "equip_jf_shaman_body_1": false,
+      "equip_jf_taoist_weapon_1": false,
+      "equip_jf_taoist_body_1": false
+    },
+    "shaman": {
+      "equip_jf_warrior_weapon_1": false,
+      "equip_jf_warrior_body_1": false,
+      "equip_jf_rogue_weapon_1": false,
+      "equip_jf_rogue_body_1": false,
+      "equip_jf_shaman_weapon_1": true,
+      "equip_jf_shaman_body_1": true,
+      "equip_jf_taoist_weapon_1": false,
+      "equip_jf_taoist_body_1": false
+    },
+    "taoist": {
+      "equip_jf_warrior_weapon_1": false,
+      "equip_jf_warrior_body_1": false,
+      "equip_jf_rogue_weapon_1": false,
+      "equip_jf_rogue_body_1": false,
+      "equip_jf_shaman_weapon_1": false,
+      "equip_jf_shaman_body_1": false,
+      "equip_jf_taoist_weapon_1": true,
+      "equip_jf_taoist_body_1": true
+    }
+  },
+  "noviceDeniedCount": 32,
+  "transitionCases": 32,
+  "permissionPrerequisite": "Class permissions actorIds/classIds must avoid blanket grants; equipmentIds may list only own role equipment.",
+  "broadClassPermissionBypassesEquipmentClassRestriction": true,
+  "physicalElement": "element_jf_physical reserved in ids.json; skills role must install definition",
+  "hashes": {
+    "data": "cb8c9ccb7d55c3557316c6ab33bf813b3e01c5a13f6228893b162ac38f2bf8bf",
+    "design": "09a8a307e9078a154acefa3ba23cb3a75117afdee74f310986e300bf67034837",
+    "assets": "119c570643180e681f5093fdcd5e9c91114abe18af74cbc968df520535f81c8a",
+    "prototype": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
+    "engineNormalizer": "c2369a73dbe6678a7e6482f2eae99a60c3685b993b290856579bb8dbc5c10853",
+    "engineRules": "10698b6776d152add8ffc517d3df4fd1e33bf28362dcd08d1d78147907747c47"
+  },
+  "gameIntegrationVerified": false,
+  "userApproved": false
+}

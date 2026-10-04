@@ -1,0 +1,340 @@
+{
+  "equipment": [
+    {
+      "id": "equip_jf_warrior_weapon_1",
+      "name": "수련 환도",
+      "imageResourceId": "jf-icon-warrior-weapon-1",
+      "iconResourceId": "jf-icon-warrior-weapon-1",
+      "slot": "weapon",
+      "price": 80,
+      "description": "전사의 짧은 외날 검. 공격력 +8.",
+      "statBonuses": {
+        "attack": 8,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_body_1",
+      "name": "솜누비 철릭",
+      "imageResourceId": "jf-icon-warrior-body-1",
+      "iconResourceId": "jf-icon-warrior-body-1",
+      "slot": "armor",
+      "price": 70,
+      "description": "허리에 주름 자락을 이은 전사의 누비옷. 방어력 +6.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 6,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_weapon_1",
+      "name": "호신 단검",
+      "imageResourceId": "jf-icon-rogue-weapon-1",
+      "iconResourceId": "jf-icon-rogue-weapon-1",
+      "slot": "weapon",
+      "price": 70,
+      "description": "짧고 날렵한 도적의 호신 칼. 공격력 +5, 민첩 +3, 치명타율 +2%p.",
+      "statBonuses": {
+        "attack": 5,
+        "defense": 0,
+        "mind": 0,
+        "agility": 3
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 2,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_body_1",
+      "name": "먹빛 저고리",
+      "imageResourceId": "jf-icon-rogue-body-1",
+      "iconResourceId": "jf-icon-rogue-body-1",
+      "slot": "armor",
+      "price": 60,
+      "description": "좁은 소매와 짧은 자락을 갖춘 도적의 저고리. 방어력 +3, 민첩 +3.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 3,
+        "mind": 0,
+        "agility": 3
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_weapon_1",
+      "name": "수습 칠성방울",
+      "imageResourceId": "jf-icon-shaman-weapon-1",
+      "iconResourceId": "jf-icon-shaman-weapon-1",
+      "slot": "weapon",
+      "price": 90,
+      "description": "일곱 방울을 둥근 테에 단 주술사의 무령. 공격력 +2, 정신력 +7.",
+      "statBonuses": {
+        "attack": 2,
+        "defense": 0,
+        "mind": 7,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_body_1",
+      "name": "홍색 무복",
+      "imageResourceId": "jf-icon-shaman-body-1",
+      "iconResourceId": "jf-icon-shaman-body-1",
+      "slot": "armor",
+      "price": 65,
+      "description": "교차 깃과 주름 자락에 색띠를 단 주술사의 철릭형 무복. 방어력 +2, 정신력 +3.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 2,
+        "mind": 3,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_weapon_1",
+      "name": "백지 접부채",
+      "imageResourceId": "jf-icon-taoist-weapon-1",
+      "iconResourceId": "jf-icon-taoist-weapon-1",
+      "slot": "weapon",
+      "price": 75,
+      "description": "대나무 살에 종이를 붙인 도사의 수련 부채. 공격력 +2, 정신력 +6.",
+      "statBonuses": {
+        "attack": 2,
+        "defense": 0,
+        "mind": 6,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_body_1",
+      "name": "삼베 도포",
+      "imageResourceId": "jf-icon-taoist-body-1",
+      "iconResourceId": "jf-icon-taoist-body-1",
+      "slot": "armor",
+      "price": 65,
+      "description": "넓은 소매에 가는 띠를 두른 도사의 긴 도포. 방어력 +3, 정신력 +2.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 3,
+        "mind": 2,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "command": "python3 content-packs/joseon-folklore/equipment/draw.py",
+  "python": "3.12.3",
+  "pillow": "12.1.1",
+  "byteIdenticalAfterRegeneration": true,
+  "savedFileSha256": {
+    "icons/rogue-body-1.png": "47543c9fb1d7c7468cc0bd603118b53a06a6355cf8f893fb26793ab7db2e8f1f",
+    "icons/rogue-weapon-1.png": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
+    "icons/shaman-body-1.png": "01d5f6046df1ed20cfdaf54750223d207529ed57a602d9fe73a8d33e3bd99cb6",
+    "icons/shaman-weapon-1.png": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
+    "icons/taoist-body-1.png": "25c62c701f320e47545ac8108ea4a9fabfb5a1340053da80970b67554da27135",
+    "icons/taoist-weapon-1.png": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
+    "icons/warrior-body-1.png": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
+    "icons/warrior-weapon-1.png": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
+    "assets.json": "119c570643180e681f5093fdcd5e9c91114abe18af74cbc968df520535f81c8a",
+    "review/pilot-contact.png": "aa95bdf1bdd90fc192a5ed3446ed19afa771f4340c1ce5a5c9abf3fd85d2ca1f"
+  },
+  "sourceSha256": {
+    "author.py": "0b4c55c89f4941f89b88d95767b634f0e216af82b81c5776a8151378599e9e03",
+    "draw.py": "eed377b05407ebaad3195dfca0ab581a46500e35543066cdc09c3b9b17c2a345",
+    "run-smoke.mjs": "ab7110f637f84b38886e8c15d12eec1a759e225ea2ee1beed89db8cef89edf2a",
+    "smoke.mts": "6dcd46b5e7d12281a42dbe7dec48ce73964f0f07752f781179be20eb8619a9b7"
+  },
+  "imageChecks": [
+    {
+      "file": "icons/rogue-body-1.png",
+      "sha256": "47543c9fb1d7c7468cc0bd603118b53a06a6355cf8f893fb26793ab7db2e8f1f",
+      "rgbaSha256": "af5e0dde5895f71004b51991f964ef66a19e3af40a45b17675eb974932a95178",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        5,
+        30,
+        28
+      ],
+      "paletteColourCountIncludingTransparent": 13
+    },
+    {
+      "file": "icons/rogue-weapon-1.png",
+      "sha256": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
+      "rgbaSha256": "45f4d18b9fc985f64c98f4fcdb1be8f02f47c27566ff8e11a2581e59de835e52",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        4,
+        5,
+        26,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/shaman-body-1.png",
+      "sha256": "01d5f6046df1ed20cfdaf54750223d207529ed57a602d9fe73a8d33e3bd99cb6",
+      "rgbaSha256": "22466d590fd36f353c57beb701c07d5c8cd29721d0986c15be7ec812e9d2a210",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 14
+    },
+    {
+      "file": "icons/shaman-weapon-1.png",
+      "sha256": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
+      "rgbaSha256": "b426683b280760f549c4384db5d5912539c9353d4fb800723d11859104db80de",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        5,
+        3,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/taoist-body-1.png",
+      "sha256": "25c62c701f320e47545ac8108ea4a9fabfb5a1340053da80970b67554da27135",
+      "rgbaSha256": "4a5127c47239ca4024a4d4ba0f88a5caed308580a27f3cb6b86a1aae422dbe34",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        2,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/taoist-weapon-1.png",
+      "sha256": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
+      "rgbaSha256": "3d4f806ef99d412faf768ca9d7b57ea04f2c8d04cd1d5d3b337cb8d908a55d82",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 11
+    },
+    {
+      "file": "icons/warrior-body-1.png",
+      "sha256": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
+      "rgbaSha256": "cda1a7fd89528d94ee368420dd475e2e88667176da62df5991bb650c6a44fa45",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        30,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/warrior-weapon-1.png",
+      "sha256": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
+      "rgbaSha256": "d65d1640b1dc845818a6b7693b27b67fb4d04ddea5c4c79323267529cc15e46c",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        2,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    }
+  ]
+}
