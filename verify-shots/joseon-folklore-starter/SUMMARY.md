@@ -26,6 +26,6 @@
 - `runtime-proof.json` / `runtime-manifest.json`: 최종 내보낸 player.html의12비트 모두 통과. 전직·기술 사용·구매·시련을 확인했다. 오류0/404누락0.
 - `rooms-proof.json` / `rooms-manifest.json`: 주막·서당·약방 각각 타일 이동으로 진입/귀환하는7비트 모두 통과. 오류0/누락0.
 - 전투 승리 화면은 기존 F 디버그 비트다. 실제 보스 피해/예고/승리/보상은 이전 팩의 `verify-shots/joseon-folklore/battle-probe.json`에서 별도로 확인한 동일 레코드다. 장기간 전체 진행 밸런스를 증명하지 않는다.
-- `player-build.json`: `npm run build:player` 성공, SDK artifact `796b601e9b0bcd3e`, schema4,407파일+36런타임 에셋.
+- `player-build.json`: `npm run build:player` 성공, SDK artifact `e0df6c826c7b8d20`, schema4,407파일+36런타임 에셋.
 - `export-proof.json`: 저장 후 재로드한 게임 내보내기,6맵/2820에셋, 외부 fallback0. preview `http://mdc-server:18345/player.html`.
 - 전체 gates/Vitest/typecheck는 AGENTS 세션 제한에 따라 실행하지 않았다.

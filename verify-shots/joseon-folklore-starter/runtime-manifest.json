@@ -787,7 +787,7 @@
           "top": -16,
           "bottom": 770,
           "left": 36,
-          "right": 1085,
+          "right": 1084,
           "width": 1048,
           "height": 786
         },
@@ -795,7 +795,7 @@
           "top": 76,
           "bottom": 770,
           "left": 36,
-          "right": 1085,
+          "right": 1084,
           "width": 1048,
           "height": 694
         },
@@ -872,7 +872,7 @@
             "node": {
               "top": 352,
               "bottom": 510,
-              "left": 764,
+              "left": 763,
               "right": 921,
               "width": 157,
               "height": 157

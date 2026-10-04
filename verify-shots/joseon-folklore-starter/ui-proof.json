@@ -2,7 +2,7 @@
   "scope": "Production launcher/menu UI, fixture folder bridge; real seed factory. Canonical storage is separate storage-proof.json.",
   "handoff": {
     "version": 1,
-    "createdAt": 1791122468463,
+    "createdAt": 1791123154722,
     "projectDir": "/fixture/달빛 버들마을",
     "title": "달빛 버들마을",
     "choiceId": "adventure-jrpg",
