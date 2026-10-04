@@ -34,6 +34,8 @@ export interface PiAgentRequest {
   readonly imageProvider?: string;
   readonly imageModel?: string;
   readonly provider: string;
+  /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
+  readonly projectKey?: string;
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
   readonly task: string;

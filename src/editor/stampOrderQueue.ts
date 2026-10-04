@@ -1,13 +1,12 @@
 // editor/stampOrderQueue.ts
-// 바로 깔기 주문 대기열 — 드래그할 때마다 한 건씩 쌓이고, 겹치지 않는 영역은 모델이 동시에 읽는다.
+// 바로 깔기 주문 대기열 — 맵당 하나만 실행하고 다른 맵은 병렬로 진행한다.
 //
 // 왜(2026-09-28, 사용자 목표: 「드래그하면서 AI 명령을 팍팍팍 내리며 게임을 만든다」):
 // 예전 바로 깔기는 채팅 패널의 turnBusy 슬롯 하나를 잡았다. 두 번째 드래그는 「진행 중인 응답이 끝난 뒤
-// 다시 시도하세요」 토스트와 함께 버려졌다. 모델 계획 호출은 2~6s 를 기다리는 일일 뿐이라 여럿을 겹쳐도 된다.
+// 다시 시도하세요」 토스트와 함께 버려졌다. 주문은 보존하고 같은 맵에서는 순서대로 실행한다.
 //
 // 규칙:
-//  - 같은 맵에서 영역이 겹치는 주문은 먼저 들어온 주문이 끝날 때까지 기다린다(FIFO). 다른 맵·떨어진 영역은 겹치지 않는다.
-//    영역 없는 주문(맵 전체)은 그 맵의 모든 주문과 겹친다.
+//  - 같은 맵의 주문은 영역과 관계없이 먼저 들어온 주문이 끝날 때까지 기다린다(FIFO).
 //  - 동시에 도는 주문(모델 읽기 + 적용 대기)은 STAMP_ORDER_CONCURRENCY 개까지.
 //  - 적용(스토어 커밋)은 조수 채팅 턴이 돌고 있으면 끝날 때까지 기다린다 — Pi 턴은 시작 시점 프로젝트를 바닥으로
 //    잡고 적용 때 stale-base 를 검사하므로, 그 사이에 깔면 조수의 결과가 통째로 거절된다.
@@ -18,6 +17,7 @@
 // (aiLaneSession.ts 와 같은 실측). 패널이 대기열을 소유하면 그 순간 돌던 주문이 사라진다.
 // 패널은 구독해서 그리기만 하고, 결과 줄은 takeUnreported() 로 한 번만 가져간다.
 import type { StampRunInput, StampRunResult, StampRunSelection } from "@/editor/stampPlaceRunner";
+import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 
 /** 동시에 도는 주문 상한. 공급자 동시 호출 한도를 넘지 않게 작게 둔다. */
 export const STAMP_ORDER_CONCURRENCY = 3;
@@ -48,7 +48,7 @@ export interface StampOrder {
   readonly projectKey: string;
   status: StampOrderStatus;
   wait: StampOrderWait | null;
-  /** 기다리게 만든 주문 id(겹침). */
+  /** 기다리게 만든 앞선 같은 맵의 주문 id. */
   blockedBy: number | null;
   /** 모델 수리 호출 중(두 번째 읽기). */
   repairing: boolean;
@@ -155,6 +155,8 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
   const concurrency = Math.max(1, deps.concurrency ?? STAMP_ORDER_CONCURRENCY);
   const list: StampOrder[] = [];
   const controllers = new Map<number, AbortController>();
+  const claims = new Map<number, () => void>();
+  const unsubscribeOwnership = editorAiMapRuns.subscribe(() => pump());
   const listeners = new Set<() => void>();
   let gateWaiters: (() => void)[] = [];
   let chatBusy: (() => boolean) | null = null;
@@ -216,6 +218,8 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
   const finish = (order: StampOrder, status: StampOrderStatus, lines: readonly string[], applied: number): void => {
     controllers.delete(order.id);
     order.status = status;
+    claims.get(order.id)?.();
+    claims.delete(order.id);
     order.wait = null;
     order.blockedBy = null;
     order.repairing = false;
@@ -227,6 +231,9 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
   };
 
   const start = (order: StampOrder): void => {
+    const claim = editorAiMapRuns.acquire(order.projectKey, [order.mapId], `바로 깔기 #${order.id}`);
+    if (!claim.ok) { order.wait = "chat"; return; }
+    claims.set(order.id, claim.release);
     const controller = new AbortController();
     controllers.set(order.id, controller);
     order.status = "planning";
@@ -253,12 +260,12 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     }
     void run.then(
       (result) => {
-        if (disposed) return;
+        if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }
         const aborted = controller.signal.aborted;
         finish(order, aborted && result.applied === 0 ? "aborted" : result.ok ? "done" : "failed", result.lines, result.applied);
       },
       (cause: unknown) => {
-        if (disposed) return;
+        if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }
         finish(order, "failed", [`바로 깔기에 실패했습니다: ${cause instanceof Error ? cause.message : String(cause)}`], 0);
       },
     );
@@ -270,8 +277,12 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     let changed = false;
     for (const order of list) {
       if (order.status !== "waiting") continue;
+      if (!gateOpen()) {
+        if (order.wait !== "chat") { order.wait = "chat"; order.blockedBy = null; changed = true; }
+        continue;
+      }
       const blocker = list.find((other) => other.id < order.id && isStampOrderActive(other)
-        && other.mapId === order.mapId && stampRectsOverlap(other.rect, order.rect));
+        && other.projectKey === order.projectKey && other.mapId === order.mapId);
       if (blocker) {
         if (order.wait !== "overlap" || order.blockedBy !== blocker.id) {
           order.wait = "overlap";
@@ -369,9 +380,11 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     setChatBusyProbe(probe) {
       chatBusy = probe;
       releaseGate();
+      pump();
     },
     pokeGate() {
       releaseGate();
+      pump();
     },
     takeUnreported() {
       const out = list.filter((order) => !isStampOrderActive(order) && !order.reported);
@@ -381,6 +394,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     },
     dispose() {
       disposed = true;
+      unsubscribeOwnership();
       for (const controller of controllers.values()) controller.abort();
       controllers.clear();
       const waiters = gateWaiters;
