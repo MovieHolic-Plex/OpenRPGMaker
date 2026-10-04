@@ -1,7 +1,7 @@
 // Dedicated runtime QA against the untouched, downloaded shipping package.
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFile, stat, writeFile } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, extname, sep, basename } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -34,6 +34,23 @@ assert.deepEqual(project.startPos, canonical.document.startPos);
 assert.deepEqual(project.system, canonical.document.system, 'Opening, title, dialogue settings and game rules must match canonical storage');
 assert.deepEqual(project.database, canonical.document.database, 'The AI-authored protagonist and records must survive export');
 assert.deepEqual(project.endings, canonical.document.endings, 'The actual authored ending must survive export');
+const presentationAssets = [];
+const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
+  ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').map(scene => scene.resourceId)].filter(Boolean))];
+const mediaRoot = resolve(root, '__oprn/asset');
+const mediaFolders = existsSync(mediaRoot) ? (await readdir(mediaRoot, {withFileTypes:true})).filter(entry => entry.isDirectory()).map(entry => entry.name) : [];
+for (const id of artIds) {
+  const saved = canonical.document.assets.uploaded[id];
+  if (!saved) continue; // Legacy fixtures can use bundled artwork.
+  assert(saved.ref, 'Generated artwork must be saved in the canonical asset store');
+  assert.deepEqual(project.assets.uploaded[id]?.ref,saved.ref,'The exported artwork reference must match canonical storage');
+  const file = mediaFolders.map(folder => resolve(mediaRoot,folder,saved.ref.sha256)).find(file => existsSync(file));
+  assert(file,'The shipping package must include the actual saved artwork');
+  const bytes = await readFile(file);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),saved.ref.sha256,'Exported artwork bytes must match the canonical hash');
+  assert.equal(bytes.length,saved.ref.bytes);
+  presentationAssets.push({resourceId:id,sha256:saved.ref.sha256,bytes:bytes.length});
+}
 for (const row of canonical.maps) {
   const map = JSON.parse(row.map_json), exported = project.maps[row.map_id];
   assert(exported, 'Every saved map must be exported');
@@ -73,7 +90,7 @@ const result = { projectId: canonical.projectId, title: project.meta.title, cano
   automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && (completion.automaticGeneration || !completion.passed)),
   projectJsonSha256: createHash('sha256').update(json).digest('hex'),
   projectJsonBytes: (await stat(projectPath)).size, openingSkipped:false, reducedMotion:false, normalKeyboardOnly:true,
-  recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], presentationEvidence: [], paths, choices: choice.options.map(o => o.text), branches: [] };
+  recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], presentationAssets, presentationEvidence: [], paths, choices: choice.options.map(o => o.text), branches: [] };
 // Pointer movement is an authored opt-in. Use ordinary arrow keys for the
 // unchanged game, one tile at a time, and verify each committed position.
 const walk = (mapId, path, arrivalOverride) => path.steps.flatMap((step, index) => [
