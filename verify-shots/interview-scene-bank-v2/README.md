@@ -7,3 +7,5 @@
 - `fresh-checkout-proof.json`: 당시 51개 합격 목록에서 합격작 한 장의 세션 PNG와 정확한 생성 요청을 일시적으로 제외한 상태로 실제 하네스 status를 실행했다. 저장소의 배포 원본과 requests 사본으로 51개 합격이 유지됐다. 제외한 세션 파일은 finally에서 복원했다. 이 수치는 해당 관찰 시점이며 현재 전체 배포 수를 뜻하지 않는다.
 
 검수는 원본을 직접 열어 pixelArt/composition/allChoices/latestChoice/identityUnset/noText/distinctShot을 각각 판단했다. 탈락 원인을 새 생성 요청에 추가하여 다시 그렸으며 원본을 픽셀 필터나 팔레트 변환으로 바꾸지 않았다. 실제 배포 수는 현재 manifest 및 하네스 status에서 읽는다. 이번 체크포인트의 전체 typecheck/Vitest/gates는 실행하지 않았다.
+
+`romance-native-bank.png`, `monster-native-bank.png`는 위 실제 카탈로그 관찰에서 찍은 production dialog 스크린샷이다. 인터뷰 컴포넌트를 별도 컨테이너에 올린 관찰이며, 앱 시작 전체 셸의 전체화면 동작이나 게임 생성·AI 조수 전달을 검증한 증거는 아니다.

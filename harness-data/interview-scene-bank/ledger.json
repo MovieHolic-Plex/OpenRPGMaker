@@ -3556,6 +3556,36 @@
           "colors": 460831,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet-2-dc6c99c1263b.png",
+        "sha256": "dc6c99c1263b7bba2f09d838cae2d3e90e1d03ed24c76a368ad46659d0b540bf",
+        "promptSha256": "e925797049be4f9665829b1891e3ee5312fbb4495077f098b24edc0a79fc83c7",
+        "generationPromptSha256": "3b01609b57326e1ffef5b8429e10fd39761b483007fc2f2c1dc87ee0edfde50d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "dc6c99c1263b7bba2f09d838cae2d3e90e1d03ed24c76a368ad46659d0b540bf",
+          "promptSha256": "e925797049be4f9665829b1891e3ee5312fbb4495077f098b24edc0a79fc83c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Facing empty dialogue chairs and separated plain cups at neighboring gates now have rain-cleared autumn leaves and a wet quiet road, correcting the cheerful spring mood."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 367684,
+          "findings": []
+        }
       }
     ],
     "romance--town--memory--warm": [
@@ -3650,6 +3680,1258 @@
           "width": 1672,
           "height": 941,
           "colors": 412741,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--choice--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--warm-1-358c7556a727.png",
+        "sha256": "358c7556a7274a0e2f621231c7b567510aee5e5c042f0b7c2441c7d3185ae356",
+        "promptSha256": "5e8fdbfcde0f46cbfb0529e436fcc5ddf3c7ba520adb88e905f4efcf54e9f1b7",
+        "generationPromptSha256": "a0b38f976dec1d80b0aaa6993d4734d2d1e36f0fd8d991c7cb5a904e5c4b4371",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "358c7556a7274a0e2f621231c7b567510aee5e5c042f0b7c2441c7d3185ae356",
+          "promptSha256": "5e8fdbfcde0f46cbfb0529e436fcc5ddf3c7ba520adb88e905f4efcf54e9f1b7",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two neighboring thresholds with separated letter/closed box and welcoming fresh flowers preserve trust choice. New wider lower road view with hard square clusters."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 531523,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--choice--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--secret-1-e7013d5500ef.png",
+        "sha256": "e7013d5500ef6901e58bcb889aa47567cc4c06d562a1543c595362e58fc1df1a",
+        "promptSha256": "932612d20400efa218ac0c9cf7afaeba3c538fdcc573ef16b191fe54fcd7d97d",
+        "generationPromptSha256": "b5e1bc9053a9832bee2f86de0744a2a2085d983b4fe2c87fa1a06c743f1cc681",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e7013d5500ef6901e58bcb889aa47567cc4c06d562a1543c595362e58fc1df1a",
+          "promptSha256": "932612d20400efa218ac0c9cf7afaeba3c538fdcc573ef16b191fe54fcd7d97d",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Dim enclosed neighboring gate and closed private box oppose the lit letter seat across the street; fresh spatial framing and discrete shadows convey secrecy."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 422231,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--choice--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--bittersweet-1-ddc6c81c5691.png",
+        "sha256": "ddc6c81c5691c0e15e6096a4396c03174de8b8d96da0c452df3a7b4658364132",
+        "promptSha256": "65cf7425b12dd9dace437555567f46c9c8727427615e519b8f8e8d3a7a8f6c6e",
+        "generationPromptSha256": "f90222a50c64261827b02c8c64386bc67b968e26cde9ac67da3f98fcdd8fe263",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ddc6c81c5691c0e15e6096a4396c03174de8b8d96da0c452df3a7b4658364132",
+          "promptSha256": "65cf7425b12dd9dace437555567f46c9c8727427615e519b8f8e8d3a7a8f6c6e",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Separated letter and personal box across opposing neighboring gates, spent leaves and quiet wet street preserve conflict while expressing lingering departure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 441911,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--collect--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--collect--bright-1-7940c2bc0d9f.png",
+        "sha256": "7940c2bc0d9fce85a48a7937739af93e8643194e00da0233c8e6bf86737c8c82",
+        "promptSha256": "b20b903c6f633f6cec71eb489d6075dddd8e649513bc618676a111a598c09fff",
+        "generationPromptSha256": "d0bdb481e4dddc38515025574b6bb6583c639a3f28920c8b2d2f391742eace45",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7940c2bc0d9fce85a48a7937739af93e8643194e00da0233c8e6bf86737c8c82",
+          "promptSha256": "b20b903c6f633f6cec71eb489d6075dddd8e649513bc618676a111a598c09fff",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Sunlit several contrasting empty wild habitats, empty case, capture net and physical tracks convey discovery and collection without designing a species."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 739228,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--collect--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--collect--secret-1-cb3d40b42c1b.png",
+        "sha256": "cb3d40b42c1b5a6f5b1e5c0447227402ad2abb1a0be1cb984af059c5fca18fa7",
+        "promptSha256": "44037c9816699c476fe0deae3cd7f29740a0491377893dd1d6eaaa21c07ab650",
+        "generationPromptSha256": "2f6a4f0fed0fadf74159222090a17faa2e0d1e99224697a7ff2f43a7fd5ada85",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cb3d40b42c1b5a6f5b1e5c0447227402ad2abb1a0be1cb984af059c5fca18fa7",
+          "promptSha256": "44037c9816699c476fe0deae3cd7f29740a0491377893dd1d6eaaa21c07ab650",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove all open books and all writing-like marks. Draw moonlit concealed wild habitat with unopened plain collecting containers and capture net, several dark empty habitat entrances and a protected research table. Strong hidden-species mystery mood using hard stepped pixel shadows. No creatures, silhouettes, emblems, people, blur or text."
+          ],
+          "notes": "Cave and research equipment are present, but the scene remains cheerful daylight and an open book has glyph-like writing. Latest mystery mood and text prohibition fail."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 527245,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--collect--secret-2-7c723d41507f.png",
+        "sha256": "7c723d41507fa35dd015ec468478e697da34a6984313f8d509ef2824271524a3",
+        "promptSha256": "44037c9816699c476fe0deae3cd7f29740a0491377893dd1d6eaaa21c07ab650",
+        "generationPromptSha256": "77595fe1be14c7854cd04e05e28178603f1eb238cb909bb5983c7543737598fe",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "7c723d41507fa35dd015ec468478e697da34a6984313f8d509ef2824271524a3",
+          "promptSha256": "44037c9816699c476fe0deae3cd7f29740a0491377893dd1d6eaaa21c07ab650",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain closed containers and capture net at moonlit research shelter with several concealed cave habitats retain wild collection and make the mystery mood clear. No open pages or creatures."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 341919,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--collect--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--collect--warm-1-106153df07b3.png",
+        "sha256": "106153df07b3b65fd0c6cdc13907cea72dfbbcc0ab8db090e92eec6a99ef903e",
+        "promptSha256": "768d72eb67ef71dca712ebe411513b6eac13b837bba0198a6bbb1bd5815ae7f0",
+        "generationPromptSha256": "04a5cace85eb589c203846aaddf7b5a017857b340417ded4201d674202d2f5ee",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "106153df07b3b65fd0c6cdc13907cea72dfbbcc0ab8db090e92eec6a99ef903e",
+          "promptSha256": "768d72eb67ef71dca712ebe411513b6eac13b837bba0198a6bbb1bd5815ae7f0",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Wild habitats remain beyond open empty collecting case and capture net; protected empty bed, bowl and blanket add companionship. No actual species body or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 648190,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--team--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--bright-1-c185acdc550a.png",
+        "sha256": "c185acdc550a3c6ed0599589de3d1d8232e99e6a6a6d7fcd0c1f5b20b78fcc34",
+        "promptSha256": "bdf5830d77a866fb30d026544c7c35e72855877ec1b76e16aa9001dc501215bb",
+        "generationPromptSha256": "b35f7d064a02fe8baa77567cb3264cf9f56c8c085ed453579dff29ef734125f2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c185acdc550a3c6ed0599589de3d1d8232e99e6a6a6d7fcd0c1f5b20b78fcc34",
+          "promptSha256": "bdf5830d77a866fb30d026544c7c35e72855877ec1b76e16aa9001dc501215bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove ALL heraldic emblems, logos, symbols and writing from every flag. Use plain solid colored fabric or no flags. Keep wild capture kit, several different empty battle-training stations and defensive obstacle arena, in bright sunlit discovery. No creatures, silhouettes or people. Recompose with arena on left and quieter right landscape."
+          ],
+          "notes": "Wild capture kit and several empty obstacle training stations with arena entrance convey team challenges and bright discovery, but repeated heraldic emblems on flags violate the no-logo brief."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 773839,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--bright-2-d27c9a1291d3.png",
+        "sha256": "d27c9a1291d3dbf6787880ca9e9329adfe1bc18b64b2c36c6c18f12d646d8dce",
+        "promptSha256": "bdf5830d77a866fb30d026544c7c35e72855877ec1b76e16aa9001dc501215bb",
+        "generationPromptSha256": "17adf69e767a538c7cbfd38dbbc41f91c81f27952287c3cdf2da0a0f80116784",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d27c9a1291d3dbf6787880ca9e9329adfe1bc18b64b2c36c6c18f12d646d8dce",
+          "promptSha256": "bdf5830d77a866fb30d026544c7c35e72855877ec1b76e16aa9001dc501215bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain solid flags replace heraldic emblems; several different empty obstacle stations and defensive arena remain beside wild net and capture case in bright daylight."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 680844,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--team--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--secret-1-1d705f29f540.png",
+        "sha256": "1d705f29f540081e11eb8201519f67fdaf2cbde8ae029236b42058e6a77fcaf8",
+        "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b",
+        "generationPromptSha256": "04682848cf8895f70de31596a22cf49cbb0a5618b24b798897593bcd7c147d85",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "1d705f29f540081e11eb8201519f67fdaf2cbde8ae029236b42058e6a77fcaf8",
+          "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": false,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove all open books, writing-like marks, invented species illustrations, silhouettes, heraldic emblems and logos. Closed plain notebooks only. Show moonlit wild capture equipment and multiple empty tactical training stations toward a dim concealed stone challenge arena; no unselected species or people. Use hard stepped shadows, all foreground sharp."
+          ],
+          "notes": "Open book contains pseudo writing and visible invented species silhouettes. Scene remains daylight rather than concealed species mystery. Wild capture and training arena are otherwise visible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 668110,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--secret-2-b334bb721d8b.png",
+        "sha256": "b334bb721d8b1479df9900e5dcb66efa04eb79a74e3e740e2e2bc96eaefdb848",
+        "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b",
+        "generationPromptSha256": "9d8771934f3d35dd383273c567cd4ba0049f4bf9e6f8207acc1d97a744840e46",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b334bb721d8b1479df9900e5dcb66efa04eb79a74e3e740e2e2bc96eaefdb848",
+          "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Closed plain notebook, wild net/capture case and empty challenge stations lead to a concealed moonlit arena. Invented species pictures and writing have been removed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 424177,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--team--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--warm-1-47ec55931ffd.png",
+        "sha256": "47ec55931ffd0bdbd2a33266f7ad813fff0ff0398a0c801db598227fa5360161",
+        "promptSha256": "39b87ca4ab07dca1f52ca3ee041c5ebafdf0f40aad33313eb4834daf2d5d2a72",
+        "generationPromptSha256": "7cff7bc1d89227c51bdcf108e4855014c189a497c3c3db6b220b5c13fe7a4c72",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "47ec55931ffd0bdbd2a33266f7ad813fff0ff0398a0c801db598227fa5360161",
+          "promptSha256": "39b87ca4ab07dca1f52ca3ee041c5ebafdf0f40aad33313eb4834daf2d5d2a72",
+          "reviewer": "Codex direct original visual inspection: v2-production-009",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove all heraldic faction emblems, logos and symbols from every flag; plain solid fabric only or no flags. Preserve protected empty companion bed and bowl, wild net/capture case and several different empty battle training stations. Draw fresh left-focused three-quarter viewpoint. No creatures, portraits, people or writing."
+          ],
+          "notes": "Protected bed/bowl beside wild capture equipment and outdoor training stations conveys companionship and battle challenges, but heraldic faction emblems repeat across flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 663349,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--warm-2-b5b8f20c9509.png",
+        "sha256": "b5b8f20c95096f77c1c864180d5c1a9881883425b3ee0693ebb0c3ab676bdaba",
+        "promptSha256": "39b87ca4ab07dca1f52ca3ee041c5ebafdf0f40aad33313eb4834daf2d5d2a72",
+        "generationPromptSha256": "fc30bc0de9cca2443fd0830e2fb9d8fba4768af2be78d3c91a53f971cf430805",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b5b8f20c95096f77c1c864180d5c1a9881883425b3ee0693ebb0c3ab676bdaba",
+          "promptSha256": "39b87ca4ab07dca1f52ca3ee041c5ebafdf0f40aad33313eb4834daf2d5d2a72",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected empty bed and bowl, wild capture equipment and several differently shaped empty battle stations retain team play and warm companionship. Flags are plain."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 678785,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--partner--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--bright-1-6d8d5f5bc1b0.png",
+        "sha256": "6d8d5f5bc1b0b3f707086e4e00514093eaf657b80edbb2a8de43ad00a1aae338",
+        "promptSha256": "8ab2de752e88931b64a18556360a0f3a9d58e5a9f2c37f2cc5af1f1126e0a44f",
+        "generationPromptSha256": "04981ab8620c4ad84eafa3092de739d2f79fd4adc1400ceffa0b9a96115e538e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6d8d5f5bc1b0b3f707086e4e00514093eaf657b80edbb2a8de43ad00a1aae338",
+          "promptSha256": "8ab2de752e88931b64a18556360a0f3a9d58e5a9f2c37f2cc5af1f1126e0a44f",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove the heraldic emblem and all symbol marks from the flag; plain solid fabric only or remove flag entirely. Keep wild humane capture net, empty cushioned companion resting basket and food/water bowls in bright new habitat. Change viewpoint to focus on care equipment at a rocky stream ledge. No people, visible species, silhouettes, open books, writing or logos."
+          ],
+          "notes": "Wild capture net, empty cushioned transport basket and bowl convey care in bright discovery, but a large heraldic emblem remains on the flag."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 664286,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--bright-2-e72f17af10f8.png",
+        "sha256": "e72f17af10f849e1eab6395a67e275ce0cdbf1782298a29af9c997a914393fe6",
+        "promptSha256": "8ab2de752e88931b64a18556360a0f3a9d58e5a9f2c37f2cc5af1f1126e0a44f",
+        "generationPromptSha256": "9ba1f3884666871469491af5635e47dada9a868933625003dbe33c238bd81bac",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e72f17af10f849e1eab6395a67e275ce0cdbf1782298a29af9c997a914393fe6",
+          "promptSha256": "8ab2de752e88931b64a18556360a0f3a9d58e5a9f2c37f2cc5af1f1126e0a44f",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Wild net and empty cushioned basket with food/water bowls at sunlit rocky stream ledge retain capture and close partner care; heraldic flag removed and new rocky composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 683436,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--partner--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--secret-1-f9f9dfce3bcb.png",
+        "sha256": "f9f9dfce3bcbd5a9cb73c6042fcc6664476e27a8b24c2a339ebbb2b740157f3b",
+        "promptSha256": "aa79d44ea477af209e575d0d01a0b4d45c7f37d12ea12ea7797408ed71413ee0",
+        "generationPromptSha256": "8b9721c101426394bb3ce521a1fce0940164f56863dc23ff66fd98a491cec115",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f9f9dfce3bcbd5a9cb73c6042fcc6664476e27a8b24c2a339ebbb2b740157f3b",
+          "promptSha256": "aa79d44ea477af209e575d0d01a0b4d45c7f37d12ea12ea7797408ed71413ee0",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Moonlit concealed wild habitat with capture net, empty resting basket and water bowl preserves capture, bonding and mystery; new shoreline framing, no creatures or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 522268,
+          "findings": []
+        }
+      }
+    ],
+    "monster--wild--partner--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm-1-6d53357b6d59.png",
+        "sha256": "6d53357b6d5985d19f5ef5010a1d4f209b794c4a7318dd88eb6ab3d61c7f8ddd",
+        "promptSha256": "9f87b3d4160e1a3454ffcd5307c93f5bba4d6b3acc659d4e51312cb460904e85",
+        "generationPromptSha256": "60dcb5ac73d8fafaef804baa15e953182aa51a4a1f091d414b4f9452c15469f6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6d53357b6d5985d19f5ef5010a1d4f209b794c4a7318dd88eb6ab3d61c7f8ddd",
+          "promptSha256": "9f87b3d4160e1a3454ffcd5307c93f5bba4d6b3acc659d4e51312cb460904e85",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Wild net and empty caring bed beside food/water bowls and open sunlit habitat preserve wild capture and deep partner bond with warm companionship."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 623399,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--bright-1-76bdb1a5e812.png",
+        "sha256": "76bdb1a5e812057cfdcaadc9b6e4c0dc8b77f44f938c4163e11270ae931490fc",
+        "promptSha256": "229ea3b0707f1e7880efb530697ca9d2247a3d084bae303d92444175f65d49de",
+        "generationPromptSha256": "60843e1d671067cd87e1a219decc0c0422abfe7ee72f3fc9b896c51830c1baeb",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "76bdb1a5e812057cfdcaadc9b6e4c0dc8b77f44f938c4163e11270ae931490fc",
+          "promptSha256": "229ea3b0707f1e7880efb530697ca9d2247a3d084bae303d92444175f65d49de",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Repaired timber refuge with empty bed/bowl, closed notebooks and binoculars opens toward different woodland/cliff/water habitats; bright discovery and collection remain readable."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 598646,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret-1-9981f8181b82.png",
+        "sha256": "9981f8181b820fffd19139b5e45dc447d7f4fa2f9712396db0ca21cb584b0240",
+        "promptSha256": "ef59130c58be51c5756613a7bf23dd6b73f5a9cafd988458d49a19ffc8f1f5a7",
+        "generationPromptSha256": "b398928f4eed181932a8109324b97f19c3cfc4477bd39e56f4fd6dcb50a0f232",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9981f8181b820fffd19139b5e45dc447d7f4fa2f9712396db0ca21cb584b0240",
+          "promptSha256": "ef59130c58be51c5756613a7bf23dd6b73f5a9cafd988458d49a19ffc8f1f5a7",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected timber refuge with empty bed/bowl and binoculars beside closed plain research book overlooks moonlit habitats; trust, collection and hidden-species investigation remain."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 399839,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm-1-5b5cbef9f58c.png",
+        "sha256": "5b5cbef9f58ca1db34e0ec682055fb931de2b54b1f3908d6d0fde7458f087c02",
+        "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+        "generationPromptSha256": "f4ecc4db5bb1d7a39d601eb157f583f0839a8d451fec41236985ef10764a2178",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "5b5cbef9f58ca1db34e0ec682055fb931de2b54b1f3908d6d0fde7458f087c02",
+          "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+          "reviewer": "Codex direct original visual inspection: v2-production-010",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Restore the selected COLLECTION play visibly. Retain the repaired trust refuge and empty companion bed/bowl, but put binoculars, several unopened plain specimen containers and closed blank research notebooks prominently on a shared workbench overlooking clearly different wetland, woodland and rocky habitat entrances. Warm welcoming afternoon; no net, cage, egg, creatures, people, open pages, writing or heraldry. Fresh oblique left-focused bench composition."
+          ],
+          "notes": "Warm bed/bowl at repaired shelter looks inviting and preserves helping/trust, but the collection play has disappeared: no observation equipment, research containers or distinct next habitats are foregrounded."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 571314,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm-2-0336c98d4691.png",
+        "sha256": "0336c98d46916c3c805799bf3ef0d1702c5abb5c20f57e1f60f539f34d652ca1",
+        "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+        "generationPromptSha256": "2b75799c14bd1bb1bd549ab65ef8b2339af7f7c822646d908bf36d30885ad733",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "0336c98d46916c3c805799bf3ef0d1702c5abb5c20f57e1f60f539f34d652ca1",
+          "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Repaired trust refuge and empty bed/bowl now retain collection through prominent binoculars, several unopened plain specimen jars and closed notebooks; different empty habitat approaches remain visible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 643410,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright-1-08627b590b67.png",
+        "sha256": "08627b590b67baba1d450d6f5ea1bb13e300ef68490004955891e03a5f62a7b4",
+        "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+        "generationPromptSha256": "bd6b167198b0406e30ba5ef4bae3baf1e96f3dc30f1518eaf228aa5d16946514",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "08627b590b67baba1d450d6f5ea1bb13e300ef68490004955891e03a5f62a7b4",
+          "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected repaired bed/bowl and several distinct empty obstacle stations/arena retain trust and team challenges in bright discovery, with fresh near-corner foreground and no heraldic flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 782993,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--secret-1-a31161ccd9e4.png",
+        "sha256": "a31161ccd9e461529db5f8b6da921b2ef922355adefe902ad2d98669244eedca",
+        "promptSha256": "30681b60f1bae990096beb81e6fa4d48952106f4e56c96cd4e6d2573b42ca3a2",
+        "generationPromptSha256": "8c8fe09a912fbc08435e4ba8f12c7de7399b4676f714ae48fc8f69fbc1f327c0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a31161ccd9e461529db5f8b6da921b2ef922355adefe902ad2d98669244eedca",
+          "promptSha256": "30681b60f1bae990096beb81e6fa4d48952106f4e56c96cd4e6d2573b42ca3a2",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Trust shelter with empty bed/bowl, closed unlettered research materials and varied empty training obstacles faces a concealed blue cave. Daylight remains outside, but hidden cave and research clearly retain the mystery without designing a species."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 762555,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--warm-1-ab3bcaf799a9.png",
+        "sha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
+        "promptSha256": "cb20696724dc8aa891c19d5efcf204becbdb9b3a58235c872c6853673500e1a4",
+        "generationPromptSha256": "a0991f22c56552601ed4fab0e87394ea116bef9abc25fd7cce600a489e65a56a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
+          "promptSha256": "cb20696724dc8aa891c19d5efcf204becbdb9b3a58235c872c6853673500e1a4",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Repaired protected shelter and bed/bowl beside several empty challenge stations retain trust, tactical growth and welcoming sunset; no faction emblem or text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 620863,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--partner--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright-1-9072ff2748b3.png",
+        "sha256": "9072ff2748b3b160b6b73cfdf2e1d5bcc6ebb534a4d857a0d31f68db7b369a49",
+        "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+        "generationPromptSha256": "51c3f08d11dcec151abeb06fd515162b7671b09ac3b7835e403335148b983eee",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9072ff2748b3b160b6b73cfdf2e1d5bcc6ebb534a4d857a0d31f68db7b369a49",
+          "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "ONLY selected facts: helping a wild companion earn trust, deep partner bond, bright discovery. New close inside view of a repaired woodland refuge workbench with folded clean cloth, padded EMPTY companion bed, food bowl and water bowl beside a plainly repaired shelter wall. Through a small side doorway see a welcoming sunlit fern glade. No training course, arena, practice obstacles, collection laboratory, capture net, cage, egg, banners, flags, emblems or huge waterfall panorama. No person or creature body/appearance. Strong square pixel clusters everywhere."
+          ],
+          "notes": "Partner care appears on left, but large training stations and arena are imported from the unselected team-play branch; repeats the previous battle scene framing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 813608,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright-2-f172f10c6554.png",
+        "sha256": "f172f10c6554282f4539ecfa29f2cf9e788ce55689635b1508692b44bc7d3859",
+        "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+        "generationPromptSha256": "a38acafaf4ef47c1737cead8312e89f7e9ba448e79a818a7996271199455c75c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f172f10c6554282f4539ecfa29f2cf9e788ce55689635b1508692b44bc7d3859",
+          "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Keep the new intimate repaired trust-care refuge, empty soft bed, food/water bowls and folded cloth in bright daylight. REMOVE ALL pinned wall sheets, notices, posters, documents, charts, labels, symbols and writing-like marks; bare timber/stone wall with dried herbs only. No training course, arena, collection laboratory, net, egg, people or creatures. Fresh diagonal indoor camera, hard square pixel clusters throughout."
+          ],
+          "notes": "Repaired bright care refuge now has empty soft bed, food/water bowls and folded cloth without a course; however pinned wall sheets contain writing-like marks."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 473132,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--partner--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret-1-46378c1b54f2.png",
+        "sha256": "46378c1b54f2ec8a6327a5b2befb8b0291406748e379fac20b858d063981a24d",
+        "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+        "generationPromptSha256": "3daeeaef91959009d38f9ea72f06b42f64ce1cc5db64a9ebbe8dc8d1c8b2d849",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "46378c1b54f2ec8a6327a5b2befb8b0291406748e379fac20b858d063981a24d",
+          "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "ONLY selected facts: repaired trust refuge, deep partner bond, hidden-species mystery. Draw a NEW intimate diagonal interior under exposed woodland roots: clean folded cloth, EMPTY soft rest bed and food/water bowls near a partly concealed small side passage opening onto dim unexplored cave vegetation. Closed plain notebook, no pages or illustrations. One continuous moonlit scene with hard stepped shadows. No arena, course, training obstacles, collecting lab, net, cage, egg, flags, people, creatures, silhouettes or writing. Not left hut/right arena panorama."
+          ],
+          "notes": "Partner care appears on left, but unselected team obstacle course and challenge arena dominate the right. Same left refuge/right arena framing repeats team branch and the mystery is not foregrounded."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 612988,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret-2-d9fa94d350e3.png",
+        "sha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+        "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+        "generationPromptSha256": "bcbed78aa8c0645a4a4367c5bbcff350725e6e674e17c5e8ba0bf6ab5411c6dd",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+          "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Fresh enclosed roots refuge with empty soft bed, food/water bowls and closed notebook faces a concealed moonlit side passage. No arena, species body, text or optical blur."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 333367,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--partner--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--warm-1-17a14c91fae5.png",
+        "sha256": "17a14c91fae51572317b43d64917e38524f2d318f3267ddf229a7e2583eec45e",
+        "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+        "generationPromptSha256": "83a4584a336b8dbe17f0a16e54d0548d19f66f81541af264a143fb1a5016714b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "17a14c91fae51572317b43d64917e38524f2d318f3267ddf229a7e2583eec45e",
+          "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": false
+          },
+          "findings": [
+            "ONLY selected facts: helping and trust, deep partner bond, warm companionship. Draw a NEW near overhead intimate view inside a repaired timber refuge, shared clean care workbench beside EMPTY soft companion resting bed and food/water bowls, fresh folded cloth in warm late afternoon. No battlefield, arena, training apparatus, collection jars, net, cage, egg, flags, heraldry, visible species, people, text or open books. Focal care objects on left, quietly detailed refuge wall right. No mountains/waterfall panorama."
+          ],
+          "notes": "Partner care appears on left, but unselected tactical course/arena and heraldic banners reappear; visually repeats team-play branch with only sunset palette change."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 654543,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--warm-2-73d416e0f190.png",
+        "sha256": "73d416e0f190fefff8aee5fc6d37511e6a295da14a005c471b61fb0a40b67646",
+        "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+        "generationPromptSha256": "f27d1ea81f239a2912a254dbe19b324220a55d2dec106908ba1c3be4ca3cff7c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "73d416e0f190fefff8aee5fc6d37511e6a295da14a005c471b61fb0a40b67646",
+          "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "New intimate care-room workbench with folded cloth, empty soft bed and bowls in warm afternoon; unrelated tactical stations and heraldic banners removed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 407830,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright-1-e3b0832ed4d9.png",
+        "sha256": "e3b0832ed4d9cf9e429429748719952ee6091da373987df7bf3a7cf269d1cdc5",
+        "promptSha256": "fd2dee4b711b8f0305390d73fc12cb63434548e598f6830d0eb5099f15913987",
+        "generationPromptSha256": "719e30a047fe77f55b2a39d14f2a71fe96f39e7c19ed272726a43603db410da5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e3b0832ed4d9cf9e429429748719952ee6091da373987df7bf3a7cf269d1cdc5",
+          "promptSha256": "fd2dee4b711b8f0305390d73fc12cb63434548e598f6830d0eb5099f15913987",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ONLY selected facts: ONE cracked speckled egg in straw nursery with NO hatchling; discovering and collecting new species; bright discovery. New close corner INSIDE timber-and-stone nursery, egg left foreground, closed plain research notebooks, binoculars and several unopened plain specimen containers on side workbench. Several small windows/doorways overlook different empty natural habitats in the same daylight. No arena, training obstacles, flags, heraldry, visible species, people, writing, open pages or UI. All foreground sharp coarse square pixel clusters. Not a left hut/right battlefield panorama."
+          ],
+          "notes": "Cracked egg, binoculars and plain specimen jars retain hatch and collection, but unselected obstacle challenge arena and symbol flags have leaked from team-play instructions."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 589429,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright-2-e60ffe5ed496.png",
+        "sha256": "e60ffe5ed496d9cc3763dc509c867b0651698d542cc7350870007537b8370006",
+        "promptSha256": "fd2dee4b711b8f0305390d73fc12cb63434548e598f6830d0eb5099f15913987",
+        "generationPromptSha256": "efcf27832ee8c24c368f1652a8081c146d2c5c17514f94dcb8fb00980838ca29",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e60ffe5ed496d9cc3763dc509c867b0651698d542cc7350870007537b8370006",
+          "promptSha256": "fd2dee4b711b8f0305390d73fc12cb63434548e598f6830d0eb5099f15913987",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg inside nursery and prominent binoculars/plain specimen jars/closed notebooks overlook distinct empty habitats through small daylight openings; unselected training arena removed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 445614,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-1-ccfca97729bc.png",
+        "sha256": "ccfca97729bca0fcd3ac6b374651c2da1e0bd0acb12d37acf834456e887bc8bf",
+        "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+        "generationPromptSha256": "10a20354691754c0fbd0cfac54d9d42228ceee0feb2f028283c8f39176802446",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ccfca97729bca0fcd3ac6b374651c2da1e0bd0acb12d37acf834456e887bc8bf",
+          "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ONLY selected facts: ONE cracked speckled egg, NO hatchling, collecting new species, hidden species mystery. New sheltered INSIDE nursery view, egg in straw at left midground, closed plain notebooks, binoculars and unopened specimen jars foreground, a small window overlooks ONE concealed moonlit empty habitat. The ENTIRE continuous scene is night: no daylight region, split screen, collage or vertical seam. No arena, training equipment, flags, species drawings, people, writing, open pages or smooth blur. Hard stepped pixel shadows, no huge river/castle panorama."
+          ],
+          "notes": "Cracked egg and collection equipment present, but vertical daylight/night split reads as a collage and an unselected challenge arena/obstacles appears instead of a single continuous collecting nursery."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 541287,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-2-a25d737f360e.png",
+        "sha256": "a25d737f360ef01cd9216656579b8f16b2660a256bb9fb55ea983289833272ef",
+        "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+        "generationPromptSha256": "9d743f56989c8e659e3051206d7713deb31c47477f1436d3bbcd57f139d2f6b6",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a25d737f360ef01cd9216656579b8f16b2660a256bb9fb55ea983289833272ef",
+          "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg and prominent collection equipment inside one continuous moonlit nursery; no day/night seam, training course or visible species."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 273511,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm-1-42d557ff8c99.png",
+        "sha256": "42d557ff8c9942f7e8e352fd57cab41d13cb33a1b9659f3de411139953bc95e5",
+        "promptSha256": "9fda90c6c0f845ed72de9f9bc3775bb3d8505cef58ad06b336cc74dd17494239",
+        "generationPromptSha256": "85ea7274d83c32a617f064764e0c995d478e8b4a185e83b8671da0ae10eaa83f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "42d557ff8c9942f7e8e352fd57cab41d13cb33a1b9659f3de411139953bc95e5",
+          "promptSha256": "9fda90c6c0f845ed72de9f9bc3775bb3d8505cef58ad06b336cc74dd17494239",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected cracked egg, binoculars, closed plain notebooks and unopened specimen jars in cozy warm nursery retain collecting and companionship with new workbench framing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 460954,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--team--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright-1-87ee75e2504e.png",
+        "sha256": "87ee75e2504e109c1c95d7f39e05dd951eab7c3adb2c333e5bc85b4c0d53d3ea",
+        "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9",
+        "generationPromptSha256": "46b993438682e34ca781a5edc95636666e14f487adef70d32ac9161aa8603e9c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "87ee75e2504e109c1c95d7f39e05dd951eab7c3adb2c333e5bc85b4c0d53d3ea",
+          "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Close cracked egg foreground and distinct empty obstacle stations through bright side door preserve hatch and team challenges; no visible hatchling or flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 507185,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--team--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret-1-420325726a18.png",
+        "sha256": "420325726a18b00c1f8ebf1559d338310ec324b1e546d88678b982ba33f4d855",
+        "promptSha256": "f355c6b7189684bb5698ad35d7f3c75ea16927b763bbb310786b49fc19e6a59e",
+        "generationPromptSha256": "5d2edfa4f641b2b6066708b6b0eb6cfbc5935a62ce40d957161d5ff8dc98f83c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "420325726a18b00c1f8ebf1559d338310ec324b1e546d88678b982ba33f4d855",
+          "promptSha256": "f355c6b7189684bb5698ad35d7f3c75ea16927b763bbb310786b49fc19e6a59e",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "One continuous physically consistent moonlit nursery and outdoor challenge yard. Show AT MOST ONE moon in the entire picture: put it only in outdoor sky; the side window shows dark nearby foliage with NO moon or reflection. Preserve one cracked egg with NO hatchling and several varied EMPTY tactical obstacle stations. Concealed night mystery, no flags, emblems, writing, species, people, split sky, collage or blur. New closer diagonal threshold angle."
+          ],
+          "notes": "Cracked egg and empty tactical course preserve choices, but two separate full moons appear in the window and outdoor sky. This is a spatial generation defect."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 310682,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--team--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm-1-a3f5ea69b6eb.png",
+        "sha256": "a3f5ea69b6ebb6cd4f64463e0b58b108ac9014a02ed64012e0bb97afdf558f6d",
+        "promptSha256": "27ec633b93a4bb98cc28dca381a25a3bb97b4e946a37250f48d9ff067c799f1e",
+        "generationPromptSha256": "dca91c1d2a2197bb0d33d68229921e9c875fdc778a63805b53558a23eb294ac2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a3f5ea69b6ebb6cd4f64463e0b58b108ac9014a02ed64012e0bb97afdf558f6d",
+          "promptSha256": "27ec633b93a4bb98cc28dca381a25a3bb97b4e946a37250f48d9ff067c799f1e",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected cracked egg with clean cloth, cozy golden nursery and varied empty tactical obstacles outside retain hatch, team growth and warm mood with smaller egg/new barn viewpoint."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 494228,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright-1-2dae2b5a5e8b.png",
+        "sha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+        "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e",
+        "generationPromptSha256": "a44eab8bd050493dee82dabd1d68e43b41178218dcc8ca9a0a00f633fa4686d5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+          "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e",
+          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg, empty soft partner bed, food/water bowls and folded cloth show hatch and deep care in bright new habitat; no unselected tactical course or collection gear."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 522609,
           "findings": []
         }
       }

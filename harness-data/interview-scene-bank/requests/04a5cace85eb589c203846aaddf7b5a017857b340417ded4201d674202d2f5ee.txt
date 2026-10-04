@@ -1,0 +1,19 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.
+SELECTED FACTS:
+1. 첫 동료: 야생에서 발견하고 포획 — 서식지를 탐험하다 낯선 생물과 마주쳐요.
+2. 중심 플레이: 새로운 종을 발견하고 수집 — 다음 서식지에서 만날 생물이 궁금해요.
+3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.
+LATEST CHOICE: 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.
+SCENE ID: monster--wild--collect--warm. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Wild habitat. Empty portable humane capture net and open unmarked small transport basket beside anonymous paw marks demonstrate discovery AND capture. No visible creature/species.
+SHOT: elevated near-corner view, focal prop prominent left, environment receding right. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: Distinct habitats and empty observation equipment suggest discovering different species; no actual species image or taxonomy writing.
+TONE: Apply only the selected mood from facts, with discrete pixel shade bands, never painting gradients or adding a contradictory genre.
+MANDATORY FACT RETENTION: Wild habitat discovery/collection uses unopened specimen containers and several distinct empty habitats. Team battle uses visibly different empty training stations and challenge arena entrances with defensive barriers, not only travel bags. No visible creatures, silhouettes, humanoid figures, species designs, portraits, readable signs or emblems. Bright: open sunlit discovery. Secret: concealed dim habitat and unopened research containers. Warm: welcoming protected rest nook with empty companion bed and bowl; keep wild habitat and selected play visible.
