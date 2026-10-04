@@ -13,7 +13,12 @@ function cellMetadata(map: GameMap): CellMetadata {
     if (!row) { row = { walls: [], groups: [], features: [], locked: false }; rows.set(index, row); }
     return row;
   };
-  for (const d of map.relief?.wallDecor ?? []) at(d.y * map.width + d.x).walls.push(d);
+  for (const d of map.relief?.wallDecor ?? []) {
+    // Flatten only real grid coordinates: an out-of-range x must not alias the
+    // neighboring row, which the original coordinate comparison never matched.
+    if (Number.isInteger(d.x) && Number.isInteger(d.y) && d.x >= 0 && d.y >= 0 && d.x < map.width && d.y < map.height)
+      at(d.y * map.width + d.x).walls.push(d);
+  }
   for (const i of map.terrainDesign?.lockedCells ?? []) at(i).locked = true;
   for (const g of map.doodadGroups ?? []) for (const c of g.cells) at(c.index).groups.push([g.id, g.label, g.kitId, c]);
   for (const f of map.terrainDesign?.features ?? []) for (const p of f.patches) at(p.index).features.push([f.id, p]);

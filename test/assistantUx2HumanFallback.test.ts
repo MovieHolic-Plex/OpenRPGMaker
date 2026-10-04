@@ -46,4 +46,9 @@ describe("descriptor-free human map edits", () => {
     expect([...changedAssistantMapCells(before, after)].sort((a, b) => a - b)).toEqual([1, 2, 3]);
   });
 
+  it("does not flatten invalid wall coordinates into a neighboring valid cell", () => {
+    const before = map(), after = { ...before, relief: { width: 16, height: 16, levels: Array(256).fill(0),
+      wallDecor: [{ x: 16, y: 0, row: 1, tile: 4 }, { x: -1, y: 1, row: 1, tile: 4 }] } };
+    expect(changedAssistantMapCells(before, after).size).toBe(0);
+  });
 });
