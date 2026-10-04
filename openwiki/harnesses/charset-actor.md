@@ -18,7 +18,7 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 걷기는 자홍색 체커가 기본이며 흰색·검정·잔디로 바로 전환한다. `audit`는 12프레임과 세 배경의 원본 비교·결손 좌표·출하 PNG/GIF 대조를 저장소 밖에 남긴다.
 새 옷/장식 안에 가둔 원본 배경도 투명 구멍이다. alpha 검사 정책 갱신은 같은 픽셀의 사용자 선택 binding을 유지한다.
 새 제작은 `animationMode: model-12`이며 모델이 납품한 걷기를 그대로 렌더한다. `model-frames.json`에 12장 각각의 실제 픽셀 해시와 변경 수·모델을 기록한다.
-`bulk`는 원본 시트와 manifest `visualReferences`(실행 폴더 안 최대 4장)를 GPT 첫 입력에 이미지로 첨부한다. 묶음 `visual-inputs.json`과 후보 meta에 파일 순서·SHA256을 남긴다.
+`bulk` 기본은 원본 ASCII 격자를 바탕으로 12장을 직접 변형하는 방식이다. 초기 PNG 첨부·남김/폐기 참고·추가 조형 지시는 기본 제작에 넣지 않는다(2026-10-04 사용자 피드백). manifest에 `visualReferences`를 명시한 실험만 원본 시트와 참고를 첫 입력에 첨부한다. `visual-inputs.json`/meta는 기본 `[]`, 실험은 첨부 파일 순서·SHA256을 기록한다.
 `audit`가 저작 기록/현재 그림 binding과 PNG/GIF를 다시 읽는다. `walk-qa`는 이전 전파 실행의 비교용이다.
 현재 그림의 해시가 바뀌면 사람의 선택도 다시 확인한다. 사용자 선택·산출·원본은 `CHR_HARNESS_DATA` 아래 보존한다.
 사람이 남긴 그림과 설명은 사용자 공용 SQLite의 `charset-actor-kept`에 자동 등록한다. 에디터를 새로고침하면 새/기존 프로젝트와 AI NPC 검색에서 쓴다.
