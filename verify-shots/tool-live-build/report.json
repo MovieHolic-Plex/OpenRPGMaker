@@ -1,0 +1,184 @@
+{
+  "transport": "scripted model; native paint_road/paint_tiles/stamp_object + checkpoint apply",
+  "errors": [],
+  "checks": [
+    {
+      "name": "도구마다 실제 변경 기록이 만들어졌다(합성)",
+      "passed": true,
+      "detail": [
+        {
+          "name": "paint_road",
+          "steps": [
+            "paint:18"
+          ],
+          "synthetic": true
+        },
+        {
+          "name": "paint_tiles",
+          "steps": [
+            "paint:55"
+          ],
+          "synthetic": true
+        },
+        {
+          "name": "stamp_object",
+          "steps": [
+            "stamp:14"
+          ],
+          "synthetic": true
+        }
+      ]
+    },
+    {
+      "name": "맵 위 재생이 돌았다",
+      "passed": true,
+      "detail": [
+        "칠하기 · paint_road · 바닥",
+        "칠하기 · paint_tiles · 바닥",
+        "찍기 · stamp_object · 물체"
+      ]
+    },
+    {
+      "name": "도구마다 재생 단계가 보였다",
+      "passed": true,
+      "detail": [
+        "칠하기 · paint_road · 바닥",
+        "칠하기 · paint_tiles · 바닥",
+        "찍기 · stamp_object · 물체"
+      ]
+    },
+    {
+      "name": "페이지 오류 없음",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "timeline": [
+    {
+      "name": "model-call-1",
+      "ms": 265
+    },
+    {
+      "name": "intent-reply",
+      "ms": 2485
+    },
+    {
+      "name": "run-request-sent",
+      "ms": 11188
+    },
+    {
+      "name": "run-request-decoded(대본 비용)",
+      "ms": 13790
+    },
+    {
+      "name": "chat-assistant-say-1",
+      "ms": 16311
+    },
+    {
+      "name": "checkpoint-road",
+      "ms": 17521
+    },
+    {
+      "name": "chat-applying-row",
+      "ms": 17528
+    },
+    {
+      "name": "reveal-playing",
+      "ms": 18685
+    },
+    {
+      "name": "chat-applied-row",
+      "ms": 18694
+    },
+    {
+      "name": "ack-1",
+      "ms": 18794
+    },
+    {
+      "name": "checkpoint-plaza",
+      "ms": 22717
+    },
+    {
+      "name": "ack-2",
+      "ms": 23915
+    },
+    {
+      "name": "checkpoint-house",
+      "ms": 29056
+    },
+    {
+      "name": "ack-3",
+      "ms": 46764
+    },
+    {
+      "name": "reveal-ended",
+      "ms": 47047
+    },
+    {
+      "name": "done",
+      "ms": 48857
+    },
+    {
+      "name": "model-call-2",
+      "ms": 49721
+    },
+    {
+      "name": "model-call-3",
+      "ms": 52187
+    }
+  ],
+  "videoAt": {
+    "model-call-1": 49.3,
+    "intent-reply": 51.6,
+    "run-request-sent": 60.3,
+    "run-request-decoded(대본 비용)": 62.9,
+    "chat-assistant-say-1": 65.4,
+    "checkpoint-road": 66.6,
+    "chat-applying-row": 66.6,
+    "reveal-playing": 67.8,
+    "chat-applied-row": 67.8,
+    "ack-1": 67.9,
+    "reveal-ended": 96.1,
+    "checkpoint-plaza": 71.8,
+    "ack-2": 73,
+    "checkpoint-house": 78.1,
+    "ack-3": 95.8,
+    "done": 97.9,
+    "model-call-2": 98.8,
+    "model-call-3": 101.3
+  },
+  "stage": "boot",
+  "tools": [
+    {
+      "name": "paint_road",
+      "steps": [
+        "paint:18"
+      ],
+      "synthetic": true
+    },
+    {
+      "name": "paint_tiles",
+      "steps": [
+        "paint:55"
+      ],
+      "synthetic": true
+    },
+    {
+      "name": "stamp_object",
+      "steps": [
+        "stamp:14"
+      ],
+      "synthetic": true
+    }
+  ],
+  "objectId": "obj:tree/snow/big-1",
+  "mapSize": [
+    20,
+    15
+  ],
+  "shownSteps": [
+    "칠하기 · paint_road · 바닥",
+    "칠하기 · paint_tiles · 바닥",
+    "찍기 · stamp_object · 물체"
+  ]
+}

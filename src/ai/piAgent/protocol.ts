@@ -176,7 +176,7 @@ type PiAgentEventPayload =
   | { readonly type: "agent_spawn"; readonly agentId: string; readonly role: PiTeamRoleId; readonly mapId: string | null; readonly mapName: string | null; readonly task: string; readonly memberId?: string; readonly label?: string; /** 검수 지적을 고치러 간 배정이면 그 검수 에이전트 id. 보드가 두 행을 잇는다. */ readonly fixOf?: string }
   | { readonly type: "agent_event"; readonly agentId: string; readonly event: PiAgentEvent }
   | { readonly type: "agent_done"; readonly agentId: string; readonly ok: boolean; readonly summary: string; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spills: readonly string[]; readonly conflicts: readonly string[] }
-  | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[] }
+  | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[]; readonly artChecks?: unknown }
   | { readonly type: "team_report"; readonly text: string }
   | { readonly type: "turn"; readonly index: number }
   /** 연결이 살아 있음. 내용은 없다 — 유휴 타임아웃을 지나가게 하고 브라우저 워치독의 시계가 된다. 보드는 무시한다. */

@@ -2243,6 +2243,11 @@ listening draft. A project `audioDescriptions.music` override replaces that
 draft for the track. Seamless loops are still preferred, and an unmatched name
 falls back to the field category instead of scanning the whole catalog.
 
+2026-10-04 실제 첫 제작의 ZIP 확인에서 기본 `기억의 길`이 미설치 곡을 고르는 실패를 발견했다.
+자동 추천의 후보·루프 폴백·스타터 폴백은 설치/CDN 가용성도 확인한다. 팩이 비었으면 코어 RTP
+`easyrpg-music-field-1`을 쓴다. `create_map`, `set_map_properties`, `set_project_settings`의
+명시적 미설치 카탈로그 BGM 쓰기도 거부하고 `recommend_bgm`으로 재선택을 안내한다.
+
 Game-over now has an AI route as well: `get_game_over` reads `system.gameOver`,
 `set_game_over` writes its title/message/button labels and background resource,
 and `generate_game_over_image` creates a clean 16:9 backdrop. Generation returns
