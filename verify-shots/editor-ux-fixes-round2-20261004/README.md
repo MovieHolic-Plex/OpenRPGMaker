@@ -66,7 +66,7 @@
 - `life/`, `extras/`, `selection/`, `progress-events/`는 첫 수정 통합 관측이다. `selection/`·`progress-events/`의 초기 구간에는 분할 mount가 계속되는 작업이 섞였다.
 - `selection-warm/`·`progress-events-warm/`은 `aria-busy` 종료 후 조작을 측정한다. 초기 mount가 빨라졌다는 증거로 사용하지 않는다. baseline warm 전체 선택 1,000개의 중앙값은 1,095ms이며 수정 warm 결과를 그대로 별도 JSON에 기록한다. 레이아웃·표시 비용과 50ms 이상 작업은 남는다.
 - `contracts/`는 실제 지형 페이지·컬링과 독립 full render 픽셀 비교다. resident bytes는 page의 세 배열만 세며 프로세스 heap/RSS가 아니다. 초기 geometry/fingerprint는 여전히 O(WH), edge raster dependency는 넓은 범위를 요구할 수 있다.
-- `data-resources/`, `animation/`, `storage-final/`, `extras-motion/`이 후속 통합 계약이다. 저장 왕복/SQLite 영수증 또는 게임 런타임 전체 검증으로 해석하지 않는다.
+- `data-resources/` 및 최신 main 통합 뒤 같은 계약을 반복한 `data-resources-final/`, `animation/`, `storage-final/`, `extras-motion/`이 후속 통합 계약이다. 저장 왕복/SQLite 영수증 또는 게임 런타임 전체 검증으로 해석하지 않는다.
 - `storage/`는 A/B 성능 원본이며 `storage-final/`은 최종 생산 파일의 계약 재확인이다. 원래 저장 fixture의 기본 칩셋 정규화 때문에 붓이 고르는 tile ID가 고정 1이라는 QA 가정은 틀렸다. 최종 계약은 실제 material/오토타일 선택을 유지하고 제출 전후 격자 쌍을 비교한다.
 - fixture 구축, dev HMR 모듈 동일성, 메뉴 클릭 및 Apply 후 새 편집 초안을 여는 기존 계약에 맞춰 QA 스크립트를 보정했다. 실패 캡처를 성공 증거로 세지 않는다.
 - 모든 캡처는 브라우저별 일회용 fixture로 실행했다. 실제 프로젝트 콘텐츠·원격 대화·라이브 모델에 쓰지 않았다. 조수의 viewport/백그라운드 실행 정책은 기존 경로를 유지한다.
