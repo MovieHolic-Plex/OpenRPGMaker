@@ -1,7 +1,7 @@
 // Dedicated runtime QA against the untouched, downloaded shipping package.
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve, extname, sep, basename } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -9,6 +9,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
 import { runRuntimeQa } from '../lib/runtimeQaRun.mjs';
+import { webUploadedAssetPath } from '../../src/project/webUploadedAssetPath.ts';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
 const root = resolve(process.env.LIVE_GAME_PACKAGE_OUT ?? 'output/qa/live-first-game', 'game-web');
@@ -37,19 +38,20 @@ assert.deepEqual(project.endings, canonical.document.endings, 'The actual author
 const presentationAssets = [];
 const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
   ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').map(scene => scene.resourceId)].filter(Boolean))];
-const mediaRoot = resolve(root, '__oprn/asset');
-const mediaFolders = existsSync(mediaRoot) ? (await readdir(mediaRoot, {withFileTypes:true})).filter(entry => entry.isDirectory()).map(entry => entry.name) : [];
 for (const id of artIds) {
   const saved = canonical.document.assets.uploaded[id];
   if (!saved) continue; // Legacy fixtures can use bundled artwork.
-  assert(saved.ref, 'Generated artwork must be saved in the canonical asset store');
-  assert.deepEqual(project.assets.uploaded[id]?.ref,saved.ref,'The exported artwork reference must match canonical storage');
-  const file = mediaFolders.map(folder => resolve(mediaRoot,folder,saved.ref.sha256)).find(file => existsSync(file));
-  assert(file,'The shipping package must include the actual saved artwork');
+  const inline = saved.dataUrl?.startsWith('data:image/') ? Buffer.from(saved.dataUrl.split(',')[1],'base64') : null;
+  assert(saved.ref || inline,'Generated artwork bytes must be present in canonical SQLite/assets');
+  if (saved.ref) assert.deepEqual(project.assets.uploaded[id]?.ref,saved.ref,'The exported artwork reference must match canonical storage');
+  const expectedHash = saved.ref?.sha256 ?? createHash('sha256').update(inline).digest('hex');
+  const expectedBytes = saved.ref?.bytes ?? inline.length;
+  const file = resolve(root,webUploadedAssetPath(saved));
+  assert(existsSync(file),'The shipping package must include the actual saved artwork');
   const bytes = await readFile(file);
-  assert.equal(createHash('sha256').update(bytes).digest('hex'),saved.ref.sha256,'Exported artwork bytes must match the canonical hash');
-  assert.equal(bytes.length,saved.ref.bytes);
-  presentationAssets.push({resourceId:id,sha256:saved.ref.sha256,bytes:bytes.length});
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),expectedHash,'Exported artwork bytes must match the canonical hash');
+  assert.equal(bytes.length,expectedBytes);
+  presentationAssets.push({resourceId:id,sha256:expectedHash,bytes:bytes.length,canonicalForm:saved.ref?'asset-ref':'sqlite-inline'});
 }
 for (const row of canonical.maps) {
   const map = JSON.parse(row.map_json), exported = project.maps[row.map_id];
