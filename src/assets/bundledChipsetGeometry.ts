@@ -6,7 +6,6 @@ import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import atlasBiomeInteriorSheet from "./atlasBiomeInteriorSheet.json";
 import { emeraldMonsterKitSheet } from "./emeraldMonsterKitAssets";
-import { monsterKitSheet } from "./monsterKitAssets";
 import {
   CASTLE_REFERENCE_TILESET_TEXTURE_KEY,
   CASTLE_REFERENCE_TILE_SIZE,
@@ -33,8 +32,6 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
-  const monsterKit = monsterKitSheet(key);
-  if (monsterKit) return monsterKit.tilesPerRow;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_shared_forest_village_objects") return 6;
   if (key === "tex_slates_32") return 56;
