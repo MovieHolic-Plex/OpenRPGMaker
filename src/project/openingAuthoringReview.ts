@@ -6,7 +6,8 @@ export function reviewOpeningAuthoring(project: Project) {
   const opening = project.system.opening;
   const warnings: string[] = [];
   const scenes = (opening?.scenes ?? []).map((scene, index) => {
-    const narrationCharacters = [...scene.narration.trim()].length;
+    const visibleText = [scene.narration, ...(scene.kind === 'animatic' ? scene.composition.layers.filter(l => l.kind === 'text').map(l => l.text ?? '') : [])].filter(Boolean).join('\n');
+    const narrationCharacters = [...visibleText.trim()].length;
     // A conservative heuristic for short Korean narration, not a reading-speed requirement.
     const estimatedReadingMs = narrationCharacters ? Math.ceil(1000 + narrationCharacters / 6 * 1000) : 0;
     if (narrationCharacters >= 100) warnings.push(`${scene.id}: 내레이션 ${narrationCharacters}자. 그림으로 전달할 내용을 줄일 수 있는지 검토하세요.`);
@@ -16,7 +17,8 @@ export function reviewOpeningAuthoring(project: Project) {
     return {
       index, id: scene.id, kind: scene.kind,
       resourceId: scene.kind === "image" || scene.kind === "video" ? scene.resourceId : null,
-      narrationPreview: [...scene.narration].slice(0, 80).join(""), narrationCharacters, estimatedReadingMs,
+      narrationPreview: [...visibleText].slice(0, 80).join(""), narrationCharacters, estimatedReadingMs,
+      imageResourceIds: scene.kind === 'image' ? [scene.resourceId] : scene.kind === 'animatic' ? [...new Set(scene.composition.layers.filter(l => l.kind === 'image' && l.resourceId).map(l => l.resourceId!))] : [],
       durationMs: scene.durationMs,
       advance: scene.kind === "video" ? (scene.durationMs > 0 ? "timer-or-video-end" : "video-end")
         : scene.durationMs > 0 ? "timer-or-confirm" : "confirm",
@@ -27,9 +29,9 @@ export function reviewOpeningAuthoring(project: Project) {
     };
   });
   const imageUses = new Map<string, string[]>();
-  for (const scene of scenes) if (scene.kind === "image" && scene.resourceId) {
-    const uses = imageUses.get(scene.resourceId) ?? [];
-    uses.push(scene.id); imageUses.set(scene.resourceId, uses);
+  for (const scene of scenes) for (const id of scene.imageResourceIds) {
+    const uses = imageUses.get(id) ?? [];
+    uses.push(scene.id); imageUses.set(id, uses);
   }
   const repeatedImages = [...imageUses].filter(([, ids]) => ids.length > 1)
     .map(([resourceId, sceneIds]) => ({ resourceId, sceneIds }));

@@ -360,8 +360,12 @@ const reviewOpening: ToolDefinition = {
     const isKnown = catalogLookup(project);
     const missingMedia = review.scenes.flatMap(scene => [
       ...(scene.resourceId && !isKnown(scene.kind === "video" ? "movie" : "image", scene.resourceId) ? [scene.resourceId] : []),
+      ...scene.imageResourceIds.filter(id => !hasOpeningImage(project, id)),
       ...(scene.narrationAudioResourceId && !isKnown("sound", scene.narrationAudioResourceId) ? [scene.narrationAudioResourceId] : []),
     ]);
+    for (const scene of project.system.opening?.scenes ?? []) if (scene.kind === 'animatic') {
+      for (const cue of scene.composition.audioCues ?? []) if (!isKnown('sound', cue.resourceId) && !isKnown('music', cue.resourceId)) missingMedia.push(cue.resourceId);
+    }
     if (review.musicResourceId && !isKnown("music", review.musicResourceId)) missingMedia.push(review.musicResourceId);
     const warnings = [...review.warnings];
     if (missingMedia.length) warnings.push(`찾을 수 없는 미디어 참조: ${[...new Set(missingMedia)].join(", ")}`);

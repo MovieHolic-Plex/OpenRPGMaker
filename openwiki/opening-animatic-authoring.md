@@ -55,3 +55,7 @@ and2.2..15seconds per panel. It atomically creates real960×720 black animatics
 with separate image/narrative layers, fades and typewriter reveal. Existing entry
 and music persist unless explicitly changed. The final shot sampling/review gate
 continues to apply after the last change. Music authoring: music-score-authoring.md.
+
+## Review includes authored layers
+
+`review_opening` counts real illustration IDs in animatic layers, includes displayed text layers in reading-time hints, and validates their illustration/audio cue references. A six-panel book with four source paintings reports four paintings rather than zero. Native playback and listening remain separate evidence.
