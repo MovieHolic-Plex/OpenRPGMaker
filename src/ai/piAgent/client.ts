@@ -9,6 +9,7 @@ import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, 
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 import { defaultYieldToUi } from "../yieldToUi";
+import { loadAiConfig } from '../llmClient';
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -72,6 +73,9 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
 }
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
+  const imageConfig = loadAiConfig();
+  request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
+    imageModel: request.imageModel ?? imageConfig.imageModel };
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();
@@ -123,9 +127,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       let png: string | undefined, issue: string | undefined;
       try {
         options.signal?.throwIfAborted();
-        const { renderPiMapImage } = await import("../toolImageRenderer");
+        const { renderPiToolImage } = await import("../toolImageRenderer");
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
-        const url = await renderPiMapImage(draft, event.data);
+        const url = await renderPiToolImage(draft, event.toolName, event.data);
         png = url.replace(/^data:image\/png;base64,/, "");
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
       const ack = await doFetch(companionAuthUrl("/v1/agent/render", request.provider), {

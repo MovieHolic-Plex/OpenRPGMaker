@@ -89,7 +89,9 @@ const opening = project.system.opening;
 const introduction = opening?.enabled && opening.scenes?.length ? opening.scenes.map((scene,index) => ({
   id:'opening-'+(index+1),note:'실제 오프닝을 건너뛰지 않고 자연 재생',
   ops:[...(index===0?[{kind:'key',key:'Enter'}]:[]),
-    {kind:'waitForAttr',testid:'cinematic-sequence',attr:'data-scene-id',value:scene.id,timeoutMs:30000}],
+    {kind:'waitForAttr',testid:'cinematic-sequence',attr:'data-scene-id',value:scene.id,timeoutMs:30000},
+    {kind:'waitForVisible',testid:'cinematic-sequence',timeoutMs:10000},
+    ...(scene.narration?[{kind:'waitForText',testid:'cinematic-sequence',text:scene.narration,timeoutMs:10000}]:[])],
   expect:{testidPresent:['cinematic-sequence']},shot:true,
 })) : [{id:'in-map-introduction',note:'첫 장소가 보이는 상태에서 실제 도입과 행동 안내',
   ops:[{kind:'key',key:'Enter'},{kind:'waitForRuntime'},
@@ -134,7 +136,7 @@ try {
         ...introduction,
         {id:'field',note:'짧은 실제 도입 완료 뒤 조작 반환',ops:[
           ...(opening?.enabled && opening.scenes?.length?[
-            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}]:[advance]),
+            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}, advance]:[advance]),
           {kind:'waitForAttr',testid:'runtime-state-json',attr:'data-live-flags',
             value:`${start.id}|${project.startPos.x}|${project.startPos.y}|true|false`,timeoutMs:30000}],
           expect:{mapId:start.id,x:project.startPos.x,y:project.startPos.y,playerSpriteTextureLoaded:true},shot:true},
