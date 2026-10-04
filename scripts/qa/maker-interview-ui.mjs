@@ -14,12 +14,13 @@ for(const size of [{width:1440,height:900},{width:960,height:540},{width:390,hei
  await p.evaluate(async()=>{await import('/src/editor/ui/projectInterviewDialog.ts');}).catch(()=>{});
  await p.waitForTimeout(2000);
  await p.goto(base+'/start-screen.html');
- await p.evaluate(async()=>{document.querySelector('#start-app')?.remove();const {createFirstWorldArrival}=await import('/src/start/firstWorldArrival.ts');window.__submitted=null;window.__arrival=createFirstWorldArrival({inputTestId:'qa-input',submitTestId:'qa-submit',genreTestId:c=>'qa-genre-'+c.id,onChoice:()=>{},onIntent:()=>{},onSubmit:(id,text)=>{window.__submitted={id,text};}});document.body.append(window.__arrival.element);});
+ // Complete Vite's module loading before tearing down the video-backed fixture.
+ await p.evaluate(async()=>{window.__interview=await import('/src/editor/ui/projectInterviewDialog.ts');document.querySelector('#start-app')?.remove();const {createFirstWorldArrival}=await import('/src/start/firstWorldArrival.ts');window.__submitted=null;window.__arrival=createFirstWorldArrival({inputTestId:'qa-input',submitTestId:'qa-submit',genreTestId:c=>'qa-genre-'+c.id,onChoice:()=>{},onIntent:()=>{},onSubmit:(id,text)=>{window.__submitted={id,text};}});document.body.append(window.__arrival.element);});
  await p.getByTestId('qa-genre-story-cutscene').click();
  await p.getByTestId('qa-submit').click();
  const clickOnly=await p.evaluate(()=>window.__submitted?.id==='story-cutscene'&&window.__submitted.text==='');if(!clickOnly)throw Error('Click-only arrival failed');
  await p.screenshot({path:out+`/arrival-${size.width}.png`});
- await p.evaluate(async()=>{window.__arrival.dispose();window.__arrival.element.remove();const {showProjectInterview}=await import('/src/editor/ui/projectInterviewDialog.ts');window.__brief=null;void showProjectInterview('story-cutscene').then(b=>window.__brief=b);});
+ await p.evaluate(()=>{window.__arrival.dispose();window.__arrival.element.remove();window.__brief=null;void window.__interview.showProjectInterview('story-cutscene').then(b=>window.__brief=b);});
  await p.getByTestId('project-interview-genre-romance').click();
  const rect=async id=>p.getByTestId(id).evaluate(e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height,visible:b.x>=0&&b.y>=0&&b.right<=innerWidth&&b.bottom<=innerHeight&&b.width>0&&b.height>0,uncovered:e.contains(document.elementFromPoint(b.x+b.width/2,b.y+b.height/2))};});
  const stages=[];stages.push({stage:'genre',button:await rect('project-interview-begin')});

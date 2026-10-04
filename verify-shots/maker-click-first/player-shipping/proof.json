@@ -132,10 +132,6 @@
       "status": 200
     },
     {
-      "path": "/assets/generated/title/oprn-title-field.png",
-      "status": 200
-    },
-    {
       "path": "/assets/easyrpg-chipset-exterior.png",
       "status": 200
     },
@@ -152,11 +148,19 @@
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/Actor2.png",
+      "path": "/assets/generated/title/oprn-title-field.png",
       "status": 200
     },
     {
       "path": "/assets/beodeul-city/beodeul-city-chipset.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor2.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision1.wav",
       "status": 200
     },
     {
@@ -168,11 +172,11 @@
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/Animal.png",
+      "path": "/assets/easyrpg/charset/Actor4.png",
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/Actor4.png",
+      "path": "/assets/easyrpg/charset/Animal.png",
       "status": 200
     },
     {
@@ -181,10 +185,6 @@
     },
     {
       "path": "/assets/easyrpg/charset/Monster2.png",
-      "status": 200
-    },
-    {
-      "path": "/assets/easyrpg/sound/Decision1.wav",
       "status": 200
     },
     {
@@ -200,15 +200,15 @@
       "status": 200
     },
     {
+      "path": "/assets/easyrpg/charset/People3.png",
+      "status": 200
+    },
+    {
       "path": "/assets/easyrpg/charset/People4.png",
       "status": 200
     },
     {
       "path": "/assets/easyrpg/charset/People5.png",
-      "status": 200
-    },
-    {
-      "path": "/assets/easyrpg/charset/People3.png",
       "status": 200
     },
     {
