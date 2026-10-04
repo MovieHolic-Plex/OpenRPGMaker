@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.118.2 — 2026-10-04
+
+### 수정
+
+- type the event storyboard host as HTMLElement (`82446a4`)
+- keep ci-full vitest inside the 12GB slice (`feb83ef`)
+
 ## 0.118.1 — 2026-10-04
 
 ### 수정
