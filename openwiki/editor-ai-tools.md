@@ -2614,3 +2614,26 @@ explicit project shop override and effective counts. make_opening_storybook defa
 to Enter-confirm pages and persistent illustration; automatic timelines require
 progression:auto. See opening-animatic-authoring.md. Successful tool output is authoring
 evidence; shipping playback and canonical save/reload remain separate requirements.
+
+## 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
+
+`monsterGameTools.ts`는 공용 `configure_monster_style(reference:emerald)`,
+`build_monster_game(mode:create|repair)`, `read_monster_game`, `review_monster_game`를
+등록한다. 전체 기본 요구는72맵·60종·8배지·리그·스토리·엔딩이며 작은 시작 예제로
+대체하지 않는다. 새 프로젝트 생성은 `createMonsterExpedition()`의 검토된 공용 원작
+캠페인을 재사용했다고 보고한다. 대형 아트/맵 데이터는 create의 `prepare`에서 지연
+로드하므로 headless는 `runToolAsync` 또는 `prepareTool` 후 `runTool`을 사용한다.
+
+create는 한 장의 미편집 `map_blank_start`만 자동 교체하고 기존 저작 게임은 거부한다.
+전체 폐기가 명시된 경우만 `replace:true`를 받는다. 기존 캠페인은 repair로 보수하며
+세션·시작·타일·DB 로스터를 재생성하지 않는다. 검토된 NPC/상점 수리는 원작
+`starlight-islands` 캠페인에만 적용한다. 사용자 오프닝은 보존하고 기본 오프닝이나
+명시 `replaceOpening:true`일 때만 공용 교수 소개를 연결한다. 모든 도구는 기존
+runner의 draft/admission/audit 경로를 통과한다. 다른 요청의 preservation
+`allowedChanges` 어휘를 전체 생성 예외로 넓히지 않는다.
+
+`monsterGameReview.ts`는 실제 정의/그림/타입/기술PP/진화/생태·배지/목표 참조·스타터/
+회복/상점/전투/조우/엔딩·전송 그래프·시작 통행·Enter 확인 도입·교수 초상·음악과
+480×320/camera2를 검사한다. 최종 읽기/검토와 실제 이미지 전달 영수증은
+`PiMonsterGameProduction`가 보유한다. 구조/리소스 검사이며 정상 난이도 플레이,
+청취, 실제 상점 거래와 정본 SQLite 저장/재로드 증거를 대신하지 않는다.

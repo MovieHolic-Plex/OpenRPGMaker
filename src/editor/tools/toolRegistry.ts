@@ -1,3 +1,4 @@
+import { MONSTER_GAME_TOOLS } from './monsterGameTools';
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
@@ -293,6 +294,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
   ...withDomain(MUSIC_AUTHORING_TOOLS, 'system'),
   ...withDomain(GAME_SYSTEM_AUTHORING_TOOLS, 'system'),
+  ...withDomain(MONSTER_GAME_TOOLS, 'system'),
   ...withDomain(NPC_PATROL_TOOLS, 'event'),
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),

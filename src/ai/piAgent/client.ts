@@ -267,6 +267,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
   if (checkpointError && !stale) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
+  if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));
+  if (done?.gameSystemProduction?.issues.length) throw new PiAgentClientError('게임 시스템 제작 미완료: ' + done.gameSystemProduction.issues.join(' '));
   if (done?.openingProduction?.issues.length) throw new PiAgentClientError('오프닝 제작 미완료: ' + done.openingProduction.issues.join(' '));
   if (done) return done;
   if (stale) {

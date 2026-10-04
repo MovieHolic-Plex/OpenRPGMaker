@@ -191,7 +191,7 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly gameSystemProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly openingProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
+  | { readonly type: "done"; readonly monsterGameProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly gameSystemProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly openingProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
       readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
       /** tilesets 가 바뀐 done 에서 그대로인 타일셋 id(PiProjectCheckpoint.unchangedTilesetIds 와 같은 뜻). */

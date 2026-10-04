@@ -3472,3 +3472,22 @@ Astra 실행에서 `generate_opening_image`가 `ui-required`만 반환하고 새
 사용하되 정본에 쓰지 않는다. 초기 intent 노출은 고정한 헤드리스 제작 평가다. 실제 클라이언트
 NDJSON 이미지 전달은 별도 브라우저 실행으로 확인했다. 오프닝의 실제 품질·내용, 정본 저장 후
 재로드, 출하 플레이어 검수는 `verify-shots/monster-assistant-opening-2026-10-03/REPORT.md`에 기록한다.
+
+## 일반 포켓몬형 요청의 전체 제작 계약 (2026-10-04)
+
+`monsterGameRequest.ts`의 공유 판정은 「포켓몬 같은 게임 만들어」와
+「Make a Pokemon-like game」 같은 명확한 전체 제작·보수 요청을 에메랄드 참고
+기본으로 해석한다. 질문·단일 NPC/상점 수정·명시 다른 포켓몬 판은 이 계약으로
+축소/승격하지 않는다. `classifyPlainPiTurn`이 전체 제작 도구와 공용 안내를 전달하며
+전체 DB/맵을 한 제작자가 소유하도록 단독 실행한다. `villageContract`도 이 범위를
+한 마을로 좁히지 않는다. 읽기 전용/계획 자율성 제한은 유지한다.
+
+실제 Pi runtime이 동일 요청 판정과 `PiMonsterGameProduction`를 사용한다. 설정만
+바꾸거나 완료 산문을 써도 전체 제작 성공이 되지 않는다. 실제 build 영수증,
+마지막 변경 뒤 read/review, 오프닝 그림 전달/검토, 실제 전체 프로젝트 검사 결과를
+수집한다. 공용 기본 생성/기존 오프닝 보수는 이 생산 계약이 맡으며 별도 오프닝
+생산기의 「변경되지 않은 오프닝」검사로 보존된 이야기까지 재생성을 강요하지 않는다.
+최대2회·기존 턴/시간 예산의 bounded repair를 공유하며 client는 캠페인/시스템/
+오프닝 미완료를 오류로 돌려 완료 처리하지 않는다. `playbackVerified:false`는
+실제 출하 플레이·정본 저장 증거가 필요하다는 뜻이다. 기존 heavy replay와 strict
+map bundle merge 계약은 변경하지 않았다.

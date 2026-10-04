@@ -1,3 +1,5 @@
+import { MONSTER_GAME_PRODUCTION_PROMPT } from '@/ai/piAgent/monsterGameRequest';
+import { EMERALD_MONSTER_AUTHORING_GUIDE } from '@/project/emeraldMonsterStyle';
 // editor/welcomeGenrePresets.ts
 // Welcome genre chips → fixed AI prompt templates (map + monster/item DB seed checklist).
 
@@ -170,13 +172,9 @@ export const MOON_CUTSCENE_STAGING_LINE =
  * 「실내 맵」 한 줄로는 안 바뀌었다. 개념 꾸러미가 빈 몬스터 프로젝트에서는 run_interior_room_pipeline 이 거부되므로 던전 방 파이프라인을 쓴다).
  */
 export const MONSTER_COLLECT_AUTHORING_GUIDE = [
-  "몬스터 수집 저작 요령:",
-  "- 전투는 잡은 몬스터가 싸운다 — configure_monster_system 을 부를 때는 battleParty:true 를 함께 준다.",
-  "- 첫 파트너는 give_starter_monsters(3종 선택 + 재지급 방지)로 만든다.",
-  "- 도로·필드 맵은 create_map 뒤 author_wild_route({mapId, exits, grassPatches, encounters:[{troopId,weight}]}) 로 흙길·숲·키큰 풀숲과 「풀숲에서만」 나오는 야생 조우를 한 번에 시공한다. 결과 exits 칸에 create_transfer_pair 로 문을 달고, trainerSpots 에 트레이너를 둔다.",
-  "- 트레이너·관장은 place_npc 페이지 commands 에 {kind:\"battleProcessing\", troopId:\"조회한 troop id\", canEscape:false, canLose:false} 를 넣는다. 트레이너의 몬스터는 upsert_enemy(speciesId) → upsert_troop 로 만든다.",
-  "- 체육관은 create_map 빈 잔디로 만들지 않는다 — run_dungeon_room_pipeline({mapId:\"map_gym\", name:\"○○ 체육관\", theme:\"stone\", character:\"crypt\", path:\"straight\", hazard:false, linkMapId:\"들어오는 맵\"}) 로 석상이 선 돌 회관을 시공하고, 관장은 입구에서 먼 안쪽 칸에 place_npc 로 세운다.",
-  "- 연구소·회복 센터·상점은 마을 집 실내를 쓴다 — 그 맵 이름을 시설 이름으로 바꾸고(set_map_properties) 마을 문 앞에 표지판을 둔다.",
+  EMERALD_MONSTER_AUTHORING_GUIDE,
+  MONSTER_GAME_PRODUCTION_PROMPT,
+  "새로 만드는 수집 게임의 전체 내용은 build_monster_game(mode:create)가 공용 몬스터 타일셋의 검토된72맵/60종을 작성한다. 커스텀 추가 맵은 현재 타일 참고문서를 읽고 기존 캠페인에 연결한다. 기본 왕국 실내·일반 던전 생성기로 몬스터 연구소/체육관을 대체하지 않는다.",
 ].join("\n");
 
 /** 마법사로 시작한 게임의 임시 제목 — 조수가 기획에 맞는 제목으로 바꾼다(레시피 이름이 게임 제목이 되던 결함). */
@@ -229,7 +227,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     return [
       `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
       gameDesignBriefContext(brief),
-      "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
+      preset.packId === "monster-collect" ? "확정 기획을 반영해 실제 전체72맵/60종/8체육관/리그/엔딩 캠페인을 제작하세요. 작은 시작 구간이나 설정만으로 완료하지 마세요." : "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
       ...(brief.interview ? [

@@ -184,3 +184,12 @@ When extending packs, add capability requirements that the shared runtime alread
   `presentationDelayMs: 0`은 결정적 호출자용이며 제품 기본값은 아니다.
 
 화면·저장 증거: `verify-shots/project-first-run/`. 이 세션에서는 AGENTS의 제한에 따라 gates/vitest를 실행하지 않았다.
+
+## 새 몬스터 프로젝트의 참고 프로필 (2026-10-04)
+
+편집기 `materializeGenreBlankProjectSystemPreset`는 몬스터 수집 새 프로젝트에
+공용 에메랄드 참고 프로필을 추가한다. 일반 엔진 `applyGenrePreset`는 기존 collector
+토글 계약을 유지한다. welcome의 AI 기획 전달은 공용 전체72맵/60종 생성·보수 도구와
+교수 소개 안내를 포함한다. AI 없는 「예제로 시작」는 기존 작은 플레이 구간이며
+완성 캠페인으로 표시하지 않는다. 공유 계약/실제 출하 증거는
+[emerald-monster-production.md](emerald-monster-production.md)를 따른다.
