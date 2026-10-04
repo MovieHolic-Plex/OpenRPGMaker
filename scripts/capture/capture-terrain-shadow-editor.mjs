@@ -20,7 +20,7 @@ try{
  const chooseMap=async id=>{await page.getByTestId('sidebar-map-switcher').click();await page.getByTestId('map-tree-node-'+id).click();const close=page.getByTestId('sidebar-maps-close');if(await close.isVisible().catch(()=>false))await close.click();await page.waitForTimeout(700);};
  await chooseMap('houses_native');await chooseMap('shadow_receivers');
  await page.getByTestId('layer-relief').first().click();await page.getByTestId('editor-zoom-stepper').click();await page.getByTestId('editor-zoom-0.5').click();await idle();captureStart=Date.now()-started;
- await caption('실제 에디터 · 높이 붓 지형과 도로 · 태양 65°');await shot('01-height-and-road');
+ await caption('실제 에디터 · 높이 붓 지형과 도로 · 태양 '+snapshot().maps.shadow_receivers.sunlight.altitude+'°');await shot('01-height-and-road');
  await openSun();await sunNumber('altitude',45);await saved(m=>m.sunlight.altitude===45);await page.keyboard.press('Escape');await idle();
  await page.getByTestId('terrain-tool-height').click();await page.getByTestId('relief-mode-set').click();await page.getByTestId('relief-size-M').click();
  for(let i=0;i<14;i++){const level=parseInt(await page.getByTestId('relief-level-value').textContent(),10);if(level===6)break;await page.getByTestId(level<6?'relief-level-up':'relief-level-down').click();}

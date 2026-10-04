@@ -3,17 +3,21 @@ import fs from 'node:fs';import assert from 'node:assert/strict';import {PNG} fr
 import {SunlightField} from '../../src/project/sunlight';
 import {SunlightField as BeforeField} from '../../.vite-cache/terrain-shadows/sunlight-before';
 import {rasterSunlightArt} from '../../src/project/sunlightArt';
+import {renderRelief} from '../../src/project/relief/render';
+import {reliefGrids} from '../../src/project/relief/window';
+import {reliefRenderOptions} from '../../src/project/relief/screen';
 import {renderMapPng,renderToolRegionPngBase64} from '../qa-game/render.mts';
 const p=JSON.parse(fs.readFileSync('.vite-cache/terrain-shadows/fixture.json','utf8'));
 const t=p.tilesets.beodeul_city,art=rasterSunlightArt(PNG.sync.read(fs.readFileSync('public/assets/beodeul-city/beodeul-city-chipset.png')),t.tileSize,t.tilesPerRow);
 const counts=(field,geometry?)=>{const alpha=new Map<string,number>();let duplicates=0,pixels=0,hidden=0;
  for(let y=0;y<field.map.height;y++){const r=field.row(y);for(let py=0;py<r.h;py++)for(let px=0;px<r.w;px++)if(r.rgba[(py*r.w+px)*4+3]){
   const key=`${r.x+px},${r.y+py}`;if(alpha.has(key))duplicates++;alpha.set(key,(alpha.get(key)??0)+1);pixels++;
-  if(geometry){const x=(r.x+px+.5)/4,sy=(r.y+py+.5)/4,bx=Math.floor(x/16),by=Math.floor(sy/16),receivers=geometry.receivers(bx,by),j=Math.floor((sy-by*16)*4)*64+Math.floor((x-bx*16)*4);if(receivers.owner[j]!==y)hidden++;}
+  if(geometry){const x=Math.floor((r.x+px+.5)*4),sy=Math.floor((r.y+py+.5)*4)+geometry.pad,j=sy*geometry.PW+x;
+   if(sy<0||sy>=geometry.SH||Math.floor(geometry.src[j]/field.map.width)!==y)hidden++;}
  }}return {duplicates,pixels,hidden,unique:alpha.size};};
 const checks=[],results=[];
 for(const mapId of ['shadow_receivers','houses_native']){
- const m=p.maps[mapId],geometry=new SunlightField(m,t,art),old=counts(new BeforeField(m,t,art),geometry),next=counts(geometry,geometry);
+ const m=p.maps[mapId],geometry=renderRelief(reliefGrids(m.relief).eff,{...reliefRenderOptions(m.relief),transparentGround:false}),old=counts(new BeforeField(m,t,art),geometry),next=counts(new SunlightField(m,t,art),geometry);
  assert.equal(next.duplicates,0);assert.ok(next.pixels>0);results.push({mapId,before:old,after:next});
 }
 checks.push('each visible ground/cliff pixel receives sunlight opacity once; hidden receivers are excluded');
