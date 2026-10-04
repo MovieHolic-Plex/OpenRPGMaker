@@ -1,4 +1,4 @@
-"""Build only classes pilot artifacts; no project persistence, registration or status write."""
+"""Build only classes full artifacts; no project persistence, registration or status write."""
 import argparse
 import hashlib
 import json
@@ -30,6 +30,9 @@ def sha(path):
 def starter_equipment(role):
     return [f'equip_jf_{role}_{slot}_1' for slot in ['weapon', 'body']]
 
+def equipment_for_role(role):
+    return [f'equip_jf_{role}_{slot}_{tier}' for tier in range(1, 5) for slot in ['weapon', 'body']]
+
 def total_exp(level):
     return sum(EXP['base'] + math.floor(EXP['extra'] * (n - 1) ** 0.9) + (n - 2) * EXP['acceleration'] for n in range(2, level + 1))
 
@@ -50,7 +53,7 @@ def main():
         curve = {key: [start[i] + gains[i] * min(level - 1, 19) for level in range(1, 100)] for i, key in enumerate(KEYS)}
         skill_ids = ids['classSkills'].get(role, ['skill_attack'])
         learned = [{'level': level, 'skillId': skill} for level, skill in zip(LEVELS if role != 'novice' else [1], skill_ids)]
-        equipment = starter_equipment(role) if role != 'novice' else []
+        equipment = equipment_for_role(role) if role != 'novice' else []
         classes.append({
             'id': ids['classes'][role], 'name': name,
             'options': {'dualWield': False, 'autoBattle': False, 'fixedEquipment': False, 'mightyGuard': False},
@@ -73,17 +76,17 @@ def main():
             'levelOne': dict(zip(KEYS, start)), 'gainPerLevel': dict(zip(KEYS, gains)),
             'levelTwenty': {key: curve[key][19] for key in KEYS},
             'snapshots': [{'level': level, **{key: curve[key][level - 1] for key in KEYS}} for level in [1, 3, 5, 8, 12, 16, 20]],
-            'learning': [{'level': entry['level'], 'skillId': entry['skillId'], 'definitionOwner': 'existing-engine' if role == 'novice' else 'skills', 'pilotDefinitionExpected': entry['level'] <= 3} for entry in learned],
-            'starterEquipmentIds': equipment,
-            'futureEquipmentIdPattern': None if role == 'novice' else f'equip_jf_{role}_<weapon|body>_<2|3|4>',
+            'learning': [{'level': entry['level'], 'skillId': entry['skillId'], 'definitionOwner': 'existing-engine' if role == 'novice' else 'root-skills-source'} for entry in learned],
+            'starterEquipmentIds': starter_equipment(role) if role != 'novice' else [],
+            'equipmentIds': equipment,
+            'equipmentByTier': [] if role == 'novice' else [{'tier': tier, 'recommendedLevel': level, 'equipmentIds': [f'equip_jf_{role}_{slot}_{tier}' for slot in ['weapon', 'body']]} for tier, level in zip(range(1, 5), [1, 5, 10, 15])],
             'equipmentRecommendationLevels': [1, 5, 10, 15],
-            'traits': {'dualWield': False, 'mightyGuard': False, 'reason': '첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false.'},
+            'traits': {'dualWield': False, 'mightyGuard': False, 'reason': '직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false.'},
         })
     write_json('data.json', {'classes': classes})
-    delayed = [skill for job in jobs for skill in ids['classSkills'][job][2:]]
     design = {
-        'packId': ids['packId'], 'phase': 'pilot', 'engine': {'battleModel': 'rm2k3', 'skin': 'retro2003', 'mpLabel': '기력', 'resource2': False},
-        'scope': '초보+네 직업 레코드. 클래스 성장 1~20과 24개 예약 기술 연결. 실제 등록·배우/이벤트 교체·정본 저장은 감독자 통합 단계.',
+        'packId': ids['packId'], 'phase': 'full', 'engine': {'battleModel': 'rm2k3', 'skin': 'retro2003', 'mpLabel': '기력', 'resource2': False},
+        'scope': '완성 5클래스. 성장 1~20, 기술24개 습득 계약, 직업별 무기/의복4등급 권한32개. 전체 기술·적·그림 원본, 배우 곡선·전직 이벤트 교체, 실제 저장은 root 소유다.',
         'roles': roles,
         'balance': {
             'curveRule': 'L1 + (min(level,20)-1) × gainPerLevel; 99개 정수 배열. Lv21~99는 Lv20 반복으로 정규화 폴백을 방지하며 게임 범위가 아니다.',
@@ -113,7 +116,7 @@ def main():
             'commandExamples': [{'kind': 'promoteActor', 'actorId': hero['id'], 'toClassId': ids['classes'][job]} for job in jobs],
             'cancel': 'promoteActor/changeActorClass를 호출하지 않는다. 초보와 HP/MP/스킬/장비/소지품을 유지한다.',
             'implicitTargetHazard': 'toClassId를 생략하면 첫 조건 충족 경로(전사)를 선택하므로 네 선택지 모두 명시해야 한다.',
-            'permanentChoice': '네 직업에 추가 promotions가 없다. 재전직/고급직업은 첫 샘플 범위가 아니다.',
+            'permanentChoice': '네 직업에 추가 promotions가 없다. 재전직/고급직업은 이 팩 범위가 아니다.',
             'vitalsOnPromotion': '레벨·경험치 유지, HP/MP 회복 없음. 새 최대치가 낮으면 현재치를 상한으로 제한한다.',
             'skillOnPromotion': '현재 레벨까지 초보의 기본 공격을 보존하고 새 직업 습득 목록을 더한다. 이전 직업의 미래 기술은 배우지 않는다.',
         },
@@ -124,24 +127,26 @@ def main():
             'persistence': '클래스 담당은 체험 이벤트나 실제 저장 서비스를 수정하지 않는다.',
         },
         'integration': {
-            'owner': 'supervisor', 'projectWritesByThisWorker': False,
+            'owner': 'root', 'projectWritesByThisWorker': False,
             'currentHero': {'actorId': hero['id'], 'name': hero['name'], 'classId': hero['classId'], 'characterResourceId': hero['characterResourceId'], 'characterIndex': hero.get('characterIndex', 0)},
             'actorChangesRequired': [
                 {'actorId': hero['id'], 'classId': ids['classes']['novice'], 'initialLevel': 1, 'maxLevel': 20, 'parameterCurvesFromClassId': ids['classes']['novice'], 'expCurveFromClassId': ids['classes']['novice'], 'learnedSkills': [{'level': 1, 'skillId': 'skill_attack'}]},
                 *[{'actorId': actor_id, 'classId': ids['classes'][job], 'maxLevel': 20, 'parameterCurvesFromClassId': ids['classes'][job], 'expCurveFromClassId': ids['classes'][job]} for actor_id, job in [('actor_scout', 'rogue'), ('actor_mage', 'shaman'), ('actor_cleric', 'taoist')]],
             ],
-            'initialClassCurveCaution': 'classIdだけ書き換えても明示的classOverride前の能力値はactor.parameterCurvesを使う。初期固定職の仲間にも職業曲線を写す。',
-            'heroInitialEquipment': '既存装備は変更しない。新職業を選ぶと旧装備が自動解除されるとは限らない。必要なら既存装備を返却・解除してから契約初級装備を明示的に付ける。',
+            'initialClassCurveCaution': '명시적 classOverrides 전에는 actor.parameterCurves를 사용한다. root가 초보 하람과 초기 고정직 동료에게 직업 곡선을 복사한다.',
+            'heroInitialEquipment': 'root가 전직 뒤 옛 장비 반환·해제와 해당 직업 초급 장비 지급·장착을 처리한다. promoteActor 자체가 기존 장비를 자동 해제한다고 가정하지 않는다.',
             'actorBattleCommandIds': '빈 목록/생략이면 직업의 한국어 명령을 쓴다. 배우별 battleCommandIds와 전투 이벤트 명령 override는 별도로 우선하므로 감독자가 확인한다.',
             'existingChoiceEvents': '기존 class_hero/class_scout/class_mage/class_cleric 선택 이벤트를 계약 ID로 바꾼다. data.json을 더하는 것만으로 기존 이벤트가 바뀌지는 않는다.',
-            'skillDependencies': {'pilotExpected': [skill for job in jobs for skill in ids['classSkills'][job][:2]], 'reservedNotExpectedInSkillsPilot': delayed},
-            'equipmentDependencies': [e for job in jobs for e in starter_equipment(job)],
-            'equipmentIdSource': 'equipment-prompt.md固定指示: equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_1。ids.json自体にはequipment一覧がない。',
-            'equipmentPermissionRule': 'canEquip는 actorId/classId/장비ID의 OR다. class.equipmentPermissions.actorIds와 classIds는 빈 목록. 장비 측 equippableActorIds도 비우고 equippableClassIds는 해당 직업만 지정한다. 후속 등급은 장비 측 직업 허용으로 사용된다.',
-            'referencesBeforePlay': '24개 기술 전체 참조를 검사하는 엄격한 가져오기는 후속 16개 기술 정의를 기다려야 한다. 첫 통합에서는 레벨 5 이상 기술 사용을 완료로 취급하지 않는다. 누락 ID를 옛 기술로 대체하지 않는다.',
+            'skillDependencies': {'owner': 'root-skills-source', 'requiredIds': [skill for job in jobs for skill in ids['classSkills'][job]]},
+            'equipmentDependencies': [e for job in jobs for e in equipment_for_role(job)],
+            'equipmentIdSource': '사용자 full 지시의 고정 패턴: equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_<1|2|3|4>. ids.json에는 장비 목록이 없으며 기존 equipment 지시와 동일한 패턴을 쓴다.',
+            'equipmentPermissionRule': 'canEquip는 actorId/classId/장비ID의 OR다. class.equipmentPermissions.actorIds와 classIds는 빈 목록. 장비 측 equippableActorIds도 비우고 equippableClassIds는 해당 직업만 지정한다. 직업별 equipmentIds는 자기 무기/의복1~4등급만 명시한다. 공유 장비는 EquipmentRecord.equippableClassIds로 허용하며 클래스의 포괄 목록을 채우지 않는다. ItemRecord 장비형이면 원래 필드는 equipmentProfile.equippableClassIds다.',
+            'referencesBeforePlay': 'root가 같은 원본에서 관리하는 전체 skills/equipment를 합쳐 기술24개·직업 장비32개 참조를 확인한다. 읽기 전용 pilot prototype의 누락은 full 팩 완료 여부를 뜻하지 않는다. classes 담당은 기술·적·그림 원본을 수정하지 않는다.',
+            'engineApiHandoff': {'normalize': 'normalizeClassRecord(record)', 'promotion': 'promoteActor(session, project, actorId, toClassId)', 'promotionEvent': {'kind': 'promoteActor', 'actorId': 'actor_hero', 'toClassId': 'class_jf_<warrior|rogue|shaman|taoist>'}, 'equipment': 'canEquip(project, actor, equipment, classId)', 'classPermissions': 'ClassRecord.equipmentPermissions.{actorIds,classIds,equipmentIds}', 'sharedEquipment': 'EquipmentRecord.equippableClassIds', 'equipmentItem': 'ItemRecord.equipmentProfile.equippableClassIds', 'effectiveClass': 'effectiveActorClassId(project, session, actorId)'},
+            'equipmentLevelPolicy': '1/5/10/15는 착용 권장 레벨이며 canEquip에 레벨 조건을 새로 발명하지 않는다. 획득/상점 배치는 root가 정한다.',
         },
         'art': {'purpose': '검토 근거 PNG만. ClassRecord에 그림 필드가 없어 새 sprite나 resourceId를 만들지 않는다.', 'characterSource': 'public/assets/easyrpg/charset/Actor1.png', 'newCharacterSprites': 0, 'previewSampling': 'native 24x32 원본 크롭; 확대는 nearest neighbor만'},
-        'approval': {'authorReview': 'REVIEW.md에 실제 PNG 검토 근거를 기록한다.', 'userApproved': False, 'meaningOfReady': '첫 샘플 파일 저장·정규화·순수 전직 smoke 완료. 사용자 승인·실게임 통합·정본 저장 합격이 아니다.'},
+        'approval': {'authorReview': 'REVIEW.md에 실제 PNG 검토 근거를 기록한다.', 'userApproved': False, 'meaningOfReady': 'full 클래스 파일 저장·정규화·순수 전직/장비 권한 smoke 완료. 사용자 승인·실게임 통합·정본 저장 합격이 아니다.'},
     }
     write_json('design.json', design)
     draw_preview(classes, hero)
@@ -155,7 +160,7 @@ def main():
         'generatedFiles': {name: {'sha256': sha(HERE / name), 'bytes': (HERE / name).stat().st_size} for name in outputs},
         'generator': {'path': 'content-packs/joseon-folklore/classes/build.py', 'sha256': sha(Path(__file__))},
     })
-    print(json.dumps({'classes': len(classes), 'skillsLinked': 25, 'reservedSkillsBeyondPilot': len(delayed), 'output': str(HERE)}, ensure_ascii=False))
+    print(json.dumps({'classes': len(classes), 'skillsLinked': 25, 'equipmentPermissionLinks': sum(len(c['equipmentPermissions']['equipmentIds']) for c in classes), 'output': str(HERE)}, ensure_ascii=False))
 
 def draw_preview(classes, hero):
     source = ROOT / 'public/assets/easyrpg/charset/Actor1.png'
@@ -172,7 +177,7 @@ def draw_preview(classes, hero):
     text = ImageFont.truetype(font_path, 16)
     small = ImageFont.truetype(font_path, 14)
     draw.rectangle((16, 16, 1255, 939), fill='#f7f3e8')
-    draw.text((38, 32), '조선 설화 · 직업 첫 샘플', font=title, fill='#292a29')
+    draw.text((38, 32), '조선 설화 · 완성 직업 5종', font=title, fill='#292a29')
     draw.text((38, 75), '동일 Actor1 유지 / 미장비 수치 / 레벨 1 → 20 / 한국어 전투 명령', font=text, fill='#555650')
     for i, c in enumerate(classes):
         role = list(BLUEPRINT)[i]
@@ -197,7 +202,7 @@ def draw_preview(classes, hero):
         draw.text((x + 15, y + 542), '습득 1 / 3 / 5 / 8 / 12 / 16' if role != 'novice' else '기본 공격만 습득', font=small, fill='#5b6156')
         draw.text((x + 15, y + 567), '쌍수·강화방어 없음', font=small, fill='#5b6156')
     draw.text((38, 739), '전직 확정: 레벨·경험치 유지 / 체력·기력 회복 없음 / 선택한 직업 ID를 명시', font=text, fill='#3d443c')
-    draw.text((38, 775), '레벨 5 이상 기술 16개는 예약 연결. 이번 skills 샘플은 직업별 레벨 1·3까지만 정의.', font=text, fill='#66522e')
+    draw.text((38, 775), '무기·의복 1~4등급: 자기 직업만 허용 / 공유 장비는 장비 측 직업 허용 / 전체 기술 정의는 root 소유', font=text, fill='#66522e')
     draw.text((38, 811), '이 PNG는 원본 그림과 실제 data.json 수치를 조립한 검토 자료. 실행 화면·사용자 승인 증거가 아님.', font=small, fill='#5b6156')
     draw.text((38, 859), 'Actor1: Marina Navarro Travesset (base), VictorSena (edit) · EasyRPG RTP · CC BY 4.0', font=small, fill='#666b61')
     draw.text((38, 886), '전경 픽셀 무수정 · 배경 키 투명화 · 배율 3× nearest neighbor · 직업 데이터/검토 레이아웃: classes 담당', font=small, fill='#666b61')

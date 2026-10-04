@@ -1,13 +1,13 @@
 {
   "packId": "joseon-folklore",
-  "phase": "pilot",
+  "phase": "full",
   "engine": {
     "battleModel": "rm2k3",
     "skin": "retro2003",
     "mpLabel": "기력",
     "resource2": false
   },
-  "scope": "초보+네 직업 레코드. 클래스 성장 1~20과 24개 예약 기술 연결. 실제 등록·배우/이벤트 교체·정본 저장은 감독자 통합 단계.",
+  "scope": "완성 5클래스. 성장 1~20, 기술24개 습득 계약, 직업별 무기/의복4등급 권한32개. 전체 기술·적·그림 원본, 배우 곡선·전직 이벤트 교체, 실제 저장은 root 소유다.",
   "roles": [
     {
       "role": "novice",
@@ -107,12 +107,12 @@
         {
           "level": 1,
           "skillId": "skill_attack",
-          "definitionOwner": "existing-engine",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "existing-engine"
         }
       ],
       "starterEquipmentIds": [],
-      "futureEquipmentIdPattern": null,
+      "equipmentIds": [],
+      "equipmentByTier": [],
       "equipmentRecommendationLevels": [
         1,
         5,
@@ -122,7 +122,7 @@
       "traits": {
         "dualWield": false,
         "mightyGuard": false,
-        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+        "reason": "직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
       }
     },
     {
@@ -223,45 +223,82 @@
         {
           "level": 1,
           "skillId": "skill_jf_cleaving_strike",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 3,
           "skillId": "skill_jf_iron_breath",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 5,
           "skillId": "skill_jf_whirlwind_cut",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 8,
           "skillId": "skill_jf_earth_split",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 12,
           "skillId": "skill_jf_blood_oath",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 16,
           "skillId": "skill_jf_mountain_guard",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         }
       ],
       "starterEquipmentIds": [
         "equip_jf_warrior_weapon_1",
         "equip_jf_warrior_body_1"
       ],
-      "futureEquipmentIdPattern": "equip_jf_warrior_<weapon|body>_<2|3|4>",
+      "equipmentIds": [
+        "equip_jf_warrior_weapon_1",
+        "equip_jf_warrior_body_1",
+        "equip_jf_warrior_weapon_2",
+        "equip_jf_warrior_body_2",
+        "equip_jf_warrior_weapon_3",
+        "equip_jf_warrior_body_3",
+        "equip_jf_warrior_weapon_4",
+        "equip_jf_warrior_body_4"
+      ],
+      "equipmentByTier": [
+        {
+          "tier": 1,
+          "recommendedLevel": 1,
+          "equipmentIds": [
+            "equip_jf_warrior_weapon_1",
+            "equip_jf_warrior_body_1"
+          ]
+        },
+        {
+          "tier": 2,
+          "recommendedLevel": 5,
+          "equipmentIds": [
+            "equip_jf_warrior_weapon_2",
+            "equip_jf_warrior_body_2"
+          ]
+        },
+        {
+          "tier": 3,
+          "recommendedLevel": 10,
+          "equipmentIds": [
+            "equip_jf_warrior_weapon_3",
+            "equip_jf_warrior_body_3"
+          ]
+        },
+        {
+          "tier": 4,
+          "recommendedLevel": 15,
+          "equipmentIds": [
+            "equip_jf_warrior_weapon_4",
+            "equip_jf_warrior_body_4"
+          ]
+        }
+      ],
       "equipmentRecommendationLevels": [
         1,
         5,
@@ -271,7 +308,7 @@
       "traits": {
         "dualWield": false,
         "mightyGuard": false,
-        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+        "reason": "직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
       }
     },
     {
@@ -372,45 +409,82 @@
         {
           "level": 1,
           "skillId": "skill_jf_double_stab",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 3,
           "skillId": "skill_jf_venom_edge",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 5,
           "skillId": "skill_jf_shadow_step",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 8,
           "skillId": "skill_jf_heart_pierce",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 12,
           "skillId": "skill_jf_smoke_screen",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 16,
           "skillId": "skill_jf_moon_slash",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         }
       ],
       "starterEquipmentIds": [
         "equip_jf_rogue_weapon_1",
         "equip_jf_rogue_body_1"
       ],
-      "futureEquipmentIdPattern": "equip_jf_rogue_<weapon|body>_<2|3|4>",
+      "equipmentIds": [
+        "equip_jf_rogue_weapon_1",
+        "equip_jf_rogue_body_1",
+        "equip_jf_rogue_weapon_2",
+        "equip_jf_rogue_body_2",
+        "equip_jf_rogue_weapon_3",
+        "equip_jf_rogue_body_3",
+        "equip_jf_rogue_weapon_4",
+        "equip_jf_rogue_body_4"
+      ],
+      "equipmentByTier": [
+        {
+          "tier": 1,
+          "recommendedLevel": 1,
+          "equipmentIds": [
+            "equip_jf_rogue_weapon_1",
+            "equip_jf_rogue_body_1"
+          ]
+        },
+        {
+          "tier": 2,
+          "recommendedLevel": 5,
+          "equipmentIds": [
+            "equip_jf_rogue_weapon_2",
+            "equip_jf_rogue_body_2"
+          ]
+        },
+        {
+          "tier": 3,
+          "recommendedLevel": 10,
+          "equipmentIds": [
+            "equip_jf_rogue_weapon_3",
+            "equip_jf_rogue_body_3"
+          ]
+        },
+        {
+          "tier": 4,
+          "recommendedLevel": 15,
+          "equipmentIds": [
+            "equip_jf_rogue_weapon_4",
+            "equip_jf_rogue_body_4"
+          ]
+        }
+      ],
       "equipmentRecommendationLevels": [
         1,
         5,
@@ -420,7 +494,7 @@
       "traits": {
         "dualWield": false,
         "mightyGuard": false,
-        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+        "reason": "직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
       }
     },
     {
@@ -521,45 +595,82 @@
         {
           "level": 1,
           "skillId": "skill_jf_ember_charm",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 3,
           "skillId": "skill_jf_frost_charm",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 5,
           "skillId": "skill_jf_thunder_charm",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 8,
           "skillId": "skill_jf_spirit_drain",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 12,
           "skillId": "skill_jf_ghost_seal",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 16,
           "skillId": "skill_jf_heaven_fire",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         }
       ],
       "starterEquipmentIds": [
         "equip_jf_shaman_weapon_1",
         "equip_jf_shaman_body_1"
       ],
-      "futureEquipmentIdPattern": "equip_jf_shaman_<weapon|body>_<2|3|4>",
+      "equipmentIds": [
+        "equip_jf_shaman_weapon_1",
+        "equip_jf_shaman_body_1",
+        "equip_jf_shaman_weapon_2",
+        "equip_jf_shaman_body_2",
+        "equip_jf_shaman_weapon_3",
+        "equip_jf_shaman_body_3",
+        "equip_jf_shaman_weapon_4",
+        "equip_jf_shaman_body_4"
+      ],
+      "equipmentByTier": [
+        {
+          "tier": 1,
+          "recommendedLevel": 1,
+          "equipmentIds": [
+            "equip_jf_shaman_weapon_1",
+            "equip_jf_shaman_body_1"
+          ]
+        },
+        {
+          "tier": 2,
+          "recommendedLevel": 5,
+          "equipmentIds": [
+            "equip_jf_shaman_weapon_2",
+            "equip_jf_shaman_body_2"
+          ]
+        },
+        {
+          "tier": 3,
+          "recommendedLevel": 10,
+          "equipmentIds": [
+            "equip_jf_shaman_weapon_3",
+            "equip_jf_shaman_body_3"
+          ]
+        },
+        {
+          "tier": 4,
+          "recommendedLevel": 15,
+          "equipmentIds": [
+            "equip_jf_shaman_weapon_4",
+            "equip_jf_shaman_body_4"
+          ]
+        }
+      ],
       "equipmentRecommendationLevels": [
         1,
         5,
@@ -569,7 +680,7 @@
       "traits": {
         "dualWield": false,
         "mightyGuard": false,
-        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+        "reason": "직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
       }
     },
     {
@@ -670,45 +781,82 @@
         {
           "level": 1,
           "skillId": "skill_jf_life_water",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 3,
           "skillId": "skill_jf_purify",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": true
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 5,
           "skillId": "skill_jf_protective_talisman",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 8,
           "skillId": "skill_jf_revive",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 12,
           "skillId": "skill_jf_spring_rain",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         },
         {
           "level": 16,
           "skillId": "skill_jf_heaven_blessing",
-          "definitionOwner": "skills",
-          "pilotDefinitionExpected": false
+          "definitionOwner": "root-skills-source"
         }
       ],
       "starterEquipmentIds": [
         "equip_jf_taoist_weapon_1",
         "equip_jf_taoist_body_1"
       ],
-      "futureEquipmentIdPattern": "equip_jf_taoist_<weapon|body>_<2|3|4>",
+      "equipmentIds": [
+        "equip_jf_taoist_weapon_1",
+        "equip_jf_taoist_body_1",
+        "equip_jf_taoist_weapon_2",
+        "equip_jf_taoist_body_2",
+        "equip_jf_taoist_weapon_3",
+        "equip_jf_taoist_body_3",
+        "equip_jf_taoist_weapon_4",
+        "equip_jf_taoist_body_4"
+      ],
+      "equipmentByTier": [
+        {
+          "tier": 1,
+          "recommendedLevel": 1,
+          "equipmentIds": [
+            "equip_jf_taoist_weapon_1",
+            "equip_jf_taoist_body_1"
+          ]
+        },
+        {
+          "tier": 2,
+          "recommendedLevel": 5,
+          "equipmentIds": [
+            "equip_jf_taoist_weapon_2",
+            "equip_jf_taoist_body_2"
+          ]
+        },
+        {
+          "tier": 3,
+          "recommendedLevel": 10,
+          "equipmentIds": [
+            "equip_jf_taoist_weapon_3",
+            "equip_jf_taoist_body_3"
+          ]
+        },
+        {
+          "tier": 4,
+          "recommendedLevel": 15,
+          "equipmentIds": [
+            "equip_jf_taoist_weapon_4",
+            "equip_jf_taoist_body_4"
+          ]
+        }
+      ],
       "equipmentRecommendationLevels": [
         1,
         5,
@@ -718,7 +866,7 @@
       "traits": {
         "dualWield": false,
         "mightyGuard": false,
-        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+        "reason": "직업 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
       }
     }
   ],
@@ -916,7 +1064,7 @@
     ],
     "cancel": "promoteActor/changeActorClass를 호출하지 않는다. 초보와 HP/MP/스킬/장비/소지품을 유지한다.",
     "implicitTargetHazard": "toClassId를 생략하면 첫 조건 충족 경로(전사)를 선택하므로 네 선택지 모두 명시해야 한다.",
-    "permanentChoice": "네 직업에 추가 promotions가 없다. 재전직/고급직업은 첫 샘플 범위가 아니다.",
+    "permanentChoice": "네 직업에 추가 promotions가 없다. 재전직/고급직업은 이 팩 범위가 아니다.",
     "vitalsOnPromotion": "레벨·경험치 유지, HP/MP 회복 없음. 새 최대치가 낮으면 현재치를 상한으로 제한한다.",
     "skillOnPromotion": "현재 레벨까지 초보의 기본 공격을 보존하고 새 직업 습득 목록을 더한다. 이전 직업의 미래 기술은 배우지 않는다."
   },
@@ -934,7 +1082,7 @@
     "persistence": "클래스 담당은 체험 이벤트나 실제 저장 서비스를 수정하지 않는다."
   },
   "integration": {
-    "owner": "supervisor",
+    "owner": "root",
     "projectWritesByThisWorker": false,
     "currentHero": {
       "actorId": "actor_hero",
@@ -980,34 +1128,33 @@
         "expCurveFromClassId": "class_jf_taoist"
       }
     ],
-    "initialClassCurveCaution": "classIdだけ書き換えても明示的classOverride前の能力値はactor.parameterCurvesを使う。初期固定職の仲間にも職業曲線を写す。",
-    "heroInitialEquipment": "既存装備は変更しない。新職業を選ぶと旧装備が自動解除されるとは限らない。必要なら既存装備を返却・解除してから契約初級装備を明示的に付ける。",
+    "initialClassCurveCaution": "명시적 classOverrides 전에는 actor.parameterCurves를 사용한다. root가 초보 하람과 초기 고정직 동료에게 직업 곡선을 복사한다.",
+    "heroInitialEquipment": "root가 전직 뒤 옛 장비 반환·해제와 해당 직업 초급 장비 지급·장착을 처리한다. promoteActor 자체가 기존 장비를 자동 해제한다고 가정하지 않는다.",
     "actorBattleCommandIds": "빈 목록/생략이면 직업의 한국어 명령을 쓴다. 배우별 battleCommandIds와 전투 이벤트 명령 override는 별도로 우선하므로 감독자가 확인한다.",
     "existingChoiceEvents": "기존 class_hero/class_scout/class_mage/class_cleric 선택 이벤트를 계약 ID로 바꾼다. data.json을 더하는 것만으로 기존 이벤트가 바뀌지는 않는다.",
     "skillDependencies": {
-      "pilotExpected": [
+      "owner": "root-skills-source",
+      "requiredIds": [
         "skill_jf_cleaving_strike",
         "skill_jf_iron_breath",
-        "skill_jf_double_stab",
-        "skill_jf_venom_edge",
-        "skill_jf_ember_charm",
-        "skill_jf_frost_charm",
-        "skill_jf_life_water",
-        "skill_jf_purify"
-      ],
-      "reservedNotExpectedInSkillsPilot": [
         "skill_jf_whirlwind_cut",
         "skill_jf_earth_split",
         "skill_jf_blood_oath",
         "skill_jf_mountain_guard",
+        "skill_jf_double_stab",
+        "skill_jf_venom_edge",
         "skill_jf_shadow_step",
         "skill_jf_heart_pierce",
         "skill_jf_smoke_screen",
         "skill_jf_moon_slash",
+        "skill_jf_ember_charm",
+        "skill_jf_frost_charm",
         "skill_jf_thunder_charm",
         "skill_jf_spirit_drain",
         "skill_jf_ghost_seal",
         "skill_jf_heaven_fire",
+        "skill_jf_life_water",
+        "skill_jf_purify",
         "skill_jf_protective_talisman",
         "skill_jf_revive",
         "skill_jf_spring_rain",
@@ -1017,16 +1164,55 @@
     "equipmentDependencies": [
       "equip_jf_warrior_weapon_1",
       "equip_jf_warrior_body_1",
+      "equip_jf_warrior_weapon_2",
+      "equip_jf_warrior_body_2",
+      "equip_jf_warrior_weapon_3",
+      "equip_jf_warrior_body_3",
+      "equip_jf_warrior_weapon_4",
+      "equip_jf_warrior_body_4",
       "equip_jf_rogue_weapon_1",
       "equip_jf_rogue_body_1",
+      "equip_jf_rogue_weapon_2",
+      "equip_jf_rogue_body_2",
+      "equip_jf_rogue_weapon_3",
+      "equip_jf_rogue_body_3",
+      "equip_jf_rogue_weapon_4",
+      "equip_jf_rogue_body_4",
       "equip_jf_shaman_weapon_1",
       "equip_jf_shaman_body_1",
+      "equip_jf_shaman_weapon_2",
+      "equip_jf_shaman_body_2",
+      "equip_jf_shaman_weapon_3",
+      "equip_jf_shaman_body_3",
+      "equip_jf_shaman_weapon_4",
+      "equip_jf_shaman_body_4",
       "equip_jf_taoist_weapon_1",
-      "equip_jf_taoist_body_1"
+      "equip_jf_taoist_body_1",
+      "equip_jf_taoist_weapon_2",
+      "equip_jf_taoist_body_2",
+      "equip_jf_taoist_weapon_3",
+      "equip_jf_taoist_body_3",
+      "equip_jf_taoist_weapon_4",
+      "equip_jf_taoist_body_4"
     ],
-    "equipmentIdSource": "equipment-prompt.md固定指示: equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_1。ids.json自体にはequipment一覧がない。",
-    "equipmentPermissionRule": "canEquip는 actorId/classId/장비ID의 OR다. class.equipmentPermissions.actorIds와 classIds는 빈 목록. 장비 측 equippableActorIds도 비우고 equippableClassIds는 해당 직업만 지정한다. 후속 등급은 장비 측 직업 허용으로 사용된다.",
-    "referencesBeforePlay": "24개 기술 전체 참조를 검사하는 엄격한 가져오기는 후속 16개 기술 정의를 기다려야 한다. 첫 통합에서는 레벨 5 이상 기술 사용을 완료로 취급하지 않는다. 누락 ID를 옛 기술로 대체하지 않는다."
+    "equipmentIdSource": "사용자 full 지시의 고정 패턴: equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_<1|2|3|4>. ids.json에는 장비 목록이 없으며 기존 equipment 지시와 동일한 패턴을 쓴다.",
+    "equipmentPermissionRule": "canEquip는 actorId/classId/장비ID의 OR다. class.equipmentPermissions.actorIds와 classIds는 빈 목록. 장비 측 equippableActorIds도 비우고 equippableClassIds는 해당 직업만 지정한다. 직업별 equipmentIds는 자기 무기/의복1~4등급만 명시한다. 공유 장비는 EquipmentRecord.equippableClassIds로 허용하며 클래스의 포괄 목록을 채우지 않는다. ItemRecord 장비형이면 원래 필드는 equipmentProfile.equippableClassIds다.",
+    "referencesBeforePlay": "root가 같은 원본에서 관리하는 전체 skills/equipment를 합쳐 기술24개·직업 장비32개 참조를 확인한다. 읽기 전용 pilot prototype의 누락은 full 팩 완료 여부를 뜻하지 않는다. classes 담당은 기술·적·그림 원본을 수정하지 않는다.",
+    "engineApiHandoff": {
+      "normalize": "normalizeClassRecord(record)",
+      "promotion": "promoteActor(session, project, actorId, toClassId)",
+      "promotionEvent": {
+        "kind": "promoteActor",
+        "actorId": "actor_hero",
+        "toClassId": "class_jf_<warrior|rogue|shaman|taoist>"
+      },
+      "equipment": "canEquip(project, actor, equipment, classId)",
+      "classPermissions": "ClassRecord.equipmentPermissions.{actorIds,classIds,equipmentIds}",
+      "sharedEquipment": "EquipmentRecord.equippableClassIds",
+      "equipmentItem": "ItemRecord.equipmentProfile.equippableClassIds",
+      "effectiveClass": "effectiveActorClassId(project, session, actorId)"
+    },
+    "equipmentLevelPolicy": "1/5/10/15는 착용 권장 레벨이며 canEquip에 레벨 조건을 새로 발명하지 않는다. 획득/상점 배치는 root가 정한다."
   },
   "art": {
     "purpose": "검토 근거 PNG만. ClassRecord에 그림 필드가 없어 새 sprite나 resourceId를 만들지 않는다.",
@@ -1037,6 +1223,6 @@
   "approval": {
     "authorReview": "REVIEW.md에 실제 PNG 검토 근거를 기록한다.",
     "userApproved": false,
-    "meaningOfReady": "첫 샘플 파일 저장·정규화·순수 전직 smoke 완료. 사용자 승인·실게임 통합·정본 저장 합격이 아니다."
+    "meaningOfReady": "full 클래스 파일 저장·정규화·순수 전직/장비 권한 smoke 완료. 사용자 승인·실게임 통합·정본 저장 합격이 아니다."
   }
 }

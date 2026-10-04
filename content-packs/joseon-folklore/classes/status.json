@@ -1,5 +1,5 @@
 {
-  "phase": "pilot",
+  "phase": "full",
   "ready": true,
   "counts": {
     "classes": 5,
@@ -7,12 +7,14 @@
     "promotionEdges": 4,
     "jobSkillLinks": 24,
     "noviceSkillLinks": 1,
-    "equipmentPermissionLinks": 8,
+    "equipmentPermissionLinks": 32,
+    "equipmentTiersPerJob": 4,
     "pngFiles": 2,
     "newActorSprites": 0,
-    "artifactFiles": 12
+    "artifactFiles": 13
   },
   "reviewFiles": [
+    "REPORT.md",
     "classes-preview.png",
     "actor1-reference.png",
     "REVIEW.md",
@@ -24,23 +26,23 @@
   "userApproved": false,
   "liveProjectIntegrated": false,
   "canonicalStoreSaved": false,
-  "sampleScope": "첫 classes 샘플 파일 저장·정규화·전직 smoke 완료",
+  "scope": "classes full 파일 완료: 5직업·1~20성장·24기술습득·자기4등급장비32개 권한·원래엔진API인계",
   "limits": [
-    "직업 기술 정의는 skills 담당 외부 의존성. 첫 샘플 후 레벨5이상16개는 예약 상태.",
-    "직업 체험 NPC/선택 이벤트·배우 곡선 복사·public 등록·실제 저장/재로드는 감독자 통합 단계.",
-    "최종 장비·적·기술 결합 전투 밸런스와 사용자 시각 승인은 아직 확인하지 않았다."
+    "전체 기술·장비·몬스터 그림과 실제 배우 곡선·전직 이벤트는 root의 같은 원본에서 결합한다.",
+    "개별 smoke는 읽기 전용 pilot prototype과 권한 fixture를 사용한다. 실제 통합 전투 밸런스·정본 저장/재로드는 root 단계다."
   ],
   "artifactSha256": {
-    "README.md": "5633963a9cb248fb26aa7e5be700b6c1fb8dd8801658903a6d0ab04fdf3083b6",
-    "REVIEW.md": "3811bfcdb640a44ae1f2da7f633dd2918c8423a3e541eba29845c111484fddc8",
+    "README.md": "f07e8099a671d97f0d95937086ca3ac52c119740b462902a48dbd756572d1d9d",
+    "REPORT.md": "7fd9e3704722d025197b613569efc5685a403ffc1b0b9f834917804f644d55ad",
+    "REVIEW.md": "58802db71749958b7a7a0229ee1f777ff458b557252e023fa93682af6a79e1fa",
     "actor1-reference.png": "3aee906cc62ee2ea44b8303becb7b2344dc2e780c266d3b9722c042853a2cb43",
-    "build.py": "144d2458505ab7cb68509f9e3e98e3e552f8c1a4df3d08649055ea02393caad6",
-    "classes-preview.png": "bb48952a1d155bfdb1d48989a4ab79b774a2f49619fc430963c78382125b0ac3",
-    "data.json": "d648b10a84d827e4b61df87f22560c9b96823f8d9f52b20abebeddb358a8d137",
-    "design.json": "c9af2c684ffa4e7721bcce7ce68155db70e3243b33b9738fea4cf6677aa3e2c0",
-    "provenance.json": "c2fc375bbd4c1b0e8bc42ae260c9e02ddc4ae63c7791b84a744a04d263bb5ae4",
+    "build.py": "192e12bed99de31351488e9ae93ac7d4f5e75b969d8ef23fe5e1b2bccddcb419",
+    "classes-preview.png": "5c05f824077a64b6d667813ea6642e532d5d060846281fe7fbe7d98cfcd66f00",
+    "data.json": "d7af7c9bab826d6361547029e131c05fd997ae0035f23967dbc6c967cac140c3",
+    "design.json": "c850468e6828b0613546f1de76fe8d9ddbb790397a8dbe607ff91dd1884b1a04",
+    "provenance.json": "5732b133e3e6c395833b3af98413a8278b9234b7765f25df8cdc55340ac4f904",
     "run-smoke.mjs": "8be84e34bac43f665ebcf955b890869b318e1fb77ecd3a3da07c2e62ea7a97a8",
-    "smoke-proof.json": "afcd44113c837cdaefe70a39650e952cae756516c5514fd8303baac451bca210",
-    "smoke.mts": "12eac5a385a2436fcb9b56dad3a0c277376b23f121954a8291667b48fdf61b1a"
+    "smoke-proof.json": "859bb37a631f9f5546858bf3f26ac4e52051f0b8d523b873a798787ee1aa29c4",
+    "smoke.mts": "cd0a45f6b8cd117f69c109f7f655da9ce6d8325e96ba672d3cd4f8411e51ace5"
   }
 }

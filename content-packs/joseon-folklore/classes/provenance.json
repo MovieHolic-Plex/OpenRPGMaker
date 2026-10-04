@@ -26,24 +26,24 @@
   },
   "generatedFiles": {
     "data.json": {
-      "sha256": "d648b10a84d827e4b61df87f22560c9b96823f8d9f52b20abebeddb358a8d137",
-      "bytes": 53642
+      "sha256": "d7af7c9bab826d6361547029e131c05fd997ae0035f23967dbc6c967cac140c3",
+      "bytes": 54530
     },
     "design.json": {
-      "sha256": "c9af2c684ffa4e7721bcce7ce68155db70e3243b33b9738fea4cf6677aa3e2c0",
-      "bytes": 28797
+      "sha256": "c850468e6828b0613546f1de76fe8d9ddbb790397a8dbe607ff91dd1884b1a04",
+      "bytes": 34153
     },
     "actor1-reference.png": {
       "sha256": "3aee906cc62ee2ea44b8303becb7b2344dc2e780c266d3b9722c042853a2cb43",
       "bytes": 47473
     },
     "classes-preview.png": {
-      "sha256": "bb48952a1d155bfdb1d48989a4ab79b774a2f49619fc430963c78382125b0ac3",
-      "bytes": 111911
+      "sha256": "5c05f824077a64b6d667813ea6642e532d5d060846281fe7fbe7d98cfcd66f00",
+      "bytes": 112682
     }
   },
   "generator": {
     "path": "content-packs/joseon-folklore/classes/build.py",
-    "sha256": "144d2458505ab7cb68509f9e3e98e3e552f8c1a4df3d08649055ea02393caad6"
+    "sha256": "192e12bed99de31351488e9ae93ac7d4f5e75b969d8ef23fe5e1b2bccddcb419"
   }
 }

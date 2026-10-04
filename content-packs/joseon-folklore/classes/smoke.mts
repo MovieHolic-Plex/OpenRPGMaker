@@ -53,6 +53,9 @@ for (const c of classes) {
     assert.equal(c.promotions, undefined);
     assert.deepEqual(c.learnedSkills.map(s => s.level), [1, 3, 5, 8, 12, 16]);
     assert.equal(c.skillIds.length, 6);
+    const role = Object.entries(ids.classes).find(([, id]) => id === c.id)![0];
+    assert.deepEqual(c.equipmentPermissions.equipmentIds, [1, 2, 3, 4].flatMap(tier => ['weapon', 'body'].map(slot => `equip_jf_${role}_${slot}_${tier}`)));
+    assert.equal(c.equipmentPermissions.equipmentIds.length, 8);
   }
 }
 const heroOriginal = prototype.actors.find(a => a.id === 'actor_hero')!;
@@ -116,6 +119,11 @@ for (const target of jobs) {
     permissions.push({ id, allowedClassId: target.id, otherClassesRejected: 4, fixtureOnly: true });
   }
 }
+// Shared equipment uses the original record-level class allow-list, not broad class permissions.
+const sharedFixture = normalizeEquipmentRecord({ id: 'fixture_shared_equipment', name: '공유 권한 전용 fixture', slot: 'accessory', equippableActorIds: [], equippableClassIds: jobs.map(c => c.id) });
+for (const job of jobs) assert.equal(canEquip(project, hero, sharedFixture, job.id), true);
+assert.equal(canEquip(project, hero, sharedFixture, novice.id), false);
+assert.equal(permissions.length, 32);
 // Engine-backed plain-attack probes: isolate class curves from external equipment/skill art.
 const dummy = (stats: Record<string, number>): MutableBattler => ({ ...stats, hp: 9999, maxHp: 9999, mp: 99, maxMp: 99, defending: false, row: 'front' } as MutableBattler);
 for (const target of classes) {
@@ -132,15 +140,15 @@ const unresolvedInPrototype = linkedSkills.filter(id => !sourceIds.has(id));
 assert.equal(unresolvedInPrototype.length, 24, 'read-only starting database should have none of the new class skills');
 const proof = {
   kind: 'individual pure engine script smoke; no gates/vitest/database writes',
-  passed: true, classCount: 5, learningLinks: linkedSkills.length, selections, permissions,
+  passed: true, phase: 'full', classCount: 5, learningLinks: linkedSkills.length, selections, permissions,
   normalizedCurvesPreserved: true, saveReload: 'local JSON stringify/parse of in-memory session only; not canonical SQLite evidence',
   originalActorArtUnchanged: hero.characterResourceId === heroOriginal.characterResourceId && hero.characterIndex === heroOriginal.characterIndex,
   sourceDatabaseSha256: createHash('sha256').update(readFileSync(prototypePath)).digest('hex'),
   dataSha256: createHash('sha256').update(readFileSync(new URL('data.json', here))).digest('hex'),
   unresolvedInReadOnlyPrototype: unresolvedInPrototype,
-  requiredExternalPilotSkills: design.integration.skillDependencies.pilotExpected,
-  reservedSkillsBeyondPilot: design.integration.skillDependencies.reservedNotExpectedInSkillsPilot,
-  limits: ['No live SQLite/Supabase, editor registry or actual player was touched.', 'Promotion learns reserved IDs; this smoke does not claim missing skill definitions are playable.', 'Equipment restriction probes used permission-only fixtures; final equipment stats remain external.'],
+  requiredRootSkills: design.integration.skillDependencies.requiredIds,
+  sharedEquipmentPermissionFixture: { allowedClassIds: jobs.map(c => c.id), noviceRejected: true, fixtureOnly: true },
+  limits: ['No live SQLite/Supabase, editor registry or actual player was touched.', 'Read-only pilot prototype lacks full root-owned skills/equipment; this script verifies class contracts, not the integrated game.', 'Equipment restriction probes used permission-only fixtures; final equipment stats remain external.'],
 };
 writeFileSync(fileURLToPath(new URL('smoke-proof.json', here)), JSON.stringify(proof, null, 2) + '\n');
 console.log(JSON.stringify({ passed: true, classes: 5, promotions: 4, perJobLevelsChecked: 20, equipmentPermissionFixtures: permissions.length, proof: 'smoke-proof.json' }));

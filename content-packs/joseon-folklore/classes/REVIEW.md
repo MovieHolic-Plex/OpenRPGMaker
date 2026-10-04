@@ -1,27 +1,24 @@
-# 첫 샘플 저자 검토
+# full 직업 저자 검토
+
+## 유지한 계약
+
+초보·전사·도적·주술사·도사 5개 클래스 ID, 레벨 1~20 성장곡선, 공통 경험치 곡선, 습득 1/3/5/8/12/16, 한국어 전투 명령을 첫 샘플과 동일하게 유지한다. 변경한 실제 레코드 값은 네 직업의 `equipmentPermissions.equipmentIds`뿐이다. 각 직업은 자기 무기/의복 `_1.._4` 8개씩, 총 32개를 가진다. 포괄 `actorIds/classIds`와 초보의 신규 장비 목록은 모두 비어 있다.
 
 ## 실제 이미지 확인
 
-원본 `public/assets/easyrpg/charset/Actor1.png`를 직접 열고, 생성된 `actor1-reference.png`와 `classes-preview.png`도 직접 이미지로 확인했다.
+첫 샘플에서 원본 Actor1과 참조 PNG를 직접 검토했다. full에서는 제목과 장비 인계 설명만 갱신한 `classes-preview.png`를 직접 열었다. 기존 하람 원본의 24×32 전경 RGB를 바꾸지 않고 배경색 키만 알파 0으로 처리한 사본을 3배 nearest neighbor로 표시한다. 새로운 배우 그림은 없으며 원본 해시·저작자·CC BY 4.0 출처와 재생성 명령을 보존했다. 저자 검토는 사용자 승인이 아니다.
 
-처음 비교 PNG의 청록 배경이 원본 투명색 키임을 확인했다. 최종 검토용 PNG에서는 그 키만 알파 0으로 처리했고, 전경 도트 색은 바꾸지 않았다. 원본 시트 크기 288×256과 24×32 프레임을 보존한다. 3배 확대는 nearest neighbor다. 비교표의 초보/전사/도적/주술사/도사 이름, 기력 용어, 1레벨·20레벨 수치, 한국어 전투 명령, 전직 조건이 잘림 없이 보인다. 이 검토는 **저자 검토이며 사용자 승인이 아니다**.
+## 개별 엔진 script 근거
 
-## 엔진 함수 근거
+`JF_CLASSES_PROTOTYPE=<읽기 전용 prototype-database.json> node content-packs/joseon-folklore/classes/run-smoke.mjs` 실행 exit **0**. 결과는 `smoke-proof.json`이다.
 
-`JF_CLASSES_PROTOTYPE=<읽기 전용 prototype-database.json> node content-packs/joseon-folklore/classes/run-smoke.mjs` 최종 실행 exit **0**, 결과는 `smoke-proof.json`이다.
+- `normalizeClassRecord`: 5개 레코드의 99칸 곡선과 습득 목록 보존. 21~99는 20레벨 값을 반복하고 실제 배우의 `maxLevel:20`은 root가 설정한다.
+- `promoteActor(session, project, actorId, toClassId)`: 초보 하람에서 네 목적지를 명시해 성공. `effectiveActorClassId`, `actorOwnedSkillIds`, `battleCommandsForActor`로 직업·습득·한국어 명령을 확인.
+- 각 직업×레벨 1~20: `actorDerivedStats`와 자동 습득 목록 확인. `computeActorLevelUp`로 신규 습득 시점과 20레벨 상한 확인.
+- HP/기력은 전직으로 회복하지 않으며 새 상한으로만 제한한다. 전직 이후 다른 직업/초보로 승급할 경로가 없고 실패 요청은 진행을 바꾸지 않는다.
+- `canEquip`: 권한 fixture 32개에서 자기 직업만 허용하고 초보와 다른 3직업을 거부한다. 별도의 공유 fixture는 장비 측 `equippableClassIds`에 네 직업을 넣어 네 직업만 허용한다. 실제 장비 수치·그림은 root 소유다.
+- 기존 `applySkillLike`의 레벨 1 미장비 공격/피격 비교와 인메모리 세션 JSON 재로드도 확인했다. 실게임 전투나 SQLite 저장·재로드 증거로 주장하지 않는다.
 
-- 실제 `normalizeClassRecord`로 5개 레코드를 정규화해 99칸 능력치·습득 목록·장비 허용이 보존됨을 확인.
-- `promoteActor`로 초보 하람에서 네 목적지를 각각 명시해 성공. `effectiveActorClassId`, `actorOwnedSkillIds`, `battleCommandsForActor`로 새 직업/첫 기술/명령을 확인.
-- 레벨 1~20 각각 전직 후 `actorDerivedStats` 값과 습득 목록을 확인. `computeActorLevelUp`로 다음 레벨과 신규 기술의 정확한 시점, 레벨 20 상한을 확인.
-- 전직은 HP를 회복하지 않고 MP를 상한으로만 제한함을 확인. 이미 전직한 뒤 재승급/초보 복귀 요청은 실패하며 세션을 바꾸지 않음.
-- 인메모리 세션의 JSON 저장·재로드 후 직업/기술 유지 확인. **SQLite 저장 증거가 아니다.**
-- 장비 권한 확인 전용 fixture 8개로 각 소유 직업만 허용, 다른 네 클래스는 거부됨을 `canEquip`로 확인. 실제 equipment 팩의 스탯/그림 테스트로 주장하지 않는다.
-- 실제 `applySkillLike`로 레벨 1 미장비 기본 공격/피격 비교 수치를 확인. 적 방어 12·공격 30·기본 power 10, 무상성/분산0/치명0/앞줄 조건. 실제 적·기술·장비 결합 전 설명용 비교다.
+## 인계 범위
 
-## 한계
-
-읽기 전용 현재 게임에는 신규 클래스 기술이 없으므로 24개 참조 모두 아직 미해결이다. skills 샘플 합류 뒤에도 레벨 5/8/12/16의 **16개**는 후속 정의를 기다린다. 데이터는 그 예약 ID를 그대로 보존하며 존재하지 않는 효과를 기술 설명으로 꾸미지 않았다.
-
-하람의 기존 `class_jb_novice`, 동료의 옛 직업/배우 곡선, 기존 선택 이벤트는 실제 저장소에서 바꾸지 않았다. `design.json`에 감독자 적용 항목을 명시하고 깊은 복제본에만 그 변경을 적용해 전직을 확인했다. 실제 직업 체험 NPC·훈련 전투·확정 이벤트·정본 저장과 재로드는 이번 작업 범위가 아니다.
-
-실게임 완성/사용자 승인 판정은 보류다. `ready`는 요청된 **첫 classes 샘플의 파일 준비 완료**만 뜻한다. gates/vitest/npm test/전체 typecheck/stash/push/PR은 실행하지 않았다.
+이번 smoke의 입력은 변하지 않은 pilot prototype이므로 신규 기술24개가 없다. root가 전체 skills·몬스터 그림을 같은 원본에서 관리하며 실제 배우 곡선과 선택 이벤트를 교체한다. classes의 full 준비 상태는 그 통합 전투 밸런스·public 등록·정본 저장 또는 사용자 승인을 뜻하지 않는다. 고급 직업/새 Actor/공용 코드/DB는 수정하지 않았다. 전체 suite·stash·push는 실행하지 않았다.

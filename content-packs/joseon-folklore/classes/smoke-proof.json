@@ -1,6 +1,7 @@
 {
   "kind": "individual pure engine script smoke; no gates/vitest/database writes",
   "passed": true,
+  "phase": "full",
   "classCount": 5,
   "learningLinks": 25,
   "selections": [
@@ -103,6 +104,42 @@
       "fixtureOnly": true
     },
     {
+      "id": "equip_jf_warrior_weapon_2",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_warrior_body_2",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_warrior_weapon_3",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_warrior_body_3",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_warrior_weapon_4",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_warrior_body_4",
+      "allowedClassId": "class_jf_warrior",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
       "id": "equip_jf_rogue_weapon_1",
       "allowedClassId": "class_jf_rogue",
       "otherClassesRejected": 4,
@@ -110,6 +147,42 @@
     },
     {
       "id": "equip_jf_rogue_body_1",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_weapon_2",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_body_2",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_weapon_3",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_body_3",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_weapon_4",
+      "allowedClassId": "class_jf_rogue",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_rogue_body_4",
       "allowedClassId": "class_jf_rogue",
       "otherClassesRejected": 4,
       "fixtureOnly": true
@@ -127,6 +200,42 @@
       "fixtureOnly": true
     },
     {
+      "id": "equip_jf_shaman_weapon_2",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_shaman_body_2",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_shaman_weapon_3",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_shaman_body_3",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_shaman_weapon_4",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_shaman_body_4",
+      "allowedClassId": "class_jf_shaman",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
       "id": "equip_jf_taoist_weapon_1",
       "allowedClassId": "class_jf_taoist",
       "otherClassesRejected": 4,
@@ -137,13 +246,49 @@
       "allowedClassId": "class_jf_taoist",
       "otherClassesRejected": 4,
       "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_weapon_2",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_body_2",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_weapon_3",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_body_3",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_weapon_4",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
+    },
+    {
+      "id": "equip_jf_taoist_body_4",
+      "allowedClassId": "class_jf_taoist",
+      "otherClassesRejected": 4,
+      "fixtureOnly": true
     }
   ],
   "normalizedCurvesPreserved": true,
   "saveReload": "local JSON stringify/parse of in-memory session only; not canonical SQLite evidence",
   "originalActorArtUnchanged": true,
   "sourceDatabaseSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
-  "dataSha256": "d648b10a84d827e4b61df87f22560c9b96823f8d9f52b20abebeddb358a8d137",
+  "dataSha256": "d7af7c9bab826d6361547029e131c05fd997ae0035f23967dbc6c967cac140c3",
   "unresolvedInReadOnlyPrototype": [
     "skill_jf_cleaving_strike",
     "skill_jf_iron_breath",
@@ -170,37 +315,45 @@
     "skill_jf_spring_rain",
     "skill_jf_heaven_blessing"
   ],
-  "requiredExternalPilotSkills": [
+  "requiredRootSkills": [
     "skill_jf_cleaving_strike",
     "skill_jf_iron_breath",
-    "skill_jf_double_stab",
-    "skill_jf_venom_edge",
-    "skill_jf_ember_charm",
-    "skill_jf_frost_charm",
-    "skill_jf_life_water",
-    "skill_jf_purify"
-  ],
-  "reservedSkillsBeyondPilot": [
     "skill_jf_whirlwind_cut",
     "skill_jf_earth_split",
     "skill_jf_blood_oath",
     "skill_jf_mountain_guard",
+    "skill_jf_double_stab",
+    "skill_jf_venom_edge",
     "skill_jf_shadow_step",
     "skill_jf_heart_pierce",
     "skill_jf_smoke_screen",
     "skill_jf_moon_slash",
+    "skill_jf_ember_charm",
+    "skill_jf_frost_charm",
     "skill_jf_thunder_charm",
     "skill_jf_spirit_drain",
     "skill_jf_ghost_seal",
     "skill_jf_heaven_fire",
+    "skill_jf_life_water",
+    "skill_jf_purify",
     "skill_jf_protective_talisman",
     "skill_jf_revive",
     "skill_jf_spring_rain",
     "skill_jf_heaven_blessing"
   ],
+  "sharedEquipmentPermissionFixture": {
+    "allowedClassIds": [
+      "class_jf_warrior",
+      "class_jf_rogue",
+      "class_jf_shaman",
+      "class_jf_taoist"
+    ],
+    "noviceRejected": true,
+    "fixtureOnly": true
+  },
   "limits": [
     "No live SQLite/Supabase, editor registry or actual player was touched.",
-    "Promotion learns reserved IDs; this smoke does not claim missing skill definitions are playable.",
+    "Read-only pilot prototype lacks full root-owned skills/equipment; this script verifies class contracts, not the integrated game.",
     "Equipment restriction probes used permission-only fixtures; final equipment stats remain external."
   ]
 }
