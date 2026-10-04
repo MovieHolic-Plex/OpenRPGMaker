@@ -268,6 +268,41 @@ describe("createLlmIntentDeclarer", () => {
   });
 });
 
+describe("parallelAudit — 감사를 라우팅과 동시에", () => {
+  // 실측 2026-10-04(Pi 입력창): 라우팅 2.2~5.8s 뒤에 감사 2.2~3.9s 를 차례로 기다렸다. 감사는 같은 사실만 본다.
+  it("만들기면 라우팅이 끝나기 전에 감사가 이미 떠 있고, 결과는 라우팅의 보정 id 로 파싱한다", async () => {
+    const order: string[] = [];
+    let releaseRouting: () => void = () => {};
+    const requirements = [{ text: FACTS.userText, criteria: [{ kind: "mapCount" as const, targets: [{ mapId: "map_start" }], count: 1 }] }];
+    const declarer = productionDeclarer({ getConfig: () => CONFIG, parallelAudit: true,
+      chat: async () => { order.push("routing"); await new Promise<void>(resolve => { releaseRouting = resolve; }); order.push("routing-done"); return reply(JSON.stringify({ mode: "create", needsPlan: false })); },
+      audit: async () => { order.push("audit"); return reply(JSON.stringify({ requirements })); },
+    });
+    const pending = declarer(FACTS);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(order).toEqual(["routing", "audit"]);
+    releaseRouting();
+    const outcome = await pending;
+    expect(outcome.intent.requestRequirements).toEqual(requirements);
+    expect(outcome.error).toBeUndefined();
+  });
+
+  it("질문이면 띄운 감사를 끊고 의무를 만들지 않는다", async () => {
+    let auditSignal: AbortSignal | undefined;
+    const declarer = productionDeclarer({ getConfig: () => CONFIG, parallelAudit: true,
+      chat: async () => reply(JSON.stringify({ mode: "question" })),
+      audit: (_config, request) => new Promise((_resolve, reject) => {
+        auditSignal = request.signal ?? undefined;
+        request.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+      }),
+    });
+    const outcome = await declarer(FACTS);
+    expect(outcome.intent.mode).toBe("question");
+    expect(outcome.intent.requestRequirements).toBeUndefined();
+    expect(auditSignal?.aborted).toBe(true);
+  });
+});
+
 describe("declareIntentCached", () => {
   it.each(["malformed", "empty", "missing-requirements", "unlinked", "invalid-criteria", "invalid-clarification", "network"] as const)("immediately retries %s coverage and caches the recovered audit", async failure => {
     let declarations = 0, audits = 0;

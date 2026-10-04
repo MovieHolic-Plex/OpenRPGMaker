@@ -2248,7 +2248,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selection: mapContext().selection ?? null,
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
-        declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 })),
+        declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000, parallelAudit: true })),
         // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
         piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: () => setStatus("의도 읽는 중…"),
