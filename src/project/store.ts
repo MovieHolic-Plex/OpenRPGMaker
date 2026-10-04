@@ -50,6 +50,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
+import type { ReliefCellChange } from "./relief/changes";
 import { restoreLockedTerrainCells } from "./terrainLocks";
 
 import { jsonEqual } from "@/util/structuralJson";
@@ -101,7 +102,7 @@ export type ProjectChangeDescriptor =
       readonly eventCommandMove?: { readonly pageId: string };
       /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */
       readonly relief?: true;
-    } & ProjectChangeAnnotation)
+    } & ProjectChangeAnnotation & ReliefCellChange)
   | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
   | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
 
@@ -1038,7 +1039,7 @@ class ProjectStore {
   updateMapTiles(
     mapId: MapId,
     mapMutator: (draft: GameMap) => void,
-    change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation = {},
+    change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation & ReliefCellChange = {},
   ): void {
     if (!canWriteTeamProject()) return;
     const currentMap = this.current.maps[mapId];

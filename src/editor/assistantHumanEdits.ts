@@ -96,11 +96,15 @@ export function createAssistantHumanEdits() {
       }
       const protectedCells = cells.get(id) ?? new Set<number>();
       // Explicit brush intent also protects a same-value stroke.
-      if (change.scope === "map" && change.cells) for (const c of change.cells) {
+      if (change.scope === "map") for (const c of [...(change.cells ?? []), ...(change.reliefCells ?? [])]) {
         if (Number.isInteger(c.x) && Number.isInteger(c.y) && c.x >= 0 && c.y >= 0 && c.x < next.width && c.y < next.height)
           protectedCells.add(c.y * next.width + c.x);
       }
-      else if (old !== next) for (const i of changedAssistantMapCells(old, next)) protectedCells.add(i);
+      // Tile descriptors and authored height descriptors cover different cells.
+      // An unknown relief change (style, legacy writer) still needs comparison.
+      const described = change.scope === "map" && (change.cells !== undefined || change.reliefCells !== undefined);
+      if (old !== next && (!described || (change.scope === "map" && change.relief && change.reliefCells === undefined)))
+        for (const i of changedAssistantMapCells(old, next)) protectedCells.add(i);
       if (protectedCells.size) cells.set(id, protectedCells);
     }
   });
