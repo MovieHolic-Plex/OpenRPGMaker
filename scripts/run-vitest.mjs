@@ -206,15 +206,24 @@ function cgroupBudget(args) {
   // 힙은 최악 파일(피크 3.13GB)을 담을 수 있어야 한다 — 이 아래로 내리면 그 파일이
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
   if (usableMb != null) {
-    heapMb = heapForWorkers(usableMb, workers);
-    const inherited = inheritedHeapMb();
-    if (inherited != null) heapMb = inherited;
-    // 이론 합이 75% 를 넘으면 워커를 줄인다. 상속 힙은 유지하고, 없을 때만 남은 예산을 다시 나눈다.
-    while (workers > 1 && workers * heapMb > usableMb) {
-      workers -= 1;
-      if (inherited == null) heapMb = heapForWorkers(usableMb, workers);
+    const memoryMaxMb = memoryMax / 1024 / 1024;
+    // 16GB 이하에서는 RSS 가 힙 합의 1.5배까지 붙는다. 12GB 슬라이스에서
+    // 상속 힙 4096MB × 워커 2 도 피크 12.00GiB, 리포트 없이 exit 1 이었다
+    // (run 37185897310, OOM kill 0). 힙은 바닥만 주고 워커를 줄인다.
+    if (memoryMaxMb <= 16 * 1024) {
+      const ceiling = Math.floor(memoryMaxMb * 0.6);
+      heapMb = MIN_WORKER_HEAP_MB;
+      while (workers > 1 && workers * heapMb > ceiling) workers -= 1;
+    } else {
+      heapMb = heapForWorkers(usableMb, workers);
+      const inherited = inheritedHeapMb();
+      if (inherited != null) heapMb = inherited;
+      while (workers > 1 && workers * heapMb > usableMb) {
+        workers -= 1;
+        if (inherited == null) heapMb = heapForWorkers(usableMb, workers);
+      }
+      if (workers * heapMb > usableMb) heapMb = heapForWorkers(usableMb, workers);
     }
-    if (workers * heapMb > usableMb) heapMb = heapForWorkers(usableMb, workers);
   }
   return { workers, heapMb, usableMb, cpus };
 }
