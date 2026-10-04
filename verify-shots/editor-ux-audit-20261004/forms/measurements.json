@@ -1,0 +1,198 @@
+{
+  "commit": "d7a3f0136eca4239fc5c340c8237048bfa848e25",
+  "viewport": "1440×900",
+  "conditions": "native database and event modal; disposable fixture; no model/host saves; inputToTwoRafMs includes automation and two rAF waits",
+  "errors": [],
+  "rows": [
+    {
+      "name": "items:25:description:0",
+      "inputToTwoRafMs": 225,
+      "longTasks": [
+        118
+      ],
+      "addedRows": 25,
+      "removedRows": 25,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:description:1",
+      "inputToTwoRafMs": 277,
+      "longTasks": [
+        90,
+        50
+      ],
+      "addedRows": 25,
+      "removedRows": 25,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:description:2",
+      "inputToTwoRafMs": 156,
+      "longTasks": [
+        78
+      ],
+      "addedRows": 25,
+      "removedRows": 25,
+      "catalogRows": 25,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:25:search",
+      "inputToTwoRafMs": 231,
+      "longTasks": [
+        65,
+        61
+      ],
+      "addedRows": 35,
+      "removedRows": 50,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "items:250:description:0",
+      "inputToTwoRafMs": 365,
+      "longTasks": [
+        179,
+        79,
+        67
+      ],
+      "addedRows": 250,
+      "removedRows": 250,
+      "catalogRows": 250,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:description:1",
+      "inputToTwoRafMs": 509,
+      "longTasks": [
+        72,
+        195,
+        92,
+        83
+      ],
+      "addedRows": 250,
+      "removedRows": 250,
+      "catalogRows": 250,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:description:2",
+      "inputToTwoRafMs": 562,
+      "longTasks": [
+        75,
+        231,
+        119,
+        87
+      ],
+      "addedRows": 250,
+      "removedRows": 250,
+      "catalogRows": 250,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:250:search",
+      "inputToTwoRafMs": 336,
+      "longTasks": [
+        182,
+        100
+      ],
+      "addedRows": 260,
+      "removedRows": 500,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "items:1000:description:0",
+      "inputToTwoRafMs": 1291,
+      "longTasks": [
+        787,
+        248,
+        188
+      ],
+      "addedRows": 1000,
+      "removedRows": 1000,
+      "catalogRows": 1000,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:description:1",
+      "inputToTwoRafMs": 1177,
+      "longTasks": [
+        185,
+        583,
+        282,
+        238
+      ],
+      "addedRows": 1000,
+      "removedRows": 1000,
+      "catalogRows": 1000,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:description:2",
+      "inputToTwoRafMs": 1294,
+      "longTasks": [
+        702,
+        292,
+        219
+      ],
+      "addedRows": 1000,
+      "removedRows": 1000,
+      "catalogRows": 1000,
+      "focused": "db-field-item-description"
+    },
+    {
+      "name": "items:1000:search",
+      "inputToTwoRafMs": 1099,
+      "longTasks": [
+        676,
+        59,
+        263
+      ],
+      "addedRows": 1010,
+      "removedRows": 2000,
+      "catalogRows": 10,
+      "focused": "db-catalog-search"
+    },
+    {
+      "name": "event:100:open",
+      "inputToTwoRafMs": 555,
+      "longTasks": [
+        298,
+        119,
+        76
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 0,
+      "focused": "event-editor-name",
+      "dom": {
+        "commands": 0,
+        "totalNodes": 5130,
+        "count": "100개"
+      }
+    },
+    {
+      "name": "event:1000:open",
+      "inputToTwoRafMs": 3521,
+      "longTasks": [
+        211,
+        1733,
+        984,
+        350,
+        366
+      ],
+      "addedRows": 0,
+      "removedRows": 0,
+      "catalogRows": 0,
+      "focused": "event-editor-name",
+      "dom": {
+        "commands": 0,
+        "totalNodes": 32130,
+        "count": "1000개"
+      }
+    }
+  ]
+}

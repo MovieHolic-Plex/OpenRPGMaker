@@ -661,3 +661,12 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
   `electronRepository` 의 `jsonContentDigest(previous.tileset)` 두 곳은 여전히 전체 순회다.
 
 실시간 표시 보강(2026-10-03): `aiCanvasProgress`의 클릭 직후 준비 표시와 `tool_start`/`tool_end` 표시는 UI 관측이며 적용·저장 영수증으로 세지 않는다. 기본 시공 표시를 켜되 저장된 off는 유지한다. 실제 수용·맵 focus는 기존 체크포인트 적용 경로가 담당한다.
+
+
+## 편집기 UX 지연 조사 (2026-10-04)
+
+`verify-shots/editor-ux-audit-20261004/README.md`는 main `d7a3f0136e` 기준 10명 조사와
+59개 네이티브 UI 측정 구간이다. 자료집 설명 입력의 전체 행 재구성, Ctrl+Z의 복사·project 범위
+재구성, 긴 이벤트의 활성/비활성 보기 생성이 우선 후보다. 시간은 자동화 입력→두 rAF이며
+실제 픽셀 표시 시점이나 Electron 출하 성능이 아니다. 나머지 코드 후보, 독립 검토의 과장 정정,
+원본 수치와 재현 스크립트는 보고서에 있다. 이 감사 자체가 대응 수정의 완료를 뜻하지 않는다.
