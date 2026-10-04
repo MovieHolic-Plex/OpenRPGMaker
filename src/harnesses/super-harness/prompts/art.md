@@ -84,6 +84,7 @@ execution.layout은 아래 JSON 파일의 {path,sha256}이다. 실제로 준비�
  "sources":[{"path":"실제 시드/치수 계약/주문서/queued state.json/그림 프롬프트/네이티브 검사 코드/판의 brief 파일","sha256":"현재 SHA256"}]
 }
 legend.role 허용: structure, parking, circulation, clearance, equipment, outside. purpose는 8자 이상 구체 근거.
+parking-contract.json을 쓰는 판은 receipt 생성에 필요한 registration-source.json도 준비하고 sources에 해시를 넣는다. 이는 실제 설치/선택 승인이 아니다.
 감독은 이 입력으로 독립 도면 검수를 먼저 실행한다. PASS 전 native 생성은 금지. 반려되면 같은 그림 차수에서 도면만 수정한다.
 
 ## 반복 실패 재설계·3/4 시점 표본 관문 v3
