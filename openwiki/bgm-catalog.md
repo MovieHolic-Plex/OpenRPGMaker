@@ -335,3 +335,10 @@ and 404s; Firefox opens the actual local-only sample adventure, checks its first
 click via native engine-owned `playing`, compares picker inventory, fetches and decodes
 all advertised playable BGM, exercises native missing-media failure and a WAV MIME alias,
 and captures 1440x900/1024x768. No media play/fetch mocking or remote content mutation.
+
+## 후보가 없는 오프닝의 원곡 (2026-10-04)
+
+`generate_original_bgm`은 카탈로그를 바꾸지 않는다. 조수가 후보 설명을 비교한 뒤 직접 악보를
+작성하고 `src/assets/originalMusic.ts`로 stereo WAV를 합성하여 현재 프로젝트 music 리소스에 등록한다.
+범위·정본 저장·재생 근거·음악 모델과의 구분은 [타이틀 오프닝 효과](title-opening-effects.md)의
+「스토리보드·독립 그림 모션·원곡 BGM」 절을 따른다. 카탈로그를 들었다고 거짓 청취 증거를 쓰지 않는다.

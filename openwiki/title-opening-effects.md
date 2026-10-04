@@ -269,3 +269,36 @@ DB 「오프닝」/「게임오버」 장면 폼에서 기본형·글자·장면
 수정하지 않은 UI 내보내기 → 출하 player.html 재생/GIF). 기능별 fixture는 실제 게임
 저작과 구별하여 `features/SUMMARY.md`에 기록한다. vitest/전체 typecheck/게이트는
 세션 실행 제한 때문에 실행하지 않는다. 회귀 계약은 `test/cinematicPresentation.test.ts`.
+
+## 스토리보드·독립 그림 모션·원곡 BGM (2026-10-04 후속)
+
+앞의 세 컷/12초 첫 제작 제한은 폐기했다. 그림 중심 기본은 서로 다른 실제 배경 5장 이상,
+5~8컷/25~45초 권장·최대90초·자동진행·건너뛰기다. 의도적인 글자 중심의 기존 계약은 유지한다.
+`firstPresentation`과 `firstScene` 두 검사 및 일반 context/capability 지침을 같이 바꿨다.
+
+`direction.layers` 최대4개의 독립 그림을 저장한다. `cinematicLayers.ts` 엄격 파서가 SQLite 로드,
+도구, 편집기 쓰기에 공통이다. width(무대 너비 비율0.05..1.5), depth(background/foreground),
+easing(linear/ease-in-out/ease-out), frames2..8(at0..1,x/y-0.5..1.5,scale0.1..3,opacity0..1,rotation-180..180).
+at은0 시작/1 끝·엄격히 증가한다. 각 그림은 배경 카메라와 별도로 WAAPI 이동/회전/등장한다.
+reduced motion은 가장 선명한 저작 지점의 정지 구도로 바꾸고, 다음 컷 대기에는 실제 위치/불투명도까지
+동결한다. 마지막 컷의 그림 조합은 canvas로 평탄화하여 맵 준비 중 유지한다(교차 출처 캔버스 실패는
+기존 배경 인계로 복구). 효과 캔버스의 동적 빛/글자 자체는 평탄화하지 않는다.
+편집기 기존 장면 카드의 「독립 그림」 아래에서 너비와 각 동작 지점을 네이티브 입력으로 수정한다.
+`generate_opening_image(role:foreground)`는 투명 단일 대상을 실제 이미지 모델로 생성한다.
+실제 투명 픽셀과 불투명 대상 픽셀을 검사하여 가짜 체커보드·전부 투명·불투명 배경을 거부한다.
+512px 참조·원화 검수에 레이어도 포함되며, 없는 그림 참조는 도구와 파일 로드에서 거부한다.
+
+음악은 `recommend_bgm` 후보의 전체 설명을 비교한다. 없으면 `generate_original_bgm`에 조수가
+직접 쓴 4/4 악보(tempo40..160, bars4..32, tracks1..5, 전체512음표 이내)를 전달한다.
+piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity를 지정한다.
+`originalMusic.ts`의 순수 합성기가 실제 22.05kHz/16bit/stereo WAV를 만든다. 피크0.8 상한,
+짧은 방 잔향·시작/끝 페이드가 있다. 외부 오디오 모델·음원 샘플을 쓰지 않는 악보 작곡+내장 합성이다.
+끝 페이드 때문에 완전 연속 루프는 아니며, 복잡한 관현악/보컬은 지원하지 않는다. 일반 write 도구로
+업로드 music과 프로젝트 설명을 등록하고 실제 체크포인트/SQLite/웹 내보내기 경로를 따른다.
+음악이 없으면 첫 제작 완료 검사는 실패한다. 메타데이터 조회·WAV 생성 성공은 청취 검수의 증거가 아니다.
+
+셸의 기존 이미지2병렬/lookahead2 캐시에 전경 그림도 포함한다. BGM은 별도 취소 가능 HTTP→blob
+캐시에서 타이틀 표시 후 미리 받아 오프닝 재생 때 같은 URL을 재요청하지 않는다. 다음 컷 이미지/
+전경을 준비하는 동안 현재 컷 시간·모션은 유지하고, 디코드 완료 후 새 컷 시계가 시작된다.
+기존 시작 맵 이미지와 엔진 모듈 워밍은 유지한다. Phaser 씬/텍스처 등록 자체는 실제 시작 때 수행한다.
+회귀 계약 `test/openingProduction.test.ts`; 이 세션의 vitest/전체 게이트 실행 제한을 따른다.

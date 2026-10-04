@@ -116,7 +116,7 @@ function resolveResourceId(
   kind: OpeningMediaKind,
   raw: unknown,
   index: number,
-  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId",
+  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.layers.resourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   if (typeof raw !== "string" || raw.trim().length === 0) {
@@ -197,6 +197,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   try {
     const direction = scene.direction === undefined ? undefined : parseCinematicDirection(scene.direction);
     if (direction?.soundResourceId) resolveResourceId(project, 'sound', direction.soundResourceId, index, 'direction.soundResourceId', isKnown);
+    for (const layer of direction?.layers ?? []) resolveResourceId(project, 'image', layer.resourceId, index, 'direction.layers.resourceId', isKnown);
     return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion, ...(direction ? { direction } : {}) };
   } catch (error) {
     if (error instanceof ToolError) throw error;
@@ -329,6 +330,17 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
     },
     direction: {
       type: 'object', additionalProperties: false, properties: {
+        layers: { type: 'array', maxItems: 4, description: '독립 그림 배우/전경. generate_opening_image(role:foreground)로 투명한 한 대상을 생성. 배경과 별도로 이동·회전·등장. 좌표는 무대 비율, at은 장면 내 진행도.', items: {
+          type: 'object', additionalProperties: false, required: ['resourceId', 'width', 'depth', 'easing', 'frames'], properties: {
+            resourceId: { type: 'string' }, width: { type: 'number', minimum: 0.05, maximum: 1.5, description: '무대 가로 대비 그림 너비. 높이는 원본 비율 보존.' },
+            depth: { type: 'string', enum: ['background', 'foreground'] }, easing: { type: 'string', enum: ['linear', 'ease-in-out', 'ease-out'] },
+            frames: { type: 'array', minItems: 2, maxItems: 8, items: { type: 'object', additionalProperties: false, required: ['at', 'x', 'y', 'scale', 'opacity', 'rotation'], properties: {
+              at: { type: 'number', minimum: 0, maximum: 1, description: '0 시작, 1 끝. 엄격히 증가.' },
+              x: { type: 'number', minimum: -0.5, maximum: 1.5 }, y: { type: 'number', minimum: -0.5, maximum: 1.5 },
+              scale: { type: 'number', minimum: 0.1, maximum: 3 }, opacity: { type: 'number', minimum: 0, maximum: 1 }, rotation: { type: 'number', minimum: -180, maximum: 180 },
+            } } },
+          },
+        } },
         camera: { type: 'object', additionalProperties: false, required: ['from', 'to'], properties: {
           from: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3, description: '[초점 x(0..1), 초점 y(0..1), 배율(1..1.6)]' },
           to: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
@@ -685,6 +697,7 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>): { rea
     throw new ToolError("name은 문자열이어야 합니다.", { code: "invalid-args" });
   }
   if (args.referenceResourceId !== undefined && (typeof args.referenceResourceId !== 'string' || !args.referenceResourceId.trim())) throw new ToolError('referenceResourceId는 실제 그림 id 문자열이어야 합니다.', { code: 'invalid-args' });
+  if (args.role !== undefined && args.role !== 'backdrop' && args.role !== 'foreground') throw new ToolError('role은 backdrop/foreground입니다.', { code: 'invalid-args' });
   const prompt = raw.trim();
   const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
   return { prompt, name };
@@ -722,6 +735,7 @@ const generateOpeningImage: ToolDefinition = {
       prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명(분위기·시간대·장소). 글자는 넣지 않는다." },
       name: { type: "string" },
       referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
+      role: { type: 'string', enum: ['backdrop', 'foreground'], description: '기본 backdrop은 전체 배경. foreground는 독립 움직임용 투명 배경의 단일 물체·실루엣 그림. 잘린 신체/그림자 바닥/체커보드 금지.' },
     },
   },
   run(_project, args): ToolExecResult {

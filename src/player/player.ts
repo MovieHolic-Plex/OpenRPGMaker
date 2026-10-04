@@ -286,7 +286,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       openingController = controller;
       let lastFrame: string | undefined;
       let handoffFadeMs = 500;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
       void playback.done.then(result => {
         if (result === "aborted" || !shellActive || openingController !== controller) return;
         openingController = null;

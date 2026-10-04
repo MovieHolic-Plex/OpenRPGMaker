@@ -13,6 +13,7 @@ import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
 import type { GenerateAiImageRequest } from '../../src/ai/imageGenerationClient';
 import type { Project } from '../../src/project/types';
+import sharp from 'sharp';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
 
@@ -71,6 +72,12 @@ export function createPiPresentationTool(
             data: { resourceId, titleScreen: ctx.project.system.titleScreen } };
         } else {
           const art = await generateOpeningStill(args, { signal, generateImage,
+            hasTransparentPixels: async dataUrl => {
+              const { data, info } = await sharp(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64')).ensureAlpha().resize(160, 160, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
+              let clear = 0, solid = 0;
+              for (let i = 3; i < data.length; i += info.channels) { if (data[i] < 16) clear++; if (data[i] > 240) solid++; }
+              return clear > 256 && solid > 256;
+            },
             resolveReference: async (resourceId, refSignal) => {
               if (!options.renderToolImage) throw new Error('오프닝 참조 그림을 읽을 경로가 없습니다.');
               const png = await options.renderToolImage(ctx.project, 'show_title_opening', { resourceId }, refSignal);
