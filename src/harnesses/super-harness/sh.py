@@ -23,6 +23,7 @@ import threading
 import time
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from functools import lru_cache
 from urllib.parse import urlparse, parse_qs, unquote
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -470,8 +471,6 @@ def step_probe(c):
         pending = True
         if tag in busy or len(running(['probe'])) >= int(store.setting('max_probe')):
             continue
-        if store.started_today(['probe']) >= int(store.setting('budget_probe_day')):
-            return
         shutil.rmtree(run_dir, ignore_errors=True)
         cmd = [BUN, 'scripts/qa-game/cli.mts', 'gen', '--brief', BRIEF, '--out', run_dir, '--text', text, '--no-check']
         if with_card:
@@ -619,8 +618,8 @@ def tick():
     if store.setting('paused') == '1':
         return
     max_codex = int(store.setting('max_codex'))
-    budget_ok = lambda: store.started_today(['discover', 'build', 'review', 'judge']) < int(store.setting('budget_codex_day'))
-    codex_free = lambda need=1: len(running(['discover', 'build', 'review', 'judge'])) + need <= max_codex and budget_ok()
+    # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
+    codex_free = lambda need=1: len(running(['discover', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
     active = store.concepts("stage IN ('build','review','probe','bake','unbake')")
@@ -812,6 +811,94 @@ def gallery_detail(cid):
             'parent': (store.concept(c['parent']) or {}).get('title') if c.get('parent') else None, 'children': kids}
 
 
+# ── 읽는 문서(마크다운) — 사람이 읽기 쉽게. 화면도 이걸 그대로 그린다. ──
+def md_img(im, width=900):
+    from urllib.parse import quote
+    return f'![{im["label"]}](/thumb?p={quote(im["path"])}&w={width}&v={im["v"]})'
+
+
+def md_cell(text):
+    return str(text or '').replace('|', '／').replace('\n', ' ')
+
+
+def concept_markdown(cid):
+    d = gallery_detail(cid)
+    if not d:
+        return None
+    c = store.concept(cid)
+    card = read_json(cdir(cid, 'card.json'), {}) or {}
+    L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
+    L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
+    if c['reasons']:
+        L += ['## 지금 고치는 이유', ''] + [f'- {w}' for w in c['reasons']] + ['']
+    if d['images']:
+        L += ['## 예제 맵', ''] + [md_img(im) for im in d['images']] + ['']
+    if d['tried']:
+        L += ['## 조수에게 「만들어줘」라고 시켜 본 결과', ''] + [md_img(im) for im in d['tried']] + ['']
+    for v in card.get('variants', []):
+        L += [f'## 변형 — {v.get("title", "")}', '']
+        meta = [v.get('worldview'), v.get('size') and f'크기 {v["size"]}', v.get('tilesetId') and f'칩셋 `{v["tilesetId"]}`']
+        L += ['· '.join(m for m in meta if m), '']
+        if v.get('build'):
+            L += [f'**짓는 법** {v["build"]}', '']
+        if v.get('structure'):
+            L += ['### 구조', ''] + [f'- {s}' for s in v['structure']] + ['']
+        if v.get('include'):
+            L += ['### 재료', '', '| 무엇 | 까는 방식 | 어떻게 |', '|---|---|---|']
+            L += [f'| {md_cell(m.get("what"))} | {"이벤트" if m.get("as") == "event" else "그림"} | {md_cell(m.get("how"))} |' for m in v['include']] + ['']
+        if v.get('exclude'):
+            L += ['### 넣지 않는 것', ''] + [f'- {s}' for s in v['exclude']] + ['']
+        if v.get('emptiness'):
+            L += [f'**빈칸** {v["emptiness"]}', '']
+    orders = [g for g in store.gaps() if g['concept'] == cid]
+    if orders:
+        L += [f'## 그림·도구 주문 {len(orders)}건', '']
+        for g in orders:
+            it = g.get('item') or {}
+            size = f' · {it["w"]}×{it["h"]}칸' if it.get('w') and it.get('h') else ''
+            L += [f'- **{it.get("ko") or g["what"]}**{size} — {it.get("desc") or g["what"]} _(→ {g["route"] or "?"})_']
+        L += ['']
+    if d['children']:
+        L += ['## 여기서 자란 개념', '', ' · '.join(f'[{k["title"]}](/?concept={k["id"]})' for k in d['children']), '']
+    if d['feedback']:
+        L += ['## 내가 준 교정', ''] + [f'- {f}' for f in d['feedback']] + ['']
+    log = store.recent_log(12, cid)
+    if log:
+        L += ['## 최근 기록', ''] + [f'- `{e["at"][5:16]}` {e["text"]}' for e in log] + ['']
+    return '\n'.join(L)
+
+
+def concept_world(cid):
+    card = read_json(cdir(cid, 'card.json'), {}) or {}
+    for v in card.get('variants', []):
+        if v.get('worldviewId'):
+            return v['worldviewId']
+    return 'unknown'
+
+
+def orders_markdown():
+    names = {w['id']: w['ko'] for w in worldviews()['worldviews']}
+    names['unknown'] = '세계관 미정'
+    groups = {}
+    for g in store.gaps():
+        groups.setdefault(concept_world(g['concept']), {}).setdefault(g['concept'], []).append(g)
+    total = sum(len(v) for w in groups.values() for v in w.values())
+    art = sum(1 for w in groups.values() for v in w.values() for g in v if g.get('item'))
+    L = ['# 그림 주문서', '', f'개념 카드를 만들다 「에디터에 없어서 못 짓는다」고 적은 것 **{total}건** — 그중 그릴 수 있게 주문서가 붙은 그림 **{art}건**.', '',
+         '> 아직 그림을 그리는 작업자가 연결되지 않았다. 지금은 쌓이기만 한다.', '']
+    for wid in sorted(groups, key=lambda k: -sum(len(v) for v in groups[k].values())):
+        L += [f'## {names.get(wid, wid)} — {sum(len(v) for v in groups[wid].values())}건', '']
+        for cid, gs in sorted(groups[wid].items(), key=lambda kv: -len(kv[1])):
+            title = (store.concept(cid) or {}).get('title', cid)
+            L += [f'### [{title}](/?concept={cid}) ({len(gs)})', '', '| 그림 | 크기 | 종류 | 모습 | 맡을 곳 |', '|---|---|---|---|---|']
+            for g in gs:
+                it = g.get('item') or {}
+                size = f'{it["w"]}×{it["h"]}' if it.get('w') and it.get('h') else ''
+                L.append(f'| **{md_cell(it.get("ko") or g["what"][:40])}** | {size} | {md_cell(it.get("category") or g["kind"])} | {md_cell(it.get("desc") or g["what"])} | `{md_cell(g["route"])}` |')
+            L.append('')
+    return '\n'.join(L)
+
+
 def thumb_bytes(rel, width):
     src = os.path.realpath(os.path.join(DATA, rel))
     if not src.startswith(os.path.realpath(DATA)) or not os.path.isfile(src):
@@ -832,6 +919,13 @@ def thumb_bytes(rel, width):
         return f.read()
 
 
+@lru_cache(maxsize=1)
+def markdown_module():
+    """편집기의 안전한 DOM 마크다운 표시기를 재사용한다. 데몬당 한 번만 변환한다."""
+    return subprocess.run([BUN, 'build', os.path.join(ROOT, 'src/util/markdown.ts'), '--target=browser'],
+                          capture_output=True, check=True, timeout=15).stdout
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass
@@ -847,16 +941,25 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         url = urlparse(self.path)
-        if url.path in ('/', '/index.html', '/detail'):
+        if url.path in ('/', '/index.html', '/orders', '/detail'):
             page = 'gallery.html' if url.path != '/detail' else 'index.html'
             with open(os.path.join(HERE, 'web', page), 'rb') as f:
                 return self.send(200, f.read(), 'text/html; charset=utf-8')
+        if url.path == '/markdown.js':
+            try:
+                return self.send(200, markdown_module(), 'text/javascript; charset=utf-8')
+            except subprocess.SubprocessError:
+                return self.send(500, {'error': '문서 표시기를 불러오지 못했습니다.'})
         q = parse_qs(url.query)
         if url.path == '/api/list':
             return self.send(200, gallery_list())
         if url.path == '/api/concept':
             d = gallery_detail(q.get('id', [''])[0])
             return self.send(200 if d else 404, d or {'error': 'not found'})
+        if url.path.startswith('/md/'):
+            name = unquote(url.path[4:])
+            text = orders_markdown() if name == 'orders.md' else concept_markdown(name[:-3]) if name.endswith('.md') else None
+            return self.send(200, text, 'text/plain; charset=utf-8') if text else self.send(404, {'error': 'not found'})
         if url.path == '/thumb':
             data = thumb_bytes(unquote(q.get('p', [''])[0]), q.get('w', ['360'])[0])
             return self.send(200, data, 'image/png', 'public, max-age=86400') if data else self.send(404, {'error': 'not found'})

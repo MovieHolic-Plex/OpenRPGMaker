@@ -18,8 +18,6 @@ DEFAULT_SETTINGS = {
     'max_active': '8',          # 동시에 만드는 개념 수 (2026-10-03 사용자 「큐 늘려서 빠르게 많이」)
     'max_codex': '16',          # 동시에 도는 codex 작업 수
     'max_probe': '4',           # 동시에 도는 조수 시험(qa:game gen) 수 — 판마다 메모리 2~3GB
-    'budget_codex_day': '400',  # 하루 codex 작업 상한
-    'budget_probe_day': '80',   # 하루 조수 시험 상한
     'min_waiting': '8',         # 발견 칸에 이만큼 쌓여 있지 않으면 낱말을 더 찾는다
     'max_attempts': '3',        # 만들기 재시도 상한 — 넘으면 막힘
     'discover_every_min': '10',
@@ -65,6 +63,8 @@ def init():
             con.execute('ALTER TABLE gaps ADD COLUMN item TEXT')
         if 'children_spawned' not in cols:
             con.execute('ALTER TABLE concepts ADD COLUMN children_spawned INTEGER DEFAULT 0')
+        # 폐기한 하루 상한은 기존 저장소에서도 제거한다.
+        con.execute("DELETE FROM settings WHERE key IN ('budget_codex_day', 'budget_probe_day')")
         for k, v in DEFAULT_SETTINGS.items():
             con.execute('INSERT OR IGNORE INTO settings(key,value) VALUES(?,?)', (k, v))
 
