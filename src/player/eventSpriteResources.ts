@@ -2,6 +2,7 @@ import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
+import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
@@ -44,6 +45,10 @@ export function resolveEventSpriteTexture(
     return { texture: spriteDef.image.id, frame };
   }
   if (spriteDef) return { texture: spriteId, frame };
+
+  // Existing item pictures can depict a real investigation object. They are
+  // static images, so a charset frame number must never crop them.
+  if (resolveCc0IconAssetUrl(spriteId)) return { texture: spriteId, frame: '__BASE', fitSize: 16 };
 
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
   if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32 };

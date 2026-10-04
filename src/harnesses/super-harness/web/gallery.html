@@ -52,19 +52,50 @@ textarea{width:100%;min-height:70px;background:#121418;color:var(--ink);border:1
 #big.on{display:block}
 #big img{display:block;margin:20px auto;max-width:none;image-rendering:pixelated}
 a{color:var(--run)}
+
+.header-link,.doc-tools a{display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none}
+.doc-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.doc-tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.document{font-size:16px;line-height:1.8;overflow-wrap:anywhere}
+.document h1{font-size:28px;line-height:1.4;margin:0 0 20px}
+.document h2{font-size:22px;line-height:1.5;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.document h3{font-size:18px;margin:24px 0 10px}
+.document p,.document ul,.document ol{margin:12px 0}
+.document li{margin:6px 0}
+.document blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--wait);background:#25282e}
+.document code{padding:2px 5px;background:#121418;border-radius:4px;font-size:14px}
+.document pre{white-space:pre-wrap;font:14px/1.8 ui-monospace,monospace;background:#121418;padding:16px;border-radius:8px}
+.table-scroll{overflow-x:auto;margin:18px 0}
+.document table{border-collapse:collapse;width:100%;font-size:15px;min-width:620px}
+.document th,.document td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+.document th{background:#272b32}
+.document th{white-space:nowrap}
+.document td:first-child{min-width:160px}
+.document td:nth-child(2),.document td:nth-child(3),.document td:nth-child(5){white-space:nowrap}
+.document td:nth-child(4){min-width:280px}
+.document figure{margin:18px 0}
+.document figure img{display:block;max-width:100%;height:auto;border-radius:8px;cursor:zoom-in}
+.document figcaption{color:var(--dim);font-size:14px;margin-top:6px}
+main.orders{display:block;max-width:1100px;margin:auto}
+@media(max-width:600px){.box{padding:18px 14px}.document{font-size:15px}.document h1{font-size:24px}header{padding:12px}.box h2{font-size:20px}}
 </style>
 </head>
 <body>
 <header>
   <h1>슈퍼하네스</h1>
   <span id="line">불러오는 중…</span>
+  <a class="header-link" id="orders-link" href="/orders">그림 주문서</a>
+  <span class="muted">하루 상한 없음</span>
   <button id="pause"></button>
 </header>
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
 <div id="big"><img></div>
-<script>
+<script type="module">
+import { renderMarkdown } from "/markdown.js";
+const ordersPage = location.pathname === "/orders";
+let requestId = 0;
 const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['wait', '기다림'], ['stop', '막힘·폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
@@ -106,32 +137,76 @@ async function refresh() {
   $('line').textContent = `${L.paused ? '멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
   $('pause').textContent = L.paused ? '▶ 다시 돌리기' : '❚❚ 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
-  render();
+  if (!ordersPage) render();
+}
+
+async function documentView(target, path, { modal = false } = {}) {
+  target.innerHTML = '<p role="status">문서를 불러오는 중…</p>';
+  const current = ++requestId;
+  try {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error('문서를 불러오지 못했습니다.');
+    const text = await response.text();
+    if (current !== requestId) return;
+    target.innerHTML = `${modal ? '<button class="close" onclick="closeModal()">닫기</button>' : ''}
+      <nav class="doc-tools" aria-label="문서 보기">
+        <button data-view="read" aria-pressed="true">읽기</button>
+        <button data-view="source" aria-pressed="false">Markdown 원문</button>
+        <a href="${esc(path)}" target="_blank" rel="noopener">원문 열기</a>
+        ${modal ? '' : '<button id="reload-doc">새로고침</button>'}
+      </nav><article class="document"></article>`;
+    const article = target.querySelector('article');
+    const show = (mode) => {
+      target.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.view === mode)));
+      if (mode === 'source') {
+        const pre = document.createElement('pre'); pre.textContent = text; article.replaceChildren(pre); return;
+      }
+      const readable = text.replace(/\]\((\/(?!\/)[^)\s]*)\)/g, (_, path) => `](${new URL(path, location.origin).href})`);
+      article.replaceChildren(renderMarkdown(readable));
+      // 공용 표시기가 이미지 문법을 링크로 읽으므로 맵 그림만 figure로 표시한다.
+      article.querySelectorAll('p').forEach((p) => {
+        const imageLinks = [...p.querySelectorAll('a')];
+        if (!imageLinks.length || [...p.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== '!')) return;
+        const pictures = [];
+        for (const link of imageLinks) {
+          const url = new URL(link.href, location.origin);
+          if (url.origin !== location.origin || url.pathname !== '/thumb') return;
+          const figure = document.createElement('figure'), img = document.createElement('img'), caption = document.createElement('figcaption');
+          img.src = url.href; img.alt = link.textContent; img.loading = 'lazy';
+          const full = new URL(url); full.searchParams.set('w', '1600');
+          img.dataset.full = full.href; img.onclick = () => big(img);
+          caption.textContent = link.textContent; figure.append(img, caption); pictures.push(figure);
+        }
+        p.replaceWith(...pictures);
+      });
+      article.querySelectorAll('table').forEach((table) => {
+        const wrap = document.createElement('div'); wrap.className = 'table-scroll'; table.replaceWith(wrap); wrap.append(table);
+      });
+    };
+    target.querySelectorAll('[data-view]').forEach((button) => button.onclick = () => show(button.dataset.view));
+    target.querySelector('#reload-doc')?.addEventListener('click', () => documentView(target, path));
+    show('read');
+    if (modal) {
+      const actions = document.createElement('section');
+      actions.innerHTML = '<h3>교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">교정 지시</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
+      target.append(actions);
+    }
+  } catch (error) {
+    if (current !== requestId) return;
+    target.replaceChildren();
+    if (modal) { const close = document.createElement('button'); close.textContent = '닫기'; close.onclick = closeModal; target.append(close); }
+    const message = document.createElement('p'); message.textContent = error.message; target.append(message);
+    const retry = document.createElement('button'); retry.textContent = '다시 불러오기'; retry.onclick = () => documentView(target, path, { modal }); target.append(retry);
+  }
 }
 
 async function openConcept(id) {
   openId = id;
-  const d = await (await fetch('/api/concept?id=' + encodeURIComponent(id))).json();
-  const pics = (list) => list.map((im) => `<figure><img loading="lazy" src="${thumb(im, 900)}" data-full="/data/${encodeURI(im.path)}" onclick="big(this)"><figcaption>${esc(im.label)}</figcaption></figure>`).join('');
-  $('box').innerHTML = `
-    <button class="close" onclick="closeModal()">닫기</button>
-    <h2>${esc(d.title)}</h2>
-    <div class="muted">${esc(d.status)}${d.parent ? ` · 「${esc(d.parent)}」의 하위` : ''}${d.pr ? ` · <a href="${esc(d.pr)}" target="_blank">PR</a>` : ''}</div>
-    <p class="about">${esc(d.about)}</p>
-    ${d.variants.length ? `<div class="muted">${d.variants.map(esc).join('<br>')}</div>` : ''}
-    ${d.images.length ? `<div class="pics">${pics(d.images)}</div>` : '<p class="muted">아직 그림이 없다.</p>'}
-    ${d.tried.length ? `<h3>조수에게 「만들어줘」라고 시켜 본 결과</h3><div class="pics">${pics(d.tried)}</div>` : ''}
-    ${d.why.length ? `<h3>지금 고치는 이유</h3><ul>${d.why.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
-    ${d.orders.length ? `<h3>주문한 그림 ${d.orders.length}건</h3><ul>${d.orders.map((o) => `<li><b>${esc(o.ko)}</b> ${esc(o.size)} — ${esc(o.desc)}</li>`).join('')}</ul>` : ''}
-    ${d.children.length ? `<h3>여기서 자란 것</h3><div class="muted">${d.children.map((k) => esc(k.title)).join(' · ')}</div>` : ''}
-    ${d.feedback.length ? `<h3>내가 준 교정</h3><ul>${d.feedback.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
-    <h3>교정</h3>
-    <textarea id="fix" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea>
-    <div class="acts"><button class="primary" onclick="act('fix')">교정 지시</button><button class="danger" onclick="act('discard')">폐기</button></div>`;
   $('modal').classList.add('on');
+  await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
 }
 
-function closeModal() { $('modal').classList.remove('on'); openId = null; }
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; }
 $('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
 document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
 function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }
@@ -149,6 +224,15 @@ async function post(body) {
   refresh();
 }
 
+Object.assign(window, { setTab, closeModal, act });
+if (ordersPage) {
+  $('orders-link').textContent = '← 개념 갤러리'; $('orders-link').href = '/';
+  $('tabs').hidden = true; $('grid').className = 'orders';
+  documentView($('grid'), '/md/orders.md');
+} else {
+  const selected = new URLSearchParams(location.search).get('concept');
+  if (selected) openConcept(selected);
+}
 refresh();
 setInterval(refresh, 15000);
 document.addEventListener('visibilitychange', refresh);

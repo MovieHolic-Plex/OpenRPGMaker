@@ -26,6 +26,7 @@ import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } 
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
+import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces } from '../../src/ai/piAgent/firstScene.ts';
 import { hasPlayableSegmentSkeleton } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
@@ -152,6 +153,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
+  let reviewedFirstScene: string | undefined;
   let firstBuildAssignments = 0;
   let segmentRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
@@ -649,7 +651,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
+          const sceneIssues = inspectFirstScene(base, working, firstPlay);
+          if (sceneIssues.length) throw new Error('첫 장면 미완료: ' + sceneIssues.join(' / '));
           if (firstPlaySignature(working, firstPlay) !== reviewedFirstPlay) await reviewFirstPlay();
+          if (firstSceneSignature(working, firstPlay) !== reviewedFirstScene) await reviewFirstScene();
         }
         // 맵 사이 연결 계약(worldGraph)을 병합본으로 검사한다. 각 담당은 자기 맵만 보므로 이음새는 여기서만 보인다.
         const seamErrors = inspectWorldSeams(working).issues.filter((issue) => issue.severity === "error");
@@ -732,7 +737,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       const member = builders[0]!;
       const agentId = `builder-${++counters.builder}`;
       const snapshot = cloneProjectSharingSharedDictionaries(working);
-      const task = `첫 제작 1단계: 확정 기획의 핵심 플레이를 기존 두 맵의 뼈대 위에 지금 작성한다. 첫 조사/대화/전투/수집 행동 → 기획에 요청된 선택과 서로 다른 결과 → 진행 스위치와 기존 문 → 기획에 맞는 구간 마무리를 실제 이벤트로 연결한다. 선택이 요청됐다면 선택 문구와 각 branch의 결과를 모두 작성한다. 기본 샘플의 대사·이름만 남긴 채 완료하지 않는다. 뼈대 ID·좌표·통행·기존 전투/포획/엔딩 연결을 보존한다. 주인공 이름은 기획대로 DB에 반영한다. 지도 장식·새 맵·타이틀/이미지/음악은 다음 단계다. upsert_event로 기존 이벤트의 pages를 바꿀 때 필요한 페이지를 모두 포함한다. 끝나면 report_first_play로 변경한 interaction·resolution 이벤트의 mapId/eventId와 플레이 순서를 보고한다.\n${repair}\n전체 사용자 지시:\n${request.task}`;
+      const task = `첫 제작 1단계: 확정 기획의 핵심 플레이를 기존 두 맵의 뼈대 위에 지금 작성한다. 첫 조사/대화/전투/수집 행동 → 기획에 요청된 선택과 서로 다른 결과 → 진행 스위치와 기존 문 → 기획에 맞는 구간 마무리를 실제 이벤트로 연결한다. 선택이 요청됐다면 선택 문구와 각 branch의 결과를 모두 작성한다. 대사의 body에는 실제 표시할 자연스러운 문장을 넣고 따옴표를 수동으로 이스케이프하지 않는다. 기본 샘플의 대사·이름만 남긴 채 완료하지 않는다. 뼈대 ID·좌표·통행·기존 전투/포획/엔딩 연결을 보존한다. 주인공 이름은 기획대로 DB에 반영한다. 지도 장식·새 맵·타이틀/이미지/음악은 다음 단계다. upsert_event로 기존 이벤트의 pages를 바꿀 때 필요한 페이지를 모두 포함한다. 끝나면 report_first_play로 변경한 interaction·resolution 이벤트의 mapId/eventId와 플레이 순서를 보고한다.\n${repair}\n전체 사용자 지시:\n${request.task}`;
       const reportTool: PiToolShape = {
         name: 'report_first_play', label: 'report_first_play',
         description: '실제로 변경한 핵심 행동과 구간 마무리 이벤트를 보고한다. 기본 샘플 그대로거나 빈 선택 결과면 거절된다.',
@@ -778,6 +783,135 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     }
   }
 
+  async function reviewFirstScene(): Promise<void> {
+    const receipt = firstPlay!;
+    const snapshot = cloneProjectSharingSharedDictionaries(working);
+    const mapIds = firstSceneMapIds(snapshot, receipt);
+    const delivered = new Set<string>();
+    let verdict: { ok: boolean; blockers: string[] } | undefined;
+    const member = reviewers[0] ?? builders[0]!;
+    const agentId = `reviewer-${++counters.reviewer}`;
+    const task = [
+      '첫 사용자 경험을 냉정하게 검수한다. 필수: 각 맵을 show_map_region(x:0,y:0,w:맵너비,h:맵높이)으로 실제 그림까지 본다.',
+      '확인 축: ① 원문 기획과 실제 장소(방/길)의 일치 ② 핵심 조사물/인물과 마무리 대상이 눈에 보이고 식별됨 ③ 시작 위치에서 첫 행동 대상/출구까지 정상 동선 ④ 오프닝의 설명/안내와 실제 그림·위치의 일치. 빈 풀밭, 안 보이는 시계, 이름만 방인 맵은 반드시 실패다.',
+      '전체 원문:\n' + request.task,
+      '핵심 근거:\n' + JSON.stringify(receipt),
+      '현재 오프닝:\n' + JSON.stringify(snapshot.system.opening),
+      '핵심 대상의 실제 자산 이름/태그:\n' + JSON.stringify(firstSceneGraphicEvidence(snapshot, receipt)),
+      '보석 그림을 시계로 부르는 대체와, 대사에 남은 좌표/ID/JSON 역슬래시를 합격시키지 않는다.',
+      '전체 그림 요청:\n' + JSON.stringify(mapIds.map(id => ({ mapId: id, x: 0, y: 0, w: snapshot.maps[id]!.width, h: snapshot.maps[id]!.height }))),
+      '이미지와 이벤트를 대조한 뒤 report_first_scene_review를 호출한다. 실제 브라우저 플레이를 했다고 주장하지 않는다.',
+    ].join('\n');
+    const reportTool: PiToolShape = {
+      name: 'report_first_scene_review', label: 'report_first_scene_review',
+      description: '각 장소의 실제 이미지를 확인한 첫 사용자 경험 검수. blockers는 실패, evidence는 4축의 구체적 그림/좌표/이벤트 근거다.',
+      parameters: { type: 'object', properties: { ok: { type: 'boolean' }, blockers: { type: 'array', items: { type: 'string' } }, evidence: { type: 'array', minItems: 4, items: { type: 'string' } } }, required: ['ok', 'blockers', 'evidence'], additionalProperties: false },
+      async execute(_id, params) {
+        const rec = params as { ok?: unknown; blockers?: unknown; evidence?: unknown };
+        const missing = mapIds.filter(id => !delivered.has(id));
+        if (missing.length) throw new Error('실제 전체 맵 이미지를 아직 보지 않았습니다: ' + missing.join(', '));
+        if (!Array.isArray(rec.blockers) || !Array.isArray(rec.evidence) || rec.evidence.length < 4) throw new Error('4축의 구체적 그림 근거와 blockers를 따로 보고하세요.');
+        verdict = { ok: rec.ok === true, blockers: rec.blockers.map(String).slice(0, 12) };
+        return text({ recorded: true });
+      },
+    };
+    progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: '' });
+    mailbox.register(agentId, member.label, null);
+    emit({ type: 'agent_spawn', agentId, role: 'reviewer', mapId: null, mapName: null, task, memberId: member.id, label: '첫 장면 이미지 확인' });
+    const reviewOptions = child(agentId, request.roleModels?.deep?.provider ?? request.provider);
+    try {
+      const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds,
+        initialToolNames: undefined, toolDomains: undefined, readOnly: true, task, maxTurns: Math.min(member.maxTurns, 16),
+        ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+        systemPrompt: ['읽기 전용 첫 장면 검수다. 실제 맵 이미지를 보고 원문/오프닝/이벤트와 대조한다. ' + FIRST_SCENE_INSTRUCTIONS.join('\n')] },
+      { ...reviewOptions, readOnlyTools: true, toolNames: ['show_map_region', 'get_map_region', 'get_event', 'get_opening', 'get_database_records', 'run_lint', 'check_reachability'], extraTools: [reportTool],
+        onEvent(event) {
+          reviewOptions.onEvent?.(event);
+          if (event.type !== 'execution_status' || event.name !== 'map.image.delivered' || !event.ok || !event.data || typeof event.data !== 'object') return;
+          const data = event.data as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
+          if (typeof data.mapId !== 'string' || !mapIds.includes(data.mapId)) return;
+          const map = snapshot.maps[data.mapId]!;
+          if (data.x === 0 && data.y === 0 && data.w === map.width && data.h === map.height) delivered.add(data.mapId);
+        },
+      });
+      toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
+      if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 첫 장면 검수가 변경을 반환했습니다.');
+      const report = verdict as { ok: boolean; blockers: string[] } | undefined;
+      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id))) throw new Error('첫 장면 검수 실패: ' + (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.'));
+      reviewedFirstScene = firstSceneSignature(working, receipt);
+      emit({ type: 'execution_status', name: 'first_scene.review_passed', ok: true, summary: '실제 장소 그림·상호작용 대상·동선·오프닝 일치를 확인했습니다.' });
+      emit({ type: 'agent_done', agentId, ok: true, summary: '첫 장면 이미지 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
+    } finally { mailbox.close(agentId); }
+  }
+
+  if (firstPlay) {
+    // Scene geometry and first interaction/intro have separate serial owners.
+    // The observed combined 48+24 turn run exhausted its budget on room/assets
+    // and never wrote the intro. Each stage gets only its relevant tools.
+    const placeTools = ['get_map_region', 'get_event', 'show_map_region', 'check_reachability', 'run_lint',
+      'find_tools', 'list_tileset_references', 'read_tileset_reference', 'list_hand_interior_parts',
+      'build_hand_interior_room', 'set_map_properties', 'set_start_position', 'author_wild_route',
+      'move_event', 'upsert_event'];
+    for (const stage of ['places', 'entry'] as const) {
+      const places = stage === 'places';
+      const inspect = places ? inspectFirstScenePlaces : inspectFirstScene;
+      let repair = '';
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const member = builders[0]!;
+        const agentId = `builder-${++counters.builder}`;
+        const snapshot = cloneProjectSharingSharedDictionaries(working);
+        let reported = false;
+        const task = [places
+          ? '첫 장소 구조 담당: 기존 두 장소의 방/길 구조와 가구·출입 동선만 완성한다. 배우/DB/오프닝/첫 대상의 이벤트 내용은 다음 담당의 작업이다. 주인공 그림이나 얼굴을 검색하지 않는다.'
+          : '첫 입력 담당: 두 장소의 구조는 이미 작성했다. 아래 실제 자산 목록에서 골라 첫 행동 대상과 마무리 대상을 지금 upsert_event로 배치하고, 짧은 일회성 맵 도입/조작 안내를 작성한다. 방을 처음부터 다시 짓거나 인물 DB/외형을 바꾸지 않는다. 자산 검색은 완료되어 목록을 제공했다. 검색을 반복하지 않는다. 첫 읽기에서 현재 이벤트/맵을 확인한 뒤 쓰기를 시작한다.',
+          ...(places ? [FIRST_SCENE_INSTRUCTIONS[1], FIRST_SCENE_INSTRUCTIONS[2],
+            '각 타일셋의 용도 MD 전 페이지와 가까운 예제의 실제 이미지를 먼저 읽는다. 바닥만 있는 길도 구조/소품을 구성한다. 시작 위치/양방향 transfer 목적지는 통행 가능하게 맞춘다.'] : [...FIRST_SCENE_INSTRUCTIONS]),
+          '핵심 이벤트 근거: ' + JSON.stringify(firstPlay),
+          ...(places ? [] : ['핵심 대상의 실제 자산 이름/태그: ' + JSON.stringify(firstSceneGraphicEvidence(snapshot, firstPlay)),
+            '실제로 사용 가능한 사물 목록(이 밖의 id를 만들지 않는다): ' + JSON.stringify(firstSceneObjectCatalog())]), repair,
+          `완료 전에 두 맵 전체를 show_map_region으로 보고 report_first_scene${places ? '_places' : ''}를 반드시 호출한다.`,
+          '전체 사용자 지시:\n' + request.task].join('\n');
+        const reportTool: PiToolShape = {
+          name: places ? 'report_first_scene_places' : 'report_first_scene', label: places ? 'report_first_scene_places' : 'report_first_scene', description: places ? '두 장소의 실제 구조와 정상 동선을 작성한 뒤 보고한다. 기본 빈 맵은 거부한다.' : '보이는 핵심 대상과 짧은 도입을 작성한 뒤 보고한다. 안 보이는 대상/글만 있는 오프닝은 거부한다.',
+          parameters: { type: 'object', properties: { report: { type: 'string', minLength: 1, maxLength: 4000 } }, required: ['report'], additionalProperties: false },
+          async execute(_id, params) {
+            const issues = [...inspectFirstPlay(base, working, firstPlay!), ...inspect(base, working, firstPlay!)];
+            if (issues.length) throw new Error(issues.join(' / '));
+            reported = true;
+            return text({ ok: true, report: str((params as { report?: unknown }).report, 'report') });
+          },
+        };
+        progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: '' });
+        mailbox.register(agentId, member.label, null);
+        emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작' });
+        try {
+          const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+            initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, places ? (attempt ? 24 : 48) : (attempt ? 16 : 24)),
+            ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+            systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 3) : FIRST_SCENE_INSTRUCTIONS),
+              places ? '이번 단계는 두 장소의 구조/가구/통행만 작성하고 report_first_scene_places로 끝낸다. 오프닝과 대상 이벤트는 다음 단계에서 작성한다.' : '이번 단계는 보이는 첫 대상/마무리 대상과 짧은 맵 도입을 작성하고 report_first_scene로 끝낸다.'] },
+          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeTools
+            : ['get_event','get_map_region','get_database_records','upsert_event','move_event','get_opening','set_opening','show_map_region','check_reachability','run_lint'],
+            onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
+          toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
+          if (!reported) throw new Error('첫 장소의 제작 보고가 없습니다.');
+          const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspect(base, done.project, firstPlay)];
+          const play = judgePlayableSegment(done.project);
+          if (issues.length || !play.ok) throw new Error([...issues, ...play.blockers].join(' / '));
+          assertModernProposal(working, done.project);
+          working = cloneProjectSharingSharedDictionaries(done.project);
+          emit({ type: 'agent_done', agentId, ok: true, summary: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
+          if (!places) await reviewFirstScene();
+          break;
+        } catch (error) {
+          if (attempt || options.signal?.aborted) throw error;
+          repair = '첫 장소의 검사에서 남은 문제만 수정한다. 핵심 플레이를 보존한다. 오류: ' + (error instanceof Error ? error.message : String(error));
+          emit({ type: 'execution_status', name: 'first_scene.repair', ok: false, summary: repair });
+        } finally { mailbox.close(agentId); }
+      }
+    }
+  }
+
   const orchestratorId = `orchestrator-${++counters.orchestrator}`;
   progress.set(orchestratorId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
   emit({ type: "agent_spawn", agentId: orchestratorId, role: "orchestrator", mapId: null, mapName: null, task: request.task });
@@ -785,7 +919,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 남은 작업만 최대 3회 배정한다. 기존 두 맵을 유지하고 대규모 장식/새 맵을 다음 요청으로 넘긴다. 필요하면 주인공 이름·지도 이름·기존 오프닝 문구 등 장면 마무리 한 project 작업을 하고 finish 한다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
   } finally { mailbox.close(orchestratorId); }
