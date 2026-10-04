@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **135쪽 / 4620KB / 약 1,338,100 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **135쪽 / 4624KB / 약 1,339,357 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -130,6 +130,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
 | `openwiki/village-layout-research.md` | 1 | `scripts/qa/capture-restored-river-village.mjs` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
+| `openwiki/worldmap-terrain-editing.md` | 1 | `optionalToolArguments.ts` |
 
 ## 페이지별 절 좌표
 
@@ -1154,12 +1155,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 화면
 - `L65` 운영
 
-### `openwiki/harnesses/worldmap-icons.md` — 4KB · 47줄 · ~1,091 토큰
+### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
 - `L6` 입구
-- `L20` 사람 선택만 굽기
-- `L34` 에디터·조수
-- `L42` 2026-10-04 근거
+- `L21` 호스트 공용 DB 등록 (2026-10-04)
+- `L38` 사람 선택만 굽기
+- `L52` 에디터·조수
+- `L60` 2026-10-04 근거
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
@@ -2423,13 +2425,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L72` 다른 맵과 사용자 설정 보호
 - `L91` 검증
 
-### `openwiki/worldmap-terrain-editing.md` — 16KB · 137줄 · ~4,692 토큰
+### `openwiki/worldmap-terrain-editing.md` — 18KB · 164줄 · ~5,448 토큰
 
 - `L7` 흐름
-- `L29` 계약
-- `L55` 새 구조 만들기 — `base: "generate"` (2026-10-03)
-- `L101` 후속 조수 실행·SQLite 재로드 (2026-10-04)
-- `L109` 지형 경계 v9 (2026-10-03)
-- `L115` 글자 지도
-- `L121` 조수 역할 적대 시험 (2026-10-03)
-- `L128` 함정
+  - `L9` 호스트 공용 DB와 조수 (2026-10-04)
+- `L56` 계약
+- `L82` 새 구조 만들기 — `base: "generate"` (2026-10-03)
+- `L128` 후속 조수 실행·SQLite 재로드 (2026-10-04)
+- `L136` 지형 경계 v9 (2026-10-03)
+- `L142` 글자 지도
+- `L148` 조수 역할 적대 시험 (2026-10-03)
+- `L155` 함정

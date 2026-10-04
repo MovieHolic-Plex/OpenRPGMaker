@@ -15,7 +15,7 @@ import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 /** 건물 목록·킷 요약(생성 건물 장소). 조수가 「3층 대저택」처럼 이름으로 고르고 출처(생성형 이미지/손 도트)를 본다. */
 type PlaceBuilding = { id: string; role: string; name: string; kit: string; image: string; x: number; y: number; width: number; height: number; doors: { x: number; y: number }[] };
 type PlaceKitSummary = { kit: string; name: string; image: string; blueprint: string; width: number; height: number; stories?: number | null; usedHere: string[] };
-type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
+type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; assets?: import('./types').Project['assets']['uploaded']; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
 type SnapshotFile = () => Promise<{ default: unknown }>;
 type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
 
