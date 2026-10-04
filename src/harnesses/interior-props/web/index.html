@@ -15,7 +15,7 @@ header h1 { font-size:16px; margin:0 6px 0 0; white-space:nowrap; }
 .tab.on { background:#3a3442; border-color:var(--sel); }
 .chip { border-radius:999px; padding:2px 10px; font-size:12px; background:#33303a; color:var(--dim); white-space:nowrap; }
 .chip b { color:var(--text); }
-.pool { margin-left:auto; color:var(--dim); font-size:12px; white-space:nowrap; }
+.pool { min-width:0; overflow:hidden; text-overflow:ellipsis; margin-left:auto; color:var(--dim); font-size:12px; white-space:nowrap; }
 .pool .live { color:var(--ok); }
 .wrap { display:flex; flex:1; min-height:0; }
 nav { width:250px; flex:none; overflow:auto; border-right:1px solid var(--line); background:#1f1d23; }
@@ -104,6 +104,14 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .toast { position:fixed; right:18px; bottom:76px; background:#2f4a2c; color:#e6f6e1; padding:8px 16px; border-radius:8px; z-index:20; display:none; pointer-events:none; box-shadow:0 2px 10px #0008; }   /* 오른쪽 아래(2026-10-03, 사용자 「위에 띄우지 말고 오른쪽 아래」) — 위는 기물 이름이라 가린다. 아래 바 단추를 가리지 않게 바 위에 */
 .toast.err { background:#5a2320; }
 .toast.act { pointer-events:auto; }
+.proposal-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-top:16px; }
+.proposal { border:1px solid var(--line); border-radius:10px; background:var(--panel); padding:14px; }
+.proposal-head { display:flex; gap:14px; align-items:center; margin-bottom:10px; }
+.proposal-head img { width:64px; max-height:96px; object-fit:contain; image-rendering:pixelated; }
+.proposal h3 { margin:0 0 4px; font-size:16px; }
+.proposal p { margin:8px 0; color:var(--dim); font-size:12px; }
+.proposal .btn { margin-top:10px; }
+.derive-hint { padding:8px 12px; margin:10px 0; border:1px solid var(--line); border-radius:8px; color:var(--dim); font-size:12px; }
 /* 파생(2026-10-04): 묶음 그림 칸 이름표 · 움직임 미리보기 · 파생 창 */
 .card.wide { grid-column:span 2; }
 .strip { display:inline-block; position:relative; padding-bottom:16px; line-height:0; }
@@ -177,6 +185,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
   <h1>소품 고르기</h1>
   <button class="tab on" data-v="pick">후보 고르기</button>
   <button class="tab" data-v="objs">기물 골라 새로 뽑기</button>
+  <button class="tab" data-v="suggest">자동 제안</button>
   <span class="chip">고를 차례 <b id="cReady">0</b></span>
   <span class="chip">그리는·검수 중 <b id="cDraw">0</b></span>
   <button class="chip" id="cDoneBtn" title="끝난 기물(이미 고른 것)은 목록에서 접어 둔다 — 눌러서 펼치기/접기">끝남 <b id="cDone">0</b></button>
@@ -194,7 +203,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
 const S = { pending:{}, showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
-            objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false, drafts:{}, fail:0, errSeen:null };
+            suggestions:null, suggestQ:'', suggestKind:'all', suggestHad:false, suggestGen:0, objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false, drafts:{}, fail:0, errSeen:null };
 const DRAW_N = 2;        // 다시 뽑기·새로 뽑기 한 번에 그리는 후보 수(서버 n). 화면 문구도 이것 하나에서 만든다
 const UNDO_MS = 5000;    // 확정·다시 뽑기는 이만큼 기다렸다가 서버에 보낸다 — 그 사이 「되돌리기」(Z)
 const $ = s => document.querySelector(s);
@@ -314,6 +323,7 @@ async function load(keep) {
     if (sn !== S.sigNav || !keep) { S.sigNav = sn; renderNav(); }
     if (sp !== S.sigPick || !keep) { S.sigPick = sp; const y = $('#main').scrollTop; renderPick(); $('#main').scrollTop = y; }
   }
+  if (S.view === 'suggest') loadSuggestions();
   clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || ['publishing','queued','error'].includes(pub.state) || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
 }
 
@@ -399,6 +409,7 @@ function renderPick() {
       ${canDerive(it) ? ` · <button class="chip" id="dvBtn" title="이 기물의 방향 4·상태·움직임·큰 판을 뽑는다 (D)">＋ 파생 만들기</button>` : ''}</span>
       ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고르면 원본과 별개의 움직이는 기물이 된다' : ''}</span>` : ''}</div>
     <div class="meta" style="color:var(--dim)">${it.isNew ? '<b class="nb">새</b> ' : ''}${esc(it.desc)}${it.use && it.use.length ? ` <span class="chip">쓰임 ${esc(it.use.join(' · '))}</span>` : ''}</div>
+    ${canDerive(it) ? '<div class="derive-hint" id="deriveHint">자동 파생 제안을 읽는 중…</div>' : ''}
     <div class="rounds">` + it.rounds.map(x => `<button data-r="${x.id}" class="${x.id === r.id ? 'on' : ''}">판 h${x.id}${x.decided ? (x.decided.verdict === 'keep' ? ' · 그대로' : ' · ' + pickName(x.decided.cand)) : ''}</button>`).join('') + `</div>`;
   if (r.note) h += `<div class="rnote">메모: ${esc(r.note)}</div>`;
   if (r.base) h += `<div class="rnote">출발점: ${esc(r.base)}</div>`;
@@ -430,6 +441,7 @@ function renderPick() {
   m.querySelectorAll('.grid .pic img').forEach(img => { sized(img, S.zoom); img.src = img.dataset.src; });
   startAnims(m, it);
   const dv = document.getElementById('dvBtn'); if (dv) dv.onclick = () => openDerive(it.id);
+  if (canDerive(it)) loadDeriveHint(it.id);
   m.querySelectorAll('.grid .ctxw img').forEach(img => {
     img.onerror = () => { const w = img.parentElement; w.classList.add('err'); w.onclick = ev => { ev.stopPropagation(); w.classList.remove('err'); w.onclick = null; img.src = img.dataset.src + '&r=' + Date.now(); }; };
     img.src = img.dataset.src; });
@@ -473,6 +485,7 @@ function memoBox(view, key, ph) {
 }
 function renderBar() {
   const b = $('#bar');
+  if (S.view === 'suggest') { b.innerHTML = ''; return; }
   if (S.view === 'objs') {
     memoBox('objs', 'objs', '작업자에게 줄 메모(모든 기물에 같이 간다) — 예: 의자 다리가 너무 굵다, 원래 디자인 살려라 · 「2x2」처럼 쓰면 크기도 바뀐다(기물 하나일 때)');
     $('#barL').innerHTML = `<span><b>${S.objSel.size}</b>개 골랐다</span>`;
@@ -605,17 +618,18 @@ function redraw(slot) {
 // ---- 파생 (2026-10-04 사용자 「의자 방향 4개, 움직이는 모션, 사이즈 키우기」) ----
 const canDerive = it => it && !it.set && !(it.isNew && (it.current || 'v5') === 'v5');
 function closeDerive() { document.querySelector('.dlgbg')?.remove(); }
-async function openDerive(id) {
+async function openDerive(id, onlyMissing = false) {
   let g; try { g = await api('/api/harness/derive/' + encodeURIComponent(id)); } catch (e) { toast('파생 정보를 못 읽었다: ' + e.message, 1); return; }
   closeDerive();
   const row = (k, on, ok, title, sub, extra = '') => `<label class="row ${ok ? '' : 'off'}"><input type="checkbox" data-k="${k}" ${on && ok ? 'checked' : ''} ${ok ? '' : 'disabled'}><span><b>${title}</b><small>${sub}</small>${extra}</span></label>`;
   const had = [...g.sets, ...g.sizes];
+  const suggested = k => g[k].checked && (!onlyMissing || !had.some(x => x.derive === k));
   const bg = document.createElement('div'); bg.className = 'dlgbg';
   bg.innerHTML = `<div class="dlg"><h3>파생 만들기 — ${esc(g.name)} <code style="font-size:12px">${esc(g.id)}</code></h3>
     <div class="made">체크는 쓰임새(${esc(g.use.join(' · ') || '없음')})로 고른 제안이다. 고친 뒤 「주문」. 묶음은 작업자 한 명이 원본 칸을 두고 나머지 칸을 한 판에 그린다 — 고르면 칸을 잘라 각 기물에 넣는다.</div>
-    ${row('facing', g.facing.checked, g.facing.ok, '방향 4 (남·동·북·서)', g.facing.ok ? (g.facing.siblings.length ? ` 짝 기물 ${g.facing.siblings.map(f => esc(g.id.replace(/ [SENW]$/, ' ' + f))).join(' · ')} 에 들어간다` : ' 새 기물 3개(동·북·서)가 생긴다') : ' ' + esc(g.facing.why))}
-    ${row('state', g.state.checked, g.state.ok, '상태 전환', ' 원본 + 다른 상태 한 칸. 이벤트가 그림을 바꾼다', ` <input type="text" id="dvState" value="${esc(g.state.label)}" title="상태 이름(열림·켬·깨짐…)">`)}
-    ${row('loop', g.loop.checked, g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 고른 움직임은 칩셋에 따로 추가`)}
+    ${row('facing', suggested('facing'), g.facing.ok, '방향 4 (남·동·북·서)', g.facing.ok ? (g.facing.siblings.length ? ` 짝 기물 ${g.facing.siblings.map(f => esc(g.id.replace(/ [SENW]$/, ' ' + f))).join(' · ')} 에 들어간다` : ' 새 기물 3개(동·북·서)가 생긴다') : ' ' + esc(g.facing.why))}
+    ${row('state', suggested('state'), g.state.ok, '상태 전환', ' 원본 + 다른 상태 한 칸. 이벤트가 그림을 바꾼다', ` <input type="text" id="dvState" value="${esc(g.state.label)}" title="상태 이름(열림·켬·깨짐…)">`)}
+    ${row('loop', suggested('loop'), g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 고른 움직임은 칩셋에 따로 추가`)}
     ${row('size', g.size.checked, g.size.ok, '큰 판', ' 원본을 출발 그림으로 새 칸 수에 다시 그린다(늘리기 금지)', ` <input type="number" id="dvW" min="1" max="8" value="${g.size.w}">×<input type="number" id="dvH" min="1" max="8" value="${g.size.h}">칸`)}
     <textarea id="dvNote" placeholder="작업자에게 줄 메모(모든 파생에 같이 간다) — 예: 열린 상자 안에 금화가 보이게"></textarea>
     ${had.length ? `<div class="made">이미 만든 파생: ${had.map(x => esc(x.name)).join(' · ')} — 같은 것을 다시 주문하면 원본의 지금 그림으로 새 판을 연다</div>` : ''}
@@ -629,9 +643,55 @@ async function openDerive(id) {
                   size:on('size') ? [+$('#dvW').value, +$('#dvH').value] : null, note:$('#dvNote').value.trim()};
     if (!body.facing && !body.state && !body.loop && !body.size) { toast('하나는 체크하세요'); return; }
     $('#dvGo').disabled = true;
-    try { const r = await api('/api/harness/derive', body); closeDerive(); toast(`주문: ${r.made.map(x => x.name).join(' · ')} — 후보 ${DRAW_N}장씩 그리는 중`); load(true); }
+    try { const r = await api('/api/harness/derive', body); closeDerive(); S.suggestions = null; toast(`주문: ${r.made.map(x => x.name).join(' · ')} — 후보 ${DRAW_N}장씩 그리는 중`); load(true); }
     catch (e) { $('#dvGo').disabled = false; toast('파생 주문 실패: ' + e.message, 1); }
   };
+}
+// 제안은 자동 계산하지만 주문은 사용자가 확인한다(기존 세션의 C안).
+async function loadDeriveHint(id) {
+  const target = $('#deriveHint'); if (!target) return;
+  try {
+    const g = await api('/api/harness/derive/' + encodeURIComponent(id));
+    if (!target.isConnected) return;
+    const labels = {facing:'방향 4',state:g.state.label + ' 상태',loop:'움직임'};
+    const keys = Object.keys(labels).filter(k => g[k].ok && g[k].checked);
+    target.textContent = keys.length ? '자동 제안: ' + keys.map(k => labels[k] + (g.sets.some(x => x.derive === k) ? ' (이미 주문)' : '')).join(' · ') + ' ' : '자동 추천 항목이 없습니다. 방향·상태·움직임·크기를 직접 주문할 수 있습니다. ';
+    const button = document.createElement('button'); button.className = 'chip'; button.textContent = '제안 확인·수정';
+    button.onclick = () => openDerive(id, keys.some(k => !g.sets.some(x => x.derive === k)));
+    target.append(button);
+  } catch (e) { if (target.isConnected) target.textContent = '자동 제안을 못 읽었습니다: ' + e.message; }
+}
+const PROPOSAL_STATUS = {done:'선택 완료',drawing:'그리는 중',ready:'고를 차례',failed:'후보 생성 실패',ordered:'주문 있음'};
+async function loadSuggestions() {
+  const gen = ++S.suggestGen;
+  if (!S.suggestions) { $('#nav').innerHTML = ''; $('#main').innerHTML = '<div class="empty">기존 기물의 파생을 자동으로 제안하는 중…</div>'; }
+  try {
+    const data = await api('/api/harness/suggestions');
+    if (S.view !== 'suggest' || gen !== S.suggestGen) return;
+    const changed = !S.suggestions || JSON.stringify(data) !== JSON.stringify(S.suggestions);
+    S.suggestions = data;
+    if (changed || !$('#suggestQ')) { const y = $('#main').scrollTop; renderSuggestions(); $('#main').scrollTop = y; }
+  } catch (e) { if (S.view === 'suggest' && gen === S.suggestGen) $('#main').innerHTML = `<div class="empty">제안을 못 읽었습니다: ${esc(e.message)}<br>잠시 후 다시 읽습니다.</div>`; }
+}
+function renderSuggestions() {
+  const data = S.suggestions, q = S.suggestQ.trim().toLowerCase();
+  const rows = data.items.filter(o => (S.suggestHad || o.pending) && (S.suggestKind === 'all' || o.proposals.some(p => p.key === S.suggestKind)) &&
+    (!q || (o.name + ' ' + o.id + ' ' + o.category).toLowerCase().includes(q)));
+  $('#nav').innerHTML = `<h3>자동 파생 제안</h3><div class="empty" style="padding:12px">아직 주문하지 않은 기물 <b>${data.pending}</b>개<br>추천 파생을 이미 주문한 기물 ${data.alreadyOrdered}개<br><br>앉기·눕기 → 방향 4<br>열기·장치 → 상태 전환<br>불빛 → 반복 움직임<br><br>크기는 제안 확인 창에서 직접 추가합니다.</div>`;
+  $('#main').innerHTML = `<div class="head"><h2>자동 파생 제안</h2></div>
+    <p class="meta">원본의 쓰임새를 보고 필요한 파생을 먼저 제안합니다. 「제안 확인」에서 더하거나 빼고 주문하세요.</p>
+    <div class="objtools"><input id="suggestQ" placeholder="기물 이름·분류로 찾기" value="${esc(S.suggestQ)}">
+    <div class="cats">${[['all','전체'],['facing','방향'],['state','상태'],['loop','움직임']].map(([k,v])=>`<button data-skind="${k}" class="${S.suggestKind===k?'on':''}">${v}</button>`).join('')}</div>
+    <label><input type="checkbox" id="suggestHad" ${S.suggestHad?'checked':''}> 이미 주문한 파생 포함</label></div>
+    <div class="proposal-list">${rows.map(o=>`<article class="proposal" data-proposal="${esc(o.id)}"><div class="proposal-head"><img loading="lazy" src="${o.current==='v5'?thumbSrc(o):`/c/${o.slug}/${o.current}.png`}" alt="${esc(o.name)} 원본"><div><h3>${esc(o.name)}</h3><span class="meta">${esc(o.category)}</span></div></div>
+      ${o.proposals.map(p=>`<div><b>${esc(p.title)}</b> ${p.existing.length?`<span class="chip">${p.existing.map(x=>PROPOSAL_STATUS[x.status]).join(' · ')}</span>`:'<span class="chip">새 제안</span>'}<p>${esc(p.reason)}</p></div>`).join('')}
+      <button class="btn ${o.pending?'go':''}" data-propose="${esc(o.id)}">${o.pending?'제안 확인':'파생 보기·다시 주문'}</button></article>`).join('')}</div>
+    ${rows.length?'':'<div class="empty">이 조건에 맞는 제안이 없습니다.</div>'}`;
+  $('#suggestQ').oninput = e => { S.suggestQ = e.target.value; const p=e.target.selectionStart; renderSuggestions(); $('#suggestQ').focus(); $('#suggestQ').setSelectionRange(p,p); };
+  $('#suggestHad').onchange = e => { S.suggestHad = e.target.checked; renderSuggestions(); };
+  $('#main').querySelectorAll('[data-skind]').forEach(b=>b.onclick=()=>{S.suggestKind=b.dataset.skind;renderSuggestions();});
+  $('#main').querySelectorAll('[data-propose]').forEach(b=>b.onclick=()=>openDerive(b.dataset.propose,!!data.items.find(o=>o.id===b.dataset.propose).pending));
+  renderBar();
 }
 // 움직임 묶음: 고른 띠에서 프레임을 잘라 돌려 본다(카드 밑 작은 캔버스)
 function startAnims(m, it) {
@@ -680,7 +740,7 @@ async function startDraw() {
 
 function setView(v) {
   S.view = v; document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === v));
-  if (v === 'objs') loadObjs(); else { renderNav(); renderPick(); }
+  if (v === 'objs') loadObjs(); else if (v === 'suggest') { renderBar(); loadSuggestions(); } else { renderNav(); renderPick(); }
 }
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => setView(t.dataset.v));
 

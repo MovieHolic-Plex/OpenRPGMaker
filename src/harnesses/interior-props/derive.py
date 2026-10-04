@@ -77,33 +77,82 @@ def _pic(i):
 
 
 _SPEC = {}
-def _use(i, o):
-    """쓰임새: 새 기물은 항목에, v5 기물은 조수용 명세(handInteriorSpec.json)에 있다."""
-    if o.get('use'): return set(o['use'])
+def _spec_object(i):
     p = os.path.join(ROOT, 'src/assets/handInteriorSpec.json'); mt = os.path.getmtime(p)
     if _SPEC.get('mt') != mt: _SPEC.update(mt=mt, objs=json.load(open(p, encoding='utf-8'))['objects'])
-    return set((_SPEC['objs'].get(i) or {}).get('use') or [])
+    return _SPEC['objs'].get(i) or {}
 
 
-def suggest(i):
+def _use(i, o):
+    """쓰임새: 새 기물은 항목에, v5 기물은 조수용 명세(handInteriorSpec.json)에 있다."""
+    return set(o.get('use') or _spec_object(i).get('use') or [])
+
+
+def suggest(i, context=None):
     """파생 창의 체크 기본값. 쓰임새(use)·종류(kind)로 정한다 — 사용자가 확인해야 주문된다."""
-    by = objects_by_id(); o = by[i]; use = _use(i, o); k = o['kind']
+    context = context or {}
+    by = context.get('by') or objects_by_id(); o = by[i]; use = _use(i, o); k = o['kind']
     fp = geom(o)['footprint']; fw, fh = int(fp.get('w') or 1), int(fp.get('h') or 0)
     st = _stem(i); sib = [f for f in FACINGS if st and f != parent_facing(i) and f'{st} {f}' in by]
     facing_ok = k == 'floor'
+    states = o.get('states') or _spec_object(i).get('states') or {}
+    state_label = next(iter(states.get('others') or {}), None)
+    unlit = i.startswith('unlit ') or states.get('state') in ('끔', '꺼짐') and 'light' in use
+    state_label = state_label or ('닫힘' if i.endswith(' open') else '켬' if unlit else
+                   next((STATE_DEFAULT[u] for u in ('open', 'switch', 'light', 'sleep', 'sit') if u in use), '다른 상태'))
     out = dict(id=i, name=o['name_ko'], kind=k, kind_ko=o['kind_ko'], use=sorted(use), footprint=[fw, fh],
                facing=dict(ok=facing_ok, checked=facing_ok and ('sit' in use or 'sleep' in use or bool(sib)),
                            why='' if facing_ok else '바닥 기물만 돌릴 수 있다(벽 앞·걸이·바닥 무늬는 늘 남쪽을 본다)',
                            siblings=sib),
-               state=dict(ok=k != 'flat', checked=bool(use & {'open', 'switch'}),
-                          label=next((STATE_DEFAULT[u] for u in ('open', 'switch', 'light', 'sleep', 'sit') if u in use), '다른 상태')),
-               loop=dict(ok=True, checked='light' in use and int(o['atlas'].get('frames') or 1) == 1, frames=LOOP_N, ms=LOOP_MS,
+               state=dict(ok=k != 'flat' or bool(use & {'open', 'switch'}), checked=bool(use & {'open', 'switch'}) or unlit, label=state_label),
+               loop=dict(ok=True, checked='light' in use and not unlit and int(o['atlas'].get('frames') or 1) == 1, frames=LOOP_N, ms=LOOP_MS,
                          why='이미 칩셋에서 움직이는 기물(12프레임)' if int(o['atlas'].get('frames') or 1) > 1 else ''),
                size=dict(ok=k in ('floor', 'wall', 'hang', 'flat'), checked=False, w=min(8, fw * 2), h=min(8, max(1, fh) * 2) if fh else 2),
-               sets=[dict(id=s['id'], derive=s['derive'], name=s['name_ko']) for s in load_sets() if s['parent'] == i],
-               sizes=[dict(id=it['id'], name=it['name_ko']) for it in json.load(open(NEW_ITEMS, encoding='utf-8'))['items']
+               sets=[dict(id=s['id'], derive=s['derive'], name=s['name_ko']) for s in (context['sets'] if 'sets' in context else load_sets()) if s['parent'] == i],
+               sizes=[dict(id=it['id'], name=it['name_ko']) for it in (context['items'] if 'items' in context else json.load(open(NEW_ITEMS, encoding='utf-8'))['items'])
                       if it.get('parent') == i and it.get('derive') == 'size'])
     return out
+
+
+def suggestions():
+    """기존 원본 전체에서 파생을 먼저 제안한다. 읽기 전용이며 주문/선택을 만들지 않는다."""
+    import picks_db, store
+    by = objects_by_id(); picks = picks_db.current_all()
+    context = dict(by=by, sets=load_sets(), items=json.load(open(NEW_ITEMS, encoding='utf-8'))['items'])
+    rounds = {}; runs = {}
+    for r in store.rounds(): rounds[r['item']] = r['id']
+    for r in store.runs(): runs.setdefault(r['round'], []).append(r)
+    def existing(s):
+        rr = runs.get(rounds.get(s['id']), [])
+        status = ('drawing' if any(r['status'] in ('queued', 'running') for r in rr) else
+                  'done' if picks.get(s['id'], {}).get('choice') else 'ready' if any(r['ok'] for r in rr) else 'failed' if rr else 'ordered')
+        return dict(id=s['id'], name=s['name'], status=status)
+    out = []
+    for i, o in by.items():
+        if o.get('set') or o.get('parent'): continue
+        if o.get('new') and picks.get(i, {}).get('choice') in (None, 'v5'): continue
+        # 방향 짝이 있는 가구는 같은 가족을 한 번만 제안한다.
+        stem = _stem(i)
+        if stem:
+            family = [f'{stem} {f}' for f in FACINGS if f'{stem} {f}' in by]
+            if family and i != family[0]: continue
+        states = o.get('states') or _spec_object(i).get('states') or {}
+        if states.get('group') in by and states['group'] != i: continue
+        g = suggest(i, context); proposals = []
+        for key, title, reason in (
+                ('facing', '방향 4', '앉거나 눕는 가구·방향 짝은 남·동·북·서 그림을 맞춥니다.'),
+                ('state', g['state']['label'] + ' 상태', '상자·장치·불빛은 원본과 다른 상태의 그림을 제안합니다.'),
+                ('loop', '움직임', '불빛 기물은 불꽃·빛이 반복해서 움직이는 그림을 제안합니다.')):
+            if not g[key]['ok'] or not g[key]['checked']: continue
+            had = [existing(s) for s in g['sets'] if s['derive'] == key]
+            proposals.append(dict(key=key, title=title, reason=reason, existing=had))
+        if not proposals: continue
+        pending = sum(not p['existing'] for p in proposals)
+        out.append(dict(id=i, slug=slug(i), name=g['name'], category=o['category_ko'], use=g['use'],
+                        current=picks.get(i, {}).get('choice') or 'v5', proposals=proposals, pending=pending))
+    out.sort(key=lambda x: (not bool(x['pending']), x['category'], x['name']))
+    return dict(items=out, pending=sum(bool(x['pending']) for x in out),
+                alreadyOrdered=sum(not bool(x['pending']) for x in out))
 
 
 # ---------------------------------------------------------------- 묶음 만들기

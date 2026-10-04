@@ -2,6 +2,7 @@
 
   GET  /harness                         고르는 화면(web/index.html)
   GET  /api/harness/state               판·후보·상태 + 일꾼 상태
+  GET  /api/harness/suggestions        기존 원본의 자동 파생 제안(주문 전 읽기)
   GET  /api/harness/objects             시트의 기물 전부(기물 고르기 패널)
   GET  /api/harness/thumb/<slug>.png    지금 시트(handInteriorSpec + interior-chipset)에서 잘라 낸 기물 그림
   POST /api/harness/decide   {id, round, choice: "h12-C"|"keep", rejects: {"h12-A": ["view", …]}, note}
@@ -379,6 +380,9 @@ def handle(h, method, parts, body=None):
             try: h.send(200, json.dumps(derive.suggest(parts[3]), ensure_ascii=False))
             except KeyError: h.send(404, json.dumps({'error': '모르는 기물'}, ensure_ascii=False))
             return True
+        if parts == ['api', 'harness', 'suggestions']:
+            import derive
+            h.send(200, json.dumps(derive.suggestions(), ensure_ascii=False)); return True
         if parts == ['api', 'harness', 'objects']:
             h.send(200, json.dumps(objects(), ensure_ascii=False)); return True
         if len(parts) == 4 and parts[:3] == ['api', 'harness', 'thumb'] and parts[3].endswith('.png'):
