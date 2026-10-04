@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.127.0 — 2026-10-05
+
+### 기능
+
+- author opening storyboards with independent art motion and original BGM (`69c8b4c`)
+
+### 수정
+
+- freeze art acceptance criteria and adjudicate conflicting reviews (#2118) (`134fc16`)
+- preserve opening depth and record live production evidence (`27d5bc9`)
+- retain painted detail in layered opening handoff (`42f8b86`)
+- keep opening music through map preparation (`40dd88e`)
+- preserve layered opening handoff at logical stage size (`34e96dc`)
+- use the installed image decoder for opening alpha validation (`ccf4204`)
+
+### 문서
+
+- refresh opening handoff wiki index (`c8fdde2`)
+
 ## 0.126.1 — 2026-10-05
 
 ### 수정
