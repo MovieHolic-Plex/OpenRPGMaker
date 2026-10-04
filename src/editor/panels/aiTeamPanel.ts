@@ -89,7 +89,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     const section = el("div", { class: "ai-team-section ai-team-now", dataset: { testid: "ai-team-now" } });
     section.append(el("h3", { class: "ai-team-section-title", text: "지금" }));
     if (!activity || activity.agents.length === 0) {
-      section.append(el("p", { class: "ai-team-empty", text: "실행 중인 팀 작업이 없습니다. 컴포저에 /pi team <지시> 를 보내면 여기서 팀원별 진행을 봅니다." }));
+      section.append(el("p", { class: "ai-team-empty", text: "실행 중인 팀 작업이 없습니다. team <지시>를 보내면 여기서 조수별 진행을 봅니다." }));
       return section;
     }
     const list = el("ul", { class: "ai-team-live" });

@@ -72,3 +72,17 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 혼합 그룹은 `defaultLayer: mixed`, `layerHome: perCell`로 직렬화한다. `layerHome: mixed`는
 프로젝트 스키마가 거부한다. bake 정의 검사에 이 enum을 추가했고, 정본 생성기는 폴더를 만들기 전에
 직렬화/역직렬화 검증을 한다. 실제 정본 revision 4에서 다시 열어 확인했다.
+
+## 기존 칩 확장 실험 (2026-10-05)
+
+`harness-data/modern-chipset/parking-wide/plan.md`를 독립적으로 검수한 뒤
+`npm run harness -- modern-chipset parking-wide --review <plan-review.json>`으로 조립한다.
+검수 요청 시 같은 이름의 `.input.json`에 planSha256/sheetSha256를 고정한다. 실행기는 현재 입력과 일치하지 않으면 거부한다.
+북벽은 한 번, 주차열 단면만 반복한다. 원본 차량·그림·칩 수는 바꾸지 않는다.
+결과 `tiledata/modern-city/parking-wide/recipe.json`은 26×18칸, 12면/차량6대다.
+`save-parking-project`에 `--recipe <recipe.json>`을 추가하면 새 정본으로 저장·재로드한다.
+실제 보행 확인은 `qa:runtime -- --scenario parking-wide --project <reloaded-project.json>`.
+
+이 표본은 조립/보행 PASS지만 **완성 시설 판정은 INCOMPLETE**다. 기둥·천장등·외곽 벽/출입 시설이 부족하여
+큰 회색 바닥과 반복 차량이 드러난다. 같은 칩의 확장 결과와 부족 소재를 보여주는 실험으로 공용 참고문서에 함께 싣고,
+두 면 표본의 합격을 12면 시설 전체의 합격으로 재사용하지 않는다. 전후 원본/플레이 화면과 독립 판정은 함께 보존한다.
