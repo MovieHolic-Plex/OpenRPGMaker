@@ -18,6 +18,7 @@ def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')
 
 NEW_ITEMS = os.path.join(ROOT, 'tiledata/hand-interior/new/items.json')   # 새 기물 길: v5 381개 밖의 기물 명세
+SETS = os.path.join(ROOT, 'tiledata/hand-interior/new/sets.json')   # 파생 묶음(방향·상태·움직임) — 하네스 안에서만 쓰는 묶음 그림 기물(src/harnesses/interior-props/derive.py)
 KIND_KO = {'floor': '바닥 기물(막힘)', 'wall': '북쪽 벽 앞 기물(막힘, 벽에 붙임)', 'hang': '벽면 걸이(벽 두 줄 중 윗줄)', 'flat': '바닥 무늬(밟을 수 있음)'}
 
 def new_item_object(it):
@@ -47,7 +48,7 @@ def new_item_object(it):
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
             'new': True, 'contextRoom': it.get('contextRoom'),
-            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout') if it.get(k)}}
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout', 'parent', 'derive', 'slot') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""
@@ -61,6 +62,14 @@ def load_new_items(v5_ids=None):
         if i in v5_ids or slug(i) in v5_slugs: raise SystemExit(f'새 기물 id {i!r} 가 v5 기물과 겹친다 (new/items.json)')
         if slug(i) in seen: raise SystemExit(f'새 기물 id {i!r} 가 new/items.json 안에서 겹친다')
         seen.add(slug(i)); out.append(apply_resize(new_item_object(it)))
+    if os.path.exists(SETS):   # 파생 묶음: 같은 새 기물 모양 + set(칸 자리). 칩셋에는 안 굽는다(install_picks 가 건너뛴다)
+        for e in json.load(open(SETS, encoding='utf-8')).get('sets', []):
+            if slug(e['id']) in seen or slug(e['id']) in v5_slugs: raise SystemExit(f'파생 묶음 id {e["id"]!r} 가 다른 기물과 겹친다')
+            seen.add(slug(e['id']))
+            o = new_item_object(e)
+            o['set'] = {k: e.get(k) for k in ('parent', 'derive', 'slots', 'ms', 'picked', 'canvas')}
+            o['kind_ko'] = f"파생 묶음 · {o['kind_ko']}"
+            out.append(o)
     return out
 
 _META = {}
@@ -71,7 +80,7 @@ def load_meta(include_new=True):
     def mt(f):
         try: return os.stat(f).st_mtime_ns
         except OSError: return 0
-    k = (include_new, mt(os.path.join(V5, 'interior-meta.json')), mt(NEW_ITEMS), mt(RESIZE_STAMP))
+    k = (include_new, mt(os.path.join(V5, 'interior-meta.json')), mt(NEW_ITEMS), mt(RESIZE_STAMP), mt(SETS))
     if _META.get(include_new, (None,))[0] != k:
         m = json.load(open(os.path.join(V5, 'interior-meta.json'), encoding='utf-8'))
         if include_new:
@@ -98,6 +107,9 @@ def v5_slot(o):
     """v5 아틀라스의 칸 자리(패딩 포함, 첫 프레임). 후보 캔버스 크기 = 이 크기."""
     a = o['atlas']
     from PIL import Image
+    if o.get('set'):   # 파생 묶음: 원본 칸을 채운 출발 그림(derive.make_set 이 만든 seed.png)
+        p = os.path.join(CAND, slug(o['id']), 'seed.png')
+        if os.path.exists(p): return Image.open(p).convert('RGBA')
     if o.get('new'):   # 새 기물은 v5 에 그림이 없다: 캔버스 크기의 투명 그림이 출발점
         return Image.new('RGBA', (a['w'], a['h']))
     im = v5_atlas().crop((a['x'], a['y'], a['x'] + a['w'], a['y'] + a['h']))

@@ -16,7 +16,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 import store  # noqa: E402
 import harness  # noqa: E402
-from common import CAND, NEW_ITEMS, RESIZE_STAMP, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
+from common import CAND, NEW_ITEMS, RESIZE_STAMP, SETS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
 
@@ -54,6 +54,7 @@ def state():
         it = items.setdefault(i, dict(id=i, slug=s, name=o['name_ko'], desc=o['description'], category=o['category_ko'],
                                       kind=o['kind_ko'], canvas=geom(o)['canvas'], current=(cur.get(i) or {}).get('choice') or 'v5',
                                       isNew=bool(o.get('new')), use=o.get('use') or [],
+                                      set=_set_view(o), parent=o.get('parent'), derive=o.get('derive'),
                                       rounds=[], last=rd['created']))
         runs = []
         for r in store.runs(rd['id']):
@@ -97,6 +98,13 @@ def state():
                 drawErrSeq=_ERR_SEQ[0], drawErrors=dict(_DRAW_ERR))
 
 
+def _set_view(o):
+    s = o.get('set')
+    if not s: return None
+    return dict(parent=s['parent'], derive=s['derive'], ms=s.get('ms'), picked=s.get('picked'),
+                slots=[{k: x.get(k) for k in ('key', 'label', 'x', 'y', 'w', 'h', 'locked', 'child')} for x in s['slots']])
+
+
 def objects():
     by = objects_by_id(); cur = picks_db.current_all(); rounds = {}
     for rd in store.rounds(): rounds[rd['item']] = rounds.get(rd['item'], 0) + 1
@@ -108,7 +116,7 @@ def objects():
                         desc=(m or {}).get('description', o.get('desc', '')), current=(cur.get(i) or {}).get('choice') or 'v5',
                         rounds=rounds.get(i, 0), known=bool(m)))
     for i, m in by.items():   # 아직 시트에 안 구운 새 기물(new/items.json) — 고르면 빈 캔버스에서 다섯 갈래로 그린다
-        if i in spec or not m.get('new'): continue
+        if i in spec or not m.get('new') or m.get('set'): continue   # 파생 묶음은 파생 창에서만
         out.append(dict(id=i, slug=slug(i), name=m['name_ko'], category=m['category_ko'], kind=m['kind'], desc=m['description'],
                         current=(cur.get(i) or {}).get('choice') or 'v5', rounds=rounds.get(i, 0), known=True, isNew=True,
                         use=m.get('use') or []))
@@ -184,7 +192,7 @@ def _sel_diff(png):
 
 def _fingerprint():
     """상태를 바꾸는 것들의 파일 시각 — 같으면 들고 있던 상태를 그대로 준다."""
-    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json'), RESIZE_STAMP]
+    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json'), RESIZE_STAMP, SETS]
     out = []
     for f in fs:
         try: st = os.stat(f); out.append(f'{st.st_mtime_ns}:{st.st_size}')
@@ -265,6 +273,9 @@ def decide(body):
         try: picks_db.export()
         except Exception as e: print('picks.json 내보내기 실패:', repr(e), flush=True)
         store.add_feedback(i, 'pick', rnd, choice, [], note)
+        if objects_by_id()[i].get('set'):   # 파생 묶음: 칸을 잘라 자식 기물(의자 동·북·서 …)의 고른 그림으로
+            import derive
+            return dict(ok=True, children=[dict(id=c, name=n) for c, n in derive.slice_pick(i, choice, rnd)])
     return dict(ok=True)
 
 
@@ -273,8 +284,10 @@ def draw(body):
     if not ids: raise ValueError('기물이 없다')
     n = max(1, min(5, int(body.get('n') or harness.N_DEFAULT))); note = str(body.get('note') or '')[:2000]; base = str(body.get('base') or '')
     if base and (len(ids) != 1 or not _exists(ids[0], base)): raise ValueError('출발 후보가 없다')
-    resized = None
-    if len(ids) == 1:   # 메모의 「2x2」 같은 크기 요청은 글로만 넘기지 않고 캔버스·칸 수·검사까지 바꾼다(resize.json)
+    resized = None; slot = str(body.get('slot') or '')
+    if slot and (len(ids) != 1 or not base or not objects_by_id()[ids[0]].get('set')): raise ValueError('칸 다시 그리기는 묶음 하나·출발 후보가 있어야 한다')
+    if slot and slot not in [x['key'] for x in objects_by_id()[ids[0]]['set']['slots'] if not x['locked']]: raise ValueError(f'고칠 수 없는 칸 {slot!r}')
+    if len(ids) == 1 and not objects_by_id()[ids[0]].get('set'):   # 메모의 「2x2」 같은 크기 요청은 글로만 넘기지 않고 캔버스·칸 수·검사까지 바꾼다(resize.json)
         sz = size_from_note(note); o = objects_by_id()[ids[0]]; fp = geom(o)['footprint']
         cur = (int(fp.get('w') or 1), int(fp.get('h') or 0) if int(fp.get('h') or 0) else geom(o)['canvas'][1] // 16)
         if sz and sz != cur:
@@ -288,7 +301,7 @@ def draw(body):
     def work():
         with DRAW_LOCK:
             try:
-                harness.draw(ids, n, note, base)
+                harness.draw(ids, n, note, base, slot=slot)
                 for i in ids: _DRAW_ERR.pop(i, None)
             except Exception as e:
                 print('하네스 draw 실패:', repr(e), flush=True)
@@ -296,6 +309,37 @@ def draw(body):
                 for i in ids: _DRAW_ERR[i] = dict(seq=_ERR_SEQ[0], error=repr(e)[:300])
     threading.Thread(target=work, daemon=True).start()
     return dict(ok=True, ids=ids, resized=resized)
+
+
+def derive_order(body):
+    """파생 창의 주문: {id, facing, state:'열림'|'', loop, size:[w,h]|null, note}. 묶음·큰 판을 만들고 바로 뽑는다."""
+    import derive
+    i = body['id']; by = objects_by_id()
+    if i not in by: raise ValueError('모르는 기물')
+    if by[i].get('set'): raise ValueError('파생 묶음에서 또 파생하지 않는다 — 원본 기물에서')
+    note = str(body.get('note') or '')[:2000]; jobs = []
+    if body.get('facing'): jobs.append((derive.make_set(i, 'facing', note=note), ''))
+    if body.get('state'): jobs.append((derive.make_set(i, 'state', label=str(body['state']), note=note), ''))
+    if body.get('loop'): jobs.append((derive.make_set(i, 'loop', note=note), ''))
+    if body.get('size'):
+        w, h = [int(v) for v in body['size']]
+        if not (1 <= w <= 8 and 1 <= h <= 8): raise ValueError('크기는 1~8칸')
+        cur = __import__('brief').current_choice(i)
+        jobs.append((derive.make_size(i, w, h, note=note), f'{cur}@{i}'))
+    if not jobs: raise ValueError('고른 파생이 없다')
+    made = [dict(id=j, name=objects_by_id()[j]['name_ko']) for j, _ in jobs]
+
+    def work():
+        with DRAW_LOCK:
+            for j, base in jobs:
+                try:
+                    harness.draw([j], harness.N_DEFAULT, note, base)
+                    _DRAW_ERR.pop(j, None)
+                except BaseException as e:   # SystemExit(명세 검사)도 화면에 알린다
+                    print('파생 draw 실패:', j, repr(e), flush=True)
+                    _ERR_SEQ[0] += 1; _DRAW_ERR[j] = dict(seq=_ERR_SEQ[0], error=repr(e)[:300])
+    threading.Thread(target=work, daemon=True).start()
+    return dict(ok=True, made=made)
 
 
 def handle(h, method, parts, body=None):
@@ -313,6 +357,11 @@ def handle(h, method, parts, body=None):
             else:
                 h.send(200, gzip.decompress(gz))
             return True
+        if len(parts) == 4 and parts[:3] == ['api', 'harness', 'derive']:
+            import derive
+            try: h.send(200, json.dumps(derive.suggest(parts[3]), ensure_ascii=False))
+            except KeyError: h.send(404, json.dumps({'error': '모르는 기물'}, ensure_ascii=False))
+            return True
         if parts == ['api', 'harness', 'objects']:
             h.send(200, json.dumps(objects(), ensure_ascii=False)); return True
         if len(parts) == 4 and parts[:3] == ['api', 'harness', 'thumb'] and parts[3].endswith('.png'):
@@ -325,6 +374,7 @@ def handle(h, method, parts, body=None):
         try:
             if parts == ['api', 'harness', 'decide']: res = decide(body or {})
             elif parts == ['api', 'harness', 'draw']: res = draw(body or {})
+            elif parts == ['api', 'harness', 'derive']: res = derive_order(body or {})
             else: h.send(404, '{}'); return True
         except Conflict as e:
             h.send(409, json.dumps({'error': str(e)}, ensure_ascii=False)); return True

@@ -54,6 +54,7 @@ def _plan():
         if not ch or ch == 'v5': skip('v5 유지' if ch == 'v5' else '선택 없음'); continue
         o, s = by[i], slug(i)
         if not os.path.exists(os.path.join(CAND, s, outline_select.split(ch)[0] + '.pxg')): skip('후보 파일 없음'); continue
+        if o.get('set'): skip('파생 묶음 그림 — 칸을 잘라 자식 기물에 넣었다(derive.slice_pick), 묶음 자체는 안 굽는다'); continue
         im, G = _png(s, ch), geom(o)
         if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형·애니메이션 없음
             if G['resized']: skip('새 기물은 resize.json 을 받지 않는다 — new/items.json 의 canvas·footprint 를 고친다'); continue

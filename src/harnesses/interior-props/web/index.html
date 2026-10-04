@@ -104,6 +104,24 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .toast { position:fixed; right:18px; bottom:76px; background:#2f4a2c; color:#e6f6e1; padding:8px 16px; border-radius:8px; z-index:20; display:none; pointer-events:none; box-shadow:0 2px 10px #0008; }   /* 오른쪽 아래(2026-10-03, 사용자 「위에 띄우지 말고 오른쪽 아래」) — 위는 기물 이름이라 가린다. 아래 바 단추를 가리지 않게 바 위에 */
 .toast.err { background:#5a2320; }
 .toast.act { pointer-events:auto; }
+/* 파생(2026-10-04): 묶음 그림 칸 이름표 · 움직임 미리보기 · 파생 창 */
+.card.wide { grid-column:span 2; }
+.strip { display:inline-block; position:relative; padding-bottom:16px; line-height:0; }
+.strip .sl { position:absolute; bottom:0; height:14px; font-size:10px; line-height:14px; text-align:center; color:var(--dim); border-left:1px solid #fff2; white-space:nowrap; overflow:hidden; }
+.strip .sl.lk { color:var(--acc); }
+.anim { display:block; margin:6px auto 0; image-rendering:pixelated; }
+.dlgbg { position:fixed; inset:0; background:#0009; z-index:30; display:flex; align-items:center; justify-content:center; }
+.dlg { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 20px; width:min(560px, 92vw); display:flex; flex-direction:column; gap:10px; }
+.dlg h3 { margin:0 0 4px; }
+.dlg .row { display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border:1px solid var(--line); border-radius:8px; }
+.dlg .row.off { opacity:.45; }
+.dlg .row b { display:block; }
+.dlg .row small { color:var(--dim); }
+.dlg input[type=number] { width:48px; background:#1a181d; border:1px solid var(--line); border-radius:6px; padding:2px 4px; }
+.dlg input[type=text] { width:90px; background:#1a181d; border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
+.dlg textarea { min-height:52px; background:#1a181d; border:1px solid var(--line); border-radius:8px; padding:6px 8px; }
+.dlg .made { color:var(--dim); font-size:12px; }
+.slotredo { display:flex; gap:4px; align-items:center; color:var(--dim); font-size:12px; white-space:nowrap; }
 .toast button { margin-left:12px; background:#0003; border:1px solid #fff5; border-radius:6px; padding:2px 10px; cursor:pointer; color:inherit; }
 .pool .bad { color:var(--bad); }
 .card .ctxw { min-height:48px; }
@@ -222,12 +240,14 @@ function sized(img, z) {
   const fit = () => {
     if (z === 'big') z = Math.max(2, Math.min(12, Math.floor(260 / img.naturalHeight), Math.floor(360 / img.naturalWidth)));   // 나란히 보기
     if (z === 'fit') {   // 카드 폭에 맞춘 정수 배율(작은 16px 그림도 크게, 큰 그림은 높이 240px 까지)
-      const w = (img.parentElement.clientWidth || 160) - 16;
+      const w = ((img.closest('.pic') || img.parentElement).clientWidth || 160) - 16;
       z = Math.max(1, Math.min(12, Math.floor(w / img.naturalWidth), Math.floor(240 / img.naturalHeight)));
     }
-    img.style.width = img.naturalWidth * z + 'px'; img.classList.remove('ld'); img.parentElement.classList.remove('wait'); };
-  img.classList.add('ld'); img.parentElement.classList.add('wait');
-  img.onload = fit; img.onerror = () => { img.parentElement.classList.remove('wait'); img.parentElement.title = '그림을 못 불러왔다'; };
+    const box = img.closest('.pic') || img.parentElement;
+    img.style.width = img.naturalWidth * z + 'px'; img.classList.remove('ld'); box.classList.remove('wait'); img.dispatchEvent(new Event('fitted')); };
+  const box = img.closest('.pic') || img.parentElement;
+  img.classList.add('ld'); box.classList.add('wait');
+  img.onload = fit; img.onerror = () => { box.classList.remove('wait'); box.title = '그림을 못 불러왔다'; };
   if (img.complete && img.naturalWidth) fit();
 }
 
@@ -318,17 +338,27 @@ function vbadge(o) {
        : '<span class="vb unk">검수?</span>';
 }
 
+const DERIVE_KO = {facing:'방향', state:'상태', loop:'움직임', size:'크기'};
+// 묶음 그림(파생): 칸 이름표를 그림 밑에 칸 폭 비율로 단다. 움직임 묶음은 프레임을 돌려 보는 작은 미리보기도
+function stripHtml(it, src) {
+  const s = it.set, W = s.slots.reduce((a, x) => Math.max(a, x.x + x.w), 0);
+  return `<span class="strip"><img data-src="${src}"${s.derive === 'loop' ? ' data-loop="1"' : ''}>` +
+    s.slots.map(x => `<span class="sl ${x.locked ? 'lk' : ''}" style="left:${100 * x.x / W}%;width:${100 * x.w / W}%" title="${esc(x.child || '')}">${esc(x.label)}</span>`).join('') + `</span>`;
+}
 function card(it, key, c, opt) {
   const sel = S.sel === c, rej = S.rej[c];
-  let h = `<div class="card ${opt.olsel ? 'olsel' : ''} ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled || opt.busy ? 'data-dis="1"' : ''}>
+  const mode = it.set ? 'one' : S.mode;   // 묶음 그림은 방 안 그림이 없다
+  let h = `<div class="card ${it.set ? 'wide' : ''} ${opt.olsel ? 'olsel' : ''} ${opt.cur ? 'cur' : ''} ${sel ? 'sel' : ''} ${rej ? 'rej' : ''} ${!opt.busy && opt.review && opt.review.verdict === 'FAIL' ? 'vfail' : ''}" data-c="${esc(c)}" ${opt.disabled || opt.busy ? 'data-dis="1"' : ''}>
     <div class="top"><span class="key">${key}</span>${opt.engine ? `<span class="eng ${opt.engine}" title="그림: ${ENG_FULL[opt.engine]}${opt.reviewEngine ? ' · 검수: ' + ENG_FULL[opt.reviewEngine] : ''}">${ENG[opt.engine]}</span>` : ''}${opt.ol ? `<span class="olk" title="테두리: ${esc(opt.ol)}">${esc(opt.ol)}</span>` : ''}<span class="dir" title="${esc(opt.label)}">${esc(opt.label)}</span>${opt.cur ? '' : `<button class="x" data-x="${esc(c)}" title="이 후보 버리기 (X)">✕</button>`}</div>`;
   const att = opt.attempt > 1 ? ` (시도 ${opt.attempt}/${S.data.pool.attempts})` : '';
-  if (opt.busy && opt.phase === 'review' && opt.v) h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '3/4 검수 중…'}"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
+  if (opt.busy && opt.phase === 'review' && opt.v && !it.set) h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '3/4 검수 중…'}"><img data-src="${imgSrc(it, c, opt.v)}"></div>`;
+  else if (opt.busy && it.set && opt.v && opt.phase === 'review') h += `<div class="pic over" data-over="${opt.busy === 'queued' ? '검수 대기' : '묶음 검수 중…'}">${stripHtml(it, imgSrc(it, c, opt.v).replace('/ctx/', '/c/'))}</div>`;
   else if (opt.busy) h += `<div class="spin"><i></i>${opt.busy === 'queued' ? '대기 중' + att : (opt.attempt > 1 ? '검수에서 떨어져 다시 그리는 중' + att : '그리는 중…')}</div>`;
   else if (opt.failed) h += `<div class="spin" style="color:var(--bad)">못 그림<br><small>${esc(opt.failed).slice(0, 80)}</small></div>`;
   else {
-    if (S.mode !== 'ctx') h += `<div class="pic"><img data-src="/c/${it.slug}/${c}.png?v=${opt.v || 0}"></div>`;
-    if (S.mode !== 'one' && !(opt.cur && it.isNew && c === 'v5')) h += `<div class="ctxw" title="같은 방 안(1배 크기 그대로 늘림)"><img data-ctx="1" data-src="${ctxSrc(it, c, opt.v)}"></div>`;
+    if (it.set) h += `<div class="pic">${stripHtml(it, `/c/${it.slug}/${c}.png?v=${opt.v || 0}`)}</div>`;
+    else if (mode !== 'ctx') h += `<div class="pic"><img data-src="/c/${it.slug}/${c}.png?v=${opt.v || 0}"></div>`;
+    if (mode !== 'one' && !(opt.cur && it.isNew && c === 'v5')) h += `<div class="ctxw" title="같은 방 안(1배 크기 그대로 늘림)"><img data-ctx="1" data-src="${ctxSrc(it, c, opt.v)}"></div>`;
   }
   // 한 줄 요약: 꼭대기 행 수 · 검수 · 다시 그린 횟수 — 긴 글은 마우스를 올리면 보인다
   const rv = opt.review, f = [];
@@ -354,7 +384,10 @@ function renderPick() {
   }
   const r = rnd(); S.round = r.id;
   const cur = it.current === 'v5' ? 'v5' : it.current;
-  let h = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code></span></div>
+  const par = (it.set && it.set.parent) || it.parent;
+  let h = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code>
+      ${canDerive(it) ? ` · <button class="chip" id="dvBtn" title="이 기물의 방향 4·상태·움직임·큰 판을 뽑는다 (D)">＋ 파생 만들기</button>` : ''}</span>
+      ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고른 프레임 띠는 묶음에 남는다(칩셋 굽기는 다음 단계)' : ''}</span>` : ''}</div>
     <div class="meta" style="color:var(--dim)">${it.isNew ? '<b class="nb">새</b> ' : ''}${esc(it.desc)}${it.use && it.use.length ? ` <span class="chip">쓰임 ${esc(it.use.join(' · '))}</span>` : ''}</div>
     <div class="rounds">` + it.rounds.map(x => `<button data-r="${x.id}" class="${x.id === r.id ? 'on' : ''}">판 h${x.id}${x.decided ? (x.decided.verdict === 'keep' ? ' · 그대로' : ' · ' + pickName(x.decided.cand)) : ''}</button>`).join('') + `</div>`;
   if (r.note) h += `<div class="rnote">메모: ${esc(r.note)}</div>`;
@@ -363,7 +396,7 @@ function renderPick() {
     <span>보기 <span class="seg">${[['both', '둘 다'], ['one', '단품'], ['ctx', '방 안']].map(([k, v]) => `<button data-mode="${k}" class="${S.mode === k ? 'on' : ''}">${v}</button>`).join('')}</span></span>
     <span>배경 <span class="seg">${['wood:나무', 'dark:어둠', 'check:체크'].map(x => { const [k, v] = x.split(':'); return `<button data-bg="${k}" class="${S.bg === k ? 'on' : ''}">${v}</button>`; }).join('')}</span></span>
     <span>확대 <span class="seg">${['fit', 3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z === 'fit' ? '맞춤' : z + '배'}</button>`).join('')}</span></span></div>`;
-  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' ? 'ctxmode' : ''}">` + card(it, '0', cur, {cur:1, label:it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
+  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' && !it.set ? 'ctxmode' : ''}">` + card(it, '0', cur, {cur:1, label:it.set && cur === 'v5' ? '출발(원본 칸만)' : it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
   r.runs.forEach((x, k) => {   // 후보마다 두 장(2026-10-03): 그린 그대로 · 테두리 꼭 필요한 곳만(outline_select.py, 이름 끝 .sel)
     const opt = {label:x.direction || DIRS[x.letter], v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history, engine:x.engine, reviewEngine:x.reviewEngine,
       busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
@@ -382,9 +415,11 @@ function renderPick() {
       <div class="col"><div class="pic"><img id="cmpA" src="${curSrc(it)}"></div>지금</div>
       <div class="col"><div class="pic"><img id="cmpB" src="/c/${it.slug}/${pick}.png"></div>고른 것 · ${esc(pickName(pick))}</div>
       <div class="col"><div class="pic ctxp" style="padding:0;background:#000"><img id="cmpC" src="/ctx/${it.slug}/${pick}.png"></div>방 안</div></div></div>`;
-  h += `<div class="keys"><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 또는 두 번 누르기 = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
+  h += `<div class="keys"><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 또는 두 번 누르기 = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>D</kbd> 파생 만들기(방향·상태·움직임·크기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
   m.innerHTML = h;
   m.querySelectorAll('.grid .pic img').forEach(img => { sized(img, S.zoom); img.src = img.dataset.src; });
+  startAnims(m, it);
+  const dv = document.getElementById('dvBtn'); if (dv) dv.onclick = () => openDerive(it.id);
   m.querySelectorAll('.grid .ctxw img').forEach(img => {
     img.onerror = () => { const w = img.parentElement; w.classList.add('err'); w.onclick = ev => { ev.stopPropagation(); w.classList.remove('err'); w.onclick = null; img.src = img.dataset.src + '&r=' + Date.now(); }; };
     img.src = img.dataset.src; });
@@ -431,8 +466,9 @@ function renderBar() {
   if (S.view === 'objs') {
     memoBox('objs', 'objs', '작업자에게 줄 메모(모든 기물에 같이 간다) — 예: 의자 다리가 너무 굵다, 원래 디자인 살려라 · 「2x2」처럼 쓰면 크기도 바뀐다(기물 하나일 때)');
     $('#barL').innerHTML = `<span><b>${S.objSel.size}</b>개 골랐다</span>`;
-    $('#barR').innerHTML = `<button class="btn" id="clr">선택 지우기</button><button class="btn go" id="go" ${S.objSel.size ? '' : 'disabled'} title="메모에서 Ctrl+Enter">후보 ${DRAW_N}장씩 뽑기</button>`;
+    $('#barR').innerHTML = `<button class="btn" id="odv" ${S.objSel.size === 1 ? '' : 'disabled'} title="기물 하나를 고르면 방향 4·상태·움직임·큰 판을 뽑는다">＋ 파생 만들기</button><button class="btn" id="clr">선택 지우기</button><button class="btn go" id="go" ${S.objSel.size ? '' : 'disabled'} title="메모에서 Ctrl+Enter">후보 ${DRAW_N}장씩 뽑기</button>`;
     $('#clr').onclick = () => { S.objSel.clear(); renderObjs(); };
+    $('#odv').onclick = () => openDerive([...S.objSel][0]);
     $('#go').onclick = startDraw;
     return;
   }
@@ -442,6 +478,7 @@ function renderBar() {
   memoBox('pick', it.id, '메모 — 다시 뽑을 때 작업자에게 그대로 간다(「2x2」처럼 쓰면 크기도 바뀐다). 고를 때 남기면 다음 판의 기억이 된다. Ctrl+Enter 확정');
   $('#barL').innerHTML = '';
   $('#barR').innerHTML = `<label title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
+    ${it.set && S.sel && S.sel !== cur && !busy ? `<span class="slotredo">칸만 다시 ${it.set.slots.filter(x => !x.locked).map(x => `<button class="btn" data-slot="${esc(x.key)}" title="고른 묶음에서 이 칸만 다시 그린다 — 다른 칸은 그대로">${esc(x.label)}</button>`).join('')}</span>` : ''}
     <button class="btn redo" id="redo" ${busy ? 'disabled' : ''} title="${busy ? '아직 그리는 중' : '후보 ' + DRAW_N + '장 새로 — 숫자 ' + (r.runs.length + 1)}">다시 뽑기${busy ? ' (그리는 중)' : ''}</button>
     <button class="btn" id="keep" title="지금 그림 그대로 확정 (0 → Enter)">지금 그대로</button>
     <button class="btn go" id="ok" ${canPick(it, r) ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ ${esc(pickName(S.sel))} 로 확정` : '✓ 확정'}</button>`;
@@ -449,6 +486,7 @@ function renderBar() {
   $('#ok').onclick = confirmSel;
   $('#keep').onclick = () => decide('keep');
   $('#redo').onclick = () => redraw();
+  $('#barR').querySelectorAll('[data-slot]').forEach(b => b.onclick = () => redraw(b.dataset.slot));
 }
 const canPick = (it, r) => S.sel && !r.runs.some(x => ['queued', 'running'].includes(x.status) && (x.cand === S.sel || x.cand + '.sel' === S.sel));
 function confirmSel() {
@@ -518,6 +556,7 @@ async function send(id) {
   try {
     const res = await api(p.kind === 'decide' ? '/api/harness/decide' : '/api/harness/draw', p.body);
     if (res.resized) toast(`${p.name}: 크기를 ${res.resized.w}×${res.resized.h}칸(${res.resized.canvas.join('×')}px)으로 바꿔 다시 뽑는 중`);
+    if (res.children && res.children.length) toast(`${p.name} → ${res.children.map(c => c.name).join(' · ')} 에 들어갔다`);
   } catch (e) {
     if (!(p.kind === 'decide' && e.status === 409 && /이미 그렇게/.test(e.message))) {   // 같은 확정이 이미 있으면 성공과 같다
       delete S.pending[id]; restore(id, p);
@@ -539,13 +578,65 @@ function decide(choice) {
   const body = {id:it.id, round:it.rounds.at(-1).id, choice, rejects:S.rej, note:S.memo.trim()};
   commit('decide', it, body, choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${pickName(choice)} 로 확정`);
 }
-function redraw() {
+function redraw(slot) {
   const it = item(), r = rnd(); if (!it || S.waitNext) return;
   if (it.rounds.at(-1).runs.some(x => ['queued', 'running'].includes(x.status))) { toast('아직 그리는 중이라 다시 뽑을 수 없다'); return; }
+  if (slot) {   // 묶음에서 칸 하나만: 고른 묶음 후보에서 출발, 다른 칸은 그대로(서버 검사가 잰다)
+    const lab = it.set.slots.find(x => x.key === slot)?.label || slot;
+    const body = {ids:[it.id], note:S.memo.trim(), base:S.sel, slot, n:DRAW_N, round:it.rounds.at(-1).id, rejects:S.rej};
+    commit('redraw', it, body, `${it.name}: 「${lab}」 칸만 다시 — 후보 ${DRAW_N}장`); return;
+  }
   const base = S.fromSel && S.sel && S.sel !== (it.current === 'v5' ? 'v5' : it.current) ? S.sel : '';
   // 확정과 같이: 이 기물을 고를 차례에서 빼고 바로 다음 기물로. 새 판이 다 그려지면 다시 「고를 차례」에 들어온다.
   const body = {ids:[it.id], note:S.memo.trim(), base, n:DRAW_N, round:it.rounds.at(-1).id, rejects:S.rej};
   commit('redraw', it, body, `${it.name}: 다시 뽑기 — 후보 ${DRAW_N}장${S.memo.trim() ? '' : ' (메모 없음)'}`);
+}
+
+// ---- 파생 (2026-10-04 사용자 「의자 방향 4개, 움직이는 모션, 사이즈 키우기」) ----
+const canDerive = it => it && !it.set && !(it.isNew && (it.current || 'v5') === 'v5');
+function closeDerive() { document.querySelector('.dlgbg')?.remove(); }
+async function openDerive(id) {
+  let g; try { g = await api('/api/harness/derive/' + encodeURIComponent(id)); } catch (e) { toast('파생 정보를 못 읽었다: ' + e.message, 1); return; }
+  closeDerive();
+  const row = (k, on, ok, title, sub, extra = '') => `<label class="row ${ok ? '' : 'off'}"><input type="checkbox" data-k="${k}" ${on && ok ? 'checked' : ''} ${ok ? '' : 'disabled'}><span><b>${title}</b><small>${sub}</small>${extra}</span></label>`;
+  const had = [...g.sets, ...g.sizes];
+  const bg = document.createElement('div'); bg.className = 'dlgbg';
+  bg.innerHTML = `<div class="dlg"><h3>파생 만들기 — ${esc(g.name)} <code style="font-size:12px">${esc(g.id)}</code></h3>
+    <div class="made">체크는 쓰임새(${esc(g.use.join(' · ') || '없음')})로 고른 제안이다. 고친 뒤 「주문」. 묶음은 작업자 한 명이 원본 칸을 두고 나머지 칸을 한 판에 그린다 — 고르면 칸을 잘라 각 기물에 넣는다.</div>
+    ${row('facing', g.facing.checked, g.facing.ok, '방향 4 (남·동·북·서)', g.facing.ok ? (g.facing.siblings.length ? ` 짝 기물 ${g.facing.siblings.map(f => esc(g.id.replace(/ [SENW]$/, ' ' + f))).join(' · ')} 에 들어간다` : ' 새 기물 3개(동·북·서)가 생긴다') : ' ' + esc(g.facing.why))}
+    ${row('state', g.state.checked, g.state.ok, '상태 전환', ' 원본 + 다른 상태 한 칸. 이벤트가 그림을 바꾼다', ` <input type="text" id="dvState" value="${esc(g.state.label)}" title="상태 이름(열림·켬·깨짐…)">`)}
+    ${row('loop', g.loop.checked, g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 칩셋 굽기는 다음 단계`)}
+    ${row('size', g.size.checked, g.size.ok, '큰 판', ' 원본을 출발 그림으로 새 칸 수에 다시 그린다(늘리기 금지)', ` <input type="number" id="dvW" min="1" max="8" value="${g.size.w}">×<input type="number" id="dvH" min="1" max="8" value="${g.size.h}">칸`)}
+    <textarea id="dvNote" placeholder="작업자에게 줄 메모(모든 파생에 같이 간다) — 예: 열린 상자 안에 금화가 보이게"></textarea>
+    ${had.length ? `<div class="made">이미 만든 파생: ${had.map(x => esc(x.name)).join(' · ')} — 같은 것을 다시 주문하면 원본의 지금 그림으로 새 판을 연다</div>` : ''}
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="dvX">닫기 (Esc)</button><button class="btn go" id="dvGo">주문</button></div></div>`;
+  document.body.append(bg);
+  bg.onclick = e => { if (e.target === bg) closeDerive(); };
+  $('#dvX').onclick = closeDerive;
+  $('#dvGo').onclick = async () => {
+    const on = k => bg.querySelector(`[data-k="${k}"]`)?.checked;
+    const body = {id:g.id, facing:on('facing'), state:on('state') ? $('#dvState').value.trim() || g.state.label : '', loop:on('loop'),
+                  size:on('size') ? [+$('#dvW').value, +$('#dvH').value] : null, note:$('#dvNote').value.trim()};
+    if (!body.facing && !body.state && !body.loop && !body.size) { toast('하나는 체크하세요'); return; }
+    $('#dvGo').disabled = true;
+    try { const r = await api('/api/harness/derive', body); closeDerive(); toast(`주문: ${r.made.map(x => x.name).join(' · ')} — 후보 ${DRAW_N}장씩 그리는 중`); load(true); }
+    catch (e) { $('#dvGo').disabled = false; toast('파생 주문 실패: ' + e.message, 1); }
+  };
+}
+// 움직임 묶음: 고른 띠에서 프레임을 잘라 돌려 본다(카드 밑 작은 캔버스)
+function startAnims(m, it) {
+  clearInterval(S._anim);
+  if (!it.set || it.set.derive !== 'loop') return;
+  const L = [];
+  m.querySelectorAll('img[data-loop]').forEach(img => {
+    const cv = document.createElement('canvas'); cv.className = 'anim'; img.closest('.pic').after(cv);
+    const go = () => { const z = Math.max(1, Math.round(img.getBoundingClientRect().width / img.naturalWidth)) * 2, f = it.set.slots[0];
+      cv.width = f.w * z; cv.height = f.h * z; L.push({img, cv, z}); };
+    img.addEventListener('fitted', go, {once:true}); if (img.complete && img.naturalWidth && img.style.width) go();
+  });
+  let k = 0;
+  S._anim = setInterval(() => { k++; for (const a of L) { const f = it.set.slots[k % it.set.slots.length], c = a.cv.getContext('2d');
+    c.imageSmoothingEnabled = false; c.clearRect(0, 0, a.cv.width, a.cv.height); c.drawImage(a.img, f.x, f.y, f.w, f.h, 0, 0, f.w * a.z, f.h * a.z); } }, it.set.ms || 150);
 }
 
 async function loadObjs() { if (!S.objs) S.objs = await api('/api/harness/objects'); renderObjs(); }
@@ -584,6 +675,7 @@ function setView(v) {
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => setView(t.dataset.v));
 
 document.addEventListener('keydown', e => {
+  if (document.querySelector('.dlgbg')) { if (e.key === 'Escape') closeDerive(); return; }
   if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'z' || e.key === 'Z') { if (S.lastUndo) undo(); else toast('되돌릴 것이 없다(5초가 지나면 서버에 보낸다)'); return; }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -599,6 +691,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Enter') confirmSel();
   else if (e.key === 'x' || e.key === 'X') { if (S.sel && S.sel !== cur) toggleRej(S.sel); }
   else if (e.key === 'r' || e.key === 'R') { e.preventDefault(); $('#memo')?.focus(); }
+  else if (e.key === 'd' || e.key === 'D') { if (canDerive(it)) openDerive(it.id); else toast('파생은 원본 기물에서 — 그림이 있는 기물만'); }
   else if (e.key === 'v' || e.key === 'V') { S.mode = {both:'one', one:'ctx', ctx:'both'}[S.mode]; renderPick(); }
   else if (e.key === 'b' || e.key === 'B') { S.bg = {wood:'dark', dark:'check', check:'wood'}[S.bg]; renderPick(); }
   else if (e.key === '+' || e.key === '=') { S.zoom = {fit:3, 3:4, 4:6, 6:8, 8:8}[S.zoom]; renderPick(); }
