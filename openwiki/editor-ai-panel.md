@@ -3498,6 +3498,24 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
 - 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).
 
+## 우클릭 영역 드래그 미리보기와 최종 선택 (2026-10-04)
+
+`EditScene.rightRegionGesture.preview`는 드래그 중의 임시 영역이다. 포인터가 새 타일에 들어오면
+Phaser의 두 선택 테두리와 크기 배지만 갱신한다. `editorState.selection`은 버튼을 놓을 때
+`selectTileRegion`으로 한 번 전달하므로 조수의 선택 칩·작업 범위와 다른 구독자는 완성된 영역을 받는다.
+마지막 영역은 릴리스 포인터에서 다시 계산한다(pointerupoutside도 같은 경로). 역방향 드래그와
+맵 경계 제한은 기존 `regionRectFromDrag`를 쓴다. 같은 영역을 다시 잡아도 액션 바와 입력 초점은 열린다.
+
+크기 배지의 숫자는 같은 Text 노드의 data만 바꾼다. 매 타일마다 textContent로 자식을 교체하면
+문서의 `:has()` 스타일 무효화와 body 하위 MutationObserver가 깨어난다. 드래그 동안 페인트
+호버도 그리지 않는다. Esc는 임시 영역만 취소하고 이전 확정 선택을 유지하며, 뒤따른 릴리스가
+취소한 영역을 다시 선택하지 않는다. 클릭만 하면 기존 스포이트/선택 안 액션 바가 동작한다.
+
+실측과 네이티브 UI GIF: `verify-shots/right-region-drag/README.md`. 1440×900, 32×24 fixture,
+배율 1, 40걸음×3회에서 스타일 재계산 합계 1,190ms → 183ms, 선택 통지 31 → 1,
+DOM 자식 변이 188 → 8(각 드래그 중앙값). GIF는 동일 시간 간격의 동작 스냅샷이며 속도 녹화가 아니다.
+고정 rAF 간격 입력의 전체 재생 시간은 1,634ms → 1,636ms로 거의 같았다.
+
 ## 턴 단계 계측과 실행 추론 강도 (2026-09-26)
 
 「프롬프트 하나에 몇 분」의 원인을 짐작하지 않고 읽기 위해, 평문 턴 하나를 단계별 벽시계로 쪼개 활동 로그 행에 싣는다.

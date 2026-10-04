@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState, type Layer, type TileSelection } from "@/editor/editorState";
 import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
@@ -627,9 +627,10 @@ export function syncSelectionOverlay(
   scene: Phaser.Scene,
   layer: Phaser.GameObjects.Container,
   mapId: MapId,
+  preview?: TileSelection,
 ): void {
   const state = editorState.get();
-  const selection = state.selection;
+  const selection = preview ?? state.selection;
   if (!selection || selection.mapId !== mapId || state.pastePreview) {
     layer.removeAll(true);
     return;
