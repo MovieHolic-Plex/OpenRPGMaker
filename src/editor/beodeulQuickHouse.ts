@@ -16,7 +16,7 @@ export function beodeulHouseMinWidth(style: BeodeulHouseStyle): number { return 
 function partsFor(style: BeodeulHouseStyle): string[] {
   if (style.startsWith("beodeul-manor-")) {
     const variant = style.slice("beodeul-manor-".length);
-    return ["bd-mpart-roof-l", "bd-mpart-roof-m", "bd-mpart-roof-r", "bd-mpart-gable", "bd-mpart-door-bay",
+    return ["bd-mpart-roof-l", "bd-mpart-roof-m", "bd-mpart-roof-r", "bd-mpart-gable", "bd-manor-small", "bd-mpart-door-bay",
       ...["l", "r"].flatMap(side => [`bd-mpart-bay-plain-${side}`, `bd-mpart-bay-win-${variant}-${side}`])];
   }
   return ["bd-out-roof-hl", "bd-out-roof-m", "bd-out-roof-m2", "bd-out-roof-hr", "bd-out-log-l", "bd-out-log-r",
@@ -45,7 +45,7 @@ export function quickBeodeulHouse(tileset: TilesetDef, options: { style: Beodeul
   const groundRows = manor ? 3 : 2, floorRows = 2;
   const stories = Math.max(1, Math.min(9, options.height === undefined ? options.stories : 1 + Math.round((options.height - roofRows - groundRows) / floorRows)));
   const height = roofRows + groundRows + (stories - 1) * floorRows;
-  const id = `quick_house_${options.style}_${wallWidth}_${stories}${width === wallWidth && roofRows === 3 ? "" : `_roof${width}x${roofRows}`}${gabled ? "_gable" : ""}`;
+  const id = `quick_house_${options.style}_${wallWidth}_${stories}${width === wallWidth && roofRows === 3 ? "" : `_roof${width}x${roofRows}`}${gabled ? "_joined_gable" : ""}`;
   let entries = cache.get(tileset); if (!entries) { entries = new Map(); cache.set(tileset, entries); }
   const old = entries.get(id); if (old) return old;
   const source = new Map(tileset.structureKits!.map(p => [p.id, p]));
@@ -69,7 +69,15 @@ export function quickBeodeulHouse(tileset: TilesetDef, options: { style: Beodeul
     for (let x = 3; x < width - 3; x++) stampRows("bd-mpart-roof-m", x, roofOffset, roofSourceRows);
     stampRows("bd-mpart-roof-r", width - 3, roofOffset, roofSourceRows);
     // Native pointed front gable. Keep its complete four-row artwork, never stretch the triangle.
-    if (gabled) stampRows("bd-mpart-gable", Math.max(0, Math.min(width - 5, doorX - 2)), roofRows - 4);
+    if (gabled) {
+      const gx = Math.max(0, Math.min(width - 5, doorX - 2));
+      stampRows("bd-mpart-gable", gx, roofRows - 4);
+      // A partial upper tile replaces the entire cell. Native compiled caps retain the roof
+      // behind the diagonal, preventing two holes beside the gable without repainting art.
+      const joined = source.get("bd-manor-small")!.rows[2]!.upperTiles!;
+      for (const [dx, sx] of [[0, 3], [4, 7]] as const) if (gx + dx >= 3 && gx + dx < width - 3)
+        rows[roofRows - 3]!.upperTiles[gx + dx] = joined[sx]!;
+    }
     const variant = options.style.slice("beodeul-manor-".length);
     for (let floor = 0; floor < stories; floor++) {
       const ground = floor === stories - 1, sourceRows = ground ? [2, 3, 4] : [0, 1], y = roofRows + floor * floorRows;
