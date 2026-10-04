@@ -310,9 +310,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   const create = (): void => void run(async () => {
-    if (state.startMode === "ai" && !state.intent.trim()) {
-      throw new Error("만들고 싶은 게임을 한 문장으로 적어 주세요.");
-    }
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const title = state.title.trim() || t(DEFAULT_TITLE);
     // A free concept enters the existing interview, whose author can still choose any genre.
