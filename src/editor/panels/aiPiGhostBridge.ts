@@ -5,6 +5,7 @@ import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCan
 import { resolveCurrentMapId } from "@/editor/mapSelection";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { startConstructionRevealForProjects } from "@/editor/agentConstructionReveal";
+import { createCanvasActivity } from "@/editor/panels/aiCanvasActivity";
 // Pi 실행 이벤트 → 캔버스 시공 표시(고스트). 워커가 툴마다 흘리는 `map_delta` 를 초안 맵으로
 // 복원하고, **기존 고스트 기계를 그대로** 돌린다(base↔초안 diff).
 //
@@ -30,6 +31,8 @@ import {
 import type { GameMap, MapId, Project } from "@/project/types";
 
 export interface PiGhostBridge {
+  /** Activity also observes final events whose post-commit deltas must not replay. */
+  readonly observeActivity: (event: PiAgentEvent) => void;
   /** 실행 이벤트 하나를 흘려 넣는다. 팀 이벤트(`agent_event`)는 알아서 한 겹 벗긴다. */
   readonly handleEvent: (event: PiAgentEvent) => void;
   /** 밀린 갱신을 지금 그린다 — 실행이 끝났는데 마지막 증분이 스로틀 안에서 잠들지 않게. */
@@ -57,6 +60,11 @@ export interface PiGhostBridgeOptions {
 // 이전 실행의 타이머·검토 버튼은 새 실행의 전역 미리보기를 건드리지 못한다.
 let activeOwner: symbol | null = null;
 
+/** Scope flat worker events before either canvas consumer sees them. */
+export function scopePiGhostEvent(event: PiAgentEvent, agentId: string): PiAgentEvent {
+  return { type: "agent_event", agentId, event };
+}
+
 export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridge {
   const owner = Symbol("pi-ghost");
   activeOwner = owner;
@@ -65,10 +73,16 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
   let explicitPlan = false;
   clearAgentBlueprint();
   let journal: { agentId: string; deltas: readonly PiMapDelta[] }[] = [];
-  let runningAgentId: string | null = null;
+  const runningTools = new Map<string, { agentId: string; name: string; args: Record<string, unknown> }>();
+  const syncRunningTool = (): void => {
+    const latest = [...runningTools.values()].at(-1);
+    if (latest) setAgentGhostRunningTool(latest.name, latest.args);
+    else clearAgentGhostRunningTool();
+  };
   let maps: Record<string, GameMap> = { ...(base.maps ?? {}) };
   let disposed = false;
   const draftProject = (): Project => ({ ...base, maps } as Project);
+  const activity = createCanvasActivity(draftProject);
 
   // 스로틀·flush·cancel 은 세션 경로와 같은 기계를 쓴다. 그쪽은 «쓰기 툴이 성공했나» 로 갱신을
   // 예약하는데, 여기서는 증분이 도착한 것 자체가 그 증거라 항상 참이다.
@@ -124,6 +138,7 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
   };
 
   return {
+    observeActivity(event) { if (!disposed && activeOwner === owner) activity.handleEvent(event); },
     reconcile,
     async present(before, next, signal, toolName) {
       if (disposed || activeOwner !== owner) return;
@@ -143,6 +158,7 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
     },
     handleEvent(raw): void {
       if (disposed || activeOwner !== owner) return;
+      activity.handleEvent(raw);
       let event = raw;
       let agentId = "root";
       while (event.type === "agent_event") {
@@ -160,9 +176,10 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
         setAgentBlueprintFromSpec(event.data as BuildSpec);
         return;
       }
-      if (event.type === "tool_end" && runningAgentId === agentId) {
-        clearAgentGhostRunningTool();
-        if (!explicitPlan && !event.ok) clearAgentBlueprint();
+      if (event.type === "tool_end") {
+        runningTools.delete(JSON.stringify([agentId, event.id]));
+        syncRunningTool();
+        if (!explicitPlan && !event.ok && !runningTools.size) clearAgentBlueprint();
       }
       if (event.type === "tool_start") {
         const args = (event.args && typeof event.args === "object" ? event.args : {}) as Record<string, unknown>;
@@ -184,8 +201,8 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
             bounds: { x: region.x, y: region.y, width: region.w, height: region.h }, onlyIfOffscreen: true,
           });
         }
-        runningAgentId = agentId;
-        setAgentGhostRunningTool(event.name, (event.args ?? undefined) as Record<string, unknown> | undefined);
+        runningTools.set(JSON.stringify([agentId, event.id]), { agentId, name: event.name, args });
+        syncRunningTool();
         return;
       }
       if (event.type === "map_delta") {
@@ -198,10 +215,9 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
       // 실행이 끝나면 밀린 증분을 바로 그린다 — 마지막 한 칸이 스로틀 안에서 잠들면 «끝났는데
       // 아무것도 안 그려진» 상태로 남는다. 고스트를 지우는 건 dispose 의 몫이다(적용 전까지 남는다).
       if (event.type === "done" || event.type === "agent_done" || event.type === "error") {
-        if (raw.type === "done" || runningAgentId === (event.type === "agent_done" ? event.agentId : agentId)) {
-          clearAgentGhostRunningTool();
-          runningAgentId = null;
-        }
+        const ended = event.type === "agent_done" ? event.agentId : agentId;
+        for (const [key, tool] of runningTools) if (raw.type === "done" || tool.agentId === ended) runningTools.delete(key);
+        syncRunningTool();
         if (isAiLiveCanvasEnabled()) updater.flush();
         else updater.cancel();
       }
@@ -218,9 +234,11 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
     dispose(): void {
       if (disposed) return;
       disposed = true;
+      activity.dispose();
       unsubscribeLiveCanvas();
       updater.cancel();
       journal = [];
+      runningTools.clear();
       if (activeOwner !== owner) return;
       activeOwner = null;
       setAgentGhostDraftMapProvider(null);

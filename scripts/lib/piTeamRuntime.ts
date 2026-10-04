@@ -19,6 +19,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 // 팀장이 wait 없이 끝나도(턴 상한 등) 런타임이 남은 배정을 거두어 병합한다.
 
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
+import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
@@ -147,6 +148,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const tasks = new Map<string, { mode: "read" | "project"; memberId: string; task: string }>();
   const runningTasks = () => [...tasks.entries()].filter(([id]) => !outcomes.has(id));
   const projectWriter = () => runningTasks().find(([, task]) => task.mode === "project");
+  const mapOwners = createMapRunLocks();
+  const claimMaps = (agentId: string, mapIds: readonly string[] | null) => {
+    mapOwners.refreshBundles("team", working);
+    const claim = mapOwners.acquire("team", mapIds, agentId);
+    if (!claim.ok) throw new Error(`같은 맵은 한 번에 한 조수만 실행합니다. ${claim.owner} 작업/검수가 진행 중입니다. wait_agents로 완료를 확인한 뒤 다시 배정하세요.`);
+    return claim;
+  };
 
   const pickMember = (id: unknown, pool: PiTeamMember[], what: string): PiTeamMember => {
     if (typeof id !== "string" || !id.trim()) return pool[0]!;
@@ -285,6 +293,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     counters.builder += 1;
     ledger = claim.ledger;
     const { phase, fixOf } = claim.assignment;
@@ -294,9 +303,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       memberId: member.id, label: member.label, ...(fixOf ? { fixOf } : {}),
     });
     mailbox.register(agentId, member.label, mapId);
-    const snapshot = structuredClone(working) as Project;
     const promise = (async (): Promise<AgentOutcome> => {
       try {
+        const snapshot = structuredClone(working) as Project;
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
@@ -327,13 +336,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         return outcome;
       } finally {
         mailbox.close(agentId);
+        ownership.release();
       }
     })();
     inflight.push({ agentId, promise });
     return { ok: true, agentId, mapId, member: member.id, phase, state: "실행 중" as AgentState };
   }
 
-  /** Read-only designs can run alongside construction; project writes own the entire working copy. */
+  /** Map reads, reviews and writes use the same ownership; project work reserves all maps. */
   function startTask(task: string, mode: "read" | "project", member: PiTeamMember): Record<string, unknown> {
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
@@ -343,12 +353,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       if (projectWriter() || runningAssignments(ledger).length) throw new Error("진행 중인 쓰기 작업이 있습니다. wait_agents 후 프로젝트 작업을 배정하세요.");
     }
     const role = member.kind;
-    const agentId = `${role}-${++counters[role]}`;
+    const agentId = `${role}-${counters[role] + 1}`;
+    const ownership = claimMaps(agentId, mode === "project" ? null : mapRunScope({ ...request, mode: "single", project: working }));
+    counters[role] += 1;
     tasks.set(agentId, { mode, memberId: member.id, task });
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     mailbox.register(agentId, member.label, null);
     emit({ type: "agent_spawn", agentId, role, mapId: null, mapName: null, task, memberId: member.id, label: member.label });
-    const snapshot = structuredClone(working) as Project;
     let report: string | undefined;
     const reportTool: PiToolShape = {
       name: "report_task", label: "report_task",
@@ -363,6 +374,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     };
     const promise = (async (): Promise<AgentOutcome> => {
       try {
+        const snapshot = structuredClone(working) as Project;
         const done = await runAgent({
           ...request, ...exposureFor(member, mode === "read"), ...request.roleModels?.deep, mode: "single", project: snapshot,
           mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
@@ -396,7 +408,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         outcomes.set(agentId, outcome);
         emit({ type: "agent_done", agentId, ok: false, summary, stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
         return outcome;
-      } finally { mailbox.close(agentId); }
+      } finally { mailbox.close(agentId); ownership.release(); }
     })();
     inflight.push({ agentId, promise });
     return { ok: true, agentId, mode, state: "실행 중" };
@@ -426,6 +438,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const busy = runningAssignments(ledger).find((assignment) => assignment.mapId === mapId);
     if (busy) throw new Error(`맵 '${mapId}' 은 아직 ${busy.memberId}(${busy.agentId})가 작업 중입니다. wait_agents 로 끝난 뒤 검수하세요 — 반쯤 지어진 맵을 검수하면 엉뚱한 지적이 나옵니다.`);
     const agentId = `reviewer-${counters.reviewer + 1}`;
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     counters.reviewer += 1;
     const task = focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`;
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
@@ -442,10 +455,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         return text({ ok: true, recorded: true });
       },
     };
-    const snapshot = structuredClone(working) as Project;
     mailbox.register(agentId, member.label, mapId);
     let done: PiAgentDoneEvent;
     try {
+      const snapshot = structuredClone(working) as Project;
       done = await runAgent(
         {
           ...request, ...exposureFor(member, true), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
@@ -455,7 +468,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         },
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [...mailbox.tools(agentId), reportTool] },
       );
-    } finally { mailbox.close(agentId); }
+    } catch (error) {
+      emit({ type: "agent_done", agentId, ok: false, summary: error instanceof Error ? error.message : String(error), stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
+      throw error;
+    } finally { mailbox.close(agentId); ownership.release(); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
@@ -468,7 +484,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     ...mailbox.tools("orchestrator-1"),
     {
       name: "assign_task_agent", label: "assign_task_agent",
-      description: "맵에 속하지 않는 설계·대사안·검사(mode=read) 또는 공유 DB·빈 맵 생성·오프닝·공통 텍스트 제작(mode=project)을 배정하고 즉시 반환한다. read는 병렬 가능하고 보고서만 반환한다. project는 모든 다른 쓰기가 끝난 뒤 한 명만 배정한다. 결과는 check_agents/wait_agents의 summary로 받아 다음 담당자에게 전달한다.",
+      description: "설계·대사안·검사(mode=read) 또는 공유 DB·빈 맵 생성·오프닝·공통 텍스트 제작(mode=project)을 배정하고 즉시 반환한다. 같은 맵을 읽거나 쓰는 다른 조수가 있으면 거절한다. 맵 범위가 없는 read와 project는 프로젝트 전체를 예약하므로 다른 배정 완료 후 사용한다. 결과는 check_agents/wait_agents의 summary로 받아 다음 담당자에게 전달한다.",
       parameters: { type: "object", properties: { task: { type: "string" }, mode: { type: "string", enum: ["read", "project"] }, member: { type: "string", enum: [...builders, ...reviewers].map(m => m.id) } }, required: ["task", "mode"], additionalProperties: false },
       async execute(_id, params) {
         const rec = (params ?? {}) as Record<string, unknown>;
@@ -539,6 +555,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (running.length > 0) {
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
+        if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
         // 맵 사이 연결 계약(worldGraph)을 병합본으로 검사한다. 각 담당은 자기 맵만 보므로 이음새는 여기서만 보인다.
         const seamErrors = inspectWorldSeams(working).issues.filter((issue) => issue.severity === "error");
@@ -580,6 +597,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
+  } catch (error) {
+    // Keep the parent run's host reservation until all previously launched children stop.
+    await Promise.all(inflight.map(entry => entry.promise));
+    throw error;
   } finally { mailbox.close(orchestratorId); }
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.

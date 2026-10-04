@@ -10,6 +10,7 @@
 
 import { createHash, randomUUID } from "node:crypto";
 import { piTimer } from "./piRunTiming.mjs";
+import { createMapRunLocks, mapRunScope } from "../../src/ai/piAgent/mapRunLocks.mjs";
 
 /** 무거운 키 — 요청 프로젝트에서 해시로 바꿔 보낼 수 있는 최상위 키. */
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"];
@@ -85,6 +86,7 @@ export function resolveHeavyProject(body) {
 // ── 실행 기록 ──────────────────────────────────────────────────────────────
 
 const runs = new Map(); // runId -> Run
+const mapRuns = createMapRunLocks();
 
 function createRun(runId, controller) {
   const run = {
@@ -107,6 +109,7 @@ function pushLine(run, line) {
 
 function finish(run) {
   run.finished = true;
+  run.mapClaim?.release();
   clearTimeout(run.graceTimer);
   for (const listener of run.listeners) listener();
   run.cleanupTimer = setTimeout(() => runs.delete(run.runId), FINISHED_TTL_MS);
@@ -217,15 +220,24 @@ export async function startRelayedRun(body, startAgent, options = {}) {
   if (resolved.missing) return { status: 409, body: { error: "heavy-missing", missing: resolved.missing } };
   const runId = typeof body.runId === "string" && /^[A-Za-z0-9-]{8,64}$/.test(body.runId) ? body.runId : randomUUID();
   if (runs.has(runId)) return { status: 409, body: { error: "run-exists", runId } };
+  const projectKey = typeof resolved.body.projectKey === "string" && resolved.body.projectKey.trim() ? resolved.body.projectKey : null;
+  mapRuns.refreshBundles(projectKey, resolved.body.project);
+  const claim = mapRuns.acquire(projectKey, mapRunScope(resolved.body), runId);
+  if (!claim.ok) return { status: 409, body: {
+    error: `맵 ${claim.mapIds?.map(id => `'${id}'`).join(", ") || "전체"} 작업이 이미 실행 중입니다. 같은 맵은 한 번에 한 조수만 실행합니다. 앞선 작업 완료 후 다시 요청하세요.`,
+    code: "map-busy", mapIds: claim.mapIds,
+  } };
   const controller = new AbortController();
   const { runId: _runId, ...request } = resolved.body;
   const run = createRun(runId, controller);
+  run.mapClaim = claim;
   let result;
   try {
     result = await startAgent(request, controller.signal, resolved.heavy);
     timer.mark("startAgent");
     timer.done();
   } catch (error) {
+    claim.release();
     runs.delete(runId);
     throw error;
   }
@@ -251,7 +263,7 @@ export function cancelRelayedRun(runId) {
 
 /** 테스트 전용: 기록·캐시 비우기. */
 export function resetRelayForTests() {
-  for (const run of runs.values()) { clearTimeout(run.graceTimer); clearTimeout(run.cleanupTimer); run.controller.abort(); }
+  for (const run of runs.values()) { clearTimeout(run.graceTimer); clearTimeout(run.cleanupTimer); run.controller.abort(); run.mapClaim?.release(); }
   runs.clear();
   cache.clear();
   cacheSize = 0;
