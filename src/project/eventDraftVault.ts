@@ -31,6 +31,14 @@ export type EventDraftVaultEntry = {
 const vault = new Map<string, EventDraftVaultEntry>();
 const vaultEntrySources = new WeakMap<EventDraftVaultEntry, GameEvent>();
 const serializedEntries = new WeakMap<EventDraftVaultEntry, string>();
+const draftLists = new WeakMap<readonly GameEvent[], readonly GameEvent[]>();
+/** Store event arrays are immutable; tile edits keep their identity. Retain only
+ * the live drafts so unrelated painting never re-scans every command event. */
+function liveDrafts(events: readonly GameEvent[]): readonly GameEvent[] {
+  let drafts = draftLists.get(events);
+  if (!drafts) { drafts = events.filter(event => !!event.draft); draftLists.set(events, drafts); }
+  return drafts;
+}
 let vaultRevision = 0;
 let serializedRevision = -1;
 let serializedVaultEntries = "";
@@ -95,7 +103,7 @@ export function rememberEventDraftVaultEntry(mapId: MapId, event: GameEvent): vo
 export function syncEventDraftVaultFromProject(project: Project): void {
   let changed = false;
   for (const [mapId, map] of Object.entries(project.maps)) {
-    for (const event of map.events) {
+    for (const event of liveDrafts(map.events)) {
       if (!event.draft) continue;
       const key = eventDraftVaultKey(mapId, event.id);
       const existing = vault.get(key);
@@ -204,7 +212,7 @@ export function applyEventDraftVault(project: Project): Project {
 export function preserveEventDraftsOnProject(incoming: Project, live: Project): Project {
   // Refresh vault from live first so in-flight editor edits win over stale vault rows.
   for (const [mapId, map] of Object.entries(live.maps)) {
-    for (const event of map.events) {
+    for (const event of liveDrafts(map.events)) {
       if (!event.draft) continue;
       rememberEventDraftVaultEntry(mapId, event);
     }
@@ -218,7 +226,7 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
   for (const [mapId, liveMap] of Object.entries(live.maps)) {
     const targetMap = next.maps[mapId];
     if (!targetMap) continue;
-    for (const liveEvent of liveMap.events) {
+    for (const liveEvent of liveDrafts(liveMap.events)) {
       if (!liveEvent.draft) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       const incoming = index >= 0 ? targetMap.events[index] : undefined;

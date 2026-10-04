@@ -7,8 +7,9 @@ import {
   listEventDraftVaultEntries,
   forgetEventDraftVaultEntry,
   restoreEventDraftVaultEntries,
+  syncEventDraftVaultFromProject,
 } from "@/project/eventDraftVault";
-import type { GameEvent } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 
 const DRAFT: GameEvent = {
   id: "draft-event",
@@ -93,4 +94,22 @@ describe("event draft vault persist debounce", () => {
     persistEventDraftVaultNow();
     expect(read().entries[0].event.x).toBe(42);
   });
+  it("reuses immutable event lists but recovers forgotten drafts and new map keys", () => {
+    let reads = 0;
+    const events = new Proxy([DRAFT, ...Array.from({ length: 1000 }, (_, i) => ({ ...DRAFT, id: `normal-${i}`, draft: undefined }))], {
+      get(target, key, receiver) { if (/^\d+$/.test(String(key))) reads++; return Reflect.get(target, key, receiver); },
+    });
+    const project = { maps: { a: { events } } } as unknown as Project;
+    syncEventDraftVaultFromProject(project);
+    expect(reads).toBeGreaterThan(1000);
+    reads = 0;
+    syncEventDraftVaultFromProject(project);
+    expect(reads).toBe(0);
+    forgetEventDraftVaultEntry("a", DRAFT.id);
+    syncEventDraftVaultFromProject(project);
+    syncEventDraftVaultFromProject({ maps: { b: { events } } } as unknown as Project);
+    expect(listEventDraftVaultEntries().map(e => e.mapId).sort()).toEqual(["a", "b"]);
+    expect(reads).toBe(0);
+  });
+
 });
