@@ -49,7 +49,8 @@ const STAGE_HINTS: Partial<Record<PlayLoadStage, string>> = {
 export function mountPlayLoadingOverlay(
   host: HTMLElement,
   initialStage: PlayLoadStage = "preparing",
-  cinematicBackdrop?: string
+  cinematicBackdrop?: string,
+  cinematicFadeMs = 500
 ): PlayLoadingOverlay {
   host.querySelector("[data-testid='play-loading-overlay']")?.remove();
 
@@ -99,7 +100,8 @@ export function mountPlayLoadingOverlay(
   host.append(root);
   if (cinematicBackdrop) {
     root.classList.add('has-cinematic-backdrop');
-    root.prepend(el('img', { class: 'play-loading-backdrop', attrs: { src: cinematicBackdrop, alt: '' } }));
+    if (cinematicBackdrop.startsWith('#')) root.style.background = cinematicBackdrop;
+    else root.prepend(el('img', { class: 'play-loading-backdrop', attrs: { src: cinematicBackdrop, alt: '' } }));
     message.textContent = '곧 시작합니다…';
     hint.textContent = '';
     root.setAttribute('aria-label', message.textContent);
@@ -216,7 +218,12 @@ export function mountPlayLoadingOverlay(
   };
 
   const remove = (): void => {
-    root.remove();
+    if (cinematicBackdrop && cinematicFadeMs > 0 && currentStage === 'ready' && !host.ownerDocument.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (root.dataset.departing) return;
+      root.dataset.departing = 'true';
+      const fade = root.animate([{ opacity: 1 }, { opacity: 0 }], { duration: Math.min(5000, cinematicFadeMs), fill: 'forwards' });
+      void fade.finished.then(() => root.remove(), () => root.remove());
+    } else root.remove();
   };
 
   setProgress(null);

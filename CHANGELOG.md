@@ -5,6 +5,46 @@
 
 <!-- releases -->
 
+## 0.122.0 — 2026-10-04
+
+### 기능
+
+- add authored opening typography and scene transitions (`707bf09`)
+
+### 수정
+
+- 반복 그림 실패를 시점 명세와 표본 검수로 되돌리기 (#2094) (`b54829b`)
+- export from the newest canonical reload receipt (`5b94985`)
+- retain the preceding composition until the next scene paints (`a2b2db9`)
+
+### 문서
+
+- record canonical opening authoring and shipping playback evidence (`27a4b45`)
+
+## 0.121.1 — 2026-10-04
+
+### 수정
+
+- follow native building silhouettes when casting sunlight shadows (`142d37a`)
+- 공간 도면·여백·구성을 실제 제작 관문으로 검수 (#2086) (`71d1af5`)
+
+### 문서
+
+- record native building shadow comparisons and shipping QA (`bb72e14`)
+
+## 0.121.0 — 2026-10-04
+
+### 기능
+
+- give cinematic interview controls a pixel-framed finish (`321f1ee`)
+- add configurable sun shadows to terrain editor and player (`731f7e0`)
+
+### 수정
+
+- **sunlight** — 다리 마스크가 없을 때 null 대신 undefined를 둔다 (`0a504b0`)
+- restore original grid editing for charset production (`2f5feaa`)
+- preserve exact shadow mask extent in canvas rendering (`1491e2d`)
+
 ## 0.120.1 — 2026-10-04
 
 ### 수정

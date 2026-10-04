@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import store
+import art_layout
 
 
 def digest(path):
@@ -119,8 +120,11 @@ def prepare(data, cid):
                         'caution': '기존 검수 방에 놓은 크기·화풍 예시입니다. 계단 높이·통행 및 문 상태 연결은 별도 검증이 필요합니다.'})
                 groups.append(group)
     generation = digest(concept / 'art-result.json')
+    layout_file = concept / 'art-layout-input.json'
+    phase = read(layout_file).get('layout', {}).get('phase', 'scene') if layout_file.is_file() else 'scene'
     for group in groups:
-        for candidate in group['candidates']: candidate['generation'] = generation
+        for candidate in group['candidates']:
+            candidate.update(generation=generation, phase=phase)
     manifest = {'version': 1, 'artResultSha256': generation, 'groups': groups}
     path = concept / 'art-choices.json'
     temporary = path.with_suffix('.tmp')
@@ -144,15 +148,22 @@ def view(data, cid):
     groups = document.get('groups', [])
     result_file = Path(data) / 'concepts' / cid / 'art-result.json'
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
+    # The manifest owns immutable image/receipt hashes. Preparation responses
+    # can replace art-result.previous.json several times before a new drawing.
+    previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review')
+                        and bool(document.get('artResultSha256')))
     context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
     context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
     saved = selections(cid)
+    feedback_file = Path(data) / 'concepts' / cid / 'art-feedback.json'
+    feedback = read(feedback_file) if feedback_file.is_file() else {}
     count = 0
     output = []
     for group in groups:
         g = {k: group[k] for k in ('id', 'title', 'description')}
         g['candidates'] = []
         for candidate in group['candidates']:
+            calibration = candidate.get('phase') == 'calibration'
             item = {k: candidate[k] for k in ('id', 'title', 'summary', 'reasons', 'caution')}
             candidate_token = fingerprint(candidate)
             context = context_reviews.get(group['id'], {}).get(candidate['id'], {})
@@ -161,22 +172,26 @@ def view(data, cid):
             if needs_context:
                 matches = context.get('fingerprint') == candidate_token
                 checks = context.get('checks', {})
-                context_ok = (matches and context.get('verdict') == 'PASS' and
+                context_ok = (matches and context.get('gateVersion') == art_layout.VERSION and context.get('verdict') == 'PASS' and
                     all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
                         and len(str(checks[k].get('evidence', '')).strip()) >= 12
-                        for k in ('identity', 'scale', 'attachments', 'circulation', 'style')))
+                        for k in art_layout.SCENE_CHECKS))
                 if not context_ok:
                     explanation = context.get('reasons', []) if matches else []
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])
                     item['summary'] = '부품 검수 통과 · 조립 예시 수정 필요' if candidate['passed'] else item['summary']
             token = fingerprint({'candidate': candidate, 'contextReview': context}) if needs_context else candidate_token
-            valid = current
+            valid = current or previous_visible
             try:
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
-            item['ready'] = valid and candidate['passed'] and context_ok
-            item.update(fingerprint=token, eligible=valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
-            item['selected'] = valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            item['ready'] = current and valid and candidate['passed'] and context_ok
+            item.update(fingerprint=token, eligible=current and not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
+            item['selected'] = current and not calibration and valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            if previous_visible:
+                item['summary'] = '이전 후보 · 새 표본 제작 중 (선택 불가)'
+            if calibration:
+                item['caution'] = '시점 확인용 표본입니다. 표본 합격 뒤 공간을 재조립하여 검수해야 선택할 수 있습니다.'
             if item['selected']: count += 1
             def image(r):
                 return {'path': str((root / r['path']).relative_to(data)), 'v': r['sha256'], 'label': r.get('label', '')}
@@ -186,6 +201,8 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
+            'maxRevisions': feedback.get('limits', {}).get('maxRevisions', int(store.setting('max_art_revisions'))),
+            'repairPolicy': feedback.get('policy', {}),
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
             'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}

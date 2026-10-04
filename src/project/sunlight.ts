@@ -3,6 +3,7 @@ import { effectiveHeights, prune, samplePixelHeight } from "./relief/render";
 import { gridFromRelief, RELIEF_TILE, type HeightGrid } from "./relief/types";
 import { reliefLiftField, type ReliefLiftField } from "./relief/screen";
 import { reliefBridgeMask } from "./relief/walk";
+import { structureSunlightArt, SUN_ART_RESOLUTION, type SunlightArt, type SunlightArtSource, type SunlightVolume } from "./sunlightArt";
 
 export interface MapSunlight {
   enabled: boolean;
@@ -50,6 +51,8 @@ interface Caster {
   x: number; y: number; w: number; d: number; base: number; height: number;
   /** Native art stays above the projected ground shadow. */
   art: { x: number; y: number; w: number; h: number };
+  silhouette?: SunlightArt;
+  volumes?: SunlightVolume[];
 }
 export interface SunlightRow {
   row: number; x: number; y: number; w: number; h: number; scale: number; rgba: Uint8ClampedArray;
@@ -65,17 +68,16 @@ export class SunlightField {
   private readonly terrain: HeightGrid | null;
   private readonly bridges: ReturnType<typeof reliefBridgeMask>;
   private readonly casterCells = new Map<number, Caster[]>();
-  private readonly artCells = new Set<number>();
-  private readonly visibleArt = new Map<number, Caster[]>();
+  private readonly visibleArt = new Map<number, { caster: Caster; lift: number }[]>();
   private readonly pixelChunks = new Map<number, Float32Array>();
   private readonly vectors: readonly { x: number; y: number; slope: number }[];
   private readonly rayLength: number;
 
-  constructor(readonly map: GameMap, tileset?: TilesetDef) {
+  constructor(readonly map: GameMap, tileset?: TilesetDef, artSource?: SunlightArtSource) {
     this.params = normalizeSunlight(map.sunlight);
     this.lift = map.relief ? reliefLiftField(map.relief) : null;
     this.terrain = map.relief ? prune(effectiveHeights(gridFromRelief(map.relief))) : null;
-    this.bridges = map.relief ? reliefBridgeMask(map.relief) : null;
+    this.bridges = map.relief ? reliefBridgeMask(map.relief) : undefined;
     this.maxTerrain = this.lift?.maxLift ?? 0;
     const casters: Caster[] = [];
     const kits = new Map(tileset?.structureKits?.map(k => [k.id, k]));
@@ -86,13 +88,16 @@ export class SunlightField {
         || /house|cottage|manor|집|주택|저택/i.test(`${kit.id} ${kit.name ?? ""}`);
       const isTree = !isHouse && /tree|나무|수목/i.test(`${kit.id} ${kit.name ?? ""}`);
       if (!isHouse && !isTree) continue;
-      const roof = kit.parts?.find(part => part.id === "roof");
-      const depth = Math.max(1, Math.min(3, p.h * .3));
-      const x = p.x + (roof?.dx ?? 0), w = roof?.w ?? p.w, y = p.y + p.h - depth;
-      const base = this.terrainAt(p.x + p.w / 2, p.y + p.h - .5);
-      casters.push({ id: p.id, kind: isHouse ? "house" : "tree", x, y, w, d: depth, base,
-        height: Math.max(1, p.h - depth) * this.params.heightScale,
-        art: { x: p.x, y: p.y, w: p.w, h: p.h } });
+      const silhouette = structureSunlightArt(map, p, kit, artSource);
+      if (!silhouette.volumes.length) continue; // erased stamps do not cast ghost shadows
+      const volumes = silhouette.volumes;
+      const x = Math.min(...volumes.map(v => v.x)), y = Math.min(...volumes.map(v => v.y));
+      const w = Math.max(...volumes.map(v => v.x + v.w)) - x, d = Math.max(...volumes.map(v => v.y + v.d)) - y;
+      const main = volumes.reduce((a, b) => a.w * a.height > b.w * b.height ? a : b);
+      const base = this.terrainAt(main.x + main.w / 2, main.y + main.d - .125);
+      casters.push({ id: p.id, kind: isHouse ? "house" : "tree", x, y, w, d, base,
+        height: Math.max(...volumes.map(v => v.height)) * this.params.heightScale,
+        art: { x: p.x, y: p.y, w: p.w, h: p.h }, silhouette, volumes });
     }
     // Authored tree clusters use their actual occupied cells, preserving gaps in the grove.
     for (const group of map.doodadGroups ?? []) {
@@ -115,11 +120,12 @@ export class SunlightField {
           const bucket = this.casterCells.get(key) ?? []; bucket.push(c); this.casterCells.set(key, bucket);
         }
       for (let y = Math.max(0, c.art.y); y < Math.min(map.height, c.art.y + c.art.h); y++)
-        for (let x = Math.max(0, c.art.x); x < Math.min(map.width, c.art.x + c.art.w); x++) this.artCells.add(y * map.width + x);
-      for (let y = Math.floor(c.art.y - c.base); y < Math.ceil(c.art.y + c.art.h - c.base); y++)
-        for (let x = c.art.x; x < c.art.x + c.art.w; x++) {
-          const key = y * map.width + x, bucket = this.visibleArt.get(key) ?? [];
-          bucket.push(c); this.visibleArt.set(key, bucket);
+        for (let x = Math.max(0, c.art.x); x < Math.min(map.width, c.art.x + c.art.w); x++) {
+          const elevation = this.lift?.elevation[y * map.width + x] ?? 0;
+          for (let sy = Math.floor(y - elevation); sy < Math.ceil(y + 1 - elevation); sy++) {
+            const key = sy * map.width + x, bucket = this.visibleArt.get(key) ?? [];
+            bucket.push({ caster: c, lift: elevation }); this.visibleArt.set(key, bucket);
+          }
         }
     }
     this.maxHeight = maximum;
@@ -167,17 +173,47 @@ export class SunlightField {
     return pixels[py * 64 + px]!;
   }
 
+  /** Highest roof sample; ray blocking also checks the air under an overhang. */
   casterAt(x: number, y: number): number {
     let height = this.terrainAt(x, y);
-    const list = this.casterCells.get(Math.floor(y) * this.map.width + Math.floor(x));
-    for (const c of list ?? []) {
-      const u = (x - c.x) / c.w, v = (y - c.y) / c.d;
-      if (u < 0 || u >= 1 || v < 0 || v >= 1) continue;
-      const ridge = c.kind === "tree" ? Math.sqrt(Math.max(0, 1 - ((u - .5) * 2) ** 2 - ((v - .5) * 2) ** 2))
-        : .8 + .2 * (1 - Math.abs(v * 2 - 1));
-      if (ridge > 0) height = Math.max(height, c.base + c.height * ridge);
-    }
+    for (const c of this.casterCells.get(Math.floor(y) * this.map.width + Math.floor(x)) ?? [])
+      height = Math.max(height, this.volumeTop(c, x, y));
     return height;
+  }
+
+  private volumeTop(c: Caster, x: number, y: number, rayZ?: number): number {
+    if (c.volumes && c.kind === "house") {
+      let top = 0;
+      for (const v of c.volumes) {
+        if (x < v.x || x >= v.x + v.w || y < v.y || y >= v.y + v.d) continue;
+        const column = Math.floor((x - v.x) * SUN_ART_RESOLUTION), high = v.high[column]!;
+        if (high <= 0) continue;
+        const lowZ = c.base + v.low[column]! * this.params.heightScale, highZ = c.base + high * this.params.heightScale;
+        if (rayZ === undefined || rayZ >= lowZ && rayZ + .06 < highZ) top = Math.max(top, highZ);
+      }
+      return top;
+    }
+    const u = (x - c.x) / c.w, v = (y - c.y) / c.d;
+    if (u < 0 || u >= 1 || v < 0 || v >= 1) return 0;
+    const ridge = Math.sqrt(Math.max(0, 1 - ((u - .5) * 2) ** 2 - ((v - .5) * 2) ** 2));
+    return ridge > 0 && (rayZ === undefined || rayZ >= c.base) ? c.base + c.height * ridge : 0;
+  }
+
+  private blocksRay(x: number, y: number, z: number): boolean {
+    if (this.terrainAt(x, y) > z + .06) return true;
+    for (const c of this.casterCells.get(Math.floor(y) * this.map.width + Math.floor(x)) ?? [])
+      if (this.volumeTop(c, x, y, z) > z + .06) return true;
+    return false;
+  }
+
+  private artAt(screenX: number, screenY: number): boolean {
+    const list = this.visibleArt.get(Math.floor(screenY) * this.map.width + Math.floor(screenX));
+    for (const { caster: c, lift } of list ?? []) {
+      const x = screenX - c.art.x, y = screenY + lift - c.art.y;
+      if (x < 0 || y < 0 || x >= c.art.w || y >= c.art.h) continue;
+      if (!c.silhouette || c.silhouette.mask[Math.floor(y * SUN_ART_RESOLUTION) * c.silhouette.width + Math.floor(x * SUN_ART_RESOLUTION)]) return true;
+    }
+    return false;
   }
 
   shadowAt(x: number, y: number, z = this.terrainAt(x, y)): number {
@@ -188,7 +224,7 @@ export class SunlightField {
       for (let distance = .2; distance <= length; distance += .25) {
         const xx = x + light.x * distance, yy = y + light.y * distance;
         if (xx < 0 || yy < 0 || xx >= this.map.width || yy >= this.map.height) break;
-        if (this.casterAt(xx, yy) > z + distance * light.slope + .06) { blocked++; break; }
+        if (this.blocksRay(xx, yy, z + distance * light.slope)) { blocked++; break; }
       }
     }
     return blocked / this.vectors.length;
@@ -203,15 +239,13 @@ export class SunlightField {
     const put = (px: number, py: number, alpha: number) => {
       if (py < 0 || py >= h || alpha <= 0) return;
       const screenX = startX + (px + .5) / resolution, screenY = row + (py + .5 - lift) / resolution;
-      const art = this.visibleArt.get(Math.floor(screenY) * this.map.width + Math.floor(screenX));
-      if (art?.some(c => screenY >= c.art.y - c.base && screenY < c.art.y + c.art.h - c.base)) return;
+      if (this.artAt(screenX, screenY)) return;
       const offset = (py * w + px) * 4;
       rgba[offset] = 18; rgba[offset + 1] = 25; rgba[offset + 2] = 39;
       rgba[offset + 3] = Math.max(rgba[offset + 3]!, Math.round(255 * this.params.opacity * alpha));
     };
     for (let px = 0; px < w; px++) for (let py = 0; py < resolution; py++) {
       const x = startX + (px + .5) / resolution, y = row + (py + .5) / resolution;
-      if (this.artCells.has(row * this.map.width + Math.floor(x))) continue;
       const z = this.terrainAt(x, y), next = this.terrainAt(x, y + 1 / resolution);
       const top = Math.round(py + lift - z * resolution), bottom = Math.round(py + 1 + lift - next * resolution);
       const shadow = this.shadowAt(x, y, z);
@@ -233,15 +267,15 @@ export class SunlightField {
 
 /** Exact scalar inputs are part of the key; immutable map edits refresh the geometry. */
 // Bound cached fields even while editor undo history retains old map objects.
-const fields = new Map<GameMap, { tileset?: TilesetDef; key: string; field: SunlightField }>();
-export function sunlightField(map: GameMap, tileset?: TilesetDef): SunlightField | null {
+const fields = new Map<GameMap, { tileset?: TilesetDef; artSource?: SunlightArtSource; key: string; field: SunlightField }>();
+export function sunlightField(map: GameMap, tileset?: TilesetDef, artSource?: SunlightArtSource): SunlightField | null {
   const params = normalizeSunlight(map.sunlight);
   if (!params.enabled || params.opacity === 0) return null;
   const key = JSON.stringify([params, map.relief, map.structurePlacements, map.doodadGroups, map.upperTiles]);
   const old = fields.get(map);
-  if (old && old.tileset === tileset && old.key === key) return old.field.maxHeight > 0 ? old.field : null;
-  const field = new SunlightField(map, tileset);
+  if (old && old.tileset === tileset && old.artSource === artSource && old.key === key) return old.field.maxHeight > 0 ? old.field : null;
+  const field = new SunlightField(map, tileset, artSource);
   if (fields.size >= 2) fields.delete(fields.keys().next().value!);
-  fields.set(map, { tileset, key, field });
+  fields.set(map, { tileset, artSource, key, field });
   return field.maxHeight > 0 ? field : null;
 }

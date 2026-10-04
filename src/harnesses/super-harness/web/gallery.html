@@ -228,7 +228,7 @@ async function documentView(target, path, { modal = false } = {}) {
       const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
       const choice = response.ok ? await response.json() : null;
       if (current !== requestId) return;
-      if (['art-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
+      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
         const panel = document.createElement('section'); panel.className = 'choice-panel';
         const docs = document.createElement('details'); docs.className = 'choice-docs';
         const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';

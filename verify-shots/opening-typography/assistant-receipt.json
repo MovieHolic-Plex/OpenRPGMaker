@@ -1,0 +1,587 @@
+{
+  "mode": "explicit opening repair of existing saved game",
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "workerCompleted": true,
+  "passed": true,
+  "requests": 1,
+  "mapsUnchanged": true,
+  "titleUnchanged": true,
+  "openingAfterReload": {
+    "enabled": true,
+    "skippable": true,
+    "musicResourceId": "cc0-bgm-rtp-ttl-001",
+    "scenes": [
+      {
+        "id": "op_scene_prologue",
+        "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+        "durationMs": 3000,
+        "presentation": {
+          "text": {
+            "delayMs": 250,
+            "animation": "typewriter",
+            "revealMs": 1500,
+            "exitMs": 350
+          },
+          "transition": {
+            "enterMs": 600,
+            "enter": "fade",
+            "exitMs": 450
+          },
+          "preset": "prologue"
+        },
+        "kind": "text"
+      },
+      {
+        "id": "op_scene_study_long",
+        "narration": "고요한 서재. 오래 멈춰 있던 시계.",
+        "durationMs": 3000,
+        "presentation": {
+          "transition": {
+            "enterMs": 750,
+            "enter": "wipe",
+            "exitMs": 0
+          },
+          "preset": "subtitle",
+          "text": {
+            "exitMs": 350,
+            "revealMs": 600,
+            "delayMs": 300,
+            "animation": "fade"
+          }
+        },
+        "kind": "image",
+        "resourceId": "opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51",
+        "motion": "none",
+        "direction": {
+          "camera": {
+            "from": [
+              0.5,
+              0.45,
+              1
+            ],
+            "to": [
+              0.52,
+              0.5,
+              1.08
+            ]
+          },
+          "transition": {
+            "kind": "fade",
+            "durationMs": 600
+          },
+          "effects": [
+            {
+              "kind": "godRays",
+              "intensity": 0.6,
+              "color": "#fff5db",
+              "source": [
+                0.75,
+                0.1
+              ],
+              "toward": [
+                0.5,
+                0.6
+              ]
+            },
+            {
+              "kind": "motes",
+              "intensity": 0.5,
+              "color": "#ffe8a3",
+              "source": [
+                0.75,
+                0.1
+              ],
+              "toward": [
+                0.5,
+                0.6
+              ]
+            }
+          ],
+          "narrationDelayMs": 300
+        }
+      },
+      {
+        "id": "op_scene_watch_closeup",
+        "narration": "멈춘 바늘 너머에서, 기억이 빛난다.",
+        "durationMs": 3000,
+        "presentation": {
+          "transition": {
+            "enter": "dissolve",
+            "enterMs": 550,
+            "exitMs": 0
+          },
+          "preset": "memory",
+          "text": {
+            "animation": "blur",
+            "layout": "bottom",
+            "delayMs": 350,
+            "revealMs": 650,
+            "exitMs": 350
+          }
+        },
+        "kind": "image",
+        "resourceId": "opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2",
+        "motion": "none",
+        "direction": {
+          "transition": {
+            "kind": "cut",
+            "durationMs": 0
+          },
+          "effects": [
+            {
+              "kind": "glow",
+              "intensity": 0.9,
+              "color": "#ffe082",
+              "source": [
+                0.5,
+                0.55
+              ],
+              "spread": 0.25
+            }
+          ],
+          "soundResourceId": "easyrpg-sound-magic1",
+          "narrationDelayMs": 300
+        }
+      },
+      {
+        "id": "op_scene_reach_medium",
+        "narration": "서린은 시계에 손을 뻗었다.",
+        "durationMs": 3000,
+        "presentation": {
+          "preset": "subtitle",
+          "text": {
+            "revealMs": 650,
+            "animation": "rise",
+            "delayMs": 300,
+            "exitMs": 400
+          },
+          "transition": {
+            "enter": "dissolve",
+            "exitMs": 500,
+            "enterMs": 600
+          }
+        },
+        "kind": "image",
+        "resourceId": "opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b",
+        "motion": "none",
+        "direction": {
+          "camera": {
+            "from": [
+              0.45,
+              0.55,
+              1
+            ],
+            "to": [
+              0.42,
+              0.55,
+              1.05
+            ]
+          },
+          "transition": {
+            "kind": "dissolve",
+            "durationMs": 500
+          },
+          "narrationDelayMs": 300
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "type": "tool_start",
+      "name": "get_opening"
+    },
+    {
+      "type": "tool_start",
+      "name": "show_title_opening"
+    },
+    {
+      "type": "tool_end",
+      "name": "get_opening",
+      "ok": true,
+      "summary": "오프닝 장면 3개(이미지 3), 사용 켜짐, 건너뛰기 가능, 배경음악 cc0-bgm-rtp-ttl-001.",
+      "durationMs": 1
+    },
+    {
+      "type": "tool_end",
+      "name": "show_title_opening",
+      "ok": true,
+      "summary": "연결된 타이틀·오프닝 원화 4장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.",
+      "durationMs": 1422
+    },
+    {
+      "type": "tool_start",
+      "name": "set_opening",
+      "args": {
+        "skippable": true,
+        "musicResourceId": "cc0-bgm-rtp-ttl-001",
+        "enabled": true,
+        "scenes": [
+          {
+            "presentation": {
+              "text": {
+                "delayMs": 250,
+                "animation": "typewriter",
+                "revealMs": 1500,
+                "exitMs": 350
+              },
+              "transition": {
+                "enterMs": 600,
+                "enter": "fade",
+                "exitMs": 450
+              },
+              "preset": "prologue"
+            },
+            "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+            "durationMs": 3000,
+            "kind": "text",
+            "id": "op_scene_prologue"
+          },
+          {
+            "kind": "image",
+            "motion": "none",
+            "presentation": {
+              "transition": {
+                "enterMs": 750,
+                "enter": "wipe",
+                "exitMs": 0
+              },
+              "preset": "subtitle",
+              "text": {
+                "exitMs": 350,
+                "revealMs": 600,
+                "delayMs": 300,
+                "animation": "fade"
+              }
+            },
+            "durationMs": 3000,
+            "direction": {
+              "transition": {
+                "durationMs": 600,
+                "kind": "fade"
+              },
+              "narrationDelayMs": 300,
+              "effects": [
+                {
+                  "kind": "godRays",
+                  "color": "#fff5db",
+                  "source": [
+                    0.75,
+                    0.1
+                  ],
+                  "intensity": 0.6,
+                  "toward": [
+                    0.5,
+                    0.6
+                  ]
+                },
+                {
+                  "source": [
+                    0.75,
+                    0.1
+                  ],
+                  "toward": [
+                    0.5,
+                    0.6
+                  ],
+                  "color": "#ffe8a3",
+                  "kind": "motes",
+                  "intensity": 0.5
+                }
+              ],
+              "camera": {
+                "to": [
+                  0.52,
+                  0.5,
+                  1.08
+                ],
+                "from": [
+                  0.5,
+                  0.45,
+                  1
+                ]
+              }
+            },
+            "id": "op_scene_study_long",
+            "resourceId": "opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51",
+            "narration": "고요한 서재. 오래 멈춰 있던 시계."
+          },
+          {
+            "kind": "image",
+            "direction": {
+              "transition": {
+                "kind": "cut",
+                "durationMs": 0
+              },
+              "narrationDelayMs": 300,
+              "effects": [
+                {
+                  "kind": "glow",
+                  "intensity": 0.9,
+                  "spread": 0.25,
+                  "color": "#ffe082",
+                  "source": [
+                    0.5,
+                    0.55
+                  ]
+                }
+              ],
+              "soundResourceId": "easyrpg-sound-magic1"
+            },
+            "id": "op_scene_watch_closeup",
+            "presentation": {
+              "transition": {
+                "enter": "dissolve",
+                "enterMs": 550,
+                "exitMs": 0
+              },
+              "preset": "memory",
+              "text": {
+                "animation": "blur",
+                "layout": "bottom",
+                "delayMs": 350,
+                "revealMs": 650,
+                "exitMs": 350
+              }
+            },
+            "motion": "none",
+            "narration": "멈춘 바늘 너머에서, 기억이 빛난다.",
+            "resourceId": "opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2",
+            "durationMs": 3000
+          },
+          {
+            "kind": "image",
+            "narration": "서린은 시계에 손을 뻗었다.",
+            "resourceId": "opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b",
+            "motion": "none",
+            "presentation": {
+              "preset": "subtitle",
+              "text": {
+                "revealMs": 650,
+                "animation": "rise",
+                "delayMs": 300,
+                "exitMs": 400
+              },
+              "transition": {
+                "enter": "dissolve",
+                "exitMs": 500,
+                "enterMs": 600
+              }
+            },
+            "id": "op_scene_reach_medium",
+            "direction": {
+              "transition": {
+                "durationMs": 500,
+                "kind": "dissolve"
+              },
+              "camera": {
+                "to": [
+                  0.42,
+                  0.55,
+                  1.05
+                ],
+                "from": [
+                  0.45,
+                  0.55,
+                  1
+                ]
+              },
+              "narrationDelayMs": 300
+            },
+            "durationMs": 3000
+          }
+        ]
+      }
+    },
+    {
+      "type": "tool_end",
+      "name": "set_opening",
+      "ok": true,
+      "summary": "오프닝 장면 4개를 저장했습니다(텍스트 1·이미지 3), 사용 켜짐, 건너뛰기 가능.",
+      "durationMs": 3866,
+      "result": {
+        "ok": true,
+        "summary": "오프닝 장면 4개를 저장했습니다(텍스트 1·이미지 3), 사용 켜짐, 건너뛰기 가능.",
+        "diff": {
+          "tilesChanged": 0,
+          "mapPropertiesChanged": 0,
+          "audioDescriptionsChanged": 0,
+          "monsterMetadataChanged": 0,
+          "eventsAdded": 0,
+          "eventsModified": 0,
+          "eventsRemoved": 0,
+          "mapsAdded": 0,
+          "mapsRemoved": 0,
+          "dbRecordsChanged": 0,
+          "tilesetsChanged": 0,
+          "switchesAdded": 0,
+          "variablesAdded": 0,
+          "worldEntitiesAdded": 0,
+          "worldEntitiesModified": 0,
+          "palettePresetsAdded": 0,
+          "palettePresetsModified": 0,
+          "endingsChanged": 0,
+          "sessionChanged": false,
+          "systemChanged": true,
+          "warnings": []
+        },
+        "issues": null,
+        "data": {
+          "opening": {
+            "enabled": true,
+            "skippable": true,
+            "musicResourceId": "cc0-bgm-rtp-ttl-001",
+            "scenes": [
+              {
+                "id": "op_scene_prologue",
+                "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+                "durationMs": 3000,
+                "presentation": {
+                  "text": {
+                    "delayMs": 250,
+                    "animation": "typewriter",
+                    "revealMs": 1500,
+                    "exitMs": 350
+                  },
+                  "transition": {
+                    "enterMs": 600,
+                    "enter": "fade",
+                    "exitMs": 450
+                  },
+                  "preset": "prologue"
+                },
+                "kind": "text"
+              },
+              {
+                "id": "op_scene_study_long",
+                "narration": "고요한 서재. 오래 멈춰 있던 시계.",
+                "durationMs": 3000,
+                "presentation": {
+                  "transition": {
+                    "enterMs": 750,
+                    "enter": "wipe",
+                    "exitMs": 0
+                  },
+                  "preset": "subtitle",
+                  "text": {
+                    "exitMs": 350,
+                    "revealMs": 600,
+                    "delayMs": 300,
+                    "animation": "fade"
+                  }
+                },
+                "kind": "image",
+                "resourceId": "opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51",
+                "motion": "none",
+                "direction": {
+                  "camera": {
+                    "from": "[깊이 상한으로 생략]",
+                    "to": "[깊이 상한으로 생략]"
+                  },
+                  "transition": {
+                    "kind": "fade",
+                    "durationMs": 600
+                  },
+                  "effects": [
+                    "[깊이 상한으로 생략]",
+                    "[깊이 상한으로 생략]"
+                  ],
+                  "narrationDelayMs": 300
+                }
+              },
+              {
+                "id": "op_scene_watch_closeup",
+                "narration": "멈춘 바늘 너머에서, 기억이 빛난다.",
+                "durationMs": 3000,
+                "presentation": {
+                  "transition": {
+                    "enter": "dissolve",
+                    "enterMs": 550,
+                    "exitMs": 0
+                  },
+                  "preset": "memory",
+                  "text": {
+                    "animation": "blur",
+                    "layout": "bottom",
+                    "delayMs": 350,
+                    "revealMs": 650,
+                    "exitMs": 350
+                  }
+                },
+                "kind": "image",
+                "resourceId": "opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2",
+                "motion": "none",
+                "direction": {
+                  "transition": {
+                    "kind": "cut",
+                    "durationMs": 0
+                  },
+                  "effects": [
+                    "[깊이 상한으로 생략]"
+                  ],
+                  "soundResourceId": "easyrpg-sound-magic1",
+                  "narrationDelayMs": 300
+                }
+              },
+              {
+                "id": "op_scene_reach_medium",
+                "narration": "서린은 시계에 손을 뻗었다.",
+                "durationMs": 3000,
+                "presentation": {
+                  "preset": "subtitle",
+                  "text": {
+                    "revealMs": 650,
+                    "animation": "rise",
+                    "delayMs": 300,
+                    "exitMs": 400
+                  },
+                  "transition": {
+                    "enter": "dissolve",
+                    "exitMs": 500,
+                    "enterMs": 600
+                  }
+                },
+                "kind": "image",
+                "resourceId": "opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b",
+                "motion": "none",
+                "direction": {
+                  "camera": {
+                    "from": "[깊이 상한으로 생략]",
+                    "to": "[깊이 상한으로 생략]"
+                  },
+                  "transition": {
+                    "kind": "dissolve",
+                    "durationMs": 500
+                  },
+                  "narrationDelayMs": 300
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "tool_start",
+      "name": "get_opening"
+    },
+    {
+      "type": "tool_start",
+      "name": "show_title_opening"
+    },
+    {
+      "type": "tool_end",
+      "name": "get_opening",
+      "ok": true,
+      "summary": "오프닝 장면 4개(텍스트 1·이미지 3), 사용 켜짐, 건너뛰기 가능, 배경음악 cc0-bgm-rtp-ttl-001.",
+      "durationMs": 1
+    },
+    {
+      "type": "tool_end",
+      "name": "show_title_opening",
+      "ok": true,
+      "summary": "연결된 타이틀·오프닝 원화 4장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.",
+      "durationMs": 1467
+    }
+  ]
+}

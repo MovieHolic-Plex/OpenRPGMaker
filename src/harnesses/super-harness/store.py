@@ -10,14 +10,14 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'art-context-review', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
-ACTIVE = ('plan', 'plan-review', 'survey', 'material-review', 'art-context-review', 'build', 'review', 'probe', 'bake', 'unbake')
+STAGES = ['discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'art-layout-review', 'art-context-review', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+ACTIVE = ('plan', 'plan-review', 'survey', 'material-review', 'art-layout-review', 'art-context-review', 'build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {
     'paused': '0',
     'max_active': '8',          # 동시에 만드는 개념 수 (2026-10-03 사용자 「큐 늘려서 빠르게 많이」)
     'max_codex': '16',          # 동시에 도는 codex 작업 수
-    'max_art_revisions': '2',   # 조립 검수 실패 후 자동 재생성 상한 (개념별 brief가 더 낮으면 우선)
+    'max_art_revisions': '5',   # 누적 자동 수정 상한 (개념별 brief가 더 낮으면 우선)
     'max_art': '1',            # 칩 제작은 격리 워크트리 하나씩, 후보 선택은 사람
     'max_probe': '4',           # 동시에 도는 조수 시험(qa:game gen) 수 — 판마다 메모리 2~3GB
     'min_waiting': '8',         # 발견 칸에 이만큼 쌓여 있지 않으면 낱말을 더 찾는다
