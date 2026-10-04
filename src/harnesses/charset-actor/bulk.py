@@ -119,6 +119,29 @@ notes나 작업자 로그는 보지 않는다. 다른 파일에는 쓰지 않는
         write_json(w / 'desc.json', desc)
 
 
+def visual_inputs(run, batch, pending):
+    """파일 경로만 지시하지 않고 원본과 사람의 시각 참고를 모델 입력에 첨부한다."""
+    root = H.run_dir(run).resolve()
+    refs = json.loads((root / 'manifest.json').read_text()).get('visualReferences', [])
+    if not isinstance(refs, list) or len(refs) > 4:
+        raise ValueError('시각 참고는 실행 폴더 안 이미지 최대 4장입니다')
+    entries = []
+    for row in pending:
+        path = (batch / row['folder'] / 'base-views' / 'sheet_x8.png').resolve(strict=True)
+        entries.append(dict(path=str(path), kind='base', key=row['key']))
+    for ref in refs:
+        if not isinstance(ref, str):
+            raise ValueError('시각 참고는 이미지 파일 경로여야 합니다')
+        path = (root / ref).resolve(strict=True)
+        if not path.is_relative_to(root):
+            raise ValueError('시각 참고는 실행 폴더 안에 보존합니다')
+        entries.append(dict(path=str(path), kind='human-visual-reference'))
+    for entry in entries:
+        entry['sha256'] = hashlib.sha256(Path(entry['path']).read_bytes()).hexdigest()
+    write_json(batch / 'visual-inputs.json', entries)
+    return entries
+
+
 def produce_batch(run, rows, index):
     if (H.run_dir(run) / 'pause-request.json').exists():
         return  # 진행 중인 작업은 마치고 다음 묶음부터 멈춘다.
@@ -135,14 +158,16 @@ def produce_batch(run, rows, index):
         prompt = prompt.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
         prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
+        visuals = visual_inputs(run, batch, pending)
+        prompt += '\n\n초기 입력에 다음 이미지가 순서대로 첨부되어 있습니다. 실제 픽셀을 보고 저작합니다.\n' + json.dumps(visuals, ensure_ascii=False, indent=2)
         (batch / 'prompt.md').write_text(prompt, encoding='utf-8')
-        process = H._spawn('gpt', batch, batch / 'prompt.md', batch / 'worker.log')
+        process = H._spawn('gpt', batch, batch / 'prompt.md', batch / 'worker.log', images=[v['path'] for v in visuals])
         for row in pending:
             w = batch / row['folder']
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
                                             strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None,
-                                            animationMode=H.FRAME_AUTHOR_MODE))
+                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals))
         log(f'batch {index}: GPT high 12프레임 직접 저작 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')

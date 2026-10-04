@@ -19,6 +19,18 @@
 화면 http://mdc-server:18314/ · 실행 `npm run harness -- charset-actor produce --count 100 [--reference /absolute/file.png]`.
 이하 Sonnet PASS/FAIL과 자동 검수 팩 기록은 이전 지시 기반 모드의 계약/실측이다.
 
+### 픽셀 참고를 실제 모델 입력에 첨부 (2026-10-04)
+
+사용자가 남김/폐기를 픽셀만으로 비교하여 추가 제작을 요청했다. 참고 PNG 경로를 brief에 적은 첫 시도는
+저작 시작 뒤 작업자 세션에서 이미지 입력/열람이 확인되지 않아 공개 전에 멈추고 저장소 밖 quarantine에 보존했다.
+`bulk`는 이제 pending 원본 시트를 GPT 첫 입력에 `--image`로 직접 첨부한다. manifest의 `visualReferences`는
+실행 폴더 안에 보존한 이미지 최대 4장을 추가한다. 경로 탈출은 거절하며 입력 파일을 실제 이미지로 읽어 확인한다.
+첨부 순서·원본 key·파일 SHA256은 묶음 `visual-inputs.json`과 후보 `meta.visualInputs`에 남긴다.
+파일 경로 지시/작업자의 열람 선언은 실제 이미지 입력의 근거가 아니다. 시각 취향은 남김/폐기 픽셀로 참고하고
+장르·직업·나이·모델·원본 변화율 통계를 취향의 정답으로 쓰지 않는다. 12프레임 직접 저작/사람 선택 계약은 이어진다.
+실측 실행 `20261004-190256-pixel-eed02089`의 작업자 4개 모두 GPT 6.1 sol high 로그와 실제 세션의
+초기 `input_image` 3개(원본 2장·사람 선택 참고 1장)를 확인했다. 근거는 데이터 폴더의 실행별 `initial-images-readback.json`이다.
+
 ### 모델이 걷기까지 전부 저작 (2026-10-04 사용자 변경 지시)
 
 사용자가 Python 걷기 합성을 지적하여 정지 4장·걷기 8장 모두 GPT 6.1 sol high가 직접 저작하도록 변경했다.
