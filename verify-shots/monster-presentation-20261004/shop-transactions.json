@@ -1,0 +1,430 @@
+{
+  "export": "/tmp/monster-npc-opening-20261004/final-export-repaired",
+  "canonicalRevision": "r25",
+  "canonicalSHAReportedByRoot": "4811a4afff1e1a6508e810ff25ddeb2245b08b4e8f007d4e028d1d62cb288937",
+  "artifactReportedByRoot": "7915c1ebc20e18af",
+  "sourceReportedByRoot": "51a50abb8dfe23a7",
+  "exportHashes": {
+    "project.json": "10b303aead3f3d7cc4f349560094427113d2de17fbe405c95434f0820ae18a17",
+    "player.js": "7a4fb78d140a71cefb634d1d58a12f0a9bd413a546bde62a4164ed970d65b9e6",
+    "player.html": "523ec20add19df8b2a834177b7402fa428d58c4314c8ced77b2b7655387b232c",
+    "README.txt": "0857ceff9b215205c5462a4e756a4a1e0a5c3b46db8a6669a7e695462a36e7e3"
+  },
+  "pristine": true,
+  "qaInstrumentation": false,
+  "debugHookObserved": "undefined",
+  "onlyNativeKeyboard": true,
+  "teleport": false,
+  "injectedGameWrites": false,
+  "canonicalWrites": false,
+  "nativeSave": false,
+  "port": 18569,
+  "serverStopped": true,
+  "errors": [],
+  "measurements": {
+    "buy-before": {
+      "active": "shop-buy-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1600G",
+        "shop-merchant-gold": "상인\n100G",
+        "shop-owned-item_capture_orb": "0",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "무엇을 구매하시겠습니까?",
+        "shop-quantity-input": "1",
+        "shop-quantity-total": "합계 80G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 509,
+          "y": 603.40625,
+          "width": 48,
+          "height": 32,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "구입",
+          "x": 765,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 833,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "buy-quantity2": {
+      "active": "shop-buy-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1600G",
+        "shop-merchant-gold": "상인\n100G",
+        "shop-owned-item_capture_orb": "0",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "무엇을 구매하시겠습니까?",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 160G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 501,
+          "y": 603.40625,
+          "width": 48,
+          "height": 32,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "구입",
+          "x": 765,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 833,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "buy-quantity2-mobile": {
+      "active": "shop-buy-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1600G",
+        "shop-owned-item_capture_orb": "0",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "무엇을 구매하시겠습니까?",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 160G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 54,
+          "y": 399.5,
+          "width": 24,
+          "height": 24,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "구입",
+          "x": 238,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 286,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "buy-after": {
+      "active": "shop-buy-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "포획 구슬 구매 — -160G",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 160G"
+      },
+      "controls": []
+    },
+    "tab-buy": {
+      "active": "shop-tab-buy",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "포획 구슬 구매 — -160G",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 160G"
+      },
+      "controls": []
+    },
+    "tab-sell": {
+      "active": "shop-tab-sell",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "포획 구슬 구매 — -160G",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 160G"
+      },
+      "controls": []
+    },
+    "sell-before": {
+      "active": "shop-tab-sell",
+      "values": {
+        "shop-brand-subtitle": "판매 · 내 소지품을 상인에게",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "40G",
+        "shop-status-text": "무엇을 판매하시겠습니까?",
+        "shop-quantity-input": "1",
+        "shop-quantity-total": "합계 40G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 54,
+          "y": 399.5,
+          "width": 24,
+          "height": 24,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "판매",
+          "x": 232,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 280,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "sell-quantity2-mobile": {
+      "active": "shop-sell-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "판매 · 내 소지품을 상인에게",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "40G",
+        "shop-status-text": "무엇을 판매하시겠습니까?",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 80G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 54,
+          "y": 399.5,
+          "width": 24,
+          "height": 24,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "판매",
+          "x": 232,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 280,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "sell-quantity2": {
+      "active": "shop-sell-item_capture_orb",
+      "values": {
+        "shop-brand-subtitle": "판매 · 내 소지품을 상인에게",
+        "shop-player-gold": "소지금\n1440G",
+        "shop-merchant-gold": "상인\n260G",
+        "shop-owned-item_capture_orb": "2",
+        "shop-price-item_capture_orb": "40G",
+        "shop-status-text": "무엇을 판매하시겠습니까?",
+        "shop-quantity-input": "2",
+        "shop-quantity-total": "합계 80G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 509,
+          "y": 603.40625,
+          "width": 48,
+          "height": 32,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "판매",
+          "x": 765,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 833,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "sell-after": {
+      "active": "shop-tab-sell",
+      "values": {
+        "shop-brand-subtitle": "판매 · 내 소지품을 상인에게",
+        "shop-player-gold": "소지금\n1520G",
+        "shop-merchant-gold": "상인\n180G",
+        "shop-item-list-empty": "팔 물건이 없습니다.",
+        "shop-status-text": "포획 구슬 판매 — +80G",
+        "shop-quantity-input": "1",
+        "shop-quantity-total": "합계 0G"
+      },
+      "controls": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 529,
+          "y": 603.40625,
+          "width": 48,
+          "height": 32,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "판매",
+          "x": 765,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 833,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "buy-return-owned0": {
+      "active": "shop-tab-buy",
+      "values": {
+        "shop-brand-subtitle": "구매 · 상인의 진열 상품",
+        "shop-player-gold": "소지금\n1520G",
+        "shop-merchant-gold": "상인\n180G",
+        "shop-owned-item_capture_orb": "0",
+        "shop-price-item_capture_orb": "80G",
+        "shop-status-text": "무엇을 구매하시겠습니까?",
+        "shop-quantity-input": "1",
+        "shop-quantity-total": "합계 80G"
+      },
+      "controls": []
+    },
+    "exited": {
+      "active": null,
+      "values": {},
+      "controls": []
+    }
+  },
+  "pass": {
+    "buy2minus160": true,
+    "sell2plus80": true,
+    "inventory0to2to0": true,
+    "merchant100to260to180": true,
+    "keyboardTabsBothWays": true,
+    "quantityAndActionVisibility960And390": true,
+    "EscToField": true
+  },
+  "limits": [
+    "Mobile side detail title/description clipped; selected list label and price readable.",
+    "Only home mart exercised; shared runtime presentation covers other shops but no actual traversal of all nine shops.",
+    "Private browser session only; canonical reload evidence belongs to parent."
+  ]
+}

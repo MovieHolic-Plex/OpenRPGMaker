@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "nativeContinueExactSavedCoordinates": true,
+    "noOpeningAfterContinue": true,
+    "originalPartyPreserved": true,
+    "originalMonsterStatsSkillsPPPreserved": true,
+    "originalInventoryPreserved": true,
+    "professorSlot6Frame79": true,
+    "rivalSlot2Frame31": true,
+    "correctFixedNPCPositions": true,
+    "geometryAndMovementEqualR23": true,
+    "noPageErrors": true
+  },
+  "allPassed": true
+}

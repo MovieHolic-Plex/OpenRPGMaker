@@ -1,0 +1,673 @@
+{
+  "export": "/tmp/monster-npc-opening-20261004/final-export-compact",
+  "artifactReportedByRoot": "4162d202d42e72f5",
+  "sourceReportedByRoot": "678d5a937a2fee64",
+  "canonicalRevision": 25,
+  "projectUnchangedFromPriorR25Export": true,
+  "exportSHA": {
+    "project.json": "10b303aead3f3d7cc4f349560094427113d2de17fbe405c95434f0820ae18a17",
+    "player.js": "c9c333b69bb883ed470b9a194fcefbb1f5d5ea7cdd4042ac45e86aafbe08761a",
+    "player.html": "cb02140a23f92a0014d0ba54fab8a61eb4de3e5fbce99021302526221f97033c"
+  },
+  "pristineShippingBoot": true,
+  "debugHook": "undefined",
+  "qaInstrumentation": false,
+  "nativeWalk": true,
+  "noGameStateInjection": true,
+  "noCanonicalWrite": true,
+  "transactionsRepeated": false,
+  "cssDesignInjection": false,
+  "port18569Stopped": true,
+  "errors": [],
+  "checks": {
+    "buy-960": {
+      "detail": [
+        {
+          "selector": ".runtime-shop-detail-name",
+          "text": "포획 구슬",
+          "box": {
+            "x": 707.890625,
+            "y": 168.484375,
+            "width": 108,
+            "height": 30,
+            "right": 815.890625,
+            "bottom": 198.484375
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "auto",
+              "overflowY": "auto",
+              "box": {
+                "x": 587.890625,
+                "y": 130.1875,
+                "width": 329.109375,
+                "height": 455.421875,
+                "right": 917,
+                "bottom": 585.609375
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 40,
+                "y": 36,
+                "width": 880,
+                "height": 648,
+                "right": 920,
+                "bottom": 684
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 12,
+                "y": 12,
+                "width": 936,
+                "height": 696,
+                "right": 948,
+                "bottom": 708
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            }
+          ],
+          "characters": 4,
+          "visibleCharacters": 4,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        },
+        {
+          "selector": "[data-testid=\"shop-help-line\"]",
+          "text": "약해진 몬스터를 포획하는 기본 구슬입니다.",
+          "box": {
+            "x": 611.890625,
+            "y": 250.1875,
+            "width": 281.109375,
+            "height": 74.78125,
+            "right": 893,
+            "bottom": 324.96875
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "auto",
+              "overflowY": "auto",
+              "box": {
+                "x": 587.890625,
+                "y": 130.1875,
+                "width": 329.109375,
+                "height": 455.421875,
+                "right": 917,
+                "bottom": 585.609375
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 40,
+                "y": 36,
+                "width": 880,
+                "height": 648,
+                "right": 920,
+                "bottom": 684
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 12,
+                "y": 12,
+                "width": 936,
+                "height": 696,
+                "right": 948,
+                "bottom": 708
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            }
+          ],
+          "characters": 19,
+          "visibleCharacters": 19,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        },
+        {
+          "selector": "[data-testid=\"shop-owned-panel\"]",
+          "text": "보유0",
+          "box": {
+            "x": 611.890625,
+            "y": 340.96875,
+            "width": 281.109375,
+            "height": 17.390625,
+            "right": 893,
+            "bottom": 358.359375
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "auto",
+              "overflowY": "auto",
+              "box": {
+                "x": 587.890625,
+                "y": 130.1875,
+                "width": 329.109375,
+                "height": 455.421875,
+                "right": 917,
+                "bottom": 585.609375
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 40,
+                "y": 36,
+                "width": 880,
+                "height": 648,
+                "right": 920,
+                "bottom": 684
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 12,
+                "y": 12,
+                "width": 936,
+                "height": 696,
+                "right": 948,
+                "bottom": 708
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 960,
+                "height": 720,
+                "right": 960,
+                "bottom": 720
+              }
+            }
+          ],
+          "characters": 3,
+          "visibleCharacters": 3,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        }
+      ],
+      "quantityAndActions": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 509,
+          "y": 603.40625,
+          "width": 48,
+          "height": 32,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "구입",
+          "x": 765,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 833,
+          "y": 600.609375,
+          "width": 60,
+          "height": 37.59375,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    },
+    "buy-390": {
+      "detail": [
+        {
+          "selector": ".runtime-shop-detail-name",
+          "text": "포획 구슬",
+          "box": {
+            "x": 276.859375,
+            "y": 269.390625,
+            "width": 54,
+            "height": 14.390625,
+            "right": 330.859375,
+            "bottom": 283.78125
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 239.734375,
+                "y": 262.59375,
+                "width": 104.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-side",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 236.734375,
+                "y": 262.59375,
+                "width": 107.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 43,
+                "y": 208,
+                "width": 304,
+                "height": 224,
+                "right": 347,
+                "bottom": 432
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 35,
+                "y": 200,
+                "width": 320,
+                "height": 240,
+                "right": 355,
+                "bottom": 440
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            }
+          ],
+          "characters": 4,
+          "visibleCharacters": 4,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        },
+        {
+          "selector": "[data-testid=\"shop-help-line\"]",
+          "text": "약해진 몬스터를 포획하는 기본 구슬입니다.",
+          "box": {
+            "x": 245.734375,
+            "y": 290.59375,
+            "width": 92.265625,
+            "height": 39,
+            "right": 338,
+            "bottom": 329.59375
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 239.734375,
+                "y": 262.59375,
+                "width": 104.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-side",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 236.734375,
+                "y": 262.59375,
+                "width": 107.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 43,
+                "y": 208,
+                "width": 304,
+                "height": 224,
+                "right": 347,
+                "bottom": 432
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 35,
+                "y": 200,
+                "width": 320,
+                "height": 240,
+                "right": 355,
+                "bottom": 440
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            }
+          ],
+          "characters": 19,
+          "visibleCharacters": 19,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        },
+        {
+          "selector": "[data-testid=\"shop-owned-panel\"]",
+          "text": "보유0",
+          "box": {
+            "x": 275.359375,
+            "y": 333.59375,
+            "width": 33,
+            "height": 14.5,
+            "right": 308.359375,
+            "bottom": 348.09375
+          },
+          "clips": [
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-panel runtime-shop-detail-panel",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 239.734375,
+                "y": 262.59375,
+                "width": 104.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-side",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 236.734375,
+                "y": 262.59375,
+                "width": 107.265625,
+                "height": 109.90625,
+                "right": 344,
+                "bottom": 372.5
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "runtime-shop-shell runtime-shop-items-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 43,
+                "y": 208,
+                "width": 304,
+                "height": 224,
+                "right": 347,
+                "bottom": 432
+              }
+            },
+            {
+              "tag": "SECTION",
+              "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 35,
+                "y": 200,
+                "width": 320,
+                "height": 240,
+                "right": 355,
+                "bottom": 440
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "play-viewport",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            },
+            {
+              "tag": "DIV",
+              "class": "player-layout system-shell",
+              "overflowX": "hidden",
+              "overflowY": "hidden",
+              "box": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 640,
+                "right": 390,
+                "bottom": 640
+              }
+            }
+          ],
+          "characters": 3,
+          "visibleCharacters": 3,
+          "allCharactersVisible": true,
+          "failedCharacters": []
+        }
+      ],
+      "quantityAndActions": [
+        {
+          "id": "shop-quantity-input",
+          "text": "",
+          "x": 54,
+          "y": 399.5,
+          "width": 24,
+          "height": 24,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-confirm",
+          "text": "구입",
+          "x": 232,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        },
+        {
+          "id": "shop-item-cancel",
+          "text": "취소",
+          "x": 280,
+          "y": 398,
+          "width": 40,
+          "height": 27,
+          "visible": true,
+          "inViewport": true,
+          "hit": true
+        }
+      ]
+    }
+  },
+  "pass": true
+}
