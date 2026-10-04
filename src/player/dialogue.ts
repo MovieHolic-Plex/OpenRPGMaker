@@ -54,6 +54,7 @@ import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { el, clearChildren } from "@/util/dom";
+import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 
 type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
@@ -242,6 +243,8 @@ export function createDialogueUI(
   const scrim = el("div", { class: "dialogue-scrim", attrs: { "aria-hidden": "true" } });
   const overlay = el("div", { class: "dialogue-overlay" });
   applySystemWindowSkinVariable(overlay);
+  stampEmeraldSurface(overlay, store.getCurrent(), "dialogue");
+  stampEmeraldSurface(scrim, store.getCurrent(), "dialogue-scrim");
   host.append(scrim, overlay);
 
   // 퇴장 예약. 상자를 즉시 파괴하지 않고 이만큼 미뤄 두기 때문에 퇴장 연출이 재생된다.
@@ -616,7 +619,9 @@ export function createDialogueUI(
         pages = paginateDialogueSegments(segmentsAll, {
           maxWidth: balloon
             ? DIALOGUE_BALLOON_TEXT_WIDTH
-            : dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
+            : overlay.dataset.monsterStyle === "emerald" && bodyEl.clientWidth > 0
+              ? bodyEl.clientWidth
+              : dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
           measure,
           maxLines: balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl),
           fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
@@ -1424,7 +1429,8 @@ function logicalHostWidth(host: HTMLElement): number {
  * 그때만 상수로 되돌린다.
  */
 function dialogueMaxLines(bodyEl: HTMLElement): number {
-  return Math.min(DIALOGUE_VISIBLE_LINES, derivedDialogueMaxLines(bodyEl));
+  const cap = bodyEl.closest('[data-monster-style="emerald"]') ? 2 : DIALOGUE_VISIBLE_LINES;
+  return Math.min(cap, derivedDialogueMaxLines(bodyEl));
 }
 
 function derivedDialogueMaxLines(bodyEl: HTMLElement): number {
@@ -1495,6 +1501,7 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   // 하드코드 hex 유리 토큰만 쓰던 시절엔 윈도스킨을 바꿔도 메시지 창은 그대로여시
   // 전투/상점/필드 메뉴와 창이 서로 다른 색이었다. 표면은 CSS 가 변수로 소모한다.
   applySystemWindowSkinVariable(box);
+  stampEmeraldSurface(box, store.getCurrent(), "dialogue-box");
   return box;
 }
 

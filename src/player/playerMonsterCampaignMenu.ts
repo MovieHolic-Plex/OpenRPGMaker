@@ -1,4 +1,4 @@
-import { monsterMoveDescription, monsterTypeLabel } from "@/player/playerMonsterPartyModel";
+import { monsterMoveDescription, monsterMenuIconResourceId, monsterTypeLabel } from "@/player/playerMonsterPartyModel";
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from '@/player/playerStatusMenuDetailTypes';
 import { monsterCampaign, monsterJournalEntry, reconcileMonsterJournal, type MonsterCampaignDefinition } from '@/project/monsterJournal';
@@ -123,7 +123,7 @@ function dexDetail(options: StatusMenuDetailOptions, campaign: MonsterCampaignDe
         label: `${String(index + 1).padStart(3, '0')} ${receipt.seen ? record?.name ?? '???' : '???'}`,
         value: receipt.caught ? '◆ 포획' : receipt.seen ? '◇ 발견' : '—',
         description: receipt.seen ? campaign.speciesNotes[speciesId] ?? '생태 기록 보기' : '아직 만나지 못한 몬스터입니다.',
-        icon: receipt.seen && record?.graphic.monsterResourceId ? { resourceId: record.graphic.monsterResourceId, alt: record.name, testId: `campaign-dex-art-${speciesId}` } : undefined,
+        icon: receipt.seen && record?.graphic.monsterResourceId ? { resourceId: monsterMenuIconResourceId(project, record.graphic.monsterResourceId), alt: record.name, testId: `campaign-dex-art-${speciesId}` } : undefined,
         attributes: { 'data-dex-seen': String(receipt.seen), 'data-dex-caught': String(receipt.caught) },
         testId: `campaign-dex-${speciesId}`,
         onActivate: receipt.seen && options.onSelectCampaignSpecies

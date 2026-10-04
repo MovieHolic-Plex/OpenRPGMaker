@@ -23,6 +23,7 @@ import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
+import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 
 export {
   createPlayerStatusMenuSnapshot,
@@ -62,6 +63,16 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ...(skin.partyStats ? { menuSkinStats: "true" } : {}),
     },
   });
+  const emerald = stampEmeraldSurface(panel, options.project, "menu");
+  if (emerald) {
+    panel.dataset.emeraldPage = selectedCommand === "monsters"
+      ? options.monsterInstanceId ? "summary" : options.monsterView === "box" ? "box" : "party"
+      : selectedCommand === "items"
+        ? options.targetItemId ? "item-target" : options.itemActionId ? "item-context" : "bag"
+        : selectedCommand;
+    panel.dataset.bagPocket = options.inventoryView?.filter ?? "all";
+    panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
+  }
   applySystemGraphic(panel);
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
@@ -149,6 +160,11 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
   detailPanel.dataset.statusMenuCommand = selectedCommand;
+  if (emerald && selectedCommand === "items" && !options.targetItemId) {
+    detailPanel.append(el("div", { class: "emerald-bag", attrs: { role: "img", "aria-label": "가방" }, children: [
+      el("span", { class: "emerald-bag-handle" }), el("span", { class: "emerald-bag-pocket" }),
+    ] }));
+  }
   // 첫 화면이 작업 패널이 아닌 스킨(파티 퍼스트·허브·시트)은 main 모드에서 작업 패널을 그리지 않는다.
   const landingOnly = mode === "main" && skin.landing !== "work";
   if (mode === "main") {

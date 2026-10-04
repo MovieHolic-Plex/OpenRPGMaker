@@ -201,7 +201,7 @@ function renderDetailEntry(options: {
       });
   if (selected) row.classList.add("selected");
   if (entry.vitals) {
-    if (entry.face) row.append(renderDetailFace(project, entry.face, 24));
+    if (entry.face) row.append(renderDetailFace(project, entry.face, entry.attributes?.partySlot === undefined ? 24 : 48));
     row.append(el("span", { class: "status-menu-target-name", text: entry.label }));
     // 상태 줄 — 걸린 상태는 빨강, 이 아이템이 푸는 상태는 「→ 정상」 초록. 비어 있으면 「정상」.
     if (entry.vitals.stateNames) {

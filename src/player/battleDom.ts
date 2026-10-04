@@ -64,6 +64,7 @@ import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
+import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldSurfaces";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
@@ -147,6 +148,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const root = document.createElement("section");
   root.className = "battle-scene";
   root.dataset.testid = "battle-scene";
+  const emerald = stampEmeraldSurface(root, store.getCurrent(), "battle");
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
   // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 등록 스킨을 갈아입힌다.
@@ -190,7 +192,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   stage.append(root);
   options.host.append(stage);
   // Fit the 640×480 UI inside an opaque, host-sized battle surface.
-  const stageScale = bindBattleStageScale(options.host, root);
+  const stageScale = emerald
+    ? bindEmeraldBattleSurface(options.host, root)
+    : bindBattleStageScale(options.host, root);
   // 전투가 소유한 지연 콜백의 스코프를 연다 — teardown 이 남은 것을 한 번에 끊는다.
   openBattleTimerScope();
 

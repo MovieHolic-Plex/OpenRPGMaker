@@ -1,3 +1,5 @@
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
@@ -173,6 +175,7 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
       value: "",
       unavailableReason: menuItemUnavailableReason(item),
       testId: `status-menu-item-use-${itemId}`,
+      ...(isEmeraldMonsterStyle(project) ? { icon: itemEntryIcon(item), description: item.description, facts: itemFacts(project, session, item) } : {}),
       onActivate: needsTarget && options.onSelectItemTarget
         ? () => options.onSelectItemTarget?.(itemId)
         : options.onUseItem ? () => options.onUseItem?.(itemId) : undefined,
@@ -201,8 +204,11 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
       onActivate: options.onCombineItems ? () => options.onCombineItems?.(itemId, partnerId) : undefined,
     });
   }
+  if (item && isEmeraldMonsterStyle(project) && entries.length === 0) {
+    entries.push({ label: "정보", value: "", description: item.description, icon: itemEntryIcon(item), facts: itemFacts(project, session, item), onActivate: () => undefined });
+  }
   return {
-    title: `${item?.name ?? itemId} · 다른 행동`,
+    title: isEmeraldMonsterStyle(project) ? item?.name ?? itemId : `${item?.name ?? itemId} · 다른 행동`,
     entries,
     emptyLabel: "할 수 있는 행동이 없습니다",
     hint: "Enter 실행 · Esc 아이템 목록",
@@ -315,7 +321,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
-      && (itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
+      && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
     if (hasOtherActions) {
       return {
         label: item.name,
@@ -662,6 +668,20 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   ];
   const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
   if (detail) return detail;
+  if (isEmeraldMonsterStyle(options.project) && view === "party") {
+    const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index) => {
+      const raw = options.session.monsterInstances[ids[index] ?? ""];
+      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true" }, disabled: true };
+      const member = monsterUiEntry(options.project, raw);
+      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
+        testId: `status-menu-monster-${raw.instanceId}`,
+        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp) },
+        vitals: { hp: member.hp, maxHp: member.maxHp, hpAfter: member.hp, mp: 0, maxMp: 0, mpAfter: 0, stateNames: member.stateNames },
+        face: { resourceId: monsterMenuIconResourceId(options.project, member.species?.graphic.monsterResourceId), alt: member.name, testId: `status-menu-monster-art-${raw.instanceId}` },
+        onActivate: () => options.onSelectMonster?.(raw.instanceId) };
+    });
+    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
+  }
   return {
     title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",
     entries,

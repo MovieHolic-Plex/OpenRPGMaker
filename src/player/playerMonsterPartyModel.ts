@@ -1,3 +1,5 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { totalExpForLevel } from "@/project/actorModel";
 import { DEFAULT_MONSTER_EXP_CURVE, monsterBattlePartyOf, monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterMaxHp, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { restoredMovePp } from "@/project/monsterMedicine";
@@ -45,4 +47,11 @@ export function monsterBoxUnavailableReason(project: Project, session: Pick<Play
   return usesMonsterParty(project) && session.monsterParty.includes(instanceId)
     && monsterBattlePartyOf(project, session).party.length <= 1
     ? "마지막 파티 몬스터는 보관할 수 없습니다. 먼저 다른 몬스터를 파티로 데려오세요." : undefined;
+}
+
+/** Optional sibling icon resource; existing packs keep their authored front fallback. */
+export function monsterMenuIconResourceId(project: Project, frontId: string | undefined): string | undefined {
+  if (!frontId || !isEmeraldMonsterStyle(project)) return frontId;
+  const iconId = frontId.replace(/_front$/u, "_icon");
+  return iconId !== frontId && resolveAssetResourceUrl(iconId, { project }) ? iconId : frontId;
 }

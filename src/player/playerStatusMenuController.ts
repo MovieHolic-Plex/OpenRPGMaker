@@ -191,6 +191,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onLoadSlot: loadSlot,
         onSelectItemTarget: (itemId) => {
           rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
+          itemActionId = undefined;
           targetItemId = itemId;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "items"));
         },

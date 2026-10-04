@@ -1,6 +1,7 @@
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
-import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
+import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterMenuIconResourceId, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
 const readOnly = () => undefined;
@@ -22,7 +23,7 @@ export function monsterKnownMoveEntries(options: StatusMenuDetailOptions, instan
 export function monsterPartyStatusDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   return { title: "상태: 몬스터 파티", entries: monsterPartyEntries(options.project, options.session).map(entry => ({
     label: entry.name, value: `Lv.${entry.instance.level}`, description: `${entry.typeLabel} · HP ${entry.hp}/${entry.maxHp} · ${entry.stateNames.join(" · ") || "정상"}`,
-    icon: { resourceId: entry.species?.graphic.monsterResourceId, alt: entry.name, testId: `status-menu-monster-art-${entry.instance.instanceId}` },
+    icon: { resourceId: monsterMenuIconResourceId(options.project, entry.species?.graphic.monsterResourceId), alt: entry.name, testId: `status-menu-monster-art-${entry.instance.instanceId}` },
     testId: `status-menu-monster-${entry.instance.instanceId}`, onActivate: () => options.onSelectMonster?.(entry.instance.instanceId),
   })), emptyLabel: "파티 몬스터가 없습니다", hint: "Enter 현재 능력·기술 보기" };
 }
@@ -37,7 +38,7 @@ export function monsterPartySkillDetail(options: StatusMenuDetailOptions): Statu
   return { title: "몬스터 기술", entries: monsterPartyEntries(options.project, options.session).map(entry => ({
     label: entry.name, value: `Lv.${entry.instance.level}`, description: `HP ${entry.hp}/${entry.maxHp} · 기술 ${entry.instance.skillIds?.length ?? 0}개`,
     testId: `status-menu-skill-actor-${entry.instance.instanceId}`, onActivate: () => options.onSelectSkillActor?.(entry.instance.instanceId),
-    icon: { resourceId: entry.species?.graphic.monsterResourceId, alt: entry.name, testId: `status-menu-skill-monster-art-${entry.instance.instanceId}` },
+    icon: { resourceId: monsterMenuIconResourceId(options.project, entry.species?.graphic.monsterResourceId), alt: entry.name, testId: `status-menu-skill-monster-art-${entry.instance.instanceId}` },
   })), emptyLabel: "파티 몬스터가 없습니다", hint: "Enter 보유 기술·현재 PP 보기" };
 }
 
@@ -52,7 +53,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
   const target = view === "party" ? "box" : "party";
   const reason = target === "box" ? monsterBoxUnavailableReason(options.project, options.session, raw.instanceId)
     : options.session.monsterParty.length >= MONSTER_PARTY_MAX ? "파티가 가득 찼습니다" : undefined;
-  return { title: `${entry.name} · Lv.${raw.level}`, layout: "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name } : undefined,
+  return { title: `${entry.name} · Lv.${raw.level}`, layout: isEmeraldMonsterStyle(options.project) ? "campaign-summary" : "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name } : undefined,
     entries: [
       { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) },
       { label: "타입", value: entry.typeLabel, onActivate: readOnly },

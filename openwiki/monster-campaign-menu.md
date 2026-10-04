@@ -91,3 +91,7 @@ system/menu/audio/map-BGM settings. Successful system/music writes require an ac
 read and review after the last change; stale or inconsistent reviews enter the
 existing bounded repair loop. Done receipts expose remaining issues and explicitly
 keep playbackVerified:false. This does not establish native gameplay or hearing.
+
+## Emerald authored presentation
+
+See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×320 field menu, six-slot monster party, independent summary/current PP, bag/context/target geometry, icon fallback and standalone browser evidence contract. Campaign data and the existing menu controller remain the semantic owners.

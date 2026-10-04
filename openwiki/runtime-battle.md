@@ -1756,3 +1756,7 @@ Completed runtime timelines persist into bounded session reports accessible from
 
 기존 도트 연출 레코드에 `movement`, 스킬에 `battleGimmick`을 추가했다. 미리보기·실전의 순수 이동 계산,
 배우별 경로, 전투 장부와 조건 분기, 공용 기본 데이터와 편집/조수 저작은 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## Emerald authored monster profile
+
+See [Emerald runtime surfaces](emerald-runtime-surfaces.md). `meta.oprnMonsterStyle.reference=emerald` uses its own480×320 surface binder and scoped pale status/message/text-command geometry. Existing640×480 scaling, normal Pokemon fan skin, battler animation ownership and Gen1 mechanics retain their contracts.
