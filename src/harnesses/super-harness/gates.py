@@ -8,7 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[3]
 VERSION = 2
 ROLES = {'floor', 'wall', 'ceiling', 'prop', 'event-graphic', 'terrain'}
-VISUAL_CHECKS = ('north', 'east', 'south', 'west', 'interior-walls', 'era', 'materials', 'scale', 'access', 'purpose')
+VISUAL_CHECKS = ('north', 'east', 'south', 'west', 'interior-walls', 'era', 'materials', 'scale', 'access', 'purpose', 'planning')
 
 
 def read(path, default=None):
@@ -62,10 +62,145 @@ def evidence(ref, pointer=False):
     return ref
 
 
+PLAN_VERSION = 1
+PLAN_CHECKS = ('identity', 'use', 'routes', 'boundaries', 'scale', 'requirements')
+
+
+def _planning_report(folder, approved=True):
+    folder = Path(folder)
+    plan = read(folder / 'planning.json', {})
+    issues = []
+    variants = plan.get('variants') or []
+    if plan.get('version') != PLAN_VERSION or plan.get('concept') != folder.name or not variants:
+        issues.append('공간 기획과 텍스트 평면도가 없음 — 재료 조사·시공 전 기획 필요')
+    ids = set()
+    worlds = {w['id'] for w in read(ROOT / 'harness-data/super-harness/seed.json', {})['worldviews']}
+    for v in variants:
+        vid = v.get('id')
+        if not isinstance(vid, str) or not vid or vid in ids:
+            issues.append('기획 변형 id가 없거나 중복됨')
+        ids.add(vid)
+        if v.get('worldviewId') not in worlds or v.get('layout') not in ('room', 'building', 'dungeon', 'outdoor'):
+            issues.append(f'{vid}: 시대·공간 종류가 없음')
+        if v.get('spaceProfile') not in ('compact', 'open', 'corridor'):
+            issues.append(f'{vid}: 공간 밀도 목적이 없음')
+        for field in ('purpose', 'experience', 'scaleReason'):
+            if not isinstance(v.get(field), str) or not v[field].strip():
+                issues.append(f'{vid}: {field} 기획 근거 없음')
+        reqs = v.get('requirements') or []
+        req_ids = {r['id'] for r in reqs}
+        if not reqs or len(req_ids) != len(reqs) or any(not r['id'] or not r.get('what') or r.get('role') not in ROLES for r in reqs):
+            issues.append(f'{vid}: 필수 재료 목록 누락/중복')
+        roles = {r.get('role') for r in reqs}
+        if not roles.intersection({'prop', 'terrain'}) or (v.get('layout') != 'outdoor' and not {'floor', 'wall', 'ceiling'} <= roles):
+            issues.append(f'{vid}: 공간 핵심 재료 또는 실내 바닥·벽·천장 기획 누락')
+        zones = v.get('zones') or []
+        symbols = {z['symbol'] for z in zones}
+        if not zones or len(symbols) != len(zones):
+            issues.append(f'{vid}: 구역 범례 누락/중복')
+        for z in zones:
+            symbol = z['symbol']
+            if not isinstance(symbol, str) or len(symbol) != 1 or symbol not in 'ABCDFGHIJKLMNOPQRSTUVWYZ':
+                issues.append(f'{vid}: 구역은 E/X를 제외한 대문자 한 글자')
+            if not z.get('name') or not z.get('purpose') or not set(z.get('requirements', [])) <= req_ids:
+                issues.append(f'{vid}/{symbol}: 구역 용도 또는 재료 연결 오류')
+        rows = v.get('diagram') or []
+        if not (3 <= len(rows) <= 80 and all(isinstance(r, str) for r in rows) and
+                3 <= len(rows[0]) <= 80 and len({len(r) for r in rows}) == 1):
+            issues.append(f'{vid}: 텍스트 도면은 같은 폭의 ASCII 행 3~80칸이어야 함')
+            continue
+        if type(v.get('cellScale')) is not int or not 1 <= v['cellScale'] <= 8:
+            issues.append(f'{vid}: 도면 한 칸의 실제 타일 축척(1~8)이 없음')
+        allowed = symbols | set('#.+EX')
+        if any(ch not in allowed for row in rows for ch in row) or not symbols <= set(''.join(rows)):
+            issues.append(f'{vid}: 도면과 구역 범례가 다름')
+        h, w = len(rows), len(rows[0])
+        walkable = {(x, y) for y, row in enumerate(rows) for x, ch in enumerate(row) if ch != '#'}
+        entries = [(x, y) for x, y in walkable if rows[y][x] == 'E']
+        if len(entries) != 1:
+            issues.append(f'{vid}: 진입점 E가 정확히 하나 필요함')
+            continue
+        for x, y in walkable:
+            if (x in (0, w - 1) or y in (0, h - 1)) and rows[y][x] not in 'EX':
+                issues.append(f'{vid}: 외곽 ({x},{y})가 벽/선언된 출입구가 아님')
+        reached, pending = {entries[0]}, [entries[0]]
+        while pending:
+            x, y = pending.pop()
+            for cell in ((x-1,y), (x+1,y), (x,y-1), (x,y+1)):
+                if cell in walkable and cell not in reached:
+                    reached.add(cell)
+                    pending.append(cell)
+        if reached != walkable:
+            issues.append(f'{vid}: 입구에서 닿지 않는 도면 칸 {len(walkable - reached)}개')
+        routes = v.get('routes') or []
+        if not routes or any(not r.get('name') or not r.get('purpose') or len(r.get('via', [])) < 2 or
+                             not set(r['via']) <= symbols | (set(''.join(rows)) & set('EX')) for r in routes):
+            issues.append(f'{vid}: 범례와 연결된 사용 동선이 없음')
+    fp = fingerprint({'version': PLAN_VERSION, 'plan': plan})
+    if approved and not issues:
+        for label in ('A', 'B'):
+            review = read(folder / 'planning-reviews' / f'{label}.json', {})
+            if review.get('verdict') != 'PASS' or review.get('fingerprint') != fp:
+                issues.append(f'기획 {label}: 현재 도면의 독립 적대적 검수 PASS가 없음')
+            checked = {v['id']: v for v in review.get('variants', [])}
+            if set(checked) != ids or len(checked) != len(review.get('variants', [])):
+                issues.append(f'기획 {label}: 검수하지 않은 변형이 있음')
+            for vid in ids:
+                checks = checked.get(vid, {}).get('checks', {})
+                for key in PLAN_CHECKS:
+                    check = checks.get(key, {})
+                    if check.get('verdict') != 'PASS' or not isinstance(check.get('evidence'), str) or not check['evidence'].strip():
+                        issues.append(f'기획 {label}/{vid}: {key} 검수 근거 없음 또는 실패')
+    return {'ok': not issues, 'problems': issues, 'fingerprint': fp, 'variants': variants}
+
+
+def planning_report(folder, approved=True):
+    try:
+        return _planning_report(folder, approved)
+    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+        return {'ok': False, 'problems': [f'기획 근거 형식 오류: {error}'], 'fingerprint': '', 'variants': []}
+
+
+def _planning_markdown(folder):
+    plan = read(Path(folder) / 'planning.json', {})
+    if not isinstance(plan, dict) or not plan.get('variants'):
+        return '## 공간 기획\n\n아직 작성되지 않았습니다. 기획과 텍스트 도면을 검수한 뒤 재료를 조사합니다.\n'
+    report = planning_report(folder)
+    lines = ['## 공간 기획·텍스트 도면', '', '**기획 승인** ' + ('A/B 통과' if report['ok'] else '미승인 — 작성/수정/검수 필요'), '']
+    for v in plan.get('variants', []):
+        lines += [f'### {v.get("title") or v.get("id")}', '', f'**용도** {v.get("purpose", "")}', '',
+                  f'**경험·활동** {v.get("experience", "")}', '', f'**축척** 도면 1칸 ≈ {v.get("cellScale", "?")}타일. {v.get("scaleReason", "")}', '',
+                  '```text', *v.get('diagram', []), '```', '', '`#` 벽/구역 밖 · `.` 통로 · `+` 문 · `E` 진입 · `X` 외부 출구. 좌표는 왼쪽 위 (0,0).', '']
+        lines += [f'- **{z["symbol"]} — {z.get("name", "")}**: {z.get("purpose", "")}' for z in v.get('zones', [])] + ['']
+        lines += [f'- **{r.get("name", "")}**: {" → ".join(r.get("via", []))} — {r.get("purpose", "")}' for r in v.get('routes', [])] + ['']
+        lines += ['**필수 재료**', ''] + [f'- {r.get("what", "")}' for r in v.get('requirements', [])] + ['']
+    for label in ('A', 'B'):
+        r = read(Path(folder) / 'planning-reviews' / f'{label}.json', {})
+        current = r.get('fingerprint') == report['fingerprint']
+        lines += [f'### 기획 검수 {label} — {r.get("verdict", "대기")}' + ('' if current or not r else ' (이전 기획 판정)'), '']
+        lines += [f'- {reason}' for reason in r.get('reasons', [])] + ['']
+        for v in r.get('variants', []):
+            lines += [f'- **{v.get("id")} / {key} / {c.get("verdict")}**: {c.get("evidence", "")}' for key, c in v.get('checks', {}).items()] + ['']
+    return '\n'.join(lines)
+
+
+def planning_markdown(folder):
+    try:
+        return _planning_markdown(folder)
+    except (OSError, ValueError, TypeError, AttributeError, KeyError):
+        return '## 공간 기획\n\n기획 문서 형식에 오류가 있습니다. 승인할 수 없으며 수정이 필요합니다.\n'
+
+
 def _material_report(folder, approved=True):
     folder = Path(folder)
     plan = read(folder / 'materials.json', {})
-    issues, missing, images, requirements = [], [], [], []
+    planning = planning_report(folder)
+    issues, missing, images, requirements = list(planning['problems']), [], [], []
+    if plan.get('planningFingerprint') != planning['fingerprint']:
+        issues.append('승인 기획 이후 재료 조사서가 갱신되지 않음')
+    planned = {v['id']: v for v in planning['variants']}
+    if set(planned) != {v['id'] for v in plan.get('variants', [])}:
+        issues.append('기획과 재료 조사서의 변형 목록이 다름')
     worlds = {w['id']: w for w in read(ROOT / 'harness-data/super-harness/seed.json', {}).get('worldviews', [])}
     variants = plan.get('variants') or []
     if plan.get('version') != VERSION or plan.get('concept') != folder.name or not variants:
@@ -76,6 +211,13 @@ def _material_report(folder, approved=True):
         if not vid or vid in variant_ids:
             issues.append('변형 id가 없거나 중복됨')
         variant_ids.add(vid)
+        pv = planned.get(vid, {})
+        if any(v.get(k) != pv.get(k) for k in ('worldviewId', 'layout', 'spaceProfile')):
+            issues.append(f'{vid}: 승인 기획의 시대·공간 종류 변경 금지')
+        actual = {r['id']: r for r in v.get('requirements', [])}
+        for req in pv.get('requirements', []):
+            if any(actual.get(req['id'], {}).get(k) != req.get(k) for k in ('role', 'what')):
+                issues.append(f'{vid}/{req["id"]}: 기획의 필수 재료가 삭제/변경됨')
         if world not in worlds or v.get('tilesetId') not in worlds.get(world, {}).get('native', []):
             issues.append(f'{vid}: 시대에 맞는 공용 칩셋이 없음 — 다른 시대의 바닥·벽도 대용 금지')
         if not isinstance(v.get('purpose'), str) or not v['purpose'].strip():
@@ -128,7 +270,7 @@ def _material_report(folder, approved=True):
         if {fingerprint(r) for r in review.get('images', [])} != {fingerprint(r) for r in images}:
             issues.append('독립 검수의 실제 칩 이미지 근거가 부족함')
     return {'ok': not issues, 'problems': issues, 'missing': missing, 'fingerprint': fp,
-            'requirements': requirements, 'images': images, 'variants': variants}
+            'requirements': requirements, 'images': images, 'variants': variants, 'planningFingerprint': planning['fingerprint']}
 
 
 def material_report(folder, approved=True):
@@ -187,6 +329,8 @@ def _visual_report(folder, reviews):
         for quadrant in ('nw', 'ne', 'sw', 'se'):
             if f'visual/{Path(original).stem}-{quadrant}.png' not in paths:
                 issues.append('네 구역 확대 그림이 부족함')
+    if read(folder / 'card.json', {}).get('planningFingerprint') != planning_report(folder)['fingerprint']:
+        issues.append('예제 카드가 현재 승인 기획에 묶이지 않음')
     if not check.get('ok'):
         issues.append('예제 기계 검사 미통과')
     try:
@@ -232,8 +376,9 @@ def visual_report(folder, reviews):
 
 
 if __name__ == '__main__':
-    result = material_report(sys.argv[2], approved='--draft' not in sys.argv) if sys.argv[1] == 'materials' else None
+    command = {'materials': material_report, 'planning': planning_report}.get(sys.argv[1])
+    result = command(sys.argv[2], approved='--draft' not in sys.argv) if command else None
     if result is None:
-        raise SystemExit('usage: gates.py materials <concept folder> [--draft]')
+        raise SystemExit('usage: gates.py planning|materials <concept folder> [--draft]')
     print(json.dumps(result, ensure_ascii=False))
     sys.exit(0 if result['ok'] else 1)

@@ -35,9 +35,9 @@ if (gate.status !== 0) {
 }
 type MaterialVariant = { id: string; worldviewId: string; tilesetId: string; spaceProfile: string; layout: string;
   requirements: { bindings?: { tool: string; field: string; id: string }[] }[] };
-const readiness = JSON.parse(gate.stdout) as { variants: MaterialVariant[] };
+const readiness = JSON.parse(gate.stdout) as { variants: MaterialVariant[]; planningFingerprint: string };
 const materials = new Map(readiness.variants.map(v => [v.id, v]));
-if (card.needsArt || card.variants.length !== materials.size || card.variants.some(v => {
+if ((card as ConceptCard & { planningFingerprint?: string }).planningFingerprint !== readiness.planningFingerprint || card.needsArt || card.variants.length !== materials.size || card.variants.some(v => {
   const approved = materials.get(v.id);
   return !approved || approved.tilesetId !== v.tilesetId || approved.worldviewId !== v.worldviewId || approved.layout !== v.layout;
 })) {

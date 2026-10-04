@@ -1,3 +1,11 @@
+# 승인된 기획을 재료로 연결
+
+`{{CDIR}}/planning.json`과 `planning-reviews/A.json`, `B.json`을 먼저 읽는다.
+`python3 {{ROOT}}/src/harnesses/super-harness/gates.py planning {{CDIR}}`의 ok가 true여야 조사한다.
+반환 fingerprint를 materials.json의 planningFingerprint에 넣는다.
+기획의 모든 변형 id/worldviewId/layout/spaceProfile을 유지하고, requirements의 id/role/what을 하나도 빼거나 변경하지 않는다.
+구역·동선에 맞춰 필요한 재료를 추가할 수 있다. 기획 자체를 바꿔야 하면 결과를 위조하지 말고 사유를 남겨 반려한다.
+
 # 맵을 짓기 전 재료 조사
 
 대상: {{CONCEPT}}

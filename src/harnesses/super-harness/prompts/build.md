@@ -1,3 +1,11 @@
+# 승인된 공간 기획을 시공
+
+`{{CDIR}}/planning.json`의 텍스트 도면·구역·동선·축척과 A/B 판정을 먼저 읽는다.
+materials.json의 planningFingerprint를 card.json의 planningFingerprint에 그대로 기록한다.
+예제는 기획의 구역 연결·필수 기능·주 동선을 구현해야 한다. 임의로 방·목표·퀘스트를 바꾸지 않는다.
+도면 한 칸은 cellScale타일의 약식 계획이다. 벽면 높이/가구 footprint 때문에 필요한 조정은 card.structure에 도면 좌표와 이유를 남긴다.
+기획을 바꿔야 할 수준이면 재료/기획 재검수가 필요하다고 사유를 적고 중단한다.
+
 # 필수 선행 관문
 
 `{{CDIR}}/materials.json`과 `material-review.json`의 현재 PASS가 있어야만 맵을 만든다.
