@@ -1,0 +1,49 @@
+{
+  "author": "GPT 6.1 sol high classes worker; original class parameters and Korean design",
+  "dataSource": {
+    "name": "prototype-database.json",
+    "sha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
+    "access": "read-only"
+  },
+  "fixedContract": {
+    "CONTRACT.md": "264047073af4aa0bd34c4f66e30da1f27249a6442a157eb90aefd6b83e98c5d8",
+    "ids.json": "efc3c4593777a4bc6b4f594f89a6d3b2a451064525b83dca346349ddf2c520a9"
+  },
+  "sourceArt": {
+    "path": "public/assets/easyrpg/charset/Actor1.png",
+    "sha256": "f20c4fffc707332d5766c816fa3a270d6b0d813c6d95e0a85466ac9d7f2a08be",
+    "authors": [
+      "Marina Navarro Travesset (base)",
+      "VictorSena (edit)"
+    ],
+    "license": "CC BY 4.0",
+    "upstreamCommit": "993d88cbc78c658d348bbfa74a3b424d393d27e5",
+    "newActorSprite": false
+  },
+  "artOperation": {
+    "actor1-reference.png": "Native 288x256 source pixels; source top-left transparency key becomes alpha=0, all foreground RGB unchanged.",
+    "classes-preview.png": "Original parameter comparison layout; crop one native 24x32 Actor1 frame, nearest-neighbor enlargement only; source transparency key becomes alpha=0, no recoloring/redrawing."
+  },
+  "generatedFiles": {
+    "data.json": {
+      "sha256": "d648b10a84d827e4b61df87f22560c9b96823f8d9f52b20abebeddb358a8d137",
+      "bytes": 53642
+    },
+    "design.json": {
+      "sha256": "c9af2c684ffa4e7721bcce7ce68155db70e3243b33b9738fea4cf6677aa3e2c0",
+      "bytes": 28797
+    },
+    "actor1-reference.png": {
+      "sha256": "3aee906cc62ee2ea44b8303becb7b2344dc2e780c266d3b9722c042853a2cb43",
+      "bytes": 47473
+    },
+    "classes-preview.png": {
+      "sha256": "bb48952a1d155bfdb1d48989a4ab79b774a2f49619fc430963c78382125b0ac3",
+      "bytes": 111911
+    }
+  },
+  "generator": {
+    "path": "content-packs/joseon-folklore/classes/build.py",
+    "sha256": "144d2458505ab7cb68509f9e3e98e3e552f8c1a4df3d08649055ea02393caad6"
+  }
+}

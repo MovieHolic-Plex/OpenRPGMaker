@@ -1,0 +1,1042 @@
+{
+  "packId": "joseon-folklore",
+  "phase": "pilot",
+  "engine": {
+    "battleModel": "rm2k3",
+    "skin": "retro2003",
+    "mpLabel": "기력",
+    "resource2": false
+  },
+  "scope": "초보+네 직업 레코드. 클래스 성장 1~20과 24개 예약 기술 연결. 실제 등록·배우/이벤트 교체·정본 저장은 감독자 통합 단계.",
+  "roles": [
+    {
+      "role": "novice",
+      "classId": "class_jf_novice",
+      "name": "초보",
+      "purpose": "직업 선택 전의 균형형. 기본 공격과 물품으로 익힌다.",
+      "levelOne": {
+        "maxHp": 120,
+        "maxMp": 36,
+        "attack": 30,
+        "defense": 18,
+        "mind": 28,
+        "agility": 28
+      },
+      "gainPerLevel": {
+        "maxHp": 14,
+        "maxMp": 3,
+        "attack": 3,
+        "defense": 2,
+        "mind": 3,
+        "agility": 2
+      },
+      "levelTwenty": {
+        "maxHp": 386,
+        "maxMp": 93,
+        "attack": 87,
+        "defense": 56,
+        "mind": 85,
+        "agility": 66
+      },
+      "snapshots": [
+        {
+          "level": 1,
+          "maxHp": 120,
+          "maxMp": 36,
+          "attack": 30,
+          "defense": 18,
+          "mind": 28,
+          "agility": 28
+        },
+        {
+          "level": 3,
+          "maxHp": 148,
+          "maxMp": 42,
+          "attack": 36,
+          "defense": 22,
+          "mind": 34,
+          "agility": 32
+        },
+        {
+          "level": 5,
+          "maxHp": 176,
+          "maxMp": 48,
+          "attack": 42,
+          "defense": 26,
+          "mind": 40,
+          "agility": 36
+        },
+        {
+          "level": 8,
+          "maxHp": 218,
+          "maxMp": 57,
+          "attack": 51,
+          "defense": 32,
+          "mind": 49,
+          "agility": 42
+        },
+        {
+          "level": 12,
+          "maxHp": 274,
+          "maxMp": 69,
+          "attack": 63,
+          "defense": 40,
+          "mind": 61,
+          "agility": 50
+        },
+        {
+          "level": 16,
+          "maxHp": 330,
+          "maxMp": 81,
+          "attack": 75,
+          "defense": 48,
+          "mind": 73,
+          "agility": 58
+        },
+        {
+          "level": 20,
+          "maxHp": 386,
+          "maxMp": 93,
+          "attack": 87,
+          "defense": 56,
+          "mind": 85,
+          "agility": 66
+        }
+      ],
+      "learning": [
+        {
+          "level": 1,
+          "skillId": "skill_attack",
+          "definitionOwner": "existing-engine",
+          "pilotDefinitionExpected": true
+        }
+      ],
+      "starterEquipmentIds": [],
+      "futureEquipmentIdPattern": null,
+      "equipmentRecommendationLevels": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "traits": {
+        "dualWield": false,
+        "mightyGuard": false,
+        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+      }
+    },
+    {
+      "role": "warrior",
+      "classId": "class_jf_warrior",
+      "name": "전사",
+      "purpose": "체력과 방어가 높은 근접 물리 공격수. 단일 공격에서 보호 역할로 성장한다.",
+      "levelOne": {
+        "maxHp": 148,
+        "maxMp": 24,
+        "attack": 34,
+        "defense": 24,
+        "mind": 18,
+        "agility": 22
+      },
+      "gainPerLevel": {
+        "maxHp": 18,
+        "maxMp": 2,
+        "attack": 4,
+        "defense": 3,
+        "mind": 2,
+        "agility": 2
+      },
+      "levelTwenty": {
+        "maxHp": 490,
+        "maxMp": 62,
+        "attack": 110,
+        "defense": 81,
+        "mind": 56,
+        "agility": 60
+      },
+      "snapshots": [
+        {
+          "level": 1,
+          "maxHp": 148,
+          "maxMp": 24,
+          "attack": 34,
+          "defense": 24,
+          "mind": 18,
+          "agility": 22
+        },
+        {
+          "level": 3,
+          "maxHp": 184,
+          "maxMp": 28,
+          "attack": 42,
+          "defense": 30,
+          "mind": 22,
+          "agility": 26
+        },
+        {
+          "level": 5,
+          "maxHp": 220,
+          "maxMp": 32,
+          "attack": 50,
+          "defense": 36,
+          "mind": 26,
+          "agility": 30
+        },
+        {
+          "level": 8,
+          "maxHp": 274,
+          "maxMp": 38,
+          "attack": 62,
+          "defense": 45,
+          "mind": 32,
+          "agility": 36
+        },
+        {
+          "level": 12,
+          "maxHp": 346,
+          "maxMp": 46,
+          "attack": 78,
+          "defense": 57,
+          "mind": 40,
+          "agility": 44
+        },
+        {
+          "level": 16,
+          "maxHp": 418,
+          "maxMp": 54,
+          "attack": 94,
+          "defense": 69,
+          "mind": 48,
+          "agility": 52
+        },
+        {
+          "level": 20,
+          "maxHp": 490,
+          "maxMp": 62,
+          "attack": 110,
+          "defense": 81,
+          "mind": 56,
+          "agility": 60
+        }
+      ],
+      "learning": [
+        {
+          "level": 1,
+          "skillId": "skill_jf_cleaving_strike",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 3,
+          "skillId": "skill_jf_iron_breath",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 5,
+          "skillId": "skill_jf_whirlwind_cut",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 8,
+          "skillId": "skill_jf_earth_split",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 12,
+          "skillId": "skill_jf_blood_oath",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 16,
+          "skillId": "skill_jf_mountain_guard",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        }
+      ],
+      "starterEquipmentIds": [
+        "equip_jf_warrior_weapon_1",
+        "equip_jf_warrior_body_1"
+      ],
+      "futureEquipmentIdPattern": "equip_jf_warrior_<weapon|body>_<2|3|4>",
+      "equipmentRecommendationLevels": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "traits": {
+        "dualWield": false,
+        "mightyGuard": false,
+        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+      }
+    },
+    {
+      "role": "rogue",
+      "classId": "class_jf_rogue",
+      "name": "도적",
+      "purpose": "민첩이 높은 단일 물리 공격수. 낮은 방어를 독과 행동 순서로 보완한다.",
+      "levelOne": {
+        "maxHp": 116,
+        "maxMp": 28,
+        "attack": 30,
+        "defense": 17,
+        "mind": 20,
+        "agility": 36
+      },
+      "gainPerLevel": {
+        "maxHp": 15,
+        "maxMp": 3,
+        "attack": 4,
+        "defense": 2,
+        "mind": 2,
+        "agility": 3
+      },
+      "levelTwenty": {
+        "maxHp": 401,
+        "maxMp": 85,
+        "attack": 106,
+        "defense": 55,
+        "mind": 58,
+        "agility": 93
+      },
+      "snapshots": [
+        {
+          "level": 1,
+          "maxHp": 116,
+          "maxMp": 28,
+          "attack": 30,
+          "defense": 17,
+          "mind": 20,
+          "agility": 36
+        },
+        {
+          "level": 3,
+          "maxHp": 146,
+          "maxMp": 34,
+          "attack": 38,
+          "defense": 21,
+          "mind": 24,
+          "agility": 42
+        },
+        {
+          "level": 5,
+          "maxHp": 176,
+          "maxMp": 40,
+          "attack": 46,
+          "defense": 25,
+          "mind": 28,
+          "agility": 48
+        },
+        {
+          "level": 8,
+          "maxHp": 221,
+          "maxMp": 49,
+          "attack": 58,
+          "defense": 31,
+          "mind": 34,
+          "agility": 57
+        },
+        {
+          "level": 12,
+          "maxHp": 281,
+          "maxMp": 61,
+          "attack": 74,
+          "defense": 39,
+          "mind": 42,
+          "agility": 69
+        },
+        {
+          "level": 16,
+          "maxHp": 341,
+          "maxMp": 73,
+          "attack": 90,
+          "defense": 47,
+          "mind": 50,
+          "agility": 81
+        },
+        {
+          "level": 20,
+          "maxHp": 401,
+          "maxMp": 85,
+          "attack": 106,
+          "defense": 55,
+          "mind": 58,
+          "agility": 93
+        }
+      ],
+      "learning": [
+        {
+          "level": 1,
+          "skillId": "skill_jf_double_stab",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 3,
+          "skillId": "skill_jf_venom_edge",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 5,
+          "skillId": "skill_jf_shadow_step",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 8,
+          "skillId": "skill_jf_heart_pierce",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 12,
+          "skillId": "skill_jf_smoke_screen",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 16,
+          "skillId": "skill_jf_moon_slash",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        }
+      ],
+      "starterEquipmentIds": [
+        "equip_jf_rogue_weapon_1",
+        "equip_jf_rogue_body_1"
+      ],
+      "futureEquipmentIdPattern": "equip_jf_rogue_<weapon|body>_<2|3|4>",
+      "equipmentRecommendationLevels": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "traits": {
+        "dualWield": false,
+        "mightyGuard": false,
+        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+      }
+    },
+    {
+      "role": "shaman",
+      "classId": "class_jf_shaman",
+      "name": "주술사",
+      "purpose": "정신과 기력이 높은 공격 주문 사용자. 불과 냉기에서 광역과 봉인으로 성장한다.",
+      "levelOne": {
+        "maxHp": 104,
+        "maxMp": 42,
+        "attack": 18,
+        "defense": 14,
+        "mind": 36,
+        "agility": 24
+      },
+      "gainPerLevel": {
+        "maxHp": 13,
+        "maxMp": 5,
+        "attack": 2,
+        "defense": 2,
+        "mind": 4,
+        "agility": 2
+      },
+      "levelTwenty": {
+        "maxHp": 351,
+        "maxMp": 137,
+        "attack": 56,
+        "defense": 52,
+        "mind": 112,
+        "agility": 62
+      },
+      "snapshots": [
+        {
+          "level": 1,
+          "maxHp": 104,
+          "maxMp": 42,
+          "attack": 18,
+          "defense": 14,
+          "mind": 36,
+          "agility": 24
+        },
+        {
+          "level": 3,
+          "maxHp": 130,
+          "maxMp": 52,
+          "attack": 22,
+          "defense": 18,
+          "mind": 44,
+          "agility": 28
+        },
+        {
+          "level": 5,
+          "maxHp": 156,
+          "maxMp": 62,
+          "attack": 26,
+          "defense": 22,
+          "mind": 52,
+          "agility": 32
+        },
+        {
+          "level": 8,
+          "maxHp": 195,
+          "maxMp": 77,
+          "attack": 32,
+          "defense": 28,
+          "mind": 64,
+          "agility": 38
+        },
+        {
+          "level": 12,
+          "maxHp": 247,
+          "maxMp": 97,
+          "attack": 40,
+          "defense": 36,
+          "mind": 80,
+          "agility": 46
+        },
+        {
+          "level": 16,
+          "maxHp": 299,
+          "maxMp": 117,
+          "attack": 48,
+          "defense": 44,
+          "mind": 96,
+          "agility": 54
+        },
+        {
+          "level": 20,
+          "maxHp": 351,
+          "maxMp": 137,
+          "attack": 56,
+          "defense": 52,
+          "mind": 112,
+          "agility": 62
+        }
+      ],
+      "learning": [
+        {
+          "level": 1,
+          "skillId": "skill_jf_ember_charm",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 3,
+          "skillId": "skill_jf_frost_charm",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 5,
+          "skillId": "skill_jf_thunder_charm",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 8,
+          "skillId": "skill_jf_spirit_drain",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 12,
+          "skillId": "skill_jf_ghost_seal",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 16,
+          "skillId": "skill_jf_heaven_fire",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        }
+      ],
+      "starterEquipmentIds": [
+        "equip_jf_shaman_weapon_1",
+        "equip_jf_shaman_body_1"
+      ],
+      "futureEquipmentIdPattern": "equip_jf_shaman_<weapon|body>_<2|3|4>",
+      "equipmentRecommendationLevels": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "traits": {
+        "dualWield": false,
+        "mightyGuard": false,
+        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+      }
+    },
+    {
+      "role": "taoist",
+      "classId": "class_jf_taoist",
+      "name": "도사",
+      "purpose": "치유와 정화 담당. 중간 체력과 방어로 아군 회복을 이어 간다.",
+      "levelOne": {
+        "maxHp": 124,
+        "maxMp": 40,
+        "attack": 20,
+        "defense": 20,
+        "mind": 32,
+        "agility": 22
+      },
+      "gainPerLevel": {
+        "maxHp": 16,
+        "maxMp": 5,
+        "attack": 2,
+        "defense": 3,
+        "mind": 4,
+        "agility": 2
+      },
+      "levelTwenty": {
+        "maxHp": 428,
+        "maxMp": 135,
+        "attack": 58,
+        "defense": 77,
+        "mind": 108,
+        "agility": 60
+      },
+      "snapshots": [
+        {
+          "level": 1,
+          "maxHp": 124,
+          "maxMp": 40,
+          "attack": 20,
+          "defense": 20,
+          "mind": 32,
+          "agility": 22
+        },
+        {
+          "level": 3,
+          "maxHp": 156,
+          "maxMp": 50,
+          "attack": 24,
+          "defense": 26,
+          "mind": 40,
+          "agility": 26
+        },
+        {
+          "level": 5,
+          "maxHp": 188,
+          "maxMp": 60,
+          "attack": 28,
+          "defense": 32,
+          "mind": 48,
+          "agility": 30
+        },
+        {
+          "level": 8,
+          "maxHp": 236,
+          "maxMp": 75,
+          "attack": 34,
+          "defense": 41,
+          "mind": 60,
+          "agility": 36
+        },
+        {
+          "level": 12,
+          "maxHp": 300,
+          "maxMp": 95,
+          "attack": 42,
+          "defense": 53,
+          "mind": 76,
+          "agility": 44
+        },
+        {
+          "level": 16,
+          "maxHp": 364,
+          "maxMp": 115,
+          "attack": 50,
+          "defense": 65,
+          "mind": 92,
+          "agility": 52
+        },
+        {
+          "level": 20,
+          "maxHp": 428,
+          "maxMp": 135,
+          "attack": 58,
+          "defense": 77,
+          "mind": 108,
+          "agility": 60
+        }
+      ],
+      "learning": [
+        {
+          "level": 1,
+          "skillId": "skill_jf_life_water",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 3,
+          "skillId": "skill_jf_purify",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": true
+        },
+        {
+          "level": 5,
+          "skillId": "skill_jf_protective_talisman",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 8,
+          "skillId": "skill_jf_revive",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 12,
+          "skillId": "skill_jf_spring_rain",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        },
+        {
+          "level": 16,
+          "skillId": "skill_jf_heaven_blessing",
+          "definitionOwner": "skills",
+          "pilotDefinitionExpected": false
+        }
+      ],
+      "starterEquipmentIds": [
+        "equip_jf_taoist_weapon_1",
+        "equip_jf_taoist_body_1"
+      ],
+      "futureEquipmentIdPattern": "equip_jf_taoist_<weapon|body>_<2|3|4>",
+      "equipmentRecommendationLevels": [
+        1,
+        5,
+        10,
+        15
+      ],
+      "traits": {
+        "dualWield": false,
+        "mightyGuard": false,
+        "reason": "첫 샘플 역할 차이는 성장곡선에서 만든다. 모든 직업 쌍수·자동전투·장비고정·강화방어 옵션은 false."
+      }
+    }
+  ],
+  "balance": {
+    "curveRule": "L1 + (min(level,20)-1) × gainPerLevel; 99개 정수 배열. Lv21~99는 Lv20 반복으로 정규화 폴백을 방지하며 게임 범위가 아니다.",
+    "actorMaxLevel": 20,
+    "classHasMaxLevelField": false,
+    "experienceCurve": {
+      "base": 15,
+      "extra": 25,
+      "acceleration": 5
+    },
+    "experienceOwnership": "computeActorLevelUp는 class.expCurve 대신 actor.expCurve를 소비한다. 공통 EXP를 모든 배우에 복사해야 한다.",
+    "experienceThresholds": [
+      {
+        "level": 1,
+        "totalExp": 0
+      },
+      {
+        "level": 2,
+        "totalExp": 40
+      },
+      {
+        "level": 3,
+        "totalExp": 106
+      },
+      {
+        "level": 4,
+        "totalExp": 198
+      },
+      {
+        "level": 5,
+        "totalExp": 315
+      },
+      {
+        "level": 6,
+        "totalExp": 456
+      },
+      {
+        "level": 7,
+        "totalExp": 621
+      },
+      {
+        "level": 8,
+        "totalExp": 810
+      },
+      {
+        "level": 9,
+        "totalExp": 1022
+      },
+      {
+        "level": 10,
+        "totalExp": 1257
+      },
+      {
+        "level": 11,
+        "totalExp": 1515
+      },
+      {
+        "level": 12,
+        "totalExp": 1796
+      },
+      {
+        "level": 13,
+        "totalExp": 2099
+      },
+      {
+        "level": 14,
+        "totalExp": 2425
+      },
+      {
+        "level": 15,
+        "totalExp": 2773
+      },
+      {
+        "level": 16,
+        "totalExp": 3144
+      },
+      {
+        "level": 17,
+        "totalExp": 3537
+      },
+      {
+        "level": 18,
+        "totalExp": 3952
+      },
+      {
+        "level": 19,
+        "totalExp": 4389
+      },
+      {
+        "level": 20,
+        "totalExp": 4847
+      }
+    ],
+    "prototypeHeroCurveMatchesNovice": false,
+    "damageRule": "RM2003 native: power+floor(sourceStat/2), 분산·속성·치명 적용 후 floor(target.defense/2) 차감. 마법도 defense로 차감한다. 하한은 방어 전 피해의 12.5%.",
+    "healingRule": "power+floor(mind/2), 분산 적용. 회복 power와 실제 회복량을 동일하다고 쓰지 않는다.",
+    "assumptions": {
+      "row": "front",
+      "elementMultiplier": 1,
+      "variance": 0,
+      "criticalRate": 0,
+      "ordinaryEnemyHp": [
+        60,
+        150
+      ],
+      "earlyBossHp": [
+        500,
+        800
+      ]
+    },
+    "levelOneUnequippedBenchmark": {
+      "enemy": {
+        "attack": 30,
+        "defense": 12,
+        "normalAttackPower": 10
+      },
+      "basicAttackDamage": {
+        "class_jf_novice": 19,
+        "class_jf_warrior": 21,
+        "class_jf_rogue": 19,
+        "class_jf_shaman": 13,
+        "class_jf_taoist": 14
+      },
+      "incomingNormalAttackDamage": {
+        "class_jf_novice": 16,
+        "class_jf_warrior": 13,
+        "class_jf_rogue": 17,
+        "class_jf_shaman": 18,
+        "class_jf_taoist": 15
+      },
+      "warning": "미장비·무상성 기준 설명용 수치다. 장비·skills·monsters 팩 실제 레코드 결합 후 최종 밸런스 확인이 필요하다."
+    },
+    "earlyMpCastsAtFullBar": {
+      "warriorAtCost3to7": [
+        3,
+        8
+      ],
+      "rogueAtCost3to7": [
+        4,
+        9
+      ],
+      "shamanAtCost5to10": [
+        4,
+        8
+      ],
+      "taoistAtCost5to9": [
+        4,
+        8
+      ]
+    },
+    "noImplicitRoleBonuses": "민첩은 명중/회피 보너스를 자동 지급하지 않는다. 도적의 회피·독, 전사의 보호, 도사의 정화는 skills 담당 실제 효과에만 의존한다.",
+    "rankRates": "예약 상태에는 직업별 내성 보너스를 발명하지 않는다. 정의되는 상태 기본 C, 다섯 계약 속성도 C로 시작한다."
+  },
+  "promotionRules": {
+    "sourceClassId": "class_jf_novice",
+    "requirements": {
+      "level": 1
+    },
+    "targets": [
+      "class_jf_warrior",
+      "class_jf_rogue",
+      "class_jf_shaman",
+      "class_jf_taoist"
+    ],
+    "advancedClasses": [],
+    "cost": {
+      "gold": 0,
+      "items": []
+    },
+    "additionalSwitchesOrVariables": [],
+    "confirmation": "선택 직업의 역할·초반 수치를 보여 주고 확정/돌아가기. 확정 때 목적지 ID를 명시한다.",
+    "commandExamples": [
+      {
+        "kind": "promoteActor",
+        "actorId": "actor_hero",
+        "toClassId": "class_jf_warrior"
+      },
+      {
+        "kind": "promoteActor",
+        "actorId": "actor_hero",
+        "toClassId": "class_jf_rogue"
+      },
+      {
+        "kind": "promoteActor",
+        "actorId": "actor_hero",
+        "toClassId": "class_jf_shaman"
+      },
+      {
+        "kind": "promoteActor",
+        "actorId": "actor_hero",
+        "toClassId": "class_jf_taoist"
+      }
+    ],
+    "cancel": "promoteActor/changeActorClass를 호출하지 않는다. 초보와 HP/MP/스킬/장비/소지품을 유지한다.",
+    "implicitTargetHazard": "toClassId를 생략하면 첫 조건 충족 경로(전사)를 선택하므로 네 선택지 모두 명시해야 한다.",
+    "permanentChoice": "네 직업에 추가 promotions가 없다. 재전직/고급직업은 첫 샘플 범위가 아니다.",
+    "vitalsOnPromotion": "레벨·경험치 유지, HP/MP 회복 없음. 새 최대치가 낮으면 현재치를 상한으로 제한한다.",
+    "skillOnPromotion": "현재 레벨까지 초보의 기본 공격을 보존하고 새 직업 습득 목록을 더한다. 이전 직업의 미래 기술은 배우지 않는다."
+  },
+  "jobExperience": {
+    "availability": "초보 Lv1에서 네 역할 설명과 수치 비교를 무료로 볼 수 있다. 실제 NPC 체험 메뉴/전투 연결은 감독자가 저작한다.",
+    "previewOnly": "체험은 원본 세션에 임시 전직하지 않는다. changeActorClass는 습득 기술을 영구 보존하므로 왕복 전직은 취소가 아니다.",
+    "isolatedTrialRecipe": [
+      "프로젝트와 세션을 깊은 복제한다.",
+      "복제한 하람에 promoteActor(..., 명시한 target)를 1회 적용한다.",
+      "해당 직업 초급 무기/의복을 복제 인벤토리에서 지급·장착하고 현재 HP/MP를 새 최대치로 채운다. 체험 전용 보급이다.",
+      "skills 첫 기술과 공격·방어·물품을 1회씩 시험한다. 도사는 다친 연두를 복제한 훈련 동료로 함께 둔다.",
+      "체험 종료/취소 시 복제본을 버린다. 원본 진행을 저장하거나 수입하지 않는다.",
+      "원본에 돌아와 직업 확정 때만 promoteActor를 호출한다."
+    ],
+    "persistence": "클래스 담당은 체험 이벤트나 실제 저장 서비스를 수정하지 않는다."
+  },
+  "integration": {
+    "owner": "supervisor",
+    "projectWritesByThisWorker": false,
+    "currentHero": {
+      "actorId": "actor_hero",
+      "name": "하람",
+      "classId": "class_jb_novice",
+      "characterResourceId": "easyrpg-charset-actor1",
+      "characterIndex": 0
+    },
+    "actorChangesRequired": [
+      {
+        "actorId": "actor_hero",
+        "classId": "class_jf_novice",
+        "initialLevel": 1,
+        "maxLevel": 20,
+        "parameterCurvesFromClassId": "class_jf_novice",
+        "expCurveFromClassId": "class_jf_novice",
+        "learnedSkills": [
+          {
+            "level": 1,
+            "skillId": "skill_attack"
+          }
+        ]
+      },
+      {
+        "actorId": "actor_scout",
+        "classId": "class_jf_rogue",
+        "maxLevel": 20,
+        "parameterCurvesFromClassId": "class_jf_rogue",
+        "expCurveFromClassId": "class_jf_rogue"
+      },
+      {
+        "actorId": "actor_mage",
+        "classId": "class_jf_shaman",
+        "maxLevel": 20,
+        "parameterCurvesFromClassId": "class_jf_shaman",
+        "expCurveFromClassId": "class_jf_shaman"
+      },
+      {
+        "actorId": "actor_cleric",
+        "classId": "class_jf_taoist",
+        "maxLevel": 20,
+        "parameterCurvesFromClassId": "class_jf_taoist",
+        "expCurveFromClassId": "class_jf_taoist"
+      }
+    ],
+    "initialClassCurveCaution": "classIdだけ書き換えても明示的classOverride前の能力値はactor.parameterCurvesを使う。初期固定職の仲間にも職業曲線を写す。",
+    "heroInitialEquipment": "既存装備は変更しない。新職業を選ぶと旧装備が自動解除されるとは限らない。必要なら既存装備を返却・解除してから契約初級装備を明示的に付ける。",
+    "actorBattleCommandIds": "빈 목록/생략이면 직업의 한국어 명령을 쓴다. 배우별 battleCommandIds와 전투 이벤트 명령 override는 별도로 우선하므로 감독자가 확인한다.",
+    "existingChoiceEvents": "기존 class_hero/class_scout/class_mage/class_cleric 선택 이벤트를 계약 ID로 바꾼다. data.json을 더하는 것만으로 기존 이벤트가 바뀌지는 않는다.",
+    "skillDependencies": {
+      "pilotExpected": [
+        "skill_jf_cleaving_strike",
+        "skill_jf_iron_breath",
+        "skill_jf_double_stab",
+        "skill_jf_venom_edge",
+        "skill_jf_ember_charm",
+        "skill_jf_frost_charm",
+        "skill_jf_life_water",
+        "skill_jf_purify"
+      ],
+      "reservedNotExpectedInSkillsPilot": [
+        "skill_jf_whirlwind_cut",
+        "skill_jf_earth_split",
+        "skill_jf_blood_oath",
+        "skill_jf_mountain_guard",
+        "skill_jf_shadow_step",
+        "skill_jf_heart_pierce",
+        "skill_jf_smoke_screen",
+        "skill_jf_moon_slash",
+        "skill_jf_thunder_charm",
+        "skill_jf_spirit_drain",
+        "skill_jf_ghost_seal",
+        "skill_jf_heaven_fire",
+        "skill_jf_protective_talisman",
+        "skill_jf_revive",
+        "skill_jf_spring_rain",
+        "skill_jf_heaven_blessing"
+      ]
+    },
+    "equipmentDependencies": [
+      "equip_jf_warrior_weapon_1",
+      "equip_jf_warrior_body_1",
+      "equip_jf_rogue_weapon_1",
+      "equip_jf_rogue_body_1",
+      "equip_jf_shaman_weapon_1",
+      "equip_jf_shaman_body_1",
+      "equip_jf_taoist_weapon_1",
+      "equip_jf_taoist_body_1"
+    ],
+    "equipmentIdSource": "equipment-prompt.md固定指示: equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_1。ids.json自体にはequipment一覧がない。",
+    "equipmentPermissionRule": "canEquip는 actorId/classId/장비ID의 OR다. class.equipmentPermissions.actorIds와 classIds는 빈 목록. 장비 측 equippableActorIds도 비우고 equippableClassIds는 해당 직업만 지정한다. 후속 등급은 장비 측 직업 허용으로 사용된다.",
+    "referencesBeforePlay": "24개 기술 전체 참조를 검사하는 엄격한 가져오기는 후속 16개 기술 정의를 기다려야 한다. 첫 통합에서는 레벨 5 이상 기술 사용을 완료로 취급하지 않는다. 누락 ID를 옛 기술로 대체하지 않는다."
+  },
+  "art": {
+    "purpose": "검토 근거 PNG만. ClassRecord에 그림 필드가 없어 새 sprite나 resourceId를 만들지 않는다.",
+    "characterSource": "public/assets/easyrpg/charset/Actor1.png",
+    "newCharacterSprites": 0,
+    "previewSampling": "native 24x32 원본 크롭; 확대는 nearest neighbor만"
+  },
+  "approval": {
+    "authorReview": "REVIEW.md에 실제 PNG 검토 근거를 기록한다.",
+    "userApproved": false,
+    "meaningOfReady": "첫 샘플 파일 저장·정규화·순수 전직 smoke 완료. 사용자 승인·실게임 통합·정본 저장 합격이 아니다."
+  }
+}

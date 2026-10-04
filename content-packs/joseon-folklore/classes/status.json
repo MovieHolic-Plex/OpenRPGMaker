@@ -1,0 +1,46 @@
+{
+  "phase": "pilot",
+  "ready": true,
+  "counts": {
+    "classes": 5,
+    "advancedClasses": 0,
+    "promotionEdges": 4,
+    "jobSkillLinks": 24,
+    "noviceSkillLinks": 1,
+    "equipmentPermissionLinks": 8,
+    "pngFiles": 2,
+    "newActorSprites": 0,
+    "artifactFiles": 12
+  },
+  "reviewFiles": [
+    "classes-preview.png",
+    "actor1-reference.png",
+    "REVIEW.md",
+    "smoke-proof.json",
+    "design.json",
+    "provenance.json"
+  ],
+  "authorReviewed": true,
+  "userApproved": false,
+  "liveProjectIntegrated": false,
+  "canonicalStoreSaved": false,
+  "sampleScope": "첫 classes 샘플 파일 저장·정규화·전직 smoke 완료",
+  "limits": [
+    "직업 기술 정의는 skills 담당 외부 의존성. 첫 샘플 후 레벨5이상16개는 예약 상태.",
+    "직업 체험 NPC/선택 이벤트·배우 곡선 복사·public 등록·실제 저장/재로드는 감독자 통합 단계.",
+    "최종 장비·적·기술 결합 전투 밸런스와 사용자 시각 승인은 아직 확인하지 않았다."
+  ],
+  "artifactSha256": {
+    "README.md": "5633963a9cb248fb26aa7e5be700b6c1fb8dd8801658903a6d0ab04fdf3083b6",
+    "REVIEW.md": "3811bfcdb640a44ae1f2da7f633dd2918c8423a3e541eba29845c111484fddc8",
+    "actor1-reference.png": "3aee906cc62ee2ea44b8303becb7b2344dc2e780c266d3b9722c042853a2cb43",
+    "build.py": "144d2458505ab7cb68509f9e3e98e3e552f8c1a4df3d08649055ea02393caad6",
+    "classes-preview.png": "bb48952a1d155bfdb1d48989a4ab79b774a2f49619fc430963c78382125b0ac3",
+    "data.json": "d648b10a84d827e4b61df87f22560c9b96823f8d9f52b20abebeddb358a8d137",
+    "design.json": "c9af2c684ffa4e7721bcce7ce68155db70e3243b33b9738fea4cf6677aa3e2c0",
+    "provenance.json": "c2fc375bbd4c1b0e8bc42ae260c9e02ddc4ae63c7791b84a744a04d263bb5ae4",
+    "run-smoke.mjs": "8be84e34bac43f665ebcf955b890869b318e1fb77ecd3a3da07c2e62ea7a97a8",
+    "smoke-proof.json": "afcd44113c837cdaefe70a39650e952cae756516c5514fd8303baac451bca210",
+    "smoke.mts": "12eac5a385a2436fcb9b56dad3a0c277376b23f121954a8291667b48fdf61b1a"
+  }
+}
