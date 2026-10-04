@@ -5,6 +5,62 @@
 
 <!-- releases -->
 
+## 0.120.0 — 2026-10-04
+
+### 기능
+
+- regenerate chip candidates from bounded review feedback (#2073) (`3d7e3d8`)
+- preload cinematic assets and direct opening storyboards (`2011f47`)
+
+### 수정
+
+- **editor** — 안 쓰는 타일 판별 import를 지우고 스키마 배열 길이를 허용한다 (`2ec5edb`)
+- **editor** — UX 2차 병합이 깨뜨린 타입 네 곳을 되돌린다 (`6543728`)
+- animate charset strips only when their pixels enter the viewport (`49b4c8c`)
+- run latest spatial workflow from the unified checkout (`09d5b7c`)
+- unify prop derivation and spatial harness under one service (`34e2590`)
+- keep command edit popovers clickable beside history controls (`7817c83`)
+- retain resource audio row focus and dispose virtual lists (`db90de5`)
+- protect authored height cells alongside tile brush intent (`f1bb35b`)
+- verify relief drafts and finish resident paging contracts (`18c5c6d`)
+- keep sparse human wall comparisons within map coordinates (`5d59a0e`)
+- page scoped conversation summaries and debounce archive search (`ba0007e`)
+- bound historical activity capture rendering and archive pruning (`8e697ed`)
+- bound resource galleries and retain virtualized audio workbench (`d17f257`)
+- preserve yielded terrain save snapshots and cache live draft lists (`9be3ce4`)
+- load Phaser before evaluating the background play scene (`f53a101`)
+- preserve exact human layer defaults and spatial proposal refusal (`7e9612d`)
+- bound event selection rendering and isolate event mutations (`1039a2d`)
+- cache database connections by reference sources and reuse More results (`37616ae`)
+- count persisted presentation artwork and observe real playback reliably (`9fb475b`)
+- retain relief pixels in resident pages and bound editor culling (`1a1f405`)
+- suspend inactive database previews and reuse animation sprites (`9a39365`)
+- retain filtered atlas selection and defer closed palette popup bodies (`de1cd0b`)
+- reuse spatial roundtrip projections and index human map edits (`aea9c06`)
+- preserve native shared catalog conditional responses (`84ee8c9`)
+- stop hidden Progress work and count committed events without clones (`13ef63e`)
+- avoid duplicate map navigation tree renders (`7dc479d`)
+- retain Life collection search and mount only selected inspector (`2fa4d8f`)
+- slice map save preparation and collapse history jump copies (`f1f95ff`)
+- retain opening effects until cinematic transitions finish (`8d5734f`)
+- distinguish recovered opening repair receipts from automatic creation (`16814e3`)
+- preserve active authoring through verified media separation (`71a7281`)
+
+### 문서
+
+- verify editor interactions after the latest main integration (`9852bf6`)
+- report the observed visible charset draw count (`aeeb38e`)
+- capture native round-two editor UX fixes and remaining latency limits (`4569a9b`)
+- record further editor UX performance findings (`7ce9a76`)
+
+### 테스트
+
+- capture directed opening playback and asset recovery evidence (`19c0104`)
+
+### 잡무
+
+- normalize opening QA evidence formatting (`5b33206`)
+
 ## 0.119.0 — 2026-10-04
 
 ### 기능
