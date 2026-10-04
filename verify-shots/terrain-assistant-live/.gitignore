@@ -2,3 +2,5 @@
 **/checkpoint.json
 **/*.mp4
 **/failure.png
+**/tiles.png
+editor/model-image-[0-9]-[0-9].png

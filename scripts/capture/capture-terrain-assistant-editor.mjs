@@ -3,12 +3,15 @@ import { firefox } from 'playwright';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import { gunzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
+import { PNG } from 'pngjs';
 const folder = resolve(process.env.TERRAIN_AI_PROJECT ?? '.vite-cache/terrain-ai/fixed-project');
 const out = resolve(process.env.TERRAIN_AI_OUTPUT ?? 'verify-shots/terrain-assistant-live/editor');
 mkdirSync(out, { recursive: true });
 // The live first-game harness also uses Firefox for full editor assistant runs.
 const browser = await firefox.launch({firefoxUserPrefs:{'network.notify.changed':false,'network.notify.IPv6':false,'network.captive-portal-service.enabled':false,'network.connectivity-service.enabled':false}});
-const page = await browser.newPage({ viewport: { width: 1440, height: 960 } }), errors = [], proof = { realEditor: true, realModel: true, folder };
+const page = await browser.newPage({ viewport: { width: 1440, height: 960 } }), errors = [], proof = { realEditor: true, realModel: true, folder, requests: [] };
 page.setDefaultTimeout(30000);
 const sqlite = () => { const db = new DatabaseSync(resolve(folder, 'project.sqlite'), {readOnly:true}); try {
   const p=db.prepare('SELECT project_id,revision FROM project WHERE id=1').get();
@@ -19,7 +22,18 @@ const save = () => writeFileSync(resolve(out,'observations.json'),JSON.stringify
 page.on('pageerror',e=>{errors.push(e.message);console.log('pageerror',e.message);});
 page.on('crash',()=>{proof.failure='Editor browser renderer crashed';save();console.log(proof.failure);});
 page.on('console',m=>{if(m.type()==='error')console.log('browser-error',m.text().slice(0,300));});
-page.on('request',r=>{if(r.url().includes('/v1/'))console.log('request',r.method(),r.url());});
+page.on('request',r=>{if(r.method()!=='POST'||!r.url().includes('/v1/'))return;
+  console.log('request',r.method(),r.url());
+  if(!/\/(chat\/completions|agent\/run)/.test(r.url()))return;
+  try { const bytes=r.postDataBuffer(),body=JSON.parse(bytes?.[0]===31?gunzipSync(bytes):bytes),images=[];
+    for(const message of body.messages??[])for(const part of Array.isArray(message.content)?message.content:[]){const url=part.image_url?.url;
+      if(typeof url!=='string'||!url.startsWith('data:image/png;base64,'))continue;
+      const png=Buffer.from(url.slice(url.indexOf(',')+1),'base64'),decoded=PNG.sync.read(png),sha256=createHash('sha256').update(png).digest('hex');
+      const file=`model-image-${sha256.slice(0,12)}.png`;writeFileSync(resolve(out,file),png);images.push({file,sha256,width:decoded.width,height:decoded.height});
+    }
+    proof.requests.push({endpoint:new URL(r.url()).pathname,model:body.model,provider:r.headers()['x-oprn-provider'],stream:body.stream===true,images});
+  }catch(e){proof.requestObservationError=e.message;}
+});
 await page.addInitScript(() => {
   // Isolated QA browser; production provider defaults and authentication are unchanged.
   try { localStorage.setItem('oprn:ai-config', JSON.stringify({configVersion:2, piTeam:false})); } catch {}
@@ -55,9 +69,9 @@ try {
   console.log('Actual editor assistant requested');
   const deadline=Date.now()+360000;
   for(;;){await page.waitForTimeout(4000);console.log('Polling actual editor');const s=await page.evaluate(()=>window.__oprnAiBridge.status());
-    proof.events=await page.evaluate(()=>window.__terrainQaEvents);proof.status=s;save();
+    proof.events=await page.evaluate(()=>window.__terrainQaEvents);proof.audit=await page.evaluate(()=>window.__oprnAiBridge.audit());proof.status=s;save();
     console.log('inspection',JSON.stringify(s),'events',proof.events.length);
-    if(!s.turnBusy&&proof.events.length)break;
+    if(!s.turnBusy&&(proof.events.length||proof.audit.some(e=>e.kind==='assistant')))break;
     if(Date.now()>deadline){await page.evaluate(()=>window.__oprnAiBridge.abort());throw new Error('Editor assistant inspection exceeded six minutes');}
   }
   proof.audit=await page.evaluate(()=>window.__oprnAiBridge.audit());
@@ -67,7 +81,7 @@ try {
   await page.reload({waitUntil:'domcontentloaded'});await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:240000});
   proof.after=sqlite();proof.reloadMapEqual=JSON.stringify(proof.before.map)===JSON.stringify(proof.after.map);
   proof.errors=errors;
-  proof.passed=proof.reloadMapEqual&&errors.length===0&&proof.events.some(e=>e.type==='tool_end'&&e.ok&&e.name==='check_terrain_access')&&proof.events.some(e=>e.type==='tool_end'&&e.ok&&e.name==='show_map_region');
+  proof.passed=proof.reloadMapEqual&&errors.length===0&&proof.requests.length>0&&['inspect_terrain','check_terrain_access','show_map_region'].every(name=>proof.audit.some(e=>e.kind==='tool'&&e.ok&&e.name===name));
   delete proof.before.map;delete proof.after.map;
   if(!proof.passed)throw new Error('Actual editor inspection or SQLite reload failed');
 }catch(e){proof.failure=e.message;await page.screenshot({path:resolve(out,'failure.png')}).catch(()=>{});throw e;}finally{save();await browser.close();}

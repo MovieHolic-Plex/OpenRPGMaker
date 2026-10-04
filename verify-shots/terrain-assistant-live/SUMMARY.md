@@ -27,8 +27,8 @@ lay_terrain_road 3회, place_terrain_ramp 3회, inspect_terrain 3회, check_terr
 
 | 버들항 외관 | 실제 집 영역 | 문 앞 | 높이 | 전체 집터+문 앞 |
 |---|---|---|---:|---|
-| 초록 지붕 통나무 | (11,19) 9×5 | (15,24) | 4 | 평탄 |
-| 파란 지붕 통나무 | (44,25) 13×5 | (50,30) | 6 | 평탄 |
+| 초록 문 통나무 | (11,19) 9×5 | (15,24) | 4 | 평탄 |
+| 파랑 문 통나무 | (44,25) 13×5 | (50,30) | 6 | 평탄 |
 | 붉은 꽃 반목조 | (36,5) 11×8 | (41,13) | 9 | 평탄 |
 
 시야 차단·고지 시야·발사체 높이 규칙은 OFF다. 외관만 요청했으므로 실내/문 이벤트는 만들지 않았다.
@@ -49,6 +49,15 @@ lay_terrain_road 3회, place_terrain_ramp 3회, inspect_terrain 3회, check_terr
   큰 프로젝트 JSON과 녹화 중간 파일은 커밋하지 않는다.
 
 ## 재현과 범위
+
+실제 에디터에서도 같은 SQLite 프로젝트를 열어 기본 Google Antigravity / Gemini 3.8 Flash로 읽기 검수를 했다.
+정상 UI 의도 선언과 읽기 레일을 통과했고, 조수가 inspect_terrain → check_terrain_access → show_map_region을
+실제로 호출했다(3회 성공, 쓰기 0회). 실제 요청에 실린 PNG도 바이트·SHA-256·크기로 보존했다.
+전체 지형 그림은 `editor/model-image-b333e88869b2.png`이며 같은 엔진 절벽과 들림을 포함한다.
+조수 최종 응답과 에디터 화면은 `editor/02-real-assistant-inspection.png`, 네트워크 메타데이터/감사 기록은
+`editor/observations.json`에 있다. 검수 후 같은 SQLite를 다시 열어 지도 값이 변하지 않은 것을 확인했다.
+첫 준비와 턴 정산은 큰 번들 자료 때문에 오래 걸렸으며 Chromium 검수는 중단하고 기존 실전 하네스와 같은
+Firefox로 완료했다. 이 증거는 준비 지연의 해소를 주장하지 않는다. 린트 경고 1건이 표시됐으며 린트 전체 통과를 주장하지 않는다.
 
 - 생성: `bun scripts/qa/terrain-assistant-live.mts --project <독립 SQLite 폴더> --task <요청.txt> --model <실제 설정 모델> --out <증거 폴더>`.
   개인 모델 설정의 키는 읽기만 하며 출력/증거에 저장하지 않는다.
