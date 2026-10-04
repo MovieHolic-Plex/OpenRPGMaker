@@ -33,6 +33,8 @@ def run_check(journey, world, out_path=None, verbose=True):
     import journey_plan_v9 as P
     import journey_check_v9 as C
     P.configure(journey)
+    lay = getattr(world, 'layout', None)
+    C.MIN_SEA_GAP[0] = int((lay or {}).get('min_sea_gap', C.MIN_SEA_GAP[0])) if isinstance(lay, dict) else C.MIN_SEA_GAP[0]
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         _, bad, info = C.run(verbose=True, w=world, out_path=out_path)

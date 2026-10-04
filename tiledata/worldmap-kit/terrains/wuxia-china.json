@@ -1,0 +1,14 @@
+{
+ "schema": "worldmap-terrain/1",
+ "id": "wuxia-china",
+ "name": "중원 — 무협(실제 중국)",
+ "base": "generate",
+ "note": "무협 테마의 기본 구조 — 실제 중국 지리(Natural Earth 해안선·ETOPO1 높이). 티베트 고원·히말라야·쿤룬, 황하·장강, 고비·타클라마칸. 맞춤이 고른 산벽이 내몽골 장성 자리라 2막 = 장성 너머 북방 초원(몽골·만주), 4막 대막 = 서북 고비·하서 회랑, 3막 = 바다 건너 한반도·일본·타이완.",
+ "ops": [
+  {
+   "op": "continents",
+   "style": "real",
+   "region": "china"
+  }
+ ]
+}
