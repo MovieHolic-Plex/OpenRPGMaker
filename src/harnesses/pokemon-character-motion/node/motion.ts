@@ -122,10 +122,34 @@ export function checkClip(source:RgbaImage,meta:ClipMetadata){
     if(!r||![r.x,r.y,r.width,r.height].every(Number.isInteger)||r.x<0||r.y<0||r.width!==meta.frameWidth||r.height!==meta.frameHeight||r.x+r.width>source.width||r.y+r.height>source.height){errors.push(`clip crop ${i} bounds/size`);return;}
     const f=cropImage(source,r);if(f.data.some((v,j)=>j%4===3&&v!==0&&v!==255))errors.push(`clip ${i} nonbinary alpha`);if(!opaqueBounds(f)){errors.push(`clip ${i} empty`);return;}frames.push(f);
   });
+  const colors=new Set<number>();frames.forEach((f,i)=>{const b=opaqueBounds(f)!;if(b.x<1||b.y<1||b.x+b.width>f.width-1||b.y+b.height>f.height-1)errors.push(`clip ${i} clipped/missing transparent margin`);for(let n=0;n<f.data.length;n+=4)if(f.data[n+3])colors.add(rgbKey(f.data[n]!,f.data[n+1]!,f.data[n+2]!));});if(colors.size>24)errors.push(`clip palette union ${colors.size}>24`);
   const normalized=frames.map(f=>{const c=cropToInk(f);for(let i=0;i<c.data.length;i+=4)if(!c.data[i+3])c.data.fill(0,i,i+4);return sha(`${c.width},${c.height}:`+sha(c.data));});
   if(meta.kind==="drawn"&&new Set(normalized).size<2)errors.push("advertised drawn clip is duplicate/translation-only");
   if(frames.length===meta.sourceRects.length){let max=0;for(let i=1;i<frames.length;i++)max=Math.max(max,diff(frames[0]!,frames[i]!));if(max<4)errors.push("clip has fewer than 4 meaningful changed pixels");}
-  return {pass:errors.length===0,errors,frames,normalized};
+  return {pass:errors.length===0,errors,frames,normalized,paletteUnion:colors.size};
+}
+
+/** Generated opening atlas -> actual drawn native strip. Source alpha only; no painted masks or poses. */
+export function importGeneratedClip(source:RgbaImage,options:{columns:number;rows:number;frameWidth:number;frameHeight:number;block?:number;sourceRects?:Box[];alphaThreshold?:number}){
+  const {columns,rows,frameWidth,frameHeight}=options;
+  if(![columns,rows,frameWidth,frameHeight].every(v=>Number.isInteger(v)&&v>0)||columns*rows<2||columns*rows>64||frameWidth<4||frameHeight<4)throw Error("generated clip layout invalid");
+  const alphaThreshold=options.alphaThreshold??128;
+  if(alphaThreshold!==128)throw Error("generated clip alpha threshold must retain harness contract128");
+  // source RGB under alpha is never used to infer a matte. Keep only the established visible-alpha threshold.
+  const visible=createImage(source.width,source.height);for(let i=0;i<source.data.length;i+=4)if(source.data[i+3]!>=alphaThreshold){visible.data.set(source.data.subarray(i,i+3),i);visible.data[i+3]=255;}
+  let rects:Box[];
+  if(options.sourceRects){rects=options.sourceRects;if(rects.length!==columns*rows||rects.some(r=>![r.x,r.y,r.width,r.height].every(Number.isInteger)||r.x<0||r.y<0||r.width<1||r.height<1||r.x+r.width>source.width||r.y+r.height>source.height))throw Error("generated source crop count/bounds");}
+  else{const py=new Array(source.height).fill(0);for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(visible.data[(y*source.width+x)*4+3])py[y]++;
+    const ys=ranges(py,rows);rects=[];ys.forEach(y=>{const px=new Array(source.width).fill(0);for(let yy=y.start;yy<y.end;yy++)for(let x=0;x<source.width;x++)if(visible.data[(yy*source.width+x)*4+3])px[x]++;ranges(px,columns).forEach(x=>rects.push({x:x.start,y:y.start,width:x.end-x.start,height:y.end-y.start}));});}
+  const crops=rects.map(r=>cropImage(visible,r));const inferred=options.block===undefined?crops.map(c=>extractGrid(c,{minBlock:2}).block):[];
+  const block=options.block??Math.round([...inferred].sort((a,b)=>a-b)[Math.floor(inferred.length/2)]!);
+  const grids=crops.map(c=>extractGrid(c,{block}).cells),scale=Math.min(1,(frameWidth-4)/Math.max(...grids.map(g=>g.width)),(frameHeight-4)/Math.max(...grids.map(g=>g.height)));
+  const frames=grids.map(g=>{const scaled=createImage(Math.max(1,Math.round(g.width*scale)),Math.max(1,Math.round(g.height*scale)));for(let y=0;y<scaled.height;y++)for(let x=0;x<scaled.width;x++)setPixel(scaled,x,y,pixelAt(g,Math.min(g.width-1,Math.floor(x/scale)),Math.min(g.height-1,Math.floor(y/scale))));
+    const landmark=head(scaled)!;const left=Math.round((frameWidth-1)/2-landmark.x),top=2,out=createImage(frameWidth,frameHeight);
+    for(let y=0;y<scaled.height;y++)for(let x=0;x<scaled.width;x++){const p=pixelAt(scaled,x,y);if(!p[3])continue;const xx=left+x,yy=top+y;if(xx<1||xx>=frameWidth-1||yy<1||yy>=frameHeight-1)throw Error("generated clip alignment clips: regenerate source or author source crops");setPixel(out,xx,yy,p);}return out;});
+  const image=createImage(frameWidth*frames.length,frameHeight);frames.forEach((f,i)=>{for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)setPixel(image,i*frameWidth+x,y,pixelAt(f,x,y));});
+  const palette=quantizePalette(image,24);
+  return {image,rects,block,inferredBlocks:inferred,scale,palette,alphaThreshold,frameCount:frames.length};
 }
 
 /** Preserve frame coherence: align source silhouettes before shared nearest sampling. */

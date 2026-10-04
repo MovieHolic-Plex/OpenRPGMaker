@@ -50,5 +50,21 @@
     "seamChangeMax": 0.36,
     "stepChangeMin": 4,
     "margin": 1
+  },
+  "openingClips": {
+    "frameWidth": 64,
+    "frameHeight": 96,
+    "columns": 3,
+    "rows": 2,
+    "fps": 6,
+    "kind": "drawn",
+    "paletteUnionMax": 24,
+    "alphaThreshold": 128,
+    "review": [
+      "blink remains visible",
+      "talk mouth remains visible",
+      "three actual gesture silhouettes",
+      "identity and source order retained"
+    ]
   }
 }

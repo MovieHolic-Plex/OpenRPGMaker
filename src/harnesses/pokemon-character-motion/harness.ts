@@ -7,6 +7,7 @@ export const POKEMON_CHARACTER_MOTION_HARNESS = defineHarness({
   stages: [
     {id:"status",title:"현황",summary:"역할별 후보와 관문·검수·결과 해시 상태를 읽는다."},
     {id:"import",title:"가져오기",summary:"생성 아틀라스 또는 기존 네이티브 시트를 불변 출처와 함께 후보로 저장한다."},
+    {id:"clip-import",title:"오프닝 생성 클립",summary:"실제 생성 아틀라스의 여러 포즈를 공통 격자·배율·팔레트로 네이티브 스트립과 출처로 가져온다."},
     {id:"check",title:"구조 검사",summary:"12프레임·색 합집합·알파·머리 흔들림·다리 변화·연속성을 검사한다."},
     {id:"preview",title:"재생 검수",summary:"원본 크기와 3배율로 네 방향 및 선택 클립을 재생하는 HTML을 만든다."},
     {id:"review",title:"시각 판정",summary:"재생 증거·검수자·이유를 출처와 최종 그림 해시에 묶어 기록한다."},

@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, copyFi
 import { resolve, join, dirname } from "node:path";
 import { readPng, writePng } from "../../monster-collect-species/node/png";
 import { createImage, pixelAt, setPixel } from "../../monster-collect-species/pixel/image";
-import { WIDTH,HEIGHT,ROWS,ORDER,LIMITS,VERSION,sha,framesFromNative,pack,importAtlas,importRasterAtlas,checkCharset,checkClip,type ClipMetadata } from "./motion";
+import { WIDTH,HEIGHT,ROWS,ORDER,LIMITS,VERSION,sha,framesFromNative,pack,importAtlas,importRasterAtlas,checkCharset,checkClip,importGeneratedClip,type ClipMetadata } from "./motion";
 const ROOT=resolve(import.meta.dirname,"../../../.."),DEFAULT=resolve(ROOT,"harness-data/pokemon-character-motion");
 const json=(path:string)=>JSON.parse(readFileSync(path,"utf8"));
 const save=(path:string,value:unknown)=>{mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify(value,null,2)+"\n");};
@@ -12,15 +12,17 @@ function args(argv:string[]){const flags:Record<string,string>={};const bool=new
 function pathRoot(f:Record<string,string>){return resolve(f.sandbox??process.env.POKEMON_MOTION_SANDBOX??DEFAULT);}
 function candidatePath(f:Record<string,string>){if(!f.candidate)throw Error("--candidate required");return resolve(f.candidate);}
 function snapshot(c:string){
-  const p=json(join(c,"provenance.json"));const files=["source.png","prompt.txt","charset.png",...(p.clip?["clip-source.png","clip-metadata.json","clip.png"]:[])];
+  const p=json(join(c,"provenance.json"));const files=p.kind==="clip"?["source.png","prompt.txt","clip.png","clip-metadata.json"]:["source.png","prompt.txt","charset.png",...(p.clip?["clip-source.png","clip-metadata.json","clip.png"]:[])];
   const hashes=Object.fromEntries(files.map(file=>[file,hashFile(join(c,file))]));
-  if(hashes["source.png"]!==p.sourceSha256||hashes["prompt.txt"]!==p.promptSha256||hashes["charset.png"]!==p.finalSha256)throw Error("immutable provenance hash mismatch");
+  if(hashes["source.png"]!==p.sourceSha256||hashes["prompt.txt"]!==p.promptSha256||hashes[p.kind==="clip"?"clip.png":"charset.png"]!==p.finalSha256)throw Error("immutable provenance hash mismatch");
+  if(p.kind==="clip"&&hashes["clip-metadata.json"]!==p.metadataSha256)throw Error("immutable clip metadata hash mismatch");
   if(p.clip&&["clip-source.png","clip-metadata.json","clip.png"].some(file=>hashes[file]!==p.clip.hashes[file]))throw Error("immutable clip provenance hash mismatch");
   const implementationSha256=sha(["cli.ts","motion.ts","../../monster-collect-species/pixel/grid.ts","../../monster-collect-species/pixel/image.ts","../../monster-collect-species/pixel/oklab.ts","../../monster-collect-species/node/png.ts"].map(file=>hashFile(resolve(import.meta.dirname,file))).join(":"));
   return {provenance:p,hashes,implementationSha256,provenanceSha256:hashFile(join(c,"provenance.json")),version:VERSION,limits:LIMITS};
 }
 function runCheck(c:string){
-  const snap=snapshot(c),result=checkCharset(readPng(join(c,"charset.png")));
+  const snap=snapshot(c);if(snap.provenance.kind==="clip"){const r=checkClip(readPng(join(c,"clip.png")),json(join(c,"clip-metadata.json")));return {kind:"structural",...snap,pass:r.pass,errors:r.errors,warnings:[],metrics:{paletteUnion:r.paletteUnion,normalized:r.normalized,frames:r.frames.length},clip:{pass:r.pass,errors:r.errors,normalized:r.normalized},createdAt:new Date().toISOString()};}
+  const result=checkCharset(readPng(join(c,"charset.png")));
   let clip=null;if(snap.provenance.clip){const r=checkClip(readPng(join(c,"clip-source.png")),json(join(c,"clip-metadata.json")));clip={pass:r.pass,errors:r.errors,normalized:r.normalized};if(!r.pass){result.pass=false;result.errors.push(...r.errors);}}
   return {kind:"structural",...snap,...result,clip,createdAt:new Date().toISOString()};
 }
@@ -34,7 +36,8 @@ function reviewFresh(c:string,snap:ReturnType<typeof snapshot>){
 }
 function gate(c:string){const report=runCheck(c);let review=null;try{review=reviewFresh(c,report);}catch(e){report.pass=false;report.errors.push(String(e));}const out={...report,kind:"gate",reviewSha256:review?hashFile(join(c,"review.json")):null};save(join(c,"gate.json"),out);return out;}
 function preview(c:string){
-  const s=snapshot(c),src=`data:image/png;base64,${readFileSync(join(c,"charset.png")).toString("base64")}`;
+  const snap=snapshot(c);if(snap.provenance.kind==="clip")return previewStandaloneClip(c,snap);
+  const s=snap,src=`data:image/png;base64,${readFileSync(join(c,"charset.png")).toString("base64")}`;
   const clip=s.provenance.clip?{src:`data:image/png;base64,${readFileSync(join(c,"clip.png")).toString("base64")}`,meta:json(join(c,"clip-metadata.json"))}:null;
   const model={src,clip,rows:ROWS,order:ORDER};
   const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>캐릭터 모션 검수</title><style>body{background:#17202b;color:#eee;font:16px system-ui;margin:24px}section{display:flex;flex-wrap:wrap;gap:24px}article{background:#344152;padding:16px}canvas{image-rendering:pixelated;background:repeating-conic-gradient(#344152 0% 25%,#526075 0% 50%) 50% / 8px 8px;vertical-align:bottom}button,input{font:inherit}small{display:block;max-width:70ch}</style><h1>${escape(s.provenance.role)} 모션 검수</h1><p>원본 1배·게임 3배. 방향 의미, 발 교대, 상체 고정, 소품 일관성과 루프 경계를 직접 확인하세요.</p><button id="pause">일시정지</button> <label>속도 <input id="speed" type="range" min="60" max="300" value="140"></label> <span id="frame"></span><section id="walk"></section><h2>12개 원본 포즈</h2><img style="image-rendering:pixelated;width:216px" src="${src}" alt="4방향 3포즈 원본"><section id="clip"></section><small>출처 ${s.hashes["source.png"]}<br>최종 ${s.hashes["charset.png"]}<br>구조 관문은 방향이나 다리 교대의 의미를 증명하지 않습니다. 검수 후 별도 review 명령으로 판정을 남깁니다.</small><script type="application/json" id="model">${JSON.stringify(model).replace(/</g,"\\u003c")}</script><script>
@@ -46,6 +49,19 @@ export async function run(argv:string[]):Promise<number>{
   const [command,...rest]=argv;try{
     const {flags:f,bool}=args(rest),base=pathRoot(f);
     if(command==="status"){const seed=json(resolve(f.seed??join(DEFAULT,"seed.json")));const dir=join(base,"candidates");console.log(JSON.stringify({base,roles:seed.roles,candidates:existsSync(dir)?readdirSync(dir).map(id=>{const c=join(dir,id);try { const snap=snapshot(c); const gatePath=join(c,"gate.json"),g=existsSync(gatePath)?json(gatePath):null;let reviewed=false;try{reviewFresh(c,snap);reviewed=true;}catch{}return {id,role:snap.provenance.role,hashes:snap.hashes,reviewed,gateFresh:!!g&&g.pass&&equal(g.hashes,snap.hashes)&&g.provenanceSha256===snap.provenanceSha256&&g.version===VERSION&&g.implementationSha256===snap.implementationSha256&&equal(g.limits,LIMITS)&&reviewed&&g.reviewSha256===hashFile(join(c,"review.json"))};} catch(error) { return {id,error:String(error)}; }}):[]},null,2));return 0;}
+    if(command==="clip-import"){
+      if(!f.role||!f.source||!f["prompt-file"])throw Error("clip-import requires --role --source --prompt-file");
+      const seed=json(resolve(f.seed??join(DEFAULT,"seed.json")));if(!seed.roles.includes(f.role))throw Error("clip role not in seed");
+      const defaults=seed.openingClips,authored=f["clip-spec"]?json(resolve(f["clip-spec"])):{};
+      const sourceBytes=readFileSync(resolve(f.source)),prompt=readFileSync(resolve(f["prompt-file"]));if(!prompt.toString().trim())throw Error("prompt cannot be blank");
+      const columns=Number(f.columns??authored.columns??defaults.columns),rows=Number(f.rows??authored.rows??defaults.rows),frameWidth=Number(f["frame-width"]??authored.frameWidth??defaults.frameWidth),frameHeight=Number(f["frame-height"]??authored.frameHeight??defaults.frameHeight),block=f.block===undefined?undefined:Number(f.block);
+      const imported=importGeneratedClip(readPng(resolve(f.source)),{columns,rows,frameWidth,frameHeight,block,sourceRects:authored.sourceRects,alphaThreshold:128});
+      const clipId=f["clip-id"]??authored.id??`${f.role}-intro`;if(!/^[a-z][a-z0-9-]*$/.test(clipId))throw Error("clip id must be kebab-case");
+      const meta:ClipMetadata={id:clipId,frameWidth,frameHeight,fps:Number(f.fps??authored.fps??defaults.fps),frameOrder:f["frame-order"]?f["frame-order"].split(',').map(Number):authored.frameOrder??Array.from({length:imported.frameCount},(_,i)=>i),sourceRects:Array.from({length:imported.frameCount},(_,i)=>({x:i*frameWidth,y:0,width:frameWidth,height:frameHeight})),kind:authored.kind??'drawn',...(authored.durationsMs?{durationsMs:authored.durationsMs}:{})};
+      const checked=checkClip(imported.image,meta);if(!checked.pass)throw Error(checked.errors.join('; '));
+      const id=`clip-${clipId}-${Date.now()}-${sha(sourceBytes).slice(0,8)}`,c=join(base,'candidates',id);mkdirSync(c,{recursive:true});writeFileSync(join(c,'source.png'),sourceBytes);writeFileSync(join(c,'prompt.txt'),prompt);writePng(join(c,'clip.png'),imported.image);save(join(c,'clip-metadata.json'),meta);
+      save(join(c,'provenance.json'),{version:VERSION,kind:'clip',mode:'generated',createdAt:new Date().toISOString(),role:f.role,clipId,sourceSha256:sha(sourceBytes),promptSha256:sha(prompt),finalSha256:hashFile(join(c,'clip.png')),metadataSha256:hashFile(join(c,'clip-metadata.json')),columns,rows,frameWidth,frameHeight,frameCount:imported.frameCount,commonBlock:imported.block,inferredBlocks:imported.inferredBlocks,sourceRects:imported.rects,commonScale:imported.scale,palette:imported.palette,alphaThreshold:imported.alphaThreshold,headAlignment:'top silhouette root, native translations only',limits:LIMITS});console.log(c);return 0;
+    }
     if(command==="import"){
       if(!f.role||!f.source||!f["prompt-file"])throw Error("import requires --role --source --prompt-file");
       const seed=json(resolve(f.seed??join(DEFAULT,"seed.json")));if(!seed.roles.includes(f.role))throw Error("role not in seed");
@@ -72,14 +88,24 @@ export async function run(argv:string[]):Promise<number>{
       const previewPath=join(c,"preview.html"),receiptPath=join(c,"preview-receipt.json");if(!existsSync(previewPath)||!existsSync(receiptPath))throw Error("preview required before review");const pr=json(receiptPath);if(pr.previewSha256!==hashFile(previewPath)||!equal(pr.hashes,snap.hashes))throw Error("stale preview");
       const evidence=f.evidence.split(',').map((path,i)=>{const file=`review-evidence-${i}${path.match(/\.[a-zA-Z0-9]+$/)?.[0]??'.bin'}`;copyFileSync(resolve(path),join(c,file));return {file,sha256:hashFile(join(c,file))};});
       if(existsSync(join(c,"review.json"))){const previous=hashFile(join(c,"review.json"));copyFileSync(join(c,"review.json"),join(c,`review-history-${previous}.json`));}
-      save(join(c,"review.json"),{...snap,createdAt:new Date().toISOString(),verdict:f.verdict,who:f.who,why:f.why,evidence,semanticChecklist:["correct four directions","alternating feet read while walking","head/body identity stable","loop seam natural","clip is actual drawn poses if advertised drawn"],previewSha256:hashFile(previewPath)});console.log(join(c,"review.json"));return 0;
+      save(join(c,"review.json"),{...snap,createdAt:new Date().toISOString(),verdict:f.verdict,who:f.who,why:f.why,evidence,semanticChecklist:snap.provenance.kind==="clip"?["blink/talk and gestures visible if authored","all source poses retained in declared order","head/body identity and root stable","actual shapes change if advertised drawn","timing and loop natural"]:["correct four directions","alternating feet read while walking","head/body identity stable","loop seam natural","clip is actual drawn poses if advertised drawn"],previewSha256:hashFile(previewPath)});console.log(join(c,"review.json"));return 0;
     }
     if(command==="gate"){const c=candidatePath(f),r=bool.has("structural-only")?runCheck(c):gate(c);if(bool.has("structural-only"))save(join(c,"check.json"),r);console.log(JSON.stringify(r,null,2));return r.pass?0:1;}
     if(command==="build"){
       const c=candidatePath(f),snap=snapshot(c),gp=join(c,"gate.json");if(!existsSync(gp))throw Error("missing gate; run gate first");const g=json(gp);
       if(!g.pass||g.kind!=="gate"||g.version!==VERSION||g.implementationSha256!==snap.implementationSha256||!equal(g.hashes,snap.hashes)||g.provenanceSha256!==snap.provenanceSha256||!equal(g.limits,LIMITS)||g.reviewSha256!==hashFile(join(c,"review.json")))throw Error("failed/stale gate hash");reviewFresh(c,snap);const current=runCheck(c);if(!current.pass)throw Error("current structure fails");
-      const out=resolve(f.out??join(base,"output",snap.provenance.role));mkdirSync(out,{recursive:true});const files=["charset.png","provenance.json","review.json","gate.json",...(snap.provenance.clip?["clip.png","clip-metadata.json"]:[])];files.forEach(file=>copyFileSync(join(c,file),join(out,file)));save(join(out,"motion.json"),{role:snap.provenance.role,frameWidth:WIDTH,frameHeight:HEIGHT,rows:ROWS,columns:["stepA","idle","stepB"],idle:1,order:ORDER,frameMs:140,sourceSha256:snap.hashes["source.png"],charsetSha256:snap.hashes["charset.png"],gateSha256:hashFile(gp),clip:snap.provenance.clip?json(join(c,"clip-metadata.json")):null});console.log(out);return 0;
+      const out=resolve(f.out??join(base,"output",snap.provenance.role));mkdirSync(out,{recursive:true});if(snap.provenance.kind==="clip"){const clipOut=resolve(f.out??join(base,"output","clips",snap.provenance.clipId));mkdirSync(clipOut,{recursive:true});["clip.png","clip-metadata.json","provenance.json","review.json","gate.json"].forEach(file=>copyFileSync(join(c,file),join(clipOut,file)));save(join(clipOut,"motion.json"),{...json(join(c,"clip-metadata.json")),role:snap.provenance.role,sourceSha256:snap.hashes["source.png"],clipSha256:snap.hashes["clip.png"],gateSha256:hashFile(gp)});console.log(clipOut);return 0;}
+      const files=["charset.png","provenance.json","review.json","gate.json",...(snap.provenance.clip?["clip.png","clip-metadata.json"]:[])];files.forEach(file=>copyFileSync(join(c,file),join(out,file)));save(join(out,"motion.json"),{role:snap.provenance.role,frameWidth:WIDTH,frameHeight:HEIGHT,rows:ROWS,columns:["stepA","idle","stepB"],idle:1,order:ORDER,frameMs:140,sourceSha256:snap.hashes["source.png"],charsetSha256:snap.hashes["charset.png"],gateSha256:hashFile(gp),clip:snap.provenance.clip?json(join(c,"clip-metadata.json")):null});console.log(out);return 0;
     }
-    throw Error("stages: status import check preview review gate build");
+    throw Error("stages: status import clip-import check preview review gate build");
   }catch(e){console.error(e instanceof Error?e.message:String(e));return 1;}
+}
+
+function previewStandaloneClip(c:string,s:ReturnType<typeof snapshot>){
+  const src=`data:image/png;base64,${readFileSync(join(c,"clip.png")).toString("base64")}`,meta=json(join(c,"clip-metadata.json"));
+  const model={src,meta};
+  const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오프닝 클립 검수</title><style>body{background:#17202b;color:#eee;font:16px system-ui;margin:24px}section{display:flex;flex-wrap:wrap;gap:24px}canvas{image-rendering:pixelated;background:repeating-conic-gradient(#344152 0% 25%,#526075 0% 50%) 50% / 8px 8px;vertical-align:bottom}button,input{font:inherit}img{max-width:100%;image-rendering:pixelated}</style><h1>${escape(s.provenance.clipId)} 실제 생성 클립</h1><p>원본 1배·3배 재생. 눈 깜빡임, 말하는 입, 손과 소품의 실제 변화 및 인물 정체성을 확인하세요.</p><button id="pause">일시정지</button> <button id="next">다음 프레임</button> <span id="frame"></span><section id="clips"></section><h2>전체 ${meta.sourceRects.length}포즈</h2><img src="${src}" alt="실제 생성 포즈 스트립"><p>원본 ${s.hashes['source.png']}<br>최종 ${s.hashes['clip.png']}</p><script type="application/json" id="model">${JSON.stringify(model).replace(/</g,'\\u003c')}</script><script>
+const m=JSON.parse(document.querySelector('#model').textContent),img=new Image();let step=0,paused=false,last=0;const canvases=[];[1,3].forEach(scale=>{const cv=document.createElement('canvas');cv.width=m.meta.frameWidth;cv.height=m.meta.frameHeight;cv.style.width=cv.width*scale+'px';cv.style.height=cv.height*scale+'px';document.querySelector('#clips').append(cv);canvases.push(cv);});document.querySelector('#pause').onclick=()=>{paused=!paused;document.querySelector('#pause').textContent=paused?'재생':'일시정지';};document.querySelector('#next').onclick=()=>{paused=true;step=(step+1)%m.meta.frameOrder.length;};function draw(t){if(!paused&&t-last>=(m.meta.durationsMs?.[step]??1000/m.meta.fps)){step=(step+1)%m.meta.frameOrder.length;last=t;}const index=m.meta.frameOrder[step];canvases.forEach(cv=>{const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(img,index*cv.width,0,cv.width,cv.height,0,0,cv.width,cv.height);});document.querySelector('#frame').textContent='frame '+index;requestAnimationFrame(draw);}img.onload=()=>requestAnimationFrame(draw);img.src=m.src;
+</script></html>`;
+  const path=join(c,'preview.html');writeFileSync(path,html);save(join(c,'preview-receipt.json'),{...s,previewSha256:hashFile(path)});return path;
 }

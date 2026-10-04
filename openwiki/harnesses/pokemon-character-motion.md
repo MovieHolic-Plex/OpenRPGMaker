@@ -58,7 +58,7 @@ import에 `--clip-source /path/strip-source.png --clip-metadata /path/clip.json`
 {"id":"hero-wave","frameWidth":24,"frameHeight":32,"fps":6,"frameOrder":[0,1,2,1],"sourceRects":[{"x":0,"y":0,"width":24,"height":32},{"x":24,"y":0,"width":24,"height":32},{"x":48,"y":0,"width":24,"height":32}],"kind":"drawn","durationsMs":[160,160,160,160]}
 ```
 
-크기·fps(0~60 초과 금지)·2~64프레임·명시 crop 경계·순서의 모든 프레임 포함·순서별 양수 지속시간(16~10000ms)·빈 프레임·최소 4px 변경을 검사한다. `kind: drawn`은 잉크 상자로 정규화한 모양이 전부 같으면 거부한다. 단순 평행 이동은 `kind: translation`이라고 정직하게 표기해야 한다. 실제 손/옷/표정이 변하는 그림인지도 감독자가 재생 검수한다. 이 메타를 엔진에 등록하는 것은 콘텐츠/런타임 소유자의 작업이며 CLI가 엔진을 고치지 않는다.
+크기·fps(0초과 60이하)·2~64프레임·명시 crop 경계·순서의 모든 프레임 포함·순서별 양수 지속시간(16~10000ms)·빈 프레임·최소 4px 변경을 검사한다. `kind: drawn`은 잉크 상자로 정규화한 모양이 전부 같으면 거부한다. 단순 평행 이동은 `kind: translation`이라고 정직하게 표기해야 한다. 실제 손/옷/표정이 변하는 그림인지도 감독자가 재생 검수한다. 이 메타를 엔진에 등록하는 것은 콘텐츠/런타임 소유자의 작업이며 CLI가 엔진을 고치지 않는다.
 
 ## 해시와 실패 제어
 
@@ -67,3 +67,24 @@ provenance는 source/prompt/final SHA-256과 계약/가공 정보를 고정한�
 ## 집중 실행 검증
 
 verify.mjs는 esbuild로 작은 노드 검사기를 묶고 실행한다. 서버·Vitest·전체 tsc·전체 gates를 돌리지 않는다. 실제 배포 그림이 아닌 최소 도형 fixture로 정상 12포즈와 잘린 시트·4px 팔 움직임을 가진 정상 보행, 프레임 뒤섞인 뿌리·중복 하체·머리 이동·팔레트 초과·반투명·불연속 경계, clip bounds/duration/translation-only를 검사한다. 실제 CLI의 import/check/preview/review/gate/build 흐름도 실행해 누락/실패/낡은 gate/최종 변조/증거 변조가 차단되는지 본다. fixture review 증거는 ledger 작동만 확인하는 stub이며 실제 캐릭터 의미 검수와 다르다. 감독자는 실제 원본을 가져와 자체 관문과 재생 증거를 다시 확인한다.
+
+## 생성 원본을 오프닝 클립으로 가져오기
+
+`clip-import`는 이미 네이티브인 줄만 받는 `import --clip-source`와 별개다. 걷기 시트 없이도 **실제 생성 원본 3열×2행의 6포즈**를 독립된 후보로 가져와 check → preview → review → gate → build를 똑같이 수행한다. 기존 import와 native clip의 계약은 유지된다.
+
+```bash
+npm run harness -- pokemon-character-motion clip-import --sandbox /path/review \
+  --role professor --clip-id professor-intro \
+  --source /path/professor-intro.png --prompt-file /path/professor-intro.prompt.txt \
+  --columns 3 --rows 2 --frame-width 64 --frame-height 96 --fps 6
+# --block 7로 검토된 공통 격자를 고정하거나 생략해 모든 프레임의 중앙값을 사용한다.
+# 반환된 후보에 기존 check/preview/review/gate/build 명령을 사용한다.
+```
+
+행·열·목표 크기·fps 기본값은 seed.openingClips다. `--frame-order 0,1,2,0,3,4,5`로 재생 순서를 명시할 수 있다. 모든 원본 프레임이 적어도 한 번 포함되어야 한다. `--clip-spec file.json`에는 columns/rows/frameWidth/frameHeight/id/fps/frameOrder/durationsMs/kind와 원본의 sourceRects를 저작할 수 있다. 명시 crop이 없다면 실제 alpha의 투명 행/열 여백을 읽는다. crop은 원본 픽셀 단위이며 count/bounds를 검사한다.
+
+알파 **128** 기준을 유지한다. 투명 픽셀의 hidden RGB나 UI 미리보기의 검은 배경을 매트라고 판단하지 않는다. 6개 원본에서 기존 격자 helper로 공통 블록을 읽고, 한 배율로 모두 줄여, 상단 실루엣 중심의 이동만으로 정렬한다. 같은 24색 이하 팔레트로 합친다. 포즈/소품/눈/입을 다시 그리거나 동작을 합성하지 않는다. 각 64×96 프레임의 원래 표현을 보존하는 것이 목적이며 blink/talk/gesture 의미는 재생 검수에서 확인한다.
+
+후보에는 source.png/prompt.txt/clip.png/clip-metadata.json/provenance.json이 있다. provenance.kind=clip, commonBlock/commonScale/inferredBlocks/sourceRects/alphaThreshold와 출처·최종·메타 해시를 남긴다. check는 프레임 수·경계·이진 알파·1px 여백·전체 팔레트 <=24·의미 있는 픽셀 변화·drawn-vs-translation을 검사한다. preview는 1배/3배 재생과 다음 프레임 버튼을 제공한다. build 기본 출력은 sandbox/output/clips/<clip-id>이며 motion.json·clip.png·메타·출처·검수·관문을 쓴다. 걷기 시트나 정본/런타임에 자동 배선하지 않는다.
+
+집중 실행 제어에는 generated six-frame import와 전체 lifecycle, clip 팔레트/반투명/잘림, 완성 PNG 변조와 fps 메타 변조 차단도 포함한다. 생성 원본 자체를 Git에 넣지 않는다.
