@@ -72,6 +72,23 @@ describe("칩셋 계열 검사", () => {
     expect(ctx.project.maps.map_cave).toBeDefined();
   });
 
+  it("(h) 손대지 않은 빈 기본 시작 맵은 그림체 기준이 아니다 → 다른 계열 새 맵 통과", () => {
+    const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
+    const result = runTool(ctx, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+  });
+
+  it("(h') 빈 시작 맵을 보더라도 프로젝트에 칠한 맵이 있으면 그 계열이 기준", () => {
+    const project = uploadedProject();
+    project.maps[MAP_ID]!.tilesetId = createBlankProject().maps[MAP_ID]!.tilesetId;
+    project.maps.map_field = { ...structuredClone(project.maps[MAP_ID]!), id: "map_field", tilesetId: "rasak_field" };
+    project.maps.map_field.lowerTiles[0] = (project.maps.map_field.lowerTiles[0] ?? 0) + 1;
+    const ctx: ToolContext = { project, currentMapId: MAP_ID };
+    const result = runTool(ctx, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("프로젝트에서 칠한 맵 map_field");
+  });
+
   it("(d) currentMapId 없음 → 옛 동작(검사 없음)", () => {
     const ctx: ToolContext = { project: uploadedProject() };
     const result = dungeon(ctx);
