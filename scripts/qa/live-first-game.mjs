@@ -41,7 +41,7 @@ async function recordWire() {
           if (!line.trim()) continue;
           const e = JSON.parse(line), inner = e.event ?? e;
           events.push({ seq: e.seq, type: e.type, at: e.at, innerType: inner.type,
-            innerAt: inner.at, agent: e.agentId, tool: inner.toolName, bytes: line.length,
+            innerAt: inner.at, agent: inner.agentId ?? e.agentId, tool: inner.toolName, bytes: line.length,
             name: inner.name, ok: inner.ok, summary: inner.summary?.slice(0, 300), message: inner.message });
         }
       }
@@ -62,6 +62,9 @@ async function recordWire() {
   report.coreFirstVerified = core >= 0 && review > core && (decoration < 0 || decoration > review);
   report.coreReadyAt = events[core]?.at;
   report.coreReviewedAt = events[review]?.at;
+  const sceneReview = events.findIndex(event => event.name === 'first_scene.review_passed' && event.ok === true);
+  report.firstSceneReviewed = sceneReview > review && events.some(event => event.name === 'map.image.delivered' && event.ok === true);
+  report.firstSceneReviewedAt = events[sceneReview]?.at;
 }
 function snapshot() {
   const folder = new URL(report.projectUrl).searchParams.get('hostProject');
@@ -139,7 +142,9 @@ try {
   await page.getByTestId('project-interview-concept').fill('서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.');
   await page.getByTestId('project-interview-begin').click();
   for (let i = 0; i < 8 && !(await page.getByTestId('project-interview-summary').count()); i++) {
-    report.questions.push({ question: await page.locator('#project-interview-question').innerText(),
+    const question = await page.locator('#project-interview-question').count()
+      ? page.locator('#project-interview-question') : page.locator('#project-interview-title');
+    report.questions.push({ question: await question.innerText(),
       options: await page.locator('[data-testid^="project-interview-option-"]').allInnerTexts() });
     await page.getByTestId('project-interview-option-0').click();
     await page.getByTestId('project-interview-next').click();
@@ -203,7 +208,7 @@ try {
   if (report.requests.length) {
     try { await recordWire(); } catch (e) { report.wireFailure = e.message; }
   }
-  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted && report.coreFirstVerified);
+  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted && report.coreFirstVerified && report.firstSceneReviewed);
   if (!report.generationPrerequisitePassed) process.exitCode = 1;
   save(); await browser.close();
 }

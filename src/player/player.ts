@@ -123,8 +123,8 @@ export type RenderPlayerOptions = {
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
   // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
   readonly hostBridge?: HostBridge;
-  // 플레이 서피스 배율 정책. 배포/커뮤니티 플레이어는 정수 배율(기본)을 유지하고,
-  // 에디터 테스트 플레이 창만 "fit" 으로 창을 가득 채운다.
+  // 플레이 서피스 배율 정책. 내보낸 게임과 테스트 플레이는 fit으로 창에 맞춘다.
+  // 명시적인 integer 호스트는 정수 배율을 유지한다.
   readonly surfaceScaleMode?: PlaySurfaceScaleMode;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).

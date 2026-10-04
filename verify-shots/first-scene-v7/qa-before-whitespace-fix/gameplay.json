@@ -1,0 +1,335 @@
+{
+  "projectId": "b2b88fc2-66b1-4455-9a2a-d97674cd5d1f",
+  "title": "멈춘 시계의 기억",
+  "canonicalContentMatched": true,
+  "automaticBuildCompleted": true,
+  "projectJsonSha256": "5901423c963974afaa1c7b589fee3f4050d73d8a5585b062d848b30703c6e278",
+  "projectJsonBytes": 86587294,
+  "openingSkipped": false,
+  "reducedMotion": false,
+  "normalKeyboardOnly": true,
+  "recordedReadingPauseMs": 2500,
+  "snapshotReadingPauseMs": 1800,
+  "recordingTimeline": [
+    {
+      "shot": "01-title.png",
+      "atSec": 5.7
+    },
+    {
+      "shot": "02-in-map-introduction.png",
+      "atSec": 16.724
+    },
+    {
+      "shot": "03-field.png",
+      "atSec": 24.847
+    },
+    {
+      "shot": "04-clock.png",
+      "atSec": 33.231
+    },
+    {
+      "shot": "05-response.png",
+      "atSec": 65.318
+    },
+    {
+      "shot": "06-route.png",
+      "atSec": 77.469
+    },
+    {
+      "shot": "07-ending.png",
+      "atSec": 94.878
+    }
+  ],
+  "paths": {
+    "clock": {
+      "steps": [
+        {
+          "x": 10,
+          "y": 9,
+          "key": "ArrowDown"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "key": "ArrowRight"
+        }
+      ],
+      "position": {
+        "x": 12,
+        "y": 9
+      },
+      "face": "ArrowUp",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_starter",
+        "x": 12,
+        "y": 8
+      }
+    },
+    "gate": {
+      "steps": [
+        {
+          "x": 13,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 17,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "key": "ArrowUp"
+        }
+      ],
+      "position": {
+        "x": 18,
+        "y": 8
+      },
+      "trigger": "playerTouch",
+      "target": {
+        "id": "ev_gate_e5426ed8-869d-4199-8539-4410fa0a0f1d",
+        "x": 18,
+        "y": 8
+      }
+    },
+    "ending": {
+      "steps": [
+        {
+          "x": 3,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 19,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 20,
+          "y": 6,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 21,
+          "y": 6,
+          "key": "ArrowRight"
+        }
+      ],
+      "position": {
+        "x": 21,
+        "y": 6
+      },
+      "face": "ArrowRight",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_end",
+        "x": 22,
+        "y": 6
+      }
+    },
+    "arrival": {
+      "kind": "transfer",
+      "x": 2,
+      "fade": "black",
+      "mapId": "map_segment_route",
+      "y": 6
+    }
+  },
+  "choices": [
+    "기억을 간직한다",
+    "기억을 놓아준다"
+  ],
+  "branches": [
+    {
+      "name": "keep",
+      "seconds": 96.653,
+      "passed": false,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "in-map-introduction",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": [
+            "op waitForText 실패: page.waitForFunction: Timeout 30000ms exceeded."
+          ]
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    },
+    {
+      "name": "release",
+      "seconds": 57.933,
+      "passed": false,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "in-map-introduction",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": [
+            "op waitForText 실패: page.waitForFunction: Timeout 30000ms exceeded."
+          ]
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    }
+  ],
+  "stageBox": {
+    "x": 40,
+    "y": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "videoPath": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/first-scene-v7/video/page@620579d279edccec97d0572da0810df2.webm",
+  "passed": false
+}

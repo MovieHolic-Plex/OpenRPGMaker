@@ -2,6 +2,7 @@ import { uploadedSpriteFrame } from "@/project/uploadedSpriteGeometry";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { mapTileSize } from "@/project/tileGeometry";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from '@/assets/cc0IconAssets';
 import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
@@ -162,7 +163,7 @@ function pageVisual(project: Project, page: EventPage): ClaimedPageVisual | null
   if (!resolved) return null;
   return {
     ...resolved,
-    scale: normalizeCharacterScale(graphic.scale),
+    scale: normalizeCharacterScale(graphic.scale) * (resolved.fitScale ?? 1),
     footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
     priority: page.priority,
   };
@@ -186,7 +187,7 @@ function claimedPageVisuals(
     }
     const visual: ClaimedPageVisual = {
       ...resolved,
-      scale: normalizeCharacterScale(graphic.scale),
+      scale: normalizeCharacterScale(graphic.scale) * (resolved.fitScale ?? 1),
       footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
       priority: page.priority,
     };
@@ -232,10 +233,15 @@ function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
     && event.y >= region.y && event.y < region.y + region.h;
 }
 
-function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean } | null {
+function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number } | null {
   const id = graphic.sprite?.id;
   if (!id) return null;
   const def = project.assets.sprites[id];
+  const iconUrl = resolveCc0IconAssetUrl(id);
+  const icon = CC0_ICON_ASSETS.find(asset => asset.id === id);
+  if (!def && iconUrl && icon) return { imageUrl: iconUrl,
+    frame: {x:0,y:0,width:icon.imageWidth,height:icon.imageHeight}, preserveAlpha:true,
+    fitScale:16 / Math.max(icon.imageWidth,icon.imageHeight) };
   const asset = project.assets.uploaded[def?.image.type === "uploaded" ? def.image.id : id];
   if (asset?.kind === "sprite") {
     const frame = uploadedSpriteFrame(asset, graphic.pattern ?? 0);

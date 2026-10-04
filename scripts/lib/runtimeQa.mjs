@@ -52,6 +52,8 @@ export const OP_KINDS = [
   // 마운트가 아니라 "실제로 보인다"를 기다린다. 페이드로 들어오는 창(상점 180ms)은
   // present 직후 조상 opacity 가 0 이라 visibleText 축이 alpha 0 으로 실패한다.
   "waitForVisible",
+  // Let the actual typewriter finish without advancing past the response.
+  "waitForText",
   // 속성값 대기. 전투 씬은 인트로·연출 중 `data-battle-sequence-busy="true"` 로 입력을 버린다 —
   // 그 사이에 누른 방향키는 조용히 사라져 다음 결정키가 엉뚱한 명령을 확정한다(실측: ↓ 가
   // 버려지고 z 가 공격을 확정). testid 존재만으로는 이 상태를 표현할 수 없어 속성 축을 둔다.

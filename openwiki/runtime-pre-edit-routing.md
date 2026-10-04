@@ -1,3 +1,18 @@
+## 내보낸 게임은 창에 맞춘다 (2026-10-04)
+
+`exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는
+1280×900 창에 960×720만 그렸다(면적 60%). fit은 원래 화면 비율을 유지하며 창의 최대 contain
+배율을 쓴다(320×240이면 1200×900). 게임/UI를 자르거나 늘려 왜곡하지 않는다. 정수 배율을
+명시한 다른 호스트의 선택은 유효하다. 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
+넘기지 않고 출하 player.html에서 자연 재생/첫 조작을 녹화한다.
+
+## 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+
+기존 `CC0_ICON_ASSETS`의 그림 id는 이벤트 `graphic.sprite`로 사용할 수 있다.
+`eventSpriteResources`는 charset frame을 적용하지 않고 `__BASE` 전체 그림을 16px 상자에 맞춘다.
+`bundled.ts`는 맵 이벤트/공간 구조가 참조한 아이콘만 로드한다(도감의 아이템 1,000개 그림 전체를 미리 싣지 않는다). `toolImageEventSprites`도 같은 크기/원본 알파로
+그린다. `ensureBundledProjectTextures`도 새 사물 참조를 로드하여 편집 직후 재로드 없이 보이게 한다. 기존 공용 그림의 표시 경로를 재사용한다. 회중시계 예: `cc0-jetrel-clock`.
+
 - **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 긴 선택지는 내부 리스트에서 줄바꿈/스크롤하며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
 
 - **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.

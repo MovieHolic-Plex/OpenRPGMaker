@@ -1,0 +1,681 @@
+{
+  "base": "http://127.0.0.1:18435",
+  "root": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-scene/project",
+  "started": "2026-10-04T02:32:45.638Z",
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "2e0cc955-04a1-42fa-a7e0-fe6b385958c1",
+      "characters": 39767,
+      "planIncluded": true,
+      "premiseIncluded": true,
+      "protagonistIncluded": true,
+      "time": "2026-10-04T02:36:27.861Z"
+    }
+  ],
+  "errors": [],
+  "questions": [
+    {
+      "question": "무엇이 이상하다는 걸 알게 되나요?",
+      "options": [
+        "사라진 사람과 남겨진 물건\n익숙한 사람이 흔적만 남기고 사라졌어요.",
+        "기록과 현실의 모순\n편지나 기록의 내용이 실제와 맞지 않아요.",
+        "열려서는 안 되는 장소\n어떤 계기로 감춰진 공간에 들어가요."
+      ]
+    },
+    {
+      "question": "진실은 어떻게 알아가나요?",
+      "options": [
+        "장소와 물건을 자세히 조사\n숨겨진 흔적을 찾아 연결해요.",
+        "사람의 말을 듣고 비교\n엇갈리는 증언 속에서 모순을 찾아요.",
+        "증거를 맞춰 가설을 확인\n모은 단서를 제시하고 추론의 결과를 봐요."
+      ]
+    },
+    {
+      "question": "어떤 긴장감을 원하나요?",
+      "options": [
+        "기묘하지만 아름답게\n무섭기보다 더 알고 싶은 세계예요.",
+        "조용하고 팽팽하게\n말 한마디와 작은 변화에도 의미가 있어요.",
+        "위협이 있는 긴장으로\n조사 중 위험이 찾아와 판단을 서둘러야 해요."
+      ]
+    },
+    {
+      "question": "사건은 어떻게 풀어가나요?",
+      "options": [
+        "한 사건을 끝까지 해결\n조사 → 증거 비교 → 결론으로 이어져요.",
+        "여러 장소를 오가며 조사\n순서를 선택하며 단서가 연결돼요.",
+        "누구를 믿을지 선택\n증언과 선택에 따라 다음 단서가 달라져요."
+      ]
+    },
+    {
+      "question": "첫 번째 추리는 어디까지 해볼까요?",
+      "options": [
+        "첫 이상 현상과 단서 하나\n사건을 만나고 직접 첫 단서를 찾아요.",
+        "단서 둘과 첫 추론\n두 정보를 비교해 가설을 확인해요.",
+        "짧은 사건과 결말 하나\n조사한 증거로 결론을 내리고 결과를 봐요."
+      ]
+    }
+  ],
+  "stage": "automatic-generation",
+  "initialConversations": 0,
+  "initialBrowserRecordDatabases": [
+    "oprn-ai-records",
+    "oprn-shared-content",
+    "oprn-terrain-library",
+    "oprn-tileset-blobs"
+  ],
+  "initialBrowserConversations": [],
+  "confirmedAt": "2026-10-04T02:34:04.571Z",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=c77d8b1a-e3df-457e-b736-5f6b686fa8db",
+  "chatTail": "2026년 10월 4일 일\n추리·미스터리 · 확정한 게임 기획\n서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.\n작업 결과\n완료 · 9:27\n✓\n이벤트 쓰기 · 완료\n첫 대상과 도입 제작\n등록된 이미지 없음\n초안\n도입 및 조작 안내\n기억의 서재 · (10, 8)\n·\n“제작이 완료된 프로젝트의 구조와 런타임 플레이 흐름을 읽기 전용으로 면밀히 검토했습니다. ### 1. 확인 및 검증 내용 - **시나리오 및 분기 구현**: - 시작 맵(기억의 서재)에서 멈춘 회중시계를 조사하면 기획대로 **\"기억을 간직한다\"**와 **\"기억을 놓아준다\"**의 두 선택… [602자 생략]”\n결과 확인\n✓\n저장 완료 응답을 확인했어요.\n변경 보기\n맵에서 보기\n이 작업 되돌리기\n\n변경 내용을 적용했어요.",
+  "elapsedSeconds": 709,
+  "latest": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-scene/project/.oprn-projects/c77d8b1a-e3df-457e-b736-5f6b686fa8db",
+    "projectId": "dcd14331-1032-4f2f-bd57-fa9a24e034ac",
+    "title": "멈춘 시계의 기억",
+    "revision": 20,
+    "branches": [
+      {
+        "text": "기억을 간직한다",
+        "lines": [
+          "서린: \"아무리 아픈 시간이라도... 잊고 싶지 않아. 마주해야 해.\"",
+          "시계를 품에 소중히 간직하자, 멈춰 있던 시계태엽이 작게 '째깍' 소리를 내며 울린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      },
+      {
+        "text": "기억을 놓아준다",
+        "lines": [
+          "서린: \"지나간 시간에 얽매이지 않고, 미련 없이 흘려보내겠어...\"",
+          "마음을 비워내자 시계는 조용히 숨을 고르고, 안개 낀 기억의 문이 조용히 열린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      }
+    ],
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "3794d04f68d1da8eed297733bdd6d8484963f174e48469a938f4d5814cdb430b",
+    "mapsHash": "7a83c2d3ca93230dbc6503c8bceefc97c2842db7ec1eda714db9057d3e6a75f5",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "기억의 서재",
+        "events": 3
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "define_ending"
+        ],
+        "summary": "define_ending"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "move_event"
+        ],
+        "summary": "move_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_start_position"
+        ],
+        "summary": "set_start_position"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_opening"
+        ],
+        "summary": "set_opening"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      }
+    ],
+    "records": []
+  },
+  "firstCommitAt": "2026-10-04T02:37:05.359Z",
+  "firstCommitSeconds": 180.788,
+  "modelFinished": true,
+  "beforeReload": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-scene/project/.oprn-projects/c77d8b1a-e3df-457e-b736-5f6b686fa8db",
+    "projectId": "dcd14331-1032-4f2f-bd57-fa9a24e034ac",
+    "title": "멈춘 시계의 기억",
+    "revision": 20,
+    "branches": [
+      {
+        "text": "기억을 간직한다",
+        "lines": [
+          "서린: \"아무리 아픈 시간이라도... 잊고 싶지 않아. 마주해야 해.\"",
+          "시계를 품에 소중히 간직하자, 멈춰 있던 시계태엽이 작게 '째깍' 소리를 내며 울린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      },
+      {
+        "text": "기억을 놓아준다",
+        "lines": [
+          "서린: \"지나간 시간에 얽매이지 않고, 미련 없이 흘려보내겠어...\"",
+          "마음을 비워내자 시계는 조용히 숨을 고르고, 안개 낀 기억의 문이 조용히 열린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      }
+    ],
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "3794d04f68d1da8eed297733bdd6d8484963f174e48469a938f4d5814cdb430b",
+    "mapsHash": "7a83c2d3ca93230dbc6503c8bceefc97c2842db7ec1eda714db9057d3e6a75f5",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "기억의 서재",
+        "events": 3
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "define_ending"
+        ],
+        "summary": "define_ending"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "move_event"
+        ],
+        "summary": "move_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_start_position"
+        ],
+        "summary": "set_start_position"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_opening"
+        ],
+        "summary": "set_opening"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      }
+    ],
+    "records": []
+  },
+  "taskLeakedIntoChat": false,
+  "afterReload": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-scene/project/.oprn-projects/c77d8b1a-e3df-457e-b736-5f6b686fa8db",
+    "projectId": "dcd14331-1032-4f2f-bd57-fa9a24e034ac",
+    "title": "멈춘 시계의 기억",
+    "revision": 20,
+    "branches": [
+      {
+        "text": "기억을 간직한다",
+        "lines": [
+          "서린: \"아무리 아픈 시간이라도... 잊고 싶지 않아. 마주해야 해.\"",
+          "시계를 품에 소중히 간직하자, 멈춰 있던 시계태엽이 작게 '째깍' 소리를 내며 울린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      },
+      {
+        "text": "기억을 놓아준다",
+        "lines": [
+          "서린: \"지나간 시간에 얽매이지 않고, 미련 없이 흘려보내겠어...\"",
+          "마음을 비워내자 시계는 조용히 숨을 고르고, 안개 낀 기억의 문이 조용히 열린다.",
+          "동쪽으로 이어진 '기억의 길' 너머에서 익숙한 빛이 스며들기 시작했다."
+        ]
+      }
+    ],
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "3794d04f68d1da8eed297733bdd6d8484963f174e48469a938f4d5814cdb430b",
+    "mapsHash": "7a83c2d3ca93230dbc6503c8bceefc97c2842db7ec1eda714db9057d3e6a75f5",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "기억의 서재",
+        "events": 3
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [
+      {
+        "author": "human",
+        "tools": [
+          "upsert_actor"
+        ],
+        "summary": "upsert_actor"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "define_ending"
+        ],
+        "summary": "define_ending"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_map_properties"
+        ],
+        "summary": "set_map_properties"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "move_event"
+        ],
+        "summary": "move_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_start_position"
+        ],
+        "summary": "set_start_position"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "build_hand_interior_room"
+        ],
+        "summary": "build_hand_interior_room"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "author_wild_route"
+        ],
+        "summary": "author_wild_route"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "set_opening"
+        ],
+        "summary": "set_opening"
+      },
+      {
+        "author": "human",
+        "tools": [
+          "upsert_event"
+        ],
+        "summary": "upsert_event"
+      }
+    ],
+    "records": []
+  },
+  "persisted": true,
+  "requestedBranchesAuthored": true,
+  "generationPrerequisitePassed": true,
+  "gameplayVerified": false,
+  "exportPackageVerified": false,
+  "wireCompleted": true,
+  "coreFirstVerified": true,
+  "coreReadyAt": 1791081489360,
+  "coreReviewedAt": 1791081514100,
+  "firstSceneReviewed": true
+}
