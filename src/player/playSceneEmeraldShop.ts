@@ -93,7 +93,9 @@ export function playEmeraldShop(options: {
         onBack: () => { if (phase === 'items') cancel(); },
       }));
       const target = phase === 'quantity' ? root.querySelector<HTMLElement>("[data-testid='shop-quantity-panel']")
-        : phase === 'receipt' ? root : root.querySelector<HTMLElement>('.emerald-shop-action.selected');
+        : phase === 'receipt' ? root
+        : phase === 'confirm' ? root.querySelector<HTMLElement>('.emerald-shop-confirmation .emerald-shop-action.selected')
+        : root.querySelector<HTMLElement>('.emerald-shop-action.selected');
       target?.focus({ preventScroll: true });
       const copy = root.querySelector<HTMLElement>('.emerald-shop-description-copy');
       if (copy) copy.parentElement!.dataset.overflow = String(copy.scrollHeight > copy.clientHeight);

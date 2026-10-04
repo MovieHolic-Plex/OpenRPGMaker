@@ -800,3 +800,34 @@ Compact/pretty/export roundtrip retains authored tables; invalid rule rejected;
 page/HTTP errors0. Route/cancel/vehicle/dialogue boundaries were inspected in source;
 the browser proves released-input movement and wall/stop termination. It does not
 prove an entire puzzle solution, canonical storage or a compiled player build.
+
+### Emerald shop confirmation backdrop and pending row (2026-10-04)
+
+Actual72map campaign QA exposed two copies of the player/shopkeeper: the real
+field crop was recentered on the left, while unused space below the shortened
+stock window exposed the original centered Phaser canvas. `emeraldShop.css` now
+makes unused buy-shell space opaque once the real snapshot exists, leaving the
+single actual crop visible. A failed/unavailable snapshot keeps the transparent
+shell and original single live field; no invented map or second crop is drawn.
+Sell phases use the same opaque shell around their owned-bag window. Entrance
+Buy/Sell/Quit remains on the actual field.
+
+Quantity/confirm/receipt shows only its selected inactive goods row in a complete
+64px window. Other rows are hidden until returning to the full stock list, so a
+partial fourth row cannot leak under Yes/No. `playSceneEmeraldShop.render` focuses
+the selected confirmation action rather than the earlier inactive stock button.
+The original phase owner, pending transaction, atomic commit, prices, budget,
+inventory and keyboard lifetime are unchanged.
+
+Reproduce with the standalone source player config, then
+`OPRN_QA_URL=<worktree-url> OPRN_QA_PROJECT=<actual-project.json> OPRN_QA_SLOT=<genuine-slot.json>`
+and `node scripts/qa/runtime/emerald-shop-backdrop.probe.mjs` (optional `OPRN_QA_OUT`).
+Receipt: `/tmp/oprn-emerald-20261004/shop-backdrop-source/SUMMARY.md`, read before PNGs.
+Exact unchanged project/slot SHA is in `report.json`. Native older-slot Continue,
+town-door entry, counter interaction and authored shop were used; only setup
+teleported to town(5,16). Desktop1280×960/narrow390×844 showed one real crop and
+one complete pending stock row, including a later selected technical ether.
+Buy2 changed1600→1440G/orbs10→12; No, Escape and Quit kept state unchanged;
+page/HTTP errors0. Snapshot-failure fallback was inspected in source. This is
+source exportEntry/store-shim evidence; final compiled player and canonical
+storage remain supervisor integration work.

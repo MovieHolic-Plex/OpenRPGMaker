@@ -15,6 +15,11 @@
   font:400 16px/1.4 var(--runtime-pixel-font,"Galmuri11",sans-serif);
   color:#303038; text-shadow:1px 1px #d0d0c8;
 }
+/* Once the real field crop is available it is the only displayed map image.
+   Opaque unused space prevents the original centered canvas appearing a second time.
+   If capture is unavailable, the transparent buy shell retains the single live field. */
+.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="buy"]:has(.emerald-shop-map-view[data-map-source="game-canvas-snapshot"]),
+.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="sell"]:not([data-shop-phase="menu"]) { background:#788898; }
 .emerald-shop-overlay .emerald-shop-window {
   position:absolute; box-sizing:border-box; background:#f8f8f0;
   border:4px solid #485060; border-radius:4px;
@@ -74,7 +79,10 @@
 .emerald-shop-overlay .emerald-shop-quantity-count::before { content:"↕ "; color:#d84038; }
 .emerald-shop-overlay .emerald-shop-confirmation { left:332px; top:138px; width:120px; height:80px; padding:6px 12px; z-index:4; }
 .emerald-shop-overlay .emerald-shop-confirmation .emerald-shop-action { height:30px; }
-.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods { height:136px; }
+/* Pending trade shows one complete inactive selected row, rather than clipping
+   a stock list under the quantity/confirmation windows. The full list returns on cancel. */
+.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods { height:64px; overflow:hidden; }
+.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods .emerald-shop-action:not(.selected) { display:none; }
 .emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods .selected::before { color:#909098; }
 .emerald-shop-overlay .emerald-shop-advance { position:absolute; right:34px; bottom:18px; color:#d84038; z-index:5; font-size:12px; }
 .emerald-shop-overlay .emerald-shop-bag {
