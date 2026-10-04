@@ -1,0 +1,155 @@
+{
+  "packagedEditor": true,
+  "states": [
+    {
+      "name": "01-height-and-road",
+      "stats": {
+        "builds": 3,
+        "frames": 272,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 45,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 4,
+        "casters": []
+      }
+    },
+    {
+      "name": "02-brush-shadow",
+      "stats": {
+        "builds": 4,
+        "frames": 392,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 45,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    },
+    {
+      "name": "03-off",
+      "stats": {
+        "builds": 4,
+        "frames": 392,
+        "pending": 0,
+        "visible": 0,
+        "textures": 0,
+        "enabled": false,
+        "nativeArt": false,
+        "maxTerrain": 0,
+        "casters": []
+      }
+    },
+    {
+      "name": "04-opposite-sun",
+      "stats": {
+        "builds": 6,
+        "frames": 536,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 135,
+          "altitude": 45,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    },
+    {
+      "name": "05-default-sun",
+      "stats": {
+        "builds": 8,
+        "frames": 680,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    },
+    {
+      "name": "06-reloaded",
+      "stats": {
+        "builds": 1,
+        "frames": 109,
+        "pending": 0,
+        "visible": 108,
+        "textures": 109,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    }
+  ],
+  "errors": [],
+  "nativeHeightBrush": true,
+  "brushStats": {
+    "builds": 4,
+    "frames": 392,
+    "pending": 0,
+    "visible": 120,
+    "textures": 120,
+    "enabled": true,
+    "params": {
+      "enabled": true,
+      "azimuth": 315,
+      "altitude": 45,
+      "opacity": 0.32,
+      "softness": 1,
+      "heightScale": 1
+    },
+    "nativeArt": true,
+    "maxTerrain": 6,
+    "casters": []
+  },
+  "idleCache": true,
+  "canonicalReload": true,
+  "projectId": "67792e6b-c160-4eb4-9e93-d3c59dace1bb",
+  "revision": 11,
+  "otherMapsUnchanged": true
+}
