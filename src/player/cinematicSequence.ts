@@ -19,7 +19,8 @@ function flattenCinematicFrame(shot: HTMLElement): string | undefined {
   const canvas = document.createElement('canvas');
   const size = shot.getBoundingClientRect();
   if (!size.width || !size.height) return;
-  canvas.width = Math.round(size.width); canvas.height = Math.round(size.height);
+  // The stage is CSS-scaled. Computed positions use logical pixels, not its screen rectangle.
+  canvas.width = shot.clientWidth; canvas.height = shot.clientHeight;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   try {

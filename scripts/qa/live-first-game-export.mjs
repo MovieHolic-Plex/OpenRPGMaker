@@ -16,7 +16,7 @@ const report = { projectId: generation.afterReload.projectId, revision: generati
   projectUrl: generation.projectUrl, started: new Date().toISOString(), errors: [] };
 report.networkFailures = [];
 const save = () => writeFileSync(out + '/export.json', JSON.stringify(report, null, 2) + '\n');
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const browser = await chromium.launch({ args: process.env.OPENING_EDITOR_CANVAS === '1' ? ['--disable-webgl'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce', acceptDownloads: true });
 page.on('pageerror', e => { report.errors.push(e.message); save(); });
 page.on('crash', () => { report.crashed = true; save(); });
@@ -29,7 +29,7 @@ page.on('response', r => {
 try {
   save();
   await page.goto(generation.projectUrl, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__oprnAiBridge?.status().ready, null, { timeout: 180000 });
+  await page.waitForFunction(() => window.__oprnAiBridge?.status().ready, null, { timeout: 300000 });
   await page.locator('.studio-project-button').click();
   const downloadPromise = page.waitForEvent('download', { timeout: 180000 });
   const failure = page.getByText(/^게임 내보내기 실패:/);

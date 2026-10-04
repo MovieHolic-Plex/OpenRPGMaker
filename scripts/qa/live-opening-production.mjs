@@ -10,7 +10,7 @@ const base = 'http://127.0.0.1:18435';
 const dir = resolve('output/qa/first-presentation/project/.oprn-projects/ed85bb3b-e221-4955-8fd6-e0afdc2ce590');
 const projectUrl = base + '/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590';
 mkdirSync(out, { recursive: true });
-const report = { base, projectUrl, mode: 'actual assistant storyboard, music selection/composition and layered art repair of existing saved game', requests: [], errors: [] };
+const report = { base, projectUrl, editorRenderer: process.env.OPENING_EDITOR_CANVAS === '1' ? 'Chromium Canvas (runtime WebGL verified separately)' : 'Chromium SwiftShader', mode: 'actual assistant storyboard, music selection/composition and layered art repair of existing saved game', requests: [], errors: [] };
 const save = () => writeFileSync(out + '/completion.json', JSON.stringify(report, null, 2) + '\n');
 function snapshot() {
   const db = new DatabaseSync(dir + '/project.sqlite', { readOnly: true });
@@ -26,13 +26,14 @@ function snapshot() {
   } finally { db.close(); }
 }
 const task = readFileSync(process.env.LIVE_OPENING_TASK_FILE ?? out + '/task.txt', 'utf8');
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const browser = await chromium.launch({ args: process.env.OPENING_EDITOR_CANVAS === '1' ? ['--disable-webgl'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width:1440, height:900 } });
+page.on('crash', () => { report.crashed=true; save(); });
 page.on('pageerror', e => { report.errors.push(e.message); save(); });
 page.on('request', r => {
   if (!r.url().includes('/v1/agent/run') || r.method() !== 'POST') return;
   const bytes=r.postDataBuffer(), body=JSON.parse(bytes?.[0]===31 ? gunzipSync(bytes) : bytes);
-  report.requests.push({ runId:body.runId, model:body.model, mode:body.mode, characters:body.task?.length, imageProvider:body.imageProvider, imageModel:body.imageModel }); save();
+  report.requests.push({ runId:body.runId, model:body.model, mode:body.mode, characters:body.task?.length, requestOrigin:new URL(r.url()).origin, imageProvider:body.imageProvider, imageModel:body.imageModel }); save();
 });
 try {
   report.before=snapshot();
@@ -56,8 +57,9 @@ try {
     await page.waitForTimeout(5000);
     report.chatTail=(await page.getByTestId('ai-chat-log').innerText()).slice(-3000);
     report.latest=snapshot();save();
-    if(report.requests.length && !await page.evaluate(()=>window.__oprnAiBridge.status().turnBusy)) break;
+    if (!await page.evaluate(()=>window.__oprnAiBridge.status().turnBusy) && (report.requests.length || /지시 해석 실패|worker exited/u.test(report.chatTail))) break;
   }
+  if (!report.requests.length) throw new Error('Actual agent run did not start: ' + report.chatTail.slice(-700));
   const html=await(await fetch(base+'/index.html')).text();
   const config=JSON.parse(html.match(/window\.__OPRN_BRIDGE__=(\{[^<]+\})<\/script>/)[1]);
   const wire=await fetch(base+'/v1/agent/run?provider=google-antigravity&runId='+report.requests.at(-1).runId,{headers:{'x-oprn-companion-token':config.companionToken,origin:base},signal:AbortSignal.timeout(5000)});
@@ -74,12 +76,13 @@ try {
   const shots=report.afterReload.opening?.scenes.filter(s=>s.kind==='image')??[];
   report.originalMusicGenerated=events.filter(e=>e.type==='tool_end'&&e.name==='generate_original_bgm'&&e.ok===true).length;
   report.musicCompared=events.filter(e=>e.type==='tool_end'&&e.name==='recommend_bgm'&&e.ok===true).length;
-  report.successfulForegroundGenerations=events.filter(e=>e.type==='tool_end'&&e.name==='generate_opening_image'&&e.ok===true&&e.args?.role==='foreground').length;
+  const calls = new Map(events.filter(e=>e.type==='tool_start').map(e=>[e.id,e]));
+  report.successfulForegroundGenerations=events.filter(e=>e.type==='tool_end'&&e.name==='generate_opening_image'&&e.ok===true&&calls.get(e.id)?.args?.role==='foreground').length;
   report.layers=shots.flatMap(s=>s.direction?.layers??[]).length;
   report.persisted=JSON.stringify(report.beforeReload)===JSON.stringify(report.afterReload);
   report.passed=report.workerCompleted&&report.persisted&&report.before.mapsHash===report.afterReload.mapsHash&&shots.length>=5&&new Set(shots.map(s=>s.resourceId)).size>=5&&report.originalMusicGenerated>=1&&report.musicCompared>=1&&report.layers>=2&&report.successfulImageGenerations>=7&&report.afterReload.opening.scenes.every(s=>s.presentation?.preset)&&JSON.stringify(report.before.title)===JSON.stringify(report.afterReload.title)&&!report.errors.length;
   await page.screenshot({path:out+'/reloaded.png'});
 } catch(e) { report.failure=e.message;await page.screenshot({path:out+'/failure.png',timeout:5000}).catch(()=>{}); }
-finally { if(!report.workerCompleted) await page.evaluate(()=>window.__oprnAiBridge?.abort()).catch(()=>{});save();await browser.close(); }
+finally { if(!report.workerCompleted) await Promise.race([page.evaluate(()=>window.__oprnAiBridge?.abort()).catch(()=>{}),new Promise(r=>setTimeout(r,5000))]);save();await browser.close(); }
 console.log(JSON.stringify({passed:report.passed,failure:report.failure,revision:report.afterReload?.revision,shots:report.afterReload?.opening?.scenes.length,layers:report.layers,music:report.afterReload?.opening?.musicResourceId,generated:report.successfulImageGenerations}));
 process.exitCode=report.passed?0:1;
