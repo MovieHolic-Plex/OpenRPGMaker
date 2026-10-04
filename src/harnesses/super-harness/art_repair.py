@@ -73,6 +73,9 @@ def validate_comparison(verdict, request, group_id):
         if status == 'deferred' and (not calibration or obligation['check'] in ('projection', 'style', 'scale')):
             raise ValueError('시점 표본에서 보류한 공간 항목만 deferred가 가능합니다.')
     expected_images = {r['sha256'] for r in request.get('previousImages', [])}
+    for ref in request.get('previousImages', []):
+        if art_choices.digest(ref['path']) != ref['sha256']:
+            raise ValueError('검수 중 이전 실패 그림이 변경되었습니다.')
     if set(verdict.get('previousImagesSeen', [])) != expected_images:
         raise ValueError('이전 실패 그림을 실제로 비교한 해시 목록이 필요합니다.')
 
