@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "errors": [],
+  "results": [
+    {
+      "width": 736,
+      "fits": true,
+      "actual": {
+        "time": 25.11,
+        "duration": 59.034,
+        "width": 704
+      },
+      "detail": "사건 · 독립 전경 2개의 부유/회전/페이드 · 흐림 자막"
+    },
+    {
+      "width": 360,
+      "fits": true,
+      "actual": {
+        "time": 25.11,
+        "duration": 59.034,
+        "width": 328
+      },
+      "detail": "사건 · 독립 전경 2개의 부유/회전/페이드 · 흐림 자막"
+    }
+  ]
+}

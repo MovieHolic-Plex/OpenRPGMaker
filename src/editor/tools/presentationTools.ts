@@ -6,7 +6,7 @@ export function presentationArtIds(project: Project): string[] {
   return [...new Set([
     project.system.titleScreen?.backgroundResourceId,
     ...(project.system.opening?.enabled ? project.system.opening.scenes
-      .filter(scene => scene.kind === 'image').map(scene => scene.resourceId) : []),
+      .filter(scene => scene.kind === 'image').flatMap(scene => [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) : []),
   ].filter((id): id is string => Boolean(id)))];
 }
 
