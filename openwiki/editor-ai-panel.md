@@ -3469,7 +3469,7 @@ Astra 실행에서 `generate_opening_image`가 `ui-required`만 반환하고 새
 6개 모두 기존 45초 제한 안에 유효한 PNG로 반환됐다. 제한을 늘린 결과가 아니다.
 
 재현 도구: `scripts/qa/opening-assistant-run.mts` + 브라우저 sidecar는 실제 Pi/LLM/이미지 제공자를
-사용하되 정본에 쓰지 않는다. 초기 intent 노출은 고정한 헤드리스 제작 평가다. 실제 클라이언트
+사용하되 정본에 쓰지 않는다. 기본 `--mode opening`은 초기 intent 노출을 고정한 오프닝 제작 평가다. 실제 클라이언트
 NDJSON 이미지 전달은 별도 브라우저 실행으로 확인했다. 오프닝의 실제 품질·내용, 정본 저장 후
 재로드, 출하 플레이어 검수는 `verify-shots/monster-assistant-opening-2026-10-03/REPORT.md`에 기록한다.
 
@@ -3491,3 +3491,39 @@ NDJSON 이미지 전달은 별도 브라우저 실행으로 확인했다. 오프
 오프닝 미완료를 오류로 돌려 완료 처리하지 않는다. `playbackVerified:false`는
 실제 출하 플레이·정본 저장 증거가 필요하다는 뜻이다. 기존 heavy replay와 strict
 map bundle merge 계약은 변경하지 않았다.
+
+### 일반 문장 실제 Pi 평가 러너 (2026-10-04)
+
+기존 `opening-assistant-run.mts`에 `--mode monster-game`을 주면 기본 사용자 문장은
+「포켓몬 같은 게임 만들어」다. 공용 `classifyPlainPiTurn` → `composePiTask` →
+`buildPiRunRequest`를 호출해 실제 평문 요청의 도구·제작 안내를 전달한다. 고정 오프닝
+의도를 붙이지 않으며 `--focused-opening`과 `--map-id`로 전체 제작을 좁히는 옵션은 거절한다.
+`--fresh-project 1`은 공용 `createBlankProject()`의 빈 프로젝트를 사용한다. 기존 게임은
+기존 `--project-json`/SHA 검증 `--media-json`으로 평가할 수 있다.
+
+```bash
+# 준비된 dev 서버의 origin을 준다. 이 명령은 실제 모델을 호출한다.
+bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
+  --browser-url http://127.0.0.1:9912 --model opencodex/gpt-6-astra \
+  --task '포켓몬 같은 게임 만들어' --out /tmp/oprn-monster-assistant-real
+
+# 모델·브라우저·자격 파일을 읽지 않는 요청 조립 확인
+bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
+  --route-only 1 --out /tmp/oprn-monster-assistant-route
+```
+
+실행은 자율 다이얼(추론medium)·단독 제작·전체 프로젝트 범위이며 개인 후보에 YOLO 적용 모드를 명시한다.
+별도 Ultrabrain 계획 턴은 생략한다. 기본 전체 제작 턴 상한은300이고 `--max-turns`와
+`--timeout-ms`로 줄일 수 있다. 오프닝 기본 모드의32턴·기존 문장·도구 노출은 유지한다.
+모델 자격은 런 내부에서 `~/.omp/agent/models.yml`을 읽고 출력에서는 키와 미디어 바이트를
+가린다. 후보 파일은 모드0600, 출력 폴더는0700이며 정본에 저장하지 않는다.
+
+브라우저 sidecar는 클라이언트와 같은 `generateOpeningStill`, `renderOpeningImage`,
+`renderOpeningAnimaticPreview`, `renderOpeningReferencePreview`, `renderPiMapImage`를
+호출하고 실제 `requestPiOpeningGeneration`/`requestPiRender`/`resolvePiRender` 브로커로
+이미지를 돌려준다. `broker-results.json`은 브로커가 수락한 그림의resourceId·renderId를
+남긴다. `SUMMARY.json`은 실제72맵/60종/배지/상점/표현 검사와 `monsterGameProduction`
+영수증을 담으며 영수증이 없거나 미완료가 있으면 exit1이다. 기존 오프닝/시스템 검사도
+유지한다. 실제 모델·이미지 호출 증거는 이 명령을 실행한 출력이며 route-only 출력은
+요청 조립 증거에 한정한다. 클라이언트 NDJSON·store 적용·정본 저장/재로드·출하 플레이는
+이 개인 후보 러너의 검증 범위 밖이다.

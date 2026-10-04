@@ -13,7 +13,8 @@ if(imageProvider) await page.evaluate(async ({imageProvider,imageModel})=>{
 },{imageProvider,imageModel});
 // Import all actual helpers before starting a model run. A cold Vite dependency
 // optimization failure must fail startup, rather than poison every later image call.
-await page.evaluate(async()=>{await import('/src/editor/openingImageGeneration.ts');await import('/src/editor/openingAnimaticPreview.ts');});
+await page.evaluate(async()=>{await import('/src/editor/openingImageGeneration.ts');await import('/src/editor/openingAnimaticPreview.ts');await import('/src/ai/toolImageRenderer.ts');});
+let browserWork=Promise.resolve();
 const server=createServer(async(req,res)=>{
  try{
   let body=''; for await(const part of req){body+=part; if(body.length>80_000_000)throw Error('QA payload too large');}
@@ -23,7 +24,7 @@ const server=createServer(async(req,res)=>{
    if(operation==='/generate') return m.generateOpeningStill(payload.args,{project:payload.project});
    if(operation==='/render') {
     const a=await import('/src/editor/openingAnimaticPreview.ts');
-    const url=payload.toolName==='preview_opening_animatic'?await a.renderOpeningAnimaticPreview(payload.project,payload.data):payload.toolName==='preview_opening_reference'?await a.renderOpeningReferencePreview(payload.data):await m.renderOpeningImage(payload.project,payload.data);
+    const url=payload.toolName==='preview_opening_animatic'?await a.renderOpeningAnimaticPreview(payload.project,payload.data):payload.toolName==='preview_opening_reference'?await a.renderOpeningReferencePreview(payload.data):payload.toolName==='show_opening_image'?await m.renderOpeningImage(payload.project,payload.data):await (await import('/src/ai/toolImageRenderer.ts')).renderPiMapImage(payload.project,payload.data);
     return {png:url.split(',')[1]};
    }
    throw Error('Unknown QA operation');
