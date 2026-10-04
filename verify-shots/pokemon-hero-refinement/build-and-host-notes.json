@@ -1,0 +1,14 @@
+{
+  "playerBuildCompleted": true,
+  "appBuildCompleted": true,
+  "wholeTestsOrGatesRun": false,
+  "focusedGateAndRuntimeQaRequestedByUser": true,
+  "source": {
+    "hero.py": "901ae69b01cf81e53a6679ff4b962545d407fa8915ddcc83db45ad68056d6f4a",
+    "quality_gate.py": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91"
+  },
+  "compilerWarnings": [
+    "Existing large Vite chunks"
+  ],
+  "canonicalReadFallback": "Shared9888 host was auto-restarting and unavailable. An official loopback-only18584 host opened the exact existing project folder. No new project or direct SQLite writes."
+}

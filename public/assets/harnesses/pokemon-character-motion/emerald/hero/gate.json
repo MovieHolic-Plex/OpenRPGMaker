@@ -2,11 +2,11 @@
   "kind": "gate",
   "provenance": {
     "version": "pokemon-motion-2",
-    "createdAt": "2026-10-04T14:13:22.133Z",
+    "createdAt": "2026-10-04T15:50:47.699Z",
     "role": "hero",
-    "sourceSha256": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "sourceSha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
     "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "finalSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+    "finalSha256": "1f0b0c11d0c771dd8cae257ac1ed3d553fa5cc7ee6193e963540aacd95607517",
     "contract": {
       "frameWidth": 16,
       "frameHeight": 32,
@@ -62,12 +62,12 @@
     "clip": null
   },
   "hashes": {
-    "source.png": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "source.png": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
     "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "charset.png": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121"
+    "charset.png": "1f0b0c11d0c771dd8cae257ac1ed3d553fa5cc7ee6193e963540aacd95607517"
   },
   "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
-  "provenanceSha256": "6811d60cab6bd8ae411e454e1fa65a9a1abf3841975aa51bf9ac02061b8f29ed",
+  "provenanceSha256": "7b9a024282fe6862a0ef6a7579d66f9e2d155649526ef715b23de278f87576ed",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -88,23 +88,26 @@
   "pass": true,
   "errors": [],
   "warnings": [
-    "left: whole-frame exact color/pose change 0.370; semantic playback required"
+    "up: whole-frame exact color/pose change 0.835; semantic playback required",
+    "right: whole-frame exact color/pose change 0.863; semantic playback required",
+    "down: whole-frame exact color/pose change 0.743; semantic playback required",
+    "left: whole-frame exact color/pose change 0.856; semantic playback required"
   ],
   "metrics": {
-    "paletteUnion": 13,
+    "paletteUnion": 15,
     "nonBinaryAlpha": 0,
     "up": {
       "jitterX": 0,
-      "jitterY": 0,
-      "widthRatio": 1,
-      "heightRatio": 1,
+      "jitterY": 1,
+      "widthRatio": 1.375,
+      "heightRatio": 1.05,
       "areaRatio": 1,
       "headWidthRatio": 1,
       "headAreaRatio": 1,
-      "stepChange": 39,
+      "stepChange": 33,
       "changes": [
         0,
-        0,
+        0.009009009009009009,
         0,
         0
       ],
@@ -117,46 +120,46 @@
       "comparisonRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ],
       "wholeExactChanges": [
-        0.2550335570469799,
-        0.2684563758389262,
-        0.2684563758389262,
-        0.2550335570469799
+        0.823170731707317,
+        0.8353658536585366,
+        0.8353658536585366,
+        0.823170731707317
       ],
       "upperEnd": 24,
       "bounds": [
         {
           "x": 2,
-          "y": 10,
+          "y": 11,
           "width": 12,
-          "height": 21
+          "height": 20
         },
         {
           "x": 2,
@@ -166,62 +169,62 @@
         },
         {
           "x": 2,
-          "y": 10,
+          "y": 11,
           "width": 12,
-          "height": 21
+          "height": 20
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 10,
           "skullCenter": 7.5
         },
         {
           "x": 8,
           "y": 10,
-          "width": 6,
+          "width": 10,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 10,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 8,
-          "core": 34,
-          "headArea": 53
+          "core": 22,
+          "headArea": 82
+        },
+        {
+          "width": 11,
+          "core": 22,
+          "headArea": 82
         },
         {
           "width": 8,
-          "core": 34,
-          "headArea": 53
-        },
-        {
-          "width": 8,
-          "core": 34,
-          "headArea": 53
+          "core": 22,
+          "headArea": 82
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
         "startY": 19,
-        "endY": 24,
-        "rows": 5,
+        "endY": 23,
+        "rows": 4,
         "centerX": 8,
         "halfWidth": 3
       },
       "torsoRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
@@ -233,72 +236,78 @@
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ]
     },
     "right": {
       "jitterX": 0,
-      "jitterY": 0,
+      "jitterY": 1,
       "widthRatio": 1,
-      "heightRatio": 1,
-      "areaRatio": 1.1666666666666667,
+      "heightRatio": 1.05,
+      "areaRatio": 1,
       "headWidthRatio": 1,
       "headAreaRatio": 1,
-      "stepChange": 39,
+      "stepChange": 23,
       "changes": [
-        0.07692307692307693,
-        0.06756756756756757,
-        0.06756756756756757,
-        0.07692307692307693
+        0,
+        0.019230769230769232,
+        0.01020408163265306,
+        0
       ],
       "alphaChanges": [
-        0.05128205128205128,
         0,
         0,
-        0.05128205128205128
+        0,
+        0
       ],
       "comparisonRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ],
       "wholeExactChanges": [
-        0.31932773109243695,
-        0.3565217391304348,
-        0.3565217391304348,
-        0.31932773109243695
+        0.8356164383561644,
+        0.863013698630137,
+        0.863013698630137,
+        0.8356164383561644
       ],
       "upperEnd": 24,
       "bounds": [
+        {
+          "x": 3,
+          "y": 11,
+          "width": 11,
+          "height": 20
+        },
         {
           "x": 3,
           "y": 10,
@@ -306,69 +315,63 @@
           "height": 21
         },
         {
-          "x": 4,
-          "y": 10,
-          "width": 8,
-          "height": 21
-        },
-        {
           "x": 3,
-          "y": 10,
-          "width": 10,
-          "height": 21
+          "y": 11,
+          "width": 11,
+          "height": 20
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 9,
           "skullCenter": 7.5
         },
         {
           "x": 8,
           "y": 10,
-          "width": 6,
+          "width": 9,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 9,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 5,
-          "core": 28,
-          "headArea": 50
+          "core": 21,
+          "headArea": 77
         },
         {
           "width": 5,
-          "core": 24,
-          "headArea": 50
+          "core": 21,
+          "headArea": 77
         },
         {
           "width": 5,
-          "core": 24,
-          "headArea": 50
+          "core": 21,
+          "headArea": 77
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
         "startY": 19,
-        "endY": 24,
-        "rows": 5,
+        "endY": 23,
+        "rows": 4,
         "centerX": 8,
         "halfWidth": 3
       },
       "torsoRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
@@ -380,25 +383,25 @@
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ]
     },
     "down": {
       "jitterX": 0,
-      "jitterY": 0,
+      "jitterY": 1,
       "widthRatio": 1,
-      "heightRatio": 1,
+      "heightRatio": 1.05,
       "areaRatio": 1,
       "headWidthRatio": 1,
       "headAreaRatio": 1,
-      "stepChange": 39,
+      "stepChange": 33,
       "changes": [
         0,
-        0,
+        0.008333333333333333,
         0,
         0
       ],
@@ -411,46 +414,46 @@
       "comparisonRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ],
       "wholeExactChanges": [
-        0.24836601307189543,
-        0.26143790849673204,
-        0.26143790849673204,
-        0.24836601307189543
+        0.7251461988304093,
+        0.7426900584795322,
+        0.7426900584795322,
+        0.7251461988304093
       ],
       "upperEnd": 24,
       "bounds": [
         {
           "x": 2,
-          "y": 10,
+          "y": 11,
           "width": 12,
-          "height": 21
+          "height": 20
         },
         {
           "x": 2,
@@ -460,62 +463,62 @@
         },
         {
           "x": 2,
-          "y": 10,
+          "y": 11,
           "width": 12,
-          "height": 21
+          "height": 20
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 10,
-          "width": 7,
+          "y": 11,
+          "width": 10,
           "skullCenter": 7.5
         },
         {
           "x": 8,
           "y": 10,
-          "width": 7,
+          "width": 10,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 10,
-          "width": 7,
+          "y": 11,
+          "width": 10,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 8,
-          "core": 34,
-          "headArea": 57
+          "core": 26,
+          "headArea": 87
         },
         {
           "width": 8,
-          "core": 34,
-          "headArea": 57
+          "core": 26,
+          "headArea": 87
         },
         {
           "width": 8,
-          "core": 34,
-          "headArea": 57
+          "core": 26,
+          "headArea": 87
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
         "startY": 19,
-        "endY": 24,
-        "rows": 5,
+        "endY": 23,
+        "rows": 4,
         "centerX": 8,
         "halfWidth": 3
       },
       "torsoRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
@@ -527,142 +530,142 @@
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ]
     },
     "left": {
       "jitterX": 0,
-      "jitterY": 0,
+      "jitterY": 1,
       "widthRatio": 1,
-      "heightRatio": 1,
-      "areaRatio": 1.125,
+      "heightRatio": 1.05,
+      "areaRatio": 1,
       "headWidthRatio": 1,
       "headAreaRatio": 1,
-      "stepChange": 40,
+      "stepChange": 24,
       "changes": [
-        0.1038961038961039,
-        0.04,
-        0.04,
-        0.1038961038961039
+        0.01,
+        0,
+        0,
+        0.018691588785046728
       ],
       "alphaChanges": [
-        0.03896103896103896,
-        0.013333333333333334,
-        0.013333333333333334,
-        0.03896103896103896
+        0,
+        0,
+        0,
+        0
       ],
       "comparisonRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": -1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": -1,
           "rejected": false
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ],
       "wholeExactChanges": [
-        0.3697478991596639,
-        0.3017241379310345,
-        0.3017241379310345,
-        0.3697478991596639
+        0.8424657534246576,
+        0.8561643835616438,
+        0.8561643835616438,
+        0.8424657534246576
       ],
       "upperEnd": 24,
       "bounds": [
         {
-          "x": 3,
-          "y": 10,
-          "width": 10,
-          "height": 21
+          "x": 2,
+          "y": 11,
+          "width": 11,
+          "height": 20
         },
         {
-          "x": 4,
-          "y": 10,
-          "width": 8,
-          "height": 21
-        },
-        {
-          "x": 3,
+          "x": 2,
           "y": 10,
           "width": 11,
           "height": 21
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "width": 11,
+          "height": 20
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 9,
           "skullCenter": 7.5
         },
         {
           "x": 8,
           "y": 10,
-          "width": 6,
+          "width": 9,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 10,
-          "width": 6,
+          "y": 11,
+          "width": 9,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 5,
-          "core": 27,
-          "headArea": 50
+          "core": 23,
+          "headArea": 77
         },
         {
           "width": 5,
-          "core": 24,
-          "headArea": 50
+          "core": 23,
+          "headArea": 77
         },
         {
           "width": 5,
-          "core": 25,
-          "headArea": 50
+          "core": 23,
+          "headArea": 77
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
         "startY": 19,
-        "endY": 24,
-        "rows": 5,
+        "endY": 23,
+        "rows": 4,
         "centerX": 8,
         "halfWidth": 3
       },
       "torsoRegistration": [
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         },
         {
@@ -674,15 +677,15 @@
         },
         {
           "x": 0,
-          "y": 0,
+          "y": 1,
           "requestedX": 0,
-          "requestedY": 0,
+          "requestedY": 1,
           "rejected": false
         }
       ]
     }
   },
   "clip": null,
-  "createdAt": "2026-10-04T14:41:36.532Z",
-  "reviewSha256": "7c8899fc08f9e92d011d6feb2de73900bfe2bd61a1a659f9f9c2fb083dda5f02"
+  "createdAt": "2026-10-04T16:19:24.943Z",
+  "reviewSha256": "0312fafe83d32b436eca78417efb851e46b6f3d8da8736fa2ca7a4802013415f"
 }

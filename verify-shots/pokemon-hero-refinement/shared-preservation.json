@@ -1,0 +1,36 @@
+{
+  "unchangedSharedCastAssets": [
+    "oprn_emerald_field_cast_2",
+    "oprn_emerald_signpost",
+    "oprn_emerald_trainer_hero",
+    "oprn_emerald_trainer_rival",
+    "oprn_emerald_trainer_professor",
+    "oprn_emerald_trainer_nurse",
+    "oprn_emerald_trainer_merchant",
+    "oprn_emerald_trainer_mother",
+    "oprn_emerald_trainer_resident",
+    "oprn_emerald_trainer_gym_leader",
+    "oprn_emerald_trainer_company_agent",
+    "oprn_emerald_trainer_captain",
+    "oprn_emerald_trainer_worker",
+    "oprn_emerald_trainer_explorer",
+    "oprn_emerald_trainer_student",
+    "oprn_emerald_trainer_ranger",
+    "oprn_emerald_trainer_moon_leader",
+    "oprn_emerald_trainer_hiker",
+    "oprn_emerald_trainer_hero_back"
+  ],
+  "heroQualityJudgments": [
+    {
+      "reviewer": "hero_hostile_review",
+      "score": 85,
+      "criticalFailures": []
+    },
+    {
+      "reviewer": "root",
+      "score": 86,
+      "criticalFailures": []
+    }
+  ],
+  "allOtherSharedAssetsUnchanged": true
+}

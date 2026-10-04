@@ -101,6 +101,9 @@ def arms(c,role,direction,phase):
 
 
 def render(role,direction,phase):
+    if role.name == "hero":
+        from hero import render as hero_render
+        return hero_render(direction, phase)
     c=Pixels((16,32),palette(role))
     if direction in ['up','down']:front_legs(c,role,phase,direction=='up')
     else:side_legs(c,role,phase,direction=='left')

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import {build} from 'esbuild';
+import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 const [selectionFile]=process.argv.slice(2);
@@ -17,7 +18,18 @@ if(authored){
   if(authored.method!=='python-native-pixel-authoring'||authored.resizing!==false||authored.quantization!==false)throw Error('Wrong native authoring declaration');
   for(const [file,sha] of Object.entries(authored.sources))if(hash(fs.readFileSync(path.resolve('scripts/asset-gen/pokemon-characters',file)))!==sha)throw Error('Authored Python source changed: '+file);
 }
+let qualityLedger=null;
 try {
+  // Native Python heroes require both current art judgments and exact GIF playback, not structural approval alone.
+  { // Every shared hero registration requires quality approval; omitting authoring must not bypass it.
+    const q=selection.quality?.hero;
+    if(!q?.pack||!q?.review||!q?.rootReview)throw Error('Hostile hero quality evidence required');
+    const result=spawnSync('python3',[path.resolve(dir,'quality_gate.py'),'gate','--pack',q.pack,'--review',q.review,'--root-review',q.rootReview,'--out',path.join(temp,'hero-quality')],{encoding:'utf8'});
+    if(result.status!==0)throw Error('Hero quality gate rejected: '+result.stderr);
+    const current=JSON.parse(result.stdout),hero=authored?.roles.find(r=>r.role==='hero');
+    if(!current.pass||current.sheetSha256!==hash(fs.readFileSync(path.join(selection.walk.hero,'source.png')))||(hero&&current.sheetSha256!==hero.charsetSha256))throw Error('Quality evidence belongs to a different hero');
+    qualityLedger={sheetSha256:current.sheetSha256,gifSha256:current.gifSha256,rubricSha256:current.rubricSha256,implementationSha256:current.implementationSha256,judgments:current.judgments,packageSha256:current.packageSha256,independentReviewSha256:current.independentReviewSha256,rootReviewSha256:current.rootReviewSha256};
+  }
   const entry=path.join(temp,'entry.ts'),compiled=path.join(temp,'harness.cjs');
   fs.writeFileSync(entry,'export {run} from '+JSON.stringify(path.join(dir,'cli.ts'))+';\nexport * from '+JSON.stringify(path.resolve('src/harnesses/monster-collect-species/node/png.ts'))+';\nexport * from '+JSON.stringify(path.resolve('src/harnesses/monster-collect-species/pixel/image.ts'))+';');
   await build({entryPoints:[entry],outfile:compiled,bundle:true,platform:'node',format:'cjs',logLevel:'silent',define:{'import.meta.dirname':JSON.stringify(dir)}});
@@ -75,11 +87,21 @@ try {
   const ledger=[];
   for(const [role,output] of outputs){
     const target=path.join(dest,role);fs.mkdirSync(target,{recursive:true});
-    for(const file of fs.readdirSync(output.out))fs.copyFileSync(path.join(output.out,file),path.join(target,file));
+    let stableGate=false;
+    try{
+      const old=JSON.parse(fs.readFileSync(path.join(target,'gate.json'))),current=JSON.parse(fs.readFileSync(path.join(output.out,'gate.json')));
+      delete old.createdAt;delete current.createdAt;stableGate=JSON.stringify(old)===JSON.stringify(current);
+    }catch(error){if(error.code!=='ENOENT')throw error;}
+    for(const file of fs.readdirSync(output.out)){
+      if(stableGate&&['gate.json','motion.json'].includes(file))continue;
+      fs.copyFileSync(path.join(output.out,file),path.join(target,file));
+    }
     const evidence=JSON.parse(fs.readFileSync(path.join(output.candidate,'review.json'),'utf8')).evidence;
+    const evidenceNames=new Set(evidence.map(e=>e.file));
+    for(const old of fs.readdirSync(target))if(old.startsWith('review-evidence-')&&!evidenceNames.has(old))fs.unlinkSync(path.join(target,old));
     for(const e of evidence)fs.copyFileSync(path.join(output.candidate,e.file),path.join(target,e.file));
     fs.copyFileSync(path.join(output.candidate,'prompt.txt'),path.join(target,'prompt.txt'));
-    ledger.push({role,source:output.candidate,sourceSha256:output.provenance.sourceSha256,promptSha256:output.provenance.promptSha256,finalSha256:output.provenance.finalSha256,gateSha256:hash(fs.readFileSync(path.join(output.out,'gate.json')))});
+    ledger.push({role,source:output.candidate,sourceSha256:output.provenance.sourceSha256,promptSha256:output.provenance.promptSha256,finalSha256:output.provenance.finalSha256,gateSha256:hash(fs.readFileSync(path.join(target,'gate.json')))});
   }
   const clipBytes=fs.readFileSync(path.join(outputs.get('professor-intro').out,'clip.png'));
   const clipAsset={id:'oprn_emerald_professor_motion',kind:'picture',name:'비취섬 천문박사 · 6개 실제 도트 자세',dataUrl:'data:image/png;base64,'+clipBytes.toString('base64'),meta:{mime:'image/png',width:384,height:64}};
@@ -92,6 +114,11 @@ try {
   for(const a of previous)if(a.id.startsWith('oprn_emerald_field_cast_')||a.id.startsWith('oprn_emerald_trainer_')){a.sha256=hash(Buffer.from(catalog[a.id].dataUrl.split(',')[1],'base64'));a.meta={...catalog[a.id].meta};a.source='public/assets/harnesses/pokemon-character-motion/emerald/generation.json';a.pipeline='scripts/content/register-pokemon-character-motion.mjs';}
   fs.writeFileSync(path.join(castDir,'catalog.json'),JSON.stringify(previous,null,2));
   if(authored)fs.copyFileSync(selection.authoring,path.join(dest,'authoring.json'));
-  fs.writeFileSync(path.join(dest,'generation.json'),JSON.stringify({version:2,native:{frameWidth:16,frameHeight:32,opaqueColorsMax:15},editorAdapter:{frameWidth:24,frameHeight:32,paddingX:4,resizing:false},imageGeneration:authored?'none / native Python pixels':'builtin-imagegen',...(authored?{authoring:{method:authored.method,manifestSha256:hash(fs.readFileSync(selection.authoring)),sources:authored.sources}}:{}),roles:ledger},null,2));
+  if(qualityLedger){
+    fs.copyFileSync(path.join(temp,'hero-quality/quality-gate.json'),path.join(dest,'hero/quality-gate.json'));
+    const packageData=JSON.parse(fs.readFileSync(selection.quality.hero.pack));
+    fs.copyFileSync(packageData.gif,path.join(dest,'hero/walk.gif'));
+  }
+  fs.writeFileSync(path.join(dest,'generation.json'),JSON.stringify({version:2,...(qualityLedger?{heroQuality:qualityLedger}:{}),native:{frameWidth:16,frameHeight:32,opaqueColorsMax:15},editorAdapter:{frameWidth:24,frameHeight:32,paddingX:4,resizing:false},imageGeneration:authored?'none / native Python pixels':'builtin-imagegen',...(authored?{authoring:{method:authored.method,manifestSha256:hash(fs.readFileSync(selection.authoring)),sources:authored.sources}}:{}),roles:ledger},null,2));
   console.log(JSON.stringify({sharedRoles:roles.length,nativeWalkingFrames:192,professorFrames:6,trainerPortraits:17,canonicalSaved:false}));
 } finally {fs.rmSync(temp,{recursive:true,force:true});}

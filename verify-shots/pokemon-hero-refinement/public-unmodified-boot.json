@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "warning",
+    "text": "[.WebGL-0x265400158200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "kind": "warning",
+    "text": "[.WebGL-0x265400158200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "kind": "warning",
+    "text": "[.WebGL-0x265400158200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "kind": "warning",
+    "text": "[.WebGL-0x265400158200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  },
+  {
+    "text": "별빛섬 몬스터 원정\n모험 시작\n불러오기\n크레딧\n그만두기\n작은 동료와 여덟 빛의 약속",
+    "title": "별빛섬 몬스터 원정"
+  }
+]

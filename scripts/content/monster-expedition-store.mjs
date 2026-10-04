@@ -27,10 +27,15 @@ if(operation==='create') {
   await fs.writeFile(identityPath,JSON.stringify(identity,null,2));
 }
 if(!identity)throw Error('Create the canonical destination first.');
-const target=new URL(identity.host);target.searchParams.set('hostProject',identity.hostProject);
+const target=new URL(identity.host);
+// A dedicated official host may open the same canonical folder directly while the shared workspace host is unavailable.
+const scope=identity.bridgeProject ?? identity.hostProject;
+if(scope)target.searchParams.set('hostProject',scope);
 const client=await connectHostBridge(target.href);
 await client.call('oprn:project.open',{projectDir:'host-project'});
 const before=await client.call('oprn:project.load',{projectDir:'host-project'});
+const beforeStatus=await client.call('oprn:project.status');
+if(beforeStatus.projectId!==identity.projectId)throw Error('Canonical destination identity differs before mutation.');
 let expected;
 const media=[];
 if(operation==='save') {

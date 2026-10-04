@@ -163,3 +163,42 @@ node scripts/qa/runtime/pokemon-hand-authoring.mjs /path/review/selection.json /
 `authoring.json`은 method=`python-native-pixel-authoring`, resizing=false, quantization=false, Python sourceSHA와34 PNG SHA를 담는다. selection.authoring을 준 공용 등록은 현재 Python SHA·native provenance·source/final decoded RGBA 동일성을 추가로 검증한다. 숫자 gate로 예술 품질을 주장하지 않는다. 맨다리 인물의 뒤다리 바지색 오류를 독립 검수로 발견해 피부 shadow로 수정했고, 가방 배색도 필드/후면을 맞췄다. 여러 인물의 얼굴·자세 유사성과 각진 작은 몸통은 남은 표현상 제한이다.
 
 새 적용 증거는 `verify-shots/pokemon-hand-pixels-20261004/SUMMARY.md`에 둔다. 정본은 공식 호스트 CAS save/fresh connection load/media bytes 확인 후에만 완료한다. 실제 standalone opening/walk/battle/old Continue QA는 이전과 같은 전용 player 경로다. 별도60종 몬스터 후보 선택을 우회하지 않는다.
+
+## Hostile hero quality gate — one-character refinement
+
+The previous Python hero received41/100 despite passing native structural checks. Frozen rubric `harness-data/pokemon-character-motion/hero-quality-rubric.json` requires85/100, every axis minimum, zero critical failures. Candidates69/73/77 were rejected; v4 received independent85 and root86. These are recorded artistic judgments, not automated aesthetic measurements or authenticated reviewer identities. Remaining limitations: rectangular torso/shorts, flat rear bag, close navy shades.
+
+`hero.py` authors the hero's12 poses directly at16×32. `field.render` dispatches only that role to it. `build.py` declares `qualityRequiredRoles:['hero']` and uses the hero's15-color palette and140ms GIF cycle. Other15 field roles,17 portraits and professor clip remain unchanged. Rebuilding preserves the reviewed hero PNG/GIF bytes.
+
+```bash
+python3 scripts/asset-gen/pokemon-characters/build.py --out /absolute/native-source
+python3 src/harnesses/pokemon-character-motion/node/quality_gate.py prepare \
+  --sheet /absolute/native-source/hero/charset.png \
+  --gif /absolute/native-source/hero/walk.gif --out /absolute/quality
+node scripts/qa/runtime/pokemon-hero-gif.mjs \
+  /absolute/native-source/hero/walk.gif /absolute/browser-gif
+# Optional exact-color display GIF; explicit indexing avoids PIL adaptive color changes.
+python3 scripts/qa/runtime/pokemon-hero-display-gif.py \
+  /absolute/native-source/hero/walk.gif /absolute/hero-display-4x.gif --scale 4
+# Author and an independent reviewer inspect all12poses, all decoded GIF frames,
+# and1x/4x display evidence. Root additionally observes actual browser playback.
+# Record both judgments against the current observationPackageSha256.
+python3 src/harnesses/pokemon-character-motion/node/quality_gate.py gate \
+  --pack /absolute/quality/quality-evidence.json \
+  --review /absolute/quality/independent-review.json \
+  --root-review /absolute/quality/root-review.json --out /absolute/quality
+python3 scripts/qa/runtime/pokemon-hero-quality-controls.py \
+  --pack /absolute/quality/quality-evidence.json \
+  --review /absolute/quality/independent-review.json \
+  --root-review /absolute/quality/root-review.json --out /absolute/controls
+```
+
+Actual GIF must be68×32, four decoded frames[0,1,2,1], infinite loop, uniform80..180ms. All16 direction/phase crops must exactly match the current native atlas; four separator columns must remain transparent. Root browser proof requires all3 distinct poses at1x/4x with exact decoded GIF pixel comparisons. Contacts are regenerated and checked, rubric/implementation/source/GIF/evidence hashes must remain current. Score sums, axis minima, observation declarations, non-root reviewer identity string and zero critical failures are mandatory. Hashes bind records to bytes; they cannot prove that a named person actually looked, prevent coordinated fabricated judgments, or establish artistic truth. Reviewers must independently judge the art rather than fill passing scores.
+
+`register-pokemon-character-motion.mjs` requires `selection.quality.hero={pack,review,rootReview}` for every shared hero registration, including selections without authoring metadata. It reruns this gate and matches its source SHA to the authored hero before any shared writes. Stores `hero/quality-gate.json`, native `hero/walk.gif`, generation.heroQuality; unchanged-role gate/motion timestamps are preserved. Standard native import/review/gate/build and exact24×32 transparent padding remain required separately.
+
+`apply-pokemon-reviewed-hero.mjs` reads current cast1 bytes via the official host bridge, replaces only slot0 (72×128), checks64,512 outside pixels and every other project field/asset for equality, then prepares detached wire/cache documents. The store helper performs CAS save and fresh-connection load/media comparison. For a temporary official host opening the same canonical folder directly, private canonical identity may set `bridgeProject:''`; projectId/projectDir/hostProject remain recorded. This does not authorize a new project or direct SQLite writes.
+
+Evidence: `verify-shots/pokemon-hero-refinement/SUMMARY.md`. Durable authoring/selection: `/home/main/z-project/pokemon-hero-refine/`. User-visible report and standalone game use the public18301 server; runtime checks use exportedplayer.html, never the editor shell. Monster species illustrations retain their separate human selection requirement.
+
+Published18301 QA note: Playwright interception at insecure mdc-server can make Chrome classify the fulfilled HTML as a different address space and block same-origin local JS/CSS. Confirm the actual unmodified mdc-server page first, retain the failed interception record, then use the same18301 server through127.0.0.1 for the existing QA instrumentation. Do not disable browser security or count the failed run as a pass. See `verify-shots/pokemon-hero-refinement/public-qa-interception-failure/`.

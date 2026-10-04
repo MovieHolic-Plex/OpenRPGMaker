@@ -1,11 +1,11 @@
 {
   "provenance": {
     "version": "pokemon-motion-2",
-    "createdAt": "2026-10-04T14:13:22.133Z",
+    "createdAt": "2026-10-04T15:50:47.699Z",
     "role": "hero",
-    "sourceSha256": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "sourceSha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
     "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "finalSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+    "finalSha256": "1f0b0c11d0c771dd8cae257ac1ed3d553fa5cc7ee6193e963540aacd95607517",
     "contract": {
       "frameWidth": 16,
       "frameHeight": 32,
@@ -61,12 +61,12 @@
     "clip": null
   },
   "hashes": {
-    "source.png": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "source.png": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
     "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "charset.png": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121"
+    "charset.png": "1f0b0c11d0c771dd8cae257ac1ed3d553fa5cc7ee6193e963540aacd95607517"
   },
   "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
-  "provenanceSha256": "6811d60cab6bd8ae411e454e1fa65a9a1abf3841975aa51bf9ac02061b8f29ed",
+  "provenanceSha256": "7b9a024282fe6862a0ef6a7579d66f9e2d155649526ef715b23de278f87576ed",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -84,22 +84,26 @@
     "stepChangeMin": 4,
     "margin": 0
   },
-  "createdAt": "2026-10-04T14:36:23.667Z",
+  "createdAt": "2026-10-04T16:19:24.156Z",
   "verdict": "pass",
-  "who": "root / Python pixel author and visual reviewer",
-  "why": "Root directly authored Python native16x32 pixels and viewed all three browser phase sheets at1x/3x: up/right/down/left match, head identity is fixed, opposing planted and lifted feet and arm swing are visible, [0,1,2,1] returns to idle. Hair, hat, uniform and bag keep role identity. Pixel preservation is separately checked. Boxy torsos remain a style limitation; this is original cast, not a claim of original Pokemon art quality.",
+  "who": "root",
+  "why": "Root inspected12 native poses, all4 decoded GIF frames and exact real browser14captures per1x/4x. Planted calf and folded raised foot alternate with the opposite sleeve and hand. Independent85/root86 meet the frozen rubric; current durable observation package and browser proof bind PNG/GIF bytes. Square torso, flat back bag and close navy colors remain nonblocking. Canonical single-slot save/fresh-load and compiled standalone four-direction QA separately preserve actual native pixels.",
   "evidence": [
     {
-      "file": "review-evidence-0.png",
-      "sha256": "49b956d7e3bdff975ae8421a11ff9ad0e155b5093bac7dc8a2e6543481ed1985"
+      "file": "review-evidence-0.json",
+      "sha256": "908f7f52170108b5bc8f6b465693be72bacd2fe8d596aea5d1eb0132e0f77c36"
     },
     {
-      "file": "review-evidence-1.png",
-      "sha256": "ad50eb271d2ab9fa1d6b0c629af544fc876d548290492208b166d9fe12af07c3"
+      "file": "review-evidence-1.json",
+      "sha256": "7544c6ed88ac08ef39a8921b4f6860b11657a504cce270ddf1d2e8d44eddaac1"
     },
     {
       "file": "review-evidence-2.png",
-      "sha256": "beacab4c96e29ac051e3ff42fa7d6a967dc644d7dbb74b995b475e268a10d4e2"
+      "sha256": "0e9aa6283a9b11965244582dd60da8ec4095dbe44c247bf18e393827772985fb"
+    },
+    {
+      "file": "review-evidence-3.json",
+      "sha256": "4049f35e60510e08e778cd705f91d3f6b26647a3ee04457acc8a4e472c26d99d"
     }
   ],
   "semanticChecklist": [
@@ -109,5 +113,5 @@
     "loop seam natural",
     "clip is actual drawn poses if advertised drawn"
   ],
-  "previewSha256": "b0e28b11a97bcb8aadd4a784a5b4306fa7e93f0af82eb9c6b58b5155fa554e47"
+  "previewSha256": "0a7ea2ea4f693bfeddc052f78e369ee5b7c43fa63157c591ef3a13c04f6d3b38"
 }

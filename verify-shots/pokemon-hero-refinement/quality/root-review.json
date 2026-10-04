@@ -1,0 +1,78 @@
+{
+  "sheetSha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
+  "gifSha256": "c9ca9fb1accecd0b6d380deaf3feb0371fb0c13b3c1ee8d593e73e9abfcb11c9",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "reviewer": "root",
+  "author": "root",
+  "scores": {
+    "silhouette": {
+      "score": 16,
+      "reason": "Native1x reads as a small capped person; crown curve and separated shoes fix the old pole silhouette. Vest block still has square sides."
+    },
+    "anatomy": {
+      "score": 16,
+      "reason": "All12 poses keep connected sleeve-hand and hip-knee-shoe chains. The nose and neck distinguish profile from front; foreshortening is economical rather than rich."
+    },
+    "walking": {
+      "score": 18,
+      "reason": "Decoded frames0/2 swap the raised folded foot and planted supporting calf in front and back. Low forearm opposes that calf; profiles show two grounded/contact phases. Browser samples independently preserve the same3 poses."
+    },
+    "pixelCraft": {
+      "score": 13,
+      "reason": "Cap highlights form clusters with a red rim and separated dark temple. No smoothing or broken transparency appears in exact1x/4x browser captures. Close navy shades and flat shorts still limit volume."
+    },
+    "identity": {
+      "score": 14,
+      "reason": "Red cap, navy hair and blue vest with gold-red pack remain readable from each direction. Profile carries the rear bag on the correct shoulder and the back retains pocket color."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Head height and shoulder width agree across12 poses; profile brim points forward and face disappears toward the rear. Bag volume is flatter from behind than in profile."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All4 decoded frames show stepA-idle-stepB-idle at140ms. Last idle and first idle have identical pixels; intentional1px bob repeats without a costume jump. Actual browser shows all3 poses at both scales."
+    }
+  },
+  "criticalFailures": [],
+  "total": 86,
+  "verdict": "pass",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/native-contact.png",
+      "sha256": "5228d31fdaf31c439741e8716e8aa9f9d20c542e6367eea5c7fdce1a7b517c4a"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/decoded-gif-contact.png",
+      "sha256": "b4439a9ac4f83e2b946b42560dff733476683cd84f6720d3a96b793cc072b265"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/browser-gif/browser-playback.png",
+      "sha256": "0e9aa6283a9b11965244582dd60da8ec4095dbe44c247bf18e393827772985fb"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/browser-gif/record.json",
+      "sha256": "4049f35e60510e08e778cd705f91d3f6b26647a3ee04457acc8a4e472c26d99d"
+    }
+  ],
+  "limitations": [
+    "Square torso/shorts and flat back bag remain.",
+    "Art scores are manual judgments; this is not an original-game quality claim."
+  ],
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": true,
+  "observationPackageSha256": "b35ca1c9a50eb7a9dd83dc573b757c153932f59a6334963fbd724cf04a0adf2a",
+  "browserProof": {
+    "file": "/home/main/z-project/pokemon-hero-refine/browser-gif/record.json",
+    "sha256": "4049f35e60510e08e778cd705f91d3f6b26647a3ee04457acc8a4e472c26d99d"
+  }
+}

@@ -14,3 +14,7 @@ Generated sources default to common source raster sampling (fixed phase0.5); exp
 
 
 Direct native authorship: `python3 scripts/asset-gen/pokemon-characters/build.py --out /path/native-source` draws final pixels without image generation/resampling. `prepare-review.py` imports/checks/previews without approving. `portrait-import --native` preserves exact64×64; `clip-import --native --columns6 --rows1` preserves the declared384×64 grid. Wrong grid, alpha and palette are rejected, not repaired. Native source/final equality and four rejection controls: `node scripts/qa/runtime/pokemon-hand-authoring.mjs <selection.json> <evidence-dir>`. The shared producer also checks all Python and native PNG hashes from selection.authoring. Runtime save/reload and visual approval remain separate requirements.
+
+### Hostile quality gate for the directly authored hero
+
+Native structural checks do not judge anatomy or walking quality. `node/quality_gate.py` adds a frozen85-point art rubric, source-exact decoded GIF checks, current prepared contacts, two recorded judgments, and root browser GIF evidence. The Python hero producer's shared registration requires it. `scripts/qa/runtime/pokemon-hero-quality-controls.py` exercises focused rejection controls; fixtures never approve artwork. See `openwiki/harnesses/pokemon-character-motion.md` for commands, evidence schema and limitations.

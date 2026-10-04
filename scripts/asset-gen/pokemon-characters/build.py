@@ -7,6 +7,7 @@ from cast import ROLES,HEADS,palette
 from field import render
 from portraits import render as portrait,hero_back
 from pixels import digest
+from hero import PALETTE as HERO_PALETTE
 
 HERE=Path(__file__).resolve().parent
 parser=argparse.ArgumentParser();parser.add_argument('--out',type=Path,required=True);parser.add_argument('--role',choices=[r.name for r in ROLES]);args=parser.parse_args()
@@ -16,7 +17,7 @@ for name,views in HEADS.items():
  for direction,rows in views.items():
   assert len(rows)==9,(name,direction)
   assert all(len(row)==10 for row in rows),(name,direction,rows)
-manifest={'version':1,'author':'Codex / root','method':'python-native-pixel-authoring','resizing':False,'quantization':False,'nativeFieldFrame':[16,32],'nativePortraitFrame':[64,64],'sources':{p.name:digest(p) for p in sorted(HERE.glob('*.py'))},'roles':[]}
+manifest={'version':1,'author':'Codex / root','method':'python-native-pixel-authoring','resizing':False,'quantization':False,'nativeFieldFrame':[16,32],'nativePortraitFrame':[64,64],'sources':{p.name:digest(p) for p in sorted(HERE.glob('*.py'))},'roles':[],'qualityRequiredRoles':['hero']}
 for role in ROLES:
  if args.role and args.role!=role.name:continue
  folder=args.out/role.name;folder.mkdir(exist_ok=True)
@@ -30,7 +31,7 @@ for role in ROLES:
  portrait(role).save(folder/'portrait.png')
  colors={p[:3] for p in sheet.get_flattened_data() if p[3]}
  assert len(colors)<=15
- manifest['roles'].append({'role':role.name,'label':role.label,'charset':str(folder/'charset.png'),'charsetSha256':digest(folder/'charset.png'),'portrait':str(folder/'portrait.png'),'portraitSha256':digest(folder/'portrait.png'),'palette':palette(role),'opaqueColors':len(colors)})
+ manifest['roles'].append({'role':role.name,'label':role.label,'charset':str(folder/'charset.png'),'charsetSha256':digest(folder/'charset.png'),'portrait':str(folder/'portrait.png'),'portraitSha256':digest(folder/'portrait.png'),'palette':HERO_PALETTE if role.name=='hero' else palette(role),'opaqueColors':len(colors)})
  # GIF only packs source pixels. Upscaling is performed by CSS in the review UI.
  palette_rgb=sorted(colors);indexes={rgb:i+1 for i,rgb in enumerate(palette_rgb)}
  pal=[0,0,0]+[v for rgb in palette_rgb for v in rgb];pal += [0]*(768-len(pal))
@@ -39,7 +40,7 @@ for role in ROLES:
   rgba=Image.new('RGBA',(68,32),(0,0,0,0))
   for row in range(4):rgba.paste(frames[row*3+phase],(row*17,0))
   gif=Image.new('P',rgba.size);gif.putpalette(pal);gif.putdata([indexes[p[:3]] if p[3] else 0 for p in rgba.get_flattened_data()]);gifs.append(gif)
- gifs[0].save(folder/'walk.gif',save_all=True,append_images=gifs[1:],loop=0,duration=90 if role.name=='hero' else 80,transparency=0,background=0,disposal=2,optimize=False)
+ gifs[0].save(folder/'walk.gif',save_all=True,append_images=gifs[1:],loop=0,duration=140 if role.name=='hero' else 80,transparency=0,background=0,disposal=2,optimize=False)
 hero_back(ROLES[0]).save(args.out/'hero_back.png')
 professor=next(r for r in ROLES if r.name=='professor')
 clip=Image.new('RGBA',(384,64),(0,0,0,0))
