@@ -7,6 +7,7 @@ off/on은 수치를 보존한다. 완전 제거는 AI `set_map_properties.clearS
 `io/shape.ts`가 공통 `normalizeSunlight`로 읽기 값을 정규화한다. 스키마 버전을 올리지 않는다.
 방향 `azimuth`는 **태양이 있는 방향**(0 북 / 90 동 / 180 남 / 270 서)이다.
 고도 12~85°, 진하기 0~.65, 가장자리 0~4, 집/나무 높이 배율 .25~2.
+고도를 생략한 새 설정의 기본값은 65°다(기존 40°는 보통 집에도 긴 그림자를 만들었다). 기본 enabled는 계속 false이고, 저자가 명시한 24°/35° 같은 고도는 그대로 보존한다. 낮은 태양은 긴 그림자가 필요할 때 선택한다. 박공/고도 비교의 실제 editor/player 근거는 `verify-shots/gabled-roof/SUMMARY.md`.
 구름 이동 `angleDeg`(0 동)와 방향 계약이 다르므로 UI/AI 설명에 방위를 함께 표시한다.
 `setMapSunlight`는 map lock과 store 계측을 통과한다. AI 부분 패치는 생략한 설정을 유지한다.
 

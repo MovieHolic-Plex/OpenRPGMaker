@@ -23,7 +23,7 @@ export const SUNLIGHT_LIMITS = {
   softness: { min: 0, max: 4 }, heightScale: { min: .25, max: 2 },
 } as const;
 export const DEFAULT_SUNLIGHT: Readonly<SunlightParams> = {
-  enabled: false, azimuth: 315, altitude: 40, opacity: .32, softness: 1, heightScale: 1,
+  enabled: false, azimuth: 315, altitude: 65, opacity: .32, softness: 1, heightScale: 1,
 };
 const bounded = (v: unknown, fallback: number, min: number, max: number) =>
   typeof v === "number" && Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : fallback;

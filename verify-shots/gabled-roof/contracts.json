@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "legacy hip identifiers and artwork stay unchanged",
+    "minimum/maximum widths and both floor bands retain complete native tiles; log houses keep their native roof",
+    "exact roof form conversion is accepted; a wall change remains rejected",
+    "width-only resize preserves each existing hip/gable form",
+    "gable to hip restores the roof fringe without leaving ghost tiles",
+    "human repaint is still protected",
+    "short shadow default stays off and preserves explicitly authored low sun"
+  ],
+  "projectWrites": false
+}

@@ -1,0 +1,35 @@
+{
+  "folder": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/gabled-roof/project",
+  "projectId": "3422b7dc-4b8d-4f56-b611-f921f561b6c9",
+  "revision": 2,
+  "canonicalReload": true,
+  "houseTool": "지붕 변경 · 벽·창·문 위치 유지",
+  "wallTilesUnchanged": true,
+  "eventsAndTerrainUnchanged": true,
+  "otherMapsUnchanged": true,
+  "userProjectWritten": false,
+  "before": {
+    "x": 19,
+    "y": 39,
+    "w": 11,
+    "h": 8,
+    "kitId": "quick_house_beodeul-manor-a_9_2_roof11x3",
+    "altitude": 35
+  },
+  "after": {
+    "x": 19,
+    "y": 38,
+    "w": 11,
+    "h": 9,
+    "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+    "altitude": 65
+  },
+  "defaultSun": {
+    "enabled": false,
+    "azimuth": 315,
+    "altitude": 65,
+    "opacity": 0.32,
+    "softness": 1,
+    "heightScale": 1
+  }
+}
