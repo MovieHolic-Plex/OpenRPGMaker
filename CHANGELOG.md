@@ -5,6 +5,15 @@
 
 <!-- releases -->
 
+## 0.118.1 — 2026-10-04
+
+### 수정
+
+- reduce editor typing, undo, and event-opening latency (#2061) (`edd0361`)
+- retain user approved drawing model per concept (#2060) (`fbe6563`)
+- retain user approved drawing model per concept (`1fb92f2`)
+- run drawing harnesses through the supervisor (#2058) (`faafc3a`)
+
 ## 0.118.0 — 2026-10-04
 
 ### 기능
