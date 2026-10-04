@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **134쪽 / 4579KB / 약 1,325,633 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **134쪽 / 4589KB / 약 1,328,486 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,9 +26,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 533 | ~21,749 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 783 | ~32,621 |
-| `openwiki/runtime-project-schema.md` | 211KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1504 | ~59,212 |
+| `openwiki/runtime-project-schema.md` | 212KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1519 | ~59,443 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
-| `openwiki/testing.md` | 215KB | 48KB | 2038 | ~59,884 |
+| `openwiki/testing.md` | 217KB | 48KB | 2063 | ~60,298 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
 ## 한국어 산문이 깨진 페이지
@@ -374,19 +374,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` 그림의 접촉점
 - `L50` 저장과 증거
 
-### `openwiki/charset-actor-harness.md` — 24KB · 242줄 · ~7,402 토큰
+### `openwiki/charset-actor-harness.md` — 26KB · 258줄 · ~8,100 토큰
 
 - `L3` GIF 공방: AI 자유 저작과 사람 선택 (2026-10-04)
-- `L21` 진입점과 저장 대상
-- `L36` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
-- `L60` 묶음 저작과 에디터용 내보내기
-  - `L62` 2026-10-04 신뢰성 감사와 v3
-- `L115` 걸음 전파 계약 (2026-10-03)
-- `L133` 재개 당시 근거
-- `L141` GPT high 원샷 비교 (2026-10-03 사용자 요청)
-- `L159` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
-- `L182` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
-- `L210` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
+  - `L21` 버튼 반응과 저장 (2026-10-04)
+- `L37` 진입점과 저장 대상
+- `L52` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
+- `L76` 묶음 저작과 에디터용 내보내기
+  - `L78` 2026-10-04 신뢰성 감사와 v3
+- `L131` 걸음 전파 계약 (2026-10-03)
+- `L149` 재개 당시 근거
+- `L157` GPT high 원샷 비교 (2026-10-03 사용자 요청)
+- `L175` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
+- `L198` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
+- `L226` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
 
 ### `openwiki/community-site.md` — 20KB · 178줄 · ~5,235 토큰
 
@@ -853,7 +854,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L290` Recovered native emote command (2026-09-05)
 - `L294` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 34KB · 215줄 · ~8,880 토큰
+### `openwiki/editor-genre-packs.md` — 37KB · 254줄 · ~9,522 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
@@ -868,6 +869,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L149` Validation
 - `L151` Two new-project surfaces, one choice model (2026-09-11)
   - `L212` Executable first romance scene (2026-10-03)
+  - `L216` Click-first interview and fresh art (2026-10-04)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 
@@ -1130,12 +1132,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L137` 시험
 - `L146` 아직 없는 것
 
-### `openwiki/harnesses/romance-scene.md` — 8KB · 49줄 · ~1,924 토큰
+### `openwiki/harnesses/romance-scene.md` — 10KB · 59줄 · ~2,599 토큰
 
 - `L5` Entry and contract
 - `L13` Authoring and rejection
 - `L25` Art direction and compact dialogue (2026-10-04)
-- `L35` Reproduction
+- `L35` Maker-owned repair loop (2026-10-04)
+- `L45` Reproduction
 
 ### `openwiki/harnesses/super-harness.md` — 7KB · 72줄 · ~2,129 토큰
 
@@ -1613,7 +1616,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L722` 8차 맵 진입 (2026-09-28)
 - `L755` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 211KB · 1504줄 · ~59,212 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 212KB · 1519줄 · ~59,443 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
 - `L11` 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
@@ -1694,6 +1697,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1466` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 - `L1492` 재편집 지형과 게임 높이 규칙 (2026-10-03)
 - `L1501` Optional internal authoring contract
+  - `L1505` Desktop fullscreen and mouse controls (2026-10-04)
 
 ### `openwiki/runtime-sessions.md` — 123KB · 627줄 · ~33,263 토큰 · 통째읽기 잘림
 
@@ -2075,25 +2079,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 44KB · 367줄 · ~13,116 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 44KB · 369줄 · ~13,309 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
   - `L44` 참고문서 읽기 게이트
-- `L52` 타일셋 종류별로 조수가 아는 정도
-- `L66` 가르치는 수단 — 효과 큰 순
-- `L87` 새 타일셋을 넣을 때 점검표
-- `L96` 재배포 금지 서드파티 팩 (예: Rasak Modern)
-- `L111` 네 층 타일셋 가르치기
-  - `L117` 조수가 지금 받는 것
-  - `L131` 네 층 팩을 가르치는 순서
-  - `L151` Rasak Fantasy 파이프라인 (저장소 밖 그림)
-  - `L163` MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
-  - `L210` 건물 문법과 마을 짜임 (2026-09-25)
-- `L292` 알려진 함정
-- `L302` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
-- `L316` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
-- `L351` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+- `L54` 타일셋 종류별로 조수가 아는 정도
+- `L68` 가르치는 수단 — 효과 큰 순
+- `L89` 새 타일셋을 넣을 때 점검표
+- `L98` 재배포 금지 서드파티 팩 (예: Rasak Modern)
+- `L113` 네 층 타일셋 가르치기
+  - `L119` 조수가 지금 받는 것
+  - `L133` 네 층 팩을 가르치는 순서
+  - `L153` Rasak Fantasy 파이프라인 (저장소 밖 그림)
+  - `L165` MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
+  - `L212` 건물 문법과 마을 짜임 (2026-09-25)
+- `L294` 알려진 함정
+- `L304` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
+- `L318` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+- `L353` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
 ### `openwiki/team-project-host.md` — 43KB · 478줄 · ~13,441 토큰
 
@@ -2145,7 +2149,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` 저장·크기 변경
 - `L77` 확인
 
-### `openwiki/testing.md` — 215KB · 2038줄 · ~59,884 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 217KB · 2063줄 · ~60,298 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
@@ -2240,6 +2244,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L1970` 화면 주변 타일 유지 검증
   - `L1993` 공식 512×512 저작 상한 검증
   - `L2021` 공식 1024×1024 저작 상한과 성능 검증
+  - `L2039` Maker repair and click-first startup (2026-10-04)
 
 ### `openwiki/tile-geometry.md` — 12KB · 145줄 · ~3,629 토큰
 

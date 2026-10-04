@@ -27,6 +27,7 @@ import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+from functools import lru_cache
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent.parent
@@ -183,6 +184,13 @@ def base_of(key):
     png, n = base_sheet(key)
     pal, _, frames = C.from_actor(png, n)
     return pal, frames
+
+
+@lru_cache(maxsize=256)
+def _gate_base(png, slot, mtime_ns, ctime_ns, size):
+    pal, _, frames = C.from_actor(png, slot)
+    base = (pal, frames)
+    return base, hashlib.sha256(C.dump(pal, {}, frames).encode()).hexdigest()
 
 
 def face_ref(key):
@@ -384,8 +392,9 @@ def current_gate(w):
     meta = json.loads((w / 'meta.json').read_text())
     raw = (w / 'out.chr.txt').read_bytes()
     source_hash = hashlib.sha256(raw).hexdigest()
-    base = base_of(meta['base'])
-    base_hash = hashlib.sha256(C.dump(base[0], {}, base[1]).encode()).hexdigest()
+    png, slot = base_sheet(meta['base'])
+    stat = png.stat()
+    base, base_hash = _gate_base(str(png.resolve()), slot, stat.st_mtime_ns, stat.st_ctime_ns, stat.st_size)
     strength = meta.get('strength') or briefs().get(meta['brief'], {}).get('strength', 'normal')
     file = w / 'views' / 'gate.json'
     try:
@@ -1053,6 +1062,7 @@ ACCEPTED_LOCAL = DATA / 'accepted'           # 올린 그림에서 나온 것(�
 def _items():
     out = []
     decisions = _decisions()
+    all_briefs = briefs()
     for rd in sorted((p for p in (DATA / 'runs').glob('*') if p.name != 'reviewtest'), reverse=True):
         discarded_file = rd / 'discarded.json'
         discarded = {r['dir'] for r in json.loads(discarded_file.read_text())['characters']} if discarded_file.exists() else set()
@@ -1063,7 +1073,7 @@ def _items():
                 m = json.loads((w / 'meta.json').read_text())
             except (OSError, ValueError):
                 continue
-            b = briefs().get(m['brief'], {})
+            b = all_briefs.get(m['brief'], {})
             has = (w / 'out.chr.txt').exists() and (w / 'views' / 'walk.gif').exists()
             gate = None
             if has:
@@ -1176,6 +1186,38 @@ def export_decisions():
                 f.unlink()
 
 
+def sync_human_decision(w, rec):
+    """선택한 후보 하나만 동기화한다. 모든 받은 칩을 매 클릭마다 다시 복사하지 않는다."""
+    run, candidate = rec['id'].split('/', 1)
+    stem = f'{candidate}__{run}'
+    dest = ACCEPTED_LOCAL
+    if effective_decision(w, rec) != 'accept':
+        for suffix in ('.chr.txt', '.png', '.json'):
+            (dest / f'{stem}{suffix}').unlink(missing_ok=True)
+        return
+    meta = json.loads((w / 'meta.json').read_text())
+    dest.mkdir(parents=True, exist_ok=True)
+    shutil.copy(w / 'out.chr.txt', dest / f'{stem}.chr.txt')
+    shutil.copy(w / 'views' / 'sheet.png', dest / f'{stem}.png')
+    write_json_atomic(dest / f'{stem}.json', dict(id=rec['id'], brief=meta['brief'], base=norm_base(meta['base']),
+                                               base_label=base_label(meta['base']), strength=meta['strength'],
+                                               files=dict(chr=f'{stem}.chr.txt', sheet=f'{stem}.png'),
+                                               description=_desc(w)))
+
+
+def decision_receipt(mutation_id):
+    if not mutation_id or not DECISIONS.exists():
+        return None
+    for line in reversed(DECISIONS.read_text().splitlines()):
+        try:
+            rec = json.loads(line)
+        except ValueError:
+            continue
+        if rec.get('mutationId') == mutation_id:
+            return rec
+    return None
+
+
 def cmd_serve(a):
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from urllib.parse import unquote
@@ -1253,6 +1295,20 @@ def cmd_serve(a):
                 return self._send(404, '{}')
             if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
                 return self._send(400, '{"error":"bad"}')
+            with decisions_lock, data_lock('decisions'):
+                return self._decide(d)
+
+        def _decide(self, d):
+            receipt = decision_receipt(d.get('mutationId'))
+            if receipt:
+                if any(receipt.get(k) != d.get(k) for k in ('id', 'decision', 'inspected')):
+                    return self._send(409, '{"error":"mutation conflict"}')
+                candidate = root / receipt['id']
+                if candidate.is_dir() and root in candidate.resolve().parents and human_review(candidate):
+                    # 사본 동기화 전에 연결이 끊겨도, 재시도는 최신 선택을 복구한다.
+                    latest = _decisions().get(receipt['id'])
+                    sync_human_decision(candidate, latest or dict(receipt, decision='clear'))
+                return self._send(200, json.dumps(receipt, ensure_ascii=False))
             w = root / d['id']
             if not w.is_dir() or root not in w.resolve().parents:
                 return self._send(404, '{"error":"candidate missing"}')
@@ -1264,14 +1320,16 @@ def cmd_serve(a):
                 if not quality(w, 'accept', gate, review)['eligible']:
                     return self._send(409, json.dumps(dict(error='결손/검사 실패 결과는 받을 수 없습니다',
                                                          fails=gate['fails']), ensure_ascii=False))
-            rec = dict(id=d['id'], decision=d['decision'], inspected=binding(gate), reasons=d.get('reasons') or [], note=d.get('note') or '',
+            rec = dict(id=d['id'], decision=d['decision'], mutationId=d.get('mutationId'), inspected=binding(gate), reasons=d.get('reasons') or [], note=d.get('note') or '',
                        client='web', at=now())
             DATA.mkdir(parents=True, exist_ok=True)
-            with decisions_lock, data_lock('decisions'):
-                with open(DECISIONS, 'a', encoding='utf-8') as fh:
-                    fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
-                    fh.flush()
-                    os.fsync(fh.fileno())
+            with open(DECISIONS, 'a', encoding='utf-8') as fh:
+                fh.write(json.dumps(rec, ensure_ascii=False) + '\n')
+                fh.flush()
+                os.fsync(fh.fileno())
+            if human_review(w):
+                sync_human_decision(w, rec)
+            else:
                 export_decisions()
             return self._send(200, json.dumps(rec, ensure_ascii=False))
 

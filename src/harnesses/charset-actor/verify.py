@@ -197,6 +197,27 @@ def verify():
         with patch.object(B, 'prepare_batch', return_value=(batch,[assigned])), patch.object(B, 'review_batch', side_effect=AssertionError('model review forbidden')):
             B.produce_batch('human-fixture',[row],1)
         check('human-resume-preserves-published-GIF', (w / 'views' / 'walk.gif').stat().st_mtime_ns==before)
+        # 원본 캐시는 파일 변경을 감지해야 한다. 실제 RTP는 수정하지 않는다.
+        from PIL import Image
+        reference = H.DATA / 'reference.png'
+        reference.write_bytes(H.ACTOR1.read_bytes())
+        with patch.object(H, 'base_sheet', return_value=(reference, 0)):
+            original = H.current_gate(w)
+            hits = H._gate_base.cache_info().hits
+            H.current_gate(w)
+            check('base-cache-reused-for-unchanged-source', H._gate_base.cache_info().hits > hits)
+            im = Image.open(reference).convert('RGB'); rgb=im.getpixel((10,10)); im.putpixel((10,10),(rgb[0]^1,rgb[1],rgb[2])); im.save(reference)
+            changed = H.current_gate(w)
+            check('base-cache-invalidates-on-file-change', changed['baseSha256']!=original['baseSha256'])
+            check('changed-base-invalidates-render', not H.views_fresh(w,changed))
+        receipt = dict(rec, mutationId='durable-idempotency-fixture')
+        with H.DECISIONS.open('a') as file:
+            file.write(json.dumps(receipt)+'\n')
+            file.write(json.dumps(dict(receipt, decision='clear', mutationId='clear-fixture'))+'\n')
+        check('retry-finds-receipt-after-later-clear', H.decision_receipt(receipt['mutationId'])==receipt and rec['id'] not in H._decisions())
+        other=H.ACCEPTED_LOCAL/'unrelated.png';other.write_bytes(b'preserve other selection')
+        H.sync_human_decision(w,dict(rec,decision='reject',inspected=H.binding(H.current_gate(w))))
+        check('single-selection-sync-preserves-other-copies', other.read_bytes()==b'preserve other selection')
     return evidence
 
 
