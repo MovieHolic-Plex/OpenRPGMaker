@@ -10,9 +10,10 @@
 import { characterDepth } from "@/player/characterDepth";
 import { PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { asReliefTextures, buildReliefStripTextures, reliefFieldOf, removeReliefTextures, type ReliefTextureManager } from "@/player/reliefStrips";
-import { cellLift, pointLift } from "@/project/relief/screen";
+import { cellLift, footLift } from "@/project/relief/screen";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap } from "@/project/types";
+import type { ReliefGroundSurface } from "@/project/relief/render";
 
 export const RELIEF_TOP_DEPTH = -0.5;
 export const RELIEF_LIFTED_LOWER_DEPTH = -0.4;
@@ -51,6 +52,7 @@ interface ReliefImage {
 }
 
 export interface ReliefLayerOptions {
+  readonly ground?: ReliefGroundSurface;
   readonly tileSize: number;
   /** 벽면 장식을 그릴 타일셋 텍스처. 없으면 장식을 건너뛴다. */
   readonly wallDecor: { readonly textureKey: string; readonly frame: (tile: number) => string } | null;
@@ -78,7 +80,7 @@ export function renderReliefLayer<TImage extends ReliefImage>(
   const map = scene.map, relief = map.relief, textures = asReliefTextures(scene.textures);
   const { tileSize, wallDecor } = options;
   if (!relief || !reliefFieldOf(relief) || !textures || typeof document === "undefined") return;
-  const built = buildReliefStripTextures(textures, relief, tileSize);
+  const built = buildReliefStripTextures(textures, relief, tileSize, { ground: options.ground });
   hostTextures.set(host, built.textureKeys);
   for (const frame of built.frames) {
     const image = scene.add.image(frame.x, frame.y, frame.textureKey, frame.frame);
@@ -135,7 +137,7 @@ export function spriteReliefLiftPx(map: GameMap | undefined, sprite: { readonly 
   const field = reliefFieldOf(map.relief);
   if (!field) return 0;
   const size = mapTileSize(map);
-  return pointLift(field, sprite.x / size - 0.5, sprite.y / size - 1) * size;
+  return footLift(field, sprite.x / size, sprite.y / size) * size;
 }
 
 /** 그리는 동안만 캐릭터를 들림만큼 올린다. 씬 create 에서 한 번 부른다. */

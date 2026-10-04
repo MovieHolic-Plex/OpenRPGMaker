@@ -4,7 +4,8 @@ import { terrainLocked } from "@/project/terrainDesign";
 import { cloneExtraLayers, layerTileAt, setLayerTileAt, shadowAt, setShadowAt, compactMapLayers } from "@/project/mapLayers";
 import { emptyRelief } from "@/project/relief/edit";
 import { genId } from "@/util/id";
-import { planTerrainDesign, type TerrainDesignOptions, type TerrainDesignPlan } from "./terrainDesignPlans";
+import { copiedTerrainMap, planTerrainDesign, type TerrainDesignOptions, type TerrainDesignPlan } from "./terrainDesignPlans";
+import { copyRelief } from "@/project/relief/edit";
 import type { TerrainPoint } from "./terrainDesignGeometry";
 
 export function terrainFeatureCell(map: GameMap, index: number): TerrainStampCell {
@@ -20,7 +21,7 @@ function put(map: GameMap, i: number, c: TerrainStampCell): void {
 export function planTerrainFeature(map: GameMap, tileset: TilesetDef, tool: TerrainFeature["tool"], points: TerrainPoint[], options: TerrainDesignOptions, editId: string | null): TerrainDesignPlan {
   const old = editId ? map.terrainDesign?.features?.find(f => f.id === editId) : undefined;
   if (editId && !old) return { ok: false, reason: "편집할 지형이 없어졌습니다. 목록에서 다시 고르세요", indices: [] };
-  const base: GameMap = { ...map, lowerTiles: map.lowerTiles.slice(), upperTiles: map.upperTiles.slice(), ...cloneExtraLayers(map) };
+  const base = copiedTerrainMap(map);
   if (old) {
     if (old.patches.some(p => terrainLocked(map.terrainDesign, p.index) || !same(terrainFeatureCell(map, p.index), p.after))) return { ok: false, reason: "이 지형 위에 다른 편집이나 잠금이 있습니다. 해당 편집을 되돌리거나 잠금을 해제한 뒤 재편집하세요", indices: [] };
     for (const patch of old.patches) put(base, patch.index, patch.before);
@@ -39,6 +40,8 @@ export function planTerrainFeature(map: GameMap, tileset: TilesetDef, tool: Terr
   next.terrainDesign.features = [...(map.terrainDesign?.features ?? []).filter(f => f.id !== old?.id), feature];
   const indices = [...new Set([...plan.indices, ...(old?.patches.map(p => p.index) ?? [])])];
   return { ...plan, indices, apply: draft => {
+    if (draft.relief) draft.relief = copyRelief(draft.relief);
+    if (draft.terrainDesign) draft.terrainDesign = { ...draft.terrainDesign, waterDepth: draft.terrainDesign.waterDepth?.slice() };
     for (const i of indices) put(draft, i, terrainFeatureCell(next, i));
     draft.terrainDesign = next.terrainDesign;
     compactMapLayers(draft);

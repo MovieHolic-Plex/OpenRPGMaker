@@ -185,7 +185,7 @@ class EditorStateStore {
     terrainRoadFlatten: false,
     terrainRoadDrag: false,
     terrainHouseStyle: "beodeul-manor-a", terrainHouseWidth: 7, terrainHouseStories: 1,
-    terrainHouseKitId: null,
+    terrainHouseKitId: "bd-out-cabin",
     terrainHouseResize: "house", terrainHouseRoofWidth: 7,
     terrainHouseDrag: null,
     terrainUnlock: false,

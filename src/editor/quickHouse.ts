@@ -20,6 +20,7 @@ export function quickHouseOptions(s: Pick<import("./editorState").EditorState, "
 export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
   return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width <= 24 && k.height <= 24
+    && !/^bd-block-|^quick_house_/.test(k.id)
     && !!k.parts?.some(p => p.kind === "entrance") && /house|home|집|주택|저택|여관|상점|대장간|성당|창고/i.test(`${k.id} ${k.name} ${k.ai?.tags?.join(" ")}`))
     .sort((a, b) => Number(!/살림집|cottage/i.test(a.name ?? "")) - Number(!/살림집|cottage/i.test(b.name ?? "")));
 }
@@ -36,6 +37,7 @@ export function quickHouseKit(tileset: TilesetDef, options: QuickHouseOptions): 
   const catalog = quickHouseCatalog(tileset);
   const selected = options.kitId ? catalog.find(k => k.id === options.kitId) : undefined;
   if (selected) return selected;
+  if (options.kitId) return undefined;
   const styles = quickHouseStyles(tileset);
   if (!styles.length) return catalog[0];
   const chosen = styles.includes(options.style) ? options.style : styles[0]!;

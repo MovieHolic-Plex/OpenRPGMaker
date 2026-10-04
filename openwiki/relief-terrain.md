@@ -12,8 +12,9 @@
 |---|---|---|
 | 데이터 | `relief/types.ts` | `ReliefData{levels, ramps?, wallDecor?, style?}`, 격자 변환 |
 | 편집 | `relief/edit.ts` | `normalizeRelief`(불러오기·0~9 경사로), `resizeRelief`, `brushRelief`(main 의 8방식), `carryReliefExtras`(조수 도구가 경사로·장식·양식을 잇는다) |
-| 걷기 | `relief/walk.ts` | `reliefAllowsStep`(단 차·경사로 축·옆구리), `reliefSlopes`(경사로 덩어리 → 렌더 사각형), `reliefBridgeMask`, `hasRelief` |
-| 들림 | `relief/screen.ts` | `reliefLiftField`/`cellLift`/`pointLift`(단 → 칸 들림, relief 객체당 한 번 계산), `reliefPaintsCell`, `reliefRenderOptions`, `reliefSignature`, `reliefRowStrips`(줄 띠 자르기), `reliefTileSlotChangedCells`(편집기 부분 갱신) |
+| 걷기 | `relief/walk.ts` | `reliefAllowsStep`(단 차·유효 층계참·옆구리), `reliefSlopes`(완전한 축 방향 통로만 병합), `invalidateReliefSlopes`, `reliefBridgeMask`, `hasRelief` |
+| 들림 | `relief/screen.ts` | `reliefLiftField`/`cellLift`/`pointLift`(타일 중심), `footLift`(물리 발 좌표), `reliefPickPoint`(보이는 윗면/벽 화소), `reliefRenderOptions`, `reliefSignature`, `reliefRowStrips`, `reliefTileSlotChangedCells` |
+| 원본 바닥 | `editor/reliefGroundSurface.ts` · `mapTileDrawCore.ts` | 현재 칩셋의 하층·겹침·2층·그림자·autotile을 16px 셀로 합성해 윗면/경사로에 투영. 작은 셀 캐시와 셀 서명으로 부분 갱신 |
 | 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트. `window` 옵션(잘라 낸 격자를 절대 좌표 무늬로 굽기), `reliefPadPx`(굽지 않고 pad 계산) |
 | 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다 |
 | 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다(런타임). `reliefFieldOf` 는 「높이가 있는가」를 relief 객체마다 한 번만 잰다 |
@@ -98,10 +99,19 @@
 실제 편집기 1~4단·교체·되돌리기 근거를 둔다. `reliefStyle.test.ts`에 단 없는 기하·연속 들림·불투명 면 계약을
 추가했으며 AGENTS의 제한에 따라 로컬 테스트 스위트는 실행하지 않았다.
 
+## 발 접지·클릭·바닥 접합 수정 (2026-10-04)
+
+- 경사로 표기의 연결 덩어리를 큰 사각형으로 채우지 않는다. 낮은 층계참 → 같은 방향/낮은 높이의 연속 칸 → 높은 층계참을 가진 통로만 인정한다. 나란한 통로도 시작/끝/높이가 같은 경우만 병합한다. 옆구리 진입, 다른 경사로로 가로질러 이동, 끊긴 경사 표기는 막는다.
+- 캐릭터는 타일 중심 들림을 보간하지 않고 `footLift`로 실제 `sprite.x/y` 발 좌표의 연속 기하를 읽는다. 타일·상층 그림은 기존 중심 좌표를 쓴다. 클릭은 `camera.worldView`를 사용해 줌 원점을 보정하고, 작은 렌더 창의 화소 소유권(`reliefPickPoint`)으로 보이는 윗면을 고른다. 절벽 벽 클릭은 목표 칸이 아니다.
+- `ReliefRenderOptions.ground`가 있으면 실제 원본 칩셋 바닥을 윗면·비탈·대각선 접점과 풀 턱에 투영한다. 바닥 없는 헤드리스 호출은 기존 절차적 팔레트가 대체한다. 원본 바닥의 kind=0 띠는 전부 under로 배치하며 하층/2층/그림자를 별도로 중복해서 그리지 않는다. 계단/다리 밑면의 전용 그림은 유지한다.
+- 바닥 변경도 relief 부분 굽기를 예약한다. autotile 이웃까지 셀 변경 창을 넓힌다. 높이 유무가 처음 바뀌면 기존 바닥 객체도 함께 갱신한다. 비활성 하층의 투명도/색조는 under 띠에도 적용한다.
+- 미리보기 계획은 `copyRelief`와 수심 배열을 복사한다. 미리보기 중 원본 높이/경사/수심을 바꾸면 Undo와 캐시가 함께 깨진다. 배열을 직접 저작하는 도로 연결은 `invalidateReliefSlopes`를 호출한다.
+- 재현: `scripts/capture/inspect-terrain-seams.mts` + `terrain-seam-sheets.py`의 세 SQLite QA 지도 접점 1,186곳(가려진 접점 포함)의 윗면/발치 시트 전량 검토. `capture-terrain-seams-runtime.mjs`는 출하 `player.html`에서 네 방향 키보드/클릭 왕복·옆구리 차단·실제 AI 원본 집 3채 문 앞 이동을 기록한다. `capture-terrain-seams-editor.mjs`는 실제 패키지 에디터에서 원본 선택·부분 바닥 갱신/전체 굽기 일치·폭 2칸 도로·저장/Undo/재로드를 확인한다. 상세 근거와 범위는 `verify-shots/terrain-seams/SUMMARY.md`.
+
 ## 알려진 한계 · 결정이 필요한 것
 
 - **걷기 규칙은 켜는 스위치가 없다.** `relief` 를 가진 맵(경사로 없이 높이만 칠한 옛 맵 포함)은 단 차이를 건너지 못한다. 편집기에서는 「높이」 막대 → 지형지물 → 경사로·계단으로 절벽 아래에 `ramps` 를 깐다(네 방향 자동 접합). 다리 탭은 같은 높이의 두 둑을 잇는다.
-- **클릭 이동(`playScenePointerMove.pointerTile`)·전투 필드 배치(`battleOnField`)는 들림을 모른다** — 들린 칸을 클릭하면 그림 위치와 칸이 어긋난다.
+- **전투 필드 배치(`battleOnField`)는 아직 들림을 모른다.** 일반 게임 클릭 이동은 위 화소 선택 경로를 쓴다.
 - 붓의 산·골짜기·다듬기는 `levels` 만 바꾼다. 단이 바뀐 칸의 `ramps`·`wallDecor` 는 그대로 남는다(조수 `sculpt_relief` 는 `carryReliefExtras` 로 걸러 잇는다).
 - 새 relief 를 칠할 때 `style` 은 자동으로 정해지지 않는다(`reliefStyleForTileset` 은 스크립트·테스트만 쓴다). 편집기 「높이」 막대의 절벽 양식 select 로 손으로 고른다(높이가 있어야 켜진다).
 - 러프 붓(기본)은 1차 스케치용이라 한 번 누르면 수십~수백 칸이 바뀐다. 「윗면 풀」의 원래 타일 기억은 세션 메모리다 — 새로고침 뒤 0단으로 내려도 길은 안 돌아온다. 세션 안의 Ctrl+Z는 맵 스냅샷으로 복원한다. 내리기를 되돌린 다음 다시 내릴 때도 원래 바닥 기록을 유지한다.
