@@ -7,8 +7,10 @@ export const ROMANCE_ART_DIRECTION = [
   '사용자가 확정한 장소·분위기·인물 외형이 우선한다. 아래는 장면 구성 기준이며 특정 건물·주인공을 강제하는 템플릿이 아니다.',
   '16px 타일 기반의 선명한 픽셀 덩어리, 일관된 빛 방향·원근·배율·팔레트를 유지한다. 그림에서 인물 설정을 추측하거나 임의로 주인공 스프라이트를 교체하지 않는다.',
   '소품을 놓기 전에 한 화면의 구도를 정한다: 대화하는 두 인물과 실제 접근 길이 초점이고, 건물/지형이 중경, 수목/경계가 배경, 길 가장자리/화단이 전경이 된다. 빈 공간에도 마당·거리·쉼터처럼 역할이 있어야 한다.',
-  '마을 첫 만남에서는 건물 문 앞 → 대화 자리 → 화면 바깥 길이 이어져야 한다. 집 한 채와 소품 몇 개를 평평한 잔디에 고립시키는 결과는 미완성이다. 빈 곳을 같은 소품의 반복이나 큰 포장 사각형으로 메우지 않는다.',
+  '확정 장소에 건물이 있으면 문 앞 → 대화 자리 → 화면 바깥 길이 이어져야 한다. 정원·숲처럼 건물이 필요 없는 장소는 입구·산책길과 대화 자리를 연결한다. 집 한 채와 소품 몇 개를 평평한 잔디에 고립시키는 결과는 미완성이다. 빈 곳을 같은 소품의 반복이나 큰 포장 사각형으로 메우지 않는다.',
   '소품은 장소의 용도에 붙인다. 벤치는 쉼터, 화단은 경계, 등은 길 가장자리. 관련 없는 노점·전투 장식은 넣지 않는다. 발밑 받침과 접지, 문 앞 통행과 인물 주변 시야를 확인한다.',
+  '자연스러운 공간 연결을 검수한다: 길의 끝은 출입구·화면 밖·쉼터로 이어지고, 화단·울타리는 공간 경계를 따른다. 의미 없는 직사각형 포장, 잔디 위에 따로 떠 있는 울타리, 무작위 소품 배열은 반려한다. 잔디 비율 검사 통과만으로 완성이 아니다.',
+  '장소 이름이나 제작자의 설명은 그림의 증거가 아니다. 일반 상점 간판을 우체국 표시로, 일반 집을 역으로 해석하지 않는다. 사용자 장소를 구별할 시각적 근거가 보이지 않으면 place를 passed:false로 보고하고, 가능한 현재 자산으로 표현할 수 있는지와 부족한 요소를 구체적으로 적는다.',
   '현재 프로젝트 타일셋 참고문서의 해당 용도 MD 모든 페이지와 실제 이미지를 먼저 읽고, 완성된 키트·오토타일을 사용한다. 다른 타일셋 번호를 추측하거나 여러 계열을 섞지 않는다.',
   '대화창 기본은 pixel-cinematic과 픽셀 글꼴. 작은 각진 반투명 패널로 배경과 인물을 보이게 한다. 사용자 스타일 지정은 보존한다. 큰 불투명 크림창·과한 글자 그림자로 도트 장면을 덮지 않는다.',
   'review_map에서 구도(composition), 장소 표현(place), 재질 일관성(materials), 접지/통행(grounding), 인물 가독성(readability)을 각각 실제 이미지의 좌표와 관찰 근거로 보고한다. 실행 검사 성공을 미술 합격 근거로 쓰지 않는다.',
@@ -31,6 +33,25 @@ export function romanceArtReviewFindings(raw: unknown): string[] {
     }
   }
   if (raw.length !== ROMANCE_ART_AXES.length) findings.push('미술 검수 축이 누락되거나 중복되었습니다.');
+  return findings;
+}
+
+/** Scenery repairs may not rewrite the confirmed game to make a gate pass. */
+export function romanceArtRepairFindings(project: Project, baseline: Project): string[] {
+  if (baseline.gameDesignBrief?.implementation?.harnessId !== 'romance-scene') return [];
+  const findings: string[] = [];
+  if (JSON.stringify(project.gameDesignBrief) !== JSON.stringify(baseline.gameDesignBrief)) findings.push('미술 수정에서 확정 기획·실행 계약을 변경할 수 없습니다.');
+  if (project.startMapId !== baseline.startMapId || JSON.stringify(project.startPos) !== JSON.stringify(baseline.startPos)
+    || JSON.stringify(Object.keys(project.maps).sort()) !== JSON.stringify(Object.keys(baseline.maps).sort())) findings.push('미술 수정에서 시작 위치·맵 범위를 변경할 수 없습니다.');
+  const hero = (p: Project) => { const a = p.database.actors.find(row => row.id === 'actor_hero');
+    return [a?.name, a?.characterResourceId, a?.characterIndex ?? 0]; };
+  if (JSON.stringify(hero(project)) !== JSON.stringify(hero(baseline))) findings.push('미술 수정에서 주인공 이름·외형을 변경할 수 없습니다.');
+  for (const map of Object.values(baseline.maps)) {
+    const next = project.maps[map.id];
+    if (!next || next.name !== map.name || map.events.some(e => JSON.stringify(next.events.find(n => n.id === e.id)) !== JSON.stringify(e))) {
+      findings.push('미술 수정에서 장소 이름·기존 인물·대화·선택지·이벤트 위치를 변경할 수 없습니다.');
+    }
+  }
   return findings;
 }
 
