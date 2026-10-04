@@ -1,8 +1,29 @@
 {
-  "scope": "local content pack only; no canonical SQLite save or public registration",
+  "phase": "full",
+  "scope": "local content pack and in-memory fixture only; no canonical SQLite save or public registration",
   "prototypePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
   "prototypeSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
-  "dataSha256": "cb6871166d7c61d3984aa18bf77c2867c7f45ee387c2a6da7708ec27ba832485",
+  "skillsSourcePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-skills/content-packs/joseon-folklore/skills/data.json",
+  "skillsSourceSha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
+  "borrowedElements": [
+    "element_jf_physical",
+    "element_jf_fire",
+    "element_jf_ice",
+    "element_jf_lightning",
+    "element_jf_spirit"
+  ],
+  "dataSha256": "d2bdf70ca0f92799e070ff01812b0569d845dc5e3947f743387c5973bcb41756",
+  "designSha256": "80a3d2c9b67a3a81379e99a4bfcd5265535faefae9608632b568f262028d62d7",
+  "scriptSources": [
+    {
+      "file": "smoke.mts",
+      "sha256": "62b695094e2bce1af9a01f2bbb897a8ef328225748f10c2dac84ae3a4071b233"
+    },
+    {
+      "file": "run-smoke.mjs",
+      "sha256": "83265c69f0be94fa4fd00ab3bb04d1092cf34c1776ad16bee034720e531798e5"
+    }
+  ],
   "engineFiles": [
     {
       "path": "src/project/databaseRecordModel.ts",
@@ -19,16 +40,52 @@
     {
       "path": "src/battle/runtime.ts",
       "sha256": "54b886fe49bf3a8ca0c1444eb0d7991acdf679839696e408bd87f74f5d9335a2"
+    },
+    {
+      "path": "src/battle/battleStates.ts",
+      "sha256": "ddbed11f5d808a70df883c43f4a582718f4816c86dd162e6edd72aa5ca967e8e"
     }
   ],
   "passed": true,
-  "checkCount": 24,
+  "checkCount": 161,
   "checks": [
     {
-      "kind": "normalize-and-reload",
+      "kind": "skill-normalize-reload-and-collision",
+      "id": "skill_jf_item_smoke_powder",
+      "stateEffects": [
+        {
+          "stateId": "state_agility_down",
+          "chance": 100,
+          "operation": "add"
+        }
+      ]
+    },
+    {
+      "kind": "skill-normalize-reload-and-collision",
+      "id": "skill_jf_item_fire_charm",
+      "formula": "32",
+      "elementId": "element_jf_fire",
+      "stateEffects": []
+    },
+    {
+      "kind": "skill-normalize-reload-and-collision",
+      "id": "skill_jf_item_ice_charm",
+      "formula": "30",
+      "elementId": "element_jf_ice",
+      "stateEffects": []
+    },
+    {
+      "kind": "skill-normalize-reload-and-collision",
+      "id": "skill_jf_item_thunder_charm",
+      "formula": "34",
+      "elementId": "element_jf_lightning",
+      "stateEffects": []
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
       "id": "item_jf_mugwort_pill",
       "iconSha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
-      "type": "medicine",
+      "price": 16,
       "hpRecovery": {
         "flat": 50,
         "percentMax": 0
@@ -42,10 +99,10 @@
       "battle": true
     },
     {
-      "kind": "normalize-and-reload",
+      "kind": "item-normalize-reload-art-and-design",
       "id": "item_jf_ginseng_tea",
       "iconSha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
-      "type": "medicine",
+      "price": 32,
       "hpRecovery": {
         "flat": 0,
         "percentMax": 0
@@ -59,10 +116,10 @@
       "battle": true
     },
     {
-      "kind": "normalize-and-reload",
+      "kind": "item-normalize-reload-art-and-design",
       "id": "item_jf_purification_charm",
       "iconSha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
-      "type": "medicine",
+      "price": 18,
       "hpRecovery": {
         "flat": 0,
         "percentMax": 0
@@ -78,10 +135,10 @@
       "battle": true
     },
     {
-      "kind": "normalize-and-reload",
+      "kind": "item-normalize-reload-art-and-design",
       "id": "item_jf_revival_charm",
       "iconSha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
-      "type": "medicine",
+      "price": 96,
       "hpRecovery": {
         "flat": 1,
         "percentMax": 25
@@ -95,10 +152,291 @@
       "battle": false
     },
     {
-      "kind": "normalize-and-reload",
-      "id": "item_jf_mat_boar_tusk",
-      "iconSha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
-      "type": "normalGoods",
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_rice_ball",
+      "iconSha256": "95668eb37e812387e288c6a92180b6f4aad3434c36647e58455b2d21eb0eb047",
+      "price": 12,
+      "hpRecovery": {
+        "flat": 35,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_rice_cake",
+      "iconSha256": "786ce7cc04230f51377a55eab8d11f0eb8b5ddfdbf7c4902e7d76cbbe6aefc48",
+      "price": 30,
+      "hpRecovery": {
+        "flat": 80,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_honey_cake",
+      "iconSha256": "d7028a6db68c9c3b611d2353ce8a7c946f5f4eaf553d94d1f63bf7ab0b8d2aeb",
+      "price": 36,
+      "hpRecovery": {
+        "flat": 35,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_herbal_decoction",
+      "iconSha256": "6170c3cc82ba21a27b2313f10c0f33cd8f2b83241cdb9a64078165b349dc7b09",
+      "price": 56,
+      "hpRecovery": {
+        "flat": 140,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_red_ginseng",
+      "iconSha256": "060dd7e375ff535ae836b6f375d8181f16056089997b27ccbe184f81df8bf733",
+      "price": 84,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 40,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_spring_water",
+      "iconSha256": "8d0894c237f6e94cc90c949286bbed004ea7b11186a64ec81dc80b38fa0f1669",
+      "price": 25,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 12,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_jade_water",
+      "iconSha256": "f503884090dc220ae906aa6173862f9d9b126d24d54114dfee7889c63497a9e0",
+      "price": 72,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 25
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_antidote",
+      "iconSha256": "65b5ce1071d0d532f21b4aaa910aaafc9cfbc4a08157ba95350887abcf8deec4",
+      "price": 24,
+      "hpRecovery": {
+        "flat": 15,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_poison"
+      ],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_clear_mind_pill",
+      "iconSha256": "3e52ad0741a0d7ca17d143a16d7fdde81992f95819e13aa47e64eea4ea803f4a",
+      "price": 28,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_sleep",
+        "state_silence"
+      ],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_warming_tea",
+      "iconSha256": "44d7736a4290c5b725dc9acaadc3ad2cd2eb05f74e01af697a2e63f16ba7a86c",
+      "price": 26,
+      "hpRecovery": {
+        "flat": 40,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_paralysis"
+      ],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_cooling_tea",
+      "iconSha256": "677fec91289d35d26401ab5ff2ce20d9a5e23fb9bd8a1dcb136731b646868b74",
+      "price": 36,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 12,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_agility_down"
+      ],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_smoke_powder",
+      "iconSha256": "ca73b5f937e6fa23c2c419e2c7179f47dc181372d260178f9063f5c4f0735209",
+      "price": 24,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_fire_charm",
+      "iconSha256": "33c6b4e21cc2c64c10ef0d8918d0cb4ed43cca0047b19693f038b917d0ea503d",
+      "price": 32,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_ice_charm",
+      "iconSha256": "d49edcf5140159ebf3ff247b28f74c856abe0f5214c3a1c872ec4e8ce0d94817",
+      "price": 32,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_thunder_charm",
+      "iconSha256": "290f0748cdb4b935bde4daba5918a860eee8dcddb974d1a2e10e5fb70f003cfb",
+      "price": 36,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_vitality_tonic",
+      "iconSha256": "bfd13b6f4cb21cabe9cf3677bba20a653d1c71a0b6054a0500ce07b7f6bf2392",
+      "price": 140,
+      "hpRecovery": {
+        "flat": 50,
+        "percentMax": 25
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 20
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_rat_tail",
+      "iconSha256": "a26d91f84e35e2d06c6cca43a68e1a1d861f12f86c51812e840d865512ef4d02",
+      "price": 4,
       "hpRecovery": {
         "flat": 0,
         "percentMax": 0
@@ -112,10 +450,180 @@
       "battle": false
     },
     {
-      "kind": "normalize-and-reload",
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_boar_tusk",
+      "iconSha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
+      "price": 12,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_bat_wing",
+      "iconSha256": "7b733af7ed74dc04f945eaeb67ce45de8b54a3aaee6ce0f226d5798a65e9e28f",
+      "price": 8,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
       "id": "item_jf_mat_straw_knot",
       "iconSha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
-      "type": "normalGoods",
+      "price": 6,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_ghost_ash",
+      "iconSha256": "38b7fb4d491534b538909fc9891fb3bf52803bd7295666432143f9bcf4bc2deb",
+      "price": 10,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_broken_jade",
+      "iconSha256": "3c9a443bb9cd0d887f8a60e8f8bf7a4faf4267bc3c0584cd532635c62de3e43f",
+      "price": 16,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_fox_fur",
+      "iconSha256": "ed2d31ec95a0a3f149452249495f4940537809178908a5f87b1368e912ee605c",
+      "price": 20,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_stone_core",
+      "iconSha256": "9d72955037187374541d49e03af4017f13219ed8ff81e4379d0dbff7f5a6e508",
+      "price": 24,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_bamboo_heart",
+      "iconSha256": "7b5aba7a74b3b7a4c9e189604fe0ce053eae95edba9fe51db2352dfc0ce14c25",
+      "price": 18,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_rusted_token",
+      "iconSha256": "76604dbdfdf96145c50bdc34c6a1bd6027cb6d7ce72fbbd07073d33da326ad61",
+      "price": 14,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_bronze_shard",
+      "iconSha256": "e00d468d5b02927242d829e067de7dc1885164ca39def1c443c222b6a1c771c7",
+      "price": 32,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "item-normalize-reload-art-and-design",
+      "id": "item_jf_mat_tiger_claw",
+      "iconSha256": "942d067bace5556dce5353fc4ef4e011f9cf68d5f4f5103b9ea3e63ea632eade",
+      "price": 40,
       "hpRecovery": {
         "flat": 0,
         "percentMax": 0
@@ -133,115 +641,179 @@
       "slug": "mugwort-pill",
       "before": {
         "hp": 10,
-        "mp": 0,
-        "stateIds": [],
-        "maxHp": 120
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
       },
       "after": {
         "hp": 60,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
         "stateIds": []
       },
-      "preview": {
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
         "hp": 10,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 60,
-        "mpAfter": 0,
-        "stateIds": [],
-        "curedStateIds": []
-      },
-      "result": "used",
-      "remaining": 1
-    },
-    {
-      "kind": "real-menu-use",
-      "slug": "mugwort-pill",
-      "before": {
-        "hp": 110,
-        "mp": 0,
-        "stateIds": [],
-        "maxHp": 120
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
       },
       "after": {
-        "hp": 120,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
-        "stateIds": []
-      },
-      "preview": {
-        "hp": 110,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 0,
-        "stateIds": [],
-        "curedStateIds": []
-      },
-      "result": "used",
-      "remaining": 1
-    },
-    {
-      "kind": "real-menu-use",
-      "slug": "mugwort-pill",
-      "before": {
-        "hp": 0,
-        "mp": 0,
-        "stateIds": [],
-        "maxHp": 120
-      },
-      "after": {
-        "hp": 0,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
-        "stateIds": []
-      },
-      "preview": {
-        "reason": "전투불능 상태입니다",
-        "hp": 0,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 0,
-        "mpAfter": 0,
-        "stateIds": [],
-        "curedStateIds": []
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
       },
       "result": "unusable",
-      "remaining": 2
+      "remaining": 0
     },
     {
       "kind": "real-menu-use",
-      "slug": "mugwort-pill",
+      "slug": "ginseng-tea",
       "before": {
-        "hp": 120,
-        "mp": 36,
-        "stateIds": [],
-        "maxHp": 120
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
       },
       "after": {
-        "hp": 120,
-        "mp": 36,
-        "maxHp": 120,
-        "maxMp": 36,
-        "stateIds": []
+        "hp": 10,
+        "mp": 18,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
       },
-      "preview": {
-        "reason": "적용할 효과가 없습니다",
-        "hp": 120,
-        "maxHp": 120,
-        "mp": 36,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 36,
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ginseng-tea",
+      "before": {
+        "hp": 500,
+        "mp": 200,
         "stateIds": [],
-        "curedStateIds": []
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
       },
       "result": "unusable",
       "remaining": 2
@@ -250,27 +822,1812 @@
       "kind": "real-menu-use",
       "slug": "ginseng-tea",
       "before": {
-        "hp": 120,
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ginseng-tea",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 126,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-ball",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 45,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-ball",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-ball",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-ball",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-cake",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 90,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-cake",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-cake",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rice-cake",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "honey-cake",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 45,
+        "mp": 10,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "honey-cake",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "honey-cake",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "honey-cake",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "herbal-decoction",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 150,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "herbal-decoction",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "herbal-decoction",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "herbal-decoction",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "red-ginseng",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 42,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "red-ginseng",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "red-ginseng",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "red-ginseng",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "spring-water",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 14,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "spring-water",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "spring-water",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "spring-water",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "jade-water",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 60,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "jade-water",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "jade-water",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "jade-water",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "antidote",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 25,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "antidote",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "antidote",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "antidote",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "clear-mind-pill",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "clear-mind-pill",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "clear-mind-pill",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "clear-mind-pill",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "warming-tea",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 50,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "warming-tea",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "warming-tea",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "warming-tea",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "cooling-tea",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 14,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "cooling-tea",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "cooling-tea",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "cooling-tea",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "vitality-tonic",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 185,
+        "mp": 50,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "vitality-tonic",
+      "before": {
+        "hp": 500,
+        "mp": 200,
+        "stateIds": [],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 500,
+        "mp": 200,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "vitality-tonic",
+      "before": {
+        "hp": 0,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 0,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "vitality-tonic",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 0
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 0
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 110,
         "mp": 0,
         "stateIds": [],
-        "maxHp": 120
+        "maxHp": 120,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 120,
-        "mp": 16,
+        "mp": 0,
         "maxHp": 120,
         "maxMp": 36,
         "stateIds": []
-      },
-      "preview": {
-        "hp": 120,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 16,
-        "stateIds": [],
-        "curedStateIds": []
       },
       "result": "used",
       "remaining": 1
@@ -282,7 +2639,9 @@
         "hp": 120,
         "mp": 30,
         "stateIds": [],
-        "maxHp": 120
+        "maxHp": 120,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 120,
@@ -291,58 +2650,6 @@
         "maxMp": 36,
         "stateIds": []
       },
-      "preview": {
-        "hp": 120,
-        "maxHp": 120,
-        "mp": 30,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 36,
-        "stateIds": [],
-        "curedStateIds": []
-      },
-      "result": "used",
-      "remaining": 1
-    },
-    {
-      "kind": "real-menu-use",
-      "slug": "purification-charm",
-      "before": {
-        "hp": 120,
-        "mp": 0,
-        "stateIds": [
-          "state_poison",
-          "state_sleep",
-          "state_deep_poison"
-        ],
-        "maxHp": 120
-      },
-      "after": {
-        "hp": 120,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
-        "stateIds": [
-          "state_sleep",
-          "state_deep_poison"
-        ]
-      },
-      "preview": {
-        "hp": 120,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 0,
-        "stateIds": [
-          "state_poison",
-          "state_sleep",
-          "state_deep_poison"
-        ],
-        "curedStateIds": [
-          "state_poison"
-        ]
-      },
       "result": "used",
       "remaining": 1
     },
@@ -355,7 +2662,9 @@
         "stateIds": [
           "state_deep_poison"
         ],
-        "maxHp": 120
+        "maxHp": 120,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 120,
@@ -365,19 +2674,6 @@
         "stateIds": [
           "state_deep_poison"
         ]
-      },
-      "preview": {
-        "reason": "적용할 효과가 없습니다",
-        "hp": 120,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 120,
-        "mpAfter": 0,
-        "stateIds": [
-          "state_deep_poison"
-        ],
-        "curedStateIds": []
       },
       "result": "unusable",
       "remaining": 2
@@ -391,7 +2687,9 @@
         "stateIds": [
           "state_poison"
         ],
-        "maxHp": 120
+        "maxHp": 120,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 31,
@@ -402,46 +2700,30 @@
           "state_poison"
         ]
       },
-      "preview": {
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
         "hp": 0,
-        "maxHp": 120,
         "mp": 7,
-        "maxMp": 36,
-        "hpAfter": 31,
-        "mpAfter": 7,
         "stateIds": [
           "state_poison"
         ],
-        "curedStateIds": []
-      },
-      "result": "used",
-      "remaining": 1
-    },
-    {
-      "kind": "real-menu-use",
-      "slug": "revival-charm",
-      "before": {
-        "hp": 0,
-        "mp": 0,
-        "stateIds": [],
-        "maxHp": 127
+        "maxHp": 127,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 32,
-        "mp": 0,
+        "mp": 7,
         "maxHp": 127,
         "maxMp": 36,
-        "stateIds": []
-      },
-      "preview": {
-        "hp": 0,
-        "maxHp": 127,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 32,
-        "mpAfter": 0,
-        "stateIds": [],
-        "curedStateIds": []
+        "stateIds": [
+          "state_poison"
+        ]
       },
       "result": "used",
       "remaining": 1
@@ -451,56 +2733,57 @@
       "slug": "revival-charm",
       "before": {
         "hp": 0,
-        "mp": 0,
-        "stateIds": [],
-        "maxHp": 1
+        "mp": 7,
+        "stateIds": [
+          "state_poison"
+        ],
+        "maxHp": 1,
+        "maxMp": 36,
+        "quantity": 2
       },
       "after": {
         "hp": 1,
-        "mp": 0,
+        "mp": 7,
         "maxHp": 1,
         "maxMp": 36,
-        "stateIds": []
-      },
-      "preview": {
-        "hp": 0,
-        "maxHp": 1,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 1,
-        "mpAfter": 0,
-        "stateIds": [],
-        "curedStateIds": []
+        "stateIds": [
+          "state_poison"
+        ]
       },
       "result": "used",
       "remaining": 1
     },
     {
       "kind": "real-menu-use",
-      "slug": "revival-charm",
+      "slug": "rat-tail",
       "before": {
         "hp": 10,
-        "mp": 7,
-        "stateIds": [],
-        "maxHp": 120
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
       },
       "after": {
         "hp": 10,
-        "mp": 7,
-        "maxHp": 120,
-        "maxMp": 36,
-        "stateIds": []
-      },
-      "preview": {
-        "reason": "전투불능 대상에게만 사용할 수 있습니다",
-        "hp": 10,
-        "maxHp": 120,
-        "mp": 7,
-        "maxMp": 36,
-        "hpAfter": 10,
-        "mpAfter": 7,
-        "stateIds": [],
-        "curedStateIds": []
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
       },
       "result": "unusable",
       "remaining": 2
@@ -510,33 +2793,67 @@
       "slug": "boar-tusk",
       "before": {
         "hp": 10,
-        "mp": 0,
+        "mp": 2,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ],
-        "maxHp": 120
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
       },
       "after": {
         "hp": 10,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ]
       },
-      "preview": {
-        "reason": "필드에서 사용할 수 없는 아이템입니다",
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "bat-wing",
+      "before": {
         "hp": 10,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 10,
-        "mpAfter": 0,
+        "mp": 2,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ],
-        "curedStateIds": []
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
       },
       "result": "unusable",
       "remaining": 2
@@ -546,33 +2863,452 @@
       "slug": "straw-knot",
       "before": {
         "hp": 10,
-        "mp": 0,
+        "mp": 2,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ],
-        "maxHp": 120
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
       },
       "after": {
         "hp": 10,
-        "mp": 0,
-        "maxHp": 120,
-        "maxMp": 36,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ]
       },
-      "preview": {
-        "reason": "필드에서 사용할 수 없는 아이템입니다",
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ghost-ash",
+      "before": {
         "hp": 10,
-        "maxHp": 120,
-        "mp": 0,
-        "maxMp": 36,
-        "hpAfter": 10,
-        "mpAfter": 0,
+        "mp": 2,
         "stateIds": [
-          "state_poison"
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
         ],
-        "curedStateIds": []
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "broken-jade",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "fox-fur",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "stone-core",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "bamboo-heart",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "rusted-token",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "bronze-shard",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "tiger-claw",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "smoke-powder",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "fire-charm",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ice-charm",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "thunder-charm",
+      "before": {
+        "hp": 10,
+        "mp": 2,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ],
+        "maxHp": 500,
+        "maxMp": 200,
+        "quantity": 2
+      },
+      "after": {
+        "hp": 10,
+        "mp": 2,
+        "maxHp": 500,
+        "maxMp": 200,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison",
+          "state_sleep",
+          "state_silence",
+          "state_paralysis",
+          "state_agility_down"
+        ]
       },
       "result": "unusable",
       "remaining": 2
@@ -580,70 +3316,1887 @@
     {
       "kind": "real-battle-use",
       "slug": "mugwort-pill",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
       "before": {
-        "hp": 1,
-        "mp": 0,
-        "stateIds": [
-          "state_poison",
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
       "after": {
-        "hp": 51,
-        "mp": 0,
-        "stateIds": [
-          "state_poison",
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 60,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
-      "remaining": 1
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
     },
     {
       "kind": "real-battle-use",
       "slug": "ginseng-tea",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
       "before": {
-        "hp": 1,
-        "mp": 0,
-        "stateIds": [
-          "state_poison",
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
       "after": {
-        "hp": 1,
-        "mp": 16,
-        "stateIds": [
-          "state_poison",
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 10,
+          "mp": 18,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
-      "remaining": 1
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
     },
     {
       "kind": "real-battle-use",
       "slug": "purification-charm",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
       "before": {
-        "hp": 1,
-        "mp": 0,
-        "stateIds": [
-          "state_poison",
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
       "after": {
-        "hp": 1,
-        "mp": 0,
-        "stateIds": [
-          "state_deep_poison"
-        ]
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
       },
-      "remaining": 1
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "revival-charm",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "rice-ball",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "rice-cake",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 90,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "honey-cake",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 45,
+          "mp": 10,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "herbal-decoction",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 120,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "red-ginseng",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "spring-water",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "jade-water",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 19,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "antidote",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 25,
+          "mp": 2,
+          "stateIds": [
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "clear-mind-pill",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "warming-tea",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 50,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "cooling-tea",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 14,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "smoke-powder",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": [
+            "state_agility_down"
+          ]
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_smoke_powder"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "fire-charm",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 58,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_fire_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "ice-charm",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 60,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_ice_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "thunder-charm",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 56,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_thunder_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "vitality-tonic",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 90,
+          "mp": 17,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "rat-tail",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "boar-tusk",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "bat-wing",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "straw-knot",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "ghost-ash",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "broken-jade",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "fox-fur",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "stone-core",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "bamboo-heart",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "rusted-token",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "bronze-shard",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "tiger-claw",
+      "elementRate": "C",
+      "immuneToSlow": false,
+      "allowed": false,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 2,
+      "userMpBefore": 36,
+      "userMpAfter": 36
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "fire-charm",
+      "elementRate": "D",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 74,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_fire_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "fire-charm",
+      "elementRate": "E",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_fire_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "ice-charm",
+      "elementRate": "D",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 75,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_ice_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "ice-charm",
+      "elementRate": "E",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_ice_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "thunder-charm",
+      "elementRate": "D",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 73,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_thunder_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "thunder-charm",
+      "elementRate": "E",
+      "immuneToSlow": false,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_thunder_charm"
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "smoke-powder",
+      "elementRate": "C",
+      "immuneToSlow": true,
+      "allowed": true,
+      "before": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "maxHp": 120,
+          "maxMp": 36,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "after": {
+        "actor": {
+          "hp": 10,
+          "mp": 2,
+          "stateIds": [
+            "state_poison",
+            "state_deep_poison",
+            "state_sleep",
+            "state_silence",
+            "state_paralysis",
+            "state_agility_down"
+          ]
+        },
+        "enemy": {
+          "hp": 90,
+          "stateIds": []
+        }
+      },
+      "remaining": 1,
+      "userMpBefore": 36,
+      "userMpAfter": 36,
+      "itemSkillId": "skill_jf_item_smoke_powder"
     },
     {
       "kind": "engine-limitation",
       "slug": "revival-charm",
       "battleAllowed": false,
-      "reason": "itemAllowsBattle rejects medicine.onlyEffectiveOnDeadActors; SkillRecord has no dead-ally scope. Field revival is implemented."
+      "reason": "Native medicine.onlyEffectiveOnDeadActors remains field-only. Taoist healing+state_death skill revival is a separate owner/path."
     }
   ]
 }

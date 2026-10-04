@@ -1,66 +1,315 @@
 {
+  "phase": "full",
   "reviewer": "consumables author / GPT 6.1 sol high",
-  "method": "view_image로 저장한 원본 32x32 PNG 6장 각각과 review/pilot-sheet.png(native+6x nearest, cream/dark 배경)를 직접 열어 확인",
-  "reviewScope": "저자 시각 검토; 실제 게임 UI·설치·사용자 승인은 별도",
+  "method": "view_image로 원본32x32 PNG32장을 각각 열고 full-sheet-1~4(native+nearest6x, cream/dark)을 직접 열어 확인",
+  "reviewScope": "저자 시각 검토; 실제 게임 화면과 사용자 승인은 별도",
   "userApproval": null,
-  "sheet": {
-    "file": "review/pilot-sheet.png",
-    "sha256": "7f6877f923625042d33c8451fb203ef2fc0f7b3e35c2e3e1ed9d14900195cbe5"
-  },
+  "sheets": [
+    {
+      "file": "review/full-sheet-1.png",
+      "sha256": "15efcaf7b314354acb3e274f8939fe62865ee599071e5c7f809f6aa75486747c"
+    },
+    {
+      "file": "review/full-sheet-2.png",
+      "sha256": "8f2584e88dc9099c73c5b49e2d867d0437153e6e02181d33405e52f013116ebe"
+    },
+    {
+      "file": "review/full-sheet-3.png",
+      "sha256": "ea8319b9e038d59dbfdaff490ab1d6cc57e11f52decdaec5c64d2d6f642d6bc3"
+    },
+    {
+      "file": "review/full-sheet-4.png",
+      "sha256": "c88299b19bff6cd23ce7cb70c5ceddd59d43cf78b2ff445efabeb78cc6733113"
+    }
+  ],
   "icons": [
     {
       "slug": "mugwort-pill",
       "file": "assets/mugwort-pill.png",
       "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "원본 32px에서 약환 두 알·쑥잎·포장지가 보인다. 확대에서 좌상단 하이라이트와 약환 그림자 군집을 확인했다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "약환 두 알, 잎 줄기, 열린 포장과 좌상단 하이라이트를 확인. 파일럿 PNG 해시 보존."
     },
     {
       "slug": "ginseng-tea",
       "file": "assets/ginseng-tea.png",
       "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "청자 사발과 호박색 수면, 갈라진 뿌리, 김을 확인했다. 약환과 넓은 사발 실루엣이 구별된다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "청자 사발·탕 표면·갈라진 뿌리·김을 확인. 파일럿 PNG 해시 보존."
     },
     {
       "slug": "purification-charm",
       "file": "assets/purification-charm.png",
       "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "세로 종이 실루엣, 접힌 모서리, 붉은 추상 문양을 확인했다. 환생부와 색만 바꾼 복제품이 아니다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "긴 종이와 접힌 모서리, 붉은 물결 문양 확인. 파일럿 PNG 해시 보존."
     },
     {
       "slug": "revival-charm",
       "file": "assets/revival-charm.png",
       "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "접힌 넓은 종이와 붉은 묶음끈, 위로 솟은 금빛 혼불을 확인했다. 원본에서 정화부와 외곽 형태가 다르다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "넓은 접힌 종이·붉은 끈·위로 솟는 혼불 확인. 파일럿 PNG 해시 보존."
+    },
+    {
+      "slug": "rice-ball",
+      "file": "assets/rice-ball.png",
+      "sha256": "95668eb37e812387e288c6a92180b6f4aad3434c36647e58455b2d21eb0eb047",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "삼각 밥 덩어리·짙은 김띠·받침 잎을 확인. 떡과 외곽 형태가 다름."
+    },
+    {
+      "slug": "rice-cake",
+      "file": "assets/rice-cake.png",
+      "sha256": "786ce7cc04230f51377a55eab8d11f0eb8b5ddfdbf7c4902e7d76cbbe6aefc48",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "엇갈린 흰 떡 층·팥색 층·받침을 확인. 위쪽 팥 점은 native에서 간략하게 보임."
+    },
+    {
+      "slug": "honey-cake",
+      "file": "assets/honey-cake.png",
+      "sha256": "d7028a6db68c9c3b611d2353ce8a7c946f5f4eaf553d94d1f63bf7ab0b8d2aeb",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "꽃 가장자리·중앙 홈·따로 떨어진 꿀방울 확인. 꿀방울이 캔버스 안에 남음."
+    },
+    {
+      "slug": "herbal-decoction",
+      "file": "assets/herbal-decoction.png",
+      "sha256": "6170c3cc82ba21a27b2313f10c0f33cd8f2b83241cdb9a64078165b349dc7b09",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "옹기의 귀·주둥이·김·잎 봉인 확인. 흙빛 어두운 몸체는 밝은 면으로 구별됨."
+    },
+    {
+      "slug": "red-ginseng",
+      "file": "assets/red-ginseng.png",
+      "sha256": "060dd7e375ff535ae836b6f375d8181f16056089997b27ccbe184f81df8bf733",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "붉은 뿌리의 갈라진 사지형 가지와 황금 띠 확인. 잔뿌리는 native에서 단순화됨."
+    },
+    {
+      "slug": "spring-water",
+      "file": "assets/spring-water.png",
+      "sha256": "8d0894c237f6e94cc90c949286bbed004ea7b11186a64ec81dc80b38fa0f1669",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "세로 대통·잘린 수면·대나무 마디·별도 물방울 확인."
+    },
+    {
+      "slug": "jade-water",
+      "file": "assets/jade-water.png",
+      "sha256": "f503884090dc220ae906aa6173862f9d9b126d24d54114dfee7889c63497a9e0",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "납작한 물병·비대칭 옥마개·왼쪽 물빛 하이라이트 확인."
+    },
+    {
+      "slug": "antidote",
+      "file": "assets/antidote.png",
+      "sha256": "65b5ce1071d0d532f21b4aaa910aaafc9cfbc4a08157ba95350887abcf8deec4",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "잎 세 갈래·빨간 묶음끈·흰 뿌리 확인. 작은 뿌리는 native에서 1px 가닥으로 남음."
+    },
+    {
+      "slug": "clear-mind-pill",
+      "file": "assets/clear-mind-pill.png",
+      "sha256": "3e52ad0741a0d7ca17d143a16d7fdde81992f95819e13aa47e64eea4ea803f4a",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "열린 푸른 약갑의 뚜껑과 아래 약환 확인. 약갑과 환의 색이 구별됨."
+    },
+    {
+      "slug": "warming-tea",
+      "file": "assets/warming-tea.png",
+      "sha256": "44d7736a4290c5b725dc9acaadc3ad2cd2eb05f74e01af697a2e63f16ba7a86c",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "상단 놋 손잡이·왼쪽 주둥이·황금 몸체·붉은 김 확인."
+    },
+    {
+      "slug": "cooling-tea",
+      "file": "assets/cooling-tea.png",
+      "sha256": "677fec91289d35d26401ab5ff2ce20d9a5e23fb9bd8a1dcb136731b646868b74",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "흰 잔·오른쪽 손잡이·상단 잎·푸른 수면·받침 확인."
+    },
+    {
+      "slug": "smoke-powder",
+      "file": "assets/smoke-powder.png",
+      "sha256": "ca73b5f937e6fa23c2c419e2c7179f47dc181372d260178f9063f5c4f0735209",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "기울어진 주머니·금빛 매듭·위로 번지는 연기와 떨어진 연기 픽셀 확인."
+    },
+    {
+      "slug": "fire-charm",
+      "file": "assets/fire-charm.png",
+      "sha256": "33c6b4e21cc2c64c10ef0d8918d0cb4ed43cca0047b19693f038b917d0ea503d",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "불규칙한 탄 종이와 붉은 불꽃, 별도 불씨를 확인. 나머지 부적과 외곽이 다름."
+    },
+    {
+      "slug": "ice-charm",
+      "file": "assets/ice-charm.png",
+      "sha256": "d49edcf5140159ebf3ff247b28f74c856abe0f5214c3a1c872ec4e8ce0d94817",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "가로 두루마리와 중앙 푸른 결정, 양쪽 말린 끝 확인. 단순 재색칠 아님."
+    },
+    {
+      "slug": "thunder-charm",
+      "file": "assets/thunder-charm.png",
+      "sha256": "290f0748cdb4b935bde4daba5918a860eee8dcddb974d1a2e10e5fb70f003cfb",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "꺾인 세로 종이·금빛 번개·방전 픽셀 확인. 정화부의 평평한 외곽과 구별됨."
+    },
+    {
+      "slug": "vitality-tonic",
+      "file": "assets/vitality-tonic.png",
+      "sha256": "bfd13b6f4cb21cabe9cf3677bba20a653d1c71a0b6054a0500ce07b7f6bf2392",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "두 마디 호리병·붉은 봉인·잎 표식·좌측 밝은 면 확인."
+    },
+    {
+      "slug": "rat-tail",
+      "file": "assets/rat-tail.png",
+      "sha256": "a26d91f84e35e2d06c6cca43a68e1a1d861f12f86c51812e840d865512ef4d02",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "털 뿌리와 분홍 S자 꼬리, 마디 확인. native에서 작지만 고리 흐름이 남음."
     },
     {
       "slug": "boar-tusk",
       "file": "assets/boar-tusk.png",
       "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "휘어진 끝과 갈색 뿌리, 상아색 명암을 확인했다. 끝이 캔버스 경계에서 잘리지 않는다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "휘어진 상아 끝·거친 갈색 뿌리 확인. 파일럿 PNG 해시 보존."
+    },
+    {
+      "slug": "bat-wing",
+      "file": "assets/bat-wing.png",
+      "sha256": "7b733af7ed74dc04f945eaeb67ce45de8b54a3aaee6ce0f226d5798a65e9e28f",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "삼각 날개막·뼈대·아래쪽 톱니 모양을 확인. 날개 끝이 잘리지 않음."
     },
     {
       "slug": "straw-knot",
       "file": "assets/straw-knot.png",
       "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
       "observed": true,
-      "authorAssessment": "검토 가능한 첫 샘플",
-      "notes": "두 고리의 투명 구멍과 꼬임, 풀린 섬유를 확인했다. 좁은 섬유는 원본에서 단순화되어 보이나 고리 형태는 남는다.",
-      "userApproval": null
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "두 고리의 실제 투명 구멍·꼬임·풀린 섬유 확인. 파일럿 PNG 해시 보존."
+    },
+    {
+      "slug": "ghost-ash",
+      "file": "assets/ghost-ash.png",
+      "sha256": "38b7fb4d491534b538909fc9891fb3bf52803bd7295666432143f9bcf4bc2deb",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "천 위 재 더미·작은 푸른 잔불·떠 있는 입자 확인. 불과 재가 수직으로 구별됨."
+    },
+    {
+      "slug": "broken-jade",
+      "file": "assets/broken-jade.png",
+      "sha256": "3c9a443bb9cd0d887f8a60e8f8bf7a4faf4267bc3c0584cd532635c62de3e43f",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "고리 구멍과 한쪽 깨진 외곽·청록 절단면 확인. 투명 구멍이 배경 양쪽에서 보임."
+    },
+    {
+      "slug": "fox-fur",
+      "file": "assets/fox-fur.png",
+      "sha256": "ed2d31ec95a0a3f149452249495f4940537809178908a5f87b1368e912ee605c",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "주황 비대칭 털뭉치와 흰 끝 확인. native에서 흰 끝을 가진 뾰족한 털 군집으로 보임."
+    },
+    {
+      "slug": "stone-core",
+      "file": "assets/stone-core.png",
+      "sha256": "9d72955037187374541d49e03af4017f13219ed8ff81e4379d0dbff7f5a6e508",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "회색 각진 광석·금빛 균열·밝은 윗면과 어두운 아래 면 확인."
+    },
+    {
+      "slug": "bamboo-heart",
+      "file": "assets/bamboo-heart.png",
+      "sha256": "7b5aba7a74b3b7a4c9e189604fe0ce053eae95edba9fe51db2352dfc0ce14c25",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "대각선 절편·빈 속·마디·옆 가지 확인. 대통 샘물과 방향·실루엣이 다름."
+    },
+    {
+      "slug": "rusted-token",
+      "file": "assets/rusted-token.png",
+      "sha256": "76604dbdfdf96145c50bdc34c6a1bd6027cb6d7ce72fbbd07073d33da326ad61",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "짧은 끈·각진 쇠패·작은 구멍·녹 얼룩 확인. 쇠패 구멍은 작은 어두운 군집으로 보임."
+    },
+    {
+      "slug": "bronze-shard",
+      "file": "assets/bronze-shard.png",
+      "sha256": "e00d468d5b02927242d829e067de7dc1885164ca39def1c443c222b6a1c771c7",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "톱니진 판편·금속 절단면·청록 녹 군집 확인."
+    },
+    {
+      "slug": "tiger-claw",
+      "file": "assets/tiger-claw.png",
+      "sha256": "942d067bace5556dce5353fc4ef4e011f9cf68d5f4f5103b9ea3e63ea632eade",
+      "observed": true,
+      "authorAssessment": "전체팩 검토 가능한 원본",
+      "userApproval": null,
+      "notes": "굵은 갈고리형 발톱·검은 끝·짙은 털 밑동 확인. 멧돼지 어금니와 굽힘 방향·끝색이 다름."
     }
   ]
 }

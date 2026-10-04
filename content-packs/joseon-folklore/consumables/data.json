@@ -3,81 +3,1108 @@
     {
       "id": "item_jf_mugwort_pill",
       "name": "쑥단",
-      "description": "말린 쑥을 꿀에 개어 빚은 초록 약환. 살아 있는 아군 한 명의 HP를 50 회복한다.",
-      "type": "medicine", "scope": "ally", "price": 16,
-      "iconResourceId": "jf-icon-mugwort-pill", "imageResourceId": "jf-icon-mugwort-pill",
-      "occasion": "always", "occasionField": true, "occasionBattle": true,
-      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
-      "onlyEffectiveOnDeadActors": false, "animationId": "anim_heal",
-      "hpRecovery": { "flat": 50, "percentMax": 0 },
-      "mpRecovery": { "flat": 0, "percentMax": 0 },
-      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+      "type": "medicine",
+      "scope": "ally",
+      "price": 16,
+      "iconResourceId": "jf-icon-mugwort-pill",
+      "imageResourceId": "jf-icon-mugwort-pill",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 50,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "말린 쑥을 꿀에 개어 빚은 초록 약환. 살아 있는 아군 한 명의 HP를 50 회복한다."
     },
     {
       "id": "item_jf_ginseng_tea",
       "name": "산삼탕",
-      "description": "작은 사발에 담은 산삼 달임물. 살아 있는 아군 한 명의 기력(MP)을 16 회복한다.",
-      "type": "medicine", "scope": "ally", "price": 32,
-      "iconResourceId": "jf-icon-ginseng-tea", "imageResourceId": "jf-icon-ginseng-tea",
-      "occasion": "always", "occasionField": true, "occasionBattle": true,
-      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
-      "onlyEffectiveOnDeadActors": false, "animationId": "anim_gen_psychic_wave",
-      "hpRecovery": { "flat": 0, "percentMax": 0 },
-      "mpRecovery": { "flat": 16, "percentMax": 0 },
-      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+      "type": "medicine",
+      "scope": "ally",
+      "price": 32,
+      "iconResourceId": "jf-icon-ginseng-tea",
+      "imageResourceId": "jf-icon-ginseng-tea",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 16,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_gen_psychic_wave",
+      "description": "작은 사발에 담은 산삼 달임물. 살아 있는 아군 한 명의 기력(MP)를 16 회복한다."
     },
     {
       "id": "item_jf_purification_charm",
       "name": "정화부",
-      "description": "물결 모양 주사가 찍힌 황지 부적. 살아 있는 아군 한 명의 독을 해제한다. 맹독과 다른 상태는 해제하지 않는다.",
-      "type": "medicine", "scope": "ally", "price": 18,
-      "iconResourceId": "jf-icon-purification-charm", "imageResourceId": "jf-icon-purification-charm",
-      "occasion": "always", "occasionField": true, "occasionBattle": true,
-      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
-      "onlyEffectiveOnDeadActors": false, "animationId": "anim_heal",
-      "hpRecovery": { "flat": 0, "percentMax": 0 },
-      "mpRecovery": { "flat": 0, "percentMax": 0 },
-      "healStateIds": ["state_poison"],
-      "stateEffects": [{ "stateId": "state_poison", "operation": "remove", "chance": 100 }],
-      "usableActorIds": [], "usableClassIds": []
+      "type": "medicine",
+      "scope": "ally",
+      "price": 18,
+      "iconResourceId": "jf-icon-purification-charm",
+      "imageResourceId": "jf-icon-purification-charm",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_poison"
+      ],
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "operation": "remove",
+          "chance": 100
+        }
+      ],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "물결 모양 주사가 찍힌 황지 부적. 살아 있는 아군 한 명의 독을 해제한다. 맹독과 다른 상태는 해제하지 않는다."
     },
     {
       "id": "item_jf_revival_charm",
       "name": "환생부",
-      "description": "붉은 끈과 금빛 혼불을 품은 접힌 부적. 필드 메뉴에서 전투불능 아군 한 명을 HP 최대치의 25%(내림)+1로 되살린다. 전투 중에는 사용할 수 없다.",
-      "type": "medicine", "scope": "ally", "price": 96,
-      "iconResourceId": "jf-icon-revival-charm", "imageResourceId": "jf-icon-revival-charm",
-      "occasion": "field", "occasionField": true, "occasionBattle": false,
-      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": true,
-      "onlyEffectiveOnDeadActors": true, "animationId": "anim_heal",
-      "hpRecovery": { "flat": 1, "percentMax": 25 },
-      "mpRecovery": { "flat": 0, "percentMax": 0 },
-      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+      "type": "medicine",
+      "scope": "ally",
+      "price": 96,
+      "iconResourceId": "jf-icon-revival-charm",
+      "imageResourceId": "jf-icon-revival-charm",
+      "occasion": "field",
+      "occasionField": true,
+      "occasionBattle": false,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": true,
+      "onlyEffectiveOnDeadActors": true,
+      "hpRecovery": {
+        "flat": 1,
+        "percentMax": 25
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "붉은 끈과 금빛 혼불을 품은 접힌 부적. 필드 메뉴에서 전투불능 아군 한 명을 HP 최대치의 25%(내림)+1로 되살린다. 전투 중에는 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_rice_ball",
+      "name": "주먹밥",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 12,
+      "iconResourceId": "jf-icon-rice-ball",
+      "imageResourceId": "jf-icon-rice-ball",
+      "occasion": "field",
+      "occasionField": true,
+      "occasionBattle": false,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": true,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 35,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "잎사귀에 올린 삼각 주먹밥. 살아 있는 아군 한 명의 HP를 35 회복한다. 필드 메뉴 전용이며 전투 중에는 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_rice_cake",
+      "name": "시루떡",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 30,
+      "iconResourceId": "jf-icon-rice-cake",
+      "imageResourceId": "jf-icon-rice-cake",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 80,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "팥고물을 끼워 쌓은 두툼한 시루떡. 살아 있는 아군 한 명의 HP를 80 회복한다."
+    },
+    {
+      "id": "item_jf_honey_cake",
+      "name": "꿀약과",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 36,
+      "iconResourceId": "jf-icon-honey-cake",
+      "imageResourceId": "jf-icon-honey-cake",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 35,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "꽃무늬 틀에 눌러 꿀을 먹인 약과. 살아 있는 아군 한 명의 HP를 35 회복한다, 기력(MP)를 8 회복한다."
+    },
+    {
+      "id": "item_jf_herbal_decoction",
+      "name": "약초탕",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 56,
+      "iconResourceId": "jf-icon-herbal-decoction",
+      "imageResourceId": "jf-icon-herbal-decoction",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 140,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "귀 달린 옹기 주전자에 넣은 진한 약초탕. 살아 있는 아군 한 명의 HP를 140 회복한다."
+    },
+    {
+      "id": "item_jf_red_ginseng",
+      "name": "홍삼",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 84,
+      "iconResourceId": "jf-icon-red-ginseng",
+      "imageResourceId": "jf-icon-red-ginseng",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 40,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_gen_psychic_wave",
+      "description": "말리고 쪄서 붉어진 산삼 뿌리. 살아 있는 아군 한 명의 기력(MP)를 40 회복한다."
+    },
+    {
+      "id": "item_jf_spring_water",
+      "name": "샘물",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 25,
+      "iconResourceId": "jf-icon-spring-water",
+      "imageResourceId": "jf-icon-spring-water",
+      "occasion": "field",
+      "occasionField": true,
+      "occasionBattle": false,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": true,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 12,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_gen_psychic_wave",
+      "description": "짧은 대통에 담은 맑은 샘물. 살아 있는 아군 한 명의 기력(MP)를 12 회복한다. 필드 메뉴 전용이며 전투 중에는 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_jade_water",
+      "name": "옥수",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 72,
+      "iconResourceId": "jf-icon-jade-water",
+      "imageResourceId": "jf-icon-jade-water",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 25
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_gen_psychic_wave",
+      "description": "옥마개를 씌운 납작한 물병. 살아 있는 아군 한 명의 기력(MP)를 최대치의 25%(내림)+8 회복한다."
+    },
+    {
+      "id": "item_jf_antidote",
+      "name": "해독초",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 24,
+      "iconResourceId": "jf-icon-antidote",
+      "imageResourceId": "jf-icon-antidote",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 15,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_poison"
+      ],
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "operation": "remove",
+          "chance": 100
+        }
+      ],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "흰 뿌리가 남은 해독초 한 묶음. 살아 있는 아군 한 명의 HP를 15 회복한다, 독을 해제한다."
+    },
+    {
+      "id": "item_jf_clear_mind_pill",
+      "name": "청심단",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 28,
+      "iconResourceId": "jf-icon-clear-mind-pill",
+      "imageResourceId": "jf-icon-clear-mind-pill",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_sleep",
+        "state_silence"
+      ],
+      "stateEffects": [
+        {
+          "stateId": "state_sleep",
+          "operation": "remove",
+          "chance": 100
+        },
+        {
+          "stateId": "state_silence",
+          "operation": "remove",
+          "chance": 100
+        }
+      ],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "푸른 약갑에 담은 검푸른 약환. 살아 있는 아군 한 명의 수면·침묵을 해제한다."
+    },
+    {
+      "id": "item_jf_warming_tea",
+      "name": "온기차",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 26,
+      "iconResourceId": "jf-icon-warming-tea",
+      "imageResourceId": "jf-icon-warming-tea",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 40,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_paralysis"
+      ],
+      "stateEffects": [
+        {
+          "stateId": "state_paralysis",
+          "operation": "remove",
+          "chance": 100
+        }
+      ],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "놋주전자에 달여 손발을 푸는 차. 살아 있는 아군 한 명의 HP를 40 회복한다, 마비를 해제한다."
+    },
+    {
+      "id": "item_jf_cooling_tea",
+      "name": "청량차",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 36,
+      "iconResourceId": "jf-icon-cooling-tea",
+      "imageResourceId": "jf-icon-cooling-tea",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 12,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_agility_down"
+      ],
+      "stateEffects": [
+        {
+          "stateId": "state_agility_down",
+          "operation": "remove",
+          "chance": 100
+        }
+      ],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_gen_psychic_wave",
+      "description": "흰 찻잔에 띄운 푸른 잎차. 살아 있는 아군 한 명의 기력(MP)를 12 회복한다, 민첩 하락을 해제한다."
+    },
+    {
+      "id": "item_jf_smoke_powder",
+      "name": "연막가루",
+      "type": "special",
+      "scope": "enemy",
+      "price": 24,
+      "iconResourceId": "jf-icon-smoke-powder",
+      "imageResourceId": "jf-icon-smoke-powder",
+      "occasion": "battle",
+      "occasionField": false,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "skillId": "skill_jf_item_smoke_powder",
+      "activateSkillId": "skill_jf_item_smoke_powder",
+      "animationId": "anim_gen_smoke_vanish",
+      "description": "매듭을 풀면 짙은 연기가 퍼지는 가루 주머니. 전투에서 적 한 명에게 기본 확률 100%로 민첩 하락을 건다(상태 저항 적용). 적용되면 민첩 계산 배율 0.5배. 피해·암흑·도주 보장은 없다. 기력 소모 없이 1개 소비한다. 필드 사용 불가."
+    },
+    {
+      "id": "item_jf_fire_charm",
+      "name": "화염부",
+      "type": "special",
+      "scope": "enemy",
+      "price": 32,
+      "iconResourceId": "jf-icon-fire-charm",
+      "imageResourceId": "jf-icon-fire-charm",
+      "occasion": "battle",
+      "occasionField": false,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "skillId": "skill_jf_item_fire_charm",
+      "activateSkillId": "skill_jf_item_fire_charm",
+      "animationId": "anim_gen_fire_burst",
+      "description": "불꽃 모양으로 탄 가장자리의 부적. 전투에서 적 한 명에게 불 속성 기본 HP 피해 32를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가."
+    },
+    {
+      "id": "item_jf_ice_charm",
+      "name": "빙결부",
+      "type": "special",
+      "scope": "enemy",
+      "price": 32,
+      "iconResourceId": "jf-icon-ice-charm",
+      "imageResourceId": "jf-icon-ice-charm",
+      "occasion": "battle",
+      "occasionField": false,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "skillId": "skill_jf_item_ice_charm",
+      "activateSkillId": "skill_jf_item_ice_charm",
+      "animationId": "anim_gen_ice_shatter",
+      "description": "횡으로 말아 푸른 결정으로 묶은 부적. 전투에서 적 한 명에게 얼음 속성 기본 HP 피해 30를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가."
+    },
+    {
+      "id": "item_jf_thunder_charm",
+      "name": "뇌전부",
+      "type": "special",
+      "scope": "enemy",
+      "price": 36,
+      "iconResourceId": "jf-icon-thunder-charm",
+      "imageResourceId": "jf-icon-thunder-charm",
+      "occasion": "battle",
+      "occasionField": false,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "skillId": "skill_jf_item_thunder_charm",
+      "activateSkillId": "skill_jf_item_thunder_charm",
+      "animationId": "anim_gen_thunder_strike",
+      "description": "번개처럼 꺾어 접은 부적. 전투에서 적 한 명에게 번개 속성 기본 HP 피해 34를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가."
+    },
+    {
+      "id": "item_jf_vitality_tonic",
+      "name": "생기탕",
+      "type": "medicine",
+      "scope": "ally",
+      "price": 140,
+      "iconResourceId": "jf-icon-vitality-tonic",
+      "imageResourceId": "jf-icon-vitality-tonic",
+      "occasion": "always",
+      "occasionField": true,
+      "occasionBattle": true,
+      "consumable": true,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 50,
+        "percentMax": 25
+      },
+      "mpRecovery": {
+        "flat": 8,
+        "percentMax": 20
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "animationId": "anim_heal",
+      "description": "붉은 끈으로 봉한 호리병의 생기탕. 살아 있는 아군 한 명의 HP를 최대치의 25%(내림)+50 회복한다, 기력(MP)를 최대치의 20%(내림)+8 회복한다."
+    },
+    {
+      "id": "item_jf_mat_rat_tail",
+      "name": "들쥐 꼬리",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 4,
+      "iconResourceId": "jf-icon-rat-tail",
+      "imageResourceId": "jf-icon-rat-tail",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "들쥐의 가늘고 긴 꼬리. 판매용 재료이며 직접 사용할 수 없다."
     },
     {
       "id": "item_jf_mat_boar_tusk",
       "name": "멧돼지 어금니",
-      "description": "휘어진 끝과 거친 뿌리가 남은 어금니. 판매용 재료이며 직접 사용할 수 없다.",
-      "type": "normalGoods", "scope": "none", "price": 12,
-      "iconResourceId": "jf-icon-boar-tusk", "imageResourceId": "jf-icon-boar-tusk",
-      "occasion": "never", "occasionField": false, "occasionBattle": false,
-      "consumable": false, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 12,
+      "iconResourceId": "jf-icon-boar-tusk",
+      "imageResourceId": "jf-icon-boar-tusk",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
       "onlyEffectiveOnDeadActors": false,
-      "hpRecovery": { "flat": 0, "percentMax": 0 }, "mpRecovery": { "flat": 0, "percentMax": 0 },
-      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "휘어진 끝과 거친 뿌리가 남은 어금니. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_bat_wing",
+      "name": "박쥐 날개",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 8,
+      "iconResourceId": "jf-icon-bat-wing",
+      "imageResourceId": "jf-icon-bat-wing",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "막과 가는 뼈가 남은 박쥐 날개. 판매용 재료이며 직접 사용할 수 없다."
     },
     {
       "id": "item_jf_mat_straw_knot",
       "name": "짚 매듭",
-      "description": "짚도깨비에서 풀려 나온 볏짚 고리. 판매용 재료이며 직접 사용할 수 없다.",
-      "type": "normalGoods", "scope": "none", "price": 6,
-      "iconResourceId": "jf-icon-straw-knot", "imageResourceId": "jf-icon-straw-knot",
-      "occasion": "never", "occasionField": false, "occasionBattle": false,
-      "consumable": false, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 6,
+      "iconResourceId": "jf-icon-straw-knot",
+      "imageResourceId": "jf-icon-straw-knot",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
       "onlyEffectiveOnDeadActors": false,
-      "hpRecovery": { "flat": 0, "percentMax": 0 }, "mpRecovery": { "flat": 0, "percentMax": 0 },
-      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "짚도깨비에서 풀려 나온 볏짚 고리. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_ghost_ash",
+      "name": "귀화재",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 10,
+      "iconResourceId": "jf-icon-ghost-ash",
+      "imageResourceId": "jf-icon-ghost-ash",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "꺼진 귀화가 남긴 창백한 재. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_broken_jade",
+      "name": "깨진 옥",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 16,
+      "iconResourceId": "jf-icon-broken-jade",
+      "imageResourceId": "jf-icon-broken-jade",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "구멍 가장자리가 부러진 옥 조각. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_fox_fur",
+      "name": "여우 털",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 20,
+      "iconResourceId": "jf-icon-fox-fur",
+      "imageResourceId": "jf-icon-fox-fur",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "흰 끝이 섞인 붉은 여우 털뭉치. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_stone_core",
+      "name": "돌 심지",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 24,
+      "iconResourceId": "jf-icon-stone-core",
+      "imageResourceId": "jf-icon-stone-core",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "돌도깨비 안에서 나온 거친 돌덩이. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_bamboo_heart",
+      "name": "대나무 심",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 18,
+      "iconResourceId": "jf-icon-bamboo-heart",
+      "imageResourceId": "jf-icon-bamboo-heart",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "마디 사이에서 잘라 낸 단단한 대나무 심. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_rusted_token",
+      "name": "녹슨 패",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 14,
+      "iconResourceId": "jf-icon-rusted-token",
+      "imageResourceId": "jf-icon-rusted-token",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "한쪽이 이지러진 낡은 쇠패. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_bronze_shard",
+      "name": "청동 조각",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 32,
+      "iconResourceId": "jf-icon-bronze-shard",
+      "imageResourceId": "jf-icon-bronze-shard",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "청동도깨비의 몸에서 떨어진 금속 조각. 판매용 재료이며 직접 사용할 수 없다."
+    },
+    {
+      "id": "item_jf_mat_tiger_claw",
+      "name": "호랑이 발톱",
+      "type": "normalGoods",
+      "scope": "none",
+      "price": 40,
+      "iconResourceId": "jf-icon-tiger-claw",
+      "imageResourceId": "jf-icon-tiger-claw",
+      "occasion": "never",
+      "occasionField": false,
+      "occasionBattle": false,
+      "consumable": false,
+      "consumptionLimit": "noLimit",
+      "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "stateEffects": [],
+      "usableActorIds": [],
+      "usableClassIds": [],
+      "description": "검은 끝과 굵은 밑동이 남은 발톱. 판매용 재료이며 직접 사용할 수 없다."
     }
   ],
-  "skills": []
+  "skills": [
+    {
+      "id": "skill_jf_item_smoke_powder",
+      "name": "연막가루 발동",
+      "description": "전투에서 적 한 명에게 기본 확률 100%로 민첩 하락을 건다(상태 저항 적용). 적용되면 민첩 계산 배율 0.5배. 피해·암흑·도주 보장은 없다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "type": "normal",
+      "scope": "enemy",
+      "power": 0,
+      "mpCost": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "animationId": "anim_gen_smoke_vanish",
+      "effect": {
+        "kind": "support"
+      },
+      "stateEffects": [
+        {
+          "stateId": "state_agility_down",
+          "operation": "add",
+          "chance": 100
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_item_fire_charm",
+      "name": "화염부 발동",
+      "description": "전투에서 적 한 명에게 불 속성 기본 HP 피해 32를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "type": "normal",
+      "scope": "enemy",
+      "power": 32,
+      "mpCost": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "animationId": "anim_gen_fire_burst",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "stateEffects": [],
+      "elementId": "element_jf_fire",
+      "damageFormula": "32"
+    },
+    {
+      "id": "skill_jf_item_ice_charm",
+      "name": "빙결부 발동",
+      "description": "전투에서 적 한 명에게 얼음 속성 기본 HP 피해 30를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "type": "normal",
+      "scope": "enemy",
+      "power": 30,
+      "mpCost": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "animationId": "anim_gen_ice_shatter",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "stateEffects": [],
+      "elementId": "element_jf_ice",
+      "damageFormula": "30"
+    },
+    {
+      "id": "skill_jf_item_thunder_charm",
+      "name": "뇌전부 발동",
+      "description": "전투에서 적 한 명에게 번개 속성 기본 HP 피해 34를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "type": "normal",
+      "scope": "enemy",
+      "power": 34,
+      "mpCost": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "animationId": "anim_gen_thunder_strike",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "stateEffects": [],
+      "elementId": "element_jf_lightning",
+      "damageFormula": "34"
+    }
+  ]
 }

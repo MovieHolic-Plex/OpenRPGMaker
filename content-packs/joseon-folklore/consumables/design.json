@@ -1,87 +1,1368 @@
 {
   "packId": "joseon-folklore",
   "role": "consumables",
-  "phase": "pilot",
+  "phase": "full",
   "language": "ko",
   "world": "조선 설화에서 착안한 창작 오프라인 판타지",
-  "fullTarget": { "consumables": 20, "materials": 12 },
-  "delivered": { "consumables": 4, "materials": 2 },
-  "deliveryScope": "실제 PNG와 엔진 입력 데이터. 상점·드롭·퀘스트·제작법은 감독자 통합 전 제안이며 현재 게임에 설치하지 않았다.",
+  "fullTarget": {
+    "consumables": 20,
+    "materials": 12
+  },
+  "delivered": {
+    "consumables": 20,
+    "materials": 12,
+    "itemSkills": 4
+  },
+  "deliveryScope": "자기 role의 실제 PNG·데이터·디자인·검토 근거. 획득·상점·드롭은 제안이며 실제 게임에 설치하지 않았다.",
   "economy": {
     "initialGold": 80,
     "currencyLabel": "전",
-    "currencyStatus": "기획 표기; 게임 terms 변경은 감독자 담당",
-    "sellPriceRule": "현재 기본 상점의 Math.floor(item.price / 2), 흥정 등 통합 설정에 따라 달라질 수 있음",
-    "openingBasketExample": { "mugwortPills": 3, "ginsengTeas": 1, "totalPrice": 80 },
-    "rationale": "쑥단 50HP/16, 산삼탕 16MP/32로 고정 계약 초반 범위를 따른다. 환생부 96은 초기 금액보다 비싸며 전투 뒤 재정비에 쓰는 희귀품으로 제안한다."
+    "currencyStatus": "기획 표기; terms 변경은 감독자 담당",
+    "sellPriceRule": "기본 판매가 floor(item.price/2); 프로젝트 판매표/흥정 설정은 감독자 통합 시 적용",
+    "openingBasketExample": {
+      "mugwortPills": 3,
+      "ginsengTeas": 1,
+      "totalPrice": 80
+    },
+    "rationale": "쑥단 50HP/16전·산삼탕 16MP/32전 유지. 중급 HP80/30·HP140/56 및 MP40/84, 후반 비율회복은 소모품 투자 선택지. 재료 판매는 2~20전."
   },
   "engineContract": {
     "itemsInput": "data.json.items → normalizeItemRecord",
-    "skills": "이번 샘플은 약품 고유 효과만 사용; data.json.skills=[]; skill_jf_item_* 예약 추가 없음",
-    "consume": "consumable=true + consumptionLimit=noLimit는 성공한 사용마다 1개 소모. 무한 재사용 아님.",
-    "menuNoEffect": "HP/MP가 이미 가득 찼거나 해제할 독이 없으면 메뉴 사용을 거절하고 수량 유지",
-    "battleNoEffect": "살아 있는 대상에 적용 효과가 없어도 전투의 승인된 아이템 행동은 1개 소모할 수 있다. 메뉴의 무효 사용 환불 규칙을 전투 전체에 약속하지 않는다.",
-    "recoveryFormula": "min(maxValue, before + floor(maxValue * percentMax / 100) + flat)",
-    "revivalLimitation": "itemAllowsBattle는 onlyEffectiveOnDeadActors 약품을 제외하고 SkillRecord에는 전투불능 아군 대상 scope가 없다. 환생부는 field/occasionBattle=false로 명시한다. runtime/editorcore 변경 없이 전투 부활을 구현했다고 주장하지 않는다.",
-    "deathRepresentation": "참고 prototype에는 state_death 행이 없다. 전투불능은 HP=0, 부활은 HP>0으로 구현한다. 없는 상태를 healStateIds에 참조하지 않는다.",
-    "classPermissions": "usableActorIds=[]/usableClassIds=[]; 네 직업과 초보가 공통 사용. 통합될 새 클래스 ID에 의존하지 않는다.",
-    "resourcePublication": "art-manifest.json.path는 감독자가 public/assets로 복사·등록할 계약 경로다. 이번 작업은 로컬 assets PNG만 제공한다."
+    "skillsInput": "data.json.skills → normalizeSkillRecord; 공격부3+연막1의 skill_jf_item_*만 소유",
+    "dependencies": "불·얼음·번개 속성은 ids.json에 예약된 element_jf_*를 skills 담당이 정의한다. 이 role은 states/elements를 저작하지 않는다. 모든 치료/연막 상태는 읽기전용 prototype에 존재한다.",
+    "consume": "consumable=true + consumptionLimit=noLimit: 성공한 메뉴 사용 또는 승인된 전투 행동마다 1개; 무한재사용 아님",
+    "menuNoEffect": "최대 회복/해제할 상태 없음/잘못된 생사 대상은 사용 거절하고 수량 유지",
+    "battleNoEffect": "효과가 없거나 실패·속성면역이어도 승인된 전투 행동은 1개 소모할 수 있음",
+    "recoveryFormula": "min(maxValue,before+floor(maxValue*percentMax/100)+flat)",
+    "attackFormula": "damageFormula=32/30/34; variance=0, criticalRate=0, hitRate=100, mpCost=0; 속성·상태·기타 실제 엔진 보정은 적용",
+    "smokeLimitation": "연막은 state_agility_down 기본100%(저항적용)·민첩배율0.5만 구현; 명중저하/암흑/확정도주 없음",
+    "revivalLimitation": "itemAllowsBattle는 onlyEffectiveOnDeadActors 약품을 거절. 환생부는 occasion=field,occasionBattle=false; 전투부활/자동부활/전멸구제 없음",
+    "deathRepresentation": "prototype에 state_death 없음; HP=0에 회복을 적용해 HP>0으로 부활. 없는 상태 참조를 넣지 않음",
+    "classPermissions": "usableActorIds/usableClassIds=[]; 모든 직업 공통 사용; resource2 안 씀",
+    "resourcePublication": "art-manifest.json의 assets/joseon-folklore/consumables/<slug>.png 경로는 감독자 public 등록용 계약; 이번 role은 자기 assets만 쓴다"
   },
   "entries": [
     {
-      "id": "item_jf_mugwort_pill", "slug": "mugwort-pill", "name": "쑥단", "category": "consumable",
-      "buyPrice": 16, "baseSellPrice": 8, "recommendedLevels": [1, 20],
-      "region": "시작 마을·들길", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "shop", "place": "마을 약방", "price": 16 }, { "kind": "quest", "place": "들길 심부름", "quantity": 2 }],
-      "actualEffect": { "scope": "ally", "livingOnly": true, "hpFlat": 50, "hpPercentMax": 0, "mpFlat": 0, "cures": [], "occasion": "always", "costPerSuccessfulUse": 1 },
-      "iconDesign": "쑥잎 한 줄기, 초록 약환 두 알, 벌어진 황갈색 종이 포장. 병 그림을 재사용하지 않는다.",
-      "notes": "현재게임 약초 50HP/15와 거의 같은 초반 수치. 범위 확장 지시 전 상위 등급을 만들지 않는다."
+      "id": "item_jf_mugwort_pill",
+      "slug": "mugwort-pill",
+      "name": "쑥단",
+      "category": "consumable",
+      "buyPrice": 16,
+      "baseSellPrice": 8,
+      "recommendedLevels": [
+        1,
+        20
+      ],
+      "region": "시작 마을·들길",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "마을 약방",
+          "price": 16
+        },
+        {
+          "kind": "treasure",
+          "place": "시작 마을·들길의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "쑥잎·초록 약환 두 알·벌어진 황갈색 종이 포장",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 50,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "말린 쑥을 꿀에 개어 빚은 초록 약환. 살아 있는 아군 한 명의 HP를 50 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
     },
     {
-      "id": "item_jf_ginseng_tea", "slug": "ginseng-tea", "name": "산삼탕", "category": "consumable",
-      "buyPrice": 32, "baseSellPrice": 16, "recommendedLevels": [1, 20],
-      "region": "시작 마을·산자락", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "shop", "place": "마을 약방", "price": 32 }, { "kind": "treasure", "place": "산자락 약초꾼 쉼터", "quantity": 1 }],
-      "actualEffect": { "scope": "ally", "livingOnly": true, "hpFlat": 0, "mpFlat": 16, "mpPercentMax": 0, "cures": [], "occasion": "always", "costPerSuccessfulUse": 1 },
-      "iconDesign": "청자 사발, 호박색 달임물, 갈라진 산삼 뿌리, 짧은 김. HP 약환과 실루엣·색을 구분한다.",
-      "notes": "MP는 기력. resource2 없음. 기존 prototype 산삼 30MP/30은 읽기 참고일 뿐 이 팩에서는 계약 범위 12~20MP/25~40을 우선한다."
+      "id": "item_jf_ginseng_tea",
+      "slug": "ginseng-tea",
+      "name": "산삼탕",
+      "category": "consumable",
+      "buyPrice": 32,
+      "baseSellPrice": 16,
+      "recommendedLevels": [
+        1,
+        20
+      ],
+      "region": "시작 마을·산자락",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "마을 약방",
+          "price": 32
+        },
+        {
+          "kind": "treasure",
+          "place": "시작 마을·산자락의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "청자 사발·호박색 탕·갈라진 뿌리·김",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 16,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "작은 사발에 담은 산삼 달임물. 살아 있는 아군 한 명의 기력(MP)를 16 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
     },
     {
-      "id": "item_jf_purification_charm", "slug": "purification-charm", "name": "정화부", "category": "consumable",
-      "buyPrice": 18, "baseSellPrice": 9, "recommendedLevels": [1, 20],
-      "region": "시작 마을·오래된 사당", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "shop", "place": "마을 부적 행상", "price": 18 }, { "kind": "quest", "place": "사당의 물동이", "quantity": 1 }],
-      "actualEffect": { "scope": "ally", "livingOnly": true, "hpFlat": 0, "mpFlat": 0, "cures": ["state_poison"], "chance": 100, "occasion": "always", "costPerSuccessfulUse": 1 },
-      "iconDesign": "세로 황지, 접힌 모서리, 주사색 물결 추상 문양. 실존 경문·상용게임 글자 복제 없음.",
-      "notes": "healStateIds와 stateEffects.remove를 동일 상태로 명시하며 전투는 중복 해제를 한 번으로 합친다. 독 면역, 맹독·침묵·저주 해제, HP회복은 없다."
+      "id": "item_jf_purification_charm",
+      "slug": "purification-charm",
+      "name": "정화부",
+      "category": "consumable",
+      "buyPrice": 18,
+      "baseSellPrice": 9,
+      "recommendedLevels": [
+        1,
+        20
+      ],
+      "region": "시작 마을·오래된 사당",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "마을 부적 행상",
+          "price": 18
+        },
+        {
+          "kind": "treasure",
+          "place": "시작 마을·오래된 사당의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "세로 황지·접힌 모서리·붉은 추상 물결",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [
+          "state_poison"
+        ],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "물결 모양 주사가 찍힌 황지 부적. 살아 있는 아군 한 명의 독을 해제한다. 맹독과 다른 상태는 해제하지 않는다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
     },
     {
-      "id": "item_jf_revival_charm", "slug": "revival-charm", "name": "환생부", "category": "consumable",
-      "buyPrice": 96, "baseSellPrice": 48, "recommendedLevels": [1, 20],
-      "region": "시작 마을·산신당", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "shop", "place": "산신당 부적 장인", "price": 96 }, { "kind": "quest", "place": "첫 도깨비 토벌 보상", "quantity": 1 }],
-      "actualEffect": { "scope": "ally", "deadOnly": true, "hpFlat": 1, "hpPercentMax": 25, "mpFlat": 0, "cures": [], "occasion": "field", "costPerSuccessfulUse": 1 },
-      "examples": [{ "maxHp": 120, "beforeHp": 0, "afterHp": 31 }, { "maxHp": 127, "beforeHp": 0, "afterHp": 32 }, { "maxHp": 1, "beforeHp": 0, "afterHp": 1 }],
-      "iconDesign": "넓게 접은 부적, 붉은 묶음끈, 금빛 매듭과 솟는 혼불. 정화부와 외곽 형태부터 다르다.",
-      "notes": "전투 후 생존자가 남아 필드로 돌아왔을 때 사용할 수 있다. 전멸 후 게임오버를 막지 않으며 자동부활·전투중부활·상태정화·MP회복은 없다."
+      "id": "item_jf_revival_charm",
+      "slug": "revival-charm",
+      "name": "환생부",
+      "category": "consumable",
+      "buyPrice": 96,
+      "baseSellPrice": 48,
+      "recommendedLevels": [
+        1,
+        20
+      ],
+      "region": "시작 마을·산신당",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "산신당 부적 장인",
+          "price": 96
+        },
+        {
+          "kind": "quest",
+          "place": "첫 도깨비 토벌 보상",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "넓게 접은 부적·붉은 묶음끈·금빛 매듭·혼불",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "field",
+        "hpFlat": 1,
+        "hpPercentMax": 25,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": true,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "붉은 끈과 금빛 혼불을 품은 접힌 부적. 필드 메뉴에서 전투불능 아군 한 명을 HP 최대치의 25%(내림)+1로 되살린다. 전투 중에는 사용할 수 없다.",
+      "notes": "필드 메뉴에서만 부활. HP 외 MP·다른 상태는 보존한다. 전멸 구제·자동부활·전투중 부활 없음.",
+      "examples": [
+        {
+          "maxHp": 120,
+          "beforeHp": 0,
+          "afterHp": 31
+        },
+        {
+          "maxHp": 127,
+          "beforeHp": 0,
+          "afterHp": 32
+        },
+        {
+          "maxHp": 1,
+          "beforeHp": 0,
+          "afterHp": 1
+        }
+      ]
     },
     {
-      "id": "item_jf_mat_boar_tusk", "slug": "boar-tusk", "name": "멧돼지 어금니", "category": "material",
-      "buyPrice": 12, "baseSellPrice": 6, "recommendedLevels": [1, 5],
-      "region": "들길·산기슭", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "enemyDrop", "enemyId": "enemy_jf_wild_boar", "chancePercent": 35, "quantity": 1 }],
-      "actualEffect": { "scope": "none", "occasion": "never", "consumable": false, "hpFlat": 0, "mpFlat": 0, "cures": [] },
-      "iconDesign": "휘어진 상아색 어금니, 갈색 거친 뿌리, 안쪽 회색 음영. 글자나 배지 없이 읽히는 단일 실루엣.",
-      "notes": "6전 판매 재료. 장비 제작·퀘스트 교환은 현재 이 팩에 구현하지 않았다. enemyDrop는 behavior/monsters 감독자 합의용 제안."
+      "id": "item_jf_rice_ball",
+      "slug": "rice-ball",
+      "name": "주먹밥",
+      "category": "consumable",
+      "buyPrice": 12,
+      "baseSellPrice": 6,
+      "recommendedLevels": [
+        1,
+        5
+      ],
+      "region": "시작 마을·논두렁",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "주막 밥상",
+          "price": 12
+        },
+        {
+          "kind": "treasure",
+          "place": "시작 마을·논두렁의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "삼각 흰 쌀밥·짙은 김띠·바닥 잎사귀",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "field",
+        "hpFlat": 35,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "잎사귀에 올린 삼각 주먹밥. 살아 있는 아군 한 명의 HP를 35 회복한다. 필드 메뉴 전용이며 전투 중에는 사용할 수 없다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
     },
     {
-      "id": "item_jf_mat_straw_knot", "slug": "straw-knot", "name": "짚 매듭", "category": "material",
-      "buyPrice": 6, "baseSellPrice": 3, "recommendedLevels": [1, 5],
-      "region": "들길·폐가 주변", "acquisitionStatus": "proposed-not-installed",
-      "acquisition": [{ "kind": "enemyDrop", "enemyId": "enemy_jf_straw_dokkaebi", "chancePercent": 45, "quantity": 1 }],
-      "actualEffect": { "scope": "none", "occasion": "never", "consumable": false, "hpFlat": 0, "mpFlat": 0, "cures": [] },
-      "iconDesign": "투명한 구멍이 있는 볏짚 고리 두 개, 꼬인 섬유, 풀린 세 가닥. 어금니와 색·외곽 모두 구별.",
-      "notes": "3전 판매 재료. 제작 능력이나 숨은 도깨비 봉인 효과를 부여하지 않는다."
+      "id": "item_jf_rice_cake",
+      "slug": "rice-cake",
+      "name": "시루떡",
+      "category": "consumable",
+      "buyPrice": 30,
+      "baseSellPrice": 15,
+      "recommendedLevels": [
+        5,
+        10
+      ],
+      "region": "장터·고갯길",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "장터 떡집",
+          "price": 30
+        },
+        {
+          "kind": "treasure",
+          "place": "장터·고갯길의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "엇갈린 흰 떡 두 층·자주색 팥고물·나무 받침",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 80,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "팥고물을 끼워 쌓은 두툼한 시루떡. 살아 있는 아군 한 명의 HP를 80 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_honey_cake",
+      "slug": "honey-cake",
+      "name": "꿀약과",
+      "category": "consumable",
+      "buyPrice": 36,
+      "baseSellPrice": 18,
+      "recommendedLevels": [
+        3,
+        8
+      ],
+      "region": "장터·산길",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "장터 떡집",
+          "price": 36
+        },
+        {
+          "kind": "treasure",
+          "place": "장터·산길의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "꽃 모양 갈색 약과·방사형 홈·작은 꿀방울",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 35,
+        "hpPercentMax": 0,
+        "mpFlat": 8,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "꽃무늬 틀에 눌러 꿀을 먹인 약과. 살아 있는 아군 한 명의 HP를 35 회복한다, 기력(MP)를 8 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_herbal_decoction",
+      "slug": "herbal-decoction",
+      "name": "약초탕",
+      "category": "consumable",
+      "buyPrice": 56,
+      "baseSellPrice": 28,
+      "recommendedLevels": [
+        8,
+        15
+      ],
+      "region": "산길·약초꾼 오두막",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "산길 약초꾼",
+          "price": 56
+        },
+        {
+          "kind": "treasure",
+          "place": "산길·약초꾼 오두막의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "짙은 옹기 손잡이·주둥이·잎 봉인·김",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 140,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "귀 달린 옹기 주전자에 넣은 진한 약초탕. 살아 있는 아군 한 명의 HP를 140 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_red_ginseng",
+      "slug": "red-ginseng",
+      "name": "홍삼",
+      "category": "consumable",
+      "buyPrice": 84,
+      "baseSellPrice": 42,
+      "recommendedLevels": [
+        8,
+        15
+      ],
+      "region": "산자락·큰 장터",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "큰 장터 약방",
+          "price": 84
+        },
+        {
+          "kind": "treasure",
+          "place": "산자락·큰 장터의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "붉은 몸통·가지 뿌리·황금 묶음띠",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 40,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "말리고 쪄서 붉어진 산삼 뿌리. 살아 있는 아군 한 명의 기력(MP)를 40 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_spring_water",
+      "slug": "spring-water",
+      "name": "샘물",
+      "category": "consumable",
+      "buyPrice": 25,
+      "baseSellPrice": 12,
+      "recommendedLevels": [
+        1,
+        5
+      ],
+      "region": "마을 샘·산자락",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "샘터 행상",
+          "price": 25
+        },
+        {
+          "kind": "treasure",
+          "place": "마을 샘·산자락의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "세로 대통·잘린 푸른 수면·흘러나온 물방울",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "field",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 12,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "짧은 대통에 담은 맑은 샘물. 살아 있는 아군 한 명의 기력(MP)를 12 회복한다. 필드 메뉴 전용이며 전투 중에는 사용할 수 없다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_jade_water",
+      "slug": "jade-water",
+      "name": "옥수",
+      "category": "consumable",
+      "buyPrice": 72,
+      "baseSellPrice": 36,
+      "recommendedLevels": [
+        10,
+        20
+      ],
+      "region": "산신당·옥빛 동굴",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "산신당 부적 장인",
+          "price": 72
+        },
+        {
+          "kind": "treasure",
+          "place": "산신당·옥빛 동굴의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "납작한 청록 물병·비대칭 옥마개·물빛 하이라이트",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 8,
+        "mpPercentMax": 25,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "옥마개를 씌운 납작한 물병. 살아 있는 아군 한 명의 기력(MP)를 최대치의 25%(내림)+8 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다.",
+      "examples": [
+        {
+          "maxMp": 36,
+          "mpRecovery": 17
+        },
+        {
+          "maxMp": 100,
+          "mpRecovery": 33
+        }
+      ]
+    },
+    {
+      "id": "item_jf_antidote",
+      "slug": "antidote",
+      "name": "해독초",
+      "category": "consumable",
+      "buyPrice": 24,
+      "baseSellPrice": 12,
+      "recommendedLevels": [
+        1,
+        8
+      ],
+      "region": "들길·약초밭",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "마을 약방",
+          "price": 24
+        },
+        {
+          "kind": "treasure",
+          "place": "들길·약초밭의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "묶인 긴 잎 세 장·가는 흰 뿌리·빨간 끈",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 15,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [
+          "state_poison"
+        ],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "흰 뿌리가 남은 해독초 한 묶음. 살아 있는 아군 한 명의 HP를 15 회복한다, 독을 해제한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_clear_mind_pill",
+      "slug": "clear-mind-pill",
+      "name": "청심단",
+      "category": "consumable",
+      "buyPrice": 28,
+      "baseSellPrice": 14,
+      "recommendedLevels": [
+        3,
+        12
+      ],
+      "region": "장터·폐가",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "장터 약방",
+          "price": 28
+        },
+        {
+          "kind": "treasure",
+          "place": "장터·폐가의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "열린 푸른 사각 약갑·어두운 환·은빛 봉인",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [
+          "state_sleep",
+          "state_silence"
+        ],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "푸른 약갑에 담은 검푸른 약환. 살아 있는 아군 한 명의 수면·침묵을 해제한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_warming_tea",
+      "slug": "warming-tea",
+      "name": "온기차",
+      "category": "consumable",
+      "buyPrice": 26,
+      "baseSellPrice": 13,
+      "recommendedLevels": [
+        3,
+        12
+      ],
+      "region": "산길·고갯길",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "고갯길 주막",
+          "price": 26
+        },
+        {
+          "kind": "treasure",
+          "place": "산길·고갯길의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "둥근 놋주전자·손잡이·붉은 김·짧은 주둥이",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 40,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [
+          "state_paralysis"
+        ],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "놋주전자에 달여 손발을 푸는 차. 살아 있는 아군 한 명의 HP를 40 회복한다, 마비를 해제한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_cooling_tea",
+      "slug": "cooling-tea",
+      "name": "청량차",
+      "category": "consumable",
+      "buyPrice": 36,
+      "baseSellPrice": 18,
+      "recommendedLevels": [
+        5,
+        15
+      ],
+      "region": "대숲·여우 고개",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "대숲 주막",
+          "price": 36
+        },
+        {
+          "kind": "treasure",
+          "place": "대숲·여우 고개의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "높은 흰 찻잔·푸른 수면·민트잎·작은 받침",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 12,
+        "mpPercentMax": 0,
+        "cures": [
+          "state_agility_down"
+        ],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "흰 찻잔에 띄운 푸른 잎차. 살아 있는 아군 한 명의 기력(MP)를 12 회복한다, 민첩 하락을 해제한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다."
+    },
+    {
+      "id": "item_jf_smoke_powder",
+      "slug": "smoke-powder",
+      "name": "연막가루",
+      "category": "consumable",
+      "buyPrice": 24,
+      "baseSellPrice": 12,
+      "recommendedLevels": [
+        3,
+        12
+      ],
+      "region": "장터·폐가",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "장터 도구상",
+          "price": 24
+        },
+        {
+          "kind": "treasure",
+          "place": "장터·폐가의 부적함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "기울어진 자주색 주머니·매듭·번지는 연기 군집",
+      "actualEffect": {
+        "scope": "enemy",
+        "occasion": "battle",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1,
+        "skillId": "skill_jf_item_smoke_powder",
+        "mpCost": 0,
+        "baseDamage": 0,
+        "elementId": null,
+        "inflicts": [
+          {
+            "stateId": "state_agility_down",
+            "operation": "add",
+            "chance": 100
+          }
+        ],
+        "variance": 0,
+        "criticalRate": 0,
+        "baseHitRate": 100
+      },
+      "usageDescription": "매듭을 풀면 짙은 연기가 퍼지는 가루 주머니. 전투에서 적 한 명에게 기본 확률 100%로 민첩 하락을 건다(상태 저항 적용). 적용되면 민첩 계산 배율 0.5배. 피해·암흑·도주 보장은 없다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "notes": "전용 아이템 기술이며 다른 담당의 직업24+적12 기술과 ID가 겹치지 않는다. 실패·상성 면역에도 승인된 전투 행동은 1개 소모한다."
+    },
+    {
+      "id": "item_jf_fire_charm",
+      "slug": "fire-charm",
+      "name": "화염부",
+      "category": "consumable",
+      "buyPrice": 32,
+      "baseSellPrice": 16,
+      "recommendedLevels": [
+        3,
+        10
+      ],
+      "region": "장터·오래된 사당",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "부적 행상",
+          "price": 32
+        },
+        {
+          "kind": "treasure",
+          "place": "장터·오래된 사당의 부적함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "불규칙한 탄 종이·붉은 불꽃·주황 불씨",
+      "actualEffect": {
+        "scope": "enemy",
+        "occasion": "battle",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1,
+        "skillId": "skill_jf_item_fire_charm",
+        "mpCost": 0,
+        "baseDamage": 32,
+        "elementId": "element_jf_fire",
+        "inflicts": [],
+        "variance": 0,
+        "criticalRate": 0,
+        "baseHitRate": 100
+      },
+      "usageDescription": "불꽃 모양으로 탄 가장자리의 부적. 전투에서 적 한 명에게 불 속성 기본 HP 피해 32를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "notes": "전용 아이템 기술이며 다른 담당의 직업24+적12 기술과 ID가 겹치지 않는다. 실패·상성 면역에도 승인된 전투 행동은 1개 소모한다."
+    },
+    {
+      "id": "item_jf_ice_charm",
+      "slug": "ice-charm",
+      "name": "빙결부",
+      "category": "consumable",
+      "buyPrice": 32,
+      "baseSellPrice": 16,
+      "recommendedLevels": [
+        3,
+        10
+      ],
+      "region": "산신당·옥빛 동굴",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "부적 행상",
+          "price": 32
+        },
+        {
+          "kind": "treasure",
+          "place": "산신당·옥빛 동굴의 부적함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "가로 두루마리·청색 결정·양쪽 말린 끝",
+      "actualEffect": {
+        "scope": "enemy",
+        "occasion": "battle",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1,
+        "skillId": "skill_jf_item_ice_charm",
+        "mpCost": 0,
+        "baseDamage": 30,
+        "elementId": "element_jf_ice",
+        "inflicts": [],
+        "variance": 0,
+        "criticalRate": 0,
+        "baseHitRate": 100
+      },
+      "usageDescription": "횡으로 말아 푸른 결정으로 묶은 부적. 전투에서 적 한 명에게 얼음 속성 기본 HP 피해 30를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "notes": "전용 아이템 기술이며 다른 담당의 직업24+적12 기술과 ID가 겹치지 않는다. 실패·상성 면역에도 승인된 전투 행동은 1개 소모한다."
+    },
+    {
+      "id": "item_jf_thunder_charm",
+      "slug": "thunder-charm",
+      "name": "뇌전부",
+      "category": "consumable",
+      "buyPrice": 36,
+      "baseSellPrice": 18,
+      "recommendedLevels": [
+        5,
+        12
+      ],
+      "region": "고갯길·대숲",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "부적 행상",
+          "price": 36
+        },
+        {
+          "kind": "treasure",
+          "place": "고갯길·대숲의 부적함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "비틀린 세로 종이·금빛 번개·작은 방전 픽셀",
+      "actualEffect": {
+        "scope": "enemy",
+        "occasion": "battle",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1,
+        "skillId": "skill_jf_item_thunder_charm",
+        "mpCost": 0,
+        "baseDamage": 34,
+        "elementId": "element_jf_lightning",
+        "inflicts": [],
+        "variance": 0,
+        "criticalRate": 0,
+        "baseHitRate": 100
+      },
+      "usageDescription": "번개처럼 꺾어 접은 부적. 전투에서 적 한 명에게 번개 속성 기본 HP 피해 34를 준다. 속성 상성·대상 상태에 따라 실제 피해가 달라진다. 기력 소모 없이 1개 소비한다. 필드 사용 불가.",
+      "notes": "전용 아이템 기술이며 다른 담당의 직업24+적12 기술과 ID가 겹치지 않는다. 실패·상성 면역에도 승인된 전투 행동은 1개 소모한다."
+    },
+    {
+      "id": "item_jf_vitality_tonic",
+      "slug": "vitality-tonic",
+      "name": "생기탕",
+      "category": "consumable",
+      "buyPrice": 140,
+      "baseSellPrice": 70,
+      "recommendedLevels": [
+        12,
+        20
+      ],
+      "region": "산신당·깊은 산",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "shop",
+          "place": "산신당 약초 장인",
+          "price": 140
+        },
+        {
+          "kind": "treasure",
+          "place": "산신당·깊은 산의 보급함",
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "두 마디 호리병·붉은 봉인·금색 잎 표식",
+      "actualEffect": {
+        "scope": "ally",
+        "occasion": "always",
+        "hpFlat": 50,
+        "hpPercentMax": 25,
+        "mpFlat": 8,
+        "mpPercentMax": 20,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 1
+      },
+      "usageDescription": "붉은 끈으로 봉한 호리병의 생기탕. 살아 있는 아군 한 명의 HP를 최대치의 25%(내림)+50 회복한다, 기력(MP)를 최대치의 20%(내림)+8 회복한다.",
+      "notes": "회복은 최대치를 넘지 않는다. 지정한 상태만 해제하며 내성·면역이나 다른 상태 효과를 새로 부여하지 않는다.",
+      "examples": [
+        {
+          "maxHp": 120,
+          "maxMp": 36,
+          "hpRecovery": 80,
+          "mpRecovery": 15
+        },
+        {
+          "maxHp": 500,
+          "maxMp": 100,
+          "hpRecovery": 175,
+          "mpRecovery": 28
+        }
+      ]
+    },
+    {
+      "id": "item_jf_mat_rat_tail",
+      "slug": "rat-tail",
+      "name": "들쥐 꼬리",
+      "category": "material",
+      "buyPrice": 4,
+      "baseSellPrice": 2,
+      "recommendedLevels": [
+        1,
+        3
+      ],
+      "region": "들길·논두렁",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_field_rat",
+          "chancePercent": 45,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "분홍빛 S자 꼬리·짙은 갈색 털 뿌리",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "들쥐의 가늘고 긴 꼬리. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_boar_tusk",
+      "slug": "boar-tusk",
+      "name": "멧돼지 어금니",
+      "category": "material",
+      "buyPrice": 12,
+      "baseSellPrice": 6,
+      "recommendedLevels": [
+        1,
+        5
+      ],
+      "region": "들길·산기슭",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_wild_boar",
+          "chancePercent": 35,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "휘어진 상아색 어금니·갈색 거친 뿌리",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "휘어진 끝과 거친 뿌리가 남은 어금니. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_bat_wing",
+      "slug": "bat-wing",
+      "name": "박쥐 날개",
+      "category": "material",
+      "buyPrice": 8,
+      "baseSellPrice": 4,
+      "recommendedLevels": [
+        2,
+        6
+      ],
+      "region": "산자락 동굴",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_cave_bat",
+          "chancePercent": 40,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "삼각 자주색 날개막·밝은 뼈대·톱니 끝",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "막과 가는 뼈가 남은 박쥐 날개. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_straw_knot",
+      "slug": "straw-knot",
+      "name": "짚 매듭",
+      "category": "material",
+      "buyPrice": 6,
+      "baseSellPrice": 3,
+      "recommendedLevels": [
+        1,
+        5
+      ],
+      "region": "들길·폐가 주변",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_straw_dokkaebi",
+          "chancePercent": 45,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "투명한 고리 두 개·꼬인 볏짚·풀린 섬유",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "짚도깨비에서 풀려 나온 볏짚 고리. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_ghost_ash",
+      "slug": "ghost-ash",
+      "name": "귀화재",
+      "category": "material",
+      "buyPrice": 10,
+      "baseSellPrice": 5,
+      "recommendedLevels": [
+        4,
+        8
+      ],
+      "region": "오래된 사당·묘역",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_lantern_wisp",
+          "chancePercent": 35,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "얕은 천 위 재 더미·작은 푸른 잔불·들린 재가루",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "꺼진 귀화가 남긴 창백한 재. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_broken_jade",
+      "slug": "broken-jade",
+      "name": "깨진 옥",
+      "category": "material",
+      "buyPrice": 16,
+      "baseSellPrice": 8,
+      "recommendedLevels": [
+        5,
+        10
+      ],
+      "region": "오래된 사당·옥빛 동굴",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_maiden_ghost",
+          "chancePercent": 30,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "뚫린 옥 고리의 파편·각진 깨짐·청록 절단면",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "구멍 가장자리가 부러진 옥 조각. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_fox_fur",
+      "slug": "fox-fur",
+      "name": "여우 털",
+      "category": "material",
+      "buyPrice": 20,
+      "baseSellPrice": 10,
+      "recommendedLevels": [
+        8,
+        12
+      ],
+      "region": "여우 고개",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_fox_spirit",
+          "chancePercent": 30,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "비대칭 주황 털 부채·흰 끝·따뜻한 음영",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "흰 끝이 섞인 붉은 여우 털뭉치. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_stone_core",
+      "slug": "stone-core",
+      "name": "돌 심지",
+      "category": "material",
+      "buyPrice": 24,
+      "baseSellPrice": 12,
+      "recommendedLevels": [
+        9,
+        14
+      ],
+      "region": "깊은 동굴·돌길",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_stone_dokkaebi",
+          "chancePercent": 30,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "각진 회색 광석·금빛 내부 균열·밑면 그림자",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "돌도깨비 안에서 나온 거친 돌덩이. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_bamboo_heart",
+      "slug": "bamboo-heart",
+      "name": "대나무 심",
+      "category": "material",
+      "buyPrice": 18,
+      "baseSellPrice": 9,
+      "recommendedLevels": [
+        9,
+        14
+      ],
+      "region": "깊은 대숲",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_bamboo_specter",
+          "chancePercent": 35,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "대각선 대나무 절편·빈 속·두 마디·짧은 가지",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "마디 사이에서 잘라 낸 단단한 대나무 심. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_rusted_token",
+      "slug": "rusted-token",
+      "name": "녹슨 패",
+      "category": "material",
+      "buyPrice": 14,
+      "baseSellPrice": 7,
+      "recommendedLevels": [
+        7,
+        12
+      ],
+      "region": "고갯길·산적 길목",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_masked_bandit",
+          "chancePercent": 40,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "각진 쇠패·작은 구멍·녹 얼룩·짧은 끈",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "한쪽이 이지러진 낡은 쇠패. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_bronze_shard",
+      "slug": "bronze-shard",
+      "name": "청동 조각",
+      "category": "material",
+      "buyPrice": 32,
+      "baseSellPrice": 16,
+      "recommendedLevels": [
+        12,
+        16
+      ],
+      "region": "청동도깨비 굴",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_bronze_dokkaebi",
+          "chancePercent": 100,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "톱니진 청동 판편·청록 녹·금속 절단면",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "청동도깨비의 몸에서 떨어진 금속 조각. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
+    },
+    {
+      "id": "item_jf_mat_tiger_claw",
+      "slug": "tiger-claw",
+      "name": "호랑이 발톱",
+      "category": "material",
+      "buyPrice": 40,
+      "baseSellPrice": 20,
+      "recommendedLevels": [
+        16,
+        20
+      ],
+      "region": "깊은 산·산군의 바위",
+      "acquisitionStatus": "proposed-not-installed",
+      "acquisition": [
+        {
+          "kind": "enemyDrop",
+          "enemyId": "enemy_jf_mountain_tiger",
+          "chancePercent": 100,
+          "quantity": 1
+        }
+      ],
+      "iconDesign": "검은 끝의 굵은 발톱·백색 안쪽·짙은 털 밑동",
+      "actualEffect": {
+        "scope": "none",
+        "occasion": "never",
+        "hpFlat": 0,
+        "hpPercentMax": 0,
+        "mpFlat": 0,
+        "mpPercentMax": 0,
+        "cures": [],
+        "deadOnly": false,
+        "costPerSuccessfulUse": 0
+      },
+      "usageDescription": "검은 끝과 굵은 밑동이 남은 발톱. 판매용 재료이며 직접 사용할 수 없다.",
+      "notes": "판매용 수집 재료. 상점 판매가는 기본 반값 기준이며 제작·교환·사용 효과는 미구현. 드롭 확률은 감독자 합의용 제안이고 여기서는 적 행동표/보상을 쓰지 않는다."
     }
   ]
 }

@@ -1,7 +1,24 @@
 {
   "schemaVersion": 1,
+  "phase": "full",
   "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
-  "sourceSha256": "887a3e99f1a4c09548d92cfceffda4e4d0f074d9a163c648d1583e48df07f88b",
+  "sourceSha256": "9f22252f1d2831ef69b3584a2a7c23f6773ab234746486bc45ab79eb7c061b69",
+  "sources": [
+    {
+      "file": "draw_icons.py",
+      "sha256": "9f22252f1d2831ef69b3584a2a7c23f6773ab234746486bc45ab79eb7c061b69"
+    },
+    {
+      "file": "extra_icons.py",
+      "sha256": "8906ccf663ddb90ecf6c95c7754c372f2af9e7cd973b95bb787f6caef18497d4"
+    }
+  ],
+  "reviewSheets": [
+    "review/full-sheet-1.png",
+    "review/full-sheet-2.png",
+    "review/full-sheet-3.png",
+    "review/full-sheet-4.png"
+  ],
   "icons": [
     {
       "slug": "mugwort-pill",
@@ -25,6 +42,7 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
       "publication": "pending supervisor integration"
     },
     {
@@ -49,6 +67,7 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
       "publication": "pending supervisor integration"
     },
     {
@@ -73,6 +92,7 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
       "publication": "pending supervisor integration"
     },
     {
@@ -97,6 +117,432 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "rice-ball",
+      "resourceId": "jf-icon-rice-ball",
+      "sourceFile": "assets/rice-ball.png",
+      "path": "assets/joseon-folklore/consumables/rice-ball.png",
+      "sha256": "95668eb37e812387e288c6a92180b6f4aad3434c36647e58455b2d21eb0eb047",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        3,
+        5,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "rice-cake",
+      "resourceId": "jf-icon-rice-cake",
+      "sourceFile": "assets/rice-cake.png",
+      "path": "assets/joseon-folklore/consumables/rice-cake.png",
+      "sha256": "786ce7cc04230f51377a55eab8d11f0eb8b5ddfdbf7c4902e7d76cbbe6aefc48",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        4,
+        5,
+        29,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "honey-cake",
+      "resourceId": "jf-icon-honey-cake",
+      "sourceFile": "assets/honey-cake.png",
+      "path": "assets/joseon-folklore/consumables/honey-cake.png",
+      "sha256": "d7028a6db68c9c3b611d2353ce8a7c946f5f4eaf553d94d1f63bf7ab0b8d2aeb",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        3,
+        4,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "herbal-decoction",
+      "resourceId": "jf-icon-herbal-decoction",
+      "sourceFile": "assets/herbal-decoction.png",
+      "path": "assets/joseon-folklore/consumables/herbal-decoction.png",
+      "sha256": "6170c3cc82ba21a27b2313f10c0f33cd8f2b83241cdb9a64078165b349dc7b09",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        29,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "red-ginseng",
+      "resourceId": "jf-icon-red-ginseng",
+      "sourceFile": "assets/red-ginseng.png",
+      "path": "assets/joseon-folklore/consumables/red-ginseng.png",
+      "sha256": "060dd7e375ff535ae836b6f375d8181f16056089997b27ccbe184f81df8bf733",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "spring-water",
+      "resourceId": "jf-icon-spring-water",
+      "sourceFile": "assets/spring-water.png",
+      "path": "assets/joseon-folklore/consumables/spring-water.png",
+      "sha256": "8d0894c237f6e94cc90c949286bbed004ea7b11186a64ec81dc80b38fa0f1669",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 9,
+      "visibleBoundsExclusive": [
+        3,
+        4,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "jade-water",
+      "resourceId": "jf-icon-jade-water",
+      "sourceFile": "assets/jade-water.png",
+      "path": "assets/joseon-folklore/consumables/jade-water.png",
+      "sha256": "f503884090dc220ae906aa6173862f9d9b126d24d54114dfee7889c63497a9e0",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "antidote",
+      "resourceId": "jf-icon-antidote",
+      "sourceFile": "assets/antidote.png",
+      "path": "assets/joseon-folklore/consumables/antidote.png",
+      "sha256": "65b5ce1071d0d532f21b4aaa910aaafc9cfbc4a08157ba95350887abcf8deec4",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 10,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        28,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "clear-mind-pill",
+      "resourceId": "jf-icon-clear-mind-pill",
+      "sourceFile": "assets/clear-mind-pill.png",
+      "path": "assets/joseon-folklore/consumables/clear-mind-pill.png",
+      "sha256": "3e52ad0741a0d7ca17d143a16d7fdde81992f95819e13aa47e64eea4ea803f4a",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "warming-tea",
+      "resourceId": "jf-icon-warming-tea",
+      "sourceFile": "assets/warming-tea.png",
+      "path": "assets/joseon-folklore/consumables/warming-tea.png",
+      "sha256": "44d7736a4290c5b725dc9acaadc3ad2cd2eb05f74e01af697a2e63f16ba7a86c",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "cooling-tea",
+      "resourceId": "jf-icon-cooling-tea",
+      "sourceFile": "assets/cooling-tea.png",
+      "path": "assets/joseon-folklore/consumables/cooling-tea.png",
+      "sha256": "677fec91289d35d26401ab5ff2ce20d9a5e23fb9bd8a1dcb136731b646868b74",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 10,
+      "visibleBoundsExclusive": [
+        5,
+        3,
+        29,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "smoke-powder",
+      "resourceId": "jf-icon-smoke-powder",
+      "sourceFile": "assets/smoke-powder.png",
+      "path": "assets/joseon-folklore/consumables/smoke-powder.png",
+      "sha256": "ca73b5f937e6fa23c2c419e2c7179f47dc181372d260178f9063f5c4f0735209",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "fire-charm",
+      "resourceId": "jf-icon-fire-charm",
+      "sourceFile": "assets/fire-charm.png",
+      "path": "assets/joseon-folklore/consumables/fire-charm.png",
+      "sha256": "33c6b4e21cc2c64c10ef0d8918d0cb4ed43cca0047b19693f038b917d0ea503d",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        27,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "ice-charm",
+      "resourceId": "jf-icon-ice-charm",
+      "sourceFile": "assets/ice-charm.png",
+      "path": "assets/joseon-folklore/consumables/ice-charm.png",
+      "sha256": "d49edcf5140159ebf3ff247b28f74c856abe0f5214c3a1c872ec4e8ce0d94817",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        5,
+        29,
+        28
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "thunder-charm",
+      "resourceId": "jf-icon-thunder-charm",
+      "sourceFile": "assets/thunder-charm.png",
+      "path": "assets/joseon-folklore/consumables/thunder-charm.png",
+      "sha256": "290f0748cdb4b935bde4daba5918a860eee8dcddb974d1a2e10e5fb70f003cfb",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "vitality-tonic",
+      "resourceId": "jf-icon-vitality-tonic",
+      "sourceFile": "assets/vitality-tonic.png",
+      "path": "assets/joseon-folklore/consumables/vitality-tonic.png",
+      "sha256": "bfd13b6f4cb21cabe9cf3677bba20a653d1c71a0b6054a0500ce07b7f6bf2392",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 9,
+      "visibleBoundsExclusive": [
+        5,
+        3,
+        28,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "rat-tail",
+      "resourceId": "jf-icon-rat-tail",
+      "sourceFile": "assets/rat-tail.png",
+      "path": "assets/joseon-folklore/consumables/rat-tail.png",
+      "sha256": "a26d91f84e35e2d06c6cca43a68e1a1d861f12f86c51812e840d865512ef4d02",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        28,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
       "publication": "pending supervisor integration"
     },
     {
@@ -121,6 +567,32 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "bat-wing",
+      "resourceId": "jf-icon-bat-wing",
+      "sourceFile": "assets/bat-wing.png",
+      "path": "assets/joseon-folklore/consumables/bat-wing.png",
+      "sha256": "7b733af7ed74dc04f945eaeb67ce45de8b54a3aaee6ce0f226d5798a65e9e28f",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
       "publication": "pending supervisor integration"
     },
     {
@@ -145,6 +617,207 @@
       "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
       "source": "draw_icons.py",
       "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": true,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "ghost-ash",
+      "resourceId": "jf-icon-ghost-ash",
+      "sourceFile": "assets/ghost-ash.png",
+      "path": "assets/joseon-folklore/consumables/ghost-ash.png",
+      "sha256": "38b7fb4d491534b538909fc9891fb3bf52803bd7295666432143f9bcf4bc2deb",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "broken-jade",
+      "resourceId": "jf-icon-broken-jade",
+      "sourceFile": "assets/broken-jade.png",
+      "path": "assets/joseon-folklore/consumables/broken-jade.png",
+      "sha256": "3c9a443bb9cd0d887f8a60e8f8bf7a4faf4267bc3c0584cd532635c62de3e43f",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "fox-fur",
+      "resourceId": "jf-icon-fox-fur",
+      "sourceFile": "assets/fox-fur.png",
+      "path": "assets/joseon-folklore/consumables/fox-fur.png",
+      "sha256": "ed2d31ec95a0a3f149452249495f4940537809178908a5f87b1368e912ee605c",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 6,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "stone-core",
+      "resourceId": "jf-icon-stone-core",
+      "sourceFile": "assets/stone-core.png",
+      "path": "assets/joseon-folklore/consumables/stone-core.png",
+      "sha256": "9d72955037187374541d49e03af4017f13219ed8ff81e4379d0dbff7f5a6e508",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        3,
+        4,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "bamboo-heart",
+      "resourceId": "jf-icon-bamboo-heart",
+      "sourceFile": "assets/bamboo-heart.png",
+      "path": "assets/joseon-folklore/consumables/bamboo-heart.png",
+      "sha256": "7b5aba7a74b3b7a4c9e189604fe0ce053eae95edba9fe51db2352dfc0ce14c25",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 5,
+      "visibleBoundsExclusive": [
+        5,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "rusted-token",
+      "resourceId": "jf-icon-rusted-token",
+      "sourceFile": "assets/rusted-token.png",
+      "path": "assets/joseon-folklore/consumables/rusted-token.png",
+      "sha256": "76604dbdfdf96145c50bdc34c6a1bd6027cb6d7ce72fbbd07073d33da326ad61",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        5,
+        3,
+        28,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "bronze-shard",
+      "resourceId": "jf-icon-bronze-shard",
+      "sourceFile": "assets/bronze-shard.png",
+      "path": "assets/joseon-folklore/consumables/bronze-shard.png",
+      "sha256": "e00d468d5b02927242d829e067de7dc1885164ca39def1c443c222b6a1c771c7",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        3,
+        3,
+        29,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "tiger-claw",
+      "resourceId": "jf-icon-tiger-claw",
+      "sourceFile": "assets/tiger-claw.png",
+      "path": "assets/joseon-folklore/consumables/tiger-claw.png",
+      "sha256": "942d067bace5556dce5353fc4ef4e011f9cf68d5f4f5103b9ea3e63ea632eade",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "extra_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "pilotPngPreserved": false,
       "publication": "pending supervisor integration"
     }
   ]

@@ -1,24 +1,28 @@
 {
-  "phase": "pilot",
+  "phase": "full",
   "ready": true,
-  "readyScope": "first sample files saved for supervisor review; not installed or user-approved",
+  "readyScope": "full 20+12 role payload saved for supervisor review; not installed or user-approved",
   "counts": {
-    "items": 6,
-    "consumables": 4,
-    "materials": 2,
-    "skills": 0,
-    "icons": 6
+    "items": 32,
+    "consumables": 20,
+    "materials": 12,
+    "skills": 4,
+    "icons": 32
   },
   "fullTarget": {
     "consumables": 20,
     "materials": 12
   },
   "reviewFiles": [
-    "review/pilot-sheet.png",
+    "review/full-sheet-1.png",
+    "review/full-sheet-2.png",
+    "review/full-sheet-3.png",
+    "review/full-sheet-4.png",
     "review/visual-review.json",
     "review/smoke.json",
     "art-manifest.json",
-    "design.json"
+    "design.json",
+    "full-report.md"
   ],
   "userApproval": null,
   "publicRegistered": false,
@@ -26,31 +30,215 @@
   "verification": {
     "script": "node content-packs/joseon-folklore/consumables/run-smoke.mjs",
     "exitCode": 0,
-    "checkCount": 24,
+    "checkCount": 161,
+    "originalPngsDirectlyViewed": 32,
+    "nearestSheetsDirectlyViewed": 4,
     "gatesExecuted": false
   },
+  "externalDependencies": [
+    "element_jf_fire",
+    "element_jf_ice",
+    "element_jf_lightning"
+  ],
   "limitations": [
-    "환생부는 현 엔진 제한에 맞춘 필드 메뉴 부활만 지원",
-    "상점·획득·드롭은 미설치 디자인 제안",
-    "public 리소스 등록·실제게임 통합·화면 QA·정본 저장은 감독자 담당",
-    "전체 20+12 확대는 후속 지시 대기"
+    "환생부는 약품의 필드 메뉴 부활만 지원; 도사의 전투부활 기술과 별개",
+    "연막은 민첩 하락만; 암흑·명중저하·도주보장 없음",
+    "공격부3은 속성/상태 보정 적용; 매 대상 고정 피해 약속 없음",
+    "획득·상점·드롭은 미설치 제안",
+    "public 등록·게임 통합·화면 QA·정본 저장은 감독자 담당"
   ],
   "savedFiles": [
     {
       "file": "README.md",
-      "sha256": "375ce9dcb6e5c30f84c45766c64a0a2cfdf0b2eeb53bf75969f5ce2af4531319"
+      "sha256": "a9f84ac295fab6400dc2d224ec4da54915519ee46d632deee0dcb1787552244c"
+    },
+    {
+      "file": "art-manifest.json",
+      "sha256": "0699551ad3a68a423108c7953e9430d10a29ee2763bb5d4a2d83ae73c300d7bb"
+    },
+    {
+      "file": "assets/antidote.png",
+      "sha256": "65b5ce1071d0d532f21b4aaa910aaafc9cfbc4a08157ba95350887abcf8deec4"
+    },
+    {
+      "file": "assets/bamboo-heart.png",
+      "sha256": "7b5aba7a74b3b7a4c9e189604fe0ce053eae95edba9fe51db2352dfc0ce14c25"
+    },
+    {
+      "file": "assets/bat-wing.png",
+      "sha256": "7b733af7ed74dc04f945eaeb67ce45de8b54a3aaee6ce0f226d5798a65e9e28f"
+    },
+    {
+      "file": "assets/boar-tusk.png",
+      "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8"
+    },
+    {
+      "file": "assets/broken-jade.png",
+      "sha256": "3c9a443bb9cd0d887f8a60e8f8bf7a4faf4267bc3c0584cd532635c62de3e43f"
+    },
+    {
+      "file": "assets/bronze-shard.png",
+      "sha256": "e00d468d5b02927242d829e067de7dc1885164ca39def1c443c222b6a1c771c7"
+    },
+    {
+      "file": "assets/clear-mind-pill.png",
+      "sha256": "3e52ad0741a0d7ca17d143a16d7fdde81992f95819e13aa47e64eea4ea803f4a"
+    },
+    {
+      "file": "assets/cooling-tea.png",
+      "sha256": "677fec91289d35d26401ab5ff2ce20d9a5e23fb9bd8a1dcb136731b646868b74"
+    },
+    {
+      "file": "assets/fire-charm.png",
+      "sha256": "33c6b4e21cc2c64c10ef0d8918d0cb4ed43cca0047b19693f038b917d0ea503d"
+    },
+    {
+      "file": "assets/fox-fur.png",
+      "sha256": "ed2d31ec95a0a3f149452249495f4940537809178908a5f87b1368e912ee605c"
+    },
+    {
+      "file": "assets/ghost-ash.png",
+      "sha256": "38b7fb4d491534b538909fc9891fb3bf52803bd7295666432143f9bcf4bc2deb"
+    },
+    {
+      "file": "assets/ginseng-tea.png",
+      "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad"
+    },
+    {
+      "file": "assets/herbal-decoction.png",
+      "sha256": "6170c3cc82ba21a27b2313f10c0f33cd8f2b83241cdb9a64078165b349dc7b09"
+    },
+    {
+      "file": "assets/honey-cake.png",
+      "sha256": "d7028a6db68c9c3b611d2353ce8a7c946f5f4eaf553d94d1f63bf7ab0b8d2aeb"
+    },
+    {
+      "file": "assets/ice-charm.png",
+      "sha256": "d49edcf5140159ebf3ff247b28f74c856abe0f5214c3a1c872ec4e8ce0d94817"
+    },
+    {
+      "file": "assets/jade-water.png",
+      "sha256": "f503884090dc220ae906aa6173862f9d9b126d24d54114dfee7889c63497a9e0"
+    },
+    {
+      "file": "assets/mugwort-pill.png",
+      "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33"
+    },
+    {
+      "file": "assets/purification-charm.png",
+      "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd"
+    },
+    {
+      "file": "assets/rat-tail.png",
+      "sha256": "a26d91f84e35e2d06c6cca43a68e1a1d861f12f86c51812e840d865512ef4d02"
+    },
+    {
+      "file": "assets/red-ginseng.png",
+      "sha256": "060dd7e375ff535ae836b6f375d8181f16056089997b27ccbe184f81df8bf733"
+    },
+    {
+      "file": "assets/revival-charm.png",
+      "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66"
+    },
+    {
+      "file": "assets/rice-ball.png",
+      "sha256": "95668eb37e812387e288c6a92180b6f4aad3434c36647e58455b2d21eb0eb047"
+    },
+    {
+      "file": "assets/rice-cake.png",
+      "sha256": "786ce7cc04230f51377a55eab8d11f0eb8b5ddfdbf7c4902e7d76cbbe6aefc48"
+    },
+    {
+      "file": "assets/rusted-token.png",
+      "sha256": "76604dbdfdf96145c50bdc34c6a1bd6027cb6d7ce72fbbd07073d33da326ad61"
+    },
+    {
+      "file": "assets/smoke-powder.png",
+      "sha256": "ca73b5f937e6fa23c2c419e2c7179f47dc181372d260178f9063f5c4f0735209"
+    },
+    {
+      "file": "assets/spring-water.png",
+      "sha256": "8d0894c237f6e94cc90c949286bbed004ea7b11186a64ec81dc80b38fa0f1669"
+    },
+    {
+      "file": "assets/stone-core.png",
+      "sha256": "9d72955037187374541d49e03af4017f13219ed8ff81e4379d0dbff7f5a6e508"
+    },
+    {
+      "file": "assets/straw-knot.png",
+      "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf"
+    },
+    {
+      "file": "assets/thunder-charm.png",
+      "sha256": "290f0748cdb4b935bde4daba5918a860eee8dcddb974d1a2e10e5fb70f003cfb"
+    },
+    {
+      "file": "assets/tiger-claw.png",
+      "sha256": "942d067bace5556dce5353fc4ef4e011f9cf68d5f4f5103b9ea3e63ea632eade"
+    },
+    {
+      "file": "assets/vitality-tonic.png",
+      "sha256": "bfd13b6f4cb21cabe9cf3677bba20a653d1c71a0b6054a0500ce07b7f6bf2392"
+    },
+    {
+      "file": "assets/warming-tea.png",
+      "sha256": "44d7736a4290c5b725dc9acaadc3ad2cd2eb05f74e01af697a2e63f16ba7a86c"
+    },
+    {
+      "file": "author_data.py",
+      "sha256": "94c0a8a455e16b021e98f75a0a568a7699e9315e7f98c12707d4d33c99699b15"
     },
     {
       "file": "data.json",
-      "sha256": "cb6871166d7c61d3984aa18bf77c2867c7f45ee387c2a6da7708ec27ba832485"
+      "sha256": "d2bdf70ca0f92799e070ff01812b0569d845dc5e3947f743387c5973bcb41756"
     },
     {
       "file": "design.json",
-      "sha256": "cca0ff61ceee73c1c958f3dac44a4500714d00ce435e148567240b273a078f63"
+      "sha256": "80a3d2c9b67a3a81379e99a4bfcd5265535faefae9608632b568f262028d62d7"
     },
     {
       "file": "draw_icons.py",
-      "sha256": "887a3e99f1a4c09548d92cfceffda4e4d0f074d9a163c648d1583e48df07f88b"
+      "sha256": "9f22252f1d2831ef69b3584a2a7c23f6773ab234746486bc45ab79eb7c061b69"
+    },
+    {
+      "file": "extra_icons.py",
+      "sha256": "8906ccf663ddb90ecf6c95c7754c372f2af9e7cd973b95bb787f6caef18497d4"
+    },
+    {
+      "file": "finalize.py",
+      "sha256": "49ebbbebef70f0220fb84de8d2b1edc2fbf5ef418ffd2a02e29bb80b1c3c5ffd"
+    },
+    {
+      "file": "full-report.md",
+      "sha256": "044cfa4c5371c889e6e07cd3397159623058a58b8caefb6a237306d1dd7264c0"
+    },
+    {
+      "file": "review/full-sheet-1.png",
+      "sha256": "15efcaf7b314354acb3e274f8939fe62865ee599071e5c7f809f6aa75486747c"
+    },
+    {
+      "file": "review/full-sheet-2.png",
+      "sha256": "8f2584e88dc9099c73c5b49e2d867d0437153e6e02181d33405e52f013116ebe"
+    },
+    {
+      "file": "review/full-sheet-3.png",
+      "sha256": "ea8319b9e038d59dbfdaff490ab1d6cc57e11f52decdaec5c64d2d6f642d6bc3"
+    },
+    {
+      "file": "review/full-sheet-4.png",
+      "sha256": "c88299b19bff6cd23ce7cb70c5ceddd59d43cf78b2ff445efabeb78cc6733113"
+    },
+    {
+      "file": "review/pilot-sheet.png",
+      "sha256": "7f6877f923625042d33c8451fb203ef2fc0f7b3e35c2e3e1ed9d14900195cbe5"
+    },
+    {
+      "file": "review/smoke.json",
+      "sha256": "dce59b4b80b0605376e9af109ee4f298adc4dbdbdc63429fe457e6b24af37dc7"
+    },
+    {
+      "file": "review/visual-review.json",
+      "sha256": "098e121235e0c0f1a7176a014e11110a52656c2b5868515d6b9654e4ed47f36b"
     },
     {
       "file": "run-smoke.mjs",
@@ -58,47 +246,7 @@
     },
     {
       "file": "smoke.mts",
-      "sha256": "3dcbd081abe1166db0d1eb6ceba12c4baaeac9ee30aa9e5e8738e058ae2ef837"
-    },
-    {
-      "file": "art-manifest.json",
-      "sha256": "4adadd41aa4784e41cbacd4904d6d026cfa6bbe660aff5deb998a079df535db8"
-    },
-    {
-      "file": "review/pilot-sheet.png",
-      "sha256": "7f6877f923625042d33c8451fb203ef2fc0f7b3e35c2e3e1ed9d14900195cbe5"
-    },
-    {
-      "file": "review/visual-review.json",
-      "sha256": "f446ed6b7f7edc5ce9b3447ecca57ed856647db31193c9657aa427c01e310018"
-    },
-    {
-      "file": "review/smoke.json",
-      "sha256": "491bbec8d7ce203b2ef9e6cfbad817524e0e82ca68b2c5bfbc68857b33d5b636"
-    },
-    {
-      "file": "assets/mugwort-pill.png",
-      "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33"
-    },
-    {
-      "file": "assets/ginseng-tea.png",
-      "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad"
-    },
-    {
-      "file": "assets/purification-charm.png",
-      "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd"
-    },
-    {
-      "file": "assets/revival-charm.png",
-      "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66"
-    },
-    {
-      "file": "assets/boar-tusk.png",
-      "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8"
-    },
-    {
-      "file": "assets/straw-knot.png",
-      "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf"
+      "sha256": "62b695094e2bce1af9a01f2bbb897a8ef328225748f10c2dac84ae3a4071b233"
     }
   ]
 }

@@ -23,6 +23,10 @@ PALETTE = {
     "gold0": "#9d6532", "gold1": "#d8a343", "ivory0": "#9b876c", "ivory1": "#c8b79a",
     "ivory2": "#e8dcc0", "ivory3": "#fff4dc", "straw0": "#785b32", "straw1": "#aa7d3c",
     "straw2": "#d4a959", "straw3": "#f3cd7b",
+    "blue0": "#34576a", "blue1": "#6498a8", "blue2": "#b6dce0",
+    "purple0": "#443349", "purple1": "#74617c", "purple2": "#ad9fb0",
+    "gray0": "#50535b", "gray1": "#82838a", "gray2": "#bfc1be",
+    "pink0": "#b77879", "pink1": "#e2a69b",
 }
 
 def canvas():
@@ -162,43 +166,64 @@ def straw():
 
 DRAWINGS = {"mugwort-pill": mugwort, "ginseng-tea": ginseng, "purification-charm": purification,
             "revival-charm": revival, "boar-tusk": tusk, "straw-knot": straw}
+PILOT_HASHES = {
+    "mugwort-pill":"d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
+    "ginseng-tea":"a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
+    "purification-charm":"3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
+    "revival-charm":"fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
+    "boar-tusk":"f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
+    "straw-knot":"9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
+}
 
 def main():
     ASSETS.mkdir(exist_ok=True)
     REVIEW.mkdir(exist_ok=True)
+    from extra_icons import drawings
+    all_drawings = {**DRAWINGS, **drawings(canvas, poly, line, rect)}
+    ids = json.loads((ROOT.parent / "ids.json").read_text())
+    order = [*ids["items"], *ids["materials"]]
+    assert set(order) == set(all_drawings) and len(order) == 32
     manifest = []
-    # Review shows exact originals at native and 6x nearest on cream AND dark backgrounds.
-    sheet = Image.new("RGB", (6 * 216, 302), "#efe6d5")
-    draw = ImageDraw.Draw(sheet)
-    for index, (slug, render) in enumerate(DRAWINGS.items()):
-        im = render()
+    # 4 bounded sheets, each native32 + nearest6x, cream and dark backgrounds.
+    sheets = [Image.new("RGB", (4 * 216, 2 * 302), "#efe6d5") for _ in range(4)]
+    for index, slug in enumerate(order):
+        im = all_drawings[slug]()
         path = ASSETS / f"{slug}.png"
         im.save(path, optimize=False)
         # Inspect decoded originals, not only in-memory render.
         im = Image.open(path).convert("RGBA")
         box = im.getbbox()
-        alphas = sorted(set(im.getchannel("A").getdata()))
-        colours = len({p[:3] for p in im.getdata() if p[3]})
+        alphas = sorted(set(im.getchannel("A").tobytes()))
+        pixels = list(im.get_flattened_data()) if hasattr(im,"get_flattened_data") else list(im.getdata())
+        colours = len({p[:3] for p in pixels if p[3]})
         assert im.size == (32, 32) and alphas == [0, 255] and colours <= 32
         assert box and min(box) >= 3 and box[2] <= 29 and box[3] <= 30
         sha = hashlib.sha256(path.read_bytes()).hexdigest()
+        if slug in PILOT_HASHES: assert sha == PILOT_HASHES[slug], f"pilot PNG changed: {slug}"
         manifest.append({"slug": slug, "resourceId": f"jf-icon-{slug}", "sourceFile": f"assets/{slug}.png",
                          "path": f"assets/joseon-folklore/consumables/{slug}.png", "sha256": sha,
                          "width": 32, "height": 32, "alphaValues": alphas, "opaqueColours": colours,
                          "visibleBoundsExclusive": box, "author": AUTHOR,
-                         "source": "draw_icons.py", "method": "original code pixel art; no sampled raster",
+                         "source": "draw_icons.py" if slug in DRAWINGS else "extra_icons.py", "method": "original code pixel art; no sampled raster",
+                         "pilotPngPreserved": slug in PILOT_HASHES,
                          "publication": "pending supervisor integration"})
-        x = index * 216
-        draw.text((x+8, 8), slug, fill="#34272a")
-        sheet.paste(im, (x+10, 28), im)
-        sheet.paste(im.resize((192,192), Image.Resampling.NEAREST), (x+12, 72), im.resize((192,192), Image.Resampling.NEAREST))
-        draw.rectangle((x+58,25,x+96,63), fill="#292b34")
-        sheet.paste(im, (x+61,28), im)
-        draw.text((x+8,282), f"32px / 6x nearest / {colours} colours", fill="#34272a")
-    sheet.save(REVIEW / "pilot-sheet.png")
-    (ROOT / "art-manifest.json").write_text(json.dumps({"schemaVersion":1, "author":AUTHOR,
-        "sourceSha256":hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "icons":manifest}, ensure_ascii=False, indent=2)+"\n")
-    print(json.dumps({"icons":len(manifest), "sheet":"review/pilot-sheet.png", "manifest":"art-manifest.json"}))
+        sheet = sheets[index//8]; draw = ImageDraw.Draw(sheet)
+        x = (index%4) * 216; y = ((index%8)//4) * 302
+        draw.text((x+8, y+8), slug, fill="#34272a")
+        sheet.paste(im, (x+10, y+28), im)
+        enlarged=im.resize((192,192), Image.Resampling.NEAREST)
+        sheet.paste(enlarged, (x+12, y+72), enlarged)
+        draw.rectangle((x+58,y+25,x+96,y+63), fill="#292b34")
+        sheet.paste(im, (x+61,y+28), im)
+        draw.text((x+8,y+282), f"32px / 6x nearest / {colours} colours", fill="#34272a")
+    sheet_files=[]
+    for i,sheet in enumerate(sheets,1):
+        name=f"review/full-sheet-{i}.png"; sheet.save(ROOT/name); sheet_files.append(name)
+    (ROOT / "art-manifest.json").write_text(json.dumps({"schemaVersion":1, "phase":"full", "author":AUTHOR,
+        "sourceSha256":hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "sources":[{"file":name,"sha256":hashlib.sha256((ROOT/name).read_bytes()).hexdigest()} for name in ("draw_icons.py","extra_icons.py")],
+        "reviewSheets":sheet_files,"icons":manifest}, ensure_ascii=False, indent=2)+"\n")
+    print(json.dumps({"icons":len(manifest), "sheets":sheet_files, "manifest":"art-manifest.json", "pilotPngsPreserved":6}))
 
 if __name__ == "__main__":
     main()
