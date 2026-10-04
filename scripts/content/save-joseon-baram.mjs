@@ -7,6 +7,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 
@@ -72,19 +73,21 @@ function checkReach(api, p, map, src, waterMembers) {
   for (const c of src.crossings || []) {
     // 줄마다 양끝 칸이 걸을 수 있으면 조각 둘레 상자 안에서만 걸어 반대쪽 끝에 닿아야 한다(다른 길로 돌아가는 것은 인정하지 않는다).
     // 양끝 중 한쪽이 막힌 줄(기둥·벽에 닿은 가장자리 줄)은 세지 않되, 건너는 곳 하나에 건널 수 있는 줄이 하나도 없으면 실패다.
-    let okLines = 0, tested = 0;
+    let okLines = 0, tested = 0, edgeLines = 0;
     for (const ln of c.lines) {
       // 지도 가장자리에 붙은 문루(사냥터 북문 등): 지도 밖 한쪽 끝은 출구이므로 조각 안의 가장자리 칸을 끝으로 본다.
       const inMap = (q) => [Math.min(Math.max(q[0], 0), map.width - 1), Math.min(Math.max(q[1], 0), map.height - 1)];
       const a = inMap(c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h]), b = inMap(c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1]);
       const box = c.axis === "h" ? { x0: c.x - 1, x1: c.x + c.w, y0: c.y, y1: c.y + c.h - 1 } : { x0: c.x, x1: c.x + c.w - 1, y0: c.y - 1, y1: c.y + c.h };
+      if (a[0] < 0 || a[1] < 0 || b[0] < 0 || b[1] < 0 || a[0] >= map.width || a[1] >= map.height || b[0] >= map.width || b[1] >= map.height) { edgeLines += 1; continue; }   // 지도 가장자리의 문루: 건너편이 지도 밖이다(출구 칸 도달은 exits 검사가 센다)
       crossLines += 1;
       if (!api.isPassable(p, map, a[0], a[1]) || !api.isPassable(p, map, b[0], b[1])) { crossLinesBlockedEnd += 1; continue; }
       tested += 1;
       if (reach(api, p, map, a, box).has(b.join(","))) okLines += 1;
       else miss.crossing.push([c.piece, c.axis, ln, a.join(","), b.join(",")]);
     }
-    info.crossingDetail.push({ piece: c.piece, axis: c.axis, x: c.x, y: c.y, lines: c.lines.length, tested, crossed: okLines });
+    info.crossingDetail.push({ piece: c.piece, axis: c.axis, x: c.x, y: c.y, lines: c.lines.length, tested, crossed: okLines, ...(edgeLines ? { edgeGate: edgeLines } : {}) });
+    if (edgeLines === c.lines.length) continue;
     if (okLines === 0) {
       const ex = exempt.find((e) => e.piece === c.piece && e.y === c.y);
       if (ex) { info.exemptCrossings.push({ piece: c.piece, x: c.x, y: c.y, why: ex.why }); miss.crossing = miss.crossing.filter((m) => !(m[0] === c.piece)); }
@@ -118,7 +121,14 @@ function checkReach(api, p, map, src, waterMembers) {
     const x = i % map.width, y = Math.floor(i / map.width), pass = api.isPassable(p, map, x, y);
     if (map.upperTiles[i] < 0) { if (pass) waterOpenBare += 1; } else if (pass) waterUnderObject += 1;
   }
-  return { crossLines, crossLinesBlockedEnd, ...info, crossings: (src.crossings || []).length, fronts: (src.fronts || []).length, waterOpenBare, waterUnderObject, start: src.start, reachable: seen.size, walkable: walkableTotal, missed: miss, missedCount: Object.values(miss).reduce((a, b) => a + b.length, 0), wallAboveDoorOpen: wallOpen };
+  const unreachComponents = (() => { // 닿지 못하는 칸의 덩어리(4방향) 수와 가장 큰 덩어리 — 보고용
+    const left = new Set(unreachAll.map((c) => c.join(","))), sizes = [];
+    for (const k of [...left]) { if (!left.has(k)) continue; const q = [k]; left.delete(k); let n = 0;
+      for (let i = 0; i < q.length; i += 1) { n += 1; const [x, y] = q[i].split(",").map(Number); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nk = (x + dx) + "," + (y + dy); if (left.has(nk)) { left.delete(nk); q.push(nk); } } }
+      sizes.push(n); }
+    return { count: sizes.length, largest: Math.max(0, ...sizes) };
+  })();
+  return { crossLines, crossLinesBlockedEnd, ...info, fullReach: { strict: !!src.reachAll, walkable: walkableTotal, reachable: walkableTotal - unreachAll.length, unreachable: unreachAll.length, components: unreachComponents, exempt: okUnreach.length, samples: unreachAll.slice(0, 12) }, crossings: (src.crossings || []).length, fronts: (src.fronts || []).length, waterOpenBare, waterUnderObject, start: src.start, reachable: seen.size, walkable: walkableTotal, missed: miss, missedCount: Object.values(miss).reduce((a, b) => a + b.length, 0), wallAboveDoorOpen: wallOpen };
 }
 
 const MASK_SAMPLES = Number(process.env.JOSEON_MASK_SAMPLES || 12);
@@ -151,7 +161,8 @@ const project = await withTsModule("scripts/content/lib/joseon-baram-entry.ts", 
   // 참고문서: 프로젝트 저장 검증기(validateTilesetReferences)를 통과하고, 그림은 /assets 경로뿐이며(바이트 0), 파일이 실제로 있다.
   api.validateTilesetReferences(ts.referenceDocuments);
   const refImages = ts.referenceDocuments.flatMap(c => c.images);
-  assert(ts.referenceDocuments.length >= 6 && refImages.length > 0, "참고문서 용도 6개 이상");
+  assert(ts.referenceDocuments.length >= 9 && refImages.length > 0, "참고문서 용도 9개 이상(마을 6 + 사냥터·동굴 + 실내 키트 + 궁 내부)");
+  for (const id of ["joseon-baram-field-cave", "joseon-baram-interior", "joseon-baram-palace"]) assert(ts.referenceDocuments.some((cat) => cat.id === id), "새 용도 없음: " + id);
   for (const img of refImages) {
     assert(api.isBundledReferenceImage(img.dataUrl), `번들 경로가 아닌 그림: ${img.name}`);
     assert(fs.existsSync(path.join("public", img.dataUrl)), `그림 파일 없음: ${img.dataUrl}`);
@@ -173,6 +184,29 @@ const project = await withTsModule("scripts/content/lib/joseon-baram-entry.ts", 
     ensureProof.sameCountReferencesRestored = isDeepStrictEqual(r.tilesets[ts.id].referenceDocuments, fresh.referenceDocuments);
     ensureProof.sameCountKitMergedAuthorKept = r.tilesets[ts.id].structureKits.some((k) => k.id === "author-kit") && r.tilesets[ts.id].structureKits.some((k) => k.id === "jb-well");
     const again = structuredClone(r); ensureProof.idempotent = api.ensureBundledTilesets(again) === false || isDeepStrictEqual(again, r);
+    // 이전 배포본(칸 13,632 · 열 64 · 참고문서 6용도)을 저장해 둔 프로젝트가 새 번들로 올라오는 길: 칸·열·표·새 참고문서 용도 3개가 생기고, 앞 칸의 표는 동결 장부와 해시가 같으며, 저자 부품·저자 문서는 남는다.
+    const frozen = JSON.parse(fs.readFileSync(`${DATA}/frozen-layout.json`, "utf8")), nOld = frozen.waves.at(-1).total;
+    const stable = (v) => Array.isArray(v) ? "[" + v.map(stable).join(",") + "]" : v && typeof v === "object" ? "{" + Object.keys(v).sort().map((k) => JSON.stringify(k) + ":" + stable(v[k])).join(",") + "}" : JSON.stringify(v);
+    const prefixSha = (t) => crypto.createHash("sha256").update(stable([t.passability.slice(0, nOld), t.priority.slice(0, nOld), t.terrain.slice(0, nOld), t.tileMeta.slice(0, nOld)])).digest("hex");
+    const inRange = (n) => n < nOld;
+    const pre = structuredClone(p).tilesets[ts.id];
+    pre.count = nOld; pre.tilesPerRow = frozen.tilesPerRow;
+    for (const k of ["passability", "priority", "terrain", "tileMeta"]) pre[k] = pre[k].slice(0, nOld);
+    pre.tileGroups = pre.tileGroups.filter((g) => g.tileIds.every(inRange));
+    pre.structureKits = pre.structureKits.filter((k) => k.rows.every((r) => [...(r.tiles ?? []), ...(r.upperTiles ?? [])].every((n) => n < nOld)));
+    pre.autotileGroups = pre.autotileGroups.filter((a) => a.memberTileIds.every(inRange) && a.connectTileIds.every(inRange));
+    pre.referenceDocuments = pre.referenceDocuments.slice(0, 6);
+    pre.structureKits.push({ id: "author-kit", kind: "section", width: 1, height: 1, rows: [{ tiles: [0], upperTiles: [-1] }], learnedFrom: "user" });
+    pre.referenceDocuments.push({ id: "author-ref", name: "내 메모", description: "저자 용도", documents: [{ id: "author-doc", name: "메모", markdown: "x" }], images: [] });
+    const preSha = prefixSha(pre);
+    const up = structuredClone(p); up.tilesets[ts.id] = pre; api.ensureBundledTilesets(up);
+    const after = up.tilesets[ts.id];
+    ensureProof.prevReleaseOldPrefixMatchesLedger = preSha === frozen.digest.meta;
+    ensureProof.prevReleaseUpgraded = after.count === fresh.count && after.tilesPerRow === fresh.tilesPerRow && after.passability.length === fresh.count && prefixSha(after) === frozen.digest.meta;
+    ensureProof.prevReleaseNewReferences = ["joseon-baram-field-cave", "joseon-baram-interior", "joseon-baram-palace"].every((id) => after.referenceDocuments.some((cat) => cat.id === id)) && after.referenceDocuments.length === fresh.referenceDocuments.length + 1;
+    ensureProof.prevReleaseAuthorKept = after.structureKits.some((k) => k.id === "author-kit") && after.referenceDocuments.some((cat) => cat.id === "author-ref" && cat.documents[0].markdown === "x");
+    const again2 = structuredClone(up); ensureProof.prevReleaseIdempotent = api.ensureBundledTilesets(again2) === false || isDeepStrictEqual(again2, up);
+    ensureProof.bundledPrefixMatchesLedger = prefixSha(ts) === frozen.digest.meta;
     for (const [k, v] of Object.entries(ensureProof)) assert(v, "ensure 증명 실패: " + k);
   }
   p.maps = {}; p.mapTree = { mapId: srcMaps[0].id, children: [] };

@@ -6,7 +6,7 @@
 
 import palette from "./reliefPalette.json";
 import { copyGrid, RELIEF_MAX_LEVEL, RELIEF_TILE as T, RELIEF_UNIT as U, type HeightGrid } from "./types";
-import { compileReliefStyle, type ReliefWallStyle } from "./styles";
+import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./styles";
 
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
@@ -16,6 +16,7 @@ const STONE_STAIR_RAMP: Rgb[] = [[47, 49, 46], [72, 75, 70], [103, 107, 98], [13
 const { TOP, GROUND, LIP, TILES } = D;
 const LV = Array.from({ length: RELIEF_MAX_LEVEL + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
 const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
+const NATIVE_EDGE_LIGHT = [.45, .65, .8, 1, 1.1, 1.2] as const;
 const shift = (p: number, s: number) => { const r = (p / 6) | 0, i = p % 6; return r * 6 + Math.max(1, Math.min(5, i + s)); };
 
 export interface ReliefRenderOptions {
@@ -632,7 +633,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     };
     const kL = kind[sy * PW + (sx - 1 + PW) % PW];
     if (c > 0) {
-      if (sy > 0 && !top(sy - 1, sx) && kind[i - PW] !== 1) {
+      if (sy === 0 ? oy === 0 : !top(sy - 1, sx) && kind[i - PW] !== 1) {
         out[i] = OUT_G; edge[i] = 1;
         if (top(sy + 1, sx)) { out[i + PW] = 4; edge[i + PW] = 1; }
         // S.cornice (tundra-snow): a snow cornice two rows deep inside the north rim — the far edge of a raised top reads as a lip
@@ -693,10 +694,12 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   }
   // 뒤·옆 가장자리 턱(rim): 북쪽 가장자리 안쪽 밝은 턱 줄 + 뒤 둑 + 동·서·대각 가장자리 바깥 낮은 땅 위 옆면 띠(벽 램프).
   // 칠한 화소는 가장자리(edge) 표시를 받아 타일 위(over)로 간다. 늪(2026-09-28)에서 시작해 2026-09-29 렌더러 r2 부터
-  // 이름 있는 모든 양식의 기본(RELIEF_DEFAULT_RIM, 양식이 rim:false 면 끔). 양식 없는 기본 그림(마을 언덕·check)은 그대로다.
-  const rim = S?.rim ?? null;
+  // 이름 있는 모든 양식의 기본(RELIEF_DEFAULT_RIM, 양식이 rim:false 면 끔).
+  // 기본 흙벽도 뒤 둑이 있어야 북쪽 단 차이가 면으로 읽힌다. 재질 없이 윗면을 고르는
+  // reliefPickPoint도 실제 화면과 같은 둑/벽 경계를 써야 한다.
+  const rim = S ? S.rim : RELIEF_DEFAULT_RIM;
   const rimPx = rim ? take("rimPx", i8, N, -1, true) : null;
-  if (rim && rimPx && S) {
+  if (rim && rimPx) {
     // 가장자리 화소(외곽선 OUT_G, edge) 하나마다: 그 화소 둘레 8칸 중 윗면이 아닌(더 낮은 땅) 쪽으로 옆면 띠를 편다.
     // 북·북동·북서는 아래로 내려다보는 뒤쪽 둑 — 윗면 안쪽에 밝은 풀 턱 lip 줄. 동·서·대각 옆은 바깥 낮은 땅 위로 side px
     // 옆면(서쪽을 향하면 빛을 받아 벽 4·3, 동쪽이면 그늘 2·1), 가장 바깥 1px 은 벽 외곽선 0. 한 칸 폭 경사로·벽 화소는 건드리지 않는다.
@@ -710,7 +713,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     // next row's face then shows instead of the row above's outline column hanging over it
     const pri = take("pri", i8, N, 99, true);
     let curPri = 0;
-    const put = (j: number, v: number) => { if (rimPx[j] < 0 || curPri < pri[j]) { rimPx[j] = v; pri[j] = curPri; } edge[j] = 1; if (owner >= 0 && src[j] >= 0 && src[j] < owner) src[j] = owner; };
+    const put = (j: number, v: number) => { if (rimPx[j] < 0 || curPri < pri[j]) { rimPx[j] = v; pri[j] = curPri; } edge[j] = 1; if (owner >= 0 && src[j] < owner) src[j] = owner; };
     for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
       const i = sy * PW + sx; if (kind[i] !== 0 || ssl[i] || !(fl[i] > 0) || out[i] !== OUT_G || !edge[i]) continue;
       if (bridge && isBridge(src[i] % W, (src[i] / W) | 0)) continue;   // a bridge deck has no bank: the gorge floor shows beside it
@@ -723,8 +726,13 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       // 뒤쪽 둑: 외곽선 바로 위(낮은 땅) 줄들에 흙 비탈 — 북쪽으로 내려가는 둑 면이 보인다(윗줄 밝게, 아래로 어둡게,
       // 맨 윗줄은 벽 외곽선). 3/4 시점에서 뒤로 내려가는 면은 짧게 보이므로 side-1 줄.
       // 면 화소 색: 바이옴 벽 몸통 무늬(이탄 띠)를 화면 좌표로 읽고 빛 방향만큼 밝기를 옮긴다 — 흙 옆면이 벽과 같은 재질로 읽힌다
-      const body = S.body[0]!;
-      const tex = (x: number, y: number, s: number) => shift(body.rows[(((y + yb) % body.h) + body.h) % body.h]![(((x + ox) % body.w) + body.w) % body.w]!, s);
+      const body = S?.body[0];
+      const tex = (x: number, y: number, s: number) => {
+        const ax = x + ox, ay = y + yb;
+        if (body) return shift(body.rows[((ay % body.h) + body.h) % body.h]![((ax % body.w) + body.w) % body.w]!, s);
+        const tile = TILES[hsh3(fdiv(ax, 14), fdiv(ay, 14), 31) % TILES.length];
+        return shift(6 + Math.max(1, tile[((ay % 14 + 14) % 14) * 14 + (ax % 14 + 14) % 14] % 6), s);
+      };
       // (back bank: side-1 rows of peat going down away from the viewer — lit where it leaves the top, darker to its foot,
       // a grass fringe hanging over its top row; the outline closes it at the foot)
       if (U) { const n = Math.max(2, side - 1); for (let k = 1; k <= n && sy - k >= 0; k++) { const j = i - k * PW; if (!low(j, c)) break; curPri = k;
@@ -846,7 +854,12 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     }
     const stone = stoneStairs && stairOwner(i);
     if (!stone && shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
-    if (!stone && rimPx && rimPx[i] >= 0) { const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6]; rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255; }
+    if (!stone && rimPx && rimPx[i] >= 0) {
+      const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6];
+      rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255;
+      // 바깥 흙 둑은 벽이다. 실제 바닥 타일로 덮거나 바닥 under 띠로 보내지 않는다.
+      if (rimPx[i] >= 6) kind[i] = 1;
+    }
     if (hid[i] >= 0 && hidCell[hidSrc[i]]) {
       const edge = [1, -1, PW, -PW].some((dd) => { const jj = i + dd; return jj < 0 || jj >= N || hid[jj] < 0 || !hidCell[hidSrc[jj]]; });
       if (edge) { xray[o] = 90; xray[o + 1] = 230; xray[o + 2] = 255; xray[o + 3] = 255; }
@@ -871,11 +884,19 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // cannot mask diagonal cuts, or preserve a continuous road texture on a ramp.
   if (opt.ground) for (let i = 0; i < N; i++) {
     const cap = kind[i] === 1 && out[i] >= 0 && out[i] < 6;
-    if (kind[i] !== 0 && !cap || mpy[i] < 0 || stairOwner(i) || bridge && underDeck[i]) continue;
+    const rimTone = rimPx?.[i] ?? -1;
+    if (kind[i] !== 0 && !cap || mpy[i] < 0 && !(rimTone >= 0 && src[i] >= 0) || stairOwner(i) || bridge && underDeck[i] || rimTone >= 6) continue;
     const o = i * 4;
-    if (opt.ground.sample(i % PW + ox, mpy[i] + oy, rgba, o)) {
-      const shade = cap ? .7 + .05 * out[i] : shadeA?.[i] ? 1 - .3 * shadeA[i] / 255 : 1;
-      rgba[o] *= shade; rgba[o + 1] *= shade; rgba[o + 2] *= shade;
+    // 지도 끝의 둑도 주인 윗단의 재질을 쓴다. 빈 여백(src=-1)에 그린 둑은 띠 분리 때 버려졌었다.
+    const py = mpy[i] < 0 ? Math.floor(src[i] / W) * T : mpy[i];
+    if (opt.ground.sample(i % PW + ox, py + oy, rgba, o)) {
+      // 무늬는 실제 하층 타일, 외곽선·안쪽 밝은 턱은 지형의 명암을 쓴다.
+      // kind=0을 무조건 덮으면 북·동·서 절벽 경계가 같은 잔디색에 묻힌다.
+      const edgeTone = rimTone >= 0 ? rimTone : edge[i] ? out[i] : -1;
+      const shade = cap ? .7 + .05 * out[i]
+        : edgeTone >= 0 && edgeTone < 6 ? NATIVE_EDGE_LIGHT[edgeTone]! : 1;
+      const light = shade * (shadeA?.[i] && rimTone < 0 ? 1 - .3 * shadeA[i] / 255 : 1);
+      rgba[o] *= light; rgba[o + 1] *= light; rgba[o + 2] *= light;
     }
   }
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(opt.ground ? { nativeGround: true } : {}), ...(overSlope ? { overSlope } : {}) };

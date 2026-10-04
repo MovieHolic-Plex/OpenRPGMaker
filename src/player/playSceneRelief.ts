@@ -119,6 +119,7 @@ const isLiftable = (value: object): value is LiftableSprite =>
 
 /** same 캐릭터 띠(200k) 밑 = below 우선순위. 들린 칸에서는 그 줄 윗면 타일 위로 올려야 보인다. */
 const SAME_PRIORITY_DEPTH = characterDepth("same", 0);
+const ABOVE_PRIORITY_DEPTH = characterDepth("above", 0);
 
 interface ReliefLiftScene {
   readonly map: GameMap;
@@ -143,13 +144,17 @@ export function spriteReliefLiftPx(map: GameMap | undefined, sprite: { readonly 
 /** 그리는 동안만 캐릭터를 들림만큼 올린다. 씬 create 에서 한 번 부른다. */
 export function installReliefSpriteLift(scene: ReliefLiftScene): void {
   const lifted: { sprite: LiftableSprite; px: number; depth: number | null }[] = [];
-  // below 우선순위 캐릭터·체공 그림자는 same 띠 밑이라 들린 칸의 윗면 타일에 묻힌다 — 그리는 동안만 그 줄 타일 위로 올린다.
+  // 바닥 띠는 칸의 남쪽 끝 depth를 쓴다. 이동 중의 연속 y depth를 그대로 쓰면
+  // 자기 발이 놓인 바닥까지 몸 위에 그려진다. 그리는 동안만 같은 칸의 띠 위로 정렬한다.
   const lift = (sprite: LiftableSprite | undefined, px: number, row: number) => {
-    if (!sprite || sprite.active === false || px === 0) return;
+    if (!sprite || sprite.active === false) return;
     let depth: number | null = null;
-    if (typeof sprite.depth === "number" && sprite.depth < SAME_PRIORITY_DEPTH && sprite.setDepth) {
+    if (typeof sprite.depth === "number" && sprite.depth < ABOVE_PRIORITY_DEPTH && sprite.setDepth) {
       depth = sprite.depth;
-      sprite.setDepth(reliefRowDepth(row, mapTileSize(scene.map), RELIEF_LIFTED_UPPER_DEPTH + 0.01));
+      const size = mapTileSize(scene.map);
+      const fraction = Math.max(0, Math.min(1, sprite.y / size - row));
+      const offset = depth < SAME_PRIORITY_DEPTH ? RELIEF_LIFTED_UPPER_DEPTH + 0.01 : 0;
+      sprite.setDepth(reliefRowDepth(row, size, offset + fraction * 0.001));
     }
     sprite.y -= px;
     lifted.push({ sprite, px, depth });
@@ -169,7 +174,8 @@ export function installReliefSpriteLift(scene: ReliefLiftScene): void {
     const ownerLift = new Map<string, { px: number; row: number }>();
     const own = (key: string, sprite: LiftableSprite | undefined) => {
       if (!sprite) return;
-      const px = spriteReliefLiftPx(scene.map, sprite), row = Math.round(sprite.y / size) - 1;
+      // 발이 칸 경계에 있으면 직전 바닥에 속한다. round는 다음 바닥에 들어가도 반 걸음 동안 이전 줄에 남는다.
+      const px = spriteReliefLiftPx(scene.map, sprite), row = Math.ceil(sprite.y / size - 1e-6) - 1;
       ownerLift.set(key, { px, row });
       lift(sprite, px, row);
     };

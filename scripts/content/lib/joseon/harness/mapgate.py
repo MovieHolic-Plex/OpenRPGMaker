@@ -83,7 +83,7 @@ def check(placed, direct, objlayer, T=16):
     tc = float(tmask.mean())
     oc = float((objlayer.a[:, :, 3] == 255).mean())
     rep['tree_cover'], rep['obj_cover'] = round(tc, 3), round(oc, 3)
-    if tc < TREE_MIN:
+    if tc < TREE_MIN and not _IN:
         fails.append(f"M2 수관 피복 {tc:.3f} < {TREE_MIN}")
     if oc < OBJ_MIN:
         fails.append(f"M3 물체 피복 {oc:.3f} < {OBJ_MIN}")
@@ -93,17 +93,17 @@ def check(placed, direct, objlayer, T=16):
     dup = [(a[0], a[1], a[2], b[1], b[2]) for i, a in enumerate(tr) for b in tr[i + 1:]
            if a[0] == b[0] and abs(a[1] - b[1]) <= 6 and abs(a[2] - b[2]) <= 6]
     rep['repeat_pairs'] = len(dup)
-    if dup:
+    if dup and not _IN:
         fails.append(f"M4 같은 나무가 6칸 안에 {len(dup)}쌍: {dup}")
 
     nb = sum(1 for p in placed if ((_BLD_RE.match(p[0]) is not None) if _GN else (p[0].split('_')[0] in BUILDINGS and 'wall' not in p[0])))
     rep['buildings'] = nb
     rep['building_density'] = round(nb / (direct.w // T * (direct.h // T)), 4)
-    if rep['building_density'] < BLD_MIN:
+    if rep['building_density'] < BLD_MIN and not _IN:
         fails.append(f"M6 건물 밀도 {rep['building_density']} < {BLD_MIN} (버들항 0.0092/칸)")
     hs = len({p[4] for p in placed if _b(p[0]).split('_')[0] in TREE_KINDS and not _b(p[0]).startswith('bush')})
     rep['tree_heights'] = hs
-    if hs < HEIGHTS_MIN:
+    if hs < HEIGHTS_MIN and not _IN:
         fails.append(f"M7 나무 키 종류 {hs} < {HEIGHTS_MIN}")
     big = [p for p in placed if p[3] * p[4] >= 8 or _b(p[0]).split('_')[0] in TREE_KINDS]
     depth = sum(1 for i, a in enumerate(big) for b in big[i + 1:] if ov(a, b))

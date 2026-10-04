@@ -1,0 +1,73 @@
+{
+  "realPackagedEditor": true,
+  "canonicalStore": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-seams/project",
+  "before": {
+    "project_id": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+    "revision": 21,
+    "sha": {
+      "terrain_ai": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252",
+      "ramps_four": "db428026f426f551820c5fad62d80b90523fb6dd8b1ae3937e1d6ada68028f81",
+      "houses_native": "df8d6dd9f880814fbca63450807728f45e6f318e66b7acf90215d1d94c02aaaa"
+    }
+  },
+  "styles": [
+    {
+      "style": "swamp-peat",
+      "savedRevision": 23
+    },
+    {
+      "style": "tundra-snow",
+      "savedRevision": 25
+    }
+  ],
+  "errors": [],
+  "surfaceChanged": true,
+  "partialMatchesFull": true,
+  "recording": {
+    "frames": 202,
+    "skippedCaptureFrames": 6,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.03,
+        "text": "절벽 위쪽 · 뒤 둑 / 안쪽 턱 / 대각 모서리"
+      },
+      {
+        "seconds": 4.773,
+        "text": "절벽 양식 swamp-peat · 원본 바닥 무늬와 외곽 유지"
+      },
+      {
+        "seconds": 13.521,
+        "text": "절벽 양식 tundra-snow · 원본 바닥 무늬와 외곽 유지"
+      },
+      {
+        "seconds": 24.271,
+        "text": "위쪽 경계의 바닥 붓 · 부분 갱신 = 전체 다시 그리기"
+      },
+      {
+        "seconds": 33.591,
+        "text": "복잡한 절벽 · 외곽 연결 확인"
+      },
+      {
+        "seconds": 39.642,
+        "text": "절벽 위 원본 집 · 외곽과 집 모두 유지"
+      }
+    ],
+    "gif": "terrain-rims-editor-2x.mp4"
+  },
+  "after": {
+    "project_id": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+    "revision": 28,
+    "sha": {
+      "terrain_ai": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252",
+      "ramps_four": "db428026f426f551820c5fad62d80b90523fb6dd8b1ae3937e1d6ada68028f81",
+      "houses_native": "df8d6dd9f880814fbca63450807728f45e6f318e66b7acf90215d1d94c02aaaa"
+    }
+  },
+  "mapsUnchanged": true
+}

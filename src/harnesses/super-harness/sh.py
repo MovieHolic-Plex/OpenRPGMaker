@@ -1071,6 +1071,17 @@ def example_images(cid):
     return out
 
 
+def concept_about(c, card):
+    planning = read_json(cdir(c['id'], 'planning.json'), {}) or {}
+    variants = planning.get('variants', []) if isinstance(planning, dict) else []
+    purposes = [v['purpose'] for v in variants if isinstance(v, dict) and isinstance(v.get('purpose'), str) and v['purpose'].strip()]
+    if purposes:
+        return ' '.join(purposes)
+    if c['stage'] in ('plan', 'plan-review'):
+        return '공간의 용도·구역·동선을 새 기획과 텍스트 도면으로 확인할 예정입니다.'
+    return card.get('summary') or c['why']
+
+
 def gallery_list():
     items = []
     for c in store.concepts():
@@ -1078,7 +1089,7 @@ def gallery_list():
         imgs = example_images(c['id'])
         items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
                       'running': c['status'] == 'running', 'status': plain_status(c),
-                      'about': first_sentence(card.get('summary') or c['why']), 'updated': c['updated'],
+                      'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
                       'thumb': imgs[0] if imgs and c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else None, 'pr': c['pr'], 'parent': c.get('parent')})
     paused = store.setting('paused') == '1'
     return {'paused': paused, 'items': items}
@@ -1104,7 +1115,7 @@ def gallery_detail(cid):
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
     kids = [{'id': k['id'], 'title': k['title']} for k in store.concepts('parent=?', (cid,))]
     return {'id': cid, 'title': c['title'], 'status': plain_status(c), 'stage': c['stage'],
-            'about': card.get('summary') or c['why'], 'variants': variants, 'images': imgs[:8], 'tried': tried[:4],
+            'about': concept_about(c, card), 'variants': variants, 'images': imgs[:8], 'tried': tried[:4],
             'why': [re.sub(r'^\[[AB]\]\s*', '', r) for r in (c['reasons'] or [])][:3],
             'orders': [{'ko': o.get('ko') or o.get('id'), 'size': f'{o["w"]}×{o["h"]}칸' if o.get('w') and o.get('h') else '', 'desc': first_sentence(o.get('desc'), 120)} for o in orders][:20],
             'feedback': [f['text'] for f in c['feedback']][-3:], 'pr': c['pr'],

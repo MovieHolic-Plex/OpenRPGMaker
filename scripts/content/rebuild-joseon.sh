@@ -5,6 +5,7 @@
 #   JOSEON_REPORT_ONLY=1 bash scripts/content/rebuild-joseon.sh  # 새 국내성 맵을 처음 합칠 때: 실패를 멈춤 없이 전부 보고
 # 합칠 때 `…__s1` 변형 경고가 나오면 두 시트의 같은 이름 조각 그림이 다르다는 뜻이다(변형은 기준 조각의 통행 보정을 이어받는다. 모양이 달라졌으면 piece-walk-overrides.json 을 새 그림에 맞게 고친다).
 # 입력(맵 빌더 산출): $GUNGNAE_FULL_DIR/{joseon-gungnae-full-chipset.png,pieces.json,map.json,extra.json}(200×208 원작 규모, 세 번째 시트·맵), tiledata/joseon-village20/{chipset.png,pieces.json,map.json,extra.json}, $GUNGNAE_DIR/{joseon-gungnae-chipset.png,pieces.json,map.json,extra.json}
+# 장소 카드는 14장(마을 20호·국내성 둘·사냥터·동굴·실내 6·궁 내부 3).
 # 사용자의 실제 프로젝트 폴더·LegacyDb/Supabase·공용 DB 에는 쓰지 않는다. gates/vitest 를 돌리지 않는다.
 set -euo pipefail
 cd "$(dirname "$0")/../.."

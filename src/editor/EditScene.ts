@@ -65,7 +65,7 @@ import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
 } from "@/editor/mapBackgroundPreviewState";
-import { editorState, EDITOR_ZOOM_LEVELS, type Layer, type TileClipboard } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS, type Layer, type TileClipboard, type TileSelection } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -192,6 +192,8 @@ type RightRegionGesture = {
   readonly start: { readonly x: number; readonly y: number };
   readonly screen: { readonly x: number; readonly y: number };
   moved: boolean;
+  /** Drag feedback belongs to the canvas; publish the selection only on release. */
+  preview: TileSelection | null;
 };
 
 const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
@@ -1262,12 +1264,13 @@ export class EditScene extends PhaserRuntime.Scene {
     const map = store.getCurrent().maps[mapId];
     if (!map) return;
     if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return;
-    this.rightRegionGesture = { mapId, start: tile, screen, moved: false };
+    this.rightRegionGesture = { mapId, start: tile, screen, moved: false, preview: null };
     // The action-chip DOM depends on the final selection. Rebuilding it for
     // every pointermove forces layout and creates a dozen buttons repeatedly
     // while the user is still dragging. Keep the lightweight Phaser outline
     // and size badge live, then build the chips once on pointerup.
     this.clearBuildPaletteOverlay();
+    this.suppressPaintHoverPreview();
     // mouseup 시 contextmenu 가 문서 타겟으로 뜨는 브라우저 대비.
     this.suppressBrowserContextMenuUntil = Date.now() + 1500;
     this.isPainting = false;
@@ -1359,19 +1362,32 @@ export class EditScene extends PhaserRuntime.Scene {
     if (rect.x !== gesture.start.x || rect.y !== gesture.start.y || rect.width > 1 || rect.height > 1) {
       gesture.moved = true;
     }
-    selectTileRegion(gesture.mapId, {
+    const previous = gesture.preview;
+    if (previous && previous.x === rect.x && previous.y === rect.y
+      && previous.width === rect.width && previous.height === rect.height) return;
+    gesture.preview = {
       mapId: gesture.mapId,
       x: rect.x,
       y: rect.y,
       width: rect.width,
       height: rect.height,
-    });
+    };
     this.lastPointerTile = end;
+    // No editorState broadcast here: AI context chips and other subscribers need
+    // the committed region, not each pointer sample. The two canvas rectangles
+    // and the size badge still follow every changed tile.
+    this.syncSelectionOverlay();
+    this.renderBuildPaletteOverlay();
+    requestEditRenderFrame(this.game);
   }
 
   private finishRightRegionGesture(ptr: Phaser.Input.Pointer): void {
     const gesture = this.rightRegionGesture;
     this.rightRegionGesture = null;
+    // A tap or a gesture ending back at its start must also clear its preview.
+    this.syncSelectionOverlay();
+    this.renderBuildPaletteOverlay();
+    requestEditRenderFrame(this.game);
     // 버튼을 놓은 직후 contextmenu 가 한 번 더 올 수 있음.
     this.suppressBrowserContextMenuUntil = Math.max(this.suppressBrowserContextMenuUntil, Date.now() + 800);
     if (!gesture) return;
@@ -1402,8 +1418,8 @@ export class EditScene extends PhaserRuntime.Scene {
       // 창이 이미 그 자리에 있고, 칩 바는 창이 열려 있는 동안 물러나 있다.
       if (retargetRegionTaskModal(rect, screen)) return;
       notifyRightDragRegionSelected();
-      // 드래그 중에 이미 같은 사각형이 선택돼 있어 위 selectTileRegion 은 통지 없이 끝난다.
-      // 여기서 직접 그리지 않으면 바는 다음 우연한 redraw(포인터 이동·팬)까지 뜨지 않는다.
+      // 같은 영역을 다시 잡으면 selectTileRegion 은 통지 없이 끝난다.
+      // 그래도 놓는 순간 바와 입력 초점은 다시 나타나야 한다.
       this.focusSelectionPromptOnRender = true;
       // 놓는 순간 바가 떠야 하므로 다음 프레임을 기다리지 않는다.
       this.flushDomOverlayLayout();
@@ -1608,10 +1624,11 @@ export class EditScene extends PhaserRuntime.Scene {
     const layer = this.selectionLayer;
     const mapId = this.mapId();
     if (!layer || !mapId) return;
-    syncSelectionOverlay(this, layer, mapId);
+    syncSelectionOverlay(this, layer, mapId, this.rightRegionGesture?.preview ?? undefined);
   }
 
   private shouldRenderPaintHover(): boolean {
+    if (this.rightRegionGesture) return false;
     if (editorState.get().pastePreview) return false;
     return shouldShowPaintHoverPreview({
       isPainting: this.isPainting,
@@ -1770,6 +1787,16 @@ export class EditScene extends PhaserRuntime.Scene {
       selectionActive: state.selection !== null,
       panToolActive: state.tool === "pan",
     });
+    if (this.rightRegionGesture && action !== "defer-to-owner") {
+      // Cancel the local preview without publishing it or losing the previous
+      // committed selection. A later pointerup cannot bring it back.
+      this.rightRegionGesture = null;
+      this.syncSelectionOverlay();
+      this.renderBuildPaletteOverlay();
+      requestEditRenderFrame(this.game);
+      this.replayDeferredCameraFocus();
+      return true;
+    }
     switch (action) {
       case "defer-to-owner":
       case "none":
@@ -3352,7 +3379,7 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   private renderRegionSizeBadge(): void {
     if (typeof document === "undefined") return;
-    const selection = editorState.get().selection;
+    const selection = this.rightRegionGesture?.preview ?? editorState.get().selection;
     const mapId = this.mapId();
     const host = this.game?.canvas?.parentElement;
     const camera = this.cameras?.main;
@@ -3369,7 +3396,13 @@ export class EditScene extends PhaserRuntime.Scene {
       this.regionSizeBadge = badge;
     }
     const label = `${selection.width}×${selection.height}`;
-    if (this.regionSizeBadge.textContent !== label) this.regionSizeBadge.textContent = label;
+    if (this.regionSizeBadge.textContent !== label) {
+      // Keep the text node: replacing children on every tile invalidates global
+      // :has() styles and wakes body-subtree mutation observers during the drag.
+      const text = this.regionSizeBadge.firstChild;
+      if (text?.nodeType === 3) (text as Text).data = label;
+      else this.regionSizeBadge.textContent = label;
+    }
     const rect = tileRectToScreenRect(
       { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
       { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom }, this.activeTileSize()
