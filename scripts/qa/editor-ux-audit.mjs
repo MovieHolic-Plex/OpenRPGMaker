@@ -209,7 +209,7 @@ try {
   report.productionSources=Object.fromEntries(['src/editor/mapEditHistory.ts','src/project/eventDraftVault.ts'].map(file=>[file,createHash('sha256').update(readFileSync(file)).digest('hex')]));
   writeFileSync(out+'/measurements.json',JSON.stringify(report,null,2));
   const compact=events.filter(e=>e.pid===main?.pid&&e.tid===main?.tid&&(e.name.startsWith('ux-')||['UpdateLayoutTree','Layout','Paint','PrePaint'].includes(e.name))).map(e=>({name:e.name,ts:e.ts,durationMs:(e.dur??0)/1000}));
-  writeFileSync(out+'/trace-costs.json',JSON.stringify(compact,null,2));
+  writeFileSync(out+'/trace-costs.json','[\n'+compact.map(entry=>'  '+JSON.stringify(entry)).join(',\n')+'\n]\n');
   console.log('Audit complete; native checks='+report.checks.length+' pageerrors='+errors.length);
 } catch(error) {
   await page.screenshot({path:out+'/failure.png',timeout:5000}).catch(()=>{});
