@@ -162,9 +162,9 @@ export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
 /** `SimplePage.face` / place_npc `face` — 두 지정 방식의 키 합집합. */
 export const FACE_SCHEMA: JsonSchema = {
   type: "object",
-  description: "{resourceId} 또는 {textureKey,characterIndex}. resourceId는 얼굴 낱장 리소스 id(48×48 PNG 한 장). 생략 시 각 페이지 graphic의 공용 캐릭터·얼굴 매핑을 사용한다. 미검토·얼굴 없음·미등록은 얼굴을 추정하지 않는다.",
+  description: "{resourceId} 또는 {textureKey,characterIndex}. resourceId는 얼굴 낱장(48×48)·흉상(bust)·전신(full) 초상 id를 모두 받는다. list_resources(kind:faceset,portraitMode:bust|full)로 후보를 확인한다. 같은 인물의 초상만 고른다. 생략 시 각 페이지 graphic의 검토된 짝 얼굴을 사용하며, 미검토·얼굴 없음·미등록은 추정하지 않는다.",
   properties: {
-    resourceId: { type: "string", description: "얼굴 낱장 리소스 id. 예: easyrpg-faceset-actor1-07" },
+    resourceId: { type: "string", description: "얼굴 또는 초상 id. 예: easyrpg-faceset-actor1-07, shared-brown-headband-expressions-bust-base. id가 bust/full이면 큰 초상으로 표시된다." },
     position: { type: "string", enum: ["left", "right"] },
     flipHorizontally: { type: "boolean" },
     textureKey: { type: "string" },

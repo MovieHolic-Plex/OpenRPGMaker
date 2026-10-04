@@ -2,6 +2,7 @@ import "@/player/player.css";
 // Standalone legacy migration only; community boot never scans global save storage.
 import "@/player/exportStorageBoot";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
+import { syncProjectFontTheme } from "@/app/fontTheme";
 
 installVitePreloadRecovery();
 import { PRODUCT_BRAND } from "@/brand";
@@ -108,6 +109,8 @@ function startPlayer(
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
     repairFaceMatches(project);
     setExportedProject(project);
+    // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
+    syncProjectFontTheme(project);
     const saveNamespace = resolveExportSaveNamespace(project, {
       source,
       hostSaveNamespace: boot.saveNamespace,
