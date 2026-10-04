@@ -6,6 +6,7 @@ import shutil
 import art_choices
 import store
 import art_layout
+import art_repair
 
 CHECKS = art_layout.SCENE_CHECKS
 
@@ -28,7 +29,7 @@ def directory(data, cid):
 
 def limits(data, cid):
     brief = read(directory(data, cid) / 'parking-repair-brief.json', {})
-    maximum = int(store.setting('max_art_revisions') or 2)
+    maximum = int(store.setting('max_art_revisions') or 5)
     if 'maxRevisions' in brief: maximum = min(maximum, max(0, int(brief['maxRevisions'])))
     return {'maxRevisions': maximum, 'candidateCount': max(1, int(brief.get('candidateCount', 1))), 'nativeAttempts': 1}
 
@@ -52,9 +53,17 @@ def review_input(data, cid):
             if not reviewed and not visible['stale'] and group.get('requiresContextReview'):
                 candidates.append(dict(c, fingerprint=art_choices.fingerprint(c)))
         if candidates: groups.append({'id': group['id'], 'title': group['title'], 'candidates': candidates})
+    previous = read(folder / 'art-feedback.json', {})
+    previous_images = []
+    for repair in previous.get('repairs', []) + previous.get('deferredRepairs', []):
+        for ref in repair.get('archivedEvidence', []):
+            if Path(ref['path']).suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp'): continue
+            if art_choices.digest(ref['path']) != ref['sha256']: raise ValueError('이전 실패 그림 해시 불일치')
+            if ref not in previous_images: previous_images.append(ref)
     return {'manifestSha256': art_choices.digest(manifest_path), 'groups': groups,
             'root': str(Path(data) / 'art-worktrees' / cid),
-            'previousFeedback': read(folder / 'art-feedback.json', {}),
+            'previousFeedback': previous, 'previousImages': previous_images,
+            'comparisonObligations': art_repair.obligations(previous),
             'repairBrief': read(folder / 'parking-repair-brief.json', {}),
             'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION}
 
@@ -84,6 +93,7 @@ def validate_review(data, cid, result, request):
                     raise ValueError(f'조립 검수 {key} 관찰 근거 필요')
             failed = any(checks[k]['verdict'] == 'FAIL' for k in CHECKS)
             if failed != (r['verdict'] == 'FAIL'): raise ValueError('세부 판정과 전체 판정 불일치')
+            art_repair.validate_comparison(r, request, group['id'])
             if failed:
                 fixes = r.get('fixes')
                 if not isinstance(fixes, list) or not fixes: raise ValueError('실패에는 구체적인 수정 지시 필요')
@@ -111,9 +121,10 @@ def queue_repair(data, cid):
         review_fingerprint = art_choices.fingerprint({'version': art_layout.VERSION, 'context': read(folder / 'art-context-review.json', {})})
         if previous.get('manifestSha256') == source and previous.get('reviewFingerprint') == review_fingerprint:
             current = store.concept(cid)
-            if current['stage'] == 'art' and current['status'] == 'running':
+            resumed = previous.get('status') == 'limit-reached' and current.get('art_revision', 0) < limits(data, cid)['maxRevisions']
+            if not resumed and current['stage'] == 'art' and current['status'] == 'running':
                 store.update_concept(cid, stage='blocked', status='idle', note='같은 실패 후보를 그대로 반환함 — 새 수정 근거 필요')
-            return False
+            if not resumed: return False
         context = read(folder / 'art-context-review.json', {}).get('groups', {})
         repairs = []
         for group in failed:
@@ -134,6 +145,7 @@ def queue_repair(data, cid):
                 repairs.append({'group': group['id'], 'candidate': candidate['id'], 'sources': raw['sources'],
                     'images': raw['images'], 'fingerprint': art_choices.fingerprint(raw),
                     'problems': candidate['reasons'], 'fixes': fixes,
+                    'failedChecks': art_repair.failed_checks(review) if matching else {},
                     'nativePassed': raw['passed'], 'archivedEvidence': archived})
         c = store.concept(cid)
         revision = c.get('art_revision') or 0
@@ -144,6 +156,10 @@ def queue_repair(data, cid):
             'status': 'limit-reached' if exhausted else 'queued', 'repairs': repairs,
             'preserveGroups': [g['id'] for g in state['groups'] if g not in failed],
             'repairBrief': read(folder / 'parking-repair-brief.json', {}), 'created': store.now()}
+        feedback['policy'] = art_repair.route(folder, repairs, source)
+        # Calibration may defer composition/space defects, but must not erase them.
+        if previous.get('policy', {}).get('phase') == 'calibration':
+            feedback['deferredRepairs'] = previous.get('deferredRepairs', []) or previous.get('repairs', [])
         # Every revision keeps its exact input; later preparation cannot erase the evidence.
         write(folder / 'art-feedback-history' / (source + '.json'), feedback)
         write(folder / 'art-feedback.json', feedback)

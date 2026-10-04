@@ -12,6 +12,7 @@
 에이전트 기본값: Codex CLI gpt-6.1-sol, reasoning medium (2026-10-03 사용자).
 """
 import glob
+from pathlib import Path
 import json
 import os
 import re
@@ -35,6 +36,7 @@ import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
+import art_repair  # noqa: E402
 import art_layout  # noqa: E402
 
 DATA = store.DATA
@@ -611,7 +613,7 @@ def start_art(c):
         os.replace(previous, cdir(cid, 'art-result.previous.json'))
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     prior_layout = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
-    template = 'art-layout-repair.md' if prior_layout.get('verdict') == 'FAIL' else 'art.md'
+    template = 'art-layout-repair.md' if prior_layout.get('verdict') == 'FAIL' or feedback.get('policy') else 'art.md'
     prompt = fill(prompt_template(template), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c),
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
@@ -641,6 +643,7 @@ def on_art(meta, code, result):
             request_path = cdir(cid, 'art-execution.json')
             write_json(request_path, request)
             layout = art_layout.build_input(wt, request)
+            art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], feedback)
             write_json(cdir(cid, 'art-layout-input.json'), layout)
             store.update_concept(cid, stage='art-layout-review', status='queued', note='제작 전 배치·비례·여백 적대적 검수 대기')
         except (OSError, ValueError, TypeError, KeyError) as error:
@@ -700,6 +703,7 @@ def on_art(meta, code, result):
 
 def advance_art_review(cid):
     state = art_choices.view(DATA, cid)
+    if art_repair.finish_calibration(DATA, cid, state, write_json, art_feedback.limits): return
     if not state['groups']:
         store.update_concept(cid, stage='blocked', status='idle', note='선택 예시 어댑터 필요 — 실제 후보를 보존함')
     elif all(any(c['ready'] for c in g['candidates']) for g in state['groups']):
@@ -752,6 +756,7 @@ def on_art_context_review(meta, code, result):
     current['version'] = 1
     write_json(cdir(cid, 'art-context-review.json'), current)
     state = art_choices.view(DATA, cid)
+    if art_repair.finish_calibration(DATA, cid, state, write_json, art_feedback.limits): return
     if all(any(c['ready'] for c in g['candidates']) for g in state['groups']):
         store.update_concept(cid, stage='art-review', status='idle', reasons=[], note='부품·조립 검수 완료 — 사람 선택 필요')
         store.log(cid, '조립 검수 통과 → 사람 선택')
@@ -801,6 +806,7 @@ def on_art_layout_review(meta, code, result):
         request['layoutApproval'] = cdir(cid, 'art-layout-review.json')
         write_json(cdir(cid, 'art-execution.json'), request)
         art_layout.require_approval(wt, request)
+        art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], read_json(cdir(cid, 'art-feedback.json'), {}))
         art_execution.prepare(wt, request)
         native_result = cdir(cid, 'art-execution-result.json')
         if os.path.exists(native_result): os.remove(native_result)
@@ -1394,6 +1400,11 @@ def concept_markdown(cid):
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     if feedback:
         L += ['## 검수 피드백 → 자동 수정', '', f'수정 차수: {feedback.get("revision")} / {feedback.get("limits", {}).get("maxRevisions")} · {c.get("note", "")}', '']
+        policy = feedback.get('policy', {})
+        if policy:
+            labels = {'asset': '칩 그림 수정', 'assembly': '배치 수정', 'spec': '형태·시점 명세 재설계', 'integration': '합격 표본으로 공간 재조립'}
+            L += [f'**수정 경로:** {labels.get(policy.get("route"), "재검토")} · ' + ('작은 시점 표본' if policy.get('phase') == 'calibration' else '공간 조립'), '', policy.get('reason', ''), '']
+            if policy.get('repeatedChecks'): L += ['반복 불합격 항목: ' + ', '.join(policy['repeatedChecks']), '']
         for repair in feedback.get('repairs', []):
             L += [f'### {repair.get("group")} / {repair.get("candidate")}', '']
             for fix in repair.get('fixes', []):
