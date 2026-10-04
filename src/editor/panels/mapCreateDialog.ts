@@ -14,6 +14,7 @@ import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { openWorldAtlasCreateDialog } from './worldAtlasCreateDialog';
 
 export function openMapCreateDialog(request: MapCreateRequest = {}): void {
   const project = store.getCurrent();
@@ -128,6 +129,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
             dataset: { testid: "map-create-confirm" },
             on: { click: submit },
           }),
+          el('button', {class:'btn',text:'세계 지도 만들기',attrs:{type:'button'},dataset:{testid:'map-create-world-atlas'},on:{click:()=>{close();openWorldAtlasCreateDialog();}}}),
           el("button", {
             class: "btn",
             text: "분류만 만들기",

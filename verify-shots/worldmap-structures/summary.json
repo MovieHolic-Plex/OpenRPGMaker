@@ -1,0 +1,136 @@
+{
+  "structures": [
+    {
+      "structure": "region-routes",
+      "atlasId": "examples_region_routes",
+      "projectId": "380b537f-432e-4023-808e-a1ee990d1930",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/region-routes",
+      "revision": 1,
+      "startMapId": "examples_region_routes_map0",
+      "startPos": {
+        "x": 34,
+        "y": 18
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "region-routes"
+      },
+      "png": "region-routes.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    },
+    {
+      "structure": "scaled-world",
+      "atlasId": "examples_scaled_world",
+      "projectId": "70c0476c-bfc0-4137-b902-f03abbf1069c",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/scaled-world",
+      "revision": 1,
+      "startMapId": "examples_scaled_world_overworld",
+      "startPos": {
+        "x": 28,
+        "y": 26
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 7,
+        "reachableAfterUnlocks": 8,
+        "structure": "scaled-world"
+      },
+      "png": "scaled-world.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    },
+    {
+      "structure": "field-overview",
+      "atlasId": "examples_field_overview",
+      "projectId": "63423c08-057f-4cd9-bc1f-d15463f83d72",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/field-overview",
+      "revision": 1,
+      "startMapId": "examples_field_overview_map6",
+      "startPos": {
+        "x": 20,
+        "y": 14
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 9,
+        "edges": 12,
+        "reachableAfterUnlocks": 9,
+        "structure": "field-overview"
+      },
+      "png": "field-overview.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    },
+    {
+      "structure": "stage-nodes",
+      "atlasId": "examples_stage_nodes",
+      "projectId": "9d4e906c-82ea-4be9-8f0d-43c13961b2c1",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/stage-nodes",
+      "revision": 1,
+      "startMapId": "examples_stage_nodes_map0",
+      "startPos": {
+        "x": 20,
+        "y": 15
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "stage-nodes"
+      },
+      "png": "stage-nodes.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    },
+    {
+      "structure": "room-network",
+      "atlasId": "examples_room_network",
+      "projectId": "d6b1aff2-e5bf-4e50-85b2-8014d9a2e8ec",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/room-network",
+      "revision": 1,
+      "startMapId": "examples_room_network_map0",
+      "startPos": {
+        "x": 2,
+        "y": 17
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 10,
+        "edges": 11,
+        "reachableAfterUnlocks": 10,
+        "structure": "room-network"
+      },
+      "png": "room-network.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    },
+    {
+      "structure": "run-path",
+      "atlasId": "examples_run_path",
+      "projectId": "4a79cc30-5223-45b6-81d1-e8125c268e39",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-20261005/run-path",
+      "revision": 1,
+      "startMapId": "examples_run_path_map0",
+      "startPos": {
+        "x": 2,
+        "y": 17
+      },
+      "audit": {
+        "ok": true,
+        "issues": [],
+        "nodes": 13,
+        "edges": 19,
+        "reachableAfterUnlocks": 13,
+        "structure": "run-path"
+      },
+      "png": "run-path.png",
+      "imageSource": "canonical SQLite reload + real map tile renders + shared atlas renderer"
+    }
+  ]
+}

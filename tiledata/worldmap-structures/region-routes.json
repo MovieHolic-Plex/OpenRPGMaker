@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "id": "examples_region_routes",
+  "name": "지역 · 마을과 도로",
+  "structure": "region-routes",
+  "seed": 7,
+  "width": 120,
+  "height": 84,
+  "startNodeId": "examples_region_routes_n0",
+  "nodes": [
+    {
+      "id": "examples_region_routes_n0",
+      "name": "새싹 마을",
+      "mapId": "examples_region_routes_map0",
+      "kind": "town",
+      "x": 12,
+      "y": 57,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 34,
+        "y": 18
+      },
+      "visitSwitchId": "examples_region_routes_visit0",
+      "clearSwitchId": "examples_region_routes_clear0",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n1",
+      "name": "1번 도로",
+      "mapId": "examples_region_routes_map1",
+      "kind": "route",
+      "x": 34,
+      "y": 57,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_region_routes_visit1",
+      "clearSwitchId": "examples_region_routes_clear1",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n2",
+      "name": "솔바람 시티",
+      "mapId": "examples_region_routes_map2",
+      "kind": "town",
+      "x": 55,
+      "y": 57,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 34,
+        "y": 18
+      },
+      "visitSwitchId": "examples_region_routes_visit2",
+      "clearSwitchId": "examples_region_routes_clear2",
+      "grants": [
+        "examples_region_routes_ability0"
+      ]
+    },
+    {
+      "id": "examples_region_routes_n3",
+      "name": "2번 도로",
+      "mapId": "examples_region_routes_map3",
+      "kind": "route",
+      "x": 55,
+      "y": 34,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_region_routes_visit3",
+      "clearSwitchId": "examples_region_routes_clear3",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n4",
+      "name": "호수 마을",
+      "mapId": "examples_region_routes_map4",
+      "kind": "town",
+      "x": 78,
+      "y": 34,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 34,
+        "y": 18
+      },
+      "visitSwitchId": "examples_region_routes_visit4",
+      "clearSwitchId": "examples_region_routes_clear4",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n5",
+      "name": "물결 도로",
+      "mapId": "examples_region_routes_map5",
+      "kind": "route",
+      "x": 78,
+      "y": 13,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 21,
+        "y": 15
+      },
+      "visitSwitchId": "examples_region_routes_visit5",
+      "clearSwitchId": "examples_region_routes_clear5",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n6",
+      "name": "별빛 리그",
+      "mapId": "examples_region_routes_map6",
+      "kind": "town",
+      "x": 100,
+      "y": 13,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 34,
+        "y": 18
+      },
+      "visitSwitchId": "examples_region_routes_visit6",
+      "clearSwitchId": "examples_region_routes_clear6",
+      "grants": []
+    },
+    {
+      "id": "examples_region_routes_n7",
+      "name": "숲샛길",
+      "mapId": "examples_region_routes_map7",
+      "kind": "route",
+      "x": 34,
+      "y": 34,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 22,
+        "y": 15
+      },
+      "visitSwitchId": "examples_region_routes_visit7",
+      "clearSwitchId": "examples_region_routes_clear7",
+      "grants": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "examples_region_routes_edge0",
+      "from": "examples_region_routes_n0",
+      "to": "examples_region_routes_n1",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 60,
+        "y": 18
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_region_routes_edge1",
+      "from": "examples_region_routes_n1",
+      "to": "examples_region_routes_n2",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_region_routes_edge2",
+      "from": "examples_region_routes_n2",
+      "to": "examples_region_routes_n3",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 34,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_region_routes_edge3",
+      "from": "examples_region_routes_n3",
+      "to": "examples_region_routes_n4",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 8,
+        "y": 19
+      }
+    },
+    {
+      "id": "examples_region_routes_edge4",
+      "from": "examples_region_routes_n4",
+      "to": "examples_region_routes_n5",
+      "requires": [
+        "examples_region_routes_ability0"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 34,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_region_routes_edge5",
+      "from": "examples_region_routes_n5",
+      "to": "examples_region_routes_n6",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_region_routes_edge6",
+      "from": "examples_region_routes_n1",
+      "to": "examples_region_routes_n7",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 22,
+        "y": 16
+      }
+    },
+    {
+      "id": "examples_region_routes_edge7",
+      "from": "examples_region_routes_n7",
+      "to": "examples_region_routes_n3",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 23,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    }
+  ],
+  "abilities": [
+    {
+      "name": "물길 통행증",
+      "switchId": "examples_region_routes_ability0"
+    }
+  ],
+  "pins": [
+    {
+      "nodeId": "examples_region_routes_n0",
+      "switchId": "examples_region_routes_pin0"
+    },
+    {
+      "nodeId": "examples_region_routes_n1",
+      "switchId": "examples_region_routes_pin1"
+    },
+    {
+      "nodeId": "examples_region_routes_n2",
+      "switchId": "examples_region_routes_pin2"
+    },
+    {
+      "nodeId": "examples_region_routes_n3",
+      "switchId": "examples_region_routes_pin3"
+    },
+    {
+      "nodeId": "examples_region_routes_n4",
+      "switchId": "examples_region_routes_pin4"
+    },
+    {
+      "nodeId": "examples_region_routes_n5",
+      "switchId": "examples_region_routes_pin5"
+    },
+    {
+      "nodeId": "examples_region_routes_n6",
+      "switchId": "examples_region_routes_pin6"
+    },
+    {
+      "nodeId": "examples_region_routes_n7",
+      "switchId": "examples_region_routes_pin7"
+    }
+  ]
+}

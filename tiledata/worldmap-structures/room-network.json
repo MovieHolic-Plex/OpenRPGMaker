@@ -1,0 +1,414 @@
+{
+  "version": 1,
+  "id": "examples_room_network",
+  "name": "방 · 발견과 재탐색",
+  "structure": "room-network",
+  "seed": 7,
+  "width": 120,
+  "height": 90,
+  "startNodeId": "examples_room_network_n0",
+  "nodes": [
+    {
+      "id": "examples_room_network_n0",
+      "name": "지상의 우물",
+      "mapId": "examples_room_network_map0",
+      "kind": "room",
+      "x": 9,
+      "y": 9,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit0",
+      "clearSwitchId": "examples_room_network_clear0",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n1",
+      "name": "잊힌 교차로",
+      "mapId": "examples_room_network_map1",
+      "kind": "room",
+      "x": 9,
+      "y": 32,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit1",
+      "clearSwitchId": "examples_room_network_clear1",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n2",
+      "name": "순례자의 방",
+      "mapId": "examples_room_network_map2",
+      "kind": "room",
+      "x": 35,
+      "y": 32,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit2",
+      "clearSwitchId": "examples_room_network_clear2",
+      "grants": [
+        "examples_room_network_ability0"
+      ]
+    },
+    {
+      "id": "examples_room_network_n3",
+      "name": "푸른 회랑",
+      "mapId": "examples_room_network_map3",
+      "kind": "room",
+      "x": 61,
+      "y": 32,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit3",
+      "clearSwitchId": "examples_room_network_clear3",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n4",
+      "name": "바람의 탑",
+      "mapId": "examples_room_network_map4",
+      "kind": "room",
+      "x": 61,
+      "y": 9,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit4",
+      "clearSwitchId": "examples_room_network_clear4",
+      "grants": [
+        "examples_room_network_ability1"
+      ]
+    },
+    {
+      "id": "examples_room_network_n5",
+      "name": "이끼 저장고",
+      "mapId": "examples_room_network_map5",
+      "kind": "room",
+      "x": 9,
+      "y": 55,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit5",
+      "clearSwitchId": "examples_room_network_clear5",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n6",
+      "name": "깊은 수로",
+      "mapId": "examples_room_network_map6",
+      "kind": "room",
+      "x": 35,
+      "y": 55,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit6",
+      "clearSwitchId": "examples_room_network_clear6",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n7",
+      "name": "침묵의 서고",
+      "mapId": "examples_room_network_map7",
+      "kind": "room",
+      "x": 61,
+      "y": 55,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit7",
+      "clearSwitchId": "examples_room_network_clear7",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n8",
+      "name": "어둠의 관문",
+      "mapId": "examples_room_network_map8",
+      "kind": "room",
+      "x": 87,
+      "y": 55,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit8",
+      "clearSwitchId": "examples_room_network_clear8",
+      "grants": []
+    },
+    {
+      "id": "examples_room_network_n9",
+      "name": "깊은 성소",
+      "mapId": "examples_room_network_map9",
+      "kind": "room",
+      "x": 87,
+      "y": 75,
+      "w": 23,
+      "h": 13,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_room_network_visit9",
+      "clearSwitchId": "examples_room_network_clear9",
+      "grants": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "examples_room_network_edge0",
+      "from": "examples_room_network_n0",
+      "to": "examples_room_network_n1",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 38,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge1",
+      "from": "examples_room_network_n1",
+      "to": "examples_room_network_n2",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 17
+      },
+      "toExit": {
+        "x": 1,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge2",
+      "from": "examples_room_network_n2",
+      "to": "examples_room_network_n3",
+      "requires": [
+        "examples_room_network_ability0"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 1,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge3",
+      "from": "examples_room_network_n3",
+      "to": "examples_room_network_n4",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 38,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge4",
+      "from": "examples_room_network_n1",
+      "to": "examples_room_network_n5",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 9,
+        "y": 17
+      },
+      "toExit": {
+        "x": 38,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge5",
+      "from": "examples_room_network_n5",
+      "to": "examples_room_network_n6",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 17
+      },
+      "toExit": {
+        "x": 1,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge6",
+      "from": "examples_room_network_n6",
+      "to": "examples_room_network_n7",
+      "requires": [
+        "examples_room_network_ability0"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 1,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge7",
+      "from": "examples_room_network_n7",
+      "to": "examples_room_network_n3",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 20,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge8",
+      "from": "examples_room_network_n7",
+      "to": "examples_room_network_n8",
+      "requires": [
+        "examples_room_network_ability1"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 17
+      },
+      "toExit": {
+        "x": 1,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge9",
+      "from": "examples_room_network_n8",
+      "to": "examples_room_network_n9",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 38,
+        "y": 17
+      },
+      "toExit": {
+        "x": 38,
+        "y": 17
+      }
+    },
+    {
+      "id": "examples_room_network_edge10",
+      "from": "examples_room_network_n4",
+      "to": "examples_room_network_n8",
+      "requires": [
+        "examples_room_network_ability1"
+      ],
+      "oneWay": false,
+      "secret": true,
+      "fromExit": {
+        "x": 20,
+        "y": 17
+      },
+      "toExit": {
+        "x": 20,
+        "y": 17
+      }
+    }
+  ],
+  "abilities": [
+    {
+      "name": "봉인 해제",
+      "switchId": "examples_room_network_ability0"
+    },
+    {
+      "name": "깊은 성소 열쇠",
+      "switchId": "examples_room_network_ability1"
+    }
+  ],
+  "pins": [
+    {
+      "nodeId": "examples_room_network_n0",
+      "switchId": "examples_room_network_pin0"
+    },
+    {
+      "nodeId": "examples_room_network_n1",
+      "switchId": "examples_room_network_pin1"
+    },
+    {
+      "nodeId": "examples_room_network_n2",
+      "switchId": "examples_room_network_pin2"
+    },
+    {
+      "nodeId": "examples_room_network_n3",
+      "switchId": "examples_room_network_pin3"
+    },
+    {
+      "nodeId": "examples_room_network_n4",
+      "switchId": "examples_room_network_pin4"
+    },
+    {
+      "nodeId": "examples_room_network_n5",
+      "switchId": "examples_room_network_pin5"
+    },
+    {
+      "nodeId": "examples_room_network_n6",
+      "switchId": "examples_room_network_pin6"
+    },
+    {
+      "nodeId": "examples_room_network_n7",
+      "switchId": "examples_room_network_pin7"
+    },
+    {
+      "nodeId": "examples_room_network_n8",
+      "switchId": "examples_room_network_pin8"
+    },
+    {
+      "nodeId": "examples_room_network_n9",
+      "switchId": "examples_room_network_pin9"
+    }
+  ]
+}

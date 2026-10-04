@@ -288,7 +288,7 @@ function stripAddedNodes(node: MapTreeNode, added: ReadonlySet<string>): MapTree
       return retainedGrandchild ? [retainedGrandchild] : [];
     });
   });
-  return added.has(node.mapId) ? undefined : { mapId: node.mapId, children };
+  return added.has(node.mapId) ? undefined : { ...node, children };
 }
 
 function mayRelocateBlankStart(baseline: Project, request: AuthorVillageRequest): boolean {

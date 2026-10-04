@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
+
+6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.
+없는 기존 프로젝트는 그대로 읽는다. `worldAtlas.normalizeWorldAtlases`는 외부 정의를 검사하고
+맵 삭제는 해당 노드/연결/핀을 정리한다. 발견·클리어·능력·핀의 현재 상태는 기존 session.switches와
+세이브 슬롯에 저장한다. 도구·런타임·SQLite 재로드 근거는 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
 ## 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
 
 0.25~1 배율. 없으면 1(기존과 같음). 그 맵에서 걷는 주인공·동료·탈것·캐릭터 칩 이벤트에만 곱한다(상자·그림 이벤트는 칸 크기 그대로).

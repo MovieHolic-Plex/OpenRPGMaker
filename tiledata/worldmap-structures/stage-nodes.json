@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "id": "examples_stage_nodes",
+  "name": "스테이지 · 클리어와 비밀길",
+  "structure": "stage-nodes",
+  "seed": 7,
+  "width": 120,
+  "height": 84,
+  "startNodeId": "examples_stage_nodes_n0",
+  "nodes": [
+    {
+      "id": "examples_stage_nodes_n0",
+      "name": "새싹 언덕",
+      "mapId": "examples_stage_nodes_map0",
+      "kind": "stage",
+      "x": 10,
+      "y": 58,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit0",
+      "clearSwitchId": "examples_stage_nodes_clear0",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n1",
+      "name": "개울길",
+      "mapId": "examples_stage_nodes_map1",
+      "kind": "stage",
+      "x": 30,
+      "y": 58,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit1",
+      "clearSwitchId": "examples_stage_nodes_clear1",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n2",
+      "name": "햇살 숲",
+      "mapId": "examples_stage_nodes_map2",
+      "kind": "stage",
+      "x": 48,
+      "y": 42,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit2",
+      "clearSwitchId": "examples_stage_nodes_clear2",
+      "grants": [
+        "examples_stage_nodes_ability0"
+      ]
+    },
+    {
+      "id": "examples_stage_nodes_n3",
+      "name": "호수 요새",
+      "mapId": "examples_stage_nodes_map3",
+      "kind": "stage",
+      "x": 76,
+      "y": 42,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit3",
+      "clearSwitchId": "examples_stage_nodes_clear3",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n4",
+      "name": "돌 고개",
+      "mapId": "examples_stage_nodes_map4",
+      "kind": "stage",
+      "x": 96,
+      "y": 26,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 14
+      },
+      "visitSwitchId": "examples_stage_nodes_visit4",
+      "clearSwitchId": "examples_stage_nodes_clear4",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n5",
+      "name": "별빛 성",
+      "mapId": "examples_stage_nodes_map5",
+      "kind": "stage",
+      "x": 96,
+      "y": 10,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 17,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit5",
+      "clearSwitchId": "examples_stage_nodes_clear5",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n6",
+      "name": "비밀 섬",
+      "mapId": "examples_stage_nodes_map6",
+      "kind": "stage",
+      "x": 30,
+      "y": 20,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 21,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit6",
+      "clearSwitchId": "examples_stage_nodes_clear6",
+      "grants": []
+    },
+    {
+      "id": "examples_stage_nodes_n7",
+      "name": "무지개 샛길",
+      "mapId": "examples_stage_nodes_map7",
+      "kind": "stage",
+      "x": 63,
+      "y": 12,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_stage_nodes_visit7",
+      "clearSwitchId": "examples_stage_nodes_clear7",
+      "grants": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "examples_stage_nodes_edge0",
+      "from": "examples_stage_nodes_n0",
+      "to": "examples_stage_nodes_n1",
+      "requires": [
+        "examples_stage_nodes_clear0"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge1",
+      "from": "examples_stage_nodes_n1",
+      "to": "examples_stage_nodes_n2",
+      "requires": [
+        "examples_stage_nodes_clear1"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge2",
+      "from": "examples_stage_nodes_n2",
+      "to": "examples_stage_nodes_n3",
+      "requires": [
+        "examples_stage_nodes_clear2"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge3",
+      "from": "examples_stage_nodes_n3",
+      "to": "examples_stage_nodes_n4",
+      "requires": [
+        "examples_stage_nodes_clear3"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge4",
+      "from": "examples_stage_nodes_n4",
+      "to": "examples_stage_nodes_n5",
+      "requires": [
+        "examples_stage_nodes_clear4"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge5",
+      "from": "examples_stage_nodes_n2",
+      "to": "examples_stage_nodes_n6",
+      "requires": [
+        "examples_stage_nodes_ability0"
+      ],
+      "oneWay": false,
+      "secret": true
+    },
+    {
+      "id": "examples_stage_nodes_edge6",
+      "from": "examples_stage_nodes_n6",
+      "to": "examples_stage_nodes_n7",
+      "requires": [
+        "examples_stage_nodes_clear6"
+      ],
+      "oneWay": false
+    },
+    {
+      "id": "examples_stage_nodes_edge7",
+      "from": "examples_stage_nodes_n7",
+      "to": "examples_stage_nodes_n5",
+      "requires": [
+        "examples_stage_nodes_clear7"
+      ],
+      "oneWay": false
+    }
+  ],
+  "abilities": [
+    {
+      "name": "숲의 비밀 출구",
+      "switchId": "examples_stage_nodes_ability0"
+    }
+  ],
+  "pins": [
+    {
+      "nodeId": "examples_stage_nodes_n0",
+      "switchId": "examples_stage_nodes_pin0"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n1",
+      "switchId": "examples_stage_nodes_pin1"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n2",
+      "switchId": "examples_stage_nodes_pin2"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n3",
+      "switchId": "examples_stage_nodes_pin3"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n4",
+      "switchId": "examples_stage_nodes_pin4"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n5",
+      "switchId": "examples_stage_nodes_pin5"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n6",
+      "switchId": "examples_stage_nodes_pin6"
+    },
+    {
+      "nodeId": "examples_stage_nodes_n7",
+      "switchId": "examples_stage_nodes_pin7"
+    }
+  ]
+}

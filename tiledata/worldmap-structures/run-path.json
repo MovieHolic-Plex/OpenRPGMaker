@@ -1,0 +1,461 @@
+{
+  "version": 1,
+  "id": "examples_run_path",
+  "name": "런 · 일방향 분기",
+  "structure": "run-path",
+  "seed": 7,
+  "width": 120,
+  "height": 90,
+  "startNodeId": "examples_run_path_n0",
+  "nodes": [
+    {
+      "id": "examples_run_path_n0",
+      "name": "출발 캠프",
+      "mapId": "examples_run_path_map0",
+      "kind": "camp",
+      "x": 55,
+      "y": 75,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit0",
+      "clearSwitchId": "examples_run_path_clear0",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n1",
+      "name": "1층 전투",
+      "mapId": "examples_run_path_map1",
+      "kind": "battle",
+      "x": 15,
+      "y": 62,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit1",
+      "clearSwitchId": "examples_run_path_clear1",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n2",
+      "name": "1층 사건",
+      "mapId": "examples_run_path_map2",
+      "kind": "event",
+      "x": 55,
+      "y": 62,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit2",
+      "clearSwitchId": "examples_run_path_clear2",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n3",
+      "name": "1층 전투",
+      "mapId": "examples_run_path_map3",
+      "kind": "battle",
+      "x": 95,
+      "y": 62,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit3",
+      "clearSwitchId": "examples_run_path_clear3",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n4",
+      "name": "2층 보물",
+      "mapId": "examples_run_path_map4",
+      "kind": "treasure",
+      "x": 15,
+      "y": 49,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit4",
+      "clearSwitchId": "examples_run_path_clear4",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n5",
+      "name": "2층 정예",
+      "mapId": "examples_run_path_map5",
+      "kind": "elite",
+      "x": 55,
+      "y": 49,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit5",
+      "clearSwitchId": "examples_run_path_clear5",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n6",
+      "name": "2층 상점",
+      "mapId": "examples_run_path_map6",
+      "kind": "shop",
+      "x": 95,
+      "y": 49,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit6",
+      "clearSwitchId": "examples_run_path_clear6",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n7",
+      "name": "3층 휴식",
+      "mapId": "examples_run_path_map7",
+      "kind": "camp",
+      "x": 15,
+      "y": 36,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit7",
+      "clearSwitchId": "examples_run_path_clear7",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n8",
+      "name": "3층 전투",
+      "mapId": "examples_run_path_map8",
+      "kind": "battle",
+      "x": 55,
+      "y": 36,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit8",
+      "clearSwitchId": "examples_run_path_clear8",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n9",
+      "name": "3층 사건",
+      "mapId": "examples_run_path_map9",
+      "kind": "event",
+      "x": 95,
+      "y": 36,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit9",
+      "clearSwitchId": "examples_run_path_clear9",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n10",
+      "name": "4층 정예",
+      "mapId": "examples_run_path_map10",
+      "kind": "elite",
+      "x": 35,
+      "y": 23,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit10",
+      "clearSwitchId": "examples_run_path_clear10",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n11",
+      "name": "4층 휴식",
+      "mapId": "examples_run_path_map11",
+      "kind": "camp",
+      "x": 75,
+      "y": 23,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit11",
+      "clearSwitchId": "examples_run_path_clear11",
+      "grants": []
+    },
+    {
+      "id": "examples_run_path_n12",
+      "name": "5층 최종 관문",
+      "mapId": "examples_run_path_map12",
+      "kind": "boss",
+      "x": 55,
+      "y": 10,
+      "w": 6,
+      "h": 6,
+      "entry": {
+        "x": 2,
+        "y": 17
+      },
+      "visitSwitchId": "examples_run_path_visit12",
+      "clearSwitchId": "examples_run_path_clear12",
+      "grants": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "examples_run_path_edge0",
+      "from": "examples_run_path_n0",
+      "to": "examples_run_path_n1",
+      "requires": [
+        "examples_run_path_clear0"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge1",
+      "from": "examples_run_path_n0",
+      "to": "examples_run_path_n2",
+      "requires": [
+        "examples_run_path_clear0"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge2",
+      "from": "examples_run_path_n0",
+      "to": "examples_run_path_n3",
+      "requires": [
+        "examples_run_path_clear0"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge3",
+      "from": "examples_run_path_n1",
+      "to": "examples_run_path_n4",
+      "requires": [
+        "examples_run_path_clear1"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge4",
+      "from": "examples_run_path_n1",
+      "to": "examples_run_path_n5",
+      "requires": [
+        "examples_run_path_clear1"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge5",
+      "from": "examples_run_path_n2",
+      "to": "examples_run_path_n5",
+      "requires": [
+        "examples_run_path_clear2"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge6",
+      "from": "examples_run_path_n2",
+      "to": "examples_run_path_n6",
+      "requires": [
+        "examples_run_path_clear2"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge7",
+      "from": "examples_run_path_n3",
+      "to": "examples_run_path_n6",
+      "requires": [
+        "examples_run_path_clear3"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge8",
+      "from": "examples_run_path_n4",
+      "to": "examples_run_path_n7",
+      "requires": [
+        "examples_run_path_clear4"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge9",
+      "from": "examples_run_path_n4",
+      "to": "examples_run_path_n8",
+      "requires": [
+        "examples_run_path_clear4"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge10",
+      "from": "examples_run_path_n5",
+      "to": "examples_run_path_n8",
+      "requires": [
+        "examples_run_path_clear5"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge11",
+      "from": "examples_run_path_n6",
+      "to": "examples_run_path_n8",
+      "requires": [
+        "examples_run_path_clear6"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge12",
+      "from": "examples_run_path_n6",
+      "to": "examples_run_path_n9",
+      "requires": [
+        "examples_run_path_clear6"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge13",
+      "from": "examples_run_path_n7",
+      "to": "examples_run_path_n10",
+      "requires": [
+        "examples_run_path_clear7"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge14",
+      "from": "examples_run_path_n8",
+      "to": "examples_run_path_n10",
+      "requires": [
+        "examples_run_path_clear8"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge15",
+      "from": "examples_run_path_n8",
+      "to": "examples_run_path_n11",
+      "requires": [
+        "examples_run_path_clear8"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge16",
+      "from": "examples_run_path_n9",
+      "to": "examples_run_path_n11",
+      "requires": [
+        "examples_run_path_clear9"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge17",
+      "from": "examples_run_path_n10",
+      "to": "examples_run_path_n12",
+      "requires": [
+        "examples_run_path_clear10"
+      ],
+      "oneWay": true
+    },
+    {
+      "id": "examples_run_path_edge18",
+      "from": "examples_run_path_n11",
+      "to": "examples_run_path_n12",
+      "requires": [
+        "examples_run_path_clear11"
+      ],
+      "oneWay": true
+    }
+  ],
+  "abilities": [],
+  "pins": [
+    {
+      "nodeId": "examples_run_path_n0",
+      "switchId": "examples_run_path_pin0"
+    },
+    {
+      "nodeId": "examples_run_path_n1",
+      "switchId": "examples_run_path_pin1"
+    },
+    {
+      "nodeId": "examples_run_path_n2",
+      "switchId": "examples_run_path_pin2"
+    },
+    {
+      "nodeId": "examples_run_path_n3",
+      "switchId": "examples_run_path_pin3"
+    },
+    {
+      "nodeId": "examples_run_path_n4",
+      "switchId": "examples_run_path_pin4"
+    },
+    {
+      "nodeId": "examples_run_path_n5",
+      "switchId": "examples_run_path_pin5"
+    },
+    {
+      "nodeId": "examples_run_path_n6",
+      "switchId": "examples_run_path_pin6"
+    },
+    {
+      "nodeId": "examples_run_path_n7",
+      "switchId": "examples_run_path_pin7"
+    },
+    {
+      "nodeId": "examples_run_path_n8",
+      "switchId": "examples_run_path_pin8"
+    },
+    {
+      "nodeId": "examples_run_path_n9",
+      "switchId": "examples_run_path_pin9"
+    },
+    {
+      "nodeId": "examples_run_path_n10",
+      "switchId": "examples_run_path_pin10"
+    },
+    {
+      "nodeId": "examples_run_path_n11",
+      "switchId": "examples_run_path_pin11"
+    },
+    {
+      "nodeId": "examples_run_path_n12",
+      "switchId": "examples_run_path_pin12"
+    }
+  ]
+}

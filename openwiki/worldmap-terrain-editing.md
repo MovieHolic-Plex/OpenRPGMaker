@@ -4,6 +4,11 @@
 조수는 `read_world_terrain` 으로 칸 좌표를 보고 `edit_world_terrain` 으로 작업을 얹는다.
 대륙을 해협으로 가르기, 섬, 산줄기·고개, 강, 숲, 바닥(사막·설원·늪…), 고원, 장소 옮기기까지 된다.
 
+포켓몬·다른 2D 게임의 전도/이동 구조 비교와 현재 `monster` 테마의 한계는
+[월드맵 게임 조사](worldmap-game-research.md)를 참고한다. 여섯 이동 구조는
+`author_worldmap_structure`로 실제 맵·문·관문을 함께 만든다.
+편집기 생성 창·런타임 M 지도·공용 자료와 정본은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
 ## 흐름
 
 ### 세계관별 준비 상태와 우주 조수 (2026-10-04)

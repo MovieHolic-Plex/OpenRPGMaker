@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4858KB / 약 1,411,464 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **143쪽 / 4880KB / 약 1,418,009 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,17 +17,17 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
 | `openwiki/editor-ai-panel.md` | 618KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3880 | ~180,406 |
-| `openwiki/editor-ai-tools.md` | 324KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~93,639 |
+| `openwiki/editor-ai-tools.md` | 325KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2686 | ~93,737 |
 | `openwiki/editor-database.md` | 413KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2457 | ~120,993 |
 | `openwiki/editor-event-authoring.md` | 176KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1052 | ~51,583 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
-| `openwiki/editor-workflows-misc.md` | 84KB | 33KB | 594 | ~23,614 |
+| `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
-| `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1547 | ~60,143 |
+| `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1554 | ~60,316 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,940 |
 | `openwiki/tileset-reference-documents.md` | 55KB | 4KB | 564 | ~16,695 |
@@ -46,7 +46,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-commands.md` | 6 | 127, 140, 141, 143, 146, 147 |
 | `openwiki/editor-observability.md` | 1 | 401 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 913, 922, 930, 934, 958 |
-| `openwiki/runtime-project-schema.md` | 1 | 98 |
+| `openwiki/runtime-project-schema.md` | 1 | 105 |
 | `openwiki/state-system.md` | 2 | 5, 89 |
 
 ## 없는 파일을 가리키는 참조
@@ -135,22 +135,23 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
 | `openwiki/village-layout-research.md` | 1 | `scripts/qa/capture-restored-river-village.mjs` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
+| `openwiki/worldmap-navigation-structures.md` | 4 | `all-six.png`, `assistant-tool-handoff.json`, `editor-capture.json`, `worldAtlasCreateDialog.ts` |
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 16KB · 178줄 · ~4,179 토큰
+### `openwiki/PROJECT_WIKI.md` — 16KB · 179줄 · ~4,222 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
-- `L67` Project identity
-- `L76` Main ownership boundaries
-- `L111` Authored tile placement references
-- `L117` How an AI should use this wiki
-- `L128` 프로젝트 정본 저장 (see root `AGENTS.md`)
-- `L136` Desktop UI integration truth (2026-08-11)
-- `L149` Per-project wiki structure
-- `L165` Staleness rule
-- `L171` 지형 설치 도구 (2026-10-03)
+- `L68` Project identity
+- `L77` Main ownership boundaries
+- `L112` Authored tile placement references
+- `L118` How an AI should use this wiki
+- `L129` 프로젝트 정본 저장 (see root `AGENTS.md`)
+- `L137` Desktop UI integration truth (2026-08-11)
+- `L150` Per-project wiki structure
+- `L166` Staleness rule
+- `L172` 지형 설치 도구 (2026-10-03)
 
 ### `openwiki/agent-tile-benchmark.md` — 11KB · 195줄 · ~3,365 토큰
 
@@ -553,7 +554,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3859` 조수창
   - `L3868` 재현·증거
 
-### `openwiki/editor-ai-tools.md` — 324KB · 2682줄 · ~93,639 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 325KB · 2686줄 · ~93,737 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L32` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -660,9 +661,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2630` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L2645` 크로노 트리거식 필드 도구 인자 (2026-09-26)
 - `L2655` 세계 지도 지형 도구 (2026-10-03)
-- `L2661` Bounded romance authoring tools
-  - `L2665` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
-- `L2673` 글자·장면 오프닝 연출 (2026-10-04)
+- `L2665` Bounded romance authoring tools
+  - `L2669` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L2677` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/editor-database.md` — 413KB · 2457줄 · ~120,993 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1053,25 +1054,26 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L291` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 84KB · 594줄 · ~23,614 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 85KB · 600줄 · ~23,742 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
-  - `L11` 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
-  - `L62` 첫 사용자 시작과 저장 안내 (2026-10-03)
-  - `L76` New-project name and player title (2026-09-07)
-  - `L86` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
-  - `L152` Game export delivery (2026-09-06)
-  - `L263` Audio descriptions and live resource ownership
-  - `L356` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L414` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L443` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L467` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L481` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L491` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L504` Authoring viewport navigation (issue 693, 2026-09-08)
-  - `L546` Common expression recovery (2026-09-17)
-  - `L566` 제작자 페이지에서 타일셋 받기 (2026-09-24)
-- `L579` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
+  - `L11` 세계 지도 만들기 (2026-10-05)
+  - `L17` 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
+  - `L68` 첫 사용자 시작과 저장 안내 (2026-10-03)
+  - `L82` New-project name and player title (2026-09-07)
+  - `L92` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
+  - `L158` Game export delivery (2026-09-06)
+  - `L269` Audio descriptions and live resource ownership
+  - `L362` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L420` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L449` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L473` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L487` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L497` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L510` Authoring viewport navigation (issue 693, 2026-09-08)
+  - `L552` Common expression recovery (2026-09-17)
+  - `L572` 제작자 페이지에서 타일셋 받기 (2026-09-24)
+- `L585` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -1739,90 +1741,91 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L754` 8차 맵 진입 (2026-09-28)
 - `L787` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 215KB · 1547줄 · ~60,143 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 215KB · 1554줄 · ~60,316 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
-- `L3` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
-- `L11` 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
-- `L20` 캐릭터별 전투 동작 (2026-10-03)
-- `L29` 퀘스트 프리셋 메타 (2026-10-01)
-- `L44` 공식 맵 크기와 저장 형태 (2026-10-01)
-- `L52` 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)
-- `L69` 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
-- `L73` 프로젝트 연출 레코드 — database.skillChoreographies (2026-09-30)
-- `L77` ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
-- `L88` 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
-- `L94` 데스크톱 시작 화면 — 시네마틱 로비 (2026-10-03)
-- `L148` 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
-- `L158` 지형지물 군집 `map.doodadGroups?` (2026-10-03)
-- `L170` 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
-- `L195` 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
-- `L228` 이름별 게임 오버 (2026-09-23)
-- `L245` 확정된 게임 기획 (2026-09-22)
-- `L267` LegacyDb 잔여 의존 정리 (2026-09-21)
-- `L274` 종족 전투 뒷모습 리소스 (2026-09-20)
-- `L278` 웹 프로젝트 생성과 선택 (2026-09-18)
-- `L284` 팀 프로젝트 서비스 (2026-09-18)
-- `L291` 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
-  - `L374` 데스크톱 앱이 실제로 뜬다 (2026-09-16)
-- `L407` 지역 하위 장소의 단일 계약 (2026-09-14)
-- `L417` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
-- `L426` 장소 재료의 포함 관계 (2026-09-14)
-- `L435` 혼합 하위 재료 구성 (2026-09-13)
-- `L454` Truthful migrated-load state (2026-09-07)
-- `L487` Explicit publication identity and Save6 (2026-09-06)
-- `L545` Spatial canonical routing (task6 backend increment, 2026-09-07)
-- `L587` P1 accepted-save receipts and read-only proof (2026-09-06)
-- `L637` 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
-- `L651` Opening and game-over cinematic settings (2026-09-06)
-- `L668` 적 전투 이미지 크기 (2026-09-06)
-- `L672` Project monster metadata overrides (foundation, 2026-09-07)
-- `L714` Project audio description overrides
-  - `L743` Concurrent persistence
-  - `L768` Editor preservation and playable export
-- `L782` Character/face authoring metadata (2026-09-06)
-- `L791` Character appearance sets v1 (2026-09-06)
-- `L828` New-project save/reload verification (2026-09-05)
-- `L836` Task15 nonvisual economy command contract (2026-09-08)
-- `L847` Independent game Save5 boundary (2026-09-06)
-- `L853` Life ownership in Save5 (2026-09-06)
-- `L869` Placement safety core (task12, 2026-09-06)
-- `L881` Project-authored equipment slots (2026-09-05)
-- `L889` 전투 명령 CSS (2026-09-05)
-- `L893` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L897` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L910` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L918` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L922` Showcase media save-copy durability (issue #693, 2026-09-08)
-- `L962` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
-- `L996` Project schema & persistence
-- `L1235` Variable arithmetic & loop runtime (2026-08-07)
-- `L1239` Canonical event-draft projection (2026-07-30)
-- `L1246` P2 general buildings and home decorations (2026-08-25)
-- `L1253` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1271` Boot normalizers must not create dangling references (2026-08-30)
-- `L1297` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1331` 성장 트리 선택 확장 (2026-09-05)
-- `L1337` 마을 설계서 (2026-09-05)
-- `L1343` 공포 게임 제작 기능 (2026-09-05)
-  - `L1347` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1351` NPC 표시 이름 (2026-09-05)
-- `L1364` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1368` 개념 장소 형상 (2026-09-05)
-- `L1372` Optional village decoration attachments (2026-09-13)
-- `L1383` Optional map climate (Feature16, 2026-09-21)
-- `L1400` Optional authored combat rules (feature16, 2026-09-21)
-- `L1403` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1416` 구름량 optional 필드 (2026-09-21)
-  - `L1428` Map atmosphere layers (2026-09-21)
-- `L1449` 필드 HUD 설정 (2026-09-21)
-  - `L1459` HUD 장르·서체 확장 (2026-09-21)
-- `L1471` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1475` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
-- `L1501` 재편집 지형과 게임 높이 규칙 (2026-10-03)
-- `L1510` Optional internal authoring contract
-  - `L1514` Desktop fullscreen and mouse controls (2026-10-04)
-  - `L1529` Cinematic image direction (2026-10-04)
-- `L1538` 글자·장면 오프닝 연출 (2026-10-04)
+- `L3` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
+- `L10` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
+- `L18` 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
+- `L27` 캐릭터별 전투 동작 (2026-10-03)
+- `L36` 퀘스트 프리셋 메타 (2026-10-01)
+- `L51` 공식 맵 크기와 저장 형태 (2026-10-01)
+- `L59` 번들·공용 참고문서 소유 분리 — 저장 문서에서 빼고 로드에서 되돌림 (2026-09-30, 편집기 렉 F)
+- `L76` 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
+- `L80` 프로젝트 연출 레코드 — database.skillChoreographies (2026-09-30)
+- `L84` ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
+- `L95` 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
+- `L101` 데스크톱 시작 화면 — 시네마틱 로비 (2026-10-03)
+- `L155` 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
+- `L165` 지형지물 군집 `map.doodadGroups?` (2026-10-03)
+- `L177` 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
+- `L202` 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
+- `L235` 이름별 게임 오버 (2026-09-23)
+- `L252` 확정된 게임 기획 (2026-09-22)
+- `L274` LegacyDb 잔여 의존 정리 (2026-09-21)
+- `L281` 종족 전투 뒷모습 리소스 (2026-09-20)
+- `L285` 웹 프로젝트 생성과 선택 (2026-09-18)
+- `L291` 팀 프로젝트 서비스 (2026-09-18)
+- `L298` 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
+  - `L381` 데스크톱 앱이 실제로 뜬다 (2026-09-16)
+- `L414` 지역 하위 장소의 단일 계약 (2026-09-14)
+- `L424` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+- `L433` 장소 재료의 포함 관계 (2026-09-14)
+- `L442` 혼합 하위 재료 구성 (2026-09-13)
+- `L461` Truthful migrated-load state (2026-09-07)
+- `L494` Explicit publication identity and Save6 (2026-09-06)
+- `L552` Spatial canonical routing (task6 backend increment, 2026-09-07)
+- `L594` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L644` 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
+- `L658` Opening and game-over cinematic settings (2026-09-06)
+- `L675` 적 전투 이미지 크기 (2026-09-06)
+- `L679` Project monster metadata overrides (foundation, 2026-09-07)
+- `L721` Project audio description overrides
+  - `L750` Concurrent persistence
+  - `L775` Editor preservation and playable export
+- `L789` Character/face authoring metadata (2026-09-06)
+- `L798` Character appearance sets v1 (2026-09-06)
+- `L835` New-project save/reload verification (2026-09-05)
+- `L843` Task15 nonvisual economy command contract (2026-09-08)
+- `L854` Independent game Save5 boundary (2026-09-06)
+- `L860` Life ownership in Save5 (2026-09-06)
+- `L876` Placement safety core (task12, 2026-09-06)
+- `L888` Project-authored equipment slots (2026-09-05)
+- `L896` 전투 명령 CSS (2026-09-05)
+- `L900` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L904` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L917` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L925` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L929` Showcase media save-copy durability (issue #693, 2026-09-08)
+- `L969` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+- `L1003` Project schema & persistence
+- `L1242` Variable arithmetic & loop runtime (2026-08-07)
+- `L1246` Canonical event-draft projection (2026-07-30)
+- `L1253` P2 general buildings and home decorations (2026-08-25)
+- `L1260` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1278` Boot normalizers must not create dangling references (2026-08-30)
+- `L1304` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1338` 성장 트리 선택 확장 (2026-09-05)
+- `L1344` 마을 설계서 (2026-09-05)
+- `L1350` 공포 게임 제작 기능 (2026-09-05)
+  - `L1354` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1358` NPC 표시 이름 (2026-09-05)
+- `L1371` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1375` 개념 장소 형상 (2026-09-05)
+- `L1379` Optional village decoration attachments (2026-09-13)
+- `L1390` Optional map climate (Feature16, 2026-09-21)
+- `L1407` Optional authored combat rules (feature16, 2026-09-21)
+- `L1410` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1423` 구름량 optional 필드 (2026-09-21)
+  - `L1435` Map atmosphere layers (2026-09-21)
+- `L1456` 필드 HUD 설정 (2026-09-21)
+  - `L1466` HUD 장르·서체 확장 (2026-09-21)
+- `L1478` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1482` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L1508` 재편집 지형과 게임 높이 규칙 (2026-10-03)
+- `L1517` Optional internal authoring contract
+  - `L1521` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1536` Cinematic image direction (2026-10-04)
+- `L1545` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-sessions.md` — 123KB · 627줄 · ~33,263 토큰 · 통째읽기 잘림
 
@@ -2546,15 +2549,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L72` 다른 맵과 사용자 설정 보호
 - `L91` 검증
 
-### `openwiki/worldmap-terrain-editing.md` — 20KB · 182줄 · ~5,949 토큰
+### `openwiki/worldmap-game-research.md` — 10KB · 127줄 · ~3,210 토큰
 
-- `L7` 흐름
-  - `L9` 세계관별 준비 상태와 우주 조수 (2026-10-04)
-  - `L27` 호스트 공용 DB와 조수 (2026-10-04)
-- `L74` 계약
-- `L100` 새 구조 만들기 — `base: "generate"` (2026-10-03)
-- `L146` 후속 조수 실행·SQLite 재로드 (2026-10-04)
-- `L154` 지형 경계 v9 (2026-10-03)
-- `L160` 글자 지도
-- `L166` 조수 역할 적대 시험 (2026-10-03)
-- `L173` 함정
+- `L7` 조사 범위와 근거
+- `L18` 먼저 구분할 것: 전도와 실제 이동 공간
+- `L29` 포켓몬식: 지역 전도 + 마을·도로 필드
+- `L54` 실제 그림에서 보이는 차이
+- `L68` 대표 6가지 비교
+- `L93` 조사 당시 월드맵 키트와 대조 (2026-10-04)
+- `L107` 조사 당시 다음 구현 제안
+
+### `openwiki/worldmap-navigation-structures.md` — 9KB · 125줄 · ~2,772 토큰
+
+- `L7` 지원 범위
+- `L25` 편집기와 조수
+- `L46` 플레이어
+- `L61` 데이터와 소유 파일
+- `L78` 공용 배포
+- `L98` 정본과 화면 근거
+
+### `openwiki/worldmap-terrain-editing.md` — 20KB · 187줄 · ~6,070 토큰
+
+- `L12` 흐름
+  - `L14` 세계관별 준비 상태와 우주 조수 (2026-10-04)
+  - `L32` 호스트 공용 DB와 조수 (2026-10-04)
+- `L79` 계약
+- `L105` 새 구조 만들기 — `base: "generate"` (2026-10-03)
+- `L151` 후속 조수 실행·SQLite 재로드 (2026-10-04)
+- `L159` 지형 경계 v9 (2026-10-03)
+- `L165` 글자 지도
+- `L171` 조수 역할 적대 시험 (2026-10-03)
+- `L178` 함정
