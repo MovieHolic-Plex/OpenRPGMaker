@@ -1,0 +1,146 @@
+[
+  {
+    "id": "hero",
+    "kind": "npc",
+    "path": "assets/emerald-monster-v2/source/hero.png"
+  },
+  {
+    "id": "rival",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. confident teenage boy, auburn spiky hair, cobalt jacket, sand shorts, blue sneakers. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/rival.png"
+  },
+  {
+    "id": "professor",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. kind elderly woman botanist, silver bun, slim round glasses, white lab coat over plum clothing, brown shoes. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/professor.png"
+  },
+  {
+    "id": "nurse",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. young nurse with rose-pink ponytail, ivory nurse uniform with teal apron, small medical cap. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/nurse.png"
+  },
+  {
+    "id": "merchant",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. friendly stout middle-aged shopkeeper, dark moustache, blue apron over mustard shirt, brown trousers. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/merchant.png"
+  },
+  {
+    "id": "mother",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. warm adult woman with chestnut bob haircut, violet blouse and long cream skirt. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/mother.png"
+  },
+  {
+    "id": "resident",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. friendly adult with dark curly hair, mint shirt, ochre skirt and sandals. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/resident.png"
+  },
+  {
+    "id": "gym_leader",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. athletic adult woman, emerald ponytail, sleeveless charcoal top and emerald trousers, gold wrist bands. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/gym_leader.png"
+  },
+  {
+    "id": "company_agent",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. sinister neat adult man, silver hair, dark slate suit, magenta necktie. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/company_agent.png"
+  },
+  {
+    "id": "captain",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. weathered adult sailor with white peaked cap, navy coat, striped shirt, full chestnut beard. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/captain.png"
+  },
+  {
+    "id": "worker",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. sturdy builder woman with yellow hard hat, orange vest, navy overalls, brown boots. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/worker.png"
+  },
+  {
+    "id": "explorer",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. adventurous woman with khaki safari hat, red scarf, tan jacket, olive trousers. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/explorer.png"
+  },
+  {
+    "id": "student",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. cheerful young boy with bowl cut, violet school bag, cream shirt and navy shorts. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/student.png"
+  },
+  {
+    "id": "ranger",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. forest ranger woman with green cap, jade vest, cream sleeves and brown boots. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/ranger.png"
+  },
+  {
+    "id": "moon_leader",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. mysterious tall adult woman with silver long braid, deep violet cloak, gold clasp. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/moon_leader.png"
+  },
+  {
+    "id": "hiker",
+    "kind": "npc",
+    "prompt": "Production original GBA RPG overworld walking character sprite sheet, ONE CHARACTER. stocky hiker man, rust-red cap, thick brown beard, moss jacket, tan trousers, huge backpack. Exactly THREE COLUMNS and FOUR ROWS, twelve equal cells, transparent background. Row1 UP/back, row2 RIGHT/profile, row3 DOWN/front, row4 LEFT/profile. Three poses in each row: left-foot step, neutral standing, right-foot step. Same character and scale and foot anchor in every frame; visible changes in steps, opposing arm swing. Strictly native logical 24x32 cells, character only 16x26 logical pixels! Compact GBA chibi proportions like 2004 top-down monster RPGs: head about 8x9 pixels, torso 9 pixels, legs 8 pixels. Do NOT draw tall detailed 40px figures. Render the logical 72x128 sheet at large crisp integer pixel blocks. 18 colors, sharp colored 1px outline, clean two-tone clusters, readable eyes and outfit, NO gradients, blur, antialias, labels, scenery, cell borders. Transparent alpha. Professional memorable character with exact directional anatomical consistency. Sheet aspect ratio9:16.",
+    "path": "assets/emerald-monster-v2/source/hiker.png"
+  },
+  {
+    "id": "sign",
+    "kind": "sign",
+    "prompt": "A single charming wooden direction signpost game sprite on transparent background. Sharp native 20 by28 pixel design, drawn as large crisp square pixel blocks. Honey-brown horizontal board on short dark brown wooden post, dark colored outline, tiny carved arrow to the right. Simple flat two-tone wood shading, 8 colors, no characters, no ground, no scenery, no text, no blur or smooth illustration.",
+    "path": "assets/emerald-monster-v2/source/sign.png"
+  },
+  {
+    "id": "trainer-a",
+    "kind": "trainer",
+    "roles": [
+      "hero",
+      "rival",
+      "professor",
+      "nurse",
+      "merchant",
+      "mother",
+      "resident",
+      "gym_leader"
+    ],
+    "prompt": "Edit this sprite sheet only to remove ALL background, colored glows, gradients, haze and shadows. Preserve exactly these eight characters, their poses, faces, clothes, pixels, size and positions. Replace every background area and spaces between limbs with ONE perfectly flat solid pure magenta #FF00FF background. Do not add or change any character detail, do not add labels or scenery. The eight full figures must remain isolated with no halo. Professional sprite extraction sheet.",
+    "path": "assets/emerald-monster-v2/source/trainer-a.png"
+  },
+  {
+    "id": "trainer-b",
+    "kind": "trainer",
+    "roles": [
+      "company_agent",
+      "captain",
+      "worker",
+      "explorer",
+      "student",
+      "ranger",
+      "moon_leader",
+      "hiker"
+    ],
+    "prompt": "Eight original human RPG trainer battle sprites in EXACTLY FOUR COLUMNS and TWO ROWS, equally sized cells. Reading left to right in top row, then bottom row: 1. company_agent: sinister neat adult man, silver hair, dark slate suit, magenta necktie. 2. captain: weathered adult sailor with white peaked cap, navy coat, striped shirt, full chestnut beard. 3. worker: sturdy builder woman with yellow hard hat, orange vest, navy overalls, brown boots. 4. explorer: adventurous woman with khaki safari hat, red scarf, tan jacket, olive trousers. 5. student: cheerful young boy with bowl cut, violet school bag, cream shirt and navy shorts. 6. ranger: forest ranger woman with green cap, jade vest, cream sleeves and brown boots. 7. moon_leader: mysterious tall adult woman with silver long braid, deep violet cloak, gold clasp. 8. hiker: stocky hiker man, rust-red cap, thick brown beard, moss jacket, tan trousers, huge backpack. Full-body poses confidently facing three-quarters LEFT and holding a tiny teal capture orb or gesturing. Distinct charming faces, matching exact stated outfit/hair designs. Professionally designed native GBA pixel art, each character48x80 logical pixels, sharp large square pixel blocks, dark colored 1px outlines, 24 colors each, simple clustered shading. Flat pure magenta #FF00FF background or clean transparent alpha, absolutely NO background gradient, lighting haze, glow, ground shadows, scenery or extra drawing. Separate full figures fully contained in each equal cell with clear gaps, aligned feet, no text or labels. Original handheld monster collecting game trainer art.",
+    "path": "assets/emerald-monster-v2/source/trainer-b.png"
+  },
+  {
+    "id": "hero-back",
+    "kind": "trainer",
+    "roles": [
+      "hero_back"
+    ],
+    "columns": 1,
+    "rows": 1,
+    "prompt": "Using this single young woman character's reference walking sheet, create ONE much larger original native pixel-art RPG TRAINER BACK BATTLE SPRITE. Same navy hair, coral red headband, white jacket, teal shorts, ochre backpack, red sneakers. Full body seen FROM BEHIND three-quarters facing RIGHT/up toward an opponent. Face mostly hidden; backpack clearly visible. Right hand raised slightly holding tiny teal orb; determined stance, feet fully visible. Native character about48x80 logical pixels. Sharp native square pixel clusters, 24 colors, dark colored1px outline, no gradients, blur or smooth illustration. Flat pure magenta background or actual transparent alpha, no glow, shadow, scenery or text. Single figure, clean isolated asset on square canvas.",
+    "path": "assets/emerald-monster-v2/source/hero-back.png"
+  }
+]

@@ -36,5 +36,12 @@ source UI/window geometry, not against the names of local presets. Existing Gen1
 battle rules must not be claimed as exact Emerald mechanics. Record unsupported
 mechanics plainly and continue implementation where required by this goal.
 
+Artwork quality is a separate gate from data/resource completeness. The former
+coordinate-generated packs do not establish visual approval. Generate original
+characters and monster sprites, inspect native pixels, and require human selection
+through the monster species harness for production fronts/backs. New NPC artwork
+must include consistent walking directions and trainer battle views; route signs
+must remain objects. See `openwiki/emerald-monster-art-v2.md`.
+
 No gates/Vitest/full typecheck/stash unless the user explicitly requests them.
 Use builds, focused executable probes and actual shipping-player evidence.

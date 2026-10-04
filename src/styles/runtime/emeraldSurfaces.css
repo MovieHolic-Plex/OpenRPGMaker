@@ -204,13 +204,15 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-submenu-header) .battle-command { min-height: 24px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="playback"] .battle-message-window { grid-column: 1 / -1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel {
-  inset: 24px;
+  inset: auto 12px 12px;
   width: auto;
   max-width: none;
-  max-height: none;
+  max-height: 164px;
   transform: none;
   margin: 0;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: 24px minmax(0, 1fr) 26px;
+  gap: 4px;
+  padding: 8px 12px;
   background: #f8f8e8;
   border: 4px solid #486050;
   color: #384840;
@@ -219,12 +221,22 @@
   box-shadow: 4px 4px #90a080;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-title { color: #384840; font: 20px/28px var(--runtime-pixel-font); text-shadow: none; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-cards { min-height: 0; overflow-y: auto; align-content: start; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-cards { min-height: 0; max-height: 84px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; align-content: start; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-reward-label { color: #384840; font: 16px/22px var(--runtime-pixel-font); }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-reward-value { color: #384840; font: 18px/24px var(--runtime-pixel-font); }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-confirm { background: #f8f8e8; color: #384840; border: 2px solid #486050; border-radius: 0; font: 18px/24px var(--runtime-pixel-font); }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-message-window { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-reward-card { background: #e8f0d8; color: #384840; border: 2px solid #90a080; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-crest,
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-next-prompt,
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-reward-icon { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-title { text-align: left; font-size: 18px; line-height: 24px; margin: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-reward-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 4px; padding: 2px 6px; min-height: 26px; border: 0; box-shadow: none; border-radius: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-exp-bar { grid-column: 1 / -1; height: 4px; min-height: 4px; margin: 2px 0 0; border: 0; border-radius: 0; background: #a8b8a0; box-shadow: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-exp-fill { height: 4px; border-radius: 0; background: #58a8b8; box-shadow: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-confirm { justify-self: end; min-height: 24px; margin: 0; padding: 0 8px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-actor-image.battle-monster-authored-back { position: relative; top: -100px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-status-icon-death { display: none; }
 
 /* Field menu and its separate full-screen functions. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] {

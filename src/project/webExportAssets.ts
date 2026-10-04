@@ -187,6 +187,14 @@ function collectProjectStrings(project: Project): Set<string> {
     const icon = front?.replace(/_front$/u, '_icon');
     if (icon && icon !== front && project.assets.uploaded[icon]) values.add(icon);
   }
+  // Trainer portraits are resolved from the event's shared charset slot at runtime.
+  // Their resource IDs are implicit, just like sibling party icons.
+  if (isEmeraldMonsterStyle(project) && ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'].some(id => values.has(id))) {
+    for (const [id, asset] of Object.entries(project.assets.uploaded)) {
+      if (id.startsWith('oprn_emerald_trainer_') && asset.kind === 'picture' &&
+          asset.meta.width === 64 && asset.meta.height === 96) values.add(id);
+    }
+  }
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
   const skinId = resolveSkinId(project.system.battleUiStyle);

@@ -127,4 +127,8 @@ def main():
     (OUT/'SOURCES.md').write_text('# Original Emerald reference field cast\n\nCC0 1.0 original integer-coordinate pixel art. No Nintendo, RTP or Scarloxy pixels copied. Source: `scripts/content/emerald-field-cast.py`. Sixteen roles, four directions, three real step poses. Native16px silhouette in mandatory24×32 engine cells.\n')
     print(json.dumps({'sheets':len(assets),'characters':len(CAST),'frames':192,'receipt':str(OUT/'catalog.json')}))
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import sys
+    if '--legacy-schematic' not in sys.argv:
+        raise SystemExit('Deprecated schematic art. Use imagegen + emerald-art-v2-pack/register-npc. Explicit --legacy-schematic is required to overwrite newer generated art.')
+    main()

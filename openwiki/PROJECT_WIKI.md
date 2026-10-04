@@ -169,3 +169,11 @@ If source behavior disagrees with the wiki, the source wins for the immediate fi
 ## 지형 설치 도구 (2026-10-03)
 
 높이·표면·강·군집 선택, 네 방향 경사로·두 둑 다리·군집 복원·시작점 통행 미리보기: [terrain-placement-tools.md](terrain-placement-tools.md).
+## Original monster campaign
+
+For the playable eight-gym game, editable content, regeneration and canonical host
+storage, read [monster-expedition.md](monster-expedition.md). Native journal/menu
+behavior is in [monster-campaign-menu.md](monster-campaign-menu.md).
+
+Generated character art, human-selected monster candidates, opening atmosphere,
+trainer battle portraits and victory repairs: [emerald-monster-art-v2.md](emerald-monster-art-v2.md).

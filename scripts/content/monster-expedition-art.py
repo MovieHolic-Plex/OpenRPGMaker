@@ -1612,6 +1612,9 @@ def main(selected=None):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--legacy-schematic',action='store_true',help='Explicitly regenerate the deprecated coordinate baseline, not approved production art')
     parser.add_argument('--species',action='append',help='Rerender only this slug; keep other verified PNG bytes')
     args=parser.parse_args()
+    if not args.legacy_schematic:
+        parser.error('Deprecated schematic art. Use imagegen and monster-collect-species human selection; --legacy-schematic is required to overwrite newer art.')
     main(set(args.species) if args.species else None)
