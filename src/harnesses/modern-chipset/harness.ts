@@ -17,6 +17,8 @@ export const MODERN_CHIPSET_HARNESS = defineHarness({
   seed: "harness-data/modern-chipset/seed.json",
   doc: "openwiki/harnesses/modern-chipset.md",
   stages: [
+    { id: "save-parking-project", title: "주차장 정본 저장", summary: "선택한 공용 키트를 새 SQLite 프로젝트에 저장하고 재로드·통행을 확인한다." },
+    { id: "publish-parking", title: "선택한 주차장 등록", summary: "현재 검수·선택 해시의 주차장 표본을 두 층 키트와 공용 참고문서로 굽는다." },
     { id: "palette", title: "팔레트", summary: "modern4 램프에서 탈것 전용 pxgrid 팔레트(palette.pal)를 다시 쓴다." },
     { id: "draw", title: "후보 그리기", summary: "탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림)." },
     { id: "status", title: "현황", summary: "판과 후보의 상태·검수 결과를 보여 준다." },

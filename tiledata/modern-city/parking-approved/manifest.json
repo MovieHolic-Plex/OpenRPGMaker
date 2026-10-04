@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "concept": "underground-parking-garage",
+  "kit": "mc-parking-two-bays",
+  "sources": {
+    "scene.png": {
+      "path": "tiledata/modern-city/parking-approved/scene.png",
+      "sha256": "970bb1bb0c8efb9200cfd30945c8f69e40a43bf801b3bfc6dd2804e2f5d0b730"
+    },
+    "environment.png": {
+      "path": "tiledata/modern-city/parking-approved/environment.png",
+      "sha256": "1812081eeb46aabd2761ba9bce590365bfc62543198fc96f814e833b6708a9a0"
+    },
+    "car.png": {
+      "path": "tiledata/modern-city/parking-approved/car.png",
+      "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+    },
+    "contract.json": {
+      "path": "tiledata/modern-city/parking-approved/contract.json",
+      "sha256": "4cff280341970530fc26ec068c1e5e63db42099ff73ef20bb54331266520542d"
+    },
+    "acceptance.json": {
+      "path": "tiledata/modern-city/parking-approved/acceptance.json",
+      "sha256": "99096fc64bd67e7ebb0b5ebc948e083c171964b1f2777481b1f47e3375421855"
+    },
+    "receipt.json": {
+      "path": "tiledata/modern-city/parking-approved/receipt.json",
+      "sha256": "6282c5c2c8cde62096cf7c49e1b81d25f6dd36265b27e5e093143c86ac587ef8"
+    },
+    "selection.json": {
+      "path": "tiledata/modern-city/parking-approved/selection.json",
+      "sha256": "c58adab5a21a65f0f97bb76840f3b4260af2d589257b3deb4ae7c145bfe6505b"
+    }
+  }
+}

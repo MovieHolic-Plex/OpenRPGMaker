@@ -56,3 +56,12 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 ## 번들 장소
 
 - 장소 id `modern-city-60x60`, 맵 id `modern-city-example`. `bake_map.py --publish`가 `public/assets/region-references/modern-city.{oprn.json,png}`, `src/project/regionReferences/modern-city.json`(스냅샷), `src/project/modernCityPlaceReferences.ts` 를 쓴다. 등록은 TS 두 군데: `regionReferences.ts`(import·`PLACE_REFERENCES` 펼침)·`regionReferenceSnapshots.ts`(`SNAPSHOT_FILES` 한 줄). 내려받기 `.oprn.json` 은 약 6.3MB(타일셋 메타 포함, 이미지 바이트 없음).
+
+## 승인된 작은 지하 주차장 (2026-10-05)
+
+`mc-parking-two-bays`는 14×7칸 고정 구역이다. 아래층 환경과 위층 차량을 함께 찍어야 한다.
+`mc-parking` 참고문서에 전체 두 층 배열·칸 좌표·정상/오류 비교를 동봉했다.
+등록 입구는 `modern-chipset publish-parking`, 정본 생성은 `save-parking-project`다.
+6회차 선택 그림의 7필수조건/9축 PASS를 보존하며, 공용 칸은 9,998→10,037로 39개만 덧붙였다.
+기존 칸 번호·화소 변경 0, 576키트 재조립 불일치 0. 기존 프로젝트에도 `ensureModernCityTileset`과
+`ensureModernCityReferences`로 키트/학습 자료가 들어간다. 전체 시설은 이 고정 구역을 반복해서 만들지 않는다.

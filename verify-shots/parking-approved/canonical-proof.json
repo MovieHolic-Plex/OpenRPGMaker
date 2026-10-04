@@ -1,0 +1,35 @@
+{
+  "projectId": "593b7781-18ea-41ae-b8a3-02fdb9de98c1",
+  "projectDir": "/home/main/.local/share/oprn/projects/parking-approved-20261005",
+  "mapId": "map_approved_parking",
+  "revision": 2,
+  "sha256": "f4e2aff6178c3f6b6d45e770af6d90704c56432a7e7ef96604078c54e1c15e03",
+  "kit": "mc-parking-two-bays",
+  "width": 14,
+  "height": 7,
+  "reachableCells": 58,
+  "requiredRoutes": [
+    [
+      9,
+      2
+    ],
+    [
+      9,
+      4
+    ],
+    [
+      9,
+      6
+    ],
+    [
+      9,
+      5
+    ],
+    [
+      0,
+      4
+    ]
+  ],
+  "canonicalReload": true,
+  "newAndExistingBundle": true
+}

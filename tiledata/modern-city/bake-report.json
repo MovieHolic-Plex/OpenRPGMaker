@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 9998,
+  "count": 10037,
   "tilesPerRow": 48,
-  "rows": 209,
+  "rows": 210,
   "sheet": [
    768,
-   3344
+   3360
   ],
-  "used": 9998,
+  "used": 10037,
   "legacy": 0,
   "height_ok": true
  },
  "kits": {
-  "total": 575,
+  "total": 576,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -20,7 +20,8 @@
    "junction": 2,
    "building": 259,
    "prop": 117,
-   "vehicle": 191
+   "vehicle": 191,
+   "scene": 1
   },
   "buildings": 259,
   "props": 117,
@@ -43,12 +44,13 @@
   "building-variant": 3709,
   "prop": 372,
   "vehicle": 822,
-  "vehicle-color": 1398
+  "vehicle-color": 1398,
+  "parking": 39
  },
  "dedupe": {
-  "kit_cells_total": 16729,
-  "unique_cells": 9933,
-  "saved": 6796,
+  "kit_cells_total": 16827,
+  "unique_cells": 9967,
+  "saved": 6860,
   "note": "칸 해시(내용+통행 종류)가 같은 칸은 한 번만 싣는다(건물 변형끼리·소품 거울/색 변형이 벽·바닥 칸을 나눠 쓴다)"
  },
  "tall_props": [
@@ -96,11 +98,11 @@
  "palette_total": {
   "cells_with_off_palette": 5107,
   "distinct_colors": 102,
-  "new_cells": 9998
+  "new_cells": 10037
  },
  "palette_note": "팔레트(modern4 = harness-data/modern-chipset/palette.pal) 밖 색의 출처: 땅·녹지 시트(원본 색), 도로 표시 코드(노란 선 YEL·정지선 STOP·화살표), 차 색 변형(CAR_RAMPS 램프), 벽색·지붕색 변형(compose_town WALL_VARIANTS/town_lib ROOF_VARIANTS)",
  "reassembly": {
-  "kits_checked": 575,
+  "kits_checked": 576,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -108,7 +110,8 @@
    "junction": 2,
    "building": 259,
    "prop": 117,
-   "vehicle": 191
+   "vehicle": 191,
+   "scene": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -118,9 +121,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 9998,
-  "kits_checked": 575,
-  "groups_checked": 61
+  "tiles_checked": 10037,
+  "kits_checked": 576,
+  "groups_checked": 62
  },
  "autotile_check": {
   "mc-intersection-12x12": {
@@ -138,16 +141,16 @@
  },
  "pass_classes": {
   "blank": 1,
-  "floor": 38,
-  "solidfloor": 2,
+  "floor": 51,
+  "solidfloor": 23,
   "flat": 52,
   "solid": 9841,
-  "star": 64
+  "star": 69
  },
- "sheet_hash": "8727877d60f348ad5b2a7c269d13d72bc1d297df",
+ "sheet_hash": "5572256f4b1177f3bd0afd176be9162249883159",
  "budget": {
   "limit": 10000,
-  "mandatory_cells": 4891,
+  "mandatory_cells": 4930,
   "kept_from_previous_bake": {
    "building_variants": 182,
    "car_colors": [
@@ -160,7 +163,7 @@
    ]
   },
   "skipped_candidates": 310,
-  "total_planned_cells": 9998,
+  "total_planned_cells": 10037,
   "car_colors": [
    "black",
    "navy",
@@ -174,52 +177,52 @@
   {
    "round": 0,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 1,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 2,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 3,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 4,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 5,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 6,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 7,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 8,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   },
   {
    "round": 9,
    "building_variants_added": 0,
-   "cells_after": 9998
+   "cells_after": 10037
   }
  ],
  "baked_variants": {
@@ -426,9 +429,9 @@
   "roof_room_px": 16,
   "padding": "건물 그림 위쪽에 투명 패딩(밑변 = 발, 폭은 16 배수 그대로). 소품·차량은 알파 bbox 로 잘라 밑변 정렬·좌우 가운데로 16 배수 캔버스에(오프셋은 kit-index 의 pad/image)."
  },
- "elapsed_sec": 20.5,
+ "elapsed_sec": 19.2,
  "reassembly_from_files": {
-  "kits_checked": 575,
+  "kits_checked": 576,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -436,7 +439,8 @@
    "junction": 2,
    "building": 259,
    "prop": 117,
-   "vehicle": 191
+   "vehicle": 191,
+   "scene": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -449,28 +453,5 @@
   "pins": "tiledata/modern-city/pins.json",
   "report": "tiledata/modern-city/bake-report.json",
   "kits": "tiledata/modern-city/kit-index.json"
- },
- "selftest": {
-  "rebake_identical": {
-   "png": true,
-   "sheet": true,
-   "tileset": true,
-   "pins": true,
-   "kits": true
-  },
-  "rebake_all_identical": true,
-  "add_asset": {
-   "old_count": 9998,
-   "new_count": 10396,
-   "pinned_moved": 0,
-   "kits_changed": 0,
-   "kits_before": 575,
-   "kits_after": 597,
-   "added_cells": 398,
-   "note": "가짜 건물 bld_selftest:Z(+예산 400) 추가",
-   "stable": true,
-   "old_cell_pixels_unchanged": true,
-   "pass": true
-  }
  }
 }

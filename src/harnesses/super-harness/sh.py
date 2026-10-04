@@ -1305,6 +1305,7 @@ def plain_status(c):
         except (ValueError, OSError, KeyError, TypeError):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
+        if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
         return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'내 선택 필요 · {choices["selectedCount"]}/{choices["total"]} 선택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
         if c.get('art_revision'):

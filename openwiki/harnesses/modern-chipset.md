@@ -50,3 +50,21 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 - `bake_map.py [--publish]` 예제 도시 맵(60×60, 지역 `modern-city-60x60`), `bake_refs.py` 참고문서(`src/assets/modernCityReferences.json`).
 - 합격 후보 PNG 는 `tiledata/modern-city/sources/<판>_<글자>.png` 에 커밋돼 있어 `qa-runs` 없이 재현된다(`run_town.sh <seed>`).
 - 한계: 건물 색 변형은 벽색/지붕색 따로(조합 없음), 색 변형 칸은 modern4 밖 색, T자·곡선 도로 없음, 주차 표시 칸 없음, 조수는 `modernTilesetPolicy` 에 막힌다.
+
+## 승인 주차장 두 면 공용 등록 (2026-10-05)
+
+`npm run harness -- modern-chipset publish-parking`은 super-harness의 **현재 해시 선택**,
+부품 receipt PASS, 최종 9축·고정 7조건 PASS를 재확인한다. `parking_bundle.py`가 승인 PNG와
+환경/차량 원본·계약·선택 근거를 `tiledata/modern-city/parking-approved/`에 보존한다.
+환경은 아래층, 원본차는 위층(솟은 줄 ★, 발 줄 막힘)인 `mc-parking-two-bays`를 굽는다.
+그룹은 mixed이며 개별 칸의 홈 층·통행·우선순위는 각각 유지한다. 새 칸은 끝에 붙고 기존 번호/그림은 보존한다.
+전체 키트 재조립·정의 검사를 쓰기 전에 실행한다. `mc-parking` 공용 참고문서는 전체 배열·원본 좌표 사전·정상/위층 누락 오류 그림을 포함한다.
+
+`npm run harness -- modern-chipset save-parking-project --project-dir <새 폴더> --evidence <증거 폴더>`로
+실제 SQLite 프로젝트를 만들고 닫은 뒤 다시 연다. 증거 폴더에는 등록 전 `previous-tileset.json`을 두며,
+새 프로젝트/기존 번들 갱신, 엔진 보행 연결·벽/차량 막힘을 함께 확인한다. 기존 프로젝트 폴더는 덮어쓰지 않는다.
+재로드한 JSON에 `npm run qa:runtime -- --scenario parking-approved --project <reloaded-project.json>`을 적용하면
+출하 플레이어 경로의 보행·차량 앞뒤 가림을 확인할 수 있다.
+
+범위는 14×7칸/224×112px, 차량 1대·주차면 2개의 고정 구역이다. 경사로·차단기·방화문을 갖춘
+12면 전체 시설의 재료 조사/개념 카드 완료와 구별한다. 문 개폐나 차량 운전은 구현하지 않는다.

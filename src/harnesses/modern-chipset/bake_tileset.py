@@ -24,6 +24,7 @@ import bake_data as D            # noqa: E402
 import compose_city as CC        # noqa: E402
 import compose_town as CT        # noqa: E402
 import town_lib as TL            # noqa: E402
+import parking_bundle            # noqa: E402
 
 BAKE_SEED = 1                    # 옥상 설비·간판 배치 시드(고정). 같은 입력 → 같은 그림.
 ROOF_ROOM = 16                   # 옥상 설비가 건물 그림 위로 솟아도 되는 높이(px) — 위쪽 패딩 칸 수를 억제
@@ -116,6 +117,8 @@ def make_item(**kw):
     it = dict(kw)
     g = it['grid']; it['h'] = len(g); it['w'] = len(g[0])
     it['keys'] = {BL.Sheet.key_of(BL.norm(c), pc) for row in g for c, pc in row if c is not None}
+    for row in it.get('upperGrid', []):
+        it['keys'].update(BL.Sheet.key_of(BL.norm(c), pc) for c, pc in row if c is not None)
     return it
 
 
@@ -485,11 +488,12 @@ def bake(out_root, dry=False, budget=BUDGET, inject=False, quiet=False):
     gcells = ground_cells(w); ovs = overlay_cells(w); shs = shadow_cells()
     roads = road_items(w, ovs)
     props = prop_items(w)
+    parking = parking_bundle.load(ROOT, make_item)
     # 필수 키 집합(계획용): 땅·표시·그림자·도로 키트·소품·차량 기본
     base_keys = set()
     for g in gcells: base_keys.add(BL.Sheet.key_of(BL.norm(g['cell']), g['pc']))
     for o in ovs + shs: base_keys.add(BL.Sheet.key_of(BL.norm(o['cell']), 'flat'))
-    for it in roads + props + vehicle_items(w, []): base_keys |= it['keys']
+    for it in roads + props + parking + vehicle_items(w, []): base_keys |= it['keys']
     base_keys.add(BL.Sheet.key_of(BL.norm(Image.new('RGBA', (16, 16))), 'blank'))
     pins = BL.load_pins(P['pins'])
     extra_buildings, car_colors, picked_variants = plan(w, budget, base_keys, log, pins.get('variants'))
@@ -528,11 +532,19 @@ def bake(out_root, dry=False, budget=BUDGET, inject=False, quiet=False):
                 r.append(tid); ids.append(tid)
             rows.append(r)
         it['ids'] = rows; it['uids'] = sorted(set(ids))
-        gr = grp(it['group'], it['gname'], it['grole'], 'lower' if it['layer'] == 'lower' else 'upper', it['gdesc'], it['grules'])
+        gr = grp(it['group'], it['gname'], it['grole'], 'mixed' if it.get('upperGrid') else 'lower' if it['layer'] == 'lower' else 'upper', it['gdesc'], it['grules'])
         gr['ids'] = sorted(set(gr['ids']) | set(ids))
         w_, h_ = it['w'], it['h']
         if it['layer'] == 'lower': krows = [dict(tiles=r, upperTiles=[-1] * w_) for r in rows]
         else: krows = [dict(tiles=[-1] * w_, upperTiles=r) for r in rows]
+        for y, upper_row in enumerate(it.get('upperGrid', [])):
+            for x, (cell, pc) in enumerate(upper_row):
+                if cell is None: continue
+                tid = sh.add(cell, pc, f"{it['name']} 차량 ({x+1},{y+1})", 'prop',
+                             f"{PCNOTE[pc]}. 키트 {it['id']} 차량 위층.", it['tags'], it['cat'])
+                krows[y]['upperTiles'][x] = tid
+                ids.append(tid)
+        it['uids'] = sorted(set(ids)); gr['ids'] = sorted(set(gr['ids']) | set(ids))
         ai = dict(description=it['desc'][:400], placementRules=it['rules'][:400], tags=list(it['tags']), role=('building' if it['kind'] == 'building' else 'prop' if it['layer'] == 'upper' else 'terrain'),
                   repeatability=it['repeatability'], layerHome='lower' if it['layer'] == 'lower' else 'upper', themes=['현대 도시'], origin='ai', confidence='high')
         if it.get('growth'): ai['growthAxis'] = it['growth']
@@ -547,6 +559,7 @@ def bake(out_root, dry=False, budget=BUDGET, inject=False, quiet=False):
     for it in blds: realize(it)
     for it in props: realize(it)
     for it in veh: realize(it)
+    for it in parking: realize(it)
     # 3) 오토타일: 보도·연석 4방향 (bit N=1 E=2 S=4 W=8 가 1 이면 그 이웃이 보도 계열)
     gid = {i: gcells[i]['id'] for i in range(16)}          # 땅 시트 0..15 칸의 번호
     sid = lambda i: gid[i]
