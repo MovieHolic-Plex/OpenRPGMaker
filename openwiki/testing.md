@@ -70,8 +70,9 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 `ci-full.slice` 가 12GiB 이고 러너 서비스 `NODE_OPTIONS` 가 `--max-old-space-size=4096` 이면
 `withHeapOption` 이 그 힙을 유지한다. 오버커밋이 워커 3을 고르면 3×4096MB 가 memory.max 와 같아
 피크 12.00GiB, OOM kill 1 로 JSON 리포트가 안 남는다(run 37183989815).
-`cgroupBudget` 은 후보 워커 수를 고른 뒤 `워커 × 실제 힙` 이 usable(memory.max 의 75%)을 넘으면
-워커를 줄인다. 이 슬라이스에서는 2×4096MB 다. 워커당 바닥 3584MB 는 그대로다.
+2×4096MB 로 줄여도 피크는 12.00GiB 였고 리포트 없이 exit 1 이었다(run 37185897310, OOM kill 0).
+16GB 이하 슬라이스는 힙을 3584MB 바닥에 두고, 합이 memory.max 의 60% 안에 들 때까지 워커를 줄인다.
+이 슬라이스는 2×3584MB 다.
 
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
