@@ -5,8 +5,8 @@
 // 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 경로였고, 「새 프로젝트」는 장르도 묻지 않고 빈 편집기로
 // 넘어간 뒤 캔버스 위 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다. 이 화면이 그 질문을 가져간다.
 //
-// 번들을 가볍게 둔다: 장르 씨앗·인터뷰·AI 모듈은 편집기 몫이다(편집기 트리를 import 하면 수십 MB 가 된다).
-// 여기서는 폴더만 만들고, 고른 장르·한 문장은 startIntent 로 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
+// 장르 씨앗·저장소·편집기 셸은 편집기 몫이다. 인터뷰 UI만 지연 로드해 폴더를 만들기 전에 기획을 받는다.
+// 확정한 기획 전체는 startIntent로 해당 폴더의 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
 
 import "./startScreen.css";
 import { mountWindowControls } from "./windowControls";
@@ -20,6 +20,7 @@ import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES,
 import { writeStartScreenIntent } from "./startIntent";
 import { START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
 import { createFirstWorldArrival, type FirstWorldArrival } from "./firstWorldArrival";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
@@ -69,6 +70,7 @@ type State = {
   error: string;
   joinUrl: string;
   teams: readonly RecentTeamEntry[];
+  confirmedBrief?: GameDesignBrief;
 };
 
 /** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
@@ -286,6 +288,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example"): void => {
     state.view = view;
+    state.confirmedBrief = undefined;
     if (view === "new") state.choiceId = choiceId ?? null;
     else if (choiceId !== undefined) state.choiceId = choiceId;
     if (view === "new") {
@@ -312,23 +315,38 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const create = (): void => void run(async () => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const title = state.title.trim() || t(DEFAULT_TITLE);
-    // A free concept enters the existing interview, whose author can still choose any genre.
-    if (state.startMode === "ai" && state.choiceId === null) state.choiceId = "story-cutscene";
+    if (state.startMode === "ai") {
+      const { interviewBeforeProject } = await import("./startInterview");
+      const brief = state.confirmedBrief ?? await interviewBeforeProject(state.choiceId, state.intent.trim());
+      // Cancelling or declining connection must not create a folder or open the editor.
+      if (!brief) return;
+      state.confirmedBrief = brief;
+      state.choiceId = brief.presetId;
+      // Planning is immediately usable. Account readiness belongs to the final build,
+      // and declining it retains the confirmed draft for the next attempt.
+      const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+      if (!await ensureAiConnectedForPreset({ presetLabel: NEW_PROJECT_CHOICES.find(choice => choice.id === brief.presetId)?.label })) return;
+      // Check storage before creating a folder; silently opening a blank project loses the plan.
+      const key = "oprn:start-handoff-storage-check";
+      window.sessionStorage.setItem(key, JSON.stringify({ gameDesignBrief: brief, intent: state.intent }) + " ".repeat(1024));
+      window.sessionStorage.removeItem(key);
+    }
     if (!state.projectDir) await refreshLocation();
     if (!state.projectDir) throw new Error("저장 위치를 정하지 못했습니다. 「위치 바꾸기」로 위치를 골라 주세요.");
     const created = await bridge.createProject({ title, projectDir: state.projectDir });
     if (!created) throw new Error("새 게임 폴더를 만들지 못했습니다.");
-    try {
-      writeStartScreenIntent(window.sessionStorage, {
-        projectDir: created.projectDir,
-        title,
-        choiceId: state.choiceId,
-        intent: state.intent.trim(),
-        startMode: state.startMode,
-        screenSize: state.screenSize,
-      });
-    } catch {
-      // sessionStorage 를 못 쓰면 빈 프로젝트로 연다 — 폴더는 이미 만들어졌다.
+    const handoff = {
+      projectDir: created.projectDir,
+      title,
+      choiceId: state.choiceId,
+      intent: state.intent.trim(),
+      startMode: state.startMode,
+      screenSize: state.screenSize,
+      ...(state.startMode === "ai" && state.confirmedBrief ? { gameDesignBrief: state.confirmedBrief } : {}),
+    };
+    if (state.startMode === "ai") writeStartScreenIntent(window.sessionStorage, handoff);
+    else {
+      try { writeStartScreenIntent(window.sessionStorage, handoff); } catch { /* Preserve the existing non-AI folder opening fallback. */ }
     }
     goEditor();
   });
@@ -449,8 +467,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       inputTestId: START_SCREEN_TESTIDS.intentInput,
       submitTestId: START_SCREEN_TESTIDS.create,
       genreTestId: choice => `${START_SCREEN_TESTIDS.genreOption}-${choice.id}`,
-      onChoice: choiceId => { state.choiceId = choiceId; },
-      onIntent: text => { state.intent = text; },
+      onChoice: choiceId => { state.choiceId = choiceId; state.confirmedBrief = undefined; },
+      onIntent: text => { state.intent = text; state.confirmedBrief = undefined; },
       onSubmit: (choiceId, text) => { state.choiceId = choiceId; state.intent = text; create(); },
     });
     const titleInput = el("input", { class: "start-input", value: state.title,

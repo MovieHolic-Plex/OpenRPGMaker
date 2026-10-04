@@ -1,0 +1,14 @@
+{
+  "productionComponents": true,
+  "syntheticAuthAndArtFailure": true,
+  "canonicalWrites": 0,
+  "errors": [],
+  "checks": [
+    "Interview mounted on launcher without folder creation, editor shell or initial art request",
+    "Choice pauses/hides film; failed generation stays on pixel still; cancellation creates no folder",
+    "Only explicit final confirmation creates folder; failed creation remains on launcher",
+    "Retry retains confirmed plan and does not repeat interview"
+  ],
+  "noEditorImports": [],
+  "passed": true
+}

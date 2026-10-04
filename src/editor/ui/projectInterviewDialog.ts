@@ -39,6 +39,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     let sceneTimer: ReturnType<typeof setTimeout> | undefined;
     let latestFocus = "새로운 세계의 첫 풍경";
     let front = 0;
+    let acceptedScene = false;
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let motion = !motionPreference.matches;
     const overlay = el("div", { class: "cinematic-interview-backdrop", dataset: { testid: "project-interview" } });
@@ -78,28 +79,34 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       const token = ++sceneToken;
       sceneAbort?.abort(); clearTimeout(sceneTimer);
       const controller = sceneAbort = new AbortController();
-      images.forEach(image => { image.className = ""; image.removeAttribute("src"); });
-      video.hidden = false; syncMotion();
+      // The film is an arrival, not a loading fallback. After the first choice keep a
+      // pixel still until the next reviewed scene is ready; never flash back to video.
+      video.pause(); video.hidden = true;
+      if (!acceptedScene) {
+        images[front]!.src = video.poster;
+        images[front]!.className = "is-visible";
+      }
       panel.dataset.artState = "generating";
-      status.textContent = "새 장면 그리는 중…";
+      status.textContent = acceptedScene ? "이전 장면 · 새 장면 그리는 중…" : "새 장면 그리는 중…";
       sceneTimer = setTimeout(() => {
         void generateInterviewScene(prompt, controller.signal, (phase, attempt) => {
           if (closed || token !== sceneToken) return;
           panel.dataset.artState = phase;
-          status.textContent = phase === "reviewing" ? "도트 확인 중…" : phase === "retrying" ? `다시 그리는 중 · ${attempt}/3` : "새 장면 그리는 중…";
+          status.textContent = (acceptedScene ? "이전 장면 · " : "") + (phase === "reviewing" ? "도트 확인 중…" : phase === "retrying" ? `다시 그리는 중 · ${attempt}/3` : "새 장면 그리는 중…");
         }).then(async url => {
           const probe = new Image(); probe.src = url; await probe.decode();
           if (closed || token !== sceneToken || controller.signal.aborted) return;
           const next = 1 - front;
           images[next]!.src = url; images[next]!.className = "is-visible";
           images[front]!.className = ""; front = next;
+          acceptedScene = true;
           video.pause(); video.hidden = true;
           panel.dataset.artState = "accepted"; panel.dataset.scene = focus;
           status.textContent = "";
         }).catch(() => {
           if (closed || token !== sceneToken || controller.signal.aborted) return;
           panel.dataset.artState = "error";
-          status.textContent = "그림을 준비하지 못했어요. 선택은 계속할 수 있어요.";
+          status.textContent = (acceptedScene ? "이전 장면 · " : "") + "그림을 준비하지 못했어요. 선택은 계속할 수 있어요.";
         });
       }, 750);
     };
@@ -262,6 +269,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       if (event.shiftKey && (document.activeElement === first || !controls.includes(document.activeElement as HTMLElement))) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     });
-    registerModal(overlay, () => done(null)); syncMotion(); render(); showScene(latestFocus);
+    panel.dataset.artState = "opening";
+    registerModal(overlay, () => done(null)); syncMotion(); render();
   });
 }
