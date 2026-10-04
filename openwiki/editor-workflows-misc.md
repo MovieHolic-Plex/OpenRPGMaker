@@ -8,6 +8,23 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
+
+근거: `verify-shots/editor-ux-audit-round2-20261004/agents/palette-maps.md`와 같은 폴더
+`README.md`의 네이티브 맵 전환/접힌 진행 관측. 기준 커밋은
+`7ce9a7655510e82360efe154bc888a0754e06d04`. 아래는 구현 계약이며 수정 후 성능 실측이 아니다.
+
+- `mapList.ts`는 맵 수를 렌더당 한 번 구하고 `RenderNodeContext.canDeleteMap`으로 행에 전달한다.
+  행 클릭은 선택 전후 **그 목록 컨테이너의 렌더 판수**를 비교한다. 맵 전환의 동기 구독자가
+  이미 그렸으면 명시 갱신을 생략한다. 구독 없는 스위처, 같은 맵 다중 선택, 폴더, 거부된 이동은
+  계속 명시 갱신하며 새 행에 초점을 돌린다. 단순히 맵 id가 바뀌었다는 이유로 갱신을 생략하지 않는다.
+
+맵 회귀 소스: `test/ux2MapNavigationRefresh.test.ts`(작성만, 실행 안 함).
+감독자 네이티브 QA: 사본 프로젝트의 20/80/200개 펼친 맵에서 「맵」의 다른 행을 왕복한다.
+`map-sidebar-list`의 childList **비우기/붙이기 한 쌍**과 `renderMapList` 1회를 확인한다.
+폴더, 같은 맵 Ctrl/Meta 토글, Shift 범위, 1024 상한 초과 맵 거부, 도구의 맵 스위처도
+갱신·선택 표시·초점·활성 맵 리빌을 확인한다. 200개는 썸네일 120개 캐시의 교체 비용을 따로 기록한다.
+
 ### 첫 사용자 시작과 저장 안내 (2026-10-03)
 
 - 첫 방문은 `editorWelcome.ts`의 전체 창 장면에서 시작한다. `src/start/firstWorldArrival.ts`를 데스크톱 시작 화면과 공유한다. 장르 선택은 로컬 참고 장면을 전환하고 첫 문장 입력창만 연다. 선택만으로 연결·인터뷰·저장·AI 호출을 하지 않는다.
