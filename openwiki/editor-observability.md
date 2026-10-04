@@ -207,6 +207,10 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 `test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
 "AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
 
+### 요청 중 사람 칸 의도 (2026-10-04)
+
+`assistantHumanEdits`는 실행 중 구독한 descriptor의 origin으로 사람 칸을 추적한다. AI 적용을 human으로 잘못 라벨링하면 그 칸을 사용자 의도로 잠그므로 위 origin 계약은 적용 로그뿐 아니라 다음 체크포인트 보호에도 필요하다. 칸 descriptor가 있는 붓질은 해당 좌표만 수집한다(전 맵 diff 없음). descriptor 없는 높이·undo 변경에서만 값 비교를 한다. AI/System 알림에서도 이전 프로젝트 포인터를 갱신해 다음 사람 편집의 비교 기준을 유지한다. ACK가 사람 값을 채택한 뒤에도 좌표 의도는 같은 실행 종료까지 남고, 프로젝트 전환으로 무효화된다. 실제 덮기를 막았을 때 작업 과정에 보존 칸 수를 남긴다.
+
 ## P3 owner-bound publication (2026-09-07)
 
 Run/operation identity is in-memory authority, not another outcome/evidence ledger.
