@@ -5,6 +5,7 @@ import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
 import { reliefMapView } from "@/editor/reliefMapView";
 import { sunlightField } from "@/project/sunlight";
+import { canvasSunlightArt } from "@/project/sunlightArtCanvas";
 import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -187,7 +188,8 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   const canvasPair = createCanvas(payload.w * drawSize, relief?.height ?? payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
-  const sunlight = payload.map ? sunlightField(payload.map, payload.tileset) : null;
+  const sunlight = payload.map ? sunlightField(payload.map, payload.tileset,
+    canvasSunlightArt(image, payload.tileset.tileSize, payload.tileset.tilesPerRow)) : null;
   const sunRow = (row: number, pad = 0) => {
     if (!sunlight) return;
     const s = sunlight.row(payload.y + row, payload.x, payload.x + payload.w), pair = createCanvas(s.w, s.h);

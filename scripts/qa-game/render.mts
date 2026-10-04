@@ -12,6 +12,7 @@ import { PNG } from "pngjs";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
 import { sunlightField } from "../../src/project/sunlight.ts";
+import { rasterSunlightArt } from "../../src/project/sunlightArt.ts";
 import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface.ts";
 import { cropExtraLayers } from "../../src/project/mapLayers.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
@@ -199,7 +200,8 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
     const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
-    const sun = sunlightField(sunSource?.map ?? map, tileset);
+    const sun = sunlightField(sunSource?.map ?? map, tileset,
+      rasterSunlightArt(image, tileset.tileSize, tileset.tilesPerRow));
     const sunRow = (row: number) => {
       if (!sun) return;
       const x = sunSource?.x ?? 0, y = sunSource?.y ?? 0, s = sun.row(row + y, x, x + map.width);

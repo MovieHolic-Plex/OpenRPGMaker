@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {startProductionPlayerPreview} from './player-production-preview.mjs';
 import {execFileSync} from 'node:child_process';
 import {PNG} from 'pngjs';
-const out=resolve('verify-shots/sunlight/player');mkdirSync(out,{recursive:true});
+const out=resolve(process.env.OPRN_SUNLIGHT_QA_OUT??'verify-shots/sunlight/player');mkdirSync(out,{recursive:true});
 const wire=JSON.parse(readFileSync('.vite-cache/sunlight/project/player.json','utf8'));
 wire.maps.ramps_four.sunlight={...wire.maps.houses_native.sunlight};
 const server=await startProductionPlayerPreview();
@@ -35,6 +35,7 @@ try{
  }
  if(new Set(proof.states.map(s=>s.sha)).size!==3)throw Error('Player sun settings did not change actual frames');
  const before=await page.evaluate(()=>window.__oprnSunlight());await page.waitForTimeout(1300);const after=await page.evaluate(()=>window.__oprnSunlight());
+ if(!before.nativeArt||before.casters.length!==4)throw Error('Shipping player not using native building silhouettes');proof.nativeBuildingSilhouettes=true;
  if(before.builds!==after.builds||before.frames!==after.frames)throw Error('Static player sun re-baked during idle');proof.idleCache=true;
  const cases=JSON.parse(readFileSync('.vite-cache/terrain-seams/cases.json','utf8'));
  for(const c of cases){
