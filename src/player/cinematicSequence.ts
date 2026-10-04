@@ -20,10 +20,11 @@ function flattenCinematicFrame(shot: HTMLElement): string | undefined {
   const canvas = document.createElement('canvas');
   const size = shot.getBoundingClientRect();
   if (!size.width || !size.height) return;
-  // The stage is CSS-scaled. Computed positions use logical pixels, not its screen rectangle.
-  canvas.width = shot.clientWidth; canvas.height = shot.clientHeight;
+  // Paint in logical coordinates at the displayed resolution: no blank area or pixelated art.
+  canvas.width = Math.round(size.width); canvas.height = Math.round(size.height);
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  ctx.scale(canvas.width / shot.clientWidth, canvas.height / shot.clientHeight);
   try {
     for (const image of shot.querySelectorAll<HTMLImageElement>('img')) {
       const style = getComputedStyle(image);

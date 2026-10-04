@@ -311,8 +311,9 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 `assistant-receipt.json`은 실제 tool_start/end를 id로 결합한 기록이며, 정본 저장·일반 재로드,
 네이티브 독립 그림 입력의 변경/재로드/복원을 따로 기록한다.
 
-마지막 그림 합성은 화면의 CSS 확대 사각형이 아닌 `shot.clientWidth/clientHeight` 논리 픽셀로
-그린다. 안 그러면 확대 무대에서 인계 그림 대부분이 투명하게 비는 오류가 난다. 효과 캔버스와
+마지막 그림 합성은 `shot.clientWidth/clientHeight` 논리 좌표를 출력 canvas의 화면 해상도로
+확대해서 그린다. 좌표 확대를 빼면 인계 그림 대부분이 투명하게 비고, canvas 자체를320×240으로
+낮추면 확대된 원화가 심하게 픽셀화된다. 화면 크기/네 모서리 alpha를 출하 fixture로 확인한다. 효과 캔버스와
 글자는 합성 대상이 아니며, 그려진 인물의 관절·표정 영상 애니메이션을 제공한다는 뜻도 아니다.
 런타임 셸은 자연 종료한 오프닝 음악을 실제 맵 준비까지 유지하고 ready에서600ms로 낮춘다.
 건너뛰기/닫기/다시 시작은 즉시 멈추며, 부팅 실패에서는 음악을 낮추고 복구 화면으로 간다.

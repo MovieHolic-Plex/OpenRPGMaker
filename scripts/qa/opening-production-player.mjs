@@ -75,7 +75,7 @@ try {
       await image.decode(); const canvas = document.createElement('canvas'); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
       const ctx = canvas.getContext('2d'); ctx.drawImage(image, 0, 0);
       const alpha = [[0, 0], [canvas.width - 1, 0], [0, canvas.height - 1], [canvas.width - 1, canvas.height - 1]].map(([x,y]) => ctx.getImageData(x,y,1,1).data[3]);
-      const stage = document.querySelector('.play-stage'); return { width: canvas.width, height: canvas.height, stageWidth: stage.clientWidth, stageHeight: stage.clientHeight, alpha, flattened: image.src.startsWith('data:image/png') };
+      const stage = document.querySelector('.play-stage'), bounds = stage.getBoundingClientRect(); return { width: canvas.width, height: canvas.height, stageWidth: Math.round(bounds.width), stageHeight: Math.round(bounds.height), logicalWidth: stage.clientWidth, logicalHeight: stage.clientHeight, alpha, flattened: image.src.startsWith('data:image/png') };
     });
     assert(composition.flattened); assert.equal(composition.width, composition.stageWidth); assert.equal(composition.height, composition.stageHeight); assert.deepEqual(composition.alpha, [255,255,255,255]);
     const musicRequests = requests.slice(begin).filter(r => r.path.endsWith(musicPath)).length; assert.equal(musicRequests, 1);
