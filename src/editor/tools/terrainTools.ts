@@ -65,7 +65,7 @@ const houseTool: ToolDefinition = {
   description: "에디터 집 도구. 다양한 원본 외관은 inspect_terrain.houseKits에서 kitId를 골라 원본 크기·형태 그대로 놓는다(너비·층수 불필요). 크기나 지붕 폭 조절이 필요한 경우에만 houseStyles의 style과 width/stories/roofWidth로 조립한다. anchor는 문 맨 아랫칸, 문 앞은 (anchor.x,anchor.y+1). 집 전체+문 앞은 같은 높이의 평평한 빈 땅이어야 한다. 고지에는 sculpt_relief rect로 집터를 만들고 lay_terrain_road로 문 앞까지 연결한 뒤 check_terrain_access로 검사한다. 물·잠금·다른 집 위는 거부한다. 외관만 만들며 실내와 문 이벤트는 별도로 저작한다.",
   parameters: { type: "object", properties: { mapId, anchor: point,
     style: { type: "string", description: "inspect_terrain의 houseStyles에서 고른 ID" }, width: { type: "integer", minimum: 5, maximum: 24 },
-    stories: { type: "integer", enum: [1, 2] }, roofWidth: { type: "integer", minimum: 5, maximum: 24 }, kitId: { type: "string" },
+    stories: { type: "integer", enum: [1, 2] }, roofWidth: { type: "integer", minimum: 5, maximum: 24 }, roofForm: { type: "string", enum: ["gable", "hip"], description: "반목조 조립식 집은 기본 gable(원본 박공). hip은 모임 지붕" }, kitId: { type: "string" },
   }, required: ["mapId", "anchor"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map), anchor = checkedPoint(map, args.anchor);
@@ -75,6 +75,7 @@ const houseTool: ToolDefinition = {
       throw new ToolError("inspect_terrain의 houseKits에서 kitId 또는 houseStyles에서 style을 고르세요");
     const options: QuickHouseOptions = { style: (args.style ?? styles[0]) as QuickHouseOptions["style"], width: typeof args.width === "number" ? args.width : 7,
       stories: args.stories === 2 ? 2 : 1, ...(typeof args.roofWidth === "number" ? { roofWidth: args.roofWidth } : {}),
+      ...(args.roofForm === "gable" || args.roofForm === "hip" ? { roofForm: args.roofForm } : {}),
       ...(typeof args.kitId === "string" && args.kitId ? { kitId: args.kitId } : {}) };
     if (options.kitId && !ts.structureKits?.some(k => k.id === options.kitId)) throw new ToolError("kitId를 찾을 수 없습니다");
     const plan = planQuickHouse(map, ts, anchor, options);
@@ -113,15 +114,16 @@ const roadTool: ToolDefinition = {
 const roofTool: ToolDefinition = {
   name: "resize_terrain_house_roof", mode: "write", domains: ["map", "tile"],
   preservesAuthoredRaster: true,
-  description: "기존 버들항 조립식 집의 지붕 폭만 바꾼다. inspect_terrain.houses의 placementId와 roofResizable을 먼저 확인한다. 벽·창·문 좌표, 층수와 배치 ID는 유지하며 잠금·기물·직접 덧칠·다른 집과의 겹침·기울어진 집터는 거부한다. 원본 고정 형태 집의 지붕 변형은 지원하지 않는다.",
-  parameters: { type: "object", properties: { mapId, placementId: { type: "string" }, roofWidth: { type: "integer", minimum: 5, maximum: 24 } }, required: ["mapId", "placementId", "roofWidth"], additionalProperties: false },
+  description: "기존 버들항 조립식 집의 지붕 폭을 바꾼다. 반목조 집은 roofForm으로 원본 뾰족한 박공(gable)/모임 지붕(hip)을 고른다. 생략하면 기존 형태 유지. inspect_terrain.houses의 placementId와 roofResizable을 먼저 확인한다. 벽·창·문 좌표, 층수와 배치 ID는 유지하며 잠금·기물·직접 덧칠·다른 집과의 겹침·기울어진 집터는 거부한다. 원본 고정 형태 집의 지붕 변형은 지원하지 않는다.",
+  parameters: { type: "object", properties: { mapId, placementId: { type: "string" }, roofWidth: { type: "integer", minimum: 5, maximum: 24 }, roofForm: { type: "string", enum: ["gable", "hip"] } }, required: ["mapId", "placementId", "roofWidth"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map);
     const placement = structurePlacementsOf(map).find(p => p.id === args.placementId);
     if (!placement) throw new ToolError("편집할 집 배치를 찾을 수 없습니다");
     const at = { x: placement.x, y: placement.y };
     const plan = planQuickHouseDrag(map, ts, { mapId: map.id, start: at, end: at },
-      { style: quickHouseStyles(ts)[0]!, width: placement.w, stories: 1, resize: "roof", roofWidth: args.roofWidth as number });
+      { style: quickHouseStyles(ts)[0]!, width: placement.w, stories: 1, resize: "roof", roofWidth: args.roofWidth as number,
+        ...(args.roofForm === "gable" || args.roofForm === "hip" ? { roofForm: args.roofForm } : {}) });
     if (!plan.ok || !plan.apply || !plan.kit || plan.resizedPlacementId !== placement.id) throw new ToolError(plan.reason, { code: "terrain-roof-resize", mapId: map.id });
     if (!ts.structureKits?.some(k => k.id === plan.kit!.id)) ts.structureKits = [...(ts.structureKits ?? []), plan.kit];
     plan.apply(map);
