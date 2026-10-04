@@ -65,3 +65,7 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 6회차 선택 그림의 7필수조건/9축 PASS를 보존하며, 공용 칸은 9,998→10,037로 39개만 덧붙였다.
 기존 칸 번호·화소 변경 0, 576키트 재조립 불일치 0. 기존 프로젝트에도 `ensureModernCityTileset`과
 `ensureModernCityReferences`로 키트/학습 자료가 들어간다. 전체 시설은 이 고정 구역을 반복해서 만들지 않는다.
+
+그룹의 lower/upper/mixed 설명 정정도 같은 칸 수의 기존 프로젝트에 전달되도록
+번들 갱신 서명에 그룹 id·defaultLayer·layerHome을 포함한다. 주차장 정본에서 실제로
+lower→mixed 갱신을 저장·재로드했다. 개별 칸의 통행/우선순위와 맵 배열은 바뀌지 않는다.
