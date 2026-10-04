@@ -19,7 +19,7 @@ try{
  headers={'content-type':'application/json','x-oprn-companion-token':token,origin:url.origin,cookie};
  await page.addScriptTag({path:resolve(process.env.ROMANCE_REVIEW_RENDERER??'output/qa/romance-scene/renderer.js')});
  const endpoint=path=>new URL(path+'?provider=google-antigravity',url).href;
- const request={runId,provider:'google-antigravity',model:'gemini-3.8-flash',mode:'team',readOnly:true,mapIds:[project.startMapId],currentMapId:project.startMapId,project,maxTurns:40,timeoutMs:240000,task:'저장된 첫 만남의 읽기 전용 검증을 끝내라. 이미 제작된 맵과 대사는 수정하지 마라. inspect_romance_scene으로 두 선택, 기억 대사, 중복 방지, 취소, 종료를 확인하라. review_map을 호출하고 검수 담당에게 show_map_region으로 실제 맵 PNG를 반드시 본 뒤 report_review를 호출하게 하라. 이름은 지우/나래이고 외형은 사용자 미정인 임시 자산이다. 지적이 있으면 정직하게 보고하고 finish하지 마라. 검수와 실행 검사가 통과하면 finish로 완료를 보고하라. 새 제작 배정을 하지 마라.'};
+ const request={runId,provider:'google-antigravity',model:'gemini-3.8-flash',mode:'team',readOnly:true,mapIds:[project.startMapId],currentMapId:project.startMapId,project,maxTurns:40,timeoutMs:240000,task:'저장된 첫 만남의 읽기 전용 검증을 끝내라. 이미 제작된 맵과 대사는 수정하지 마라. inspect_romance_scene으로 두 선택, 기억 대사, 중복 방지, 취소, 종료를 확인하라. review_map을 호출하고 검수 담당에게 show_map_region으로 실제 맵 PNG를 반드시 본 뒤 report_review를 호출하게 하라. 이름과 선택지는 프로젝트의 실제 제작 계약을 확인하고, 사용자가 정하지 않은 외형은 임시 자산으로 평가한다. 지적이 있으면 정직하게 보고하고 finish하지 마라. 검수와 실행 검사가 통과하면 finish로 완료를 보고하라. 새 제작 배정을 하지 마라.'};
  const response=await fetch(endpoint('/v1/agent/run'),{method:'POST',headers:{...headers,'content-encoding':'gzip'},body:gzipSync(Buffer.from(JSON.stringify(request))),signal:AbortSignal.timeout(360000)});
  if(!response.ok)throw Error('Run HTTP '+response.status+' '+await response.text());
  async function receive(event){

@@ -1,4 +1,4 @@
-import { companionCompletionsBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { companionRequestBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { companionTokenHeaders } from "@/ai/companionToken";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
@@ -38,7 +38,7 @@ export class ImageGenerationError extends Error {
 }
 
 export function imageGenerationEndpoint(): string {
-  return `${companionCompletionsBaseUrl().replace(/\/$/, "")}/images/generations`;
+  return `${companionRequestBaseUrl().replace(/\/$/, "")}/images/generations`;
 }
 
 export function imageGenerationUsesOtherProvider(config: AiConfig): boolean {

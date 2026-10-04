@@ -1,0 +1,73 @@
+{
+  "actualElectron": true,
+  "startup": {
+    "fullscreen": true,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 1024
+    },
+    "url": "app://oprn/start-screen.html"
+  },
+  "geometry": {
+    "window": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 1024
+    },
+    "display": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 1024
+    }
+  },
+  "controls": [
+    {
+      "text": "화면 전환",
+      "color": "rgb(255, 249, 235)",
+      "background": "rgba(16, 26, 41, 0.91)",
+      "visible": true,
+      "uncovered": true
+    },
+    {
+      "text": "앱 닫기",
+      "color": "rgb(255, 249, 235)",
+      "background": "rgba(16, 26, 41, 0.91)",
+      "visible": true,
+      "uncovered": true
+    }
+  ],
+  "navigation": [
+    {
+      "text": "새 게임 만들기",
+      "uncovered": true,
+      "noNativeOverlap": true
+    },
+    {
+      "text": "폴더 열기",
+      "uncovered": true,
+      "noNativeOverlap": true
+    },
+    {
+      "text": "팀에 참여",
+      "uncovered": true,
+      "noNativeOverlap": true
+    },
+    {
+      "text": "홈",
+      "uncovered": true,
+      "noNativeOverlap": true
+    },
+    {
+      "text": "새 게임",
+      "uncovered": true,
+      "noNativeOverlap": true
+    }
+  ],
+  "afterClick": false,
+  "restored": true,
+  "passed": true
+}
