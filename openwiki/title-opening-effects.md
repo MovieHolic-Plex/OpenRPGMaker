@@ -178,3 +178,43 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 ## Independent opening timelines
 
 See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actual assistant tools, shared renderer, sprite poses, timed audio, preview evidence, and title/idle/New Game entry contracts; [opening-reference-study.md](opening-reference-study.md) holds source-qualified game research.
+
+## Emerald monster opening atmosphere (2026-10-04)
+
+`configureEmeraldMonsterTitle` no longer clears all authored motion. Its shared
+`createEmeraldMonsterTitleEffects()` installs six effects anchored to the bundled
+original coastal stag key art: sunset shafts, sea ripples, foreground leaf
+shadows, 12 light motes, one antler glow and restrained parallax. Coordinates are
+image coordinates, including the sea polygon (below y=.70) and foliage polygon
+(below y=.84); the stag silhouette and left title/menu are not dapple targets.
+A 700 ms entrance and 300 ms New Game fade occur once at their normal native
+boundaries. No title/menu movement replays the entrance. These are ordinary
+`titleScreen.effects/sequence/transition` fields, so existing `set_title_screen`
+and title effect editor paths can refine them. When changing the background,
+refit anchors against the actual new picture instead of reusing these points.
+
+The Enter-paced professor introduction uses `emeraldOpeningAtmosphere.ts` and
+its separately owned `emeraldOpeningMotion.css`. Professor and scenery nodes
+remain mounted across pages. Dust/light drift continues behind readable text;
+professor and monster illustrations move by integer pixels only, with no scaling
+or page fades. This is restrained motion of still art, not newly drawn animation
+poses. `prefers-reduced-motion` removes the motion. A title still with water/leaf
+shadow effects similarly does not claim physically animated tree geometry.
+
+SFX use existing registered `titleScreen.sounds` references: the shared preset
+fills missing cursor/confirmation/cancel sounds with the local CC0 Kenney
+`select-001` / `confirmation-001` / `back-001` IDs and preserves authored choices.
+The intro's entry and page cues own a separate short-lived HTML audio element,
+respect device SE volume at .25/.18 gain, and release on completion, skip,
+abort or host removal. Missing/blocked optional sound never blocks narration.
+WASD does not cue a sound or touch the persistent cinematic BGM. These references
+are already covered by title sound validation and export dependency collection;
+no new serialized sound field or global audio channel is introduced.
+
+For source browser QA, route `/src/project/store.ts` to a re-export of the actual
+`exportProjectStoreShim.ts` module (the same module identity, not a copied body); Vite's editor dev config does not apply the
+production player build aliases automatically; similarly route `/src/app/mode.ts`
+to a re-export of `exportAppModeShim.ts` to avoid loading the editor mode graph. Otherwise `exportEntry` loads a
+portable project into a different store than `renderPlayer` reads and the probe
+can accidentally capture the blank editor project. Production `vite.player`
+continues to use its existing alias.

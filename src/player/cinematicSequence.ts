@@ -5,6 +5,7 @@ import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
+import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -37,6 +38,7 @@ export function playCinematicSequence(options: {
   if(isBook){root.dataset.presentation='storybook';root.dataset.ink=book!.ink;root.setAttribute('aria-label','이야기 오프닝');}
   const isEmeraldIntro = isBook && isEmeraldMonsterStyle(project) && Boolean(book?.portraitResourceId);
   if (isEmeraldIntro) { root.dataset.monsterStyle = 'emerald'; root.setAttribute('aria-label','교수와 몬스터 소개'); }
+  const atmosphere = isEmeraldIntro ? createEmeraldOpeningAtmosphere(host, project, reducedMotion) : undefined;
   let bookImage:HTMLImageElement|undefined;
   let bookImageId:string|undefined;
   let index = 0;
@@ -65,6 +67,7 @@ export function playCinematicSequence(options: {
     settled = true;
     cleanScene();
     stopMusic();
+    atmosphere?.dispose();
     observer.disconnect();
     signal.removeEventListener("abort", abort);
     view.removeEventListener("keydown", onKeyDown, true);
@@ -77,6 +80,7 @@ export function playCinematicSequence(options: {
   };
   const abort = (): void => finish("aborted");
   const next = (): void => {
+    if (index + 1 < sequence.scenes.length) atmosphere?.cue('page');
     cleanScene();
     index += 1;
     if (index === sequence.scenes.length) finish("completed");
@@ -121,12 +125,13 @@ export function playCinematicSequence(options: {
     // Keep the same illustration node mounted while its dialogue pages change.
     const imageResourceId = isEmeraldIntro ? book!.portraitResourceId! : scene.kind === 'image' ? scene.resourceId : undefined;
     const keepImage=isBook&&scene.kind==='image'&&bookImageId===imageResourceId&&bookImage?.parentElement===root;
-    if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage)child.remove();}
+    if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage && child!==atmosphere?.layer)child.remove();}
     else {root.replaceChildren();bookImage=undefined;bookImageId=undefined;}
     root.dataset.page=String(index+1);
     root.dataset.sceneId = scene.id;
     root.dataset.sceneKind = scene.kind;
     root.dataset.mediaState = "ready";
+    if (atmosphere && atmosphere.layer.parentElement !== root) root.append(atmosphere.layer);
     root.style.setProperty("--cinematic-motion-ms", `${scene.durationMs || 8000}ms`);
     // A fade reveals a shot; its hold time must not keep the whole picture dim.
     root.style.setProperty("--cinematic-fade-ms", `${Math.min(600, scene.durationMs || 600)}ms`);
@@ -274,5 +279,6 @@ export function playCinematicSequence(options: {
   observer.observe(host.ownerDocument, { childList: true, subtree: true });
   root.focus({ preventScroll: true });
   renderScene();
+  atmosphere?.cue('entry');
   return { done, teardown: abort };
 }
