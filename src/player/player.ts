@@ -285,18 +285,19 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       const controller = new AbortController();
       openingController = controller;
       let lastFrame: string | undefined;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, onFrame: url => { lastFrame = url; } });
+      let handoffFadeMs = 500;
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
       void playback.done.then(result => {
         if (result === "aborted" || !shellActive || openingController !== controller) return;
         openingController = null;
-        bootRun(request, lastFrame);
+        bootRun(request, lastFrame, handoffFadeMs);
       });
       return;
     }
     bootRun(request);
   };
 
-  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string): void => {
+  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string, cinematicFadeMs = 500): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
@@ -324,7 +325,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
-    const loading = mountPlayLoadingOverlay(layout, "engine", cinematicBackdrop);
+    const loading = mountPlayLoadingOverlay(layout, "engine", cinematicBackdrop, cinematicFadeMs);
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape

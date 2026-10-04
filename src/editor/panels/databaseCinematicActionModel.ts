@@ -54,6 +54,7 @@ export function sceneWithKind(
     id: scene.id,
     narration: scene.narration,
     durationMs: scene.durationMs,
+    ...(scene.presentation ? { presentation: structuredClone(scene.presentation) } : {}),
     ...(scene.narrationAudioResourceId
       ? { narrationAudioResourceId: scene.narrationAudioResourceId }
       : {}),

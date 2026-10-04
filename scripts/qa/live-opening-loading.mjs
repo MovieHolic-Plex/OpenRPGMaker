@@ -1,3 +1,4 @@
+import { resolveCinematicPresentation } from '../../src/project/cinematicPresentation.ts';
 // Shipping player only. Observe real requests, decoded shot clocks, recovery and cancellation.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -21,7 +22,7 @@ const server=createServer(async(req,res)=>{const path=resolve(root,'.'+decodeURI
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-const saved=JSON.parse(await readFile(resolve(out,'reloaded.json'),'utf8'));
+const saved=JSON.parse(await readFile(resolve(out,'reloaded.json'),'utf8').catch(()=>readFile(resolve(out,'completion.json'),'utf8')));
 const result={projectId:saved.afterReload.projectId,paths,cases:[],errors:[]};
 await mkdir(resolve(out,'loading'),{recursive:true});
 async function open(options={}){
@@ -29,7 +30,7 @@ async function open(options={}){
  const page=await ctx.newPage();lastPage=page;page.on('pageerror',e=>result.errors.push(e.message));page.on('requestfailed',r=>{(result.requestFailures??=[]).push({path:new URL(r.url()).pathname,error:r.failure()?.errorText})});page.on('request',r=>{const path=new URL(r.url()).pathname;if(paths.some(p=>path.endsWith(p)))requested.push({path,time:Date.now()})});
  const waitForFunction=page.waitForFunction.bind(page);page.waitForFunction=(fn,arg,options)=>waitForFunction(fn,arg,{polling:100,...options});
  const cdp=await ctx.newCDPSession(page);await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});
- await page.addInitScript(()=>{window.__shotTimes=[];window.__handoffBackdrops=[];let last='';new MutationObserver(()=>{const backdrop=document.querySelector('.play-loading-backdrop');if(backdrop)window.__handoffBackdrops.push(backdrop.getAttribute('src'));const n=document.querySelector('[data-testid="cinematic-sequence"]');if(!n)return;const state=[n.dataset.sceneId,n.dataset.mediaState,n.dataset.pendingSceneId].join(':');if(state===last)return;last=state;window.__shotTimes.push({id:n.dataset.sceneId,state:n.dataset.mediaState,pending:n.dataset.pendingSceneId,time:performance.now()});}).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['data-scene-id','data-media-state','data-pending-scene-id']})});
+ await page.addInitScript(()=>{window.__shotTimes=[];window.__handoffBackdrops=[];window.__handoffFrames=[];let last='';new MutationObserver(()=>{const cover=document.querySelector('.play-loading-overlay.has-cinematic-backdrop');if(cover)window.__handoffFrames.push({background:getComputedStyle(cover).backgroundColor,backdrop:cover.querySelector('.play-loading-backdrop')?.getAttribute('src')});const backdrop=document.querySelector('.play-loading-backdrop');if(backdrop)window.__handoffBackdrops.push(backdrop.getAttribute('src'));const n=document.querySelector('[data-testid="cinematic-sequence"]');if(!n)return;const state=[n.dataset.sceneId,n.dataset.mediaState,n.dataset.pendingSceneId].join(':');if(state===last)return;last=state;window.__shotTimes.push({id:n.dataset.sceneId,state:n.dataset.mediaState,pending:n.dataset.pendingSceneId,time:performance.now()});}).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['data-scene-id','data-media-state','data-pending-scene-id']})});
  return{ctx,page};
 }
 async function title(page){await page.goto(base+'/player.html',{waitUntil:'domcontentloaded'});await page.getByTestId('title-screen').waitFor({timeout:120000});await page.waitForFunction(()=>document.querySelector('[data-testid="title-screen"]')?.dataset.seqState==='done',null,{timeout:30000})}
@@ -39,7 +40,9 @@ try{
  if(wanted.has('delayed')){const{ctx,page}=await open();const begin=requests.length;let releaseFirst,releaseSecond;const firstHeld=new Promise(r=>{releaseFirst=r});const secondHeld=new Promise(r=>{releaseSecond=r});
   await page.route('**/*',async route=>{const url=new URL(route.request().url()).pathname;if(url.endsWith(paths[0]))await firstHeld;if(url.endsWith(paths[1]))await secondHeld;await route.continue().catch(()=>{})});
   await title(page);await page.keyboard.press('Enter');await page.waitForTimeout(900);
-  assert(await page.getByTestId('title-screen').isVisible(),'Keep title while the first picture is decoded');
+  const startsWithText=project.system.opening.scenes[0].kind==='text';
+  if(startsWithText) assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'),project.system.opening.scenes[0].id,'Start authored text while pictures load in the background');
+  else assert(await page.getByTestId('title-screen').isVisible(),'Keep title while the first picture is decoded');
   await page.screenshot({path:resolve(out,'loading/01-title-preparing.png')});
   releaseFirst();
   await ready(page,0);assert.equal(await page.locator('.cinematic-effects').first().getAttribute('data-title-effects-renderer'),'webgl');assert.equal(await page.locator('.cinematic-image').evaluate(n=>n.complete&&n.naturalWidth>0),true);
@@ -48,9 +51,9 @@ try{
   await page.screenshot({path:resolve(out,'loading/02-previous-shot-retained.png')});
   releaseSecond();
   await ready(page,1);await ready(page,2);await playing(page);
-  const handoff=await page.evaluate(()=>window.__handoffBackdrops);assert(handoff.some(url=>url?.startsWith('blob:')),'Keep the last opening artwork beneath remaining map preparation');
+  const handoff=await page.evaluate(()=>window.__handoffFrames);const last=project.system.opening.scenes.at(-1);const authoredFade=last.kind!=='image'&&last.presentation&&resolveCinematicPresentation(last.presentation).transition.exitMs>0;assert(handoff.some(frame=>authoredFade?frame.background==='rgb(0, 0, 0)'&&!frame.backdrop:frame.backdrop?.startsWith('blob:')),'Keep the authored final black frame or last artwork beneath map preparation');
   const times=await page.evaluate(()=>window.__shotTimes);const decoded=shots.map(s=>times.find(t=>t.id===s.id&&t.state==='ready'));
-  assert(decoded.every(Boolean));assert(decoded[2].time-decoded[1].time>=3900,'Second shot keeps its full duration after delayed decode');
+  assert(decoded.every(Boolean));assert(decoded[2].time-decoded[1].time>=shots[1].durationMs-100,'Second shot keeps its full duration after delayed decode');
   const counts=paths.map(path=>requests.slice(begin).filter(r=>r.path.endsWith(path)).length);result.delayDiagnostics={counts,requested:[...requested],times};
   assert.equal(counts[0],1);assert.equal(counts[2],1);assert(counts[1]===1||counts[1]===2);
   const secondRequests=requested.filter(r=>r.path.endsWith(paths[1]));
