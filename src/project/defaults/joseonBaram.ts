@@ -1,4 +1,4 @@
-// 조선(바람의나라풍 손 도트) 번들 칩셋 — 마을 20호·국내성 맵이 같은 시트를 쓴다. 시트·정의는 scripts/content/build-joseon-tileset.py 가
+// 조선(바람의나라풍 손 도트) 번들 칩셋 — 마을 20호·국내성·사냥터·동굴·실내 6방·궁 내부 3방, 14장의 맵이 같은 시트를 쓴다. 시트·정의는 scripts/content/build-joseon-tileset.py 가
 // (입력 시트·pieces.json·map.json·extra.json 만 바꿔 같은 명령으로) 다시 구운 public/assets/joseon-baram/joseon-baram-chipset.png 와
 // src/assets/joseonBaramTileset.json 이고, 참고문서는 scripts/content/prepare-joseon-baram-references.py 의 src/assets/joseonBaramReferences.json
 // (그림은 public/assets/joseon-baram/references/ 경로만)다. 위키: openwiki/joseon-baram.md.
@@ -70,7 +70,8 @@ export function ensureJoseonBaramReferences(tileset: TilesetDef): boolean {
  * 칸 수가 다른 사본(옛 시트)은 칸 번호가 가리키는 그림이 달라 칸 표(통행·레이어·그룹·오토타일·부품)를 번들 것으로 통째로 바꾼다.
  * 칸 수가 같은 사본(저자가 그룹·부품을 더한 것 포함)은 건드리지 않고, 없는 번들 부품(id 기준)만 덧붙이며 번들 소유 `jb-` 부품은 최신으로 바꾼다.
  * 더 새 번들에서 저장된(칸이 더 많은) 사본은 줄이지 않는다. 계열이 비어 있거나 다르면 `oprn-joseon` 으로 고친다.
- * 번들 배포 뒤 시트는 칸 끝에만 덧붙인다 — 앞 칸 번호가 바뀌면 이미 칠한 맵이 달라진다.
+ * 번들 배포 뒤 시트는 칸 끝에만 덧붙인다 — 앞 칸 번호가 바뀌면 이미 칠한 맵이 달라진다(동결 장부 tiledata/joseon-village/frozen-layout.json 이 해시로 지킨다).
+ * 열 수(tilesPerRow)는 판이 늘면 바뀔 수 있다(64 → 128): 칸 번호는 그대로이고 시트 그림 안의 칸 위치만 달라진다. 칸이 더 적은 사본은 표를 번들 것으로 바꾸되 저자 부품·묶음·오토타일은 지킨다.
  */
 export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== JOSEON_BARAM_ID || tileset.image.type !== "bundled" || tileset.image.id !== JOSEON_BARAM_TEXTURE) return false;
@@ -81,16 +82,22 @@ export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
   if (sheetCopy && tileset.count > data.count) return changed;
   if (sheetCopy && tileset.count === data.count) return mergeShippedKits(tileset) || changed;
   const fresh = createJoseonBaramTileset();
+  // 저자가 더한 부품·묶음·오토타일(번들 id 가 아닌 것)은 지킨다 — 칸 번호는 판이 늘어도 바뀌지 않으므로(앞 칸 불변) 그대로 유효하다.
+  const shippedGroupIds = new Set((fresh.tileGroups ?? []).map(group => group.id));
+  const shippedAutotileIds = new Set((fresh.autotileGroups ?? []).map(group => group.id));
+  const authorKits = (tileset.structureKits ?? []).filter(kit => !kit.id.startsWith(JOSEON_BARAM_PREFIX));
+  const authorGroups = (tileset.tileGroups ?? []).filter(group => !group.id.startsWith("jb:") && !shippedGroupIds.has(group.id));
+  const authorAutotiles = (tileset.autotileGroups ?? []).filter(group => !shippedAutotileIds.has(group.id));
   tileset.count = fresh.count;
   tileset.tilesPerRow = fresh.tilesPerRow;
   tileset.passability = fresh.passability;
   tileset.priority = fresh.priority;
   tileset.terrain = fresh.terrain;
   tileset.tileMeta = fresh.tileMeta;
-  tileset.tileGroups = fresh.tileGroups;
+  tileset.tileGroups = [...(fresh.tileGroups ?? []), ...authorGroups];
   tileset.animationStrips = fresh.animationStrips;
-  tileset.structureKits = fresh.structureKits;
-  tileset.autotileGroups = fresh.autotileGroups;
+  tileset.structureKits = [...(fresh.structureKits ?? []), ...authorKits];
+  tileset.autotileGroups = [...(fresh.autotileGroups ?? []), ...authorAutotiles];
   if (!tileset.referenceSourceTilesetId && tileset.referenceDocuments?.length) {
     const shipped = new Map(REFERENCES.map(category => [category.id, category]));
     tileset.referenceDocuments = tileset.referenceDocuments.map(category => shipped.has(category.id) ? structuredClone(shipped.get(category.id)!) : category);

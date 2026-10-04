@@ -3,13 +3,16 @@
 #     + tiledata/joseon-village/references/*.md (같은 쪽의 출처 사본) + tiledata/joseon-village/qa-tamper-checks.json (오류 그림 검출 기록)
 # 용도(categories): 1) 한 장 조립(사전·읽는 순서·작업 순서·통행)  2) 땅 오토타일(길·마당·강·논)  3) 건물 조각 사전  4) 나무·소품·담·다리 조각 사전
 #                  5) 조립 예제(양반댁 둘레·집 줄·건널목·강과 논)  6) 오류 교훈(실제로 변조한 그림 + 검출 코드·좌표)
+#                  7) 사냥터·동굴 지형  8) 조선 실내 키트  9) 궁 내부 — 7~9 는 scripts/content/lib/joseon_tileset/newrefs.py 가 만든다(새 판의 지도 11장).
 # 사용: python3 scripts/content/build-joseon-tileset.py 다음에  python3 scripts/content/prepare-joseon-baram-references.py [--map-id joseon_v20]
 # 그림은 모두 시트 칸 번호를 그대로 다시 조립한 것(nearest-neighbor 확대)이다. AI 가 그린 모형은 없다.
-import argparse, collections, json, pathlib
+import argparse, collections, json, pathlib, sys
 import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts/content/lib"))
+from joseon_tileset import newrefs  # noqa: E402
 ap = argparse.ArgumentParser()
 ap.add_argument("--map-id", default="joseon_v20")
 ap.add_argument("--data", default="tiledata/joseon-village")
@@ -118,7 +121,13 @@ def ko(name):
 
 
 HEAD = (f"tilesetId `{TID}` · 그림 `{PIECE_PATH}`(텍스처 `{TEX}`, **{COUNT}칸**, 16px 칸, 한 줄 **{COLS}칸** — 번호 n 의 칸은 행 n÷{COLS}, 열 n%{COLS}, "
-        f"픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 {TS['baseCount']} 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).")
+        f"픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 {TS['baseCount']} 이상 곳곳에 같은 그림이 다른 통행으로 쓰이는 복사본 칸(꼬리)이 있다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다). "
+        f"칸 번호는 판이 늘어도 바뀌지 않는다(새 조각은 뒤에 덧붙는다).")
+NEW_PFX = ("fld_", "cav_", "in_b_", "pal_")                      # 새 판(사냥터·동굴·실내 키트·궁 내부) 조각 접두 — 7~9 번 용도가 맡는다
+NEW_AT = ("jb_fld_", "jb_cav_", "jb_in_b_", "jb_pal_")          # 새 판 오토타일 id 접두
+NEW_GROUP = ("jb:fld_", "jb:cav_", "jb:in_b_", "jb:pal_")       # 새 판 지형 묶음 id 접두
+OLD_PIECES = sum(1 for n in PW if not n.startswith(NEW_PFX))
+OLD_AUTOTILES = sum(1 for a in TS["autotileGroups"] if not a["id"].startswith(NEW_AT))
 WALKTXT = """| 기호 | 칸 통행 | 그림 순서 | 뜻 |
 |---|---|---|---|
 | `X` | 막힘 | 사람과 같은 높이로 y 정렬(윗층 priority `upper`) | 집 몸채·담·소품·줄기 |
@@ -170,7 +179,7 @@ guide = f"""# 조선 — 한 장 조립 (읽는 순서 · 작업 순서 · 통�
 
 {HEAD}
 
-조선(바람의나라풍) 칩셋은 손 도트 조각 **{STATS['pieces']}종**(집·정자·성문·궁궐·나무·담·소품)과 땅 오토타일 **{STATS['autotileGroups']}종**(흙길·마당·강/연못·빈 논·모 논 등)을 한 장에 담았다.
+조선(바람의나라풍) 칩셋은 손 도트 조각 마을·국내성용 **{OLD_PIECES}종**(집·정자·성문·궁궐·나무·담·소품)과 땅 오토타일 **{OLD_AUTOTILES}종**(흙길·마당·강/연못·빈 논·모 논 등)을 한 장에 담았고, 뒤쪽 칸에 사냥터·동굴·실내·궁 내부 조각이 더 있다(용도 「사냥터·동굴」「실내 키트」「궁 내부」).
 **원본 마을 20호(정본 맵 `{args.map_id}`)는 이 시트로 만든 한 가지 예시일 뿐 정답 좌표가 아니다.** 같은 조각으로 다른 마을을 짓는 것이 이 문서의 목적이다.
 계열은 `{TS['family']}` — 버들항(`oprn-atlas`)·숲마을 칸 번호와 섞어 쓰지 않는다(맵의 타일셋을 바꾸려면 사용자 승인이 필요하다).
 
@@ -215,7 +224,7 @@ guide = f"""# 조선 — 한 장 조립 (읽는 순서 · 작업 순서 · 통�
 - **디딤돌 칸**: 맨 아래 줄의 계단 그림 칸 — 걸음(`F`). 조립 부품 `parts.door`(kind `entrance`)가 이 칸이다.
 - **문 앞 접근칸**: 조각 바로 아래 한 칸 — 길·마당(땅). 맵 `doors[]` 가 이 칸을 기록하고 도달 검사가 이 칸에서 디딤돌로 올라선다.
 - **통로**: 성문류(`gate_solseul`·`gate_pyeong`·`palace_gate_4`·`fort_gate`·`gungnae_gate_*`)는 아치 열 전부가 `F`(위쪽 같은 열은 `C`) — 걸어서 반대편으로 나간다(`parts.passage`).
-- **이벤트**: 이 칩셋에는 실내 맵이 없다. 문 이동·상호작용 이벤트는 만들지 않는다(주민 NPC 20명만). 문 이동이 필요하면 조수가 실내 맵을 따로 만들고 디딤돌 칸에 이벤트를 심는다.
+- **이벤트**: 마을 20호·국내성 맵에는 문 이동·상호작용 이벤트가 없다(주민 NPC 만). 집 안에 들어가려면 실내 방 맵(용도 「실내 키트」)을 따로 만들고 문 앞 접근칸·디딤돌 칸에 이동 이벤트를 심는다.
 
 ## 통행·구조 검사의 범위 (item 7)
 저장 스크립트(`scripts/content/save-joseon-baram.mjs`)가 **구조·통행만** 센다: 엔진 `isPassable` 대 구운 정답 {W * H}칸 불일치 0, 문 앞·디딤돌·성문 통로·주민 칸 도달, 오토타일 마스크 대 엔진.
@@ -274,12 +283,14 @@ cats.append(dict(id="joseon-baram-guide", name="조선 · 한 장 조립(읽는 
 docs, images = [], []
 rows_t = []
 for a in TS["autotileGroups"]:
+    if a["id"].startswith(NEW_AT):
+        continue
     mem = a["memberTileIds"]
     kind = "블롭 47×변형" if len(mem) % 47 == 0 and len(mem) >= 47 else "마스크 16"
     rows_t.append(f"| `{a['id']}` | {a['name']} | {kind} | {mem[0]}~{mem[-1]} ({len(mem)}칸) | {'맵 밖 = 이어짐' if a.get('edgeConnects') else '맵 가장자리 = 가장자리 모양'} | {len(a['connectTileIds'])}칸 |")
 flat_rows = []
 for g in TS["tileGroups"]:
-    if g["id"].startswith("jb:") and g["defaultLayer"] == "lower" and "오토타일" not in g["name"]:
+    if g["id"].startswith("jb:") and not g["id"].startswith(NEW_GROUP) and g["defaultLayer"] == "lower" and "오토타일" not in g["name"]:
         flat_rows.append(f"| `{g['id']}` | {g['name']} | {g['tileIds'][0]}~{g['tileIds'][-1]} ({len(g['tileIds'])}칸) |")
 exp_lines = "\n".join(f"- **{gid}**: {v['max']}칸 이내 — {v['why']}" for gid, v in EXPECT.items() if not gid.startswith("_"))
 auto_md = f"""# 땅 오토타일 — 흙길·마당·강/연못·논 (마스크 비트와 변형 표)
@@ -407,14 +418,15 @@ def piece_images(names, prefix, caption, per_sheet=24):
 
 by_cls = collections.defaultdict(list)
 for n, v in PW.items():
-    by_cls[v["cls"]].append(n)
+    if not n.startswith(NEW_PFX):
+        by_cls[v["cls"]].append(n)
 built = sorted(by_cls["built"], key=lambda n: (n.startswith(("gn_", "palace", "tower", "gungnae")), n))
 docs = piece_docs(built, "pieces-built", "건물 조각 사전", "집·관아·정자·성문·궁궐·누각. **문은 맨 아래 줄 디딤돌 칸**이고 집 y = 문 앞 길 y − 집 높이. 지붕 좌우 처마 열은 `C`(걸을 수 있다).")
 imgs = piece_images(built, "pieces-built", "건물 조각 통행 그림")
 cats.append(dict(id="joseon-baram-buildings", name="조선 · 건물 조각 사전(칸 배열·통행·문 칸)",
                  description=f"집·관아·정자·성문·궁궐 {len(built)}종의 크기·윗층 칸 배열·칸 통행 격자·문 디딤돌/통로 좌표와 통행 그림.", documents=docs, images=imgs))
 RANK = {"tree": 0, "bush": 1, "sapling": 2, "tuft": 3, "wall": 4, "prop": 5}
-others = sorted([n for n, v in PW.items() if v["cls"] != "built"], key=lambda n: (RANK.get(PW[n]["cls"], 9), n))
+others = sorted([n for n, v in PW.items() if v["cls"] != "built" and not n.startswith(NEW_PFX)], key=lambda n: (RANK.get(PW[n]["cls"], 9), n))
 docs = piece_docs(others, "pieces-props", "나무·소품·담·다리 조각 사전", "나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).", per_doc=22)
 imgs = piece_images(others, "pieces-props", "나무·소품·담·다리 조각 통행 그림", per_sheet=40)
 cats.append(dict(id="joseon-baram-props", name="조선 · 나무·소품·담·다리 조각 사전",
@@ -654,6 +666,12 @@ add_doc(docs, "qa-lessons", "오류 교훈 · 오류 그림(실제 변조)", f""
 cats.append(dict(id="joseon-baram-qa", name="조선 · 오류 교훈(실제 변조 그림 + 검출 코드·좌표)",
                  description="문 앞 막힘·수관 아래층·반대 방향 둑·다리 갑판 막힘을 실제로 변조한 오류/정답 그림과 검출 코드·맵 좌표. 검사 범위와 레이어 정정(신규).",
                  documents=docs, images=images))
+
+# ============================================================ 7~9. 새 판: 사냥터·동굴 지형 / 실내 키트 / 궁 내부
+cats += newrefs.build(dict(
+    ROOT=ROOT, DATA=DATA, TS=TS, PW=PW, KITS=KITS, PASS=PASS, PRI=PRI, AT=AT, EQUIV=EQUIV, STATS=STATS, TID=TID, TEX=TEX, PFX=PFX, T=T, COLS=COLS, COUNT=COUNT,
+    HEAD=HEAD, WALKTXT=WALKTXT, NEW_PFX=NEW_PFX, NEW_AT=NEW_AT, NEW_GROUP=NEW_GROUP, tile=tile, draw=draw, up=up, save=save, tint_overlay=tint_overlay,
+    piece_image=piece_image, piece_docs=piece_docs, grid_image=grid_image, array_text=array_text, ko=ko, add_doc=add_doc, small=small))
 
 # ============================================================ 장소 카드용 완성 그림(모든 맵, 원본 해상도 · 팔레트 256색)
 CARD = DATA / "images"; CARD.mkdir(parents=True, exist_ok=True)

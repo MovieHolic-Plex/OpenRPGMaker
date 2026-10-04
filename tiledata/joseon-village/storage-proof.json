@@ -74,6 +74,21 @@
     "id": "joseon-baram-qa",
     "docs": 1,
     "images": 4
+   },
+   {
+    "id": "joseon-baram-field-cave",
+    "docs": 15,
+    "images": 27
+   },
+   {
+    "id": "joseon-baram-interior",
+    "docs": 18,
+    "images": 22
+   },
+   {
+    "id": "joseon-baram-palace",
+    "docs": 11,
+    "images": 15
    }
   ]
  },
@@ -3919,7 +3934,13 @@
   "oldShortCopyRestored": true,
   "sameCountReferencesRestored": true,
   "sameCountKitMergedAuthorKept": true,
-  "idempotent": true
+  "idempotent": true,
+  "prevReleaseOldPrefixMatchesLedger": true,
+  "prevReleaseUpgraded": true,
+  "prevReleaseNewReferences": true,
+  "prevReleaseAuthorKept": true,
+  "prevReleaseIdempotent": true,
+  "bundledPrefixMatchesLedger": true
  },
  "walkAfterReload": {
   "gungnae": {
