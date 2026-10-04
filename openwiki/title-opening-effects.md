@@ -230,3 +230,5 @@ RPG 일곱 작품 공식 자료 조사/적용의 범위는 [rpg-opening-research
 캔버스에 loseContext를 먼저 호출하면 Chromium이 흰 lost-context 그림을 합성할 수 있다.
 출하 플레이어 촬영은 animations:allow로 실제 카메라·전환을 보존하고 이전 컷 대신
 현재 `.cinematic-shot:not([data-previous-shot])`의 원화를 검사한다.
+
+배경 엔진 준비에서도 `ensurePhaser()` → `import(PlayScene)` 순서를 지킨다. `PlayScene`은 모듈 평가 때 `getLoadedPhaser()`를 읽으므로 둘을 `Promise.all`로 병렬화하면 빠른 스킵에서 부팅이 실패한다. 로딩 QA는 Phaser 응답을 잡아 둔 채 Esc를 누른 뒤 해제해 이 의존성을 실제 출하물에서 확인한다.

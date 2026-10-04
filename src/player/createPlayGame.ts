@@ -25,8 +25,11 @@ export type PlayGameBootOptions = {
 
 let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof import('@/player/PlayScene')['PlayScene'] }> | undefined;
 function preparePlayRuntime() {
-  return runtimeWarmup ??= Promise.all([ensurePhaser(), importWithRetry(() => import('@/player/PlayScene'))])
-    .then(([PhaserRuntime, { PlayScene }]) => ({ PhaserRuntime, PlayScene }))
+  // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
+  return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
+      const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
+      return { PhaserRuntime, PlayScene };
+    })
     .catch(error => { runtimeWarmup = undefined; throw error; });
 }
 /** Fetch/parse engine chunks while the title is visible; never creates a game/session. */

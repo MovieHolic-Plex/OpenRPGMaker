@@ -72,14 +72,15 @@ try{
   result.cases.push({name:'missing-picture-retry',passed:true});await ctx.close();
  }
  if(wanted.has('reduced')){const{ctx,page}=await open({reduce:true});let release;const held=new Promise(r=>{release=r});
-  await page.route('**/*',async route=>{if(new URL(route.request().url()).pathname.endsWith(paths[1]))await held;await route.continue().catch(()=>{})});
+  await page.route('**/*',async route=>{const path=new URL(route.request().url()).pathname;if(path.endsWith(paths[1])||path.includes('/assets/phaser.min-'))await held;await route.continue().catch(()=>{})});
   await title(page);await page.keyboard.press('Enter');await ready(page,0);
+  assert.equal(await page.evaluate(()=>Boolean(window.Phaser)),false,'Exercise skip before the background engine has loaded');
   const animations=await page.locator('.cinematic-shot').evaluate(n=>n.getAnimations({subtree:true}).length);assert.equal(animations,0,'Reduced motion disables shot camera/transition animations');
   await page.keyboard.press('Escape');release();await playing(page);await page.waitForTimeout(1500);
   assert.equal(await page.getByTestId('cinematic-sequence').count(),0,'Late prepared image cannot revive a skipped opening');
   assert.equal(await page.locator('.cinematic-effects').count(),0);
   await page.screenshot({path:resolve(out,'loading/04-reduced-skip-first-play.png')});
-  result.cases.push({name:'reduced-motion-and-skip-during-prefetch',passed:true,activeShotAnimations:animations});await ctx.close();
+  result.cases.push({name:'reduced-motion-and-skip-during-prefetch',passed:true,activeShotAnimations:animations,engineReadyBeforeSkip:false});await ctx.close();
  }
  result.passed=result.cases.length===wanted.size&&result.cases.every(c=>c.passed)&&!result.errors.length;
 }catch(e){result.failure=e.message;result.passed=false;result.failureState=await lastPage?.evaluate(()=>({overlay:document.querySelector('[data-testid="play-loading-overlay"]')?.textContent,scene:document.querySelector('[data-testid="cinematic-sequence"]')?.dataset,shotTimes:window.__shotTimes})).catch(()=>null);await lastPage?.screenshot({path:resolve(out,'loading/failure.png'),timeout:5000}).catch(()=>{})}
