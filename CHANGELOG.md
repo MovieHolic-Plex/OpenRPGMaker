@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.144.1 — 2026-10-06
+
+### 수정
+
+- discard and redraw repeated monster bodies (#2205) (`0fa4199`)
+
 ## 0.144.0 — 2026-10-06
 
 ### 기능
