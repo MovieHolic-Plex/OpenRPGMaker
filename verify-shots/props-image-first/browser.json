@@ -1,0 +1,31 @@
+{
+  "errors": [],
+  "fails": [],
+  "writes": [],
+  "measure": {
+    "titleTop": 10,
+    "firstImageTop": 120.03125,
+    "width": 1024,
+    "scroll": 1024,
+    "bar": {
+      "x": 190,
+      "y": 681.609375,
+      "width": 834,
+      "height": 50.390625,
+      "top": 681.609375,
+      "right": 1024,
+      "bottom": 732,
+      "left": 190
+    },
+    "ok": {
+      "x": 877,
+      "y": 690.609375,
+      "width": 135,
+      "height": 33.390625,
+      "top": 690.609375,
+      "right": 1012,
+      "bottom": 724,
+      "left": 877
+    }
+  }
+}

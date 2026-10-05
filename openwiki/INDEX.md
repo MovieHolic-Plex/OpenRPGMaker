@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **145쪽 / 4974KB / 약 1,447,536 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **145쪽 / 4978KB / 약 1,448,725 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1165,7 +1165,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/harnesses/interior-prop-derivations-operations.md` — 15KB · 203줄 · ~4,449 토큰
+### `openwiki/harnesses/interior-prop-derivations-operations.md` — 16KB · 216줄 · ~4,760 토큰
 
 - `L6` 1. 실제 대상을 먼저 확인한다
 - `L43` 2. API와 쓰기 영향
@@ -1175,8 +1175,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L150` 6. 백업·이관
 - `L176` 7. 검증과 PR 완료 보고
 - `L191` 2026-10-05 화면에서 저장 상태 확인
+  - `L205` 그림 우선 UI 후속 배포 (2026-10-05)
 
-### `openwiki/harnesses/interior-prop-derivations.md` — 28KB · 346줄 · ~8,762 토큰
+### `openwiki/harnesses/interior-prop-derivations.md` — 31KB · 374줄 · ~9,640 토큰
 
 - `L9` 1. 사용자가 결정한 제품 흐름
 - `L32` 2. 세 계층과 현재 완료 범위
@@ -1195,6 +1196,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L286` 15. 기존 근거와 세션 연혁
 - `L303` 2026-10-05 기물 선택 화면과 공용 반영 확인
   - `L332` 실제 DB와 픽셀 확인
+  - `L348` 2026-10-05 후속 개편: 이름·그림 먼저, 더블클릭으로 다음
 
 ### `openwiki/harnesses/interior-props.md` — 8KB · 84줄 · ~2,442 토큰
 
