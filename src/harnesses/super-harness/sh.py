@@ -506,7 +506,7 @@ def require_planning(cid):
 def reject_planning(cid, reasons):
     c = store.concept(cid)
     attempt = c['plan_attempt'] + 1
-    blocked = attempt > int(store.setting('max_attempts'))
+    blocked = attempt > int(store.setting('max_art_revisions') if theme_production.policy(cid) else store.setting('max_attempts'))
     store.update_concept(cid, stage='blocked' if blocked else 'plan', status='idle' if blocked else 'queued',
                          plan_attempt=attempt, reasons=reasons[:16], note='기획 검수 반려 — 수정 필요')
     store.log(cid, '기획 반려 → ' + ('막힘' if blocked else f'기획 {attempt}차 수정'))
