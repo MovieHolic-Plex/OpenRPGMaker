@@ -36,9 +36,10 @@ def launch(root, par=4, batch_size=2):
     return dict(run=root.name, pid=child.pid)
 
 
-def runs(items=None):
+def runs(items=None, *, blocked_by_run=None, decisions=None):
     items = H._items() if items is None else items
     result = []
+    decisions = H._decisions() if decisions is None else decisions
     for file in sorted((H.DATA / 'runs').glob('*/manifest.json'), reverse=True):
         manifest = json.loads(file.read_text())
         if manifest.get('reviewMode') != 'human':
@@ -49,7 +50,6 @@ def runs(items=None):
         alive = H._alive(driver.get('pid'))
         rows = [it for it in items if it['run'] == root.name]
         ready = [it for it in rows if it['status'] == 'done']
-        decisions = H._decisions()
         kept = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'accept' for it in ready)
         rejected = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'reject' for it in ready)
         current_phase = state.get('phase', 'running')
@@ -60,7 +60,7 @@ def runs(items=None):
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
                            recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), continuedIn=state.get('continuedIn'),
                            maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
-                           blocked=sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
+                           blocked=blocked_by_run.get(root.name, 0) if blocked_by_run is not None else sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
                                        for p in root.glob('*__*') if (p / 'out.chr.txt').exists())))
     return result
 
@@ -168,11 +168,11 @@ def _control(run, resume):
     return dict(run=run, phase='pausing')
 
 
-def export_kept(run='all'):
+def export_kept(run='all', decisions=None):
     if run != 'all':
         if not isinstance(run, str) or Path(run).name != run or run in ('.', '..') or not H.run_dir(run).is_dir():
             raise ValueError('실행을 찾을 수 없습니다')
-    decisions = H._decisions()
+    decisions = H._decisions() if decisions is None else decisions
     selected = []
     for it in H._items():
         if run != 'all' and it['run'] != run:

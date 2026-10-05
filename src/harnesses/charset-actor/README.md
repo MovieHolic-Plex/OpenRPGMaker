@@ -86,6 +86,26 @@ API 시작과 선택 저장 뒤 자동 등록하며 위 `publish-shared` 명령�
 `bulk.py`의 외부 manifest도 각 행에 `reviewMode: "human"`, `strength: "free"`를 넣으면 같은 자유 저작 계약을 사용한다.
 그 경우 최상위 manifest에도 `reviewMode: "human"`을 넣어 내보내기에서 사람 선택만 사용하게 한다.
 
+## 선택 저장과 공용 등록 (2026-10-05)
+
+`serve`의 현재 진입점은 `review_server.py`다. 봉인된 도트 저작 도구와 HTTP 동기화를 분리하여
+제작 중인 모델/12프레임/원본/납품 해시를 유지한 채 화면을 고친다. `harness.py serve`는 이전 실행용이다.
+
+- 선택은 후보의 현재 binding과 기술 적격성을 확인하고 journal을 fsync한 뒤 응답한다. 공용 등록 실패는 저장한 선택을 되돌리지 않는다.
+- 공용 SQLite 등록과 accepted 사본 복구는 단일 작업자가 뒤에서 묶어 처리한다. 동시에 새 선택이 들어오면 최신 journal로 이어 등록한다.
+- 동일 mutation의 재시도는 같은 영수증을 반환하며 옛 남기기 재시도가 뒤의 폐기/되돌리기를 복원하지 않는다.
+- 목록 검사는 입력/그림/납품/원본/모델 종료가 바뀔 때 한 작업자만 갱신한다. 선택과 생산 상태는 매 조회에 다시 읽으며 남기기 시 기술 검사는 현재 파일로 수행한다.
+- 다운로드는 선택 목록만 잠금 안에서 복사하고 패킹은 별도 잠금으로 진행한다. 다운로드 중에도 선택을 저장한다.
+- 숨은 탭은 주기 조회를 쉬며 GIF 로드 전에는 버튼에 대기 상태를 표시한다. 공용 등록 중/실패/재시도는 journal 저장과 따로 보여준다.
+- 서버의 legacy 내보내기/사본도 저장소 밖 `decisions-export.json`/`accepted-legacy/`에 둔다. 기존 기록과 원본을 덮지 않는다.
+
+별도 저장소의 3탭 브라우저에서 공용 등록을 6초 늦춘 상태로 연속 남기기/폐기, 되돌리기와 옛 재전송,
+재접속, 숨은 탭, SQLite 재로드를 확인했다. 카드 이동 53~95ms, 저장 응답 91~298ms,
+동시 목록 조회 37~43ms, 브라우저 오류 0이었다. 이 값은 확인용 저장소의 측정이며 실제 서버 측정은
+`evidence/review-save-20261005/live-state-proof.json`에 별도로 보존한다.
+자동 CI의 `verify_review_server.py`는 journal 재읽기/중복/해시 변경/등록 지연·실패·재시도 계약을 확인한다.
+이 세션에서 전체 테스트/게이트를 직접 실행하지 않는다.
+
 ## 선택적인 좌표 저작 비교 실험
 
 `bulk` manifest의 캐릭터에 `authoringMode: "pixel-patches-v1"`을 넣으면 `pixel-worker.md`를 사용한다.
@@ -201,7 +221,7 @@ http://mdc-server:18314/ — 비포(Actor1 원본 걷기·돌기·시트·얼굴
 서버는 사용자 유닛(transient) — 죽었으면:
 ```bash
 export XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
-systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/harness.py serve --port 18314
+systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/review_server.py --port 18314
 ```
 
 ## 지시문 쓰는 법 — 실루엣은 뼈대 그대로 (2026-10-02 사용자: 「무기나 모자 추가는 별로」)

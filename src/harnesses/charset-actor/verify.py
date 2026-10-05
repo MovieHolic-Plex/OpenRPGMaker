@@ -373,6 +373,8 @@ def verify():
     verify_motion.verify(check)
     import verify_animal
     verify_animal.verify(check, isolated_store)
+    import verify_review_server
+    verify_review_server.verify(check, isolated_store)
     return evidence
 
 
