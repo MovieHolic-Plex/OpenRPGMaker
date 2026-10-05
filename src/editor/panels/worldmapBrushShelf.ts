@@ -48,7 +48,7 @@ export function makeWorldmapBrushShelf(t: TilesetDef, layer: 'lower' | 'upper', 
         const height = el('div', { attrs: { style: 'display:flex;flex-wrap:wrap;gap:4px;margin-top:10px' } });
         for (const [id, name, mode] of [['plateau', '고원·절벽', 'set'], ['flatten', '높이 지우기', 'flatten']] as const)
             height.append(el('button', { class: 'btn', text: name, attrs: { type: 'button' }, dataset: { testid: 'worldmap-brush-' + id }, on: { click: () => { editorState.set({ tool: 'relief', layer: 'lower', activePaletteStamp: null, reliefMode: mode, reliefLevel: 1, reliefTopGrass: false, reliefDoodad: null, reliefRoughSize: 'S', brushSize: 1 }); rerender(); } } }));
-        height.append(el('button', { class: 'btn', text: '고개·경사로', attrs: { type: 'button' }, dataset: { testid: 'worldmap-brush-slope' }, on: { click: () => { editorState.set({ tool: 'relief', layer: 'lower', activePaletteStamp: null, reliefTopGrass: false, reliefDoodad: 'ramp:slope', reliefRampWidth: 2 }); rerender(); } } }));
+        height.append(el('button', { class: 'btn', text: '고개·경사로', attrs: { type: 'button' }, dataset: { testid: 'worldmap-brush-slope' }, on: { click: () => { editorState.set({ tool: 'relief', layer: 'lower', activePaletteStamp: null, reliefTopGrass: false, reliefDoodad: 'ramp:slope', reliefRampWidth: 1 }); rerender(); } } }));
         root.append(height);
     }
     return root;

@@ -1,0 +1,21 @@
+{
+  "nativeUiOnly": true,
+  "newModelCall": false,
+  "speed": 1,
+  "cuts": [
+    {
+      "source": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/native-r9/video/page@2a7c2990ce20833de5f6c162105e3d2f.webm",
+      "start": 135.21099999999998,
+      "duration": 57.11800000000002,
+      "actions": "empty sea → connected terrain/forests/roads/bridge → six complete settlement kits"
+    },
+    {
+      "source": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/native-height-r1/video/page@6c738c629e99f9a383dd36686cb2a5b3.webm",
+      "start": 110.586,
+      "duration": 9.453000000000003,
+      "actions": "one-cell mountain pass → actual SQLite save"
+    }
+  ],
+  "tailHoldSeconds": 3,
+  "omitted": "boot waits, inactive waits, earlier rejected 2-cell ramp attempt, reload wait; fresh browser reload remains in receipts and PNGs"
+}

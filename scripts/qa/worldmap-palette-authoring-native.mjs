@@ -45,6 +45,7 @@ try{
   await page.getByTestId('sidebar-map-switcher').click();await page.getByTestId('map-add').click();
   await page.getByTestId('map-create-worldmap-blank').click();await page.getByTestId('map-create-name').fill('팔레트로 만든 새 대륙');await page.getByTestId('map-create-confirm').click();
   const close=page.getByTestId('sidebar-maps-close');if(await close.isVisible().catch(()=>false))await close.click();
+  const collapseAi=page.getByTestId('ai-collapse');if(await collapseAi.isVisible().catch(()=>false))await collapseAi.click();
   await page.getByTestId('worldmap-brush-grass-sea').waitFor();
   let p=await current();mapId=Object.keys(p.maps).find(id=>p.maps[id].name==='팔레트로 만든 새 대륙');receipt.mapId=mapId;
   receipt.blank={width:p.maps[mapId].width,height:p.maps[mapId].height,allSea:p.maps[mapId].lowerTiles.every(t=>t===0),allUpperEmpty:p.maps[mapId].upperTiles.every(t=>t===-1)};
@@ -100,9 +101,10 @@ try{
   await page.screenshot({path:resolve(dir,'05-final.png')});writeRuntimeProject(projectDir,resolve(dir,'live.json'));receipt.videoPath=await page.video().path();await context.close();context=null;
   stage('fresh-browser-reload');const fresh=await newEditor(browser,host.url,projectDir,{});context=fresh.context;page=fresh.page;
   await page.getByTestId('sidebar-map-switcher').click();await page.getByTestId('map-tree-node-'+mapId).click();if(await page.getByTestId('sidebar-maps-close').isVisible().catch(()=>false))await page.getByTestId('sidebar-maps-close').click();
+  if(await page.getByTestId('ai-collapse').isVisible().catch(()=>false))await page.getByTestId('ai-collapse').click();
   const loaded=fresh.loads.find(l=>l.sha256===saved.sha256);receipt.freshBrowserLoadedSameMap=!!loaded&&isDeepStrictEqual(loaded.maps[mapId],saved.project.maps[mapId]);
   receipt.reopenedStoredSameMap=isDeepStrictEqual(stored(projectDir).project.maps[mapId],saved.project.maps[mapId]);
-  await page.screenshot({path:resolve(dir,'06-reloaded.png')});receipt.passed=receipt.saved.sameMap&&receipt.freshBrowserLoadedSameMap&&receipt.reopenedStoredSameMap&&receipt.erasePreservesGround&&receipt.eraseReshapesNeighbor&&receipt.undoRestoresForest&&receipt.plateau.levels>0&&receipt.plateau.sameGround&&receipt.errors.length===0;
-  stage(receipt.passed?'complete':'incomplete');console.log(JSON.stringify(receipt));
+  await page.screenshot({path:resolve(dir,'06-reloaded.png')});receipt.passed=receipt.saved.sameMap&&receipt.freshBrowserLoadedSameMap&&receipt.reopenedStoredSameMap&&receipt.erasePreservesGround&&receipt.eraseReshapesNeighbor&&receipt.undoRestoresForest&&receipt.plateau.levels>0&&receipt.plateau.ramps>0&&receipt.plateau.sameGround&&receipt.errors.length===0;
+  stage(receipt.passed?'complete':'incomplete');if(!receipt.passed)process.exitCode=1;console.log(JSON.stringify(receipt));
 }catch(e){receipt.failure=e.message;receipt.failureStack=e.stack;save();await page?.screenshot({path:resolve(dir,'failure.png')}).catch(()=>{});console.log(JSON.stringify(receipt));process.exitCode=1;}
 finally{await context?.close().catch(()=>{});await browser.close();await host.close();save();}
