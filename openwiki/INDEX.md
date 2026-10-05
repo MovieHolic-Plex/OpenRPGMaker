@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **146쪽 / 5052KB / 약 1,471,235 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **146쪽 / 5056KB / 약 1,472,733 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
 | `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
-| `openwiki/harnesses/super-harness.md` | 65KB | 4KB | 653 | ~20,405 |
+| `openwiki/harnesses/super-harness.md` | 69KB | 4KB | 695 | ~21,617 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
 | `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1555 | ~60,403 |
@@ -89,7 +89,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/modern-chipset.md` | 2 | `.input.json`, `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness.md` | 19 | `B.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `result-review.json`, `supervisor-authorization.json`, `verdict.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness.md` | 25 | `B.json`, `DATA/reference-catalog.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `native_retry.py`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `provider_retry.py`, `reference-source.json`, `reference_source.py`, `result-review.json`, `supervisor-authorization.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -112,7 +112,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 26 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `_retro-themes.css`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `qa-runs/battle-moves/anim.js`, `qa-runs/battle-sfx/audio-score.js`, `raw.png`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `test/battleLookFrontSkin.test.ts`, `verify-shots/monster-refresh/SUMMARY.md`, `verify-shots/monster-refresh/runtime/SUMMARY.md` |
 | `openwiki/runtime-m2-flow-controls.md` | 4 | `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 28 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `phaser.min.js`, `render-relief-maps.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
+| `openwiki/runtime-project-schema.md` | 29 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `phaser.min.js`, `render-relief-maps.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
@@ -127,7 +127,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/stardew-core-elements-research.md` | 1 | `scripts/save-stardew-demo.mts` |
 | `openwiki/storage-retirement.md` | 1 | `.oprn-local.json` |
 | `openwiki/teaching-assistant-tilesets.md` | 1 | `_specs.py` |
-| `openwiki/team-project-host.md` | 2 | `dist-electron/dist-electron/browser-bridge.js`, `userData/recent-teams.json` |
+| `openwiki/team-project-host.md` | 3 | `dist-electron/dist-electron/browser-bridge.js`, `dist-electron/main.cjs`, `userData/recent-teams.json` |
 | `openwiki/testing.md` | 39 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `boot-failure.json`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `legacyDb-proof-first-save.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `qa-db-beginner-mode.spec.ts`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/qa/acceptance-live.mjs`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
@@ -1208,12 +1208,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L348` 2026-10-05 후속 개편: 이름·그림 먼저, 더블클릭으로 다음
   - `L376` 2026-10-05 크기 변경 후 다시 뽑기
 
-### `openwiki/harnesses/interior-props.md` — 8KB · 84줄 · ~2,442 토큰
+### `openwiki/harnesses/interior-props.md` — 8KB · 90줄 · ~2,570 토큰
 
 - `L9` 에디터 공방 (아래 서버 하네스와 저장 경로가 다름)
 - `L20` 서버 하네스의 파생 (2026-10-04)
 - `L34` 서버 확정 → 공용 SQLite 자동 등록 (2026-10-04)
 - `L65` 자동 파생 제안 화면 (2026-10-04)
+  - `L85` 공간 감독의 공급자 오류 복구 (2026-10-05)
 
 ### `openwiki/harnesses/joseon-baram.md` — 15KB · 105줄 · ~4,358 토큰
 
@@ -1239,7 +1240,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` pick 절차 (사람)
 - `L76` 복제에서 바꾼 점 (modern-chipset 대비)
 
-### `openwiki/harnesses/modern-chipset.md` — 10KB · 101줄 · ~2,941 토큰
+### `openwiki/harnesses/modern-chipset.md` — 10KB · 108줄 · ~3,099 토큰
 
 - `L8` 왜 만들었나 (2026-10-01)
 - `L14` 흐름
@@ -1250,6 +1251,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L54` 승인 주차장 두 면 공용 등록 (2026-10-05)
 - `L76` 기존 칩 확장 실험 (2026-10-05)
   - `L90` 미완성 판정의 후속 처리
+  - `L102` 공급자 오류 재개 (2026-10-05)
 
 ### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
 
@@ -1287,7 +1289,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
 - `L176` 전체 제작 통합 방향 (2026-10-05)
 
-### `openwiki/harnesses/super-harness.md` — 65KB · 653줄 · ~20,405 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/super-harness.md` — 69KB · 695줄 · ~21,617 토큰 · 통째읽기 잘림
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1320,6 +1322,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L582` 사용자에게는 실제 타일 공간 데모를 제공한다 (2026-10-05)
   - `L610` Native 작업 문맥 격리 (2026-10-05)
 - `L620` 키워드에서 계속 만드는 공간 흐름 (2026-10-05)
+- `L654` 공급자 오류 자동 복구 (2026-10-05)
 
 ### `openwiki/harnesses/town-props-300.md` — 29KB · 532줄 · ~8,453 토큰
 

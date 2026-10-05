@@ -198,6 +198,8 @@ def require_completed(root, request, snapshot):
     verified(root, request['layout'])
     if request['layout'] != snapshot.get('layoutRef'):
         raise ValueError('수집된 그림의 도면 승인 입력이 다릅니다.')
+    if {k:v for k,v in request.items() if k!='layoutApproval'} != snapshot.get('execution'):
+        raise ValueError('승인 후 실행 대상/모델/계약 변경')
     report = json.loads(Path(request['layoutApproval']).read_text())
     validate_verdict(report, snapshot['fingerprint'], LAYOUT_CHECKS)
     if request.get('acceptance'): verified(root, request['acceptance'])
@@ -206,3 +208,34 @@ def require_completed(root, request, snapshot):
     mutable = {'harness.sqlite', 'harness.sqlite-wal', 'state.json'}
     for ref in snapshot['layout']['sources']:
         if Path(ref['path']).name not in mutable: verified(root, ref)
+
+
+def freeze_generated_previews(root, request):
+    """Hash immutable review copies of explicitly declared generated previews.
+
+    Instructions, code, atlases and source assets remain bound to their original
+    files. Runtime preview outputs are revalidated by collection + visual QA.
+    """
+    import shutil
+    root=Path(root).resolve(); original=verified(root,request['layout'])
+    layout=json.loads(original.read_text()); changed={}
+    for ref in layout['sources']:
+        if ref.get('role')!='generated-preview': continue
+        src=verified(root,ref)
+        if src.suffix.lower() not in ('.png','.json') or not src.is_relative_to(root/'art-output'):
+            raise ValueError('생성 미리보기는 art-output 안 PNG/JSON만 허용합니다.')
+        frozen=root/'art-output'/'approved-previews'/ref['sha256']/src.name
+        frozen.parent.mkdir(parents=True,exist_ok=True)
+        if not frozen.exists(): shutil.copy2(src,frozen)
+        if digest(frozen)!=ref['sha256']: raise ValueError('동결 미리보기 해시 불일치')
+        changed[ref['path']]=dict(path=str(frozen.relative_to(root)),sha256=ref['sha256'])
+    if not changed: return
+    for ref in layout['sources']:
+        if ref['path'] in changed:
+            origin=ref['path']; ref.update(changed[origin]);ref['generatedFrom']=origin
+    for ref in layout.get('camera',{}).get('references',[]):
+        if ref['path'] in changed: ref.update(changed[ref['path']])
+    path=root/'art-output'/'approved-previews'/request['layout']['sha256']/'layout.json'
+    path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text(json.dumps(layout,ensure_ascii=False,indent=2))
+    request['layout']=dict(path=str(path.relative_to(root)),sha256=digest(path))
