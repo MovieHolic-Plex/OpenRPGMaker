@@ -47,6 +47,13 @@ class SelectedIcons:
                 raise KitError('선택 아이콘 그림 해시가 다르다: ' + item['id'])
             with Image.open(source) as opened:
                 icon = opened.convert('RGBA')
+                # Match the committed palette sheet's transparent and shadow color keys.
+                pixels = np.array(icon)
+                transparent = np.all(pixels[:, :, :3] == (255, 103, 139), axis=2)
+                shadow = np.all(pixels[:, :, :3] == (254, 103, 139), axis=2)
+                pixels[transparent] = (0, 0, 0, 0)
+                pixels[shadow] = (0, 0, 0, 80)
+                icon = Image.fromarray(pixels)
                 if icon.size != (site['width'] * 16, site['height'] * 16):
                     raise KitError('선택 아이콘의 실제 크기가 다르다: ' + item['id'])
                 result.alpha_composite(icon, (site['x'] * 16, site['y'] * 16))

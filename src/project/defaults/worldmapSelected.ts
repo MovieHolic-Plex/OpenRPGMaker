@@ -1,5 +1,6 @@
 import sheet from "@/assets/worldmapSelectedSheet.json";
 import references from "@/assets/worldmapSelectedReferences.json";
+import materialReferences from "@/assets/worldmapMaterialReferences.json";
 import type { TilesetDef, StructureKitDef, TileGroupMetadata } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
@@ -7,7 +8,7 @@ export const WORLDMAP_SELECTED_ID = "worldmap_selected";
 export const WORLDMAP_SELECTED_TEXTURE = "tex_worldmap_selected";
 export const WORLDMAP_SELECTED_ICONS = sheet.icons;
 const PREFIX = "wmi-";
-const REFERENCES = references as unknown as TilesetReferenceCategory[];
+const REFERENCES = [...references, ...materialReferences] as unknown as TilesetReferenceCategory[];
 
 /** EasyRPG 지형 480칸 + 사람 선택만. 시트의 기존 칸 위치는 바꾸지 않는다. */
 export function createWorldmapSelectedTileset(world: TilesetDef): TilesetDef {

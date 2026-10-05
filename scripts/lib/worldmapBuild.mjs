@@ -94,6 +94,8 @@ export async function buildWorldmap(request = {}) {
     const ascii = await readFile(join(out, "terrain.txt"), "utf8");
     const warnings = res.stdout.split("\n").filter((l) => l.startsWith("지형 경고:")).map((l) => l.replace(/^지형 경고:\s*/, ""));
     const selection = world.icon_selection;
+    const packed = preview ? null : Object.values(world.tilemaps ?? {})[0];
+    const tilemap = packed ? { ...packed, imageDataUrl: `data:image/png;base64,${(await readFile(join(out, packed.image))).toString('base64')}` } : undefined;
     if (selection?.pending.length) warnings.push(`테마 ${theme}: 사람 선택이 없거나 발자국이 다른 장소 ${selection.pending.length}곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다.`);
     return {
       ok: true,
@@ -109,6 +111,7 @@ export async function buildWorldmap(request = {}) {
       },
       themeNote: await themeNote(theme),
       iconSelection: selection,
+      tilemap,
       ascii,
       journeyCheck: report.journey_check ?? null,
       warnings,
