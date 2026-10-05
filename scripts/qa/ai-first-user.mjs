@@ -59,11 +59,14 @@ try {
   if (process.env.QA_HTTP_RELAY === '1') {
     let inFlight = 0; const waiting = [];
     await page.route(base + '/**', async route => {
+      // Large project responses exceed the DevTools pipe frame limit; keep their native HTTP path.
+      if (new URL(route.request().url()).pathname.startsWith('/__oprn/')) return route.continue();
       if (inFlight >= 2) await new Promise(resolve => waiting.push(resolve));
       inFlight++;
       let response;
       try { response = await route.fetch({ timeout: 180000 }); await route.fulfill({ response }); }
-      finally { await response?.dispose(); inFlight--; waiting.shift()?.(); }
+      catch { await route.abort().catch(() => {}); }
+      finally { await response?.dispose().catch(() => {}); inFlight--; waiting.shift()?.(); }
     });
     report.transport = 'Unmodified local Vite HTTP responses forwarded via Playwright with two concurrent requests; temporary network-interface workaround.';
   }

@@ -1,0 +1,274 @@
+{
+  "provenance": "Actual editor UI, controlled team receipts replay; no new model call, no authored content or canonical SQLite write.",
+  "checks": [
+    {
+      "name": "first-visit-map-focused",
+      "ok": true,
+      "detail": {
+        "dock": 44,
+        "canvas": 1210,
+        "panel": 43,
+        "fits": true,
+        "folded": true,
+        "tab": "chat",
+        "composers": 0
+      }
+    },
+    {
+      "name": "one-workspace-no-extra-rail",
+      "ok": true
+    },
+    {
+      "name": "first-request-starter-visible",
+      "ok": true
+    },
+    {
+      "name": "no-empty-team-tabs",
+      "ok": true
+    },
+    {
+      "name": "quick-placement-inside-settings",
+      "ok": true
+    },
+    {
+      "name": "display-controls-not-on-first-screen",
+      "ok": true
+    },
+    {
+      "name": "example-only-prefills",
+      "ok": true
+    },
+    {
+      "name": "example-protects-existing-draft",
+      "ok": true
+    },
+    {
+      "name": "advanced-placement-still-reachable",
+      "ok": true
+    },
+    {
+      "name": "empty-log-actions-disabled",
+      "ok": true
+    },
+    {
+      "name": "stream-does-not-unfold",
+      "ok": true
+    },
+    {
+      "name": "overlay-keeps-map-width",
+      "ok": true,
+      "detail": {
+        "initial": {
+          "dock": 44,
+          "canvas": 1210,
+          "panel": 43,
+          "fits": true,
+          "folded": true,
+          "tab": "chat",
+          "composers": 0
+        },
+        "opened": {
+          "dock": 44,
+          "canvas": 1210,
+          "panel": 380,
+          "fits": true,
+          "folded": false,
+          "tab": "chat",
+          "composers": 1
+        }
+      }
+    },
+    {
+      "name": "single-member-composer",
+      "ok": true,
+      "detail": {
+        "dock": 44,
+        "canvas": 1210,
+        "panel": 380,
+        "fits": true,
+        "folded": false,
+        "tab": "team",
+        "composers": 1
+      }
+    },
+    {
+      "name": "current-result-next-visible",
+      "ok": true
+    },
+    {
+      "name": "member-records-folded",
+      "ok": true
+    },
+    {
+      "name": "member-recent-hidden-until-requested",
+      "ok": true
+    },
+    {
+      "name": "member-records-reachable",
+      "ok": true
+    },
+    {
+      "name": "member-draft-preserved",
+      "ok": true
+    },
+    {
+      "name": "stream-keeps-selected-tab",
+      "ok": true
+    },
+    {
+      "name": "stream-keeps-selected-member",
+      "ok": true
+    },
+    {
+      "name": "active-run-reason-visible",
+      "ok": true
+    },
+    {
+      "name": "same-global-input-draft-cursor",
+      "ok": true
+    },
+    {
+      "name": "one-conversation-composer",
+      "ok": true
+    },
+    {
+      "name": "map-view-folds-workspace",
+      "ok": true
+    },
+    {
+      "name": "map-view-selects-member-map",
+      "ok": true
+    },
+    {
+      "name": "map-view-keeps-project-identity",
+      "ok": true
+    },
+    {
+      "name": "restore-preserves-member-draft",
+      "ok": true
+    },
+    {
+      "name": "archive-project-isolated",
+      "ok": true
+    },
+    {
+      "name": "clipboard-member-scope",
+      "ok": true,
+      "detail": {
+        "length": 819
+      }
+    },
+    {
+      "name": "txt-actual-download",
+      "ok": true
+    },
+    {
+      "name": "json-member-projection",
+      "ok": true
+    },
+    {
+      "name": "whole-run-projection",
+      "ok": true
+    },
+    {
+      "name": "archived-run-download",
+      "ok": true
+    },
+    {
+      "name": "manual-copy-survives-stream",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "same": true
+      }
+    },
+    {
+      "name": "wide-shares-live-nodes",
+      "ok": true
+    },
+    {
+      "name": "wide-restores-one-pane",
+      "ok": true
+    },
+    {
+      "name": "wide-map-reveals-map",
+      "ok": true
+    },
+    {
+      "name": "responsive-overlay-1024",
+      "ok": true,
+      "detail": {
+        "open": {
+          "dock": 44,
+          "canvas": 634,
+          "panel": 380,
+          "fits": true,
+          "folded": false,
+          "tab": "team",
+          "composers": 1
+        },
+        "folded": {
+          "dock": 44,
+          "canvas": 634,
+          "panel": 43,
+          "fits": true,
+          "folded": true,
+          "tab": "team",
+          "composers": 0
+        }
+      }
+    },
+    {
+      "name": "responsive-overlay-700",
+      "ok": true,
+      "detail": {
+        "open": {
+          "dock": 44,
+          "canvas": 430,
+          "panel": 380,
+          "fits": true,
+          "folded": false,
+          "tab": "team",
+          "composers": 1
+        },
+        "folded": {
+          "dock": 44,
+          "canvas": 430,
+          "panel": 43,
+          "fits": true,
+          "folded": true,
+          "tab": "team",
+          "composers": 0
+        }
+      }
+    },
+    {
+      "name": "tab-and-fold-preferences-saved",
+      "ok": true
+    },
+    {
+      "name": "export-retention-and-redaction",
+      "ok": true,
+      "detail": {
+        "count": 201,
+        "redacted": true,
+        "dropped": true
+      }
+    },
+    {
+      "name": "no-browser-errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "transport": "Unmodified local Vite HTTP responses forwarded via Playwright with two concurrent requests; temporary network-interface workaround.",
+  "fixture": {
+    "projectId": "347980f0-b23f-46d5-9b00-f2636fc7aeaa",
+    "mapId": "map_7ef94936-6385-4161-a1d9-c33c1f72f585",
+    "traceId": "activity-1791178941234-1dl9qncvjcli",
+    "entries": 4
+  },
+  "reloadVerification": "Not included: repeated shared-machine ERR_NETWORK_CHANGED interrupted dev reloads; report verifies saved preference values and live fold/restore instead.",
+  "passed": true
+}
