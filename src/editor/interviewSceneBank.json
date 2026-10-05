@@ -369,6 +369,11 @@
       "sha256": "ee8ea95e7f45f79c33763922689a7894fa56a96914788dc0a96d356ba74d7e0f",
       "promptSha256": "f1c0a9a550ac1bef2dd077bca98f5f6f370d5803403e1bf5279d918d46ee9384"
     },
+    "romance--palace--choice--warm--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--warm--perspectives-e4b0466829b4.png",
+      "sha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+      "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4"
+    },
     "romance--palace--choice--secret": {
       "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--secret-32543db539db.png",
       "sha256": "32543db539db80ff9bdfd3ea8afc8452568d17418f3883530932fae079715053",
@@ -379,6 +384,11 @@
       "sha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
       "promptSha256": "4caedff62d6106cac3fccf3faf4ad89f4d01ef06bc0407ba5e9387060b4d1155"
     },
+    "romance--palace--choice--secret--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--secret--routes-0725b3a2166c.png",
+      "sha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+      "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53"
+    },
     "romance--palace--choice--secret--perspectives": {
       "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--secret--perspectives-dc5632f41177.png",
       "sha256": "dc5632f411779a768fc5d19dc505d769d19f2335bb5be95234816333ef745848",
@@ -388,6 +398,21 @@
       "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-ca0155c4c05d.png",
       "sha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
       "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7"
+    },
+    "romance--palace--choice--bittersweet--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--single-dcb254d53a40.png",
+      "sha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+      "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f"
+    },
+    "romance--palace--choice--bittersweet--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--routes-a04d4245ffbc.png",
+      "sha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+      "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb"
+    },
+    "romance--palace--choice--bittersweet--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--perspectives-4d224f4f087b.png",
+      "sha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+      "promptSha256": "e1d99f39c5a6a012fca1fa2d9f7d8459dee12724f21899419cbf3bb58bdb0071"
     },
     "romance--town": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town-269880336292.png",
@@ -404,15 +429,55 @@
       "sha256": "104ae765400937aedc11d4421bfbbf3ecbf81d6bff8d7169d16b98967dc9d224",
       "promptSha256": "9512862043da0790172e007acef39614e544ac1ac518aecd95c2431f9eb370b2"
     },
+    "romance--town--talk--warm--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--warm--routes-1b957ec9698e.png",
+      "sha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+      "promptSha256": "a7a28fb61def0ccfd1e06c77af9a10ced3f04e1604e39f7cb3c2088feb84b1d4"
+    },
+    "romance--town--talk--warm--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives-023bff6fa9c7.png",
+      "sha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+      "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc"
+    },
     "romance--town--talk--secret": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--secret-b9fe66a4ee4a.png",
       "sha256": "b9fe66a4ee4aa6e43a636c7ce25da07def909ecc06b7606dd1f03c0b7e51f3b0",
       "promptSha256": "9eb92a26fe614419facb6d1252e547ad750af526be918c3768b566e7ad172d50"
     },
+    "romance--town--talk--secret--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--secret--single-8286421b8522.png",
+      "sha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+      "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda"
+    },
+    "romance--town--talk--secret--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--secret--routes-c902af7b07bb.png",
+      "sha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+      "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f"
+    },
+    "romance--town--talk--secret--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives-865ab6a2e45b.png",
+      "sha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+      "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f"
+    },
     "romance--town--talk--bittersweet": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--bittersweet-dc6c99c1263b.png",
       "sha256": "dc6c99c1263b7bba2f09d838cae2d3e90e1d03ed24c76a368ad46659d0b540bf",
       "promptSha256": "e925797049be4f9665829b1891e3ee5312fbb4495077f098b24edc0a79fc83c7"
+    },
+    "romance--town--talk--bittersweet--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single-5490671a78f4.png",
+      "sha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+      "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1"
+    },
+    "romance--town--talk--bittersweet--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes-36a286cb6c29.png",
+      "sha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+      "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced"
+    },
+    "romance--town--talk--bittersweet--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives-40f477215a8c.png",
+      "sha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+      "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb"
     },
     "romance--town--memory": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--memory-023bf66883c2.png",

@@ -10596,6 +10596,36 @@
           "colors": 379266,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--perspectives-2-e4b0466829b4.png",
+        "sha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+        "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+        "generationPromptSha256": "5c94fd748f6c4bba9b9f58f7a07eaf92ca498c92dfa0ec28bd28e0320991bfc7",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+          "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: elevated alcove, one closed common box between two fully visible opposed chairs with two masks; actual opposed doorways carry books versus scarf, window and doorway provide contrasting same-event views; warm flowers midground, sharp bare floor. New elevated framing differs from frontal parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 335527,
+          "findings": []
+        }
       }
     ],
     "romance--palace--choice--secret--single": [
@@ -10662,6 +10692,36 @@
           "colors": 278032,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--routes-2-0725b3a2166c.png",
+        "sha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+        "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+        "generationPromptSha256": "7425e925045a0cc3a66c299366dc0952a799f537bf90e12b6683a090b286ae2c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+          "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: night confined palace, real fork leads to three separate paired vacant nooks with varied closed box/pitcher arrangements; masks remain near and actual opposing private doors have closed books versus folded scarf. Hard moon-shadow clusters and no humans/writing. Branched architecture differs from frontal pair parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 278156,
+          "findings": []
+        }
       }
     ],
     "romance--palace--choice--secret--perspectives": [
@@ -10692,6 +10752,584 @@
           "width": 1672,
           "height": 941,
           "colors": 256321,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--single-1-cca058724796.png",
+        "sha256": "cca058724796d7fd15f0d12ef5255c11c37423f9d698bcf0505856a05f970c61",
+        "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+        "generationPromptSha256": "af9b045143b4d24371dce892d5d6dfcb1fcd90520c808df09b740cfaad57a56d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cca058724796d7fd15f0d12ef5255c11c37423f9d698bcf0505856a05f970c61",
+          "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Empty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Rain-cleared quiet autumn, spent petals/brown leaves, vacated threshold and lingering departure. No cheerful spring sunset.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: TWO plain EYE-MASK props are MISSING; architecture alone does NOT establish selected masquerade. Add TWO clearly visible plain prop masks beside ONE common CLOSED PLAIN keepsake between TWO entirely visible facing empty chairs. Retain rain-cleared autumn/wet floor/spent leaves and ONE intimate continuous private passage plus TWO opposing actual private doors with CLOSED PLAIN books at one versus folded ordinary scarf at other. No people/statues/portraits, writing/pseudo-text/papers/envelopes, flags/banners/tapestries/heraldry; independent hard-pixel composition."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for allChoices. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 305968,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--single-2-dcb254d53a40.png",
+        "sha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+        "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+        "generationPromptSha256": "9051a7f34c5ec2afc94ca1e6b702b76dff697f321dcf68f89287592a03b70f5e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+          "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original compared to parent: near-left pair of fully visible vacant red/blue chairs and unique closed common box, two clear eye masks, opposing private doors with closed books/scarf. Autumn leaves/wet palace floor and continuous intimate passage. New nearer off-center staged alcove rather than parent wide central balustrade shot; hard clusters and no figures/text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 327538,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--routes-1-bae11136483e.png",
+        "sha256": "bae11136483e4f5a62f72ca8b7a2eeeca7fe99335a09634929f21a86027019ff",
+        "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+        "generationPromptSha256": "a9e9787446031e1ca1a34bc8d9ec96d2e76077cff5655b45d28391afb0f2d96e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bae11136483e4f5a62f72ca8b7a2eeeca7fe99335a09634929f21a86027019ff",
+          "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Empty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Rain-cleared quiet autumn, spent petals/brown leaves, vacated threshold and lingering departure. No cheerful spring sunset.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choosing whom to become closer to: several spatially separate empty meeting nooks with distinct ordinary keepsakes, connected by an actual branching walkway. No people, portraits, route labels or collage.\nNEW PHYSICAL CAMERA: elevated oblique view along an actual three-way walkway fork. THREE clearly separate empty meeting nooks EACH contain a PAIR of facing vacant seats and their own different ordinary shared closed keepsake/book/mug arrangement. Three real continuous branches visibly connect these paired places, not scattered lone benches or a diagram. Retain selected premise/mood/play props on the near LEFT.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: Hanging BANNERS remain and the CLOSED PLAIN BOOK trust-choice alternative is MISSING. REMOVE ALL hanging flags/banners/tapestries/insignia and gold heraldic panels; leave bare stone walls. TWO actual opposite private doors need CLOSED PLAIN books beside one versus folded ordinary scarf beside other. Retain TWO eye masks, rain-cleared autumn/wet floor/leaves and THREE spatially separate nooks EACH with TWO facing EMPTY seats, different plain shared keepsakes, and THREE real forked continuous walkways. No people/statues/portraits/writing/papers/clocks; all planes sharp hard pixel clusters."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for allChoices, noText. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 285755,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--routes-2-a04d4245ffbc.png",
+        "sha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+        "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+        "generationPromptSha256": "376bf21025aaa6d4f90ace9dc0b194f39abc78468be96b6993c0baf5938dd3c5",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+          "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: new staggered internal staircase fork connecting three different paired nooks, front mask pair retained; closed book by top-left actual private door versus folded scarf by top-right door. Bare walls with no former banners, wet floor and brown leaves. Continuous real architecture, sharply pixelled chairs/props, no figures/text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 329955,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--perspectives-1-4d224f4f087b.png",
+        "sha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+        "promptSha256": "e1d99f39c5a6a012fca1fa2d9f7d8459dee12724f21899419cbf3bb58bdb0071",
+        "generationPromptSha256": "54ca5a17b7bbfd506253b8d4aa5d2071a230ed69af2cc6c7a712be391a2a4fbe",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+          "promptSha256": "e1d99f39c5a6a012fca1fa2d9f7d8459dee12724f21899419cbf3bb58bdb0071",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: oblique sheltered palace alcove; unique closed common box and two eye masks between fully visible empty seats, window and two differently framed doorways around same event; left closed books and right folded scarf preserve consequential trust alternatives. Wet floor/autumn leaves retain lingering departure, independent elevated shot."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 282616,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single-1-8ffe9f4bba70.png",
+        "sha256": "8ffe9f4bba700b0270e3df1c7af9fab82706f3d8cd6390a17b5a7d8c0b03bdb2",
+        "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+        "generationPromptSha256": "99b630b0ce25bb088d049d4a94be96829b84a6d034d302de517e4f39a864c162",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8ffe9f4bba700b0270e3df1c7af9fab82706f3d8cd6390a17b5a7d8c0b03bdb2",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.\nTwo EMPTY facing seats around shared table express dialogue.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nFINAL OVERRIDE: REPEATS the parent composition: large near round table/two chairs at left-home facade, central sunset horizon and descending village path at right. Use a SUBSTANTIALLY NEW side-on camera INSIDE a small ordinary modern rural house vestibule, with neighboring house gates visible through side window and ONE intimate continuous private passage crossing laterally, NOT frontal terrace and central sunset avenue. Keep exactly TWO ENTIRELY VISIBLE facing EMPTY chairs with ONE shared CLOSED PLAIN keepsake between them, welcoming light and small flowers in MIDGROUND only. No foreground framing foliage, no people/portraits/castle/university/writing/papers/clocks/flags/banners; hard native square pixels on ALL planes."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for distinctShot. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 373956,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single-2-eb37498952ce.png",
+        "sha256": "eb37498952ce57dd9965e01a9796456cd7afb305e23a2f2b13e44e2e92eef013",
+        "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+        "generationPromptSha256": "6b6a8a4bec6a449f7347644a892998ccb7dce5d76dade9a0e989c624b81f054a",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "eb37498952ce57dd9965e01a9796456cd7afb305e23a2f2b13e44e2e92eef013",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.\nTwo EMPTY facing seats around shared table express dialogue.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nFINAL OVERRIDE: REPEATS the parent composition: large near round table/two chairs at left-home facade, central sunset horizon and descending village path at right. Use a SUBSTANTIALLY NEW side-on camera INSIDE a small ordinary modern rural house vestibule, with neighboring house gates visible through side window and ONE intimate continuous private passage crossing laterally, NOT frontal terrace and central sunset avenue. Keep exactly TWO ENTIRELY VISIBLE facing EMPTY chairs with ONE shared CLOSED PLAIN keepsake between them, welcoming light and small flowers in MIDGROUND only. No foreground framing foliage, no people/portraits/castle/university/writing/papers/clocks/flags/banners; hard native square pixels on ALL planes.\nFINAL OVERRIDE: STILL repeats frontal outdoor terrace pair at left facade and descending distant village corridor at RIGHT. REJECTED again for SAME CAMERA. Use a strictly TOP-DOWN OBLIQUE near view looking ACROSS an INTERNAL rural timber HOUSE ROOM, with the main pair and table arranged DIAGONALLY upper-left/lower-right in frame, neighboring gates seen through a SMALL SIDE WINDOW in LEFT wall, and ONE private passage crossing HORIZONTALLY behind furniture. NO central horizon, NO frontal house terrace, NO sunset town avenue at right. Two ENTIRELY VISIBLE EMPTY chair backs and seats with ONE central CLOSED PLAIN shared keepsake, inviting warm light and small midground flowers. No people/portraits/figures, caste/university, writing/pseudo-text/papers/clocks/flags/banners/insignia; same hard native pixel focus every plane."
+          ],
+          "notes": "Direct original reopened and compared with published parent and previous rejected attempt. Camera/composition still repeats; no acceptable independent shot."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 357192,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--routes-1-1b957ec9698e.png",
+        "sha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+        "promptSha256": "a7a28fb61def0ccfd1e06c77af9a10ced3f04e1604e39f7cb3c2088feb84b1d4",
+        "generationPromptSha256": "ca2b0503b8ecec892877d8d7939a309ac7728ff1092c282c0a08b79cdb103714",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+          "promptSha256": "a7a28fb61def0ccfd1e06c77af9a10ced3f04e1604e39f7cb3c2088feb84b1d4",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: small ordinary neighboring homes, real stone path fork connecting three distinct paired vacant dialogue nooks with different cups/closed objects, inviting flowers and sunset. Entire chair seats readable, all planes hard pixel shading. Elevated three-way staging differs from parent single terrace."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 518938,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives-1-ed450f0028ad.png",
+        "sha256": "ed450f0028ad4d3730ccfa6e89c1e7fd66c1364b203918272c8f09f2b6949eaf",
+        "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+        "generationPromptSha256": "29e24ad1cb45ad224b54d00294207a48226cdd0084a00f920b08593f5d5b5a98",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ed450f0028ad4d3730ccfa6e89c1e7fd66c1364b203918272c8f09f2b6949eaf",
+          "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.\nTwo EMPTY facing seats around shared table express dialogue.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Different understandings of the SAME event: one central shared keepsake seen between two opposed empty seats and differently framed architectural openings. One continuous physical place, no split-screen or invented faces.\nNEW PHYSICAL CAMERA: near-overhead oblique view INSIDE a sheltered alcove. ONE central plain shared keepsake sits between TWO opposed empty seats, while an actual side window and differently framed doorway show contrasting views around that SAME object/event in one continuous room. Keep chosen premise props nearby; no split panels or duplicate keepsakes. Do not repeat front-on large table against distant tower.\nFINAL OVERRIDE: Unique central CLOSED PLAIN common keepsake is MISSING; flowers alone do NOT establish the same-event shared object. Place ONE unique CLOSED PLAIN box between TWO fully visible opposed EMPTY seats in one small rural home alcove; side window and differently framed actual doorway must show contrasting views around THAT SAME common object/event, neighboring house gates and shared path still visible outside. Warm welcoming light, small flowers behind focal object in midground only, independent elevated oblique framing. No foreground framing foliage, people/portraits/university/castle/writing/papers/clocks/flags/banners, no blur."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for latestChoice. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 347733,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives-2-023bff6fa9c7.png",
+        "sha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+        "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+        "generationPromptSha256": "6910c546d0d23874aeaf6fd2ed6d7f6546225f617d7822e27f47448320fd32c1",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+          "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: closed common box now clearly between two opposed empty seats, window and differently framed door reveal neighboring village gates around same event. Warm ordinary rural house alcove, midground flowers behind focal table, all planes sharp, new internal oblique camera compared to outdoor parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 408937,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-1-281aae6aedb1.png",
+        "sha256": "281aae6aedb12aff0997d61ba2b6714ddb51ae43e2595ae77791e8a9cb8efd59",
+        "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+        "generationPromptSha256": "4191901d1aa36a58dc2fd146f37a05d46d573526e76f19db45e8434dd451bebd",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "281aae6aedb12aff0997d61ba2b6714ddb51ae43e2595ae77791e8a9cb8efd59",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.\nTwo EMPTY facing seats around shared table express dialogue.\nMOOD: CONFINED private interior AT NIGHT, partly concealed plain keepsake, narrow threshold and hard discrete moonlight-shadow bands. No bright sunset, exposed cheerful flower garden or open celebration.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nFINAL OVERRIDE: Exposed outdoor village terrace is NOT selected CONFINED private interior, and repeats warm single camera. Compose NEW lateral view INSIDE small rural HOUSE ENTRY ROOM AT NIGHT, narrow private door and side window reveal neighboring home gates. ONE central CLOSED PLAIN common keepsake is partly concealed by ordinary folded cloth while still recognizable between TWO ENTIRELY VISIBLE facing EMPTY chairs. ONE continuous intimate passage, hard moonlight-shadow bands, sparse restrained lamplight, no cheerful garden/open terrace. No foreground framing plants/flowers/door-jamb, people/portraits/castle/university/writing/papers/clocks/flags/banners; all planes hard pixel focus."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for allChoices, distinctShot. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 218076,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-2-8286421b8522.png",
+        "sha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+        "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+        "generationPromptSha256": "60badff462885f4b95302d55365069dbcd6928cc10c422cf38d407e69fcb77a0",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: genuinely inside private rural house at night; fully visible facing empty seats around one closed box partly concealed by cloth, narrow door to neighbor gates/continuous private passage and side window; distinct hard moon-shadow bands, sparse lamplight. Fresh lateral interior staging replaces outdoor parent camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 180212,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-1-4ab1a512b06a.png",
+        "sha256": "4ab1a512b06a8cefbc113b3d2e9b6e3d6accc09284835c404dc9f12b203bc85c",
+        "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+        "generationPromptSha256": "fe9632e1c9b2978c436e9cd72e0fa9c970ac8d1b157b09d71f71e5c8182c9b85",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4ab1a512b06a8cefbc113b3d2e9b6e3d6accc09284835c404dc9f12b203bc85c",
+          "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.\nTwo EMPTY facing seats around shared table express dialogue.\nMOOD: CONFINED private interior AT NIGHT, partly concealed plain keepsake, narrow threshold and hard discrete moonlight-shadow bands. No bright sunset, exposed cheerful flower garden or open celebration.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choosing whom to become closer to: several spatially separate empty meeting nooks with distinct ordinary keepsakes, connected by an actual branching walkway. No people, portraits, route labels or collage.\nNEW PHYSICAL CAMERA: elevated oblique view along an actual three-way walkway fork. THREE clearly separate empty meeting nooks EACH contain a PAIR of facing vacant seats and their own different ordinary shared closed keepsake/book/mug arrangement. Three real continuous branches visibly connect these paired places, not scattered lone benches or a diagram. Retain selected premise/mood/play props on the near LEFT.\nFINAL OVERRIDE: Exposed hillside garden paths are NOT selected CONFINED private interior. Compose a continuous private interconnected rural house ENTRY-HALL AT NIGHT with THREE actual branching internal passages leading to THREE distinct vacant nooks, EACH containing TWO facing EMPTY chairs and different ordinary closed keepsake/cup arrangements. Narrow windows show adjacent ordinary town house gates; do not stage castle/university or outdoor celebration. Near shared keepsake partly concealed by folded ordinary cloth, hard moonlight-shadow bands and restrained light. No people/portraits, writing/papers/clocks/flags/banners or near-camera foliage framing; sharp native square pixel clusters EVERYWHERE."
+          ],
+          "notes": "Direct native original inspected against actual parent; rejected for allChoices. No filtering or downsampling to pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 384456,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-2-c902af7b07bb.png",
+        "sha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+        "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+        "generationPromptSha256": "c4581d2fbb52bc084caed3835f0ab1e75e9596d1277616fc5b71f57c91cc9f9f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+          "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: continuous confined night house hall branches toward three distinct paired empty dialogue nooks with different closed-box/cup/flower preparations; near keep partly hidden by cloth. Neighbor houses through narrow windows, hard moon-shadow bands, new forked interior camera; no humans or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 191515,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives-1-865ab6a2e45b.png",
+        "sha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+        "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+        "generationPromptSha256": "4850f4b4caf07f0a0459ce0758d4b18812e6bf4998bb6d19b337e80384f07b7b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+          "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: new near-overhead alcove, unique common closed box between two opposed vacant chairs; actual side window and different door reveal contrasting views of neighbor gates around same-event object. Night private room, hard moon shadows across box/floor, restrained light, no text/people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 171985,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single-1-5490671a78f4.png",
+        "sha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+        "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+        "generationPromptSha256": "973514c3a5183b348ade3d29cb2e044e6ed812985dc6e1397ae049f68a53eab5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+          "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original compared to actual bittersweet parent: sheltered near-left porch pair with fully visible chairs around closed shared keep, one continuous private passage to neighboring gates. Wet ground/brown autumn leaves/quiet vacated threshold. Smaller side-staged pair and covered vestibule differ from parent large central exposed table."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 394789,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes-1-36a286cb6c29.png",
+        "sha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+        "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+        "generationPromptSha256": "d15a441f937e694abde885ae016895918270388170cf59b8ecf5ad844e8b1591",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+          "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: elevated oblique real path fork links three spatially distinct two-chair meeting nooks with varied cups/closed-book/keep arrangements. Ordinary neighboring rural homes, wet stone and spent brown leaves, departure mood. Fresh forked staging relative to single-table parent; sharp cluster shading."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 549833,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives-1-40f477215a8c.png",
+        "sha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+        "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+        "generationPromptSha256": "e10c112dfa6c58d45d6776d560e9db73c95854024ad1662bff1e42681b20f1c0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+          "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: unique closed common box between fully visible opposed seats in one sheltered rural alcove, real side window and differently framed doorway toward neighboring homes around same event. Autumn wet lane/brown leaves and subdued evening preserve bittersweet; fresh internal high-oblique camera relative to exposed parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 356495,
           "findings": []
         }
       }

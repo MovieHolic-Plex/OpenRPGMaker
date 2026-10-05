@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 210,
-  "remaining": 1247,
+  "published": 223,
+  "remaining": 1234,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -1061,29 +1061,24 @@
     "romance--campus--talk--warm--single--episode",
     "romance--campus--talk--warm--single--scene",
     "romance--campus--talk--warm--single--short",
-    "romance--palace--choice--bittersweet--perspectives",
     "romance--palace--choice--bittersweet--perspectives--episode",
     "romance--palace--choice--bittersweet--perspectives--scene",
     "romance--palace--choice--bittersweet--perspectives--short",
-    "romance--palace--choice--bittersweet--routes",
     "romance--palace--choice--bittersweet--routes--episode",
     "romance--palace--choice--bittersweet--routes--scene",
     "romance--palace--choice--bittersweet--routes--short",
-    "romance--palace--choice--bittersweet--single",
     "romance--palace--choice--bittersweet--single--episode",
     "romance--palace--choice--bittersweet--single--scene",
     "romance--palace--choice--bittersweet--single--short",
     "romance--palace--choice--secret--perspectives--episode",
     "romance--palace--choice--secret--perspectives--scene",
     "romance--palace--choice--secret--perspectives--short",
-    "romance--palace--choice--secret--routes",
     "romance--palace--choice--secret--routes--episode",
     "romance--palace--choice--secret--routes--scene",
     "romance--palace--choice--secret--routes--short",
     "romance--palace--choice--secret--single--episode",
     "romance--palace--choice--secret--single--scene",
     "romance--palace--choice--secret--single--short",
-    "romance--palace--choice--warm--perspectives",
     "romance--palace--choice--warm--perspectives--episode",
     "romance--palace--choice--warm--perspectives--scene",
     "romance--palace--choice--warm--perspectives--short",
@@ -1219,35 +1214,27 @@
     "romance--town--memory--warm--single--episode",
     "romance--town--memory--warm--single--scene",
     "romance--town--memory--warm--single--short",
-    "romance--town--talk--bittersweet--perspectives",
     "romance--town--talk--bittersweet--perspectives--episode",
     "romance--town--talk--bittersweet--perspectives--scene",
     "romance--town--talk--bittersweet--perspectives--short",
-    "romance--town--talk--bittersweet--routes",
     "romance--town--talk--bittersweet--routes--episode",
     "romance--town--talk--bittersweet--routes--scene",
     "romance--town--talk--bittersweet--routes--short",
-    "romance--town--talk--bittersweet--single",
     "romance--town--talk--bittersweet--single--episode",
     "romance--town--talk--bittersweet--single--scene",
     "romance--town--talk--bittersweet--single--short",
-    "romance--town--talk--secret--perspectives",
     "romance--town--talk--secret--perspectives--episode",
     "romance--town--talk--secret--perspectives--scene",
     "romance--town--talk--secret--perspectives--short",
-    "romance--town--talk--secret--routes",
     "romance--town--talk--secret--routes--episode",
     "romance--town--talk--secret--routes--scene",
     "romance--town--talk--secret--routes--short",
-    "romance--town--talk--secret--single",
     "romance--town--talk--secret--single--episode",
     "romance--town--talk--secret--single--scene",
     "romance--town--talk--secret--single--short",
-    "romance--town--talk--warm--perspectives",
     "romance--town--talk--warm--perspectives--episode",
     "romance--town--talk--warm--perspectives--scene",
     "romance--town--talk--warm--perspectives--short",
-    "romance--town--talk--warm--routes",
     "romance--town--talk--warm--routes--episode",
     "romance--town--talk--warm--routes--scene",
     "romance--town--talk--warm--routes--short",
@@ -1769,6 +1756,13 @@
       "height": 941
     },
     {
+      "key": "romance--palace--choice--warm--perspectives",
+      "sha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+      "generationPromptSha256": "5c94fd748f6c4bba9b9f58f7a07eaf92ca498c92dfa0ec28bd28e0320991bfc7",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--palace--choice--secret",
       "sha256": "32543db539db80ff9bdfd3ea8afc8452568d17418f3883530932fae079715053",
       "generationPromptSha256": "1f8b88fe104218d45e91e90fe8c733bc76524f3e4b46972e183fb3e195ec05f0",
@@ -1783,6 +1777,13 @@
       "height": 941
     },
     {
+      "key": "romance--palace--choice--secret--routes",
+      "sha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+      "generationPromptSha256": "7425e925045a0cc3a66c299366dc0952a799f537bf90e12b6683a090b286ae2c",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--palace--choice--secret--perspectives",
       "sha256": "dc5632f411779a768fc5d19dc505d769d19f2335bb5be95234816333ef745848",
       "generationPromptSha256": "5ed9484b6db46fb22c1a027c7efe0a19f0f92f7d774f42766a8ea853bda806d2",
@@ -1793,6 +1794,27 @@
       "key": "romance--palace--choice--bittersweet",
       "sha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
       "generationPromptSha256": "de1430d94686dba11c79840262130af4e973985e54f989466c0145e1b3a658cf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--bittersweet--single",
+      "sha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+      "generationPromptSha256": "9051a7f34c5ec2afc94ca1e6b702b76dff697f321dcf68f89287592a03b70f5e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--bittersweet--routes",
+      "sha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+      "generationPromptSha256": "376bf21025aaa6d4f90ace9dc0b194f39abc78468be96b6993c0baf5938dd3c5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--bittersweet--perspectives",
+      "sha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+      "generationPromptSha256": "54ca5a17b7bbfd506253b8d4aa5d2071a230ed69af2cc6c7a712be391a2a4fbe",
       "width": 1672,
       "height": 941
     },
@@ -1818,6 +1840,20 @@
       "height": 941
     },
     {
+      "key": "romance--town--talk--warm--routes",
+      "sha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+      "generationPromptSha256": "ca2b0503b8ecec892877d8d7939a309ac7728ff1092c282c0a08b79cdb103714",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--warm--perspectives",
+      "sha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+      "generationPromptSha256": "6910c546d0d23874aeaf6fd2ed6d7f6546225f617d7822e27f47448320fd32c1",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--talk--secret",
       "sha256": "b9fe66a4ee4aa6e43a636c7ce25da07def909ecc06b7606dd1f03c0b7e51f3b0",
       "generationPromptSha256": "b0fe686ae6efe4d137f6a97213316284a2b6b81850ce7d9ffa6cc978de350eea",
@@ -1825,9 +1861,51 @@
       "height": 941
     },
     {
+      "key": "romance--town--talk--secret--single",
+      "sha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+      "generationPromptSha256": "60badff462885f4b95302d55365069dbcd6928cc10c422cf38d407e69fcb77a0",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--secret--routes",
+      "sha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+      "generationPromptSha256": "c4581d2fbb52bc084caed3835f0ab1e75e9596d1277616fc5b71f57c91cc9f9f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--secret--perspectives",
+      "sha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+      "generationPromptSha256": "4850f4b4caf07f0a0459ce0758d4b18812e6bf4998bb6d19b337e80384f07b7b",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--talk--bittersweet",
       "sha256": "dc6c99c1263b7bba2f09d838cae2d3e90e1d03ed24c76a368ad46659d0b540bf",
       "generationPromptSha256": "3b01609b57326e1ffef5b8429e10fd39761b483007fc2f2c1dc87ee0edfde50d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--bittersweet--single",
+      "sha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+      "generationPromptSha256": "973514c3a5183b348ade3d29cb2e044e6ed812985dc6e1397ae049f68a53eab5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--bittersweet--routes",
+      "sha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+      "generationPromptSha256": "d15a441f937e694abde885ae016895918270388170cf59b8ecf5ad844e8b1591",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--talk--bittersweet--perspectives",
+      "sha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+      "generationPromptSha256": "e10c112dfa6c58d45d6776d560e9db73c95854024ad1662bff1e42681b20f1c0",
       "width": 1672,
       "height": 941
     },
