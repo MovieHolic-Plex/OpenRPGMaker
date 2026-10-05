@@ -1,0 +1,221 @@
+{
+  "reason": "Long dark teal scarf tail read as a black stripe on the back; shorten at head, restore uninterrupted garment.",
+  "edits": [
+    {
+      "frame": "up_stepA",
+      "y": 19,
+      "before": "...DAAAAADD9A...",
+      "after": "...DAAAAADDDD..."
+    },
+    {
+      "frame": "up_stepA",
+      "y": 20,
+      "before": "...DDCCCCDD9A...",
+      "after": "...DDCCCCDDDD..."
+    },
+    {
+      "frame": "up_stepA",
+      "y": 21,
+      "before": "....DDDDDD.A....",
+      "after": "....DDDDDD......"
+    },
+    {
+      "frame": "up_stepA",
+      "y": 22,
+      "before": "..4CBEEEEABC....",
+      "after": "..4CBEEEEEBC...."
+    },
+    {
+      "frame": "up_stepA",
+      "y": 23,
+      "before": ".42BC6EEEAEBC...",
+      "after": ".42BC6EEEEEBC..."
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "before": ".43BC5EEEAE8C...",
+      "after": ".43BC5EEEEE8C..."
+    },
+    {
+      "frame": "left_stepA",
+      "y": 20,
+      "before": "..422F233DD9A...",
+      "after": "..422F233DDDD..."
+    },
+    {
+      "frame": "left_stepA",
+      "y": 21,
+      "before": "..4CC22234D9A...",
+      "after": "..4CC22234DDD..."
+    },
+    {
+      "frame": "left_stepA",
+      "y": 22,
+      "before": "...443334DD.A...",
+      "after": "...443334DD....."
+    },
+    {
+      "frame": "right_stepA",
+      "y": 20,
+      "before": "...A9DD332F224..",
+      "after": "...DDDD332F224.."
+    },
+    {
+      "frame": "right_stepA",
+      "y": 21,
+      "before": "...A9D43222CC4..",
+      "after": "...DDD43222CC4.."
+    },
+    {
+      "frame": "right_stepA",
+      "y": 22,
+      "before": "...A.DD433344...",
+      "after": ".....DD433344..."
+    },
+    {
+      "frame": "up_idle",
+      "y": 18,
+      "before": "...DAAAAADD9A...",
+      "after": "...DAAAAADDDD..."
+    },
+    {
+      "frame": "up_idle",
+      "y": 19,
+      "before": "...DDCCCCDD9A...",
+      "after": "...DDCCCCDDDD..."
+    },
+    {
+      "frame": "up_idle",
+      "y": 20,
+      "before": "....DDDDDD.A....",
+      "after": "....DDDDDD......"
+    },
+    {
+      "frame": "up_idle",
+      "y": 21,
+      "before": "...CBEEEEEABC...",
+      "after": "...CBEEEEEEBC..."
+    },
+    {
+      "frame": "up_idle",
+      "y": 22,
+      "before": "..CB5EEEEAE5BC..",
+      "after": "..CB5EEEEEE5BC.."
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "before": "..CB65EEEA56BC..",
+      "after": "..CB65EEEE56BC.."
+    },
+    {
+      "frame": "left_idle",
+      "y": 19,
+      "before": "..422F233DD9A...",
+      "after": "..422F233DDDD..."
+    },
+    {
+      "frame": "left_idle",
+      "y": 20,
+      "before": "..4CC22234D9A...",
+      "after": "..4CC22234DDD..."
+    },
+    {
+      "frame": "left_idle",
+      "y": 21,
+      "before": "...443334DD.A...",
+      "after": "...443334DD....."
+    },
+    {
+      "frame": "right_idle",
+      "y": 19,
+      "before": "...A9DD332F224..",
+      "after": "...DDDD332F224.."
+    },
+    {
+      "frame": "right_idle",
+      "y": 20,
+      "before": "...A9D43222CC4..",
+      "after": "...DDD43222CC4.."
+    },
+    {
+      "frame": "right_idle",
+      "y": 21,
+      "before": "...A.DD433344...",
+      "after": ".....DD433344..."
+    },
+    {
+      "frame": "up_stepB",
+      "y": 19,
+      "before": "...DAAAAADD9A...",
+      "after": "...DAAAAADDDD..."
+    },
+    {
+      "frame": "up_stepB",
+      "y": 20,
+      "before": "...DDCCCCDD9A...",
+      "after": "...DDCCCCDDDD..."
+    },
+    {
+      "frame": "up_stepB",
+      "y": 21,
+      "before": "....DDDDDD.A....",
+      "after": "....DDDDDD......"
+    },
+    {
+      "frame": "up_stepB",
+      "y": 22,
+      "before": "....CBEEEABC4...",
+      "after": "....CBEEEEBC4..."
+    },
+    {
+      "frame": "up_stepB",
+      "y": 23,
+      "before": "...CB6EEEAEBC24.",
+      "after": "...CB6EEEEEBC24."
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "before": "...C85EEEAEBC34.",
+      "after": "...C85EEEEEBC34."
+    },
+    {
+      "frame": "left_stepB",
+      "y": 20,
+      "before": "..422F233DD9A...",
+      "after": "..422F233DDDD..."
+    },
+    {
+      "frame": "left_stepB",
+      "y": 21,
+      "before": "..4CC22234D9A...",
+      "after": "..4CC22234DDD..."
+    },
+    {
+      "frame": "left_stepB",
+      "y": 22,
+      "before": "...443334DD.A...",
+      "after": "...443334DD....."
+    },
+    {
+      "frame": "right_stepB",
+      "y": 20,
+      "before": "...A9DD332F224..",
+      "after": "...DDDD332F224.."
+    },
+    {
+      "frame": "right_stepB",
+      "y": 21,
+      "before": "...A9D43222CC4..",
+      "after": "...DDD43222CC4.."
+    },
+    {
+      "frame": "right_stepB",
+      "y": 22,
+      "before": "...A.DD433344...",
+      "after": ".....DD433344..."
+    }
+  ]
+}

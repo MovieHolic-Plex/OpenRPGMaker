@@ -1,0 +1,18 @@
+{
+  "id": "merchant-2d36fdaf6bdd88be",
+  "state": "pending",
+  "structural": {
+    "pass": true,
+    "errors": []
+  },
+  "media": {
+    "templateId": "mart_employee",
+    "gifFrames": 4,
+    "sourcePixelsExact": true,
+    "durationMs": 130,
+    "paletteMax": 15,
+    "resizing": false
+  },
+  "data": "/home/main/z-project/harness/pokemon-like-characters/.data",
+  "votesWritten": 0
+}
