@@ -37,7 +37,9 @@ for (const category of references) for (const doc of category.documents ?? []) {
 }
 const tileset = { ...def, id: tid, name: '실내 · 사용자가 고른 공용 기물', kind: 'custom',
   image: { type: 'uploaded', id: assetId }, referenceDocuments: references,
-  structureKits: def.structureKits.map(k => ({ ...k, id: `shared_${k.id}` })) };
+  structureKits: def.structureKits.map(k => ({ ...k, id: `shared_${k.id}`,
+    ...(applied.has(k.id.replace(/^hand-interior:/, '')) || variantChoices.has(k.id.replace(/^hand-interior:/, ''))
+      ? { ai: { ...k.ai, tags: [...new Set([...(k.ai?.tags ?? []), '사용자 선택', '슈퍼하네싱'])] } } : {}) })) };
 delete tileset.textureKey; delete tileset.libraryEnd;
 const library = { version: 1, projectDefaults: true, roots: [], places: {}, maps: {}, previews: {},
   sourceProjectId: 'interior-props-harness', tilesets: { [tid]: tileset },

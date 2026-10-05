@@ -33,14 +33,17 @@ def decide_example(data, cid, body):
         expected = [{'path': im['path'], 'v': im['v']} for im in candidate['images']]
         if body.get('images') != expected or not expected:
             raise ValueError('보고 있는 예시와 현재 그림이 다릅니다. 새로고침해 주세요.')
+        text = body.get('text', '')
+        if not isinstance(text, str) or len(text) > 2000: raise ValueError('수정 의견은 2000자 이내로 입력해 주세요.')
+        text = text.strip()
         prefs = preferences(c)
         key = (group['id'], candidate['id'], candidate['fingerprint'])
-        if prefs.get(key) == decision:
+        if prefs.get(key) == decision and not text:
             return state  # Double click/retry does not spend another revision.
         prefs[key] = decision
         entry = dict(kind='example-decision', at=store.now(), group=group['id'], candidate=candidate['id'],
                      fingerprint=candidate['fingerprint'], images=candidate['images'], decision=decision,
-                     text=f'예시 {group["title"]}/{candidate["id"]}: {decision.upper()}')
+                     text=f'데모 {group["title"]}/{candidate["id"]}: {decision.upper()}' + (' — 수정 요청: ' + text if text else ''))
         # Keep an already allowed selection; multiple Allow preferences are valid.
         if decision == 'allow' and not any(v['selected'] for v in group['candidates']):
             art_choices.choose(data, cid, dict(body, action='choose-art'))

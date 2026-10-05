@@ -65,12 +65,26 @@ def review_input(data, cid):
             if art_choices.digest(ref['path']) != ref['sha256']: raise ValueError('이전 실패 그림 해시 불일치')
             if ref not in previous_images: previous_images.append(ref)
     required_groups = {r['group'] for r in previous.get('completionRepairs', [])}
-    if not required_groups <= {g['id'] for g in manifest.get('groups', [])}:
+    # A whole-space demo includes the original groups, with exact candidate
+    # identities and source hashes, rather than replacing their obligations.
+    represented = {g['id'] for g in manifest.get('groups', [])}
+    mapping = {}
+    if manifest.get('demoVersion') == 1:
+        for group in manifest['groups']:
+            common = set.intersection(*(set(c.get('components', {})) for c in group['candidates'])) if group['candidates'] else set()
+            represented.update(common)
+            mapping.update({original: group['id'] for original in common})
+    if not required_groups <= represented:
         raise ValueError('시설 수정 대상 그룹을 다른 후보로 대체할 수 없습니다.')
+    obligations = art_repair.obligations(previous)
+    for obligation in obligations:
+        if obligation['group'] in mapping:
+            obligation['sourceGroup'] = obligation['group']
+            obligation['group'] = mapping[obligation['group']]
     return {'manifestSha256': art_choices.digest(manifest_path), 'groups': groups,
             'root': str(Path(data) / 'art-worktrees' / cid),
             'previousFeedback': previous, 'previousImages': previous_images,
-            'comparisonObligations': art_repair.obligations(previous),
+            'comparisonObligations': obligations,
             'repairBrief': read(folder / 'parking-repair-brief.json', {}),
             'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION,
             'acceptance': art_acceptance.contract(folder)}

@@ -2732,3 +2732,12 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 `toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
 
 choices의 `choice1`~`choice5`는 Esc가 해당 선택지를 실행하는 설정이다. 취소하면 아무 일 없이 종료하는 요청은 `cancelBehavior:"branch",cancelBranch:[]`다. 도구 스키마와 Pi 저작 지침에 이 의미를 함께 제공한다. `run_scene_test`도 실제 대화창과 같은 `choiceCancellation.cancelChoiceIndex`를 사용한다. 취소 불가·설정 생략·없는 선택지로 취소는 검사 실패로 알리며 강제로 종료하지 않는다.
+
+## 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
+
+`publish_shared.mjs`가 실제 채택된 기본/크기 변경/함께 쓰기 변형 킷에만 `사용자 선택` 태그를 붙인다.
+`list_spatial_designs`의 이름/id 일치 우선순위는 유지하고 동일 점수 안에서 이 태그를 우선한다.
+Pi 시스템 지침과 `HAND_INTERIOR_POLICY_LINE`은 시대·장소·용도에 맞는 선택 기물을 먼저 검색하도록 한다.
+실내 골조를 만든 뒤 `stamp_object`로 공용 킷을 놓는다. 고정 실내 도구에 동적 공용 id를 전달하지 않는다.
+동일 호스트의 새/기존 프로젝트 설치·새로고침 경계와 제작 목록은
+[마을 기물 300종](harnesses/town-props-300.md)을 따른다.

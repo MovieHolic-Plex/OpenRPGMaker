@@ -24,6 +24,7 @@ TASKS = {
     'art': ('도면·부품 치수·시점·조립 좌표를 맞추고 제작 주문서를 준비합니다.', '도면 독립 검수 → 통과하면 실제 칩 제작'),
     'art-native': ('전용 그림 하네스가 칩을 그리고 원본·조립 그림을 검수합니다.', '칩 그림과 공간에 배치한 예시'),
     'art-layout-review': ('그리기 전에 공간 여백·벽 접합·3/4 시점·통행을 검사합니다.', '도면 승인 후 칩 제작, 반려 시 명세 수정'),
+    'art-demo': ('제작된 실제 타일로 공간 전체를 조립하고 있습니다.', '공간 전체 데모 → 독립 검수 → Allow / Deny'),
     'art-context-review': ('실제 칩을 배치한 예시에서 반복·가림·시점·공간 구성을 검사합니다.', '사용자가 Allow / Deny할 예시'),
     'art-review': ('생성된 예시와 선택·등록 상태를 확인하는 단계입니다.', '예시 선택 → 공용 등록·공간 조립'),
     'build': ('준비된 재료로 공간을 조립하고 결과 이미지를 만듭니다.', '공간 전체 이미지'),
@@ -107,7 +108,7 @@ def describe(c, item):
     material = gates.material_report(folder)
     candidates = sh.candidate_images(cid)
     plans = sh.planning_images(cid)
-    assembled = sh.example_images(cid) if not sh.before_build(c) else []
+    assembled = sh.demo_images(cid) or (sh.example_images(cid) if not sh.before_build(c) else [])
     reviews = {k: sh.read_json(folder / 'reviews' / f'{c["attempt"]}-{k}.json') for k in ('A', 'B')}
     visual = bool(assembled) and gates.visual_report(folder, reviews)['ok']
     tested = visual and c['stage'] in ('result-review', 'bake', 'done')
