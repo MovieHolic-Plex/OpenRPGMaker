@@ -1,0 +1,27 @@
+{
+  "intake": {
+    "concept": "underground-parking-garage",
+    "fingerprint": "b474e246c96185f08cc4f016480bd15edcf503cb8b7911e771eee13c853ae9f8",
+    "revision": 7,
+    "status": "queued",
+    "duplicate": true
+  },
+  "concept": {
+    "id": "underground-parking-garage",
+    "stage": "art",
+    "status": "running",
+    "note": "형태·시점 명세와 제작 주문서 준비 중",
+    "art_revision": 7
+  },
+  "paused": "1",
+  "limit": "10",
+  "jobs": [
+    {
+      "id": 663,
+      "kind": "art",
+      "pid": 2689540,
+      "started": "2026-10-05T08:58:30"
+    }
+  ],
+  "recordedAt": "2026-10-05T09:01:24"
+}

@@ -86,3 +86,15 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 이 표본은 조립/보행 PASS지만 **완성 시설 판정은 INCOMPLETE**다. 기둥·천장등·외곽 벽/출입 시설이 부족하여
 큰 회색 바닥과 반복 차량이 드러난다. 같은 칩의 확장 결과와 부족 소재를 보여주는 실험으로 공용 참고문서에 함께 싣고,
 두 면 표본의 합격을 12면 시설 전체의 합격으로 재사용하지 않는다. 전후 원본/플레이 화면과 독립 판정은 함께 보존한다.
+
+### 미완성 판정의 후속 처리
+
+`npm run harness -- modern-chipset parking-followup harness-data/modern-chipset/parking-wide/followup.json`
+은 위 확장 검수의 실제 scene/plan 해시와 네 지적의 수정 주문을 확인하고 super-harness art 큐에 넣는다.
+전역 pause와 해당 개념의 실행 작업 없음이 전제다. 같은 입력은 한 번만 회차를 소비한다.
+기존 작은 표본의 승인·선택·설치·피드백은 scene-followup-history에 보존하고,
+`parking-facility-v1`의 구조·조명·출입 연결·차량 다양성·공간 구성 조건으로 별도 범위를 연다.
+원래 assembly PASS/facility INCOMPLETE 기록을 FAIL로 위조하지 않는다.
+현재 누적 회차에서 한 번 증가하며 10회를 초기화하지 않는다. 상한이면 blocked이고 제작을 시작하지 않는다.
+수정 결과는 기존 도면→native 제작→독립 전체 조립 검수 경로로 돌아온다. 필수 결함을 모두 해결하기 전
+선택/시설 완료를 승인하지 않는다. 공용 게시/정본 저장은 그 뒤의 별도 작업이다.
