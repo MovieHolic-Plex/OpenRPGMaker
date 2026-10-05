@@ -1,12 +1,11 @@
 import { inspectWorldAtlas } from '@/project/worldAtlasAudit';
 import { canMove, isPassable } from '@/project/collision';
 import { setLayerTileAt } from '@/project/mapLayers';
-import { createForestHarmonyTileset } from '@/project/defaults/forestHarmony';
-import { createAtlasBiomeDungeonTileset } from '@/project/defaults/atlasBiomeDungeon';
+import { ensureAtlasCartographyTerrain } from '@/project/defaults/atlasCartography';
+import {atlasRoomDimensions} from '@/project/worldAtlasGeometry';
+import {paintAtlasLandscape,fieldTerrain,worldTerrain,atlasRoad,atlasLandmark,paintAtlasRoom} from './atlasLandscape';
 import { WORLD_ATLAS_CATALOG, type WorldAtlas, type WorldAtlasStructure, type WorldAtlasNode, type AtlasPoint, type AtlasNodeKind } from '@/project/worldAtlas';
 import type { Command, GameEvent, GameMap, Project } from '@/project/types';
-import { WILD_ROUTE_TOOLS } from '@/editor/tools/wildRouteTool';
-import { AUTHOR_VILLAGE_TOOL } from '@/editor/tools/authorVillageToolDef';
 
 type Spec = { name: string; kind: AtlasNodeKind; x: number; y: number; grants?: number[] };
 type Link = [number, number, number?, boolean?];
@@ -40,9 +39,9 @@ function recipe(structure: WorldAtlasStructure): { specs: Spec[]; links: Link[];
   if (structure === 'room-network') return {
     width: 120, height: 90, abilities: ['봉인 해제','깊은 성소 열쇠'],
     specs: [
-      {name:'지상의 우물',kind:'room',x:9,y:9}, {name:'잊힌 교차로',kind:'room',x:9,y:32},
-      {name:'순례자의 방',kind:'room',x:35,y:32,grants:[0]}, {name:'푸른 회랑',kind:'room',x:61,y:32},
-      {name:'바람의 탑',kind:'room',x:61,y:9,grants:[1]}, {name:'이끼 저장고',kind:'room',x:9,y:55},
+      {name:'지상의 우물',kind:'room',x:9,y:4}, {name:'잊힌 교차로',kind:'room',x:9,y:32},
+      {name:'순례자의 방',kind:'room',x:35,y:32,grants:[0]}, {name:'푸른 회랑',kind:'room',x:61,y:35},
+      {name:'바람의 탑',kind:'room',x:66,y:1,grants:[1]}, {name:'이끼 저장고',kind:'room',x:9,y:55},
       {name:'깊은 수로',kind:'room',x:35,y:55}, {name:'침묵의 서고',kind:'room',x:61,y:55},
       {name:'어둠의 관문',kind:'room',x:87,y:55}, {name:'깊은 성소',kind:'room',x:87,y:75},
     ], links:[[0,1],[1,2],[2,3,0],[3,4],[1,5],[5,6],[6,7,0],[7,3],[7,8,1],[8,9],[4,8,1,true]],
@@ -58,8 +57,8 @@ function recipe(structure: WorldAtlasStructure): { specs: Spec[]; links: Link[];
 }
 
 function blankMap(id: string, name: string, width=40, height=30, dungeon=false): GameMap {
-  return {id,name,width,height,tilesetId:dungeon?'atlas_biome_dungeon':'forest_harmony',tileSize:16,
-    lowerTiles:new Array<number>(width*height).fill(dungeon?637:240),upperTiles:new Array<number>(width*height).fill(-1),events:[],
+  return {id,name,width,height,tilesetId:'atlas_cartography',tileSize:32,
+    lowerTiles:new Array<number>(width*height).fill(dungeon?47:0),upperTiles:new Array<number>(width*height).fill(-1),events:[],
     mapRole:dungeon?'dungeon':'field',encounterRate:0,minimap:{enabled:true}};
 }
 function addSwitch(project: Project, id: string, name: string): void {
@@ -102,26 +101,10 @@ function doorLanding(project:Project,map:GameMap,door:AtlasPoint,home:AtlasPoint
   if(!p)throw new Error('출입구 착지 칸이 없습니다: '+map.id);return p;
 }
 
-/** Existing bundled stone tiles provide a real side view floor and jumpable platforms. */
-function buildSideRoom(project: Project,map: GameMap,index: number): void {
-  map.sideView=true; map.sideViewJumpTiles=2;map.sideViewFallDamage=0;
-  const tileset=project.tilesets[map.tilesetId]!;
-  const wall=tileset.tileGroups?.find(g=>g.id.endsWith('wall-brown'))?.tileIds.find(id=>!tileset.passability[id]?.down);
-  if(wall===undefined)throw new Error('공용 던전 벽 부품이 없습니다.');
-  for(let y=0;y<map.height;y++)for(let x=0;x<map.width;x++) {
-    const solid=y>=map.height-2||y===0||x===0||x===map.width-1;
-    setLayerTileAt(map,1,y*map.width+x,solid?wall:637);
-  }
-  // Low platforms never sever the floor route; upward is the runtime's built-in jump.
-  for(let x=12;x<18;x++)setLayerTileAt(map,1,(map.height-4)*map.width+x,wall);
-  if(index%2===0)for(let x=25;x<30;x++)setLayerTileAt(map,1,(map.height-5)*map.width+x,wall);
-}
-
 export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest): WorldAtlas {
   if (!/^[a-z][a-z0-9_-]{0,60}$/.test(request.id)) throw new Error('지도 id는 영문 소문자로 시작하는 1~61자입니다.');
   if(project.worldAtlases?.some(a=>a.id===request.id)||Object.keys(project.maps).some(id=>id.startsWith(request.id+'_')&&id!==request.overworldMapId))throw new Error('이미 있는 지도 id입니다: '+request.id);
-  project.tilesets.forest_harmony ??= createForestHarmonyTileset();
-  project.tilesets.atlas_biome_dungeon ??= createAtlasBiomeDungeonTileset();
+  ensureAtlasCartographyTerrain(project);
   const r=recipe(request.structure);
   const atlas: WorldAtlas={version:1,id:request.id,name:request.name??WORLD_ATLAS_CATALOG.find(c=>c.id===request.structure)!.name,
     structure:request.structure,seed:request.seed,width:r.width,height:r.height,startNodeId:request.id+'_n0',nodes:[],edges:[],
@@ -129,31 +112,31 @@ export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest):
   if(request.structure==='field-overview')atlas.startNodeId=request.id+'_n6';
   let specs=r.specs;
   if(request.structure==='scaled-world') {
-    const world=project.maps[request.overworldMapId??''];if(!world)throw new Error('먼저 대륙 지형을 생성해야 합니다.');
+    const world=blankMap(request.overworldMapId??request.id+'_overworld','쌍둥이 대륙',96,72);
+    world.characterScale=.5;project.maps[world.id]=world;
+    paintAtlasLandscape(world,request.seed,worldTerrain);
     atlas.overviewMapId=world.id;atlas.width=world.width;atlas.height=world.height;
-    const entrances=(world.locations??[]).map(loc=>{
-      const match=/입구\(성문\) (\d+),(\d+)/.exec(loc.note??'');
-      return {loc,point:match?{x:Number(match[1]),y:Number(match[2])}:nearestOpen(project,world,{x:loc.x+Math.floor(loc.w/2),y:loc.y+loc.h-1})};
-    });
-    if(!entrances.length)throw new Error('대륙에 거점이 없습니다.');
-    const start=entrances[0]!.point,seen=new Set([start.y*world.width+start.x]),queue=[start];
-    for(let i=0;i<queue.length;i++){const p=queue[i]!;for(const [dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){
-      const x=p.x+dx!,y=p.y+dy!,k=y*world.width+x;if(!seen.has(k)&&isPassable(project,world,x,y)){seen.add(k);queue.push({x,y});}
-    }}
-    const chosen=entrances.filter(e=>seen.has(e.point.y*world.width+e.point.x)).slice(0,8);
-    if(chosen.length<2)throw new Error('처음 거점에서 걸어갈 수 있는 대륙 거점이 부족합니다.');
-    specs=chosen.map((e,i)=>({name:e.loc.name,kind:i%3===2?'dungeon':'town',x:Math.min(world.width-6,e.point.x),y:Math.min(world.height-6,e.point.y),grants:i===1?[0]:[]}));
-    chosen.forEach((e,i)=>{(specs[i] as Spec&{worldEntrance:AtlasPoint}).worldEntrance=e.point;});
-    r.links=chosen.slice(1).map((_,i)=>[i,i+1,i===2?0:undefined]);
+    const places=[['모래 나루',18,54],['잎새 마을',28,37],['눈빛 관문',24,17],['고원 수도',44,16],['호수 항구',47,39],['돌빛 탑',70,32],['새벽 성',77,17],['동쪽 유적',69,49]] as const;
+    specs=places.map(([name,x,y],i)=>({name,kind:i===5||i===7?'dungeon':'town',x,y,grants:i===1?[0]:[]}));
+    r.links=places.slice(1).map((_,i)=>[i,i+1,i===2?0:undefined]);
+    for(let i=0;i<places.length;i++){
+      const [,x,y]=places[i]!,icon=[0,1,6,3,2,5,3,4][i]!;
+      if(i>0){const [,ax,ay]=places[i-1]!;atlasRoad(world,{x:ax,y:ay},{x,y});}
+      atlasLandmark(world,icon,x-1,y-3);
+      atlasRoad(world,{x,y},{x,y:y+2},1);
+      (specs[i] as Spec&{worldEntrance:AtlasPoint}).worldEntrance={x,y};
+    }
   }
-  const compact=['room-network','run-path'].includes(request.structure);
+  const compact=['room-network','run-path','stage-nodes'].includes(request.structure);
   specs.forEach((spec,i)=>{
-    const map=blankMap(`${request.id}_map${i}`,spec.name,40,compact?20:30,compact||spec.kind==='dungeon');
+    const dims=request.structure==='room-network'?atlasRoomDimensions(i):{width:request.structure==='stage-nodes'?64:40,height:compact?24:30};
+    const map=blankMap(`${request.id}_map${i}`,spec.name,dims.width,dims.height,compact||spec.kind==='dungeon');
     project.maps[map.id]=map;
     const node: WorldAtlasNode={id:`${request.id}_n${i}`,name:spec.name,mapId:map.id,kind:spec.kind,
-      x:spec.x,y:spec.y,w:request.structure==='field-overview'?40:request.structure==='room-network'?23:6,h:request.structure==='field-overview'?30:request.structure==='room-network'?13:6,
+      x:spec.x,y:spec.y,w:request.structure==='field-overview'?40:request.structure==='room-network'?[15,24,19,24,13,22,27,24,15,24][i]!:6,h:request.structure==='field-overview'?30:request.structure==='room-network'?[19,14,17,12,29,16,11,18,16,13][i]!:6,
       entry:{x:2,y:compact?map.height-3:Math.floor(map.height/2)},visitSwitchId:`${request.id}_visit${i}`,clearSwitchId:`${request.id}_clear${i}`,
       grants:(spec.grants??[]).map(n=>atlas.abilities[n]!.switchId),
+      ...(request.structure==='room-network'?{roomShape:i}:{}),
       ...('worldEntrance'in spec?{worldEntrance:(spec as Spec&{worldEntrance:AtlasPoint}).worldEntrance}:{})};
     atlas.nodes.push(node);addSwitch(project,node.visitSwitchId,`${atlas.name} · ${node.name} 발견`);addSwitch(project,node.clearSwitchId,`${atlas.name} · ${node.name} 클리어`);
     const pin={nodeId:node.id,switchId:`${request.id}_pin${i}`};atlas.pins.push(pin);addSwitch(project,pin.switchId,`${node.name} 지도 핀`);
@@ -168,28 +151,32 @@ export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest):
   // Separate maps use genuine doors. Stage and run atlases choose destinations through guarded UI.
   const physical=['region-routes','field-overview','room-network'].includes(request.structure);
   for(const node of atlas.nodes){let map=project.maps[node.mapId]!;
-    if(compact)buildSideRoom(project,map,atlas.nodes.indexOf(node));
-    else if(map.tilesetId==='forest_harmony') {
-      const neighbours=atlas.edges.flatMap(e=>e.from===node.id?[atlas.nodes.find(n=>n.id===e.to)!]:e.to===node.id?[atlas.nodes.find(n=>n.id===e.from)!]:[]);
-      const exits=neighbours.map(n=>fieldExit(map,node,n));
-      const unique=exits.filter((p,i)=>exits.findIndex(q=>q.x===p.x&&q.y===p.y)===i);
-      if(unique.length<2)unique.push({x:unique[0]?.x===0?map.width-1:0,y:Math.floor(map.height/2)});
-      if(node.kind==='town'&&request.structure!=='field-overview') {
-        AUTHOR_VILLAGE_TOOL.run(project,{target:{kind:'existing',mapId:map.id},houseCount:3,seed:request.seed+atlas.nodes.indexOf(node),countPolicy:'exact',interior:false});
-        map=project.maps[node.mapId]!;
-        // Preserve the town's buildings; lay access strips only on its outer approach.
-        for(const exit of unique)for(let d=0;d<6;d++){
-          const x=exit.x===0?d:exit.x===map.width-1?map.width-1-d:exit.x;
-          const y=exit.y===0?d:exit.y===map.height-1?map.height-1-d:exit.y;
-          setLayerTileAt(map,1,y*map.width+x,421);setLayerTileAt(map,3,y*map.width+x,-1);
+    const index=atlas.nodes.indexOf(node);
+    if(compact){
+      paintAtlasRoom(map,index);
+      if(request.structure==='stage-nodes'){
+        // Actual platform courses: open sky, stone ground and staggered low platforms.
+        for(let y=0;y<map.height;y++)for(let x=0;x<map.width;x++){
+          setLayerTileAt(map,1,y*map.width+x,y>=map.height-2?55:63);setLayerTileAt(map,3,y*map.width+x,-1);
         }
-      } else WILD_ROUTE_TOOLS[0]!.run(project,{mapId:map.id,exits:unique,grassPatches:2,encounters:[],encounterRate:0,seed:request.seed+atlas.nodes.indexOf(node)});
-      node.entry=nearestOpen(project,map,{x:Math.floor(map.width/2),y:Math.floor(map.height/2)});
-    }
-    else {
-      const t=project.tilesets[map.tilesetId]!;const wall=t.tileGroups?.find(g=>g.id.endsWith('wall-brown'))?.tileIds[1]??532;
-      for(let y=0;y<map.height;y++)for(let x=0;x<map.width;x++)if(x===0||y===0||x===map.width-1||y===map.height-1)setLayerTileAt(map,1,y*map.width+x,wall);
-      node.entry={x:2,y:Math.floor(map.height/2)};
+        for(let x=9;x<map.width-8;x+=10)for(let dx=0;dx<6;dx++)setLayerTileAt(map,1,(map.height-4-index%2)*map.width+x+dx,55);
+      }
+    }else{
+      if(request.structure==='field-overview')paintAtlasLandscape(map,request.seed,fieldTerrain,node.x,node.y);
+      else paintAtlasLandscape(map,request.seed+index,(x,y)=>{
+        if(x>map.width-9&&index%3===1)return 'water';
+        if(y<5&&index%3===2)return 'stone';
+        if(x<9||y<7||x>map.width-5)return 'forest';
+        return 'grass';
+      });
+      const home={x:Math.floor(map.width/2),y:Math.floor(map.height/2)};
+      const neighbours=atlas.edges.flatMap(e=>e.from===node.id?[atlas.nodes.find(n=>n.id===e.to)!]:e.to===node.id?[atlas.nodes.find(n=>n.id===e.from)!]:[]);
+      for(const neighbour of neighbours)atlasRoad(map,home,fieldExit(map,node,neighbour));
+      atlasRoad(map,home,{x:home.x+4,y:home.y},2);
+      if(node.kind==='town')atlasLandmark(map,index%2,home.x-2,home.y-5);
+      if(node.kind==='dungeon')atlasLandmark(map,4,home.x-1,home.y-4);
+      if(request.structure==='field-overview'&&index===2)atlasLandmark(map,6,home.x-2,home.y-5);
+      node.entry=nearestOpen(project,map,home);
     }
     // Clearing is an actual interactable goal; merely opening the atlas never grants rewards.
     const goal=compact?{x:map.width-6,y:map.height-3}:nearestOpen(project,map,{x:Math.floor(map.width/2)+2,y:Math.floor(map.height/2)});
@@ -222,7 +209,7 @@ export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest):
   }
   const doorSlots=new Map<string,Set<number>>();
   function roomDoor(map:GameMap,want:number):AtlasPoint{const used=doorSlots.get(map.id)??new Set<number>();doorSlots.set(map.id,used);
-    const x=[want,20,9,29,15,25].find(x=>!used.has(x));if(x===undefined)throw new Error('방 출입구가 너무 많습니다.');used.add(x);return {x,y:map.height-3};}
+    const x=[want,20,9,29,15,25].find(x=>x>0&&x<map.width-1&&!used.has(x));if(x===undefined)throw new Error('방 출입구가 너무 많습니다.');used.add(x);return {x,y:map.height-3};}
   if(physical)for(const edge of atlas.edges){const from=atlas.nodes.find(n=>n.id===edge.from)!,to=atlas.nodes.find(n=>n.id===edge.to)!;
     const a=project.maps[from.mapId]!,b=project.maps[to.mapId]!;
     const room=request.structure==='room-network';
@@ -231,7 +218,7 @@ export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest):
     edge.fromExit=ea;edge.toExit=eb;
     // Events cannot land on the return door: move one tile inward to stop ping-pong transfers.
     const entryA=doorLanding(project,a,ea,from.entry),entryB=doorLanding(project,b,eb,to.entry);
-    if(!room){for(const [m,p]of[[a,ea],[b,eb]] as const){setLayerTileAt(m,1,p.y*m.width+p.x,m.tilesetId==='forest_harmony'?421:637);setLayerTileAt(m,3,p.y*m.width+p.x,-1);}}
+    if(!room){for(const [m,p]of[[a,ea],[b,eb]] as const){setLayerTileAt(m,1,p.y*m.width+p.x,4);setLayerTileAt(m,3,p.y*m.width+p.x,-1);}}
     event(a,edge.id+'_out',to.name,ea,gated([{kind:'setSwitch',switchId:to.visitSwitchId,value:true},{kind:'transfer',mapId:b.id,...entryB}],edge.requires,atlas),true);
     event(b,edge.id+'_back',from.name,eb,gated([{kind:'setSwitch',switchId:from.visitSwitchId,value:true},{kind:'transfer',mapId:a.id,...entryA}],edge.requires,atlas),true);
   }

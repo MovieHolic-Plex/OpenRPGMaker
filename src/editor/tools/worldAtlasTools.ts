@@ -3,17 +3,14 @@ import { authorWorldAtlas } from '@/editor/worldmap/atlasAuthoring';
 import atlasExamples from '@/assets/worldAtlasExamples.json';
 import { WORLD_ATLAS_CATALOG, WORLD_ATLAS_STRUCTURES } from '@/project/worldAtlas';
 import { resolveReferenceImageDataUrl } from '@/project/bundledReferenceImages';
-import { WORLD_TERRAIN_TOOLS } from './worldTerrainTools';
 import { ToolError, type ToolDefinition } from './types';
 
-const terrainTool=WORLD_TERRAIN_TOOLS.find(t=>t.name==='edit_world_terrain')!;
 function ids(args: Record<string,unknown>) {
   const base=String(args.id??'world_atlas');
   const structures=args.structure==='all'?[...WORLD_ATLAS_STRUCTURES]:[String(args.structure)];
   if(structures.some(s=>!WORLD_ATLAS_STRUCTURES.includes(s as never)))throw new ToolError('지원하지 않는 월드맵 구조입니다.');
   return structures.map(structure=>({structure:structure as typeof WORLD_ATLAS_STRUCTURES[number],id:args.structure==='all'?base+'_'+structure.replaceAll('-','_'):base}));
 }
-const terrainArgs=(id:string)=>({newMapId:id+'_overworld',name:'걸을 수 있는 대륙',theme:'fantasy',ops:[],characterScale:0.5});
 
 export async function worldAtlasReferenceImages(data: unknown) {
   const id=(data as {id?:unknown}|null)?.id;
@@ -34,18 +31,17 @@ export const WORLD_ATLAS_TOOLS: readonly ToolDefinition[]=[{
   run(_project,args){const example=atlasExamples.find(e=>e.id===args.structure);if(!example)throw new ToolError('월드맵 구조가 없습니다.');return {summary:example.name+' · 정본 참고문서',data:example};},
 },{
   name:'author_worldmap_structure',mode:'write',domains:['map','world'],preservesAuthoredRaster:true,
-  description:'월드맵 구조를 실제 맵·문·해금 스위치·관문 이벤트와 함께 저작한다. region-routes=포켓몬 마을/도로, scaled-world=FF 걸을 대륙, field-overview=젤다 필드/열쇠, stage-nodes=마리오 클리어/비밀길, room-network=할로우 나이트 횡스크롤 방/발견/핀, run-path=슬레이 더 스파이어 일방향 선택. all은 여섯 구조를 함께 만든다. 기존 맵을 덮지 않는다. 타일·대륙 그림은 기존 공용 번들과 사람 승인 월드맵 아이콘만 쓴다. 생성 후 inspect_worldmap_structure와 실제 화면을 확인한다.',
+  description:'월드맵 구조를 실제 맵·문·해금 스위치·관문 이벤트와 함께 저작한다. region-routes=포켓몬 마을/도로, scaled-world=FF 걸을 대륙, field-overview=젤다 필드/열쇠, stage-nodes=마리오 클리어/비밀길, room-network=할로우 나이트 횡스크롤 방/발견/핀, run-path=슬레이 더 스파이어 일방향 선택. all은 여섯 구조를 함께 만든다. 기존 맵을 덮지 않는다. 지형은 새32px 공용 atlas_cartography를 쓰고 거점은 사람 승인 아이콘만 재사용한다. 필드는 이어지는 강·호수·절벽, 방은 서로 다른 실제 윤곽, 스테이지는 횡스크롤 코스로 만든다. 생성 후 inspect_worldmap_structure와 실제 화면을 확인한다.',
   parameters:{type:'object',properties:{id:{type:'string',description:'새 지도 묶음의 영문 소문자 id'},name:{type:'string'},structure:{type:'string',enum:[...WORLD_ATLAS_STRUCTURES,'all']},seed:{type:'integer'},setStart:{type:'boolean',description:'true이면 생성된 시작 맵을 게임 시작으로 지정(기본 false)'}},required:['id','structure'],additionalProperties:false},
   async prepare(args,project){
     const entries=ids(args);if(project?.worldAtlases?.some(a=>entries.some(e=>e.id===a.id))||project&&Object.keys(project.maps).some(id=>entries.some(e=>id.startsWith(e.id+'_'))))throw new ToolError('이미 있는 지도 id입니다. 새 id를 사용하세요.');
-    const scaled=entries.find(e=>e.structure==='scaled-world');if(scaled)await terrainTool.prepare?.(terrainArgs(scaled.id),project);
+
   },
   run(project,args){
     try {
       const entries=ids(args),seed=Number(args.seed??1);if(!Number.isSafeInteger(seed))throw new Error('seed는 정수입니다.');
       if(project.worldAtlases?.some(a=>entries.some(e=>e.id===a.id))||Object.keys(project.maps).some(id=>entries.some(e=>id.startsWith(e.id+'_'))))throw new Error('이미 있는 지도 id입니다. 새 id를 사용하세요.');
       const atlases=entries.map(entry=>{
-        if(entry.structure==='scaled-world')terrainTool.run(project,terrainArgs(entry.id));
         return authorWorldAtlas(project,{...entry,seed,...(typeof args.name==='string'&&entries.length===1?{name:args.name}:{}),
           ...(entry.structure==='scaled-world'?{overworldMapId:entry.id+'_overworld'}:{})});
       });

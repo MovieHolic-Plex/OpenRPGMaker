@@ -12,11 +12,11 @@
 
 ## 정본 표본
 
-프로젝트 d6b1aff2-e5bf-4e50-85b2-8014d9a2e8ec. 맵 10개, 연결 11개. 해금 뒤 10/10 장소 도달. PNG는 저장소를 닫고 다시 연 프로젝트의 타일 렌더와 공용 지도 렌더러를 사용했다.
+프로젝트 64f38f6a-2237-425b-86e4-15fd499989ed. 맵 10개, 연결 11개. 해금 뒤 10/10 장소 도달. PNG는 저장소를 닫고 다시 연 프로젝트의 타일 렌더와 공용 지도 렌더러를 사용했다.
 
 ## 데이터와 그림의 계약
 
-세계관 theme과 이동 structure는 독립이다. 이 표본은 공용 숲마을/던전 타일과 판타지 대륙을 사용한다. 특정 상용 게임의 타일을 복사한 것이 아니다. 공개 타일의 원래 참고문서는 해당 타일셋(list_tileset_references)에서 읽는다.
+세계관 theme과 이동 structure는 독립이다. 현재 생성기는 여섯 구조별 고정 연결 레시피이며 완성된 상용 게임을 재현한 것은 아니다. 이 표본은 새 공용 atlas_cartography 32px 지형을 사용한다. 지형 원본은 scripts/content/build-atlas-cartography.py이며, 거점은 사람이 승인한 기존 아이콘의 원본 화소를 재사용한다. 필드의 강·호수·절벽과 굴곡 길은 실제 통행 타일이다. 방 지도는 roomShape가 가리키는 실제 방 윤곽을 쓰고 사다리에는 실제 climbable 지형 기록을 연결한다. 스테이지는 하늘과 풀 절벽 발판이 있는 횡스크롤 코스다. 특정 상용 게임의 타일을 복사한 것이 아니다. 공개 타일의 원래 참고문서는 해당 타일셋(list_tileset_references)에서 읽는다.
 
 발견·클리어·능력·핀은 session.switches에 저장한다. 지도에 들어오거나 그림을 여는 것만으로 관문이 통과되지 않는다. stage-nodes/run-path는 열린 인접 장소만 이동한다. run-path는 이전 층과 방문한 분기를 재진입하지 않는다. region-routes/field-overview/room-network는 실제 출입구 이벤트로 왕복한다. scaled-world는 실제 대륙의 거점 입구로 출입한다. 비밀 출구는 일반 클리어와 별도 스위치다.
 
@@ -43,16 +43,17 @@
       "mapId": "examples_room_network_map0",
       "kind": "room",
       "x": 9,
-      "y": 9,
-      "w": 23,
-      "h": 13,
+      "y": 4,
+      "w": 15,
+      "h": 19,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 25
       },
       "visitSwitchId": "examples_room_network_visit0",
       "clearSwitchId": "examples_room_network_clear0",
-      "grants": []
+      "grants": [],
+      "roomShape": 0
     },
     {
       "id": "examples_room_network_n1",
@@ -61,15 +62,16 @@
       "kind": "room",
       "x": 9,
       "y": 32,
-      "w": 23,
-      "h": 13,
+      "w": 24,
+      "h": 14,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 19
       },
       "visitSwitchId": "examples_room_network_visit1",
       "clearSwitchId": "examples_room_network_clear1",
-      "grants": []
+      "grants": [],
+      "roomShape": 1
     },
     {
       "id": "examples_room_network_n2",
@@ -78,17 +80,18 @@
       "kind": "room",
       "x": 35,
       "y": 32,
-      "w": 23,
-      "h": 13,
+      "w": 19,
+      "h": 17,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 23
       },
       "visitSwitchId": "examples_room_network_visit2",
       "clearSwitchId": "examples_room_network_clear2",
       "grants": [
         "examples_room_network_ability0"
-      ]
+      ],
+      "roomShape": 2
     },
     {
       "id": "examples_room_network_n3",
@@ -96,35 +99,37 @@
       "mapId": "examples_room_network_map3",
       "kind": "room",
       "x": 61,
-      "y": 32,
-      "w": 23,
-      "h": 13,
+      "y": 35,
+      "w": 24,
+      "h": 12,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 15
       },
       "visitSwitchId": "examples_room_network_visit3",
       "clearSwitchId": "examples_room_network_clear3",
-      "grants": []
+      "grants": [],
+      "roomShape": 3
     },
     {
       "id": "examples_room_network_n4",
       "name": "바람의 탑",
       "mapId": "examples_room_network_map4",
       "kind": "room",
-      "x": 61,
-      "y": 9,
-      "w": 23,
-      "h": 13,
+      "x": 66,
+      "y": 1,
+      "w": 13,
+      "h": 29,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 37
       },
       "visitSwitchId": "examples_room_network_visit4",
       "clearSwitchId": "examples_room_network_clear4",
       "grants": [
         "examples_room_network_ability1"
-      ]
+      ],
+      "roomShape": 4
     },
     {
       "id": "examples_room_network_n5",
@@ -133,15 +138,16 @@
       "kind": "room",
       "x": 9,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 22,
+      "h": 16,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_room_network_visit5",
       "clearSwitchId": "examples_room_network_clear5",
-      "grants": []
+      "grants": [],
+      "roomShape": 5
     },
     {
       "id": "examples_room_network_n6",
@@ -150,15 +156,16 @@
       "kind": "room",
       "x": 35,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 27,
+      "h": 11,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 13
       },
       "visitSwitchId": "examples_room_network_visit6",
       "clearSwitchId": "examples_room_network_clear6",
-      "grants": []
+      "grants": [],
+      "roomShape": 6
     },
     {
       "id": "examples_room_network_n7",
@@ -167,15 +174,16 @@
       "kind": "room",
       "x": 61,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 24,
+      "h": 18,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 27
       },
       "visitSwitchId": "examples_room_network_visit7",
       "clearSwitchId": "examples_room_network_clear7",
-      "grants": []
+      "grants": [],
+      "roomShape": 7
     },
     {
       "id": "examples_room_network_n8",
@@ -184,15 +192,16 @@
       "kind": "room",
       "x": 87,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 15,
+      "h": 16,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_room_network_visit8",
       "clearSwitchId": "examples_room_network_clear8",
-      "grants": []
+      "grants": [],
+      "roomShape": 8
     },
     {
       "id": "examples_room_network_n9",
@@ -201,15 +210,16 @@
       "kind": "room",
       "x": 87,
       "y": 75,
-      "w": 23,
+      "w": 24,
       "h": 13,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 25
       },
       "visitSwitchId": "examples_room_network_visit9",
       "clearSwitchId": "examples_room_network_clear9",
-      "grants": []
+      "grants": [],
+      "roomShape": 9
     }
   ],
   "edges": [
@@ -220,12 +230,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 28,
+        "y": 25
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 52,
+        "y": 19
       }
     },
     {
@@ -236,11 +246,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 19
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 23
       }
     },
     {
@@ -252,12 +262,12 @@
       ],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 34,
+        "y": 23
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 15
       }
     },
     {
@@ -267,12 +277,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 54,
+        "y": 15
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 1,
+        "y": 37
       }
     },
     {
@@ -283,11 +293,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 9,
-        "y": 17
+        "y": 19
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 36,
+        "y": 21
       }
     },
     {
@@ -298,11 +308,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 21
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 13
       }
     },
     {
@@ -314,12 +324,12 @@
       ],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 58,
+        "y": 13
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 27
       }
     },
     {
@@ -329,12 +339,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 42,
+        "y": 27
       },
       "toExit": {
         "x": 20,
-        "y": 17
+        "y": 15
       }
     },
     {
@@ -347,11 +357,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 27
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 21
       }
     },
     {
@@ -361,12 +371,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 30,
+        "y": 21
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 46,
+        "y": 25
       }
     },
     {
@@ -379,12 +389,12 @@
       "oneWay": false,
       "secret": true,
       "fromExit": {
-        "x": 20,
-        "y": 17
+        "x": 22,
+        "y": 37
       },
       "toExit": {
         "x": 20,
-        "y": 17
+        "y": 21
       }
     }
   ],

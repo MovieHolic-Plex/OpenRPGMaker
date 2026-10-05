@@ -6,10 +6,13 @@ import {runRuntimeQa,startPlayerQaServer} from '../lib/runtimeQaRun.mjs';
 import {canMove} from '../../src/project/collision.ts';
 const out=path.resolve(process.argv[2]??'verify-shots/worldmap-structures');
 const cases=JSON.parse(fs.readFileSync(path.join(out,'canonical-projects.json'),'utf8')).cases;
+const selectedIndex=process.argv.indexOf('--structures');
+const selected=selectedIndex>=0?process.argv[selectedIndex+1]!.split(','):null;
 const server=await startPlayerQaServer();const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu']});
 const reports:any[]=[];
 try{
   for(const item of cases){
+    if(selected&&!selected.includes(item.structure))continue;
     const fixture=path.join(out,item.structure,'runtime-project.json'),p=JSON.parse(fs.readFileSync(fixture,'utf8')),atlas=p.worldAtlases[0];
     const start=atlas.nodes.find((n:any)=>n.id===atlas.startNodeId);
     const beats:any[]=[
@@ -21,6 +24,11 @@ try{
     ];
     if(['region-routes','field-overview','room-network'].includes(item.structure))beats.push({id:'pin',note:'현재 장소의 핀',ops:[{kind:'pointerClick',testid:'world-atlas-pin'},{kind:'waitForAttr',testid:'world-atlas-pin',attr:'aria-pressed',value:'true'}],expect:{switches:{[atlas.pins.find((pin:any)=>pin.nodeId===start.id).switchId]:true}},shot:true});
     beats.push({id:'close',note:'Esc 닫기',ops:[{kind:'key',key:'Escape'},{kind:'waitFor',testid:'world-atlas',state:'absent'}],expect:{testidAbsent:['world-atlas','main-menu']}});
+    if(item.structure==='room-network'&&start.roomShape!==undefined){
+      const map=p.maps[start.mapId],x=Math.floor(map.width*.5),y=map.height-3;
+      beats.push({id:'ladder',note:'실제 사다리로 점프 높이를 넘는 위쪽 방까지 오르기',ops:[{kind:'teleport',mapId:start.mapId,x,y},{kind:'dir',dir:'up'},
+        {kind:'waitForPosition',mapId:start.mapId,x,y:y-6},{kind:'dir',dir:null}],expect:{mapId:start.mapId,x,y:y-6},shot:true});
+    }
     if(['region-routes','field-overview','room-network','scaled-world'].includes(item.structure)){
       const from=atlas.overviewMapId??start.mapId,edge=atlas.edges.find((e:any)=>e.from===start.id&&!e.requires.length);
       const dest=atlas.overviewMapId?start:atlas.nodes.find((n:any)=>n.id===edge.to);
@@ -50,5 +58,7 @@ try{
     console.log(JSON.stringify(reports.at(-1)));
   }
 }finally{await browser.close();await server.close();}
-fs.writeFileSync(path.join(out,'runtime-capture.json'),JSON.stringify(reports,null,2));
+const priorFile=path.join(out,'runtime-capture.json');
+const prior=selected&&fs.existsSync(priorFile)?JSON.parse(fs.readFileSync(priorFile,'utf8')):[];
+fs.writeFileSync(priorFile,JSON.stringify([...prior.filter((r:any)=>!reports.some(n=>n.structure===r.structure)),...reports],null,2));
 if(reports.some(r=>r.errors.length||r.beats.some((b:any)=>b.failures.length)))process.exitCode=1;

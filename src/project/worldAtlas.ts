@@ -22,6 +22,8 @@ export interface WorldAtlasNode {
   grants: string[];
   /** Location in the walkable scaled overworld, when present. */
   worldEntrance?: AtlasPoint;
+  /** Saved layout identity: deleting another room must not change this room's silhouette. */
+  roomShape?: number;
 }
 export interface WorldAtlasEdge {
   id: string; from: string; to: string; requires: string[];
@@ -98,7 +100,8 @@ export function normalizeWorldAtlases(value: unknown): WorldAtlas[] {
         || !kinds.includes(node.kind) || !point(node.entry) || !str(node.visitSwitchId) || !str(node.clearSwitchId) || !strings(node.grants)
         || ![node.x,node.y,node.w,node.h].every(Number.isFinite) || node.x < 0 || node.y < 0 || node.w <= 0 || node.h <= 0
         || node.x + node.w > atlas.width || node.y + node.h > atlas.height
-        || (node.worldEntrance !== undefined && !point(node.worldEntrance))) throw new Error('Invalid world atlas node');
+        || (node.worldEntrance !== undefined && !point(node.worldEntrance))
+        || (node.roomShape !== undefined && (!Number.isInteger(node.roomShape) || node.roomShape < 0 || node.roomShape > 9))) throw new Error('Invalid world atlas node');
       nodes.add(node.id);
     }
     if (!nodes.has(atlas.startNodeId)) throw new Error('Invalid world atlas start');

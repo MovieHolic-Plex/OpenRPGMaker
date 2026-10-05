@@ -18,8 +18,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit0",
       "clearSwitchId": "examples_stage_nodes_clear0",
@@ -35,8 +35,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit1",
       "clearSwitchId": "examples_stage_nodes_clear1",
@@ -52,8 +52,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit2",
       "clearSwitchId": "examples_stage_nodes_clear2",
@@ -71,8 +71,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit3",
       "clearSwitchId": "examples_stage_nodes_clear3",
@@ -88,8 +88,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 14
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit4",
       "clearSwitchId": "examples_stage_nodes_clear4",
@@ -105,8 +105,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 17,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit5",
       "clearSwitchId": "examples_stage_nodes_clear5",
@@ -122,8 +122,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 21,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit6",
       "clearSwitchId": "examples_stage_nodes_clear6",
@@ -139,8 +139,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 20,
-        "y": 15
+        "x": 2,
+        "y": 21
       },
       "visitSwitchId": "examples_stage_nodes_visit7",
       "clearSwitchId": "examples_stage_nodes_clear7",

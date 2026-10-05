@@ -9,8 +9,6 @@ import {createBlankProject} from '../../src/project/defaults.ts';
 import {initLocalProjectStore,openLocalProjectStore} from '../../electron/local-store/store.ts';
 import {installSharedContent,ensureSharedContent} from '../../src/project/sharedContent.ts';
 import {readSharedContentLibrary} from '../lib/sharedContentSqlite.ts';
-import {setWorldmapBuilder} from '../../src/editor/worldmap/worldmapBuild.ts';
-import {buildWorldmap} from '../lib/worldmapBuild.mjs';
 import {getTool,runTool} from '../../src/editor/tools/index.ts';
 import {WORLD_ATLAS_STRUCTURES} from '../../src/project/worldAtlas.ts';
 import {renderWorldAtlasSvg} from '../../src/project/worldAtlasRender.ts';
@@ -30,9 +28,8 @@ if(arg('phase','create')==='create'){
   await installSharedContent({revision:createHash('sha256').update(JSON.stringify(row.library)).digest('hex'),libraries:{'worldmap-human-selected':row.library}});
   const project=createBlankProject();project.system.opening=undefined;ensureSharedContent(project);
   const originalIds=new Set(Object.keys(project.maps));
-  setWorldmapBuilder(buildWorldmap);
   const args={id:'examples',structure:'all',seed:7};
-  console.log('Preparing approved terrain for the scaled overworld…');
+  console.log('Authoring shared new terrain and accepted landmark pixels…');
   await getTool('author_worldmap_structure')!.prepare?.(args,project);
   const context={project};const result=runTool(context,'author_worldmap_structure',args,{dryRun:false});
   if(!result.ok)throw Error(JSON.stringify(result));
@@ -77,7 +74,8 @@ try{
       const rendered=renderMapPng(project,project.maps[mapId]!,1);if(rendered.note)throw Error(rendered.note);
       fs.writeFileSync(path.join(dir,mapId+'.png'),rendered.png);images[mapId]='data:image/png;base64,'+rendered.png.toString('base64');
     }
-    const svg=renderWorldAtlasSvg(atlas,{revealAll:true,mapId:project.startMapId,mapImages:images});
+    const landmarkImages=Object.fromEntries(Array.from({length:8},(_,i)=>[i,'data:image/png;base64,'+fs.readFileSync(path.resolve('public/assets/atlas-cartography/icons/'+i+'.png')).toString('base64')]));
+    const svg=renderWorldAtlasSvg(atlas,{revealAll:true,mapId:project.startMapId,mapImages:images,landmarkImages});
     fs.writeFileSync(path.join(dir,'atlas.svg'),svg);
     await page.setContent('<!doctype html><html><body style="margin:0">'+svg+'</body></html>');await page.evaluate(()=>document.fonts.ready);
     await page.locator('svg').screenshot({path:path.join(out,item.structure+'.png')});

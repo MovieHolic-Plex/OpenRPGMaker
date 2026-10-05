@@ -14,16 +14,17 @@
       "mapId": "examples_room_network_map0",
       "kind": "room",
       "x": 9,
-      "y": 9,
-      "w": 23,
-      "h": 13,
+      "y": 4,
+      "w": 15,
+      "h": 19,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 25
       },
       "visitSwitchId": "examples_room_network_visit0",
       "clearSwitchId": "examples_room_network_clear0",
-      "grants": []
+      "grants": [],
+      "roomShape": 0
     },
     {
       "id": "examples_room_network_n1",
@@ -32,15 +33,16 @@
       "kind": "room",
       "x": 9,
       "y": 32,
-      "w": 23,
-      "h": 13,
+      "w": 24,
+      "h": 14,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 19
       },
       "visitSwitchId": "examples_room_network_visit1",
       "clearSwitchId": "examples_room_network_clear1",
-      "grants": []
+      "grants": [],
+      "roomShape": 1
     },
     {
       "id": "examples_room_network_n2",
@@ -49,17 +51,18 @@
       "kind": "room",
       "x": 35,
       "y": 32,
-      "w": 23,
-      "h": 13,
+      "w": 19,
+      "h": 17,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 23
       },
       "visitSwitchId": "examples_room_network_visit2",
       "clearSwitchId": "examples_room_network_clear2",
       "grants": [
         "examples_room_network_ability0"
-      ]
+      ],
+      "roomShape": 2
     },
     {
       "id": "examples_room_network_n3",
@@ -67,35 +70,37 @@
       "mapId": "examples_room_network_map3",
       "kind": "room",
       "x": 61,
-      "y": 32,
-      "w": 23,
-      "h": 13,
+      "y": 35,
+      "w": 24,
+      "h": 12,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 15
       },
       "visitSwitchId": "examples_room_network_visit3",
       "clearSwitchId": "examples_room_network_clear3",
-      "grants": []
+      "grants": [],
+      "roomShape": 3
     },
     {
       "id": "examples_room_network_n4",
       "name": "바람의 탑",
       "mapId": "examples_room_network_map4",
       "kind": "room",
-      "x": 61,
-      "y": 9,
-      "w": 23,
-      "h": 13,
+      "x": 66,
+      "y": 1,
+      "w": 13,
+      "h": 29,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 37
       },
       "visitSwitchId": "examples_room_network_visit4",
       "clearSwitchId": "examples_room_network_clear4",
       "grants": [
         "examples_room_network_ability1"
-      ]
+      ],
+      "roomShape": 4
     },
     {
       "id": "examples_room_network_n5",
@@ -104,15 +109,16 @@
       "kind": "room",
       "x": 9,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 22,
+      "h": 16,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_room_network_visit5",
       "clearSwitchId": "examples_room_network_clear5",
-      "grants": []
+      "grants": [],
+      "roomShape": 5
     },
     {
       "id": "examples_room_network_n6",
@@ -121,15 +127,16 @@
       "kind": "room",
       "x": 35,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 27,
+      "h": 11,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 13
       },
       "visitSwitchId": "examples_room_network_visit6",
       "clearSwitchId": "examples_room_network_clear6",
-      "grants": []
+      "grants": [],
+      "roomShape": 6
     },
     {
       "id": "examples_room_network_n7",
@@ -138,15 +145,16 @@
       "kind": "room",
       "x": 61,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 24,
+      "h": 18,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 27
       },
       "visitSwitchId": "examples_room_network_visit7",
       "clearSwitchId": "examples_room_network_clear7",
-      "grants": []
+      "grants": [],
+      "roomShape": 7
     },
     {
       "id": "examples_room_network_n8",
@@ -155,15 +163,16 @@
       "kind": "room",
       "x": 87,
       "y": 55,
-      "w": 23,
-      "h": 13,
+      "w": 15,
+      "h": 16,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_room_network_visit8",
       "clearSwitchId": "examples_room_network_clear8",
-      "grants": []
+      "grants": [],
+      "roomShape": 8
     },
     {
       "id": "examples_room_network_n9",
@@ -172,15 +181,16 @@
       "kind": "room",
       "x": 87,
       "y": 75,
-      "w": 23,
+      "w": 24,
       "h": 13,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 25
       },
       "visitSwitchId": "examples_room_network_visit9",
       "clearSwitchId": "examples_room_network_clear9",
-      "grants": []
+      "grants": [],
+      "roomShape": 9
     }
   ],
   "edges": [
@@ -191,12 +201,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 28,
+        "y": 25
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 52,
+        "y": 19
       }
     },
     {
@@ -207,11 +217,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 19
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 23
       }
     },
     {
@@ -223,12 +233,12 @@
       ],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 34,
+        "y": 23
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 15
       }
     },
     {
@@ -238,12 +248,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 54,
+        "y": 15
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 1,
+        "y": 37
       }
     },
     {
@@ -254,11 +264,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 9,
-        "y": 17
+        "y": 19
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 36,
+        "y": 21
       }
     },
     {
@@ -269,11 +279,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 21
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 13
       }
     },
     {
@@ -285,12 +295,12 @@
       ],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 58,
+        "y": 13
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 27
       }
     },
     {
@@ -300,12 +310,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 42,
+        "y": 27
       },
       "toExit": {
         "x": 20,
-        "y": 17
+        "y": 15
       }
     },
     {
@@ -318,11 +328,11 @@
       "oneWay": false,
       "fromExit": {
         "x": 20,
-        "y": 17
+        "y": 27
       },
       "toExit": {
         "x": 1,
-        "y": 17
+        "y": 21
       }
     },
     {
@@ -332,12 +342,12 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 38,
-        "y": 17
+        "x": 30,
+        "y": 21
       },
       "toExit": {
-        "x": 38,
-        "y": 17
+        "x": 46,
+        "y": 25
       }
     },
     {
@@ -350,12 +360,12 @@
       "oneWay": false,
       "secret": true,
       "fromExit": {
-        "x": 20,
-        "y": 17
+        "x": 22,
+        "y": 37
       },
       "toExit": {
         "x": 20,
-        "y": 17
+        "y": 21
       }
     }
   ],

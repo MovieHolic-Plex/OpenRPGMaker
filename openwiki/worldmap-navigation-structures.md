@@ -2,7 +2,7 @@
 
 [게임 조사](worldmap-game-research.md)의 여섯 이동 방식을 실제 맵·이벤트·플레이어 지도창으로 구현했다.
 세계관 `theme`은 지형/그림의 선택이고 `structure`는 이동 방식의 선택이다.
-현재 저작 레시피는 기존 공용 숲마을·던전 타일과 판타지 대륙을 사용한다.
+현재 저작 레시피는 새 공용 `atlas_cartography` 32px 지형과 사람이 승인한 기존 거점 아이콘을 사용한다. 옛 숲/던전/월드 지형 시트는 이 저작기에서 쓰지 않는다.
 
 ## 지원 범위
 
@@ -16,11 +16,11 @@
 | `run-path` | 13 | 위층 일방향 분기, 전투/정예/보스·선택 사건·보물·상점·휴식 |
 
 게임 이름은 조사 비교 대상이다. 상용 게임의 그림·몬스터·전투·액션을 복제한 결과가 아니다.
-포켓몬식 포획/체육관, 마리오의 플랫폼 코스, 할로우 나이트 전투, 스파이어의 카드 전투는
+포켓몬식 포획/체육관, 마리오의 적/정교한 플랫폼 코스, 할로우 나이트 전투, 스파이어의 카드 전투는
 이 이동 구조 기능에 포함되지 않는다. 횡스크롤 방은 기존 sideView 엔진을 쓴다.
 런 전투는 프로젝트에 있는 기본 전투/적 부대, 보상·상점·휴식은 기존 명령을 쓴다.
 연결 그래프는 유형별 레시피이며 seed는 실제 필드 배치를 바꾼다. 매번 새 그래프를 만드는 생성기는 아니다.
-축척 대륙에는 키트의 기존 31개 랜드마크 그림이 있고, 그중 처음부터 걸어 닿는 8개에 별도 맵을 연결한다.
+축척 대륙은 새 지형의 두 대륙과 다리·굴곡 길을 직접 만들고 8개 거점에 별도 맵을 연결한다. 모든 거점 입구의 실제 canMove 도달성도 검사한다.
 
 ## 편집기와 조수
 
@@ -39,7 +39,7 @@
 참고문서 읽기는 Pi/기존 조수 양쪽에서 정본 PNG를 실제 image part로 첨부한다.
 Pi의 일반 응답 상한으로 전체 연결 정의가 잘리지 않도록 이 읽기에 32,000자 예산을 쓴다.
 실제 타일 수정 시에는 해당 타일셋의 `list_tileset_references`/`read_tileset_reference`를 계속 먼저 읽는다.
-저작기는 기존 `author_village`·숲 도로 도구와 layer mutation helper를 사용한다.
+저작기는 `atlasLandscape.ts`와 layer mutation helper로 실제 지형·길·방을 만든다. 예전 숲길 반복 생성과 던전 빈 사각형은 교체했다.
 이 과정에서 발견한 마을 범위 검사의 폴더 metadata 누락은 `authorVillageScope.stripAddedNodes`에서
 `{...node, children}`으로 보존한다. 맵 트리를 바꾸지 않은 마을도 폴더 이름/종류가 있으면 거부되던 문제다.
 
@@ -93,23 +93,13 @@ bun scripts/content/prepare-worldmap-structure-references.mts verify-shots/world
 create는 기존 project.sqlite가 있으면 덮지 않는다. images와 자료 재생성은 정본을 다시 읽는다.
 `--publish`는 `/home/main/.local/share/oprn/shared-content.sqlite`의 로컬 publication API만 사용한다.
 원격 LegacyDb/Supabase에 쓰지 않는다. 현재 revision/재로드 근거는
-`verify-shots/worldmap-structures/shared-library.json`.
+`verify-shots/worldmap-structures-v3/shared-library.json`. 정본 PNG 바이트도 이 pack의 previews에 함께 저장한다.
 
 ## 정본과 화면 근거
 
-저장 루트: `/home/main/.local/share/oprn/worldmap-structures-20261005/`.
-각 폴더의 project.sqlite에 저장한 뒤 닫고 다시 열어 연결 정의 동치와 audit.ok를 확인했다(각 revision 1).
-
-| 폴더 | project id |
-|---|---|
-| region-routes | 380b537f-432e-4023-808e-a1ee990d1930 |
-| scaled-world | 70c0476c-bfc0-4137-b902-f03abbf1069c |
-| field-overview | 63423c08-057f-4cd9-bc1f-d15463f83d72 |
-| stage-nodes | 9d4e906c-82ea-4be9-8f0d-43c13961b2c1 |
-| room-network | d6b1aff2-e5bf-4e50-85b2-8014d9a2e8ec |
-| run-path | 4a79cc30-5223-45b6-81d1-e8125c268e39 |
-
-`verify-shots/worldmap-structures/canonical-projects.json`과 `summary.json`이 재로드 근거다.
+수정판 저장 루트: `/home/main/.local/share/oprn/worldmap-structures-v3-20261005/`. 이전 표본은 `/home/main/.local/share/oprn/worldmap-structures-20261005/`에 보존한다.
+각 폴더의 project.sqlite에 저장하고 닫았다가 같은 대상을 다시 열어 실제 지도/참고문서와 audit.ok를 확인했다.
+현재 project id와 revision은 `verify-shots/worldmap-structures-v3/canonical-projects.json`, 재로드 근거는 `canonical-reload.json`이다.
 같은 재로드 자료의 실제 타일 PNG와 공용 렌더러로 6개 전체 지도 PNG 및 `all-six.png`를 만들었다.
 전체 PNG는 저작 검토를 위해 미발견 방도 표시한다. 런타임 방 지도는 발견만 표시한다.
 전용 `player.html` 캡처는 `scripts/qa/capture-worldmap-structures.mts`,
@@ -122,3 +112,18 @@ create는 기존 project.sqlite가 있으면 덮지 않는다. images와 자료 
 `assistant-tool-handoff.json`은 6종의 전체 지침과 PNG가 Pi 응답에 실린 증거다(파일 SHA256 일치).
 모델 서버 `http://100.73.251.77:8000/v1` 연결 실패로 자연어 실호출 2회는 완료되지 않았다.
 `assistant-region*/events.json`에 실패가 남아 있다. 실모델의 새 구조 생성 성공으로 보고하지 않는다.
+
+## 시각 수정판 (2026-10-05)
+
+이전 결과는 지역/스테이지 배경을 재사용하고 필드는 숲길 9장을 반복했으며 방은 같은 빈 사각형, 런은 글리프 표식을 썼다. 사용자의 품질 지적을 받아 교체했다.
+
+- 지역: 별도 해안·산줄기·호수·숲의 전도와 승인 거점 그림.
+- 축척 월드: 새32px 두 대륙·눈/모래/숲·다리와 실제8거점.
+- 필드:120×90 연속 지형을40×30 아홉 필드로 자른다. 강·호수는 실제×, 다리46은○. 길 굴곡의 끝은 실제 인접 출구와 일치한다.
+- 스테이지: 지역과 다른 여러 섬·고개·별도 승인 요새, 실제64×24 하늘/풀 절벽 발판 코스.
+- 방:실제24–60칸 폭/16–40칸 높이의 회랑·굴곡 방·탑. `atlasRoomAir`를 충돌 바닥과 지도 윤곽이 공유한다. `node.roomShape`는 저장된0–9 번호라 방 삭제/재정렬 뒤에도 모양이 유지된다. 사다리50은 지형 기록의climbable태그를 저작기에서 연결한다. 기존 표본에roomShape가 없으면 실제 기존 맵 이미지의 사각 전도를 계속 쓴다.
+- 런:종류별 기존UI벡터 표식·굴곡 분기·종이 지형선. 글꼴에 따른 한자/기호 표식을 제거했다.
+
+지형 시트와 승인 아이콘 화소는 `scripts/content/build-atlas-cartography.py` → `public/assets/atlas-cartography/` / `src/assets/atlasCartographySheet.json`이다. 사전/배치/정상·오류 계약은 `tiledata/atlas-cartography/README.md`, 번들은 `atlasCartographyReferences.json`이다. `defaultAssets`는 새 프로젝트에 타일셋을 넣고 기존 프로젝트에도 누락된 번들/참고문서를 보충한다. 사람이 승인한 거점 원본은 변경하지 않고 최근접2배로만 시트에 넣는다.
+
+검증: 수정판6종의 전용player캡처43비트와JS오류, 실제문/관문/핀/M·Esc·지도중정지를 확인했다. 마지막 방/코스 수정은 해당 두 유형만 다시 캡처하고, 방 사다리로 점프 높이보다 높은6칸을 실제로 오르는 비트를 더했다. 최종 여섯 유형44비트는 실패0/JS오류0이다. 수정판 어댑터의 전체참고문서/PNG해시 일치는 `verify-shots/worldmap-structures-v3/assistant-tool-handoff.json`이다. 이 기록은 이동/관문 동작의 근거이며 원작급 미술·전투·전체 코스 완주의 합격을 뜻하지 않는다.

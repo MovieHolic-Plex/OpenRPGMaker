@@ -3,6 +3,7 @@
 ## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 
 6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.
+방 노드의 선택 `roomShape?:number`(정수0–9)는 실제 방/미니맵 윤곽의 고정 식별자다. 노드 삭제 뒤 배열 순번이 바뀌어도 다른 모양을 그리지 않는다. 없는 기존 방은 실제 맵 이미지의 기존 사각 전도를 유지한다.
 없는 기존 프로젝트는 그대로 읽는다. `worldAtlas.normalizeWorldAtlases`는 외부 정의를 검사하고
 맵 삭제는 해당 노드/연결/핀을 정리한다. 발견·클리어·능력·핀의 현재 상태는 기존 session.switches와
 세이브 슬롯에 저장한다. 도구·런타임·SQLite 재로드 근거는 [세계 지도 이동 구조](worldmap-navigation-structures.md).

@@ -10,37 +10,37 @@
   "nodes": [
     {
       "id": "examples_scaled_world_n0",
-      "name": "대성",
+      "name": "모래 나루",
       "mapId": "examples_scaled_world_map0",
       "kind": "town",
-      "x": 28,
-      "y": 26,
+      "x": 18,
+      "y": 54,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit0",
       "clearSwitchId": "examples_scaled_world_clear0",
       "grants": [],
       "worldEntrance": {
-        "x": 28,
-        "y": 26
+        "x": 18,
+        "y": 54
       }
     },
     {
       "id": "examples_scaled_world_n1",
-      "name": "강가 마을",
+      "name": "잎새 마을",
       "mapId": "examples_scaled_world_map1",
       "kind": "town",
-      "x": 39,
-      "y": 28,
+      "x": 28,
+      "y": 37,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit1",
       "clearSwitchId": "examples_scaled_world_clear1",
@@ -48,134 +48,134 @@
         "examples_scaled_world_ability0"
       ],
       "worldEntrance": {
-        "x": 39,
-        "y": 28
+        "x": 28,
+        "y": 37
       }
     },
     {
       "id": "examples_scaled_world_n2",
-      "name": "내해 항구",
+      "name": "눈빛 관문",
       "mapId": "examples_scaled_world_map2",
-      "kind": "dungeon",
-      "x": 42,
-      "y": 33,
+      "kind": "town",
+      "x": 24,
+      "y": 17,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 2,
+        "x": 20,
         "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit2",
       "clearSwitchId": "examples_scaled_world_clear2",
       "grants": [],
       "worldEntrance": {
-        "x": 42,
-        "y": 33
+        "x": 24,
+        "y": 17
       }
     },
     {
       "id": "examples_scaled_world_n3",
-      "name": "설원 마을",
+      "name": "고원 수도",
       "mapId": "examples_scaled_world_map3",
       "kind": "town",
-      "x": 34,
-      "y": 10,
+      "x": 44,
+      "y": 16,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 16
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit3",
       "clearSwitchId": "examples_scaled_world_clear3",
       "grants": [],
       "worldEntrance": {
-        "x": 34,
-        "y": 10
+        "x": 44,
+        "y": 16
       }
     },
     {
       "id": "examples_scaled_world_n4",
-      "name": "눈 촌락",
+      "name": "호수 항구",
       "mapId": "examples_scaled_world_map4",
       "kind": "town",
-      "x": 20,
-      "y": 11,
+      "x": 47,
+      "y": 39,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit4",
       "clearSwitchId": "examples_scaled_world_clear4",
       "grants": [],
       "worldEntrance": {
-        "x": 20,
-        "y": 11
+        "x": 47,
+        "y": 39
       }
     },
     {
       "id": "examples_scaled_world_n5",
-      "name": "고원 마을",
+      "name": "돌빛 탑",
       "mapId": "examples_scaled_world_map5",
       "kind": "dungeon",
-      "x": 16,
-      "y": 22,
+      "x": 70,
+      "y": 32,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 2,
+        "x": 20,
         "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit5",
       "clearSwitchId": "examples_scaled_world_clear5",
       "grants": [],
       "worldEntrance": {
-        "x": 16,
-        "y": 22
+        "x": 70,
+        "y": 32
       }
     },
     {
       "id": "examples_scaled_world_n6",
-      "name": "산기슭 동굴",
+      "name": "새벽 성",
       "mapId": "examples_scaled_world_map6",
       "kind": "town",
-      "x": 9,
-      "y": 26,
+      "x": 77,
+      "y": 17,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit6",
       "clearSwitchId": "examples_scaled_world_clear6",
       "grants": [],
       "worldEntrance": {
-        "x": 9,
-        "y": 26
+        "x": 77,
+        "y": 17
       }
     },
     {
       "id": "examples_scaled_world_n7",
-      "name": "사막 촌락",
+      "name": "동쪽 유적",
       "mapId": "examples_scaled_world_map7",
-      "kind": "town",
-      "x": 21,
-      "y": 51,
+      "kind": "dungeon",
+      "x": 69,
+      "y": 49,
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 17
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_scaled_world_visit7",
       "clearSwitchId": "examples_scaled_world_clear7",
       "grants": [],
       "worldEntrance": {
-        "x": 21,
-        "y": 51
+        "x": 69,
+        "y": 49
       }
     }
   ],

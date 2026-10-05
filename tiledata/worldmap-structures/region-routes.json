@@ -18,8 +18,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit0",
       "clearSwitchId": "examples_region_routes_clear0",
@@ -52,8 +52,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit2",
       "clearSwitchId": "examples_region_routes_clear2",
@@ -88,8 +88,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit4",
       "clearSwitchId": "examples_region_routes_clear4",
@@ -105,7 +105,7 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 21,
+        "x": 20,
         "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit5",
@@ -122,8 +122,8 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 34,
-        "y": 18
+        "x": 20,
+        "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit6",
       "clearSwitchId": "examples_region_routes_clear6",
@@ -139,7 +139,7 @@
       "w": 6,
       "h": 6,
       "entry": {
-        "x": 22,
+        "x": 20,
         "y": 15
       },
       "visitSwitchId": "examples_region_routes_visit7",
@@ -155,8 +155,8 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 60,
-        "y": 18
+        "x": 39,
+        "y": 15
       },
       "toExit": {
         "x": 0,
@@ -185,7 +185,7 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 34,
+        "x": 20,
         "y": 0
       },
       "toExit": {
@@ -204,8 +204,8 @@
         "y": 15
       },
       "toExit": {
-        "x": 8,
-        "y": 19
+        "x": 0,
+        "y": 15
       }
     },
     {
@@ -217,7 +217,7 @@
       ],
       "oneWay": false,
       "fromExit": {
-        "x": 34,
+        "x": 20,
         "y": 0
       },
       "toExit": {
@@ -237,7 +237,7 @@
       },
       "toExit": {
         "x": 0,
-        "y": 17
+        "y": 15
       }
     },
     {
@@ -251,8 +251,8 @@
         "y": 0
       },
       "toExit": {
-        "x": 22,
-        "y": 16
+        "x": 20,
+        "y": 29
       }
     },
     {
@@ -262,7 +262,7 @@
       "requires": [],
       "oneWay": false,
       "fromExit": {
-        "x": 23,
+        "x": 39,
         "y": 15
       },
       "toExit": {

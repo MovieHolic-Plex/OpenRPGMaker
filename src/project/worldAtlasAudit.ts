@@ -17,6 +17,19 @@ export function inspectWorldAtlas(project: Project, atlas: WorldAtlas) {
   atlas.edges.flatMap(edge => edge.requires).forEach(checkSwitch);
   atlas.abilities.forEach(a => checkSwitch(a.switchId)); atlas.pins.forEach(pin => checkSwitch(pin.switchId));
   if (atlas.overviewMapId && !project.maps[atlas.overviewMapId]) issues.push('대륙 맵이 없습니다.');
+  if(atlas.overviewMapId&&project.maps[atlas.overviewMapId]){
+    const world=project.maps[atlas.overviewMapId]!,start=atlas.nodes.find(n=>n.id===atlas.startNodeId)?.worldEntrance;
+    if(!start)issues.push('대륙 시작 입구가 없습니다.');
+    else{
+      const seen=new Set([start.y*world.width+start.x]),queue=[start];
+      for(let i=0;i<queue.length;i++){const p=queue[i]!;for(const [dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){
+        const x=p.x+dx!,y=p.y+dy!,key=y*world.width+x;
+        if(x<0||y<0||x>=world.width||y>=world.height||seen.has(key)||!canMove(project,world,p.x,p.y,x,y))continue;
+        seen.add(key);queue.push({x,y});
+      }}
+      for(const node of atlas.nodes)if(!node.worldEntrance||!seen.has(node.worldEntrance.y*world.width+node.worldEntrance.x))issues.push('대륙에서 닿지 않는 거점: '+node.name);
+    }
+  }
   // Acquire only rewards that are themselves reachable. A key behind its own gate is a deadlock.
   const reached = new Set([atlas.startNodeId]); const acquired = new Set<string>();
   let changed = true;

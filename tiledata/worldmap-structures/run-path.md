@@ -12,11 +12,11 @@
 
 ## 정본 표본
 
-프로젝트 4a79cc30-5223-45b6-81d1-e8125c268e39. 맵 13개, 연결 19개. 해금 뒤 13/13 장소 도달. PNG는 저장소를 닫고 다시 연 프로젝트의 타일 렌더와 공용 지도 렌더러를 사용했다.
+프로젝트 8af71241-f680-4298-b051-f96544016fce. 맵 13개, 연결 19개. 해금 뒤 13/13 장소 도달. PNG는 저장소를 닫고 다시 연 프로젝트의 타일 렌더와 공용 지도 렌더러를 사용했다.
 
 ## 데이터와 그림의 계약
 
-세계관 theme과 이동 structure는 독립이다. 이 표본은 공용 숲마을/던전 타일과 판타지 대륙을 사용한다. 특정 상용 게임의 타일을 복사한 것이 아니다. 공개 타일의 원래 참고문서는 해당 타일셋(list_tileset_references)에서 읽는다.
+세계관 theme과 이동 structure는 독립이다. 현재 생성기는 여섯 구조별 고정 연결 레시피이며 완성된 상용 게임을 재현한 것은 아니다. 이 표본은 새 공용 atlas_cartography 32px 지형을 사용한다. 지형 원본은 scripts/content/build-atlas-cartography.py이며, 거점은 사람이 승인한 기존 아이콘의 원본 화소를 재사용한다. 필드의 강·호수·절벽과 굴곡 길은 실제 통행 타일이다. 방 지도는 roomShape가 가리키는 실제 방 윤곽을 쓰고 사다리에는 실제 climbable 지형 기록을 연결한다. 스테이지는 하늘과 풀 절벽 발판이 있는 횡스크롤 코스다. 특정 상용 게임의 타일을 복사한 것이 아니다. 공개 타일의 원래 참고문서는 해당 타일셋(list_tileset_references)에서 읽는다.
 
 발견·클리어·능력·핀은 session.switches에 저장한다. 지도에 들어오거나 그림을 여는 것만으로 관문이 통과되지 않는다. stage-nodes/run-path는 열린 인접 장소만 이동한다. run-path는 이전 층과 방문한 분기를 재진입하지 않는다. region-routes/field-overview/room-network는 실제 출입구 이벤트로 왕복한다. scaled-world는 실제 대륙의 거점 입구로 출입한다. 비밀 출구는 일반 클리어와 별도 스위치다.
 
@@ -48,7 +48,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit0",
       "clearSwitchId": "examples_run_path_clear0",
@@ -65,7 +65,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit1",
       "clearSwitchId": "examples_run_path_clear1",
@@ -82,7 +82,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit2",
       "clearSwitchId": "examples_run_path_clear2",
@@ -99,7 +99,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit3",
       "clearSwitchId": "examples_run_path_clear3",
@@ -116,7 +116,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit4",
       "clearSwitchId": "examples_run_path_clear4",
@@ -133,7 +133,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit5",
       "clearSwitchId": "examples_run_path_clear5",
@@ -150,7 +150,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit6",
       "clearSwitchId": "examples_run_path_clear6",
@@ -167,7 +167,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit7",
       "clearSwitchId": "examples_run_path_clear7",
@@ -184,7 +184,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit8",
       "clearSwitchId": "examples_run_path_clear8",
@@ -201,7 +201,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit9",
       "clearSwitchId": "examples_run_path_clear9",
@@ -218,7 +218,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit10",
       "clearSwitchId": "examples_run_path_clear10",
@@ -235,7 +235,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit11",
       "clearSwitchId": "examples_run_path_clear11",
@@ -252,7 +252,7 @@
       "h": 6,
       "entry": {
         "x": 2,
-        "y": 17
+        "y": 21
       },
       "visitSwitchId": "examples_run_path_visit12",
       "clearSwitchId": "examples_run_path_clear12",
