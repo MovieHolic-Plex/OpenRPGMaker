@@ -1,0 +1,26 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/charsetQuery.test.ts (11 tests) 258ms
+ ✓ test/charsetCatalogCoverage.test.ts (2 tests) 19ms
+ ✓ test/sharedCharacters.test.ts (9 tests) 332ms
+ ✓ test/charsetLabelOverrides.test.ts (8 tests) 1661ms
+   ✓ charset label overrides > 시스템 프롬프트에 가르친 캐릭터 칩이 실린다  1618ms
+ ✓ test/charsetSelectionEvidence.test.ts (15 tests) 31176ms
+   ✓ charset selection evidence > credits Gemini multimodal function responses with a legend inside the JSON envelope  2658ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful responses turn  2582ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful gemini turn  2508ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful anthropic turn  2537ms
+   ✓ charset selection evidence > rejects wrong-image reading evidence  2207ms
+   ✓ charset selection evidence > rejects aborted reading evidence  2359ms
+   ✓ charset selection evidence > rejects text-only reading evidence  2750ms
+   ✓ charset selection evidence > rejects truncated reading evidence  2460ms
+   ✓ charset selection evidence > rejects king substitution and slot/frame confusion after viewing a golem  2458ms
+   ✓ charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics  2993ms
+   ✓ charset selection evidence > keeps existing graphics on text/position edits, including reordered events  3694ms
+   ✓ charset selection evidence > rolls a failed write back atomically and shares evidence with discovered tools  1931ms
+
+ Test Files  5 passed (5)
+      Tests  45 passed (45)
+   Start at  14:40:42
+   Duration  87.43s (transform 48.59s, setup 0ms, collect 117.74s, tests 33.45s, environment 2ms, prepare 4.08s)

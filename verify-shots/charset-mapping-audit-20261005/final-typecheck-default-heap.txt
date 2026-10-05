@@ -1,0 +1,22 @@
+
+> oprn@0.136.0 typecheck:app
+> tsc --noEmit -p tsconfig.app.json
+
+
+<--- Last few GCs --->
+
+[537001:0x1de70000]    85689 ms: Scavenge (interleaved) 4084.8 (4092.5) -> 4084.4 (4103.0) MB, pooled: 0 MB, 19.70 / 0.00 ms  (average mu = 0.189, current mu = 0.120) allocation failure; 
+[537001:0x1de70000]    88789 ms: Mark-Compact (reduce) 4084.9 (4103.0) -> 4084.9 (4089.7) MB, pooled: 0 MB, 2936.22 / 0.00 ms  (+ 25.9 ms in 7 steps since start of marking, biggest step 5.1 ms, walltime since start of marking 2987 ms) (average mu = 0.132,
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x72be1c node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/usr/local/bin/node]
+ 2: 0xb9dc10  [/usr/local/bin/node]
+ 3: 0xb9dcff  [/usr/local/bin/node]
+ 4: 0xe367e5  [/usr/local/bin/node]
+ 5: 0xe36812  [/usr/local/bin/node]
+ 6: 0xe36b0a  [/usr/local/bin/node]
+ 7: 0xe4702a  [/usr/local/bin/node]
+ 8: 0xe4b3d0  [/usr/local/bin/node]
+ 9: 0x18de281  [/usr/local/bin/node]
+Aborted (core dumped)

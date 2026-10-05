@@ -1,0 +1,31 @@
+{
+  "testedCommit": "1a9615c6c62217c28d1f22b1c4d5faec22814562",
+  "tests": {
+    "files": 5,
+    "passed": 45,
+    "exitCode": 0
+  },
+  "typecheck": {
+    "defaultHeapExitCode": 134,
+    "retryCommand": "NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck:app",
+    "retryExitCode": 0
+  },
+  "assistantCases": {
+    "npc-golem": "pass",
+    "npc-king": "pass"
+  },
+  "logs": [
+    {
+      "file": "final-integration-tests.txt",
+      "sha256": "611907acf3c6284551c10086d3517d8da741a9911295a10de1ef2477ce4c6157"
+    },
+    {
+      "file": "final-typecheck-default-heap.txt",
+      "sha256": "8eb16d4cf35cf02c427e227777206f50ebec38c64373d0723ac615d3d4c0e318"
+    },
+    {
+      "file": "final-typecheck-8gb.txt",
+      "sha256": "d03308f195e3052ed0729180513bf18641a7ee08e6131a72a9a657b8401c2e97"
+    }
+  ]
+}
