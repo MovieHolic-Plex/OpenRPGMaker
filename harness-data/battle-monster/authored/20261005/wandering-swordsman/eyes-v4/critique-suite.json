@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs, including the suite native 1x tiles and nearest-neighbor 3x panels. The beardless adult face, tied dark hair, separated legs and rightward weapon action read clearly. Upper-left highlights on the shoulders, hair and trousers give useful volume, but the lower coat is predominantly dark navy, its hem reads as a short coat, and the sash is red-brown rather than the specified teal. The exposed silver blade reads as a short knife beside the substantially longer scabbard. Windup, spread stance, horizontal attack, lowered recovery, recoil and prone death are distinguishable; idle changes are subtle. Feet visually meet native y=60, including the crouched status states, and no obvious unintended transparent interior holes or broken body outlines are visible across the three backgrounds. Hand-to-tool connections are generally readable. Skill preparation lowers the blade, contact has a silver-blue crescent visibly connected to the actual blade tip near (56,33), and recovery combines short separated afterglow with a return toward the sheath. Poison has grimacing upright/crouched poses and hollow amber particles; stun uses hanging arms and overhead stars; sleep uses closed eyes and small head/shoulder changes. These are visibly changed states rather than palette tints, although sleep is restrained at 1x. This is a visual rework recommendation, not a selection or approval. Static pose previews cannot establish battle timing, sliding, interpolated continuity or impact synchronization; PNGs cannot establish literal pxgrid authorship. No geometry PASS is treated as visual approval.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 35,
+      "y": 47,
+      "message": "The lower coat is a broad dark navy mass and ends above the knees around y=50, reading as a short tunic rather than the requested pale gray-blue long dopo. Reauthor the skirt clusters with a larger gray-blue lit cloth plane, narrower navy fold shadows and a longer split hem below the knees. Carry the same garment length and cloth shading into idle_b, idle_c and the action/status poses while preserving leg separation."
+    },
+    {
+      "pose": "idle_a",
+      "x": 33,
+      "y": 40,
+      "message": "The visible waist sash uses red and brown clusters at approximately x=30..36, y=39..41. Replace the sash colors with a distinct teal base/shadow treatment within the 18-color budget, and carry that sash consistently through the remaining frames; keep brown on the scabbard and grip."
+    },
+    {
+      "pose": "attack",
+      "x": 55,
+      "y": 31,
+      "message": "The silver blade spans only roughly x=51..61 beyond the guard, so the horizontal strike reads as a knife thrust rather than a long single-edged sword cut. Move the grip/forearm inward enough to allocate a longer continuous blade inside the 64px cell, retaining the one-pixel right margin. Keep a coherent long blade-to-scabbard proportion in idle, move, recover, hit and skill frames, and reconnect the skill_b crescent to the revised blade tip."
+    }
+  ],
+  "binding": "8cc09f2ac81a8037df1ea1ce39d85761014ae7738e01f289f0cc240e273c34dc",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "62c984b2ce47f017f51f8b9309edef50780a28cd7cc4e53ada3d0d04a50ac63e",
+    "preview/suite/light.png": "a6482f93a2da389632f8bcc3e6dafcd32e5b52ebe4e07d83a8f8f40cac289b8a",
+    "preview/suite/dark.png": "28949492c77e8a4d83a20bcc32a7128281b97f0e0a5514c3cf5ece87a40446bb",
+    "preview/suite/checker.png": "ece70aee007c373c92e30e30064935a0f515a75a832ba1d33dce8b51e35aa472"
+  },
+  "jobId": "c72d0aec-ef57-44e6-95d2-9935cf935dc8",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T08:23:37.597740+00:00",
+  "userApproved": false
+}

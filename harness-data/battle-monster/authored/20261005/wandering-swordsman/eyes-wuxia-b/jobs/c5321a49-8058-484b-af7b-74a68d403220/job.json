@@ -1,0 +1,37 @@
+{
+  "id": "c5321a49-8058-484b-af7b-74a68d403220",
+  "stage": "author",
+  "phase": "idle",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T08:15:19.346714+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-wuxia-b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-wuxia-b/reference.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-wuxia-b/references/own-original-face-8x.png",
+    "-"
+  ],
+  "promptSha256": "8a1286b9a087f5eb7be9f2b2e7687588b1c325f66086bb335547628904265c98",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "reference.png": "87bfacd5a9bda174b38a4abecf0bf3a35480d408867cb844fc6f563d8f17d7c4",
+    "references/own-original-face-8x.png": "11d74adf3b5d81fe2daf2d35a3d8bf99e46dd4fe5034f63bc6ce4b57060abbea"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T08:17:45.290546+00:00"
+}

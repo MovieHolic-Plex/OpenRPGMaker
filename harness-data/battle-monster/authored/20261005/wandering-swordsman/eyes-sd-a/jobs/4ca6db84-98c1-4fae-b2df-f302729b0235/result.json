@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs at native 1x and the supplied nearest-neighbor 3x scale. The right-facing face, long dark hair, teal sash and raised sword read clearly. Both shoes meet native y=60, giving a planted stance. The sword hand connects to the hilt; the other hand touches the narrow dark scabbard, although that scabbard merges with the left robe edge. Hair highlights suggest upper-left light. The lower robe has competing broad cream highlights and reads as rounded, divided puffs rather than a hanging long garment. Two enclosed transparent pixels expose the background inside the hair and beside the scabbard. Pale cloth edges lose some separation on the light background; the dark preview preserves the overall silhouette. These four images show the same idle_a pose, so frame continuity, attack/skill readability and grounding during movement cannot be assessed. This is a pose preview, not battle footage; geometry compliance alone is not visual approval. Recommendation is advisory.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 27,
+      "y": 23,
+      "message": "Fill this enclosed transparent pixel with the adjacent dark hair palette color. It creates a background-colored puncture inside the crown, especially visible on the light and checker previews."
+    },
+    {
+      "pose": "idle_a",
+      "x": 23,
+      "y": 51,
+      "message": "Fill this enclosed transparent pixel beside the scabbard with the existing blue-gray robe shadow. Maintain the dark scabbard at x=22; the background pinhole currently interrupts the cloth/scabbard boundary."
+    },
+    {
+      "pose": "idle_a",
+      "x": 32,
+      "y": 50,
+      "message": "Narrow the cream highlight around x=32..33, y=48..54 with existing robe midtone/shadow pixels, connecting it into the blue-gray hanging folds. Keep the broader upper-left highlight so the lower robe gains directional volume instead of two equally bright rounded lobes."
+    }
+  ]
+}

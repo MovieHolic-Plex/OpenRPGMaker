@@ -1,0 +1,49 @@
+{
+  "userFeedback": "'눈' 이 너무 별로임",
+  "parent": "wandering-swordsman/silhouette-wuxia-b",
+  "palettePreserved": true,
+  "timingPreserved": true,
+  "allPixelsOutsideEyeRectanglesPreserved": true,
+  "allowedRectangles": {
+    "idle_a": [
+      27,
+      16,
+      34,
+      21
+    ]
+  },
+  "edits": {
+    "idle_a": [
+      {
+        "x": 30,
+        "y": 17,
+        "before": "L",
+        "after": "S"
+      },
+      {
+        "x": 33,
+        "y": 17,
+        "before": "L",
+        "after": "S"
+      },
+      {
+        "x": 31,
+        "y": 18,
+        "before": "s",
+        "after": "L"
+      },
+      {
+        "x": 32,
+        "y": 18,
+        "before": "E",
+        "after": "W"
+      },
+      {
+        "x": 33,
+        "y": 18,
+        "before": "L",
+        "after": "E"
+      }
+    ]
+  }
+}

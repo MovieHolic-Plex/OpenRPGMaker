@@ -1,0 +1,26 @@
+{
+  "proof": [
+    {
+      "key": "eyes-v4",
+      "name": "방랑 검객 · 눈 수정",
+      "motions": 8,
+      "beforeAfter": true,
+      "gifImages": 16
+    },
+    {
+      "key": "eyes-sd-a",
+      "name": "조선 SD 검객 · 눈 수정",
+      "motions": 1,
+      "beforeAfter": true,
+      "gifImages": 2
+    },
+    {
+      "key": "eyes-wuxia-b",
+      "name": "무협 장포 검객 · 눈 수정",
+      "motions": 1,
+      "beforeAfter": true,
+      "gifImages": 2
+    }
+  ],
+  "errors": []
+}

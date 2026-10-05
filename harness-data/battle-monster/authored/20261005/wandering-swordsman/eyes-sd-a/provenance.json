@@ -1,0 +1,92 @@
+{
+  "createdAt": "2026-10-05T08:20:08.519712+00:00",
+  "kind": "eye-repair",
+  "parent": "wandering-swordsman/silhouette-sd-a",
+  "parentBinding": "19ae74f0921747d134b681eee37da641de1b0f4f85f568531a2869dde35a9533",
+  "displayName": "조선 SD 검객 · 눈 수정",
+  "userCorrection": "'눈' 이 너무 별로임",
+  "scope": "Only eyes/lids; body, weapons, motion and palette preserved",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "f354b8fa-6b4f-4993-a64f-613e6f757f05",
+      "stage": "author",
+      "phase": "idle",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T08:20:08.521340+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/reference.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/references/own-original-face-8x.png",
+        "-"
+      ],
+      "promptSha256": "7011e71d619e0aeba00542ce9e3fe00eea3f3a9ce9346bbd71023fa636381011",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "reference.png": "2f4a41dfe7001cfc2881e1edaa2b6609ed5ce3947f2891739735b6754321a15c",
+        "references/own-original-face-8x.png": "603d106d123a750c1d6ea79d68af909a84069dabaf9dae864e7c4ae76c402b50"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T08:23:39.367388+00:00"
+    },
+    {
+      "id": "4ca6db84-98c1-4fae-b2df-f302729b0235",
+      "stage": "critique",
+      "phase": "idle",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T08:23:39.525009+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/jobs/4ca6db84-98c1-4fae-b2df-f302729b0235",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/portrait.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/light.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/dark.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/checker.png",
+        "-"
+      ],
+      "promptSha256": "b2fc24c915f379766701d4b6899493823a9a559e7116ecec0209d7c59f206aac",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "preview/idle/portrait.png": "f0462b530f8d60f4cff72e6bb085999af6a230981f3e268eb341ba72f5d2f0eb",
+        "preview/idle/light.png": "584cc6e3243ce552637c9c5d1efca7063aa93c02fb98e98ffe3af2ad8b9bc279",
+        "preview/idle/dark.png": "8c98b74f3cc3a984e5b5cfc8b922114dc238608177a2397b214f091428c9abbe",
+        "preview/idle/checker.png": "c40fd6266dd67eb55f554098f0d6f0b554bd0c8fc036fa133d5179fcafa095d7"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T08:25:45.313455+00:00"
+    }
+  ]
+}

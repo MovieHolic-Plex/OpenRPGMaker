@@ -1,0 +1,43 @@
+{
+  "id": "4ca6db84-98c1-4fae-b2df-f302729b0235",
+  "stage": "critique",
+  "phase": "idle",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T08:23:39.525009+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/jobs/4ca6db84-98c1-4fae-b2df-f302729b0235",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/portrait.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/light.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/dark.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eye-wave/candidates/wandering-swordsman/eyes-sd-a/preview/idle/checker.png",
+    "-"
+  ],
+  "promptSha256": "b2fc24c915f379766701d4b6899493823a9a559e7116ecec0209d7c59f206aac",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/idle/portrait.png": "f0462b530f8d60f4cff72e6bb085999af6a230981f3e268eb341ba72f5d2f0eb",
+    "preview/idle/light.png": "584cc6e3243ce552637c9c5d1efca7063aa93c02fb98e98ffe3af2ad8b9bc279",
+    "preview/idle/dark.png": "8c98b74f3cc3a984e5b5cfc8b922114dc238608177a2397b214f091428c9abbe",
+    "preview/idle/checker.png": "c40fd6266dd67eb55f554098f0d6f0b554bd0c8fc036fa133d5179fcafa095d7"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T08:25:45.313455+00:00"
+}

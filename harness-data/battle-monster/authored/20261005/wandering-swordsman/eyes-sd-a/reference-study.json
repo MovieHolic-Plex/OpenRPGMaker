@@ -1,0 +1,6 @@
+{
+  "purpose": "Inspect original own pixels only; nearest enlarged eye crop is not a new sprite",
+  "sourceCandidate": "wandering-swordsman/silhouette-sd-a",
+  "sourceBinding": "19ae74f0921747d134b681eee37da641de1b0f4f85f568531a2869dde35a9533",
+  "referencePngSha256": "2f4a41dfe7001cfc2881e1edaa2b6609ed5ce3947f2891739735b6754321a15c"
+}

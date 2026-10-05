@@ -1,0 +1,55 @@
+{
+  "userFeedback": "'눈' 이 너무 별로임",
+  "parent": "wandering-swordsman/silhouette-sd-a",
+  "palettePreserved": true,
+  "timingPreserved": true,
+  "allPixelsOutsideEyeRectanglesPreserved": true,
+  "allowedRectangles": {
+    "idle_a": [
+      28,
+      27,
+      37,
+      32
+    ]
+  },
+  "edits": {
+    "idle_a": [
+      {
+        "x": 29,
+        "y": 28,
+        "before": "L",
+        "after": "f"
+      },
+      {
+        "x": 31,
+        "y": 28,
+        "before": "h",
+        "after": "L"
+      },
+      {
+        "x": 32,
+        "y": 28,
+        "before": "L",
+        "after": "f"
+      },
+      {
+        "x": 29,
+        "y": 29,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 31,
+        "y": 29,
+        "before": "f",
+        "after": "W"
+      },
+      {
+        "x": 32,
+        "y": 29,
+        "before": "K",
+        "after": "H"
+      }
+    ]
+  }
+}

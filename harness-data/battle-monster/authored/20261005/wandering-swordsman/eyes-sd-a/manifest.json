@@ -1,0 +1,18 @@
+{
+  "monster": "wandering-swordsman",
+  "candidate": "eyes-sd-a",
+  "displayName": "조선 SD 검객 · 눈 수정",
+  "nativeCell": 64,
+  "phase": "idle",
+  "frames": 1,
+  "motionGifs": 1,
+  "binding": "ee9fd231e8f2f48e5ea545a5b80e67a9e48fee5860b55570e7139595d9171dc9",
+  "userChoiceRequired": true,
+  "scope": "eyes/lids only; palette, all non-eye pixels and timing preserved",
+  "independentReviewRecommendation": "rework",
+  "sourceHashes": {
+    "source/AUTHORING.md": "a77255d698e83161bd767fb3913144cd65b18f62effbc59910bd64f4ca3b6f35",
+    "source/palette.json": "9cd35a0e868cfd3ad47f45a7333cd2f6aea06cc0c722e3af4c5caf27311188f2",
+    "source/poses/idle_a.pxgrid": "a8c3c4099fa82819e159abf4b32e976427d35885f63eae5337489c5194c90c64"
+  }
+}
