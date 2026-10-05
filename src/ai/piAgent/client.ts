@@ -286,7 +286,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     throw new PiAgentClientError("AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다: " + (dropError instanceof Error ? dropError.message : String(dropError)));
   }
   // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
-  if (checkpointError && !stale) throw checkpointError;
+  // done 이 왔으면 워커가 거절을 받아 넘긴 것이다(적용 검증 거부·맵 소실 거절은 그 변경만 되돌리고 계속한다) —
+  // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
+  if (checkpointError && !stale && !done) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
   if (done) return done;
   if (stale) {

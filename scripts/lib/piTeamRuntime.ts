@@ -320,7 +320,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
       return working;
     });
-    publication = next;
+    // 거부된 발행 하나가 줄을 막지 않게 한다 — `publication = next` 였을 때는 한 번 거부되면 뒤에 배정된 팀원의
+    // 모든 쓰기가 같은 거부로 끝났다(2026-10-05 스트레스 g-ashen-chase: builder-1 의 맵 삭제를 사용자가 거절하자
+    // builder-2~8 이 확인 창 없이 첫 쓰기마다 「맵 1개 삭제를 취소했습니다」로 죽었다). 편집기 쪽 발행 줄과 같은 규칙.
+    publication = next.catch(() => undefined);
     return await next;
   };
 

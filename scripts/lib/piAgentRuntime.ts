@@ -52,7 +52,7 @@ import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
@@ -376,10 +376,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // 내용 무결성 거부(commit-rejected)는 방금 그 도구의 변경 탓이다 — 체크포인트는 쓰기마다 돈다.
       // 실행 전체를 죽이지 말고 그 변경만 되돌린 뒤 도구 실패로 모델에게 돌려준다(2026-09-24:
       // upsert_event 하나의 movement.speed 누락이 38호출짜리 실행을 통째로 버렸다).
-      // 권위·기준선·파괴 승인·중단은 실행 단위 문제라 그대로 중단한다.
+      // 권위·기준선·중단은 실행 단위 문제라 그대로 중단한다.
       if (/^적용 실패\(commit-rejected\)/u.test(message) && !options.signal?.aborted) {
         ctx.project = snapshotProjectKeepingHeavy(accepted);
         throw new Error(`${message} — 이 도구의 변경은 적용 검증에서 거부돼 되돌렸습니다. 인자를 고쳐 다시 호출하세요.`);
+      }
+      // 맵 소실 확인에서 사용자가 「그만두기」를 골랐다 — 그 변경 하나를 거절한 것이지 작업 전체를 멈춘 게 아니다
+      // (중단은 따로 있다). 되돌리고 모델에게 알린다. 2026-10-05 스트레스: 빈 시드 맵 삭제 거절이 팀 작업을 통째로 끝냈다.
+      if (message.startsWith(PI_MAP_LOSS_DECLINED_PREFIX) && !options.signal?.aborted) {
+        ctx.project = snapshotProjectKeepingHeavy(accepted);
+        throw new Error(`${message.slice(PI_MAP_LOSS_DECLINED_PREFIX.length).trim()} 사용자가 이 변경(맵 삭제·비우기)을 거절해 되돌렸습니다. 같은 맵을 지우거나 비우지 말고 나머지 작업을 계속하세요.`);
       }
       rejected = true;
       fatal = message;

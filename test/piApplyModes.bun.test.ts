@@ -186,3 +186,25 @@ test("a content rejection reverts only that write and the run continues", async 
   const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
   expect(failed?.summary).toContain("되돌렸습니다");
 });
+
+// 2026-10-05 스트레스 g-ashen-chase: 맵 소실 확인에서 「그만두기」를 고르자 실행이 통째로 끝났다.
+test("a declined map-loss checkpoint reverts only that write and the run continues", async () => {
+  const { PI_MAP_LOSS_DECLINED_PREFIX } = await import("../src/ai/piAgent/protocol.ts");
+  const calls: ScriptedCall[] = [];
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ applyMode: "default" }), {
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream(calls, [
+      { name: "set_project_settings", args: { title: "declined" } },
+      { name: "set_project_settings", args: { title: "kept" } },
+    ]) as never,
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.project.meta.title === "declined") throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} 맵 1개 삭제를 취소했습니다 — 프로젝트는 그대로입니다.`);
+    },
+  });
+  expect(calls.length).toBe(3);
+  expect(done.project.meta.title).toBe("kept");
+  const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
+  expect(failed?.summary).toContain("거절해 되돌렸습니다");
+  expect(failed?.summary).not.toContain(PI_MAP_LOSS_DECLINED_PREFIX);
+});

@@ -142,6 +142,12 @@ export const PI_AGENT_STALE_MS = 30_000;
  */
 export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
 
+/**
+ * 체크포인트 거절 사유 머리 — 맵 소실 확인에서 사용자가 그 변경을 거절했다. 워커는 이 머리를 보면 실행을 멈추지 않고
+ * 그 변경만 되돌린 뒤 모델에게 알린다. 다른 거절(권위·기준선·단계 중단)은 그대로 실행을 멈춘다.
+ */
+export const PI_MAP_LOSS_DECLINED_PREFIX = "[맵 소실 거절]";
+
 export interface PiTeamAgentStats extends PiAgentStats {}
 
 /**
