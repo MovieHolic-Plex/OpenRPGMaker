@@ -26,8 +26,8 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
     const completed=state.groups.filter(g=>!pending.includes(g));
     let status = '마음에 드는 예시에 Allow, 아닌 예시에 Deny를 눌러 주세요. 여러 개 Allow해도 됩니다.';
     if(state.installation) status='등록된 결과입니다.';
-    else if(state.complete && !pending.length) status='선호하는 예시를 저장했습니다. 현재 공용 등록·조립 연결에서 멈춰 있습니다. 추가 선택은 필요 없습니다.';
-    else if(state.stage==='blocked') status='새 예시 제작이 멈췄습니다. 기존 그림과 결정은 보존되어 있습니다.';
+    else if(state.complete && !pending.length) status='선호하는 예시를 저장했습니다. 다음 단계 연결은 운영에서 처리할 일입니다. 추가로 선택하거나 입력하실 필요가 없습니다.';
+    else if(state.stage==='blocked') status='제작 문제를 운영에서 확인해야 합니다. 지금 하실 일은 없고, 기존 그림과 결정은 보존됩니다.';
     else if(working) status=state.status==='running'?'새 예시를 준비하고 있습니다. 지금 누를 버튼은 없습니다.':state.paused?'새 예시 제작을 요청했습니다. 전체 작업이 일시 정지되어 실행을 기다립니다.':'새 예시 제작을 기다립니다.';
     host.innerHTML=`<h1>${esc(state.title)}</h1><p class="choice-lead">1. 예시 보기 → 2. 결과 확인</p><p class="decision-intro">${esc(status)}</p>
       <p class="example-caption">${state.id==='underground-prison'?'아래 그림은 계단·문을 방에 놓아 본 예시입니다. 전체 감옥의 완성 결과는 다음에 확인합니다.':'공간에 놓인 모습을 보고 선택해 주세요.'} Deny는 이 예시만 거절합니다.</p>

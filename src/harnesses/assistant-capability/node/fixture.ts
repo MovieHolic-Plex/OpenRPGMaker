@@ -5,9 +5,11 @@ import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { COMBINED_TOWN_TILESET_ID } from '../../../project/defaults/constants';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 
-export async function prepareWorldmapProof(root: string): Promise<void> {
+export async function prepareWorldmapProof(root: string, selected?: string): Promise<void> {
   if (existsSync(root)) throw Error(`기존 실행 덮어쓰기 거부: ${root}`);
-  for (const id of ['default', 'pokemon']) {
+  const ids = selected ? selected.split(',') : ['default', 'pokemon'];
+  if (ids.some(id => !['default', 'pokemon'].includes(id))) throw Error('지원하는 녹화: default,pokemon');
+  for (const id of ids) {
     const dir = resolve(root, id), projectDir = resolve(dir, 'project');
     const project = createEmberQuestProject();
     project.meta.title = `월드맵 조수 실제 녹화 · ${id}`;
