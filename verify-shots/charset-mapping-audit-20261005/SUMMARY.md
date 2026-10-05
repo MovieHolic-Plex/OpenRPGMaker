@@ -74,4 +74,21 @@ python3 scripts/content/render-charset-mapping-audit.py --out <같은 폴더>
 
 ## 실제 조수 시험의 입력 전 기동 실패
 
-첫 시도 왕·골렘은 조수 패널이 접힌 상태에서 숨겨진 작업 설정 버튼을 클릭하다 입력 전에 멈췄다. 모델 요청은 0회이며 합격으로 집계하지 않는다. 실패 결과는 input-bootstrap-failures.json에 남겼다. 하네스가 실제 ai-collapsed-restore 버튼으로 패널을 펼치도록 교정하고 새 폴더 r2에서 재실행한다. 검증기 반례 교정 61건은 pass이며 실제 모델 시험의 성공 수에 넣지 않는다.
+첫 시도 왕·골렘은 조수 패널이 접힌 상태에서 숨겨진 작업 설정 버튼을 클릭하다 입력 전에 멈췄다. 모델 요청은 0회이며 합격으로 집계하지 않는다. 실패 결과는 input-bootstrap-failures.json에 남겼다. 하네스가 실제 ai-collapsed-restore 버튼으로 패널을 펼치도록 교정하고 새 폴더 r2에서 재실행했다. 검증기 반례 교정 61건은 pass이며 실제 모델 시험의 성공 수에 넣지 않는다.
+
+## 실제 조수 시험 — 왕·골렘 2건 통과
+
+실행 폴더: `qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2`. 실제 입력창 `/pi`에 과제별 사용자 지시를 한 번 제출했다. 제품의 계획/실행 단계가 만든 내부 요청과 원본 SSE done은 보존했다. 제공자는 google-antigravity, 모델은 gemini-3.8-flash다.
+
+| 과제 | 실제 저장 칩 | 실행·요구·보존·플레이·저장·시각 | SQLite project id |
+|---|---|---|---|
+| 골렘 | monster2#4 / frame 73 | 6개 축 모두 pass | 201e9c7b-6117-4fd0-8c5b-24dc447a4551 |
+| 왕 | people3#0 / frame 25 | 6개 축 모두 pass | 6d645bb6-a5ce-4984-9043-49f9493e3b16 |
+
+실제 제공자 입력에 후보 PNG가 포함된 성공 응답을 확인했다. 후보 원본과 플레이 시작·첫 대화·재대화 화면에서 갈색 돌 몸/붉은 눈의 골렘과 금관/회색 수염/빨간 망토의 왕을 각각 직접 확인했다. 기존 대사·다른 NPC·타일·DB는 허용한 그래픽 필드 외에 변하지 않았다. player.html 전용 플레이 검사는 과제별 6비트가 통과했다.
+
+저장 대상은 위 실행 폴더의 각 과제 `project/project.sqlite`다. 실제 UI 저장 후 새 브라우저 context에서 같은 대상을 다시 불러왔다. 골렘 문서 SHA는 `4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502`, 왕 문서 SHA는 `77a749825066938854f28634221465629d464dfb7b6d97209d42f806fd3424cc`이며 재로드 SHA와 각각 일치한다.
+
+`assistant/<과제>/receipt.json`에 최종 게이트·요청 메타데이터·도구 완료·정본 저장/재로드·원본 해시를, 같은 폴더에 실제 검수한 PNG와 해시에 묶인 visual-review.json을 남겼다. 원본 result.json의 visual은 pending이며 하네스가 검수 영수증을 대조한 summary에서 pass로 계산한다. 검수 전 실행 명령의 exit 1을 최종 실패나 성공으로 대신 쓰지 않았다. 준비 시점 커밋은 0d866608ad이며 당시 미커밋 상태였던 입력창 펼치기 교정의 실제 harnessDigest와 조사한 소스 SHA도 기록했다.
+
+선택한 두 과제의 단일 모델·단일 표현·단일 시행 결과다. 전체 12과제나 일반 자연어 의도 분류의 반복 성공률을 측정한 것은 아니다. 과거 신고의 원인 확정과 별도다.

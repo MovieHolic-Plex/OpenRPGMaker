@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "reviewer": "codex-root",
+  "notes": "후보 PNG에서 스톤 골렘의 갈색 돌 몸과 붉은 눈을 확인했다. 실제 플레이 시작·첫 대화·재대화 화면에도 동일 골렘이 표시되며 주변 두 NPC는 그대로다. 꼬마 미루의 원래 대사와 재대화가 유지되고 잘림 없이 읽힌다. 편집기 적용·새 context 재로드 화면도 확인했다.",
+  "images": [
+    {
+      "file": "before.png",
+      "sha256": "755e199d1877495569fde3d5999feb97f91f4624ce4964b994c3407ebf9ef46e"
+    },
+    {
+      "file": "candidate-preview-1.png",
+      "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+    },
+    {
+      "file": "candidate-preview-2.png",
+      "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+    },
+    {
+      "file": "candidate-preview-3.png",
+      "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+    },
+    {
+      "file": "candidate-preview-4.png",
+      "sha256": "b1ef2069e8ab59c9d5b838ab84b99cfce7a6e40c9ca2cabb4901f12a6513829f"
+    },
+    {
+      "file": "after.png",
+      "sha256": "86c2048baa3dc9ce8d6436db1e8a5403abcdc559c355b6ed7984d3a5f89fc52a"
+    },
+    {
+      "file": "reloaded.png",
+      "sha256": "fc416d8f9f4aad66841662c87838d8e3c8fca4f509daaee5bb4d18761a23e528"
+    },
+    {
+      "file": "runtime/02-start.png",
+      "sha256": "ae595f31775b01d1626b7a31232bf3502274115e70f95ff93620342634eb1412"
+    },
+    {
+      "file": "runtime/03-first-line.png",
+      "sha256": "1248d1edc82c2b446a72b1996329036c4bb5c3e6c7046d016f7ce4b9620e19eb"
+    },
+    {
+      "file": "runtime/05-repeat.png",
+      "sha256": "1248d1edc82c2b446a72b1996329036c4bb5c3e6c7046d016f7ce4b9620e19eb"
+    }
+  ],
+  "resultDigest": "1b329e1a6d39db0889c9d882b90e77b41670207295c8defb6b2e8c5e8b24910e",
+  "reviewedAt": "2026-10-05T05:31:03.491Z"
+}
