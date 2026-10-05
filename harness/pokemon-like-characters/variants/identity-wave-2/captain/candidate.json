@@ -1,0 +1,12 @@
+{
+  "role": "captain",
+  "label": "선장",
+  "variant": "해준 v2 · 제복 선장",
+  "description": "넓은 챙과 금장 문장의 선장모, 회색 수염, 금빛 단추와 소매 장식의 긴 항해복",
+  "identity": "넓은 챙과 금장 문장의 선장모, 회색 수염, 금빛 단추와 소매 장식의 긴 항해복 · 원작 보행과 발 접지 유지",
+  "collection": "identity-wave-2",
+  "base": "captain-identity-v2",
+  "templateId": "sailor",
+  "sourceNote": "에메랄드 sailor의 몸·보행을 판형으로 사용하고 머리·얼굴·옷을 명시적 픽셀 행으로 수정한 파생 캐릭터입니다.",
+  "author": "Codex GPT-6"
+}
