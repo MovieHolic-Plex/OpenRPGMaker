@@ -227,7 +227,7 @@ export function renderEditor(main: HTMLElement): void {
   disposeReliefToolbar = mountReliefToolbar(canvasArea);
   aiSidebarWorkspace?.dispose();
   aiSidebarWorkspace = createAiSidebarWorkspace(left, null, () => { applyLayout(); scheduleFitCanvas(); });
-  // 조수는 오른쪽 도크에 항상 떠 있다 — 왼쪽 팔레트와 동시에 쓴다(2026-09-26). 폭은 applyLayout 이 정한다.
+  // Right conversation dock: folding releases width without unmounting the session.
   const aiDock = el("aside", {
     class: "ai-right-dock",
     attrs: { "aria-label": "조수" },
@@ -237,6 +237,13 @@ export function renderEditor(main: HTMLElement): void {
   aiDockRoot = aiDock;
   layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea, aiDock);
   const aiPanel = renderAiChatPanel();
+  const syncAiDockCollapsed = (): void => {
+    aiDock.classList.toggle("is-collapsed", aiPanel.classList.contains("is-collapsed"));
+    applyLayout();
+    scheduleFitCanvas();
+  };
+  aiPanel.addEventListener("oprn:ai-panel-collapse", syncAiDockCollapsed);
+  aiDock.classList.toggle("is-collapsed", aiPanel.classList.contains("is-collapsed"));
   const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
   aiTeamRailRoot = teamSidebar;
   if (teamSidebar) {
@@ -686,7 +693,8 @@ function applyLayout(): void {
   if (aiSidebarWorkspace) {
     const collapsed = aiSidebarWorkspace.isCollapsed();
     // 오른쪽 조수 도크 폭을 먼저 잡고 남은 폭에서 왼쪽을 잡는다 — 캔버스가 MIN_CANVAS_WIDTH 아래로 눌리지 않게.
-    const dockWidth = aiDockRoot ? Math.round(Math.max(AI_DOCK_MIN_WIDTH, Math.min(AI_DOCK_MAX_WIDTH, usableWidth * 0.26))) : 0;
+    const dockWidth = aiDockRoot ? aiDockRoot.classList.contains("is-collapsed") ? 44
+      : Math.round(Math.max(AI_DOCK_MIN_WIDTH, Math.min(AI_DOCK_MAX_WIDTH, usableWidth * 0.26))) : 0;
     if (aiDockRoot) aiDockRoot.style.width = `${dockWidth}px`;
     const teamRailWidth = aiTeamRailRoot ? visibleWidth(aiTeamRailRoot) : 0;
     const room = usableWidth - dockWidth - teamRailWidth - MIN_CANVAS_WIDTH - resizerWidth;
