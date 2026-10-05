@@ -13,6 +13,7 @@ import { SUPER_HARNESS } from "../super-harness/harness";
 import { ROMANCE_SCENE_HARNESS } from "../romance-scene/harness";
 import { CHARSET_ACTOR_HARNESS } from "../charset-actor/harness";
 import { WORLDMAP_ICONS_HARNESS } from "../worldmap-icons/harness";
+import { ASSISTANT_CAPABILITY_HARNESS } from "../assistant-capability/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -24,6 +25,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   ROMANCE_SCENE_HARNESS,
   CHARSET_ACTOR_HARNESS,
   WORLDMAP_ICONS_HARNESS,
+  ASSISTANT_CAPABILITY_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

@@ -50,3 +50,51 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 - `bake_map.py [--publish]` 예제 도시 맵(60×60, 지역 `modern-city-60x60`), `bake_refs.py` 참고문서(`src/assets/modernCityReferences.json`).
 - 합격 후보 PNG 는 `tiledata/modern-city/sources/<판>_<글자>.png` 에 커밋돼 있어 `qa-runs` 없이 재현된다(`run_town.sh <seed>`).
 - 한계: 건물 색 변형은 벽색/지붕색 따로(조합 없음), 색 변형 칸은 modern4 밖 색, T자·곡선 도로 없음, 주차 표시 칸 없음, 조수는 `modernTilesetPolicy` 에 막힌다.
+
+## 승인 주차장 두 면 공용 등록 (2026-10-05)
+
+`npm run harness -- modern-chipset publish-parking`은 super-harness의 **현재 해시 선택**,
+부품 receipt PASS, 최종 9축·고정 7조건 PASS를 재확인한다. `parking_bundle.py`가 승인 PNG와
+환경/차량 원본·계약·선택 근거를 `tiledata/modern-city/parking-approved/`에 보존한다.
+환경은 아래층, 원본차는 위층(솟은 줄 ★, 발 줄 막힘)인 `mc-parking-two-bays`를 굽는다.
+그룹은 mixed이며 개별 칸의 홈 층·통행·우선순위는 각각 유지한다. 새 칸은 끝에 붙고 기존 번호/그림은 보존한다.
+전체 키트 재조립·정의 검사를 쓰기 전에 실행한다. `mc-parking` 공용 참고문서는 전체 배열·원본 좌표 사전·정상/위층 누락 오류 그림을 포함한다.
+
+`npm run harness -- modern-chipset save-parking-project --project-dir <새 폴더> --evidence <증거 폴더>`로
+실제 SQLite 프로젝트를 만들고 닫은 뒤 다시 연다. 증거 폴더에는 등록 전 `previous-tileset.json`을 두며,
+새 프로젝트/기존 번들 갱신, 엔진 보행 연결·벽/차량 막힘을 함께 확인한다. 기존 프로젝트 폴더는 덮어쓰지 않는다.
+재로드한 JSON에 `npm run qa:runtime -- --scenario parking-approved --project <reloaded-project.json>`을 적용하면
+출하 플레이어 경로의 보행·차량 앞뒤 가림을 확인할 수 있다.
+
+범위는 14×7칸/224×112px, 차량 1대·주차면 2개의 고정 구역이다. 경사로·차단기·방화문을 갖춘
+12면 전체 시설의 재료 조사/개념 카드 완료와 구별한다. 문 개폐나 차량 운전은 구현하지 않는다.
+
+혼합 그룹은 `defaultLayer: mixed`, `layerHome: perCell`로 직렬화한다. `layerHome: mixed`는
+프로젝트 스키마가 거부한다. bake 정의 검사에 이 enum을 추가했고, 정본 생성기는 폴더를 만들기 전에
+직렬화/역직렬화 검증을 한다. 실제 정본 revision 4에서 다시 열어 확인했다.
+
+## 기존 칩 확장 실험 (2026-10-05)
+
+`harness-data/modern-chipset/parking-wide/plan.md`를 독립적으로 검수한 뒤
+`npm run harness -- modern-chipset parking-wide --review <plan-review.json>`으로 조립한다.
+검수 요청 시 같은 이름의 `.input.json`에 planSha256/sheetSha256를 고정한다. 실행기는 현재 입력과 일치하지 않으면 거부한다.
+북벽은 한 번, 주차열 단면만 반복한다. 원본 차량·그림·칩 수는 바꾸지 않는다.
+결과 `tiledata/modern-city/parking-wide/recipe.json`은 26×18칸, 12면/차량6대다.
+`save-parking-project`에 `--recipe <recipe.json>`을 추가하면 새 정본으로 저장·재로드한다.
+실제 보행 확인은 `qa:runtime -- --scenario parking-wide --project <reloaded-project.json>`.
+
+이 표본은 조립/보행 PASS지만 **완성 시설 판정은 INCOMPLETE**다. 기둥·천장등·외곽 벽/출입 시설이 부족하여
+큰 회색 바닥과 반복 차량이 드러난다. 같은 칩의 확장 결과와 부족 소재를 보여주는 실험으로 공용 참고문서에 함께 싣고,
+두 면 표본의 합격을 12면 시설 전체의 합격으로 재사용하지 않는다. 전후 원본/플레이 화면과 독립 판정은 함께 보존한다.
+
+### 미완성 판정의 후속 처리
+
+`npm run harness -- modern-chipset parking-followup harness-data/modern-chipset/parking-wide/followup.json`
+은 위 확장 검수의 실제 scene/plan 해시와 네 지적의 수정 주문을 확인하고 super-harness art 큐에 넣는다.
+전역 pause와 해당 개념의 실행 작업 없음이 전제다. 같은 입력은 한 번만 회차를 소비한다.
+기존 작은 표본의 승인·선택·설치·피드백은 scene-followup-history에 보존하고,
+`parking-facility-v1`의 구조·조명·출입 연결·차량 다양성·공간 구성 조건으로 별도 범위를 연다.
+원래 assembly PASS/facility INCOMPLETE 기록을 FAIL로 위조하지 않는다.
+현재 누적 회차에서 한 번 증가하며 10회를 초기화하지 않는다. 상한이면 blocked이고 제작을 시작하지 않는다.
+수정 결과는 기존 도면→native 제작→독립 전체 조립 검수 경로로 돌아온다. 필수 결함을 모두 해결하기 전
+선택/시설 완료를 승인하지 않는다. 공용 게시/정본 저장은 그 뒤의 별도 작업이다.

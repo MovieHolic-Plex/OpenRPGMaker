@@ -18,10 +18,11 @@ export function inspectFirstPresentation(project: Project): string[] {
     if (!textOpening && !opening.scenes.some(scene => scene.kind === 'image' || scene.kind === 'video')) issues.push('오프닝이 검은 화면의 글뿐입니다. 작품의 장면 그림/영상이 필요합니다.');
     const shots = opening.scenes.filter(scene => scene.kind === 'image');
     if (!textOpening && !opening.scenes.some(scene => scene.kind === 'video')) {
-      if (opening.scenes.length < 3 || shots.length < 2 || new Set(shots.map(scene => scene.resourceId)).size < 2) issues.push('첫 오프닝은 장소 소개 → 사건 발생 → 첫 행동으로 이어지는 세 컷과 서로 다른 실제 그림 2장 이상이 필요합니다. 한 그림 확대만으로 완료하지 마세요.');
+      if (opening.scenes.length < 5 || shots.length < 5 || new Set(shots.map(scene => scene.resourceId)).size < 5) issues.push('첫 오프닝은 장소 소개 → 사건 발생 → 첫 행동으로 이어지는 다섯 컷과 서로 다른 실제 그림 5장 이상이 필요합니다. 한 그림 확대만으로 완료하지 마세요.');
       if (!shots.some(scene => scene.direction?.transition || scene.direction?.effects?.length || scene.direction?.soundResourceId || scene.presentation)) issues.push('오프닝에 장면별 전환·빛/입자·효과음 연출이 없습니다. 실제 그림과 사건에 맞게 direction을 작성하세요.');
     }
-    if (opening.scenes.some(scene => scene.durationMs <= 0) || opening.scenes.reduce((sum, scene) => sum + scene.durationMs, 0) > 12_000) issues.push('첫 오프닝은 모든 장면이 자동 진행되고 총 12초 이내여야 합니다.');
+    if (opening.scenes.some(scene => scene.durationMs <= 0) || opening.scenes.reduce((sum, scene) => sum + scene.durationMs, 0) > 90_000) issues.push('첫 오프닝은 모든 장면이 자동 진행되고 총 90초 이내여야 합니다.');
+    if (!opening.musicResourceId) issues.push('오프닝 BGM을 고르거나 generate_original_bgm으로 작곡해 연결해야 합니다.');
     if (!opening.skippable) issues.push('첫 오프닝을 건너뛸 수 있어야 합니다.');
     if (!opening.scenes.some(scene => scene.narration.trim())) issues.push('첫 오프닝에 이야기의 계기와 첫 행동을 잇는 짧은 서술이 없습니다.');
   }
@@ -36,12 +37,15 @@ export const FIRST_PRESENTATION_INSTRUCTIONS = [
   '작품 전용 타이틀과 저작된 이야기 오프닝은 첫 제작의 필수 결과물이다. 기본 눈 덮인 마을에 제목만 바꾸거나 system.opening을 끄고 완료하지 않는다.',
   '전체 사용자 기획과 완성된 시작 장소/핵심 물체를 확인한다. generate_title_art(prompt,name,title,logoSubtitle)로 작품 전용 키아트를 만들면 그림 등록과 타이틀 연결까지 자동 수행된다. 존재하지 않는 resourceId를 만들지 않는다.',
   'set_title_screen으로 logoStyle, logoSubtitle, sequence(예:fadeMs:1200,logoAtMs:800,menuAtMs:1800,logoReveal:rise), transition(예:kind:fade,durationMs:700), menuStyle을 작품에 맞게 구성한다. 그림은 cover/smooth로 화면 전체를 채운다. 효과는 생성된 그림의 실제 빛·물·안개에 맞는 자리만 쓴다.',
-  '그림 중심 기본형에서는 먼저 세 컷을 설계한다: ① 장소와 인물의 상황을 보여주는 원경 ② 이상 현상/핵심 물체의 사건이 실제로 벌어지는 클로즈업 ③ 그 결과와 첫 플레이 행동으로 넘기는 중경. 같은 그림 확대만으로 사건이 발생했다고 설명하지 않는다. 서로 다른 실제 그림을 2장 이상 generate_opening_image(prompt,name,referenceResourceId?)로 만든다. 앞 그림을 referenceResourceId로 전달해 물체·인물·장소·화풍을 유지하되 구도와 사건 상태를 바꾼다.',
-  '사용자가 서문·글자·편지·챕터 카드 중심의 오프닝을 원하면 text 장면 2개 이상에 서로 다른 presentation preset(prologue/memory/chapter/credits)을 실제 저장한다. 이 의도적인 글자 연출도 합격 가능하다. 글 한 줄만 있는 기본 검정 화면은 합격이 아니다. 그림 중심 기본형에는 아래 세 컷 규칙을 적용한다.',
-  'set_opening(enabled:true,skippable:true,scenes:[{kind:image,resourceId,narration,durationMs:4000,motion:none,direction}])으로 세 컷을 연결한다. 총 자동 재생 12초 이내, 각 durationMs는 양수. 자막은 컷당 짧은 한 문장이고 읽을 시간을 준다. 사용자 의도가 글자 중심이 아닐 때 기본 검정 텍스트나 조작 대기로 대체하지 않는다.',
+  '그림 중심 기본형에서는 먼저 5~8컷의 스토리보드를 설계한다: ① 장소와 인물의 상황을 보여주는 원경 ② 이상 현상/핵심 물체의 사건이 실제로 벌어지는 클로즈업 ③ 그 결과와 첫 플레이 행동으로 넘기는 중경. 같은 그림 확대만으로 사건이 발생했다고 설명하지 않는다. 서로 다른 실제 배경 그림을 5장 이상 generate_opening_image(prompt,name,referenceResourceId?)로 만든다. 앞 그림을 referenceResourceId로 전달해 물체·인물·장소·화풍을 유지하되 구도와 사건 상태를 바꾼다.',
+  '사용자가 서문·글자·편지·챕터 카드 중심의 오프닝을 원하면 text 장면 2개 이상에 서로 다른 presentation preset(prologue/memory/chapter/credits)을 실제 저장한다. 이 의도적인 글자 연출도 합격 가능하다. 글 한 줄만 있는 기본 검정 화면은 합격이 아니다. 그림 중심 기본형에는 아래 스토리보드 규칙을 적용한다.',
+  'set_opening(enabled:true,skippable:true,scenes:[{kind:image,resourceId,narration,durationMs:4000,motion:none,direction}])으로 이야기 컷을 연결한다. 기본 25~45초, 최대 90초, 각 durationMs는 양수. 자막은 컷당 짧은 한 문장이고 읽을 시간을 준다. 사용자 의도가 글자 중심이 아닐 때 기본 검정 텍스트나 조작 대기로 대체하지 않는다.',
   '모든 text/image/video 장면의 presentation을 저작한다. preset subtitle/prologue/chapter/memory/credits, text:{animation:none|fade|rise|typewriter|blur|scroll,layout:center|bottom|left|credits,font:serif|sans|pixel,size:8..64,color:#RRGGBB,delayMs,revealMs,exitMs}, transition:{enter:cut|fade|dissolve|wipe|iris|flash,enterMs:0..5000,exitMs:0..5000}, letterbox:0..20을 조합한다. 시간은 durationMs 안에 포함된다. image.direction 카메라·빛은 그대로 조합 가능하며 presentation의 장면 전환·글자 지연이 우선한다.',
   'direction으로 장면별 전환·카메라·효과음의 리듬을 작성한다. transition:{kind:cut|dissolve|fade|flash,durationMs:0..1000}, camera:{from:[초점x,초점y,배율],to:[초점x,초점y,배율]}(x/y=0..1, 배율1..1.6), narrationDelayMs:0..2000, soundResourceId:실제SE id를 쓴다. 원경은 천천히, 사건 클로즈업은 컷, 행동 인계는 디졸브 등 의미에 맞춰 구성한다. 모든 컷의 동일 확대와 번쩍임 남발을 피한다.',
   'direction.effects는 최대4개, godRays(source/toward), glow(source), motes(source/toward 또는 region), mist(region)을 지원한다. 좌표는 실제 그림을 보고 정하고 intensity는 절제한다. region은 3~8개 [x,y] 좌표다. 움직이는 그림 자체가 필요한 사건은 별도 그림/영상을 생성한다. 입자와 카메라가 인물 애니메이션을 대신한다고 말하지 않는다.',
+  'BGM은 recommend_bgm(query:실제 이야기의 분위기·악기·리듬,limit:5)과 get_audio_resource로 먼저 비교한다. 후보 설명을 읽고 적합한 곡과 이유를 고르며 메타데이터를 청취했다고 말하지 않는다. 필요한 분위기/전개가 없으면 generate_original_bgm(name,brief,score)으로 직접 악보를 작곡해 WAV를 만든다. 4/4 tempo40..160, bars4..32(총90초 이내), tracks1..5(piano/bell/strings/bass,gain0.05..1,pan-1..1), notes(pitch MIDI36..96,beat,duration0.125..8,velocity0.05..1)를 실제 배열로 쓴다. 3~4음 모티브의 반복/변형, 화음 전개, 사건 지점 악기 추가, 마지막 해소를 작성한다. 생성된 resourceId를 musicResourceId로 연결한다. 단일 음/무음/남의 곡 복제는 금지. 외부 오디오 모델 생성이 아니라 조수 악보+내장 합성임을 밝힌다.',
+  '독립 모션이 필요한 물체·실루엣·기억 조각은 generate_opening_image(role:foreground,prompt,referenceResourceId)로 실제 투명 PNG를 별도로 생성한다. 완성 배경에서 인물이 움직이는 것처럼 설명하지 않는다. image.direction.layers 최대4개에 resourceId,width(무대비율0.05..1.5),depth:background|foreground,easing:linear|ease-in-out|ease-out,frames2..8을 작성한다. 각 frame={at:0..1,x:-0.5..1.5,y:-0.5..1.5,scale:0.1..3,opacity:0..1,rotation:-180..180}; at은0시작/1끝 엄격히 증가, x/y는 그림 중심. 화면 진입→정지→회전/부유→퇴장 같은 실제 시간표를 저작한다. 과장된 물체 확대·무관한 장식은 피한다. 카메라·타이핑·시차 물체·컷/페이드/와이프 중 이야기와 맞는 3가지 이상을 조합하며 같은 확대를 반복하지 않는다.',
+  '원화 생성 예산을 이름만으로 채우지 않는다. 실제 원화를 충분히 만들고 shot distance(원경/중경/클로즈업/세부/행동)와 사건 전후를 달리한다. 기본25~45초에서 짧은 자막이 읽혀야 한다. 장면 수와 길이는 사용자 의도에 맞게 조절하되 첫 오프닝의 최대90초와 건너뛰기를 지킨다. 오프닝 중 다음 배경·전경·BGM과 시작 맵 이미지/엔진이 자동 준비되며, 이 배경 로더를 이벤트로 다시 만들지 않는다.',
   '타이틀은 이야기의 인상, 오프닝은 사건의 시작, 실제 맵 도입은 첫 행동과 조작 안내를 맡는다. 기획과 맞는 구체적 장소/물체/인물을 보이고 같은 긴 설명을 반복하지 않는다. 이미 작성된 맵·선택 결과·엔딩·일회성 조작 안내는 보존한다.',
-  'show_title_opening으로 연결된 타이틀과 모든 오프닝 그림을 보고 전체 원문 및 시작 맵 그림과 대조한다. 세 컷의 구도 차이·사건 전후·동일 물체·첫 행동 연결을 눈으로 검사하고 부족한 그림을 다시 만든다. 이미지 생성 실패·누락은 실패로 보고하며 기본 그림으로 바꾸고 성공이라 말하지 않는다. 실제 브라우저 재생을 했다고 주장하지 않는다.',
+  'show_title_opening으로 연결된 타이틀과 모든 오프닝 그림을 보고 전체 원문 및 시작 맵 그림과 대조한다. 각 컷의 구도 차이·사건 전후·동일 물체·첫 행동 연결을 눈으로 검사하고 부족한 그림을 다시 만든다. 이미지 생성 실패·누락은 실패로 보고하며 기본 그림으로 바꾸고 성공이라 말하지 않는다. 실제 브라우저 재생을 했다고 주장하지 않는다.',
 ] as const;

@@ -1,0 +1,22 @@
+{
+  "source": "ai-team-agent-centered.mp4",
+  "segments_seconds": [
+    [
+      0,
+      4
+    ],
+    [
+      16.524142265319824,
+      21.524142265319824
+    ],
+    [
+      54.53793954849243,
+      60.68208885192871
+    ],
+    [
+      61.6310920715332,
+      70.9792070388794
+    ]
+  ],
+  "provenance": "Actual team command UI send and connected model run. Waiting intervals cut; no speed change or replay."
+}

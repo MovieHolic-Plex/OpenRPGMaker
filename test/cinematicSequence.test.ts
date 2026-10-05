@@ -4,7 +4,7 @@ import { playCinematicSequence, type CinematicPlayback } from "@/player/cinemati
 import { createBlankProject } from "@/project/defaults";
 import type { CinematicScene, CinematicSequence, Project } from "@/project/types";
 
-vi.mock('@/player/cinematicAssets', () => ({ createCinematicAssets: () => ({ prepare: async (url: string) => ({ url, width: 16, height: 9 }), warm: () => undefined, dispose: () => undefined }) }));
+vi.mock('@/player/cinematicAssets', () => ({ createCinematicAssets: () => ({ prepare: async (url: string) => ({ url, width: 16, height: 9 }), prepareAudio: async (url: string) => url, warm: () => undefined, dispose: () => undefined }) }));
 
 const text: CinematicScene = { id: "text", kind: "text", narration: "<b>literal</b>\nline", durationMs: 0 };
 const image: CinematicScene = { id: "image", kind: "image", resourceId: "image", narration: "caption", durationMs: 0, motion: "pan" };
@@ -167,7 +167,7 @@ describe("shared sequence playback", () => {
     let prepared!: (value: { url: string; width: number; height: number }) => void;
     const promise = new Promise<{ url: string; width: number; height: number }>(resolve => { prepared = resolve; });
     const onFrame = vi.fn();
-    playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable: true, scenes: [image] }, signal: controller.signal, onFrame, assets: { prepare: () => promise, warm: () => undefined, dispose: () => undefined } });
+    playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable: true, scenes: [image] }, signal: controller.signal, onFrame, assets: { prepare: () => promise, prepareAudio: async (url: string) => url, warm: () => undefined, dispose: () => undefined } });
     controller.abort();
     prepared({ url: project.assets.uploaded.image.dataUrl!, width: 16, height: 9 });
     await vi.advanceTimersByTimeAsync(0);

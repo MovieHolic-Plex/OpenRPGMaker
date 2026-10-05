@@ -1,0 +1,880 @@
+{
+  "version": 11,
+  "scope": "single-small-parking-scene",
+  "phase": "scene",
+  "route": "spec",
+  "canvas": [
+    224,
+    112
+  ],
+  "tileSize": 16,
+  "car": {
+    "path": "harness-data/parking-calibration-r5/sources/public-car2-a.png",
+    "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+    "size": [
+      80,
+      48
+    ],
+    "alphaBBox": [
+      5,
+      20,
+      75,
+      48
+    ],
+    "scale": 1,
+    "origin": [
+      128,
+      16
+    ],
+    "direction": "east",
+    "sourceKit": "mc-veh-car2-a",
+    "wheelCentersOriginal": [
+      [
+        17,
+        43
+      ],
+      [
+        58,
+        43
+      ]
+    ],
+    "note": "Observed approximate hub centers only; never ground contacts or footprint width. alphaBBox remains file integrity only.",
+    "contact": "원점(128,16)의 앞 타이어 우단 y59..61:x191,y62:x190,y63:x189, 최하단 x184..189,y63과 y64 바닥을 근거로 한다. 턱 노출점(192,59),(192,60),(192,61),(191,62),(190,63)은 승인 국소 접점을(104,0) 평행이동한 값이다. 허브와 alpha90 그림자는 접지점이 아니다."
+  },
+  "camera": {
+    "references": [
+      {
+        "path": "harness-data/parking-calibration-r5/sources/public-car2-a.png",
+        "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+        "label": "공용 기준 자동차 원본 1배"
+      },
+      {
+        "path": "harness-data/parking-calibration-r5/references/mc-assemble/images/mc-img-bld-kit-low3-c.png",
+        "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb",
+        "label": "공용 구조 기준: 윗면/전면 분리와 모서리 두께"
+      }
+    ],
+    "groundPlane": "공용차 지붕·보닛의 긴 평행변과 앞뒤 허브 연결은 화면 수평 +x, 지붕의 가로 폭은 화면 +y로 관측한다. 구조 기준 PNG의 수평 지붕변과 수직 깊이 띠도 이 축 선택의 근거다. 이 표본은 원근 없는 정사영 P(X,Y,Z)=(24+X,32+Y/2-Z)를 설계 가설로 사용한다. 지상 길이 U=(1,0), 지상 깊이 V=(0,0.5), 높이 H=(0,-1)이다. 깊이와 높이는 화면에서 평행하지만 지상 면과 수직면에서 역할을 분리한다. 원본 자동차의 실세계 깊이·높이 비율은 확인 불가하며 새 표본의 시점은 독립 검수가 판독한다. 부재 회전이나 좌우 부호 반전, 소실점은 사용하지 않는다.",
+    "heightAxis": "북벽과 서벽 끝 절단면은 각 접지점에서 (0,-24)로 상단을 얻는다. 서벽 깊이변(0,12)은 높이면과 투영상 겹쳐 옆면이 선으로 축퇴하므로 억지 대각 면을 만들지 않는다. 높이는 남쪽 절단면의 8×24 면과 북벽 전면으로 읽는다. 턱 높이는 (0,-2), 바닥 폭8px와 투영 깊이14px는 높이와 별개다. alpha bbox는 원본 보존 확인용으로만 쓴다.",
+    "lighting": "원본차의 밝은 좌상 지붕/보닛과 어두운 아래 옆면을 따라 좌상 광원을 유지한다. 벽 캡과 턱 윗면은 밝고 낮은 전면과 접지띠는 어둡게 하되 차량보다 대비를 낮춘다.",
+    "objects": [
+      {
+        "id": "car",
+        "footprint": "원본80×48을(128,16)에1배 합성. 지상[133,48,70,16]은 숨은폭28..32의 상한32와 승인 깊이축0.5의 투영 가설이다. 지붕깊이와 차체높이를 구별하며 alpha bbox는 지상폭으로 쓰지 않는다.",
+        "topFace": "승인 원본 지붕·보닛 큰 면의 픽셀과 수평변을 변경 없이 평행 이동한다.",
+        "verticalFace": "차체 아래 옆면과 타이어가 높이를 표현하며 그 화면 높이는 지상 점유 깊이에 포함하지 않는다.",
+        "contact": "원점(128,16)의 앞 타이어 우단 y59..61:x191,y62:x190,y63:x189, 최하단 x184..189,y63과 y64 바닥을 근거로 한다. 턱 노출점(192,59),(192,60),(192,61),(191,62),(190,63)은 승인 국소 접점을(104,0) 평행이동한 값이다. 허브와 alpha90 그림자는 접지점이 아니다.",
+        "occlusion": "환경과 턱을 먼저 그리고 원본차를 마지막 합성한다. 북통로32..48 일부는 첫 불투명y36부터 높은 차체에 화면상 가려지지만 바닥 장애물은 아니다. 보행자 접지와 깊이순서 처리 필요성은 감독 독립검수로 확인한다. 가림 회피를 위해 간격을 추가하지 않는다."
+      },
+      {
+        "id": "wheel-stop",
+        "footprint": "첫 지상 x190..198,y54..68, 둘째y86..100. 승인폭8/깊이14는 국소 단면이며 전체 차축 폭의 실측이 아니다.",
+        "topFace": "첫 윗면[190,52,8,14], 둘째[190,84,8,14]는 연속 낮은 면이고 새32px 피치에 맞춘다.",
+        "verticalFace": "첫 남단y66..68와 둘째y98..100의2px 전면이 높이를 나타내며14px 깊이와 분리한다.",
+        "contact": "원점(128,16)의 앞 타이어 우단 y59..61:x191,y62:x190,y63:x189, 최하단 x184..189,y63과 y64 바닥을 근거로 한다. 턱 노출점(192,59),(192,60),(192,61),(191,62),(190,63)은 승인 국소 접점을(104,0) 평행이동한 값이다. 허브와 alpha90 그림자는 접지점이 아니다. 둘째는32px 아래 동일 단면이며 접지음영은1px 이내.",
+        "occlusion": "첫턱은 원본차의 타이어에 가려지고 둘째는 노출된다. 차 합성 후 전경 덮어쓰기 없이 같은 단면을 대조한다."
+      },
+      {
+        "id": "wall-corner",
+        "footprint": "북벽 x8..224,y28..32 및 서반환 x8..16,y32..44. 승인 지상두께8 투영을 이동하며 실세계 치수 실측은 아니다.",
+        "topFace": "북캡 x8..224,y4..8과 서캡 x8..16,y8..20은 같은 공유변에 이어진다.",
+        "verticalFace": "북전면 y8..32와 서남절단면 y20..44는 높이24를 나타내며 가짜 대각 옆면을 만들지 않는다.",
+        "contact": "벽 바닥 y32 및 서반환 x16,y32..44에 접지하며 y31 어두운 접지띠를 유지한다.",
+        "occlusion": "서반환은y44에서 끝나고 서개구y44..112에 접한다. 캡 위4px 관찰여백을 유지하며 하단 여백이나 천장을 추가하지 않는다."
+      },
+      {
+        "id": "wall-light",
+        "footprint": "벽등 [128,11,64,4]는 벽 부착물로 지상 점유가 없다. 부착 깊이1px는 출처 실측이 아닌 설계값이다.",
+        "topFace": "하우징과 양끝 프레임을 분리하며 코어 [134,12,52,2]의 얇은 수평면을 유지한다.",
+        "verticalFace": "본체 아래 y15의1px 부착그림자가 낮은 두께를 나타내며 떠 있는 바닥 물체로 만들지 않는다.",
+        "contact": "벽반영 y16..31, 접지띠y31 보존, 바닥경계y32 뒤 y33부터56→40px 반영, y40 이후 바탕 복귀한다.",
+        "occlusion": "코어161/163/172와 반영148/150/161은 지붕175/177/184 아래이고 차·접지·도색선을 덮지 않는다."
+      }
+    ]
+  },
+  "contextSources": [
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+      "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+      "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+      "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+      "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+      "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+      "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+      "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+      "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+      "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+      "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-feedback.json",
+      "sha256": "fe289ef5a726d74e3bad2b125c400b1dace01e7e8d032f1118ebdcde2ac1070b"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-layout-review.json",
+      "sha256": "ea696b392d59a9b70767b1afde3a499133af39daba2c9ddd262c7a0f4665d093"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-layout-input.json",
+      "sha256": "6c2da91a7c972f4f105f62071f3cb92fe2caae103da6709a1b611a7a85fcd6d6"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-calibration.json",
+      "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/r7-A.png",
+      "sha256": "2191df9d65e22e1e96d4c53559d5e9afc8c75b7aaa93425e3a5602a9d428852d"
+    },
+    {
+      "path": "harness-data/parking-scene-spec-r10/preserved-evidence/r7-A-x3.png",
+      "sha256": "01c30fb04be17310614672f5ec15ff65bf8e4027203b73ca27b43754a304798f"
+    }
+  ],
+  "candidateCount": 1,
+  "nativeAttempts": 1,
+  "revision": 6,
+  "bays": [
+    [
+      112,
+      40,
+      96,
+      32
+    ],
+    [
+      112,
+      72,
+      96,
+      32
+    ]
+  ],
+  "wheelStops": [
+    [
+      190,
+      52,
+      9,
+      17
+    ],
+    [
+      190,
+      84,
+      9,
+      17
+    ]
+  ],
+  "foregroundStop": null,
+  "flatFloorProbes": [
+    [
+      32,
+      48,
+      24,
+      20
+    ],
+    [
+      212,
+      48,
+      8,
+      16
+    ]
+  ],
+  "northWall": [
+    8,
+    4,
+    216,
+    29
+  ],
+  "structure": {
+    "northFootprint": [
+      [
+        8,
+        28
+      ],
+      [
+        224,
+        28
+      ],
+      [
+        224,
+        32
+      ],
+      [
+        8,
+        32
+      ]
+    ],
+    "northTop": [
+      [
+        8,
+        4
+      ],
+      [
+        224,
+        4
+      ],
+      [
+        224,
+        8
+      ],
+      [
+        8,
+        8
+      ]
+    ],
+    "northFace": [
+      [
+        16,
+        8
+      ],
+      [
+        224,
+        8
+      ],
+      [
+        224,
+        32
+      ],
+      [
+        16,
+        32
+      ]
+    ],
+    "westFootprint": [
+      [
+        8,
+        32
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        16,
+        44
+      ],
+      [
+        8,
+        44
+      ]
+    ],
+    "westTop": [
+      [
+        8,
+        8
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        16,
+        20
+      ],
+      [
+        8,
+        20
+      ]
+    ],
+    "westSouthFace": [
+      [
+        8,
+        20
+      ],
+      [
+        16,
+        20
+      ],
+      [
+        16,
+        44
+      ],
+      [
+        8,
+        44
+      ]
+    ],
+    "heightVector": [
+      0,
+      -24
+    ],
+    "depthAxis": [
+      0,
+      0.5
+    ],
+    "lengthAxis": [
+      1,
+      0
+    ],
+    "floor": [
+      0,
+      32,
+      224,
+      80
+    ],
+    "projection": "승인 U=(1,0),V=(0,0.5),H=(0,-1)을 유지한다. 벽은 기존 위치, 첫차/턱은 승인표본에서(104,0) 평행이동. 북여백4px만 관찰용이며 하단112는 마지막 공유하차96..112의 끝이다.",
+    "observationMargin": [
+      0,
+      0,
+      224,
+      4
+    ]
+  },
+  "stopProfile": {
+    "width": 8,
+    "projectedDepth": 14,
+    "height": 2,
+    "profiles": [
+      {
+        "footprint": [
+          [
+            190,
+            54
+          ],
+          [
+            198,
+            54
+          ],
+          [
+            198,
+            68
+          ],
+          [
+            190,
+            68
+          ]
+        ],
+        "topFace": [
+          [
+            190,
+            52
+          ],
+          [
+            198,
+            52
+          ],
+          [
+            198,
+            66
+          ],
+          [
+            190,
+            66
+          ]
+        ],
+        "southFace": [
+          [
+            190,
+            66
+          ],
+          [
+            198,
+            66
+          ],
+          [
+            198,
+            68
+          ],
+          [
+            190,
+            68
+          ]
+        ]
+      },
+      {
+        "footprint": [
+          [
+            190,
+            86
+          ],
+          [
+            198,
+            86
+          ],
+          [
+            198,
+            100
+          ],
+          [
+            190,
+            100
+          ]
+        ],
+        "topFace": [
+          [
+            190,
+            84
+          ],
+          [
+            198,
+            84
+          ],
+          [
+            198,
+            98
+          ],
+          [
+            190,
+            98
+          ]
+        ],
+        "southFace": [
+          [
+            190,
+            98
+          ],
+          [
+            198,
+            98
+          ],
+          [
+            198,
+            100
+          ],
+          [
+            190,
+            100
+          ]
+        ]
+      }
+    ],
+    "contact": "원점(128,16)의 앞 타이어 우단 y59..61:x191,y62:x190,y63:x189, 최하단 x184..189,y63과 y64 바닥을 근거로 한다. 턱 노출점(192,59),(192,60),(192,61),(191,62),(190,63)은 승인 국소 접점을(104,0) 평행이동한 값이다. 허브와 alpha90 그림자는 접지점이 아니다.",
+    "occlusion": "environment first / original car last / foregroundStop null"
+  },
+  "finish": {
+    "wallJoints": [
+      [
+        64,
+        8,
+        2,
+        23
+      ],
+      [
+        112,
+        8,
+        2,
+        23
+      ],
+      [
+        208,
+        8,
+        2,
+        23
+      ]
+    ],
+    "wallContactBand": [
+      16,
+      31,
+      208,
+      1
+    ],
+    "wallLight": [
+      128,
+      11,
+      64,
+      4
+    ],
+    "attachmentShadow": [
+      128,
+      15,
+      64,
+      1
+    ],
+    "lightEndFrames": [
+      [
+        128,
+        11,
+        2,
+        4
+      ],
+      [
+        190,
+        11,
+        2,
+        4
+      ]
+    ],
+    "wallReflection": [
+      128,
+      16,
+      64,
+      15
+    ],
+    "lightFootprint": [
+      132,
+      33,
+      56,
+      11
+    ],
+    "floorJoints": [
+      [
+        16,
+        72,
+        192,
+        2
+      ],
+      [
+        208,
+        32,
+        2,
+        80
+      ]
+    ],
+    "hierarchy": "224×112 무라벨1배에서 북벽 패널끝·등프레임·y15부착그림자·y31접지·y32바닥경계·y33반영·y72/73 및 x208/209 이음을 판독한다. 색예산은 지붕 아래이며 빈 바닥을 소품/노이즈로 채우지 않는다.",
+    "floorJointProfile": {
+      "horizontalGap": [
+        16,
+        72,
+        192,
+        1
+      ],
+      "horizontalEdge": [
+        16,
+        73,
+        192,
+        1
+      ],
+      "verticalGap": [
+        208,
+        32,
+        1,
+        80
+      ],
+      "verticalEdge": [
+        209,
+        32,
+        1,
+        80
+      ],
+      "junction": "x208..209,y72..73에서 실제 바닥 이음의 두 단면을 연결한다.",
+      "material": "y32..111 동일 콘크리트 바탕; y72 아래 밝은 판 금지. 이음은 흰선보다 낮은 대비이며 통행 장애물이 아니다."
+    },
+    "reflectionProfile": {
+      "wallBands": [
+        {
+          "box": [
+            128,
+            16,
+            64,
+            4
+          ],
+          "level": "near-wall",
+          "rgb": [
+            148,
+            150,
+            161
+          ]
+        },
+        {
+          "box": [
+            132,
+            20,
+            56,
+            8
+          ],
+          "level": "middle-wall",
+          "rgb": [
+            132,
+            135,
+            148
+          ]
+        },
+        {
+          "box": [
+            136,
+            28,
+            48,
+            3
+          ],
+          "level": "low-wall",
+          "rgb": [
+            117,
+            120,
+            134
+          ]
+        }
+      ],
+      "floorBands": [
+        {
+          "box": [
+            132,
+            33,
+            56,
+            3
+          ],
+          "level": "near-floor",
+          "rgb": [
+            148,
+            150,
+            161
+          ]
+        },
+        {
+          "box": [
+            140,
+            36,
+            40,
+            4
+          ],
+          "level": "middle-floor",
+          "rgb": [
+            132,
+            135,
+            148
+          ]
+        },
+        {
+          "box": [
+            148,
+            40,
+            24,
+            4
+          ],
+          "level": "base-floor",
+          "rgb": [
+            117,
+            120,
+            134
+          ]
+        }
+      ],
+      "baseReturn": [
+        132,
+        40,
+        56,
+        4
+      ],
+      "contact": "y31 접지띠를 보존하고 y32 북측 바닥 경계 뒤 y33부터 별도 반영을 시작한다.",
+      "brightness": "색은 modern4 고정: 바닥 X=(117,120,134), near-floor Z=(148,150,161), middle-floor Y=(132,135,148), base-floor/복귀 X. 바닥 상승량은 두 단계 후 0으로 종료한다. 벽 바탕 W=(103,106,119), wallBands Z/Y/X 순이며 증가량은 엄격 감소한다. 등 코어 0=(161,163,172) > 각 반영 Z > 바탕이며 전부 지붕 1=(175,177,184)보다 낮다. y32 도색선은 반영 검사의 예외로 별도 보존한다. 임의 노이즈·긴 균일 밝은 판 금지."
+    },
+    "lightEmitter": {
+      "box": [
+        134,
+        12,
+        52,
+        2
+      ],
+      "rgb": [
+        161,
+        163,
+        172
+      ],
+      "housingRGB": [
+        148,
+        150,
+        161
+      ],
+      "roofCeilingRGB": [
+        175,
+        177,
+        184
+      ],
+      "rule": "코어와 하우징·벽/바닥 반영은 각각 정의된 색 예산; 환경 최고 명도는 지붕보다 엄격히 낮다."
+    }
+  },
+  "requiredReviewItems": [
+    "concrete-floor",
+    "concrete-wall",
+    "parking-lines",
+    "wheel-stop",
+    "parking-small-scene"
+  ],
+  "deferred": [
+    "경사로",
+    "차단기",
+    "방화문",
+    "전체13품목",
+    "사람선택/설치(공간 독립검수 후)"
+  ],
+  "acceptance": [
+    "当前 새 도면 독립검수 후에만 native1회 제작",
+    "합격 시점표본 및 이전 실패1배/3배와 같은 scene 조립1배/3배 비교",
+    "기계검사를 시점/공간 검수로 대체하지 않는다",
+    "두면 동선·낮은턱·벽등부착·구조마감을 scene 독립검수하고 그 후 사람 선택"
+  ],
+  "repairPlan": {
+    "route": "spec",
+    "changes": "44px 피치를32px로 교체하고 문열림과 문닫은 뒤 보행을 동일16px 바닥에서 순차 공유한다. 첫 차를12px 위로 이동하고 둘째 가상차와 턱을32px 간격으로 배치한다. 북쪽도 문과 보행을 공유하며 224×112로 하단을 잘라 별도 남통로와 좌하단 확장을 제거한다. 모든 주문·검사·검수와 마감 좌표를 동기화한다.",
+    "supersededConstraints": "북문12+차체16+남하차16=44의 합산은 순차 이용에도 서로 다른 바닥을 요구한 오류다. 지상96×88의 거의 정사각형 면을96×64로 교체한다. 28px 차체간격과 첫 북측28px 여유를16px로 공유하고 화면 지붕 가림을 지상 장애물로 취급하지 않는다. 136..152 남통로 및 이용 근거 없는 좌하단1792px를 제거한다. alpha bbox는 원본 무결성 확인만 하며 숨은 차폭과 문회전은 가설로 독립 검수한다."
+  },
+  "approvedLayout": {
+    "path": "harness-data/parking-scene-spec-r10/layout.json",
+    "status": "pending-independent-review",
+    "approvalRequiredBeforeNative": true,
+    "reviewOwner": "supervisor",
+    "reusePreviousPlanningApproval": false
+  },
+  "components": [
+    {
+      "id": "concrete-floor",
+      "item": "concrete-floor",
+      "box": [
+        0,
+        32,
+        224,
+        80
+      ]
+    },
+    {
+      "id": "concrete-wall",
+      "item": "concrete-wall",
+      "box": [
+        8,
+        4,
+        216,
+        41
+      ]
+    },
+    {
+      "id": "parking-lines",
+      "item": "parking-lines",
+      "box": [
+        112,
+        40,
+        96,
+        64
+      ]
+    },
+    {
+      "id": "wheel-stop",
+      "item": "wheel-stop",
+      "box": [
+        190,
+        52,
+        9,
+        49
+      ]
+    },
+    {
+      "id": "parking-small-scene",
+      "item": "parking-small-scene",
+      "box": [
+        0,
+        0,
+        224,
+        112
+      ]
+    }
+  ],
+  "layoutRevision": 10,
+  "aisle": [
+    16,
+    32,
+    96,
+    80
+  ],
+  "westOpening": [
+    0,
+    44,
+    16,
+    68
+  ],
+  "eastWalkway": [
+    208,
+    32,
+    16,
+    80
+  ],
+  "southWalkway": null,
+  "circulationPlan": {
+    "car": "서개구y44..112→서차로x16..112→+x 직선진입/-x 후진. 면밖 원점(32,16)/(32,48)→(128,16)/(128,48). 차체[37,48,70,16]/[37,80,70,16]→[133,48,70,16]/[133,80,70,16]. 한대씩 이용하고90도회전은 범위 밖이다.",
+    "pedestrian": "북32..48/중간64..80/남96..112 공유16px 띠는 문닫은 뒤 x112..184→서차로로 직접 나간다. 북띠는 서차로에서 x16..32,y32..64로 꺾어 서개구y48..64로 연결한다. 동통로x208..224,y32..112는 북남 연결이다. 별도 하단 남통로는 없다.",
+    "obstacles": "문8px 개방→문닫음→보행16px 순서로 동일 좌표를 점유하며 동시문열림/보행을 보장하지 않는다. 중간통로는 다음 가상차 지붕 화면가림과 지상장애물을 구별한다. 턱x190 이상은 서쪽으로 나가는 보행범위x112..184와 분리한다."
+  },
+  "inspectionPlan": {
+    "mechanical": "224×112/modern4/원본차80×48·bbox 무결성/원점128,16. probe[32,48,24,20]/[212,48,8,16]. 준비 입력 해시 검사만으로 공간합격을 선언하지 않는다.",
+    "independent": "r9 FAIL의44피치/96×88/좌하단1792px와 새32피치/96×64/하단112를 비교한다. 문열림8과 문닫은16보행의 동일좌표 단계 점유, 숨은폭과높이/화면가림, 승인표본 및 r7 실패1배/3배, 턱 접점과벽등부착/이음/명도위계를 모두 검사한다. 순차운용 공유가 부족하면 반려한다."
+  },
+  "maxRevisions": 10,
+  "groundSizing": {
+    "carLength": 70,
+    "hiddenWidthRange": [
+      28,
+      32
+    ],
+    "projectedDepthUpper": 16,
+    "bayLength": 96,
+    "projectedPitch": 32,
+    "groundBayWidth": 64,
+    "firstFootprint": [
+      133,
+      48,
+      70,
+      16
+    ],
+    "secondHypotheticalFootprint": [
+      133,
+      80,
+      70,
+      16
+    ],
+    "northDoorEnvelope": [
+      145,
+      40,
+      32,
+      8
+    ],
+    "southDoorEnvelope": [
+      145,
+      64,
+      32,
+      8
+    ],
+    "secondNorthDoorEnvelope": [
+      145,
+      72,
+      32,
+      8
+    ],
+    "secondSouthDoorEnvelope": [
+      145,
+      96,
+      32,
+      8
+    ],
+    "northSharedStrip": [
+      112,
+      32,
+      96,
+      16
+    ],
+    "betweenSharedStrip": [
+      112,
+      64,
+      72,
+      16
+    ],
+    "southSharedStrip": [
+      112,
+      96,
+      72,
+      16
+    ],
+    "rationale": "두 차체 깊이16 사이에 하나의16px 띠를 둔다. 문8px가 열린 단계에는 보행하지 않고 한 번에 한 차의 문만 연다. 문을 닫은 뒤 같은16px 전체가 보행 통로가 된다. 피치16+max(문8,보행16)=32, 지상폭64/차폭상한32=2배, 지상면96:64=1.5:1 및 차체70:32=2.19:1이다. 각 면 도색 경계는 공유띠 중앙이며 띠를 독립 두 번 합산하지 않는다. 첫 북측32..48도 문40..48과 보행32..48을 공유한다. 바닥과 높은 차체의 화면 가림을 구별하고 숨은폭28..32 및 문8은 미실측 설계 가설로 반려 가능하다."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "provenance": "Replay of receipts from live-events.json for responsive layout; synthetic stream probe for the in-place update edge case.",
+  "geometry": {
+    "membersBottom": 355.09375,
+    "progressTop": 355.09375,
+    "progressWidth": 398,
+    "rootWidth": 398,
+    "containerType": "inline-size",
+    "columns": "398px",
+    "stacked": true,
+    "fits": true
+  },
+  "observation": {
+    "latestSignal": true,
+    "privateThinkingExcluded": true
+  },
+  "errors": []
+}

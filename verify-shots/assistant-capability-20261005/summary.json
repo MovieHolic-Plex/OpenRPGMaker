@@ -1,0 +1,1646 @@
+{
+  "schemaVersion": 1,
+  "suite": "core",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "counts": {
+    "pass": 1,
+    "fail": 8,
+    "blocked": 1,
+    "pending": 0,
+    "unexecuted": 0
+  },
+  "total": 10,
+  "strictPassRate": 0.1,
+  "executed": 10,
+  "bootstrapAttempts": 3,
+  "actualModelTrials": 10,
+  "coverageGaps": [
+    "타일·선택 영역 저작",
+    "실내 생성",
+    "맵 간 이동 저작",
+    "전투",
+    "장기 연속 지시",
+    "중단·저장 충돌 복구",
+    "모호한 지시",
+    "표현·모델별 반복 성공률"
+  ],
+  "results": [
+    {
+      "schemaVersion": 1,
+      "caseId": "inspect-readonly",
+      "title": "조회만 하기",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "startedAt": "2026-10-04T15:32:55.525Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "answer-grounded",
+              "ok": true,
+              "detail": "NPC 이름·위치·첫 대사·15G를 원문 답에서 확인"
+            },
+            {
+              "id": "read-only",
+              "ok": true,
+              "detail": "조회 후 게임 콘텐츠 전체 불변"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "blocked",
+          "detail": "재로드 중 공용 라이브러리 판본이 바뀌었다. 게임 내용은 같지만 동일 판본의 저장 게이트는 판정할 수 없다.",
+          "receipt": {
+            "projectId": "e13617fc-57e3-4e2f-b297-236d1d87d05c",
+            "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inspect-readonly/project",
+            "afterRevision": 3,
+            "afterSha256": "abd2ba3c996f480371f2663716063fd12518cf19942b0ccbc1ac86bca0734b05",
+            "reloadedSha256": "36e35c7d51c128496c265c737f899d2d224413a2f902ba219e213ea72d936d82",
+            "sameTarget": true,
+            "sameStoredDocument": false,
+            "reloadEqual": true,
+            "flush": {
+              "kind": "saved",
+              "dirty": false
+            },
+            "observationRecovery": true,
+            "libraryRevisionChange": {
+              "before": "779759833c823c40d20cbbf80b0c4e9e8955855ab393650b72e81596a674d1d9|gb93e850",
+              "after": "f44fd84d70a2742b143bfc0a480140fdb19ce2eada7f0a31235a8894a83d8001|gb93e850",
+              "gameContentEqual": true
+            }
+          }
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "초기 빈 캡처를 보존하고 렌더 완료 후 실제 저장 결과의 지도·네 E 마커·패널을 확인했다. 두 관측 그림이 정상이다. 원문 답변은 trace의 이름·좌표·대사·요금과 대조했다. 공용 라이브러리 기동 스탬프 변경은 저장 게이트의 환경 차단으로 따로 남는다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png"
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        }
+      },
+      "finishedAt": "2026-10-04T15:37:00.800Z",
+      "status": "blocked",
+      "verification": {
+        "harnessDigest": "9be8ce3938d43980ca0bc62b813a985987589331e920a02f19f9855b569966cd",
+        "priorResultDigest": "29fc47a6189a44fd34074d2c4a5f78e055197da39575983e8f165af3eeae1065",
+        "archive": "verification-history/1791131766755",
+        "at": "2026-10-04T16:36:06.976Z",
+        "newModelTurn": false
+      },
+      "projectId": "e13617fc-57e3-4e2f-b297-236d1d87d05c",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inspect-readonly/project",
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r1",
+          "startedAt": "2026-10-04T15:19:30.751Z",
+          "status": "fail",
+          "nativeInput": false
+        },
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r2",
+          "startedAt": "2026-10-04T15:26:34.616Z",
+          "status": "blocked",
+          "nativeInput": false
+        },
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T15:32:55.525Z",
+          "status": "blocked",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "plan-readonly",
+      "title": "계획만 세우기",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "2b88e1fc2bcca170a36265de364341db1666245e8c21bad0c3230738f11336b5",
+      "startedAt": "2026-10-04T15:41:28.130Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "plan-answer",
+              "ok": true,
+              "detail": "실제 계획 답변 존재"
+            },
+            {
+              "id": "plan-no-write",
+              "ok": true,
+              "detail": "계획 단계 게임 콘텐츠 전체 불변"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"f46dc3de-c40a-4fa4-b269-a34529a0a4c6\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/plan-readonly/project\",\"beforeRevision\":3,\"afterRevision\":3,\"afterSha256\":\"16058410865aa3d8a26a81056f06d9484216083405bf33a25e4c1939635deaa5\",\"reloadedSha256\":\"16058410865aa3d8a26a81056f06d9484216083405bf33a25e4c1939635deaa5\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-independent-evidence-review",
+          "notes": "실행 후 지도 E 마커 네 개·잔디·패널이 정상 표시되고 변경 없음이 보인다. 조수 답변은 계획만 세웠다고 표시한다. 새 context 재로드에서 동일 지도·표시 상태를 확인했다. 대사·보상 실행은 이 과제의 시각 범위 밖이며 데이터 불변은 별도 게이트로 확인했다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png"
+          ]
+        }
+      },
+      "elapsedMs": 92693,
+      "models": [
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "fcb4f327-1dcd-4ccd-83e1-8aefee0ca926",
+          "at": 1791128630159
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "fcb4f327-1dcd-4ccd-83e1-8aefee0ca926",
+          "at": 1791128633698
+        }
+      ],
+      "projectId": "f46dc3de-c40a-4fa4-b269-a34529a0a4c6",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/plan-readonly/project",
+      "finishedAt": "2026-10-04T15:45:23.645Z",
+      "status": "pass",
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T15:41:28.130Z",
+          "status": "pass",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "npc-line",
+      "title": "첫 대사만 수정",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "f85bb436bdc6602d266bc7e7617dd0840c2a9aa1cbe18ebe32e1cf8b7ebf9174",
+      "startedAt": "2026-10-04T15:45:23.673Z",
+      "gates": {
+        "execution": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": false,
+              "detail": "Generation failed with finish reason: PROHIBITED_CONTENT"
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-first-line",
+              "ok": true,
+              "detail": "동일 이벤트 첫 페이지 첫 문장 정확히 교체"
+            },
+            {
+              "id": "old-line-removed",
+              "ok": true,
+              "detail": "옛 문장 잔존 없음"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"effd3baa-045a-4843-99ef-fbc8ba9f379c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-line/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"80a11548aa6d08d6887778a39d9467da5906f1192a9f5fb46785aa56b39bb357\",\"reloadedSha256\":\"80a11548aa6d08d6887778a39d9467da5906f1192a9f5fb46785aa56b39bb357\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "fail",
+          "reviewer": "codex-evidence-review",
+          "notes": "변경 화면·새 context 렌더 완료 지도·플레이를 직접 읽었다. 플레이의 동문에서 만나자 대사와 캐릭터·대화창은 읽히고 잘림이 없다. 재캡처 지도는 E 마커와 잔디가 정상이다. 원래 적용 화면의 조수 답변이 중간에서 잘리고 PROHIBITED_CONTENT 오류가 노출돼 해당 표시를 시각 실패로 기록한다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/03-first-line.png"
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-line",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-close",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/04-close.png",
+            "runtime/05-repeat.png",
+            "runtime/06-repeat-close.png"
+          ]
+        }
+      },
+      "elapsedMs": 121639,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791128865677
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "a252e25e-537d-413a-b281-a041a8068882",
+          "at": 1791128871851
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "a252e25e-537d-413a-b281-a041a8068882",
+          "at": 1791128877001
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791128913655
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791128913692
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791128913698
+        }
+      ],
+      "projectId": "effd3baa-045a-4843-99ef-fbc8ba9f379c",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-line/project",
+      "finishedAt": "2026-10-04T15:49:59.968Z",
+      "status": "fail",
+      "verification": {
+        "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+        "priorResultDigest": "87d42139124b08cdf1ee6a2580c8e9f227f6d29014d43e8899adca3376e19dc9",
+        "archive": "verification-history/1791129740887",
+        "at": "2026-10-04T16:02:21.089Z",
+        "newModelTurn": false
+      },
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T15:45:23.673Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "npc-move",
+      "title": "기존 NPC 이동",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "d7d1d55a953bc5cdf7aa4106eb70e91ea3c08856216e7d73ad4ce653f29d026f",
+      "startedAt": "2026-10-04T15:50:00.028Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-position",
+              "ok": true,
+              "detail": "기존 ID가 (9,7)에 위치"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"d768e72e-6b82-4731-b99d-9080c23350e7\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-move/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"2586bc3d07da1b1caec5f5bcd8f735c6a6622927d19cbb99746ad3f049fdfb4e\",\"reloadedSha256\":\"2586bc3d07da1b1caec5f5bcd8f735c6a6622927d19cbb99746ad3f049fdfb4e\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "변경·재로드 지도에서 미루 E 마커가 오른쪽 한 칸 이동한 위치에 표시된다. 전용 플레이어에서 해당 위치 앞의 주인공이 같은 미루에게 말하고 옛 대사가 표시된다. 캐릭터·대화창 잘림이나 겹친 이벤트 표시는 없다. 다른 맵 보존은 별도 게이트 실패다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/03-first-line.png"
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-line",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-close",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/04-close.png",
+            "runtime/05-repeat.png",
+            "runtime/06-repeat-close.png"
+          ]
+        }
+      },
+      "elapsedMs": 122857,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129168459
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "12e333d7-32f2-4622-95c5-1891237e2c94",
+          "at": 1791129174114
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "12e333d7-32f2-4622-95c5-1891237e2c94",
+          "at": 1791129179006
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129214746
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129214777
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129214781
+        }
+      ],
+      "projectId": "d768e72e-6b82-4731-b99d-9080c23350e7",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-move/project",
+      "finishedAt": "2026-10-04T15:55:02.681Z",
+      "status": "fail",
+      "verification": {
+        "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+        "priorResultDigest": "c952b5105cfaf02594b08244b6a15c042226a5e0df9b7a54c3743182f111057a",
+        "archive": "verification-history/1791129872845",
+        "at": "2026-10-04T16:04:33.076Z",
+        "newModelTurn": false
+      },
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T15:50:00.028Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "npc-delete",
+      "title": "대상 NPC만 삭제",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "9de413b56118bb02c30577e7611613c02120de8cba329f0da31e3e8d0fd1197a",
+      "startedAt": "2026-10-04T15:55:03.038Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "target-deleted",
+              "ok": true,
+              "detail": "지정 이벤트만 한 개 삭제"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: tilesets.shared_paw_modern_interiors.$blob, tilesets.shared_refmap_crayon.$blob, tilesets.shared_refmap_snow.$blob, tilesets.shared_refmap_town_outside.$blob, maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "blocked",
+          "detail": "재로드 중 공용 라이브러리 판본이 바뀌었다. 게임 내용은 같지만 동일 판본의 저장 게이트는 판정할 수 없다.",
+          "receipt": {
+            "projectId": "7a3becc6-c838-4f56-a9ea-4efddfd7c2e1",
+            "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-delete/project",
+            "beforeRevision": 2,
+            "afterRevision": 4,
+            "afterSha256": "a707670ad19dcbc49490d5bdcaf160dc7197337ce295e1db20f2581620267404",
+            "reloadedSha256": "3bbdabef284d15baa4e51615849b278fd9f961fd49baf20c48de25ce1fe9cdc5",
+            "sameTarget": true,
+            "sameStoredDocument": false,
+            "reloadEqual": true,
+            "flush": {
+              "kind": "saved",
+              "dirty": false
+            },
+            "indexedDb": {
+              "exists": true,
+              "conversations": 0,
+              "userEntries": 0
+            },
+            "libraryRevisionChange": {
+              "before": "779759833c823c40d20cbbf80b0c4e9e8955855ab393650b72e81596a674d1d9|gb93e850",
+              "after": "f44fd84d70a2742b143bfc0a480140fdb19ce2eada7f0a31235a8894a83d8001|gb93e850",
+              "gameContentEqual": true
+            }
+          }
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "실제 저장 결과와 새 context에서 미루 자리 E 마커만 없어지고 여관·파수꾼·문 마커는 남았다. 플레이에서 주인공이 미루 자리로 걸어 들어가고 대화 창이 뜨지 않는다. 캐릭터·배경과 다른 두 NPC가 정상으로 보인다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/04-walk-through-deleted-npc.png"
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "deleted-position",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "walk-through-deleted-npc",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-deleted-position.png",
+            "runtime/04-walk-through-deleted-npc.png"
+          ]
+        }
+      },
+      "elapsedMs": 167618,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129458752
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "f31c4b06-7f2d-4bfb-9a10-cce9d72f06c0",
+          "at": 1791129481951
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "f31c4b06-7f2d-4bfb-9a10-cce9d72f06c0",
+          "at": 1791129502122
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129538510
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129538545
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129538667
+        }
+      ],
+      "projectId": "7a3becc6-c838-4f56-a9ea-4efddfd7c2e1",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-delete/project",
+      "finishedAt": "2026-10-04T16:01:14.181Z",
+      "status": "fail",
+      "verification": {
+        "harnessDigest": "9be8ce3938d43980ca0bc62b813a985987589331e920a02f19f9855b569966cd",
+        "priorResultDigest": "dc1d64f219f5864312038dd5423c5387d7b678429e0f0a2a763534fb1dceed68",
+        "archive": "verification-history/1791131768822",
+        "at": "2026-10-04T16:36:09.055Z",
+        "newModelTurn": false
+      },
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T15:55:03.038Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "item-price",
+      "title": "아이템 가격만 수정",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "83dd8a0b2e3d08d3241379bff2d932fa31d661143d626a30d08c391bf69cd048",
+      "startedAt": "2026-10-04T16:07:26.624Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-price",
+              "ok": true,
+              "detail": "동일 회복약 가격 30"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"deedbf2d-f285-4a36-93f9-49ab3c072330\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4/item-price/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"501eeba8a5f6635b888c0e136d153fe81f1344db773820c291230f3f4610b0ee\",\"reloadedSha256\":\"501eeba8a5f6635b888c0e136d153fe81f1344db773820c291230f3f4610b0ee\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "修改 카드의 회복약 그림과 가격 30을 확인했다. DB 상세 화면의 가격 30, HP 50 회복, 이름·설명·소모 방식이 읽힌다. 렌더 완료 재로드 지도와 패널이 정상이며 모달 글자·컨트롤에 잘림이 없다. 다른 맵 변경은 보존 게이트에서 별도 실패다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "database.png"
+          ]
+        }
+      },
+      "elapsedMs": 124479,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130173711
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "c474d158-de04-4fcf-85ed-87154b1a651e",
+          "at": 1791130179188
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "c474d158-de04-4fcf-85ed-87154b1a651e",
+          "at": 1791130184642
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130218588
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130218687
+        }
+      ],
+      "projectId": "deedbf2d-f285-4a36-93f9-49ab3c072330",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4/item-price/project",
+      "finishedAt": "2026-10-04T16:11:38.810Z",
+      "status": "fail",
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T16:01:14.240Z",
+          "status": "blocked",
+          "nativeInput": false
+        },
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4",
+          "startedAt": "2026-10-04T16:07:26.624Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "map-rename",
+      "title": "맵 이름만 수정",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+      "startedAt": "2026-10-04T16:03:12.816Z",
+      "gates": {
+        "execution": {
+          "status": "blocked",
+          "detail": "모델 요청 영수증은 있으나 원본 SSE done 기록이 누락되어 실행 증거를 완성할 수 없다. 이전 실행기 재시작 관측 장애는 보존·요구 판정과 구분한다."
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-map-renamed",
+              "ok": true,
+              "detail": "동일 맵 ID의 이름 교체"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"c36de1f6-b8d0-4549-b7ac-1c65464b5a15\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/map-rename/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"029a44b30fdf079d7f172d9077a0bd53c8f338c3da804c4e11f1a7b9c76ebc1a\",\"reloadedSha256\":\"029a44b30fdf079d7f172d9077a0bd53c8f338c3da804c4e11f1a7b9c76ebc1a\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "새 저장 결과를 렌더 완료 후 직접 읽었다. 왼쪽 맵 선택기와 오른쪽 조수 대상 이름이 모두 새벽 마을로 표시된다. E 마커 네 개와 지도·패널은 정상으로 보인다. 다른 맵 타일 변경은 보존 게이트 실패로 남긴다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png"
+          ]
+        }
+      },
+      "elapsedMs": 109759,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129926219
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "71c461d9-221d-45c1-88ef-82fd27018148",
+          "at": 1791129931477
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "71c461d9-221d-45c1-88ef-82fd27018148",
+          "at": 1791129937471
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129964359
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791129964482
+        }
+      ],
+      "projectId": "c36de1f6-b8d0-4549-b7ac-1c65464b5a15",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/map-rename/project",
+      "finishedAt": "2026-10-04T16:07:16.716Z",
+      "status": "fail",
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T16:03:12.816Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "inn-price",
+      "title": "숙박 요금과 안내 일치",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+      "startedAt": "2026-10-04T16:07:16.748Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "inn-price",
+              "ok": true,
+              "detail": "실제 숙박 명령 25G"
+            },
+            {
+              "id": "inn-message",
+              "ok": true,
+              "detail": "안내 25G·옛 요금 제거"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "price-dialogue",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "offer",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "decline",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "offer-again",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "accept",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-price-dialogue.png",
+            "runtime/04-offer.png",
+            "runtime/05-decline.png",
+            "runtime/06-offer-again.png",
+            "runtime/07-accept.png"
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"c282f743-be68-490a-a3df-68271b634c2c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inn-price/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"7552fed95a2a638d777250b5548a50c63ebde6d61ab38f89f966bbc31ba7abd2\",\"reloadedSha256\":\"7552fed95a2a638d777250b5548a50c63ebde6d61ab38f89f966bbc31ba7abd2\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "변경 결과와 재로드의 여관 E 마커·주변 지도는 정상이다. 플레이 안내의 바뀐 25와 여관 선택 창의 하룻밤 25G, 소지금 100→75를 읽었다. 예·아니오·회복 요약·인물 도트에 잘림이나 가림이 없다. 안내 그림은 타자 출력 중 캡처되어 뒤쪽 문장이 흐린 상태이며 전체 문자열과 차감은 별도 플레이 관측으로 확인했다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/03-price-dialogue.png",
+            "runtime/04-offer.png"
+          ]
+        }
+      },
+      "elapsedMs": 118449,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130166369
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "1a73293b-7dfa-40f3-8e3e-88233e93161b",
+          "at": 1791130171808
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "1a73293b-7dfa-40f3-8e3e-88233e93161b",
+          "at": 1791130176473
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130207110
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130207158
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130207163
+        }
+      ],
+      "projectId": "c282f743-be68-490a-a3df-68271b634c2c",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inn-price/project",
+      "finishedAt": "2026-10-04T16:13:00.153Z",
+      "status": "fail",
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T16:07:16.748Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "dialogue-choice",
+      "title": "선택지 양쪽과 취소",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+      "startedAt": "2026-10-04T16:13:00.193Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "two-choices",
+              "ok": true,
+              "detail": "요청 질문·선택지 두 개·순서(선행 질문 대사도 허용)"
+            },
+            {
+              "id": "both-branches",
+              "ok": true,
+              "detail": "두 분기에 서로 다른 정확한 대사"
+            },
+            {
+              "id": "no-reward",
+              "ok": true,
+              "detail": "보상·전역 상태 변경·이동 없음(취소 분기 포함)"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"27ba5ccd-8471-4825-ad61-00423eab3741\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/dialogue-choice/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"8416b40f68059d69f27a8d8bf7ddca2090d597f813849adcfe2a9bc239f9b80f\",\"reloadedSha256\":\"8416b40f68059d69f27a8d8bf7ddca2090d597f813849adcfe2a9bc239f9b80f\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "fail",
+          "reviewer": "codex-evidence-review",
+          "notes": "실제 변경·재로드 지도와 새 플레이 그림을 읽었다. 동문·여관 선택지 두 개와 여관에서 쉬자 대사가 정상으로 보인다. 실제 Esc 취소 뒤 동문에서 만나자 대화창과 다음 표시가 남아 종료 요구의 시각 실패다. 질문의 선행 대사 표현은 허용했다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/04-choices.png",
+            "runtime/08-inn-branch.png",
+            "runtime/11-cancel.png"
+          ]
+        },
+        "runtime": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "question",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "choices",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "east-branch",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "east-close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "reopen",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "inn-branch",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "inn-close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "reopen-cancel",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "cancel",
+              "ok": false,
+              "detail": "op waitFor 실패: page.waitForFunction: Timeout 10000ms exceeded.; testid 잔존: dialogue-box"
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-question.png",
+            "runtime/04-choices.png",
+            "runtime/05-east-branch.png",
+            "runtime/06-east-close.png",
+            "runtime/07-reopen.png",
+            "runtime/08-inn-branch.png",
+            "runtime/09-inn-close.png",
+            "runtime/10-reopen-cancel.png",
+            "runtime/11-cancel.png"
+          ]
+        }
+      },
+      "elapsedMs": 126263,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130520829
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "7a4eaa9e-3672-4344-9b98-b613469d6a71",
+          "at": 1791130526483
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "7a4eaa9e-3672-4344-9b98-b613469d6a71",
+          "at": 1791130531590
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130571765
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130571799
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130571802
+        }
+      ],
+      "projectId": "27ba5ccd-8471-4825-ad61-00423eab3741",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/dialogue-choice/project",
+      "finishedAt": "2026-10-04T16:19:49.734Z",
+      "status": "fail",
+      "verification": {
+        "harnessDigest": "5a42f1d9ffad4e0a7f7bef46ace10ce0cb7b57f67e1adebc8d76d6a6368d7ae4",
+        "priorResultDigest": "f7ea8b7a76af1b7c8f95eba566f633fa55ea1ab76a921f26b1c14bda9efbe571",
+        "archive": "verification-history/1791131398672",
+        "at": "2026-10-04T16:29:58.829Z",
+        "newModelTurn": false
+      },
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T16:13:00.193Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "reward-once",
+      "title": "보상 한 번과 재대화",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+      "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+      "startedAt": "2026-10-04T16:19:49.781Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "원본 trace.json의 실제 입력과 done"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "reward-25",
+              "ok": true,
+              "detail": "실제 25G 보상 명령"
+            },
+            {
+              "id": "first-and-repeat-lines",
+              "ok": true,
+              "detail": "첫 대화·재대화 문장"
+            },
+            {
+              "id": "guarded-reward",
+              "ok": true,
+              "detail": "보상 재실행 방지 구조 존재; 실제 반복 지급은 플레이로 별도 검사"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "fail",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": false,
+              "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_ember_village.events.0.pages.0.footprint, maps.map_ember_village.events.0.pages.0.animationType, maps.map_ember_village.events.0.pages.1.animationType, maps.map_ember_village.events.0.pages.1.footprint, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13"
+            }
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"ec1a8fda-15d8-409e-bc35-3c4a3830dd9c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/reward-once/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"1dd7bdeee3d5e8fb2deb2cb9e4fb991bb603dcdd993224b6d0d9d3082d79f196\",\"reloadedSha256\":\"1dd7bdeee3d5e8fb2deb2cb9e4fb991bb603dcdd993224b6d0d9d3082d79f196\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-evidence-review",
+          "notes": "변경·재로드 지도와 미루 E 마커가 정상이다. 플레이 첫 대화 처음 선물이야, 재대화 이미 선물을 줬어, 맵 재진입 뒤 이미 선물을 줬어를 타자 완료 그림에서 읽었다. 동일 캐릭터와 대화창이 잘림·가림 없이 표시된다. 125G 유지와 페이지·다른 맵 보존은 각각 플레이·보존 게이트에서 따로 판정했다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/03-first-message.png",
+            "runtime/05-repeat-message.png",
+            "runtime/11-after-reentry.png"
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-message",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-reward",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-message",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-no-reward",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "walk-to-exit",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "leave-map",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "return-map",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "walk-back",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "after-reentry",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "after-reentry-no-reward",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-first-message.png",
+            "runtime/04-first-reward.png",
+            "runtime/05-repeat-message.png",
+            "runtime/06-repeat-no-reward.png",
+            "runtime/07-walk-to-exit.png",
+            "runtime/08-leave-map.png",
+            "runtime/09-return-map.png",
+            "runtime/10-walk-back.png",
+            "runtime/11-after-reentry.png",
+            "runtime/12-after-reentry-no-reward.png"
+          ]
+        }
+      },
+      "elapsedMs": 138812,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791130939566
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "7d2a1e1d-7fd5-45e6-b6ec-5c86bd35c4e8",
+          "at": 1791130945920
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "7d2a1e1d-7fd5-45e6-b6ec-5c86bd35c4e8",
+          "at": 1791130951022
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791131002555
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791131002599
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791131002603
+        }
+      ],
+      "projectId": "ec1a8fda-15d8-409e-bc35-3c4a3830dd9c",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/reward-once/project",
+      "finishedAt": "2026-10-04T16:26:24.964Z",
+      "status": "fail",
+      "verification": {
+        "harnessDigest": "5a42f1d9ffad4e0a7f7bef46ace10ce0cb7b57f67e1adebc8d76d6a6368d7ae4",
+        "priorResultDigest": "8d329248d01da813b1dd604dc635de9ecd85a92ea4df5d3ef69ef33cb81be6af",
+        "archive": "verification-history/1791131488628",
+        "at": "2026-10-04T16:31:28.800Z",
+        "newModelTurn": false
+      },
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+          "startedAt": "2026-10-04T16:19:49.781Z",
+          "status": "fail",
+          "nativeInput": true
+        }
+      ]
+    }
+  ]
+}

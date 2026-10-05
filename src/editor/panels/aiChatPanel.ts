@@ -2351,7 +2351,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 거절하지 않고 대기열로 보낸다(2026-10-03 사용자: 맵당 AI 하나, 맵마다 대기열, 여러 맵은 동시에).
     const runMapId = editorState.get().currentMapId ?? store.getCurrent().startMapId ?? null;
     const mapKey = runMapId ?? "__project__";
-    const exclusive = handoff?.team === true || /^\/(?:team|pi\s+team)(?:\s|$)/u.test(text)
+    const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
+    const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text);
     const queue = mapRunQueue();
     if (turnBusy || queue.forMap(mapKey).length > 0 || (exclusive && queue.running().length > 0)) {
@@ -2377,8 +2378,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     try {
       // 조수 채팅의 실행 경로는 Pi 하나다(2026-09-11). 질문·계획은 자율성 다이얼이 Pi 노브
       // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
-      // 명시 `/pi …`·`/team …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다 — 사용자가 직접 쓴 명령이다.
-      const explicit = parsePiCommand(text, store.getCurrent(), editorState.get().currentMapId ?? null);
+      // 명시 `team …`·`/team …`·`/pi …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다.
       if (explicit) {
         await runPiTurn(explicit, shown, null, { slotClaimed: true, ...(handoff ? { sentText: text } : {}) });
         return;

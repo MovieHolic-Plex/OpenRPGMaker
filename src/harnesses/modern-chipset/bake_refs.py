@@ -1410,6 +1410,9 @@ def finalize():
 
 
 CATS_OUT = finalize()
+import parking_bundle
+parking_reference = parking_bundle.references(ROOT)
+if parking_reference: CATS_OUT.append(parking_reference)
 os.makedirs(MD_DIR, exist_ok=True)
 for fn in os.listdir(MD_DIR):
     if fn.endswith('.md'): os.remove(os.path.join(MD_DIR, fn))

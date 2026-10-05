@@ -1,0 +1,12 @@
+{
+  "concept": "underground-parking-garage",
+  "artRevision": 6,
+  "canvas": [
+    224,
+    112
+  ],
+  "layoutJob": 659,
+  "nativeJob": 660,
+  "validation": "Actual layout gate accepted all seven frozen criteria and kept brightness/extra compaction findings as warnings. Native generation started; final image review pending.",
+  "tests": "Python AST parsing and git diff --check only; no vitest/gates/typecheck suite."
+}

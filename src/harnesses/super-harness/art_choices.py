@@ -5,6 +5,7 @@ from pathlib import Path
 
 import store
 import art_layout
+import art_acceptance
 
 
 def digest(path):
@@ -54,7 +55,9 @@ def prepare(data, cid):
         receipt_path = verified(root, receipt_ref)
         receipt = read(receipt_path)
         if receipt.get('harness') == 'modern-chipset' and receipt.get('contractSha256'):
-            contract_path = safe(root, 'harness-data/modern-chipset-parking/parking-contract.json')
+            # Expanded scenes retain their own immutable contract; do not make
+            # them overwrite the small scene's selected source to be collected.
+            contract_path = safe(root, receipt.get('contractPath', 'harness-data/modern-chipset-parking/parking-contract.json'))
             if digest(contract_path) != receipt['contractSha256']:
                 raise ValueError('주차장 부품 명세가 검수 이후 바뀌었습니다.')
             contract = read(contract_path)
@@ -176,6 +179,11 @@ def view(data, cid):
                     all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
                         and len(str(checks[k].get('evidence', '')).strip()) >= 12
                         for k in art_layout.SCENE_CHECKS))
+                if context_ok:
+                    try:
+                        art_acceptance.validate(context, art_acceptance.contract(Path(data) / 'concepts' / cid), art_layout.SCENE_CHECKS)
+                    except (ValueError, KeyError, TypeError):
+                        context_ok = False
                 if not context_ok:
                     explanation = context.get('reasons', []) if matches else []
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])
@@ -200,12 +208,22 @@ def view(data, cid):
             g['candidates'].append(item)
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
+    installation = None
+    installation_path = Path(data) / 'concepts' / cid / 'art-installation.json'
+    if installation_path.is_file() and groups and count == len(groups):
+        receipt = read(installation_path)
+        selected = {g['id']: next(i['fingerprint'] for i in g['candidates'] if i['selected']) for g in output}
+        if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
+                and receipt.get('publicRegistered') is True and receipt.get('runtimePassed') is True
+                and receipt.get('projectId') and receipt.get('sha256')):
+            installation = receipt
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
             'maxRevisions': feedback.get('limits', {}).get('maxRevisions', int(store.setting('max_art_revisions'))),
             'repairPolicy': feedback.get('policy', {}),
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
-            'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}
+            'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
+            'installation': installation}
 
 
 def choose(data, cid, body, *, delegated=False):

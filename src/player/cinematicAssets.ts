@@ -4,6 +4,7 @@ import type { CinematicSequence, Project } from '@/project/types';
 type PreparedImage = { url: string; width: number; height: number };
 export type CinematicAssets = {
   prepare: (url: string) => Promise<PreparedImage>;
+  prepareAudio: (url: string) => Promise<string>;
   warm: (project: Project, sequence: CinematicSequence | undefined, index?: number) => void;
   dispose: () => void;
 };
@@ -12,6 +13,24 @@ export type CinematicAssets = {
 export function createCinematicAssets(): CinematicAssets {
   const lifetime = new AbortController();
   const entries = new Map<string, { promise: Promise<PreparedImage>; blobUrl?: string; ready?: boolean }>();
+  const audioEntries = new Map<string, { promise: Promise<string>; blobUrl?: string }>();
+  const prepareAudio = (url: string): Promise<string> => {
+    if (lifetime.signal.aborted) return Promise.reject(new DOMException('Closed', 'AbortError'));
+    const cached = audioEntries.get(url);
+    if (cached) return cached.promise;
+    const entry: { promise: Promise<string>; blobUrl?: string } = { promise: Promise.resolve(url) };
+    entry.promise = (async () => {
+      if (/^(data:|blob:)/u.test(url)) return url;
+      const signal = AbortSignal.any([lifetime.signal, AbortSignal.timeout(20_000)]);
+      const response = await fetch(url, { signal, priority: 'low' } as RequestInit);
+      if (!response.ok) throw new Error(`음악을 준비할 수 없습니다 (${response.status}).`);
+      const blob = await response.blob(); signal.throwIfAborted();
+      entry.blobUrl = URL.createObjectURL(blob);
+      return entry.blobUrl;
+    })().catch(error => { audioEntries.delete(url); throw error; });
+    audioEntries.set(url, entry);
+    return entry.promise;
+  };
   let active = 0;
   const queue: Array<() => void> = [];
   const drain = (): void => {
@@ -71,12 +90,19 @@ export function createCinematicAssets(): CinematicAssets {
   };
   return {
     prepare,
+    prepareAudio,
     warm(project, sequence, index = 0) {
       if (!sequence?.enabled || lifetime.signal.aborted) return;
+      if (sequence.musicResourceId) {
+        const url = resolveAssetResourceUrl(sequence.musicResourceId, { project });
+        if (url) void prepareAudio(url).catch(() => undefined);
+      }
       for (const scene of sequence.scenes.slice(index, index + 2)) {
         if (scene.kind !== 'image') continue;
-        const url = resolveAssetResourceUrl(scene.resourceId, { project });
-        if (url) void prepare(url).catch(() => undefined);
+        for (const id of [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) {
+          const url = resolveAssetResourceUrl(id, { project });
+          if (url) void prepare(url).catch(() => undefined);
+        }
       }
     },
     dispose() {
@@ -85,6 +111,8 @@ export function createCinematicAssets(): CinematicAssets {
       drain();
       for (const entry of entries.values()) if (entry.blobUrl) URL.revokeObjectURL(entry.blobUrl);
       entries.clear();
+      for (const entry of audioEntries.values()) if (entry.blobUrl) URL.revokeObjectURL(entry.blobUrl);
+      audioEntries.clear();
     },
   };
 }

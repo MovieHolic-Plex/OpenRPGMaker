@@ -338,3 +338,44 @@ write_json에서 os.fspath로 경로를 정규화한다. 결과 처리 예외의
 native 실행 실패가 원인처럼 남지 않게 한다. 기존 이미지/검수는 보존하고 합격 보존·전이만 재실행한다.
 또한 이전 receipt 생성 실패의 원인인 registration-source.json을 주차장 제작 전 필수 해시에 포함한다.
 누락은 그림 제작 전에 드러나며, 등록 메타데이터 존재가 공용 설치 승인을 뜻하지 않는다.
+
+### 고정 합격 기준·권고 분리·판정 충돌 재검수 (2026-10-05)
+
+사용자가 주차장에 누적 10회와 감독의 후보 선택을 위임한 뒤, 동일 도면이 실행 코드 해시 변경만으로
+6축 PASS에서 비례/공간 사용/구성 FAIL로 뒤집혔다. 횟수 확대만으로 해결되지 않아 합격 계약을 추가했다.
+
+- 개념의 `art-acceptance.json`을 감독이 `art-output/acceptance-contract.json`에 복사하고 실행 요청에
+  경로/해시를 넣는다. 준비·도면·최종 검수가 같은 계약을 읽는다. 주차장 표본 원본은
+  `harness-data/super-harness/acceptance/parking-small-v1.json`이다. 계약 없는 개념은 기존 경로를 따른다.
+- `art_acceptance.py`는 모든 필수 조건별 `criterionResults`와 연결된 축의 PASS/FAIL 일치를 검증한다.
+  `acceptanceSha256`이 현재 계약과 다르면 승인하지 않는다. `warnings`는 수정 필수 목록과 분리한다.
+  이전 지적도 계약상 권고이면 전후 근거를 남겨 `advisory`로 분류한다. 시점/동선/접합 결함을 권고로
+  숨길 수 없도록 해당 필수 조건 판정은 별도로 모두 요구한다.
+- 도면 내용의 `semanticFingerprint`를 실행 출처 해시와 별도로 보존한다. 같은 계약/도면의 PASS를
+  FAIL로 뒤집으면 이전 PASS와 새 FAIL을 보존하고 독립 재판정 1회를 거친다. 최종 그림 FAIL도
+  독립 재판정 1회 후에만 수정 회차를 소비한다. 재판정은 현재 파일/이미지 해시와 계약을 다시 검사하며
+  `adjudication.decision/evidence`를 남긴다. 단순히 기존 PASS를 재사용하거나 FAIL을 자동 승격하지 않는다.
+- 주차면 길이·피치·화면 크기의 허용 범위는 게임 표본의 명시적 설계 조건이다. 실세계 법규나 사진에서
+  실측한 값으로 주장하지 않는다. 후보 완료와 공용 등록/정본 저장 완료는 따로 보고한다.
+
+### 선택 구역의 설치 완료 근거
+
+`art-installation.json`은 현재 선택 fingerprint 전체와 정본 project id/SHA,
+공용 등록·SQLite 재로드·실제 런타임 확인 결과를 묶는다. 선택이 바뀌면 설치 표시를 숨긴다.
+화면은 이 근거가 있을 때 ‘선택 구역 완성 · 공용 등록·맵 저장 완료’로 표시한다.
+이 표시는 원래의 더 큰 기획·재료 조사·개념 카드 전체를 done으로 우회시키지 않는다.
+주차장 첫 구역은 두 면이고, 원래 12면 시설 계획은 별도 범위로 남는다.
+
+### 확장판 미완성 → 실제 수정 큐 (2026-10-05)
+
+확장판은 별도 검수 파일에 assembly PASS/facility INCOMPLETE를 남겼지만 art 큐에 들어가지 않아
+수정이 실행되지 않았다. `scene_followup.py`가 현재 이미지·기획 해시, 모든 지적별 수정 주문,
+새 범위의 합격 계약을 확인하고 기존 art 파이프라인으로 연결한다. 도입 표본은 modern-chipset의
+`parking-followup` 단계다. 기존 선택/설치/계약은 해시별 history에 보존한다.
+
+- SQLite scene_followups가 동일 요청의 중복 소비를 막는다. 기존 누적 art_revision과 상한을 유지한다.
+- `completionRepairs`는 다음 세대의 반려에도 남는다. 대상 그룹 교체로 비교를 생략할 수 없다.
+- required 비교 항목은 advisory/deferred로 낮출 수 없다. unresolved가 있으면 PASS 불가다.
+- `requiresFacilityVerdict` 계약의 최종 조립 판정은 facilityVerdict와 필수 조건 판정이 일치해야 한다.
+  도면의 기하학적 가능성이나 보행 PASS는 시설 시각 완료를 대신하지 않는다.
+- 그림 저작은 기존 전용 워크트리/native 하네스만 쓴다. 전역 pause를 풀어 다른 개념을 실행하지 않는다.

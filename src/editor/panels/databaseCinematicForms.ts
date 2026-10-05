@@ -1,4 +1,5 @@
 import { cinematicPresentationForm } from './databaseCinematicPresentationForm';
+import { cinematicLayersForm } from './databaseCinematicLayersForm';
 import { store } from "@/project/store";
 import type { DatabaseCinematicActions } from "@/editor/panels/databaseCinematicActions";
 import {
@@ -148,6 +149,7 @@ export function cinematicSceneForm(options: FormContext & {
       if (usable()) actions.setDirection(scene.id, { ...scene.direction, transition: { kind: transition.value as 'cut' | 'dissolve' | 'fade' | 'flash', durationMs: transition.value === 'cut' ? 0 : 500 } });
     });
     children.push(field('장면 전환', transition));
+    if (scene.direction?.layers?.length) children.push(cinematicLayersForm(scene, actions, usable));
     if (scene.direction) children.push(note(`장면 연출: ${scene.direction.camera ? '초점 이동 · ' : ''}${scene.direction.effects?.map(effect => (({ godRays: '빛내림', glow: '발광', motes: '입자', mist: '안개' } as Record<string, string>)[effect.kind] ?? effect.kind)).join(' · ') || ''}${scene.direction.soundResourceId ? ' · 효과음' : ''}`));
   }
   children.push(cinematicPresentationForm({ id: scene.id, actions, usable, redraw }));
