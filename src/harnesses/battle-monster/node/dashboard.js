@@ -3,15 +3,18 @@ const $ = id => document.getElementById(id);
 const token = document.querySelector('meta[name="review-token"]').content;
 let items = [], selected = null, filter = 'pending', busy = false;
 let playing = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-let rendered = '', modification = null, toastTimer;
-const labels = {pending:'검토 대기',allow:'Allow · 보관됨',modify:'Modify · 수정 요청',deny:'Deny · 제외됨'};
+let rendered = '', modification = null, toastTimer, uiVersion = '';
+const restoredFilter = sessionStorage.getItem('monster-review-filter');
+if (['pending','allow','deny','history'].includes(restoredFilter)) filter = restoredFilter;
+const labels = {pending:'검토 대기',allow:'Allow · 선택 반영됨',modify:'Modify · 수정 요청',deny:'Deny · 제외됨'};
 const imageCache = new Map();
 function loadImage(src) {
   if (!imageCache.has(src)) imageCache.set(src,new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src;}));
   return imageCache.get(src);
 }
 function row(){return items.find(item=>item.key===selected);}
-function visible(){return items.filter(item=>filter==='history'?['modify','deny'].includes(item.choice):item.choice===filter);}
+function visible(){return items.filter(item=>filter==='history'?(item.choice==='modify'||(item.choice==='allow'&&item.active===false)):filter==='allow'?item.choice==='allow'&&item.active!==false:item.choice===filter);}
+function chooseFilter(value){filter=value;sessionStorage.setItem('monster-review-filter',filter);selected=null;render();}
 function draw(canvas,img,pose,size,scale=3){
   canvas.width=size*scale;canvas.height=size*scale;
   const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -47,39 +50,53 @@ function toast(message,error=false){
   $('toast').textContent=message;$('toast').setAttribute('role',error?'alert':'status');$('toast').classList.add('visible');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4500);
 }
-function stateText(item){return item.working?(item.choice==='modify'?'AI가 수정 중':'결과 준비 중'):item.failed?'작업을 다시 요청해 주세요':labels[item.choice];}
+function stateText(item){return item.choice==='allow'&&item.active===false?'Allow · 이전에 선택한 버전':labels[item.choice];}
 async function render(){
   const pending=items.filter(item=>item.choice==='pending').length;
-  $('pending-count').textContent=pending;$('allow-count').textContent=items.filter(item=>item.choice==='allow').length;
+  const allowed=items.filter(item=>item.choice==='allow'&&item.active!==false).length;
+  $('pending-count').textContent=pending;$('allow-count').textContent=allowed;
+  $('deny-count').textContent=items.filter(item=>item.choice==='deny').length;
+  $('selection-summary').textContent=`Allow ${allowed}종 선택 · Deny ${$('deny-count').textContent}개 제외 · 검토 대기 ${pending}개`;
+  $('list-empty').textContent=filter==='allow'?'선택한 몬스터가 없습니다.':filter==='deny'?'제외한 결과가 없습니다.':filter==='history'?'지난 버전이나 수정 요청이 없습니다.':'검토할 결과가 없습니다.';
+  $('empty-title').textContent=filter==='pending'?'선택 반영 완료':'결과가 없습니다';
+  $('empty-description').textContent=filter==='pending'?`선택한 ${allowed}종은 Allow에, 제외한 결과는 Deny에 반영됐습니다.`:'다른 목록에서 결과를 확인할 수 있습니다.';
+  $('show-allowed').hidden=filter!=='pending'||!allowed;
   document.querySelectorAll('[data-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===filter)));
   const candidates=visible();
   if(!candidates.some(item=>item.key===selected))selected=candidates[0]?.key??null;
   $('list').replaceChildren();$('list-empty').hidden=!!candidates.length;
   for(const item of candidates){
-    const button=document.createElement('button');button.type='button';button.className='result-card';button.dataset.key=item.key;button.setAttribute('aria-pressed',String(item.key===selected));button.setAttribute('aria-label',`${item.name} ${stateText(item)}`);
+    const button=document.createElement('button');button.type='button';button.className='result-card';button.dataset.key=item.key;button.dataset.choice=item.choice;button.setAttribute('aria-pressed',String(item.key===selected));button.setAttribute('aria-label',`${item.name} ${stateText(item)}`);
     const canvas=document.createElement('canvas');canvas.width=64;canvas.height=64;canvas.setAttribute('aria-hidden','true');
     const text=document.createElement('span');const name=document.createElement('span');name.className='card-name';name.textContent=item.name;
-    const status=document.createElement('span');status.className='card-status';status.textContent=stateText(item);text.append(name,status);button.append(canvas,text);
+    const status=document.createElement('span');status.className='card-status';status.textContent=stateText(item);text.append(name,status);
+    if(item.working||item.failed){const task=document.createElement('span');task.className='card-task';task.textContent=item.failed?'파일 준비 실패':item.choice==='modify'?'AI 수정 중':'받을 파일 준비 중';text.append(task);}
+    button.append(canvas,text);
     button.addEventListener('click',()=>{selected=item.key;render();});$('list').append(button);
     loadImage(item.image).then(im=>draw(canvas,im,0,item.cell,1)).catch(()=>{});
   }
   const item=row();$('empty-view').hidden=!!item;$('result-view').hidden=!item;
   if(!item)return;
-  $('name').textContent=item.name;$('edition').textContent=item.parent?'수정된 결과':item.phase==='idle'?'새 그림':'새 결과';$('choice').textContent=labels[item.choice];
+  $('name').textContent=item.name;$('edition').textContent=item.parent?'수정된 결과':item.phase==='idle'?'새 그림':'새 결과';$('choice').textContent=stateText(item);$('choice').dataset.choice=item.choice;
   renderMotions(item);$('skill').textContent=item.skill?'스킬 · '+item.skill:'';
   $('note').hidden=!item.note||['allow','deny'].includes(item.note);$('note').textContent=item.note?'수정 요청 · '+item.note:'';
   $('progress').hidden=!item.working&&!item.failed;
-  $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':'선택은 저장됐습니다. 결과를 받을 수 있도록 준비 중입니다.';
-  for(const id of ['allow','modify','deny'])$(id).disabled=busy||item.working||(id==='allow'&&!item.ready);
+  $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':'Allow 선택은 반영됐습니다. 받을 파일을 준비 중이며, Modify·Deny로 선택을 바꿀 수 있습니다.';
+  for(const id of ['allow','modify','deny'])$(id).disabled=busy||(id==='allow'&&(!item.ready||(item.choice==='allow'&&item.active!==false&&!item.failed)))||(id==='deny'&&item.choice==='deny');
+  $('allow').querySelector('span').textContent=item.choice==='allow'&&item.active!==false&&!item.failed?'선택 반영됨':'이 결과 선택';
   $('download').hidden=!item.download;$('download').href=item.download||'';$('download').download=item.name+'.zip';
   $('play').textContent=playing?'일시 정지':'움직임 재생';$('play').setAttribute('aria-pressed',String(playing));
 }
 async function refresh(force=false){
   const response=await fetch('/api/state',{cache:'no-store'});if(!response.ok)throw Error('결과를 불러오지 못했습니다.');
-  const data=await response.json();const fingerprint=JSON.stringify(data);
+  const data=await response.json();
+  if(uiVersion&&data.uiVersion&&uiVersion!==data.uiVersion&&!busy&&!$('modify-dialog').open){location.reload();return;}
+  uiVersion=data.uiVersion??uiVersion;
+  $('last-decision').textContent=data.lastDecision?`마지막 반영 · ${data.lastDecision.name} ${data.lastDecision.action.toUpperCase()}`:'';
+  const fingerprint=JSON.stringify(data);
   const count=data.working+(data.making??0);
-  $('activity').textContent=count?`AI가 새 결과 ${count}개를 준비 중`:'그림과 움직임을 보고 골라주세요';
-  if(fingerprint!==rendered||force){if(!rendered&&!data.items.some(i=>i.choice==='pending')&&data.items.some(i=>i.choice==='allow'))filter='allow';items=data.items;rendered=fingerprint;await render();}
+  $('activity').textContent=count?`작업 ${count}개 진행 중 · 선택은 즉시 반영`:'그림과 움직임을 보고 골라주세요';
+  if(fingerprint!==rendered||force){if(!rendered&&!restoredFilter&&!data.items.some(i=>i.choice==='pending')&&data.items.some(i=>i.choice==='allow'))filter='allow';items=data.items;rendered=fingerprint;await render();}
 }
 function requestId(){return crypto.randomUUID?.()??'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const n=Math.floor(Math.random()*16);return(c==='x'?n:(n&3|8)).toString(16);});}
 async function decide(action,note='',target=row()){
@@ -90,19 +107,20 @@ async function decide(action,note='',target=row()){
     const response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':token},body:JSON.stringify({key:target.key,version:target.version,action,note,requestId:requestId()})});
     const result=await response.json();if(!response.ok)throw Error(result.error||'선택을 저장하지 못했습니다.');
     if($('modify-dialog').open)$('modify-dialog').close();
-    toast(action==='allow'?'Allow · 결과를 보관했습니다':action==='modify'?'Modify · AI에 수정 요청을 보냈습니다':'Deny · 검토 목록에서 제외했습니다');
+    toast(action==='allow'?'Allow · 선택한 몬스터에 반영했습니다':action==='modify'?'Modify · AI에 수정 요청을 보냈습니다':'Deny · 제외 목록에 반영했습니다');
     selected=null;await refresh(true);
   }catch(error){toast(error.message,true);await refresh(true).catch(()=>{});}
   finally{busy=false;submit.disabled=false;render();}
 }
-function openModify(){const item=row();if(!item||busy||item.working)return;modification={...item};$('instruction').value=item.choice==='modify'?item.note:'';$('modify-dialog').showModal();$('instruction').focus();}
+function openModify(){const item=row();if(!item||busy)return;modification={...item};$('instruction').value=item.choice==='modify'?item.note:'';$('modify-dialog').showModal();$('instruction').focus();}
 $('allow').addEventListener('click',()=>decide('allow'));
 $('deny').addEventListener('click',()=>decide('deny'));
 $('modify').addEventListener('click',openModify);
 $('cancel-modify').addEventListener('click',()=>$('modify-dialog').close());
 $('modify-form').addEventListener('submit',event=>{event.preventDefault();const text=$('instruction').value.trim();if(!text){$('instruction').focus();return;}decide('modify',text,modification);});
 $('play').addEventListener('click',()=>{playing=!playing;$('play').textContent=playing?'일시 정지':'움직임 재생';$('play').setAttribute('aria-pressed',String(playing));document.querySelectorAll('.motion-gallery img').forEach(im=>{im.src=playing?im.dataset.gif:im.dataset.poster;});});
-document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;selected=null;render();}));
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{chooseFilter(button.dataset.filter);}));
 document.addEventListener('keydown',event=>{if(event.altKey||event.ctrlKey||event.metaKey||event.repeat||$('modify-dialog').open||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)||document.activeElement.isContentEditable)return;const id={a:'allow',m:'modify',d:'deny'}[event.key.toLowerCase()];if(id&&!$(id).disabled){event.preventDefault();$(id).click();}});
+$('show-allowed').addEventListener('click',()=>chooseFilter('allow'));
 refresh().catch(error=>toast(error.message,true));
 setInterval(()=>{if(!busy&&!$('modify-dialog').open)refresh().catch(()=>{$('activity').textContent='연결을 다시 확인하고 있습니다…';});},3000);

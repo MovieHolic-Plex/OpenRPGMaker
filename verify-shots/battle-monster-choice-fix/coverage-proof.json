@@ -1,0 +1,62 @@
+{
+  "packSeconds": 3.699,
+  "noNewModelJobs": true,
+  "exactSubsetCoverage": {
+    "idle": {
+      "reviewedPhase": "suite",
+      "jobId": "968bcb71-a1c1-49c7-b532-20216d62c53b",
+      "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+      "sources": {
+        "brief.json": "0d4f55baee6237702596bc6776a8d0f257cce34083a6864672837cf82110699b",
+        "source/palette.json": "b0cb27c1c2f343205ffab333cadeb2ff08966c23de87d9475793304dc8dc155e",
+        "source/poses/idle_a.pxgrid": "685d0278fc5c31617eefed47eb3fcf9e29a0edfcabef5d8cdf43061b98f9b817"
+      }
+    },
+    "poses": {
+      "reviewedPhase": "suite",
+      "jobId": "968bcb71-a1c1-49c7-b532-20216d62c53b",
+      "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+      "sources": {
+        "brief.json": "0d4f55baee6237702596bc6776a8d0f257cce34083a6864672837cf82110699b",
+        "source/palette.json": "b0cb27c1c2f343205ffab333cadeb2ff08966c23de87d9475793304dc8dc155e",
+        "source/poses/idle_a.pxgrid": "685d0278fc5c31617eefed47eb3fcf9e29a0edfcabef5d8cdf43061b98f9b817",
+        "source/poses/idle_b.pxgrid": "807d2c417e9f9594aa676ccfe24750f2ecba9fafd24dc7f9ba1cd8d626206ce3",
+        "source/poses/idle_c.pxgrid": "ecbaefccec1cc2b0c900687ab2868abf08e5673e3027c18e162ad80412c09464",
+        "source/poses/windup.pxgrid": "7a48c78d1aa9bd90ba74be7de703ee6326ddcc975fc8a65e090529d0bb503479",
+        "source/poses/move.pxgrid": "b70fcbbc84c9915ae2bcd317b370b194f015eb38af137e45b6340181a7b7a083",
+        "source/poses/attack.pxgrid": "e9a4dead19e6d7efeaed27e6646b69bae572a5147901af1f34646fe81637485e",
+        "source/poses/recover.pxgrid": "2bf4be71af00c86eccb5c4b4d6430eecccf44961c4a5e95b38567c095ca08fe5",
+        "source/poses/hit.pxgrid": "6a1fcd00fd2513ce78b9b088100b1b760803c8223c641f3b887b3bd48e8af3ff",
+        "source/poses/dead.pxgrid": "bad2ac153a8db2fa9084555e7d51b10f0b1403ec99b7a3615859c934a0558aee"
+      }
+    },
+    "suite": {
+      "reviewedPhase": "suite",
+      "jobId": "968bcb71-a1c1-49c7-b532-20216d62c53b",
+      "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+      "sources": {
+        "brief.json": "0d4f55baee6237702596bc6776a8d0f257cce34083a6864672837cf82110699b",
+        "source/palette.json": "b0cb27c1c2f343205ffab333cadeb2ff08966c23de87d9475793304dc8dc155e",
+        "source/poses/idle_a.pxgrid": "685d0278fc5c31617eefed47eb3fcf9e29a0edfcabef5d8cdf43061b98f9b817",
+        "source/poses/idle_b.pxgrid": "807d2c417e9f9594aa676ccfe24750f2ecba9fafd24dc7f9ba1cd8d626206ce3",
+        "source/poses/idle_c.pxgrid": "ecbaefccec1cc2b0c900687ab2868abf08e5673e3027c18e162ad80412c09464",
+        "source/poses/windup.pxgrid": "7a48c78d1aa9bd90ba74be7de703ee6326ddcc975fc8a65e090529d0bb503479",
+        "source/poses/move.pxgrid": "b70fcbbc84c9915ae2bcd317b370b194f015eb38af137e45b6340181a7b7a083",
+        "source/poses/attack.pxgrid": "e9a4dead19e6d7efeaed27e6646b69bae572a5147901af1f34646fe81637485e",
+        "source/poses/recover.pxgrid": "2bf4be71af00c86eccb5c4b4d6430eecccf44961c4a5e95b38567c095ca08fe5",
+        "source/poses/hit.pxgrid": "6a1fcd00fd2513ce78b9b088100b1b760803c8223c641f3b887b3bd48e8af3ff",
+        "source/poses/dead.pxgrid": "bad2ac153a8db2fa9084555e7d51b10f0b1403ec99b7a3615859c934a0558aee",
+        "source/actions/skill_a.pxgrid": "f428781ed2f50c30779232626be5ddfe8f7fa02cc8be1c5da42fcd7548bfaaad",
+        "source/actions/skill_b.pxgrid": "88f39dad13ab70a7b32e9805cefa34e3dd944a82a0a9da12144a251f929e7006",
+        "source/actions/skill_c.pxgrid": "0b3f1d16577bbedbb43751a4a20c0d87d4e7960ca8805d90a489407d83888b91",
+        "source/actions/poison_a.pxgrid": "b23ffe05b9f96eb62a6c092c8a517889a03248068e75ff74e841043ce145ddba",
+        "source/actions/poison_b.pxgrid": "0422b68c9784a70d6561ddc958afecbfb1691ed44c01478b719c2ea4a2bb8f9b",
+        "source/actions/stun_a.pxgrid": "465cf902f2f8c9e61f9cccb58a98c3e60424ea376f0f5ba8f0177b28061fdb7c",
+        "source/actions/stun_b.pxgrid": "cbdc85e7ff7baa4220ef221f77363b66b2b877fc1da2842b84fba6d4f200ccbd",
+        "source/actions/sleep_a.pxgrid": "8826b709dd4ae105a64bf662c36c267e7fe810f02eafa94e0f4ca8b85b939619",
+        "source/actions/sleep_b.pxgrid": "dcbc7641e83c966c81d1bc8de059dde1e3affd0785fdb285c55a869487294423"
+      }
+    }
+  },
+  "stalePaletteReviewRejected": true
+}

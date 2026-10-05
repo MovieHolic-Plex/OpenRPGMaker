@@ -50,8 +50,14 @@ class Dashboard:
                 job['state'] = 'done' if job['action'] == 'deny' else 'queued'
                 save(path, job)
             elif job['state'] == 'running':
-                job['state'] = 'queued'
+                job['state'] = 'cancelled' if job.get('supersededBy') else 'queued'
                 save(path, job)
+        jobs = self.jobs()
+        for job in jobs:
+            newer = [j for j in jobs if j['key'] == job['key'] and j['createdAt'] > job['createdAt']]
+            if newer and job['state'] in ('queued', 'recording'):
+                job.update(state='cancelled', supersededBy=max(newer, key=lambda j: j['createdAt'])['id'])
+                save(self.requests / (job['id'] + '.json'), job)
 
     def directory(self, key):
         parts = key.split('/') if isinstance(key, str) else []
@@ -118,6 +124,7 @@ class Dashboard:
         snapshot['choice'] = {'keep': 'allow', 'rework': 'modify', 'discard': 'deny'}.get(decision, 'pending')
         snapshot['version'] = sha(canonical({'bindings': snapshot['bindings'], 'latest': latest}))
         snapshot['note'] = latest['note'] if latest else snapshot.get('correction', '')
+        snapshot['decisionAt'] = latest['at'] if latest else ''
         return snapshot
 
     def state(self):
@@ -134,7 +141,7 @@ class Dashboard:
                     item = self.decorate(self.snapshot(directory))
                     related = [j for j in jobs if j['key'] == key]
                     job = max(related, key=lambda j: j['createdAt']) if related else None
-                    item['working'] = bool(job and job['state'] in ('queued', 'running', 'recording'))
+                    item['working'] = bool(job and not job.get('supersededBy') and job['state'] in ('queued', 'running', 'recording'))
                     item['failed'] = bool(job and job['state'] == 'failed')
                     item['download'] = '/api/download?id=' + job['id'] if job and job.get('pack') and item['choice'] == 'allow' else None
                     if item['parent']:
@@ -149,10 +156,33 @@ class Dashboard:
                     continue
             making = 0
             if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
-                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave'):
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave'):
                     for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
                         making += load(task)['state'] in ('queued', 'running')
-            return {'items': items, 'working': sum(j['state'] in ('queued', 'running') for j in jobs), 'making': making}
+            selected = {}
+            by_key = {i['key']: i for i in items}
+            # Replay real choices. Removing the active version never silently
+            # resurrects a previously replaced Allow; rejecting a competing
+            # pending candidate does not revoke the selected one either.
+            for decision in self.harness.ledger()['decisions']:
+                item = by_key.get(decision['candidate'])
+                if (not item or decision['phase'] != item['phase']
+                        or decision['binding'] != item['bindings'][item['phase']]):
+                    continue
+                species = item['key'].split('/')[0]
+                if decision['choice'] == 'keep':
+                    selected[species] = item
+                elif selected.get(species) is item:
+                    selected.pop(species)
+            selected = {species: i for species, i in selected.items() if i['choice'] == 'allow'}
+            for item in items:
+                item['active'] = selected.get(item['key'].split('/')[0]) is item
+            selection = [{'key': i['key'], 'bindings': i['bindings']} for i in selected.values()]
+            latest = max((i for i in items if i['decisionAt']), key=lambda i: i['decisionAt'], default=None)
+            return {'items': items, 'working': sum(not j.get('supersededBy') and j['state'] in ('queued', 'running') for j in jobs),
+                    'making': making, 'selection': selection,
+                    'lastDecision': {'name': latest['name'], 'action': latest['choice']} if latest else None,
+                    'uiVersion': sha(b''.join((HERE / f).read_bytes() for f in ('dashboard.js', 'dashboard.html', 'dashboard.css')))}
 
     def record_decision(self, job):
         with lock(self.harness.ledger_path.with_suffix('.lock')):
@@ -175,7 +205,9 @@ class Dashboard:
         if not isinstance(note, str) or len(note) > 4000 or (action == 'modify' and not note.strip()):
             raise ChoiceError('어떻게 고칠지 적어 주세요. 최대 4,000자입니다.')
         directory = self.directory(payload.get('key'))
-        with self.mutex, lock(directory / '.lock'):
+        # Choices do not wait for a model/ZIP lock. Check the published source
+        # binding read-only; authoring creates a separate child candidate.
+        with self.mutex:
             self.refresh_seed()
             path = self.requests / (request_id + '.json')
             if path.exists():
@@ -183,20 +215,27 @@ class Dashboard:
                 if (job['key'], job['action'], job['note']) != (payload.get('key'), action, note.strip()):
                     raise ChoiceError('이미 처리된 요청입니다. 다시 선택해 주세요.')
                 return {'saved': True, 'requestId': request_id}
-            snapshot = self.decorate(self.snapshot(directory, already_locked=True))
+            snapshot = self.decorate(self.snapshot(directory))
             if payload.get('version') != snapshot['version']:
                 raise ChoiceError('새 결과나 선택이 있습니다. 갱신된 그림을 보고 다시 선택해 주세요.')
             if action == 'allow' and not snapshot['ready']:
                 raise ChoiceError('AI가 결과를 준비 중입니다. 잠시 후 다시 확인해 주세요.')
             jobs = self.jobs()
-            if any(j['key'] == snapshot['key'] and j['state'] in ('queued', 'running', 'recording') for j in jobs):
-                raise ChoiceError('이 결과의 요청을 처리 중입니다. 잠시 기다려 주세요.')
+            for phase, binding in snapshot['bindings'].items():
+                if self.harness.pixels(directory, phase)[2]['binding'] != binding:
+                    raise ChoiceError('그림이 변경되었습니다. 갱신된 결과를 보고 선택해 주세요.')
             job = {'id': request_id, 'key': snapshot['key'], 'action': action, 'note': note.strip(),
                    'bindings': snapshot['bindings'], 'phase': snapshot['phase'], 'createdAt': stamp(), 'state': 'recording'}
-            if action == 'modify':
+            if action == 'modify' or (action == 'allow' and snapshot['phase'] == 'idle'):
                 job['target'] = directory.parent.name + '/rev-' + request_id.replace('-', '')[:16]
             save(path, job)
             self.record_decision(job)
+            for previous in jobs:
+                if previous['key'] == snapshot['key'] and previous['state'] in ('queued', 'running', 'recording'):
+                    previous['supersededBy'] = request_id
+                    if previous['state'] != 'running':
+                        previous['state'] = 'cancelled'
+                    save(self.requests / (previous['id'] + '.json'), previous)
             job['state'] = 'done' if action == 'deny' else 'queued'
             save(path, job)
             self.wake.set()
@@ -248,10 +287,13 @@ class Dashboard:
     def process(self, job):
         directory = self.directory(job['key'])
         harness = self.runner(job['note'])
+        with self.mutex:
+            self.snapshot(directory)  # Cache the immutable parent before its job takes the lock.
         for phase, binding in job['bindings'].items():
             if harness.pixels(directory, phase)[2]['binding'] != binding:
                 raise ValueError('요청 후 원본이 변경됨')
-        if job['action'] == 'modify':
+        if job['action'] == 'modify' or job['phase'] == 'idle':
+            expanding = job['action'] == 'allow'
             target = self.root / job['target']
             if not target.exists():
                 harness.init(target)
@@ -259,11 +301,19 @@ class Dashboard:
                 reference = directory / 'preview' / job['phase'] / 'checker.png'
                 shutil.copyfile(reference, target / 'reference.png')
                 provenance = load(target / 'provenance.json')
-                provenance.update({'parent': job['key'], 'requestId': job['id'], 'userCorrection': job['note']})
+                provenance.update({'parent': job['key'], 'requestId': job['id'],
+                                   'userCorrection': '선택한 기본 자세에 동작 추가' if expanding else job['note']})
                 save(target / 'provenance.json', provenance)
             with lock(target / '.lock'):
                 if not job.get('authored'):
+                    if expanding:
+                        protected = {p: p.read_bytes() for p in (target / 'source/palette.json', target / 'source/poses/idle_a.pxgrid')}
+                        harness.args.note += '\nPreserve palette.json and idle_a byte-for-byte; author the missing poses and actions only.'
                     report = self.author(harness, target, 'complete', job)
+                    if expanding and any(p.read_bytes() != value for p, value in protected.items()):
+                        for p, value in protected.items():
+                            p.write_bytes(value)
+                        raise ValueError('선택한 기본 자세가 바뀌어서 동작 확장을 보류했습니다.')
                     if report['binding'] == job['bindings'].get(job['phase']):
                         raise ValueError('수정 지시가 그림에 반영되지 않았습니다.')
                     job['authored'] = True
@@ -278,17 +328,14 @@ class Dashboard:
         # An Allow is the user's choice immediately. The AI finishes its checks
         # and packaging afterwards; a failure cannot silently revoke that choice.
         with lock(directory / '.lock'):
-            if job['phase'] == 'idle':
-                self.author(harness, directory, 'poses', job)
-                self.author(harness, directory, 'actions', job)
-                harness.work(directory, 'critique', 'suite')
-                return
+            reports = {}
             for phase in job['bindings']:
                 report = harness.bake(directory, phase)
+                reports[phase] = report
                 if not report['pass']:
                     raise ValueError('선택 결과 픽셀 검사 실패')
-                if not harness.current_critique(directory, phase, report):
-                    harness.work(directory, 'critique', phase)
+            if len(harness.review_coverage(directory, reports)) != len(reports):
+                harness.work(directory, 'critique', job['phase'])
             out = self.root / 'packs' / (job['id'] + '.zip')
             if out.exists():
                 out.unlink()  # Only this request owns this deterministic output.
@@ -299,7 +346,11 @@ class Dashboard:
 
     def update_job(self, job):
         with self.mutex:
-            save(self.requests / (job['id'] + '.json'), job)
+            path = self.requests / (job['id'] + '.json')
+            previous = load(path) if path.exists() else {}
+            if previous.get('supersededBy'):
+                job['supersededBy'] = previous['supersededBy']
+            save(path, job)
 
     def worker(self):
         while not self.stopping.is_set():
@@ -321,8 +372,12 @@ class Dashboard:
             except Exception as error:
                 job['state'] = 'failed'
                 job['error'] = str(error)
-            job['finishedAt'] = stamp()
-            self.update_job(job)
+            with self.mutex:
+                if load(self.requests / (job['id'] + '.json')).get('supersededBy'):
+                    job['state'] = 'cancelled'
+                    job.pop('error', None)
+                job['finishedAt'] = stamp()
+                self.update_job(job)
 
 
 def serve(args):

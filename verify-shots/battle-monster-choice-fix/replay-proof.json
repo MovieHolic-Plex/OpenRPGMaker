@@ -1,0 +1,6 @@
+{
+  "oldAllowDoesNotRevive": true,
+  "rejectedCompetitorPreservesSelection": true,
+  "obsoleteCompletionPreservesSupersededMarker": true,
+  "restartPreservesLastSelection": true
+}

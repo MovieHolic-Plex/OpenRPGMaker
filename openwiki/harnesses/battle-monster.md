@@ -57,6 +57,10 @@ npm run harness -- battle-monster wave --work qa-runs/battle-monster-extra-motio
 대시보드 root로 옮긴다. 제작 중인 절반 결과는 게시하지 않는다. AI 검수 추천은 사람 선택이 아니다.
 기존 Allow 결과의 추가 동작은 새 `motions-v2` 후보로 돌아온다. Deny한 방아토끼는 이번 웨이브에 넣지 않는다.
 완성 후보의 Allow는 suite·poses·idle을 모두 현재 원본에 묶고 팩도 모든 현재 선택/검수를 요구한다.
+전체 suite의 실제 독립 검수가 현재 해시와 맞으면, 동일한 원본 파일 해시를 가지는 poses·idle도
+그 검수로 포함할 수 있다. 검수 결과를 꾸며 복제하지 않는다. 팩의 `review-coverage.json`에 실제
+검수 phase/jobId/binding과 포함한 원본 해시를 남긴다. 추가 동작이나 팔레트가 바뀌면 이 포함 관계도
+무효다. 이미 검수한 전체 후보를 포장하기 위해 같은 그림을 세 차례 모델에 보내지 않는다.
 팩에 원본·GIF·PNG·시간표와 검수 출처를 포함한다. 기본 `pilot`은 실제 시드 원본이 있는 종만 가져온다.
 완성 격자·팔레트·시간표·독립 검수 출처는 `harness-data/battle-monster/authored/20261005/`에도 보존한다.
 `ingest --phase suite --source .../source/poses --palette .../source/palette.json`은 같은 원본의 추가
@@ -75,6 +79,16 @@ npm run harness -- battle-monster wave --work qa-runs/battle-monster-extra-motio
 뒤집지 않는다. **팩 생성은 여전히 현재 픽셀 검사·현재 독립 검수·현재 사람 선택을 모두 확인**한다.
 기술 실패/모델 호출 실패 시 선택은 남고, 화면은 작업 실패를 알려 다시 Modify할 수 있게 한다.
 수정본을 AI가 스스로 Allow하지 않는다. 다운로드도 현재 Allow·현재 그림이 맞아야 한다.
+선택과 파일 준비는 별도 상태다. Allow/Deny를 먼저 화면과 ledger에 반영하고, 포장 중에도
+Modify/Deny로 바꿀 수 있다. 새 선택은 이전 요청을 superseded/cancelled로 기록하며, 워커가
+이전 요청을 마쳐도 새 선택을 덮어쓰지 않는다. 재시작 때도 오래된 요청을 취소한다.
+대시보드 Allow에는 종마다 가장 최근에 선택한 유효 버전 하나를 표시한다. 과거 Allow 버전은
+지난 결과에, Deny는 별도 제외 목록에 남는다. `/api/state.selection`은 현재 선택의 투영이며,
+원본 선택 기록을 삭제하지 않는다. 파일 준비 실패가 선택을 철회하지 않는다.
+idle Allow의 추가 동작은 별도 child 후보로 만들고, 선택된 palette/idle은 보존한다.
+수정 중인 후보의 작업 잠금이 부모의 선택 입력을 막아서는 안 된다. 선택 시 현재 원본 해시는
+읽기 전용으로 다시 확인한다. 브라우저의 목록 탭은 새로고침 후에도 유지되고 UI 버전이 바뀌면
+수정 창이 닫힌 뒤 갱신한다.
 같은 root로 서버 두 개를 띄우지 않으며, 기존 서비스의 실행 중 작업을 중단할 때는 해당
 프로세스 그룹까지 함께 종료해야 중복 AI 실행을 피할 수 있다.
 
@@ -120,6 +134,11 @@ npm run harness -- battle-monster review
 `author`/`critique`는 **GPT 6.1 sol high**를 각각 별도 `codex exec --ephemeral` 세션으로
 실행한다. `--prepare-only`는 호출 없이 지시·명령·이미지 해시를 준비한다. 각 작업의
 모델·effort·툴/지시/첨부 해시·종료 상태는 `jobs/<uuid>/`에 보존한다.
+참고가 필요하면 후보의 `reference.png`와 `references/*.png`를 실제로 보고 저작하도록 첨부한다.
+idle에도 첨부할 수 있다. `references/`는 연구용이며 팩에 포함하지 않는다. 원저자 URL·관찰 내용·
+이미지 해시는 별도 `reference-study.json`에 남기고, 참고 이미지를 추출/트레이싱하지 않는다.
+64×64라는 캔버스 계약만으로 사람 체형이 좋아지지 않는다. 인간형 새 스타일은 대표 한 명의
+실제 얼굴·어깨·팔꿈치·손·무기·접지를 확인한 뒤 확장한다. 기존 Allow/Deny를 새 후보에 이관하지 않는다.
 `author idle`은 기본 자세만 만든다. `author poses`는 현재 기본 자세의 사용자 keep가
 필요하고, 선택한 palette/idle_a를 바꿀 수 없다. 나머지 8자세를 직접 찍는다.
 

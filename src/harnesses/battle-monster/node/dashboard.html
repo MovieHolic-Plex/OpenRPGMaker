@@ -10,18 +10,20 @@
 </head>
 <body>
   <header class="top"><div><span class="eyebrow">__THEME__</span><h1>몬스터 작업실</h1></div><p id="activity" role="status">결과를 불러오는 중…</p></header>
+  <div class="selection-summary" role="status"><strong id="selection-summary">선택을 불러오는 중…</strong><span id="last-decision"></span></div>
   <main>
     <aside aria-label="결과 목록">
       <nav class="filters" aria-label="결과 상태">
         <button data-filter="pending" aria-pressed="true">검토 대기 <span id="pending-count">0</span></button>
         <button data-filter="allow" aria-pressed="false">Allow <span id="allow-count">0</span></button>
+        <button data-filter="deny" aria-pressed="false">Deny <span id="deny-count">0</span></button>
         <button data-filter="history" aria-pressed="false">지난 결과</button>
       </nav>
       <div id="list" class="result-list"></div>
       <p id="list-empty" class="empty" hidden>검토할 결과가 없습니다.</p>
     </aside>
     <section class="viewer" aria-label="선택한 몬스터">
-      <div id="empty-view" class="empty-view" hidden><h2>검토를 마쳤습니다</h2><p>새 결과가 준비되면 여기에 표시됩니다.</p></div>
+      <div id="empty-view" class="empty-view" hidden><h2 id="empty-title">검토를 마쳤습니다</h2><p id="empty-description">새 결과가 준비되면 여기에 표시됩니다.</p><button id="show-allowed" hidden>선택한 몬스터 보기</button></div>
       <div id="result-view">
         <div class="result-heading"><div><span id="edition" class="eyebrow">새 결과</span><h2 id="name"></h2></div><span id="choice" class="choice">검토 대기</span></div>
         <div class="motion-tools"><p>모든 동작을 함께 보기</p><button id="play" aria-pressed="true">일시 정지</button></div>
@@ -30,7 +32,7 @@
         <p id="note" class="correction" hidden></p>
         <p id="progress" class="progress-note" role="status" hidden></p>
         <div class="decisions" aria-label="이 결과 선택">
-          <button id="allow" class="allow"><strong>Allow</strong><span>이 결과 보관</span><kbd>A</kbd></button>
+          <button id="allow" class="allow"><strong>Allow</strong><span>이 결과 선택</span><kbd>A</kbd></button>
           <button id="modify" class="modify"><strong>Modify</strong><span>고쳐서 다시 보기</span><kbd>M</kbd></button>
           <button id="deny" class="deny"><strong>Deny</strong><span>이 결과 제외</span><kbd>D</kbd></button>
         </div>

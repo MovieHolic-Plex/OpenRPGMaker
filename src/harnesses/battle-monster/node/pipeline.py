@@ -316,8 +316,13 @@ class Harness:
             images = []
             if phase == 'poses':
                 images = [directory / 'preview/idle/checker.png']
-            elif phase in ('full', 'complete', 'actions') and (directory / 'reference.png').exists():
+            elif (directory / 'reference.png').exists():
                 images = [directory / 'reference.png']
+            images += sorted((directory / 'references').glob('*.png'))
+            if images:
+                prompt += ('\nInspect the attached reference images before authoring. Study readable anatomy, '
+                           'silhouette and hand/weapon connections; author original literal pixels. '
+                           'References are visual study only, never trace, extract, resample or redistribute them.\n')
         else:
             report = self.bake(directory, phase)
             if not report['pass']:
@@ -454,13 +459,30 @@ class Harness:
                               'button[aria-pressed=true]{outline:2px solid currentColor}</style>' + fragment + '</html>')
         return {'candidates': len(data), 'fragment': str(out), 'standalone': str(standalone)}
 
+    def review_coverage(self, directory, reports):
+        """An actual larger review covers exact source subsets, without fake reviews."""
+        current = {phase: self.current_critique(directory, phase, report)
+                   for phase, report in reports.items()}
+        coverage = {}
+        for phase, report in reports.items():
+            for reviewed_phase in ('suite', 'poses', 'idle'):
+                reviewed = reports.get(reviewed_phase)
+                review = current.get(reviewed_phase)
+                if (review and reviewed['pass'] and all(reviewed['sources'].get(path) == digest
+                                                       for path, digest in report['sources'].items())):
+                    coverage[phase] = {'reviewedPhase': reviewed_phase, 'jobId': review['jobId'],
+                                       'binding': reviewed['binding'], 'sources': report['sources']}
+                    break
+        return coverage
+
     def pack(self, directory):
         phases = ('idle', 'poses', 'suite') if all((directory / 'source/actions' / (p + '.pxgrid')).exists() for p in EXTRA_POSES) else ('idle', 'poses')
         reports = {phase: self.bake(directory, phase) for phase in phases}
+        coverage = self.review_coverage(directory, reports)
         for phase, report in reports.items():
             if not report['pass'] or self.decision(directory, phase, report['binding']) != 'keep':
                 raise ValueError(f'{phase}: 현재 사람 선택/픽셀 검사 없음. 선택되지 않은 후보는 팩에 넣지 않습니다.')
-            if not self.current_critique(directory, phase, report):
+            if phase not in coverage:
                 raise ValueError(f'{phase}: 현재 독립 그림 검수 없음')
         brief = self.brief(directory)
         monster = brief['monster']
@@ -482,7 +504,8 @@ class Harness:
         decisions = [row for row in self.ledger()['decisions'] if row['candidate'] == key]
         with zipfile.ZipFile(out, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(directory.rglob('*')):
-                if path.is_file() and (path.suffix in ('.pxgrid', '.json', '.md', '.png', '.gif')):
+                if (path.is_file() and not path.is_relative_to(directory / 'references')
+                        and path.suffix in ('.pxgrid', '.json', '.md', '.png', '.gif')):
                     archive.write(path, 'provenance/' + str(path.relative_to(directory)))
             archive.write(directory / 'preview/poses/sheet.png', asset_dir + '/sheet.png')
             archive.write(directory / 'preview/poses/portrait.png', asset_dir + '/portrait.png')
@@ -491,6 +514,7 @@ class Harness:
                     archive.write(path, asset_dir + '/motions/' + path.name)
             archive.writestr('sheets.json', json.dumps([metadata], ensure_ascii=False, indent=2))
             archive.writestr('decisions.json', json.dumps(decisions, ensure_ascii=False, indent=2))
+            archive.writestr('review-coverage.json', json.dumps(coverage, ensure_ascii=False, indent=2))
             archive.writestr('README.md', 'Original native-grid monster art. Source provenance and human choices included.\n'
                              'Register sheets.json in pixelEnemySheets/pixelEnemyPortraits through the owning shared asset pack.\n'
                              'This ZIP does not install assets or create enemy/skill records. Runtime movement, skill contact, '

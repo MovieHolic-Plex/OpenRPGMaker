@@ -1,0 +1,33 @@
+{
+  "decisionMs": 553,
+  "selection": [
+    {
+      "key": "wild-boar/baseline",
+      "bindings": {
+        "poses": "2b3aa157e2904008dd4e5415169e1bad7ea8117dcded3785a97f17eadd34f61a",
+        "idle": "c851dd41db13db02a0622b41a4c9505079d581b52b9df4d5ed648279c2215fe1"
+      }
+    }
+  ],
+  "choices": [
+    {
+      "key": "wandering-swordsman/motions-v1",
+      "choice": "deny",
+      "active": false,
+      "working": false
+    },
+    {
+      "key": "wild-boar/baseline",
+      "choice": "allow",
+      "active": true,
+      "working": true
+    },
+    {
+      "key": "wild-boar/motions-v2",
+      "choice": "modify",
+      "active": false,
+      "working": true
+    }
+  ],
+  "errors": []
+}

@@ -17,6 +17,10 @@ npm run harness -- battle-monster --help
 
 AI는 GPT high 저작·기계 검사·독립 검수·패킹을 맡는다. 사용자는 결과 그림을 보고
 Allow/Modify/Deny를 선택한다. Modify는 원본을 보존한 새 후보를 만들어 다시 제시한다.
+선택은 파일 준비와 별도로 즉시 반영한다. 포장 중 Modify/Deny로 변경할 수 있고,
+Allow에는 현재 선택한 종별 버전 하나, Deny에는 제외한 결과, 지난 결과에는 옛 버전을 표시한다.
+전체 suite의 실제 현재 검수가 같은 원본 해시를 포함하면 poses/idle을 다시 모델에 보내지 않는다.
+연구용 `references/*.png`는 저작 모델에 첨부할 수 있으며 게임 에셋/팩에는 포함하지 않는다.
 `review`는 AI/개발자 진단용이며 에디터 공방 배선과 게임 설치는 별도다.
 
 ## 동시 GIF 검토와 인간형 적

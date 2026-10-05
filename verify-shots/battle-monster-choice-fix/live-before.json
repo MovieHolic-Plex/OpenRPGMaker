@@ -1,0 +1,23 @@
+{
+  "choices": {
+    "black-cloth-assassin/motions-v1": "allow",
+    "cult-sorcerer/motions-v1": "allow",
+    "earthen-jar-fiend/baseline": "allow",
+    "earthen-jar-fiend/motions-v2": "allow",
+    "fallen-taoist/motions-v1": "allow",
+    "jangseung-spirit/baseline": "allow",
+    "jangseung-spirit/motions-v2": "allow",
+    "mortar-rabbit/baseline": "deny",
+    "mountain-bandit/motions-v1": "deny",
+    "mountain-spearman/motions-v1": "allow",
+    "venom-toad/baseline": "allow",
+    "venom-toad/motions-v2": "allow",
+    "wandering-swordsman/motions-v1": "deny",
+    "wild-boar/baseline": "allow",
+    "wild-boar/motions-v2": "allow"
+  },
+  "remaining": 4,
+  "interruptedReadOnlyPackaging": [
+    "jangseung-spirit/motions-v2"
+  ]
+}
