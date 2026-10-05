@@ -84,9 +84,30 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   const browser = await chromium.launch({ executablePath: resolve('scripts/qa/ai-stress/chrome-netns.sh'), headless: true,
     env: { ...process.env, STRESS_HOST_PORT: hostPort, STRESS_SOCK: sock },
     args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--enable-precise-memory-info',
-      // 이 박스는 다른 세션 때문에 전역 OOM 이 잦고, 크롬은 렌더러에 oom_score_adj 300 을 줘서 늘 먼저 죽는다.
-      // 한 프로세스로 띄워 페이지를 adj 0 인 브라우저 프로세스 안에 둔다(STRESS_MULTI_PROCESS=1 이면 기본 구성).
-      ...(process.env.STRESS_MULTI_PROCESS === '1' ? [] : ['--single-process', '--no-zygote'])] });
+      // --single-process 는 렌더러 힙을 1.6~1.8배로 부풀려 V8 한도에서 죽는 가짜 결함을 만든다(2026-10-05 실측) — 쓰지 않는다.
+      ...(process.env.STRESS_SINGLE_PROCESS === '1' ? ['--single-process', '--no-zygote'] : [])] });
+  // 이 박스는 다른 세션 때문에 전역 OOM 이 잦고, 크롬은 렌더러에 oom_score_adj 300 을 줘서 늘 먼저 죽는다.
+  // 이 셸에서 난 프로세스는 하한이 -1000 이라 되돌릴 수 있다 — 우리 크롬 자손만 0 으로 낮춘다(남의 프로세스는 건드리지 않는다).
+  // Browser 객체는 프로세스를 내주지 않는다 — 이 node 의 자손을 걷는다(adj>0 인 것만 = 크롬 렌더러·유틸리티).
+  const browserRoot = process.pid;
+  const unpinOom = async () => {
+    if (!browserRoot) return;
+    const children = new Map();
+    for (const name of await readdir('/proc').catch(() => [])) {
+      if (!/^\d+$/.test(name)) continue;
+      const stat = await readFile(`/proc/${name}/stat`, 'utf8').catch(() => '');
+      const ppid = Number(stat.slice(stat.lastIndexOf(')') + 2).split(' ')[1]);
+      if (ppid) (children.get(ppid) ?? children.set(ppid, []).get(ppid)).push(Number(name));
+    }
+    const stack = [browserRoot];
+    while (stack.length) {
+      const pid = stack.pop();
+      const adj = Number(await readFile(`/proc/${pid}/oom_score_adj`, 'utf8').catch(() => '0'));
+      if (adj > 0) await writeFile(`/proc/${pid}/oom_score_adj`, '0').catch(() => {});
+      stack.push(...(children.get(pid) ?? []));
+    }
+  };
+  const oomTimer = setInterval(() => { void unpinOom(); }, 3000);
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
@@ -315,6 +336,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
     await page.screenshot({ path: out + '/failure.png' }).catch(() => {});
   } finally {
     await context.close().catch(() => {}); await browser.close().catch(() => {}); await host.close().catch(() => {});
+    clearInterval(oomTimer);
     outer.kill();
     spawnSync('pkill', ['-f', `UNIX-CONNECT:${sock}`]);
   }
