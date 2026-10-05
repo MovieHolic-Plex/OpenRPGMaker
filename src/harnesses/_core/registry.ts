@@ -11,10 +11,12 @@ import { JP_CITY_HARNESS } from "../jp-city/harness";
 import { JOSEON_BARAM_HARNESS } from "../joseon-baram/harness";
 
 import { POKEMON_CHARACTER_MOTION_HARNESS } from "../pokemon-character-motion/harness";
+import { POKEMON_CHARACTER_CASTING_HARNESS } from "../pokemon-character-casting/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
   POKEMON_CHARACTER_MOTION_HARNESS,
+  POKEMON_CHARACTER_CASTING_HARNESS,
   MODERN_CHIPSET_HARNESS,
   INTERIOR_PROPS_HARNESS,
   JP_CITY_HARNESS,

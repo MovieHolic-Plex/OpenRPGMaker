@@ -240,3 +240,7 @@ The user subsequently requested ≥95% identity with the actual original walking
 Registration must explicitly select `quality.hero={mode:'reference-fidelity',gif:...}` and the matching authoring source declaration. It reruns the source fidelity gate before any shared writes. The existing original-costume rubric and subjective quality path stay unchanged; they are not used to invent an artistic approval for copied reference art. Native import/manual review/gate/build remains required for all roles. Canonical asset metadata explicitly records adopted hero provenance.
 
 Evidence: `verify-shots/pokemon-hero-reference-fidelity/`, private full data `/home/main/z-project/pokemon-hero-reference-fidelity/`. The runtime proof additionally compares twelve24×32 actual player texture-frame samples, after removing transparent gutters, to the pinned original cells; canonical/shared/export casts are checked separately. Runtime gait/camera checks use the standalone player and private QA inputs, not the editor shell or a full campaign completion claim.
+
+## User-controlled NPC casting
+
+New/changed walking candidates now use [pokemon-character-casting](pokemon-character-casting.md). Its browser Allow/Deny belongs to the user; supervisors do not substitute their semantic review for that choice. Shared registration checks a live source-bound Allow for changed roles while preserving existing published sources. All native contracts and the separate hero quality/fidelity gate still apply. Walking selection does not approve battle portraits.

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **140쪽 / 4637KB / 약 1,338,731 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4648KB / 약 1,341,363 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1077,7 +1077,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
 
-### `openwiki/harnesses/README.md` — 4KB · 47줄 · ~1,169 토큰
+### `openwiki/harnesses/README.md` — 4KB · 49줄 · ~1,217 토큰
 
 - `L6` 위치 (저장소 루트 기준)
 - `L26` 규칙
@@ -1135,7 +1135,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L171` 시험
 - `L180` 아직 없는 것
 
-### `openwiki/harnesses/pokemon-character-motion.md` — 31KB · 231줄 · ~8,759 토큰
+### `openwiki/harnesses/pokemon-character-casting.md` — 7KB · 52줄 · ~1,763 토큰
+
+- `L5` Start and reuse
+- `L20` Current first wave
+- `L28` Human review
+- `L39` Freshness and shipping gate
+- `L47` Focused verification
+
+### `openwiki/harnesses/pokemon-character-motion.md` — 35KB · 247줄 · ~9,580 토큰
 
 - `L5` 원본 규격과 엔진 컨테이너를 구분한다
 - `L23` 실행과 저장 경계
@@ -1151,6 +1159,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L206` Actual chipset comparison before art approval
 - `L216` Further hero craft revision
 - `L222` User rejection of v14 and full native pose rewrite
+- `L232` Explicit original-reference fidelity mode
+- `L244` User-controlled NPC casting
 
 ### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 

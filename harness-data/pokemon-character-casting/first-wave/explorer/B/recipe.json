@@ -1,0 +1,129 @@
+{
+  "sourceSha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+  "sourceUrl": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "method": "explicit-native-head-row-edits-and-palette-substitution",
+  "seed": {
+    "role": "explorer",
+    "label": "탐험가",
+    "variant": "B",
+    "head": "brim",
+    "description": "남색 챙 모자 · 황토색 재킷 · 청록 장비",
+    "palette": {
+      "5": "354862",
+      "9": "59738c",
+      "E": "96b2c4",
+      "A": "739d97",
+      "B": "416e74",
+      "C": "d8ad68",
+      "D": "9f794b"
+    }
+  },
+  "headRows": {
+    "down": [
+      [
+        4,
+        "55555555"
+      ],
+      [
+        3,
+        "5999999995"
+      ],
+      [
+        3,
+        "59EEEE9995"
+      ],
+      [
+        2,
+        "599EEEE99995"
+      ],
+      [
+        2,
+        "F9999999999F"
+      ],
+      [
+        1,
+        "FBBBBBBBBBBBBF"
+      ],
+      [
+        1,
+        "FAAAAAAAAAAAAF"
+      ],
+      [
+        2,
+        "F5888888885F"
+      ]
+    ],
+    "up": [
+      [
+        4,
+        "55555555"
+      ],
+      [
+        3,
+        "5999999995"
+      ],
+      [
+        3,
+        "59EEEE9995"
+      ],
+      [
+        2,
+        "599EEEE99995"
+      ],
+      [
+        2,
+        "F9999999999F"
+      ],
+      [
+        1,
+        "FBBBBBBBBBBBBF"
+      ],
+      [
+        1,
+        "FAAAAAAAAAAAAF"
+      ],
+      [
+        2,
+        "F8889999888F"
+      ]
+    ],
+    "left": [
+      [
+        4,
+        "5555555"
+      ],
+      [
+        3,
+        "599999995"
+      ],
+      [
+        3,
+        "59EEE9995"
+      ],
+      [
+        2,
+        "599EEEE9995"
+      ],
+      [
+        2,
+        "F999999999F"
+      ],
+      [
+        0,
+        "FBBBBBBBBBBBBF"
+      ],
+      [
+        0,
+        "FAAAAAAAAAAAAF"
+      ],
+      [
+        2,
+        "F888888899F"
+      ]
+    ]
+  },
+  "generatorSha256": "d977f97a555edea3e7829441f5f9d704568e8c868cf39fde62b0fb3fcbe2698a",
+  "resizingAuthoredPixels": false,
+  "mapContext": "Placement mockup. Existing hero above; candidate below. Not runtime QA."
+}
