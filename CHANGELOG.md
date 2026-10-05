@@ -5,6 +5,27 @@
 
 <!-- releases -->
 
+## 0.135.0 — 2026-10-05
+
+### 기능
+
+- show live space milestones and actual image outputs (`f433025`)
+- **editor** — unify AI workspace and simplify scoped log exports (`132c363`)
+
+### 수정
+
+- **editor** — 쓰이지 않는 measuredWidth를 지운다 (`13fe21f`)
+- parallelize isolated space work and bound layout review scope (`299d9ec`)
+- 실제 칩 이미지와 선택 ID로 조수 캐릭터 선택 검증 (#2157) (`b242ee4`)
+
+### 문서
+
+- capture AI workspace and log export UI evidence (`8957a4a`)
+
+### 기타
+
+- record workspace interactions and report dev reload limitation (`cccffa2`)
+
 ## 0.134.0 — 2026-10-05
 
 ### 기능
