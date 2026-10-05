@@ -13,6 +13,9 @@ completionRepairs가 있으면 확장판의 시설 미완성 후속 작업이다
 먼저 art-layout-review.json / art-layout-input.json / art-execution.json / parking-repair-brief.json을 읽는다.
 반려된 source 명세와 직접 관련된 코드 부분만 확인한다. 기존 자료를 새로 조사하거나 전체 참고문서/전체 소스/위키를 반복 출력하지 않는다.
 기준차·출처 이미지는 기존 것을 그대로 사용한다. 새 그림·하위 모델·native 실행·검수 판정 작성 금지.
+위 금지는 지금의 준비 작업자에게만 적용된다. 생성하는 미래 reviewTemplate에는 적용하지 않는다.
+reviewTemplate은 실제 검수 단계에서 현재 이미지의 PASS/FAIL 및 필수 항목별 근거를 지정된 verdict.json에
+반드시 쓰도록 지시한다. '현재는 판정을 작성하지 않는다' 같은 준비 단계 문장을 복사하지 않는다.
 FAIL의 구체 지적에 맞춰 캔버스·구역·치수 계약·주문서·관련 프롬프트만 수정한다.
 기존 원본·검수 기록을 보존하도록 별도 data/runs 경로와 새 판 id를 사용한다.
 변경된 좌표와 이전 고정 수치가 충돌하지 않게 판 brief/검사/검수 프롬프트까지 일치시킨다.
