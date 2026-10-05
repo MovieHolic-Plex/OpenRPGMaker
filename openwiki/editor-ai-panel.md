@@ -1022,6 +1022,12 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   - **판정 — 브라우저 워치독(`client.ts`).** `PI_AGENT_STALE_MS`(30초, heartbeat 의 6배) 동안 줄이 하나도 안 오면
     리더를 취소하고 「워커가 응답하지 않습니다」로 끝낌다. 이제 **침묵은 정상이 아니다** — 생각하는 중이면
     heartbeat 가 오기 때문이다. 이게 없으면 죽은 워커를 10분 상한까지 「실행 중」으로 띄우게 된다.
+    단, **타이머가 제때보다 늦게 울렸으면 침묵은 페이지 쪽이다**(주 스레드가 막혀 줄을 못 읽었다). 그때는 heartbeat 두 번만큼
+    더 듣고 판정하며, 줄 처리 시간은 침묵에 넣지 않는다(2026-10-05: 편집기 86초 멈춤 뒤 워치독이 먼저 울려 살아 있는 팀 실행을 끊었다).
+  - **실행 도중 키 갱신 — `scripts/lib/piWorkerKeys.ts`.** 호스트는 실행 시작 때 키를 한 번 풀어(남은 수명 ≥15분) 워커에 넘긴다.
+    15분보다 긴 실행(팀 첫 생성은 흔하다)은 중간에 pi-ai 의 「OAuth token expired before request」로 에이전트가 죽었다.
+    이제 호스트(`ohMyPiPiAi.mjs` `keepWorkerKeysFresh`)가 실행 중 5분마다 키를 다시 풀어 워커 `POST /agent/keys` 로 밀고,
+    `piAgentRuntime` 의 `getApiKey` 는 요청마다 `providerApiKeys` 를 다시 읽는다. 워커에는 여전히 인증이 없다.
   `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
   다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
   워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,

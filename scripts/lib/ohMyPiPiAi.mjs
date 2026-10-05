@@ -37,6 +37,35 @@ let workerStale = false;
  * 것이 아니라 **워커가 낡아 있었다**. 지금 도는 실행은 죽이지 않는다: 갈아 끼우는 자리는 다음
  * 요청이다(진행 중인 Pi 실행을 파일 저장 한 번으로 끊지 않는다).
  */
+
+/** 실행 도중 키를 다시 푸는 간격. resolveRequestApiKey 는 남은 수명이 15분 아래일 때만 갱신하므로 대부분 호출은 저장본을 읽고 끝난다. */
+const WORKER_KEY_REFRESH_MS = 5 * 60_000;
+
+/**
+ * 워커 실행이 도는 동안 요청 키를 주기적으로 다시 풀어 워커에 밀어 넣는다(scripts/lib/piWorkerKeys.ts).
+ * 시작 때 한 번 푼 키는 15분 남짓만 보장된다 — 팀 실행이 그보다 길면 실행 중간에 「OAuth token expired before request」로
+ * 에이전트가 죽었다(2026-10-05 스트레스 실측, 18분 40초째). 본문이 끝나거나 취소되면 멈춘다.
+ */
+function keepWorkerKeysFresh(port, providerApiKeys, body, signal) {
+  if (!body) return body;
+  const providers = Object.keys(providerApiKeys).filter((provider) => providerApiKeys[provider]);
+  if (!providers.length) return body;
+  let timer = null;
+  const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+  timer = setInterval(async () => {
+    const fresh = {};
+    for (const provider of providers) {
+      try { fresh[provider] = await resolveRequestApiKey(provider); } catch { /* 갱신 실패 — 원래 키로 계속 간다 */ }
+    }
+    await fetch(`http://127.0.0.1:${port}/agent/keys`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ providerApiKeys: fresh }),
+    }).catch(() => undefined);
+  }, WORKER_KEY_REFRESH_MS);
+  timer.unref?.();
+  signal?.addEventListener("abort", stop, { once: true });
+  return body.pipeThrough(new TransformStream({ flush: stop, cancel: stop }));
+}
+
 export function markOhMyPiWorkerStale() {
   workerStale = true;
 }
@@ -285,7 +314,7 @@ export async function createOhMyPiAdapters() {
         error.status = response.status;
         throw error;
       }
-      return { stream: true, ndjson: response.body };
+      return { stream: true, ndjson: keepWorkerKeysFresh(port, providerApiKeys, response.body, options.signal) };
     },
     async generateImage(provider, body) {
       const apiKey = await resolveRequestApiKey(provider);
