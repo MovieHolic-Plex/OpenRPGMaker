@@ -192,6 +192,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
   const candidateMaps = request.mapIds.length > 0 ? [...request.mapIds] : Object.keys(base.maps);
   const mapName = (id: string | null) => (id ? working.maps[id]?.name ?? null : null);
+  /** 팀원이 마지막으로 한 말. report_task 를 빼먹고 끝난 팀원의 보고를 팀장에게 대신 전한다. */
+  const lastSaid = new Map<string, string>();
   const child = (agentId: string, provider = request.provider): RunPiAgentOptions => ({
     apiKey: provider === request.provider ? options.apiKey : undefined,
     providerApiKeys: options.providerApiKeys,
@@ -216,7 +218,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         else if (event.type === "tool_end") {
           if (!event.ok) row.toolErrors += 1;
           row.lastLine = `${event.ok ? "✓" : "✗"} ${event.name} — ${plainLine(event.summary)}`;
-        } else if (event.type === "assistant") row.lastLine = plainLine(event.text, 220);
+        } else if (event.type === "assistant") { row.lastLine = plainLine(event.text, 220); lastSaid.set(agentId, event.text); }
       }
       emit({ type: "agent_event", agentId, event });
     },
@@ -434,7 +436,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           ],
         }, { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: mode === "read", ...(mode === "project" && options.onCheckpoint ? { onCheckpoint: checkpointFor(null, snapshot) } : {}), extraTools: [...mailbox.tools(agentId), reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
-        if (!report) throw new Error("report_task 결과가 없어 작업을 완료 처리하지 않았습니다.");
+        if (!report) {
+          // 체크포인트로 이미 작업 사본에 들어간 변경은 남는다. 「변경 없음」처럼 알리면 팀장이 같은 일을 새 팀원에게 다시 맡겨
+          // 세계관을 덮어쓰고 마을·들판 맵을 한 벌 더 만들었다(2026-10-05 스트레스 실측: 칩셋 질문으로 끝난 빌더 → 재배정 2회).
+          const applied = mode === "project" ? changedProjectKeys(snapshot, working) : [];
+          const summary = missingReportSummary(snapshot, working, applied, lastSaid.get(agentId));
+          const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: false, summary, changedKeys: applied, spills: [], conflicts: [] };
+          outcomes.set(agentId, outcome);
+          emit({ type: "agent_done", agentId, ok: false, summary, stats: done.stats, changedKeys: applied, spills: [], conflicts: [] });
+          return outcome;
+        }
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
@@ -1057,6 +1068,26 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
   emit(slimDoneEvent(done, base));
   return done;
+}
+
+/** report_task 없이 끝난 팀원의 결과. 이미 반영된 맵·키를 밝혀 팀장이 같은 일을 다시 맡기지 않게 한다. */
+export function missingReportSummary(before: Project, after: Project, changedKeys: readonly string[], lastSaid: string | undefined): string {
+  const added = Object.keys(after.maps).filter((id) => !before.maps[id]);
+  const changed = Object.keys(after.maps).filter((id) => before.maps[id] && before.maps[id] !== after.maps[id] && JSON.stringify(before.maps[id]) !== JSON.stringify(after.maps[id]));
+  const name = (id: string) => `${after.maps[id]?.name ?? id}(${id})`;
+  const other = changedKeys.filter((key) => key !== "maps" && !key.startsWith("maps."));
+  const parts = [
+    added.length ? `새 맵 ${added.map(name).join(", ")}` : "",
+    changed.length ? `고친 맵 ${changed.map(name).join(", ")}` : "",
+    other.length ? `바뀐 프로젝트 데이터 ${other.join(", ")}` : "",
+  ].filter(Boolean);
+  return [
+    "report_task 없이 끝나 완료로 치지 않았다.",
+    parts.length
+      ? `그러나 이미 프로젝트에 반영된 변경이 있다 — ${parts.join(" · ")}. 같은 일을 처음부터 다시 맡기지 말고, 남은 일만 이 맵·데이터를 이어서 배정하라.`
+      : "프로젝트에 반영된 변경은 없다.",
+    lastSaid?.trim() ? `팀원의 마지막 말: ${lastSaid.trim().slice(0, 1500)}` : "",
+  ].filter(Boolean).join(" ");
 }
 
 function summaryOf(done: PiAgentDoneEvent): string {
