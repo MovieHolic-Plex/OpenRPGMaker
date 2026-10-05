@@ -2,7 +2,8 @@
 from pathlib import Path
 from PIL import Image
 import argparse,itertools,json,hashlib
-POLICY={'version':1,'bodyStartY':22,'silhouetteCloneIoU':.985,'lowerBodyCloneIoU':.985,'wholePalettePartitionClone':True,'lowerPalettePartitionClone':True}
+from template import verified_lineage
+POLICY={'version':2,'verifiedSharedTemplate':'warn-and-human-review','bodyStartY':22,'silhouetteCloneIoU':.985,'lowerBodyCloneIoU':.985,'wholePalettePartitionClone':True,'lowerPalettePartitionClone':True}
 def load(p):
  im=Image.open(p).convert('RGBA');assert im.size==(48,128);return list(im.get_flattened_data())
 def partition(data,body=False):
@@ -32,8 +33,11 @@ def pair(a,b):
 
 def inspect(bundles):
  records=[];data={str(b):load(Path(b)/'charset.png') for b in bundles}
- for left,right in itertools.combinations(map(str,bundles),2):records.append({'left':left,'right':right,**pair(data[left],data[right])})
- return {'pass':all(not p['clone'] for p in records),'policy':POLICY,'implementationSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'pairs':records,'scope':'Reject repeated silhouette/body/palette-label pattern. Does not prove different age, gender, role, anatomy quality or artistic merit; user review required.'}
+ lineages={str(b):verified_lineage(b) for b in bundles}
+ for left,right in itertools.combinations(map(str,bundles),2):
+  metrics=pair(data[left],data[right]);derived=any(json.loads((Path(p)/'recipe.json').read_text()).get('method')=='pinned-template-explicit-edits' for p in [left,right]);shared=bool(derived and data[left]!=data[right] and lineages[left] and lineages[left]==lineages[right])
+  records.append({'left':left,'right':right,**metrics,'verifiedSharedTemplate':shared,'blocked':metrics['clone'] and not shared,'warning':'Shared source body/gait; compare edited identity visually.' if shared else None})
+ return {'pass':all(not p['blocked'] for p in records),'policy':POLICY,'implementationSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'pairs':records,'scope':'Reject undeclared clones; replay-verified shared templates emit warnings and require human identity/gait review. Metrics do not prove artistic merit.'}
 
 def controls():
  root=Path(__file__).resolve().parents[4];sheet=root/'harness-data/pokemon-character-casting/first-wave/rival/A/charset.png';original=load(sheet)

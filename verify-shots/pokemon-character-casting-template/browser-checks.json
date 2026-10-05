@@ -1,0 +1,77 @@
+{
+  "pass": true,
+  "candidateId": "explorer-2fe0ce80a94b963f",
+  "checks": [
+    {
+      "name": "direct link opens template-derived Naru v2",
+      "pass": true
+    },
+    {
+      "name": "original template, derivative and changed pixels visible",
+      "pass": true
+    },
+    {
+      "name": "all comparison images retain 48x128 native atlas",
+      "pass": true
+    },
+    {
+      "name": "honest derivative provenance shown",
+      "pass": true
+    },
+    {
+      "name": "identity observation asks about intentional edits",
+      "pass": true
+    },
+    {
+      "name": "five human review observations remain",
+      "pass": true
+    },
+    {
+      "name": "Allow disabled before observations",
+      "pass": true
+    },
+    {
+      "name": "phase 0 preview works",
+      "pass": true
+    },
+    {
+      "name": "phase 1 preview works",
+      "pass": true
+    },
+    {
+      "name": "phase 2 preview works",
+      "pass": true
+    },
+    {
+      "name": "phase 3 preview works",
+      "pass": true
+    },
+    {
+      "name": "mobile no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile comparison uses integer pixel scale",
+      "pass": true
+    },
+    {
+      "name": "unapproved download blocked",
+      "pass": true
+    },
+    {
+      "name": "no browser/resource errors",
+      "pass": true
+    },
+    {
+      "name": "production decisions unchanged",
+      "pass": true
+    },
+    {
+      "name": "candidate still pending after reload",
+      "pass": true
+    }
+  ],
+  "productionDecisionsBefore": 1,
+  "productionDecisionsAfter": 1,
+  "productionVotesWritten": 0
+}
