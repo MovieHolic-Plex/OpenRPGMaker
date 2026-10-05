@@ -1,0 +1,41 @@
+OPRN Studio · AI 실행 로그
+UI 확인용 재생 · 작업 현황과 로그 추출
+실행: activity-1791172236093-3n5tjv1w3i4
+프로젝트: 82d2131d-8667-44b5-b01b-ee80610aef32
+상태: 준비
+범위: 시공 조수
+시작: 2026-10-05T03:50:36.093Z
+갱신: 2026-10-05T03:50:36.097Z
+기록: 2건
+원본 실행에서 보존 상한으로 생략된 기록: 0건
+그림은 참조만 포함합니다.
+
+2026-10-05T03:50:36.094Z · 시공 조수 · agent_spawn · info
+작업 배정
+결과:
+{
+  "type": "agent_spawn",
+  "agentId": "workspace-builder",
+  "role": "builder",
+  "label": "시공 조수",
+  "memberId": "builder",
+  "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+  "mapName": "시장 마을",
+  "task": "지도 구성 확인"
+}
+
+2026-10-05T03:50:36.095Z · 시공 조수 · inspect_map · ok · 1ms
+지도 구성 확인 완료
+입력:
+{
+  "callId": "workspace-builder-read",
+  "args": {
+    "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+    "apiKey": "[인증 정보 가림]",
+    "evidence": "UI replay only"
+  }
+}
+결과:
+{
+  "nodes": 3
+}
