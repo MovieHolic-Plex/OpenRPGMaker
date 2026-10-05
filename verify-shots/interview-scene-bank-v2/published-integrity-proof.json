@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 181,
-  "remaining": 1276,
+  "published": 210,
+  "remaining": 1247,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -980,34 +980,27 @@
     "mystery--record--testimony--wonder--trust--episode",
     "mystery--record--testimony--wonder--trust--scene",
     "mystery--record--testimony--wonder--trust--short",
-    "romance--campus--choice--bittersweet--perspectives",
     "romance--campus--choice--bittersweet--perspectives--episode",
     "romance--campus--choice--bittersweet--perspectives--scene",
     "romance--campus--choice--bittersweet--perspectives--short",
-    "romance--campus--choice--bittersweet--routes",
     "romance--campus--choice--bittersweet--routes--episode",
     "romance--campus--choice--bittersweet--routes--scene",
     "romance--campus--choice--bittersweet--routes--short",
-    "romance--campus--choice--bittersweet--single",
     "romance--campus--choice--bittersweet--single--episode",
     "romance--campus--choice--bittersweet--single--scene",
     "romance--campus--choice--bittersweet--single--short",
-    "romance--campus--choice--secret--perspectives",
     "romance--campus--choice--secret--perspectives--episode",
     "romance--campus--choice--secret--perspectives--scene",
     "romance--campus--choice--secret--perspectives--short",
     "romance--campus--choice--secret--routes--episode",
     "romance--campus--choice--secret--routes--scene",
     "romance--campus--choice--secret--routes--short",
-    "romance--campus--choice--secret--single",
     "romance--campus--choice--secret--single--episode",
     "romance--campus--choice--secret--single--scene",
     "romance--campus--choice--secret--single--short",
-    "romance--campus--choice--warm--perspectives",
     "romance--campus--choice--warm--perspectives--episode",
     "romance--campus--choice--warm--perspectives--scene",
     "romance--campus--choice--warm--perspectives--short",
-    "romance--campus--choice--warm--routes",
     "romance--campus--choice--warm--routes--episode",
     "romance--campus--choice--warm--routes--scene",
     "romance--campus--choice--warm--routes--short",
@@ -1080,7 +1073,6 @@
     "romance--palace--choice--bittersweet--single--episode",
     "romance--palace--choice--bittersweet--single--scene",
     "romance--palace--choice--bittersweet--single--short",
-    "romance--palace--choice--secret--perspectives",
     "romance--palace--choice--secret--perspectives--episode",
     "romance--palace--choice--secret--perspectives--scene",
     "romance--palace--choice--secret--perspectives--short",
@@ -1088,7 +1080,6 @@
     "romance--palace--choice--secret--routes--episode",
     "romance--palace--choice--secret--routes--scene",
     "romance--palace--choice--secret--routes--short",
-    "romance--palace--choice--secret--single",
     "romance--palace--choice--secret--single--episode",
     "romance--palace--choice--secret--single--scene",
     "romance--palace--choice--secret--single--short",
@@ -1096,83 +1087,63 @@
     "romance--palace--choice--warm--perspectives--episode",
     "romance--palace--choice--warm--perspectives--scene",
     "romance--palace--choice--warm--perspectives--short",
-    "romance--palace--choice--warm--routes",
     "romance--palace--choice--warm--routes--episode",
     "romance--palace--choice--warm--routes--scene",
     "romance--palace--choice--warm--routes--short",
-    "romance--palace--choice--warm--single",
     "romance--palace--choice--warm--single--episode",
     "romance--palace--choice--warm--single--scene",
     "romance--palace--choice--warm--single--short",
-    "romance--palace--memory--bittersweet--perspectives",
     "romance--palace--memory--bittersweet--perspectives--episode",
     "romance--palace--memory--bittersweet--perspectives--scene",
     "romance--palace--memory--bittersweet--perspectives--short",
-    "romance--palace--memory--bittersweet--routes",
     "romance--palace--memory--bittersweet--routes--episode",
     "romance--palace--memory--bittersweet--routes--scene",
     "romance--palace--memory--bittersweet--routes--short",
-    "romance--palace--memory--bittersweet--single",
     "romance--palace--memory--bittersweet--single--episode",
     "romance--palace--memory--bittersweet--single--scene",
     "romance--palace--memory--bittersweet--single--short",
-    "romance--palace--memory--secret--perspectives",
     "romance--palace--memory--secret--perspectives--episode",
     "romance--palace--memory--secret--perspectives--scene",
     "romance--palace--memory--secret--perspectives--short",
-    "romance--palace--memory--secret--routes",
     "romance--palace--memory--secret--routes--episode",
     "romance--palace--memory--secret--routes--scene",
     "romance--palace--memory--secret--routes--short",
-    "romance--palace--memory--secret--single",
     "romance--palace--memory--secret--single--episode",
     "romance--palace--memory--secret--single--scene",
     "romance--palace--memory--secret--single--short",
-    "romance--palace--memory--warm--perspectives",
     "romance--palace--memory--warm--perspectives--episode",
     "romance--palace--memory--warm--perspectives--scene",
     "romance--palace--memory--warm--perspectives--short",
-    "romance--palace--memory--warm--routes",
     "romance--palace--memory--warm--routes--episode",
     "romance--palace--memory--warm--routes--scene",
     "romance--palace--memory--warm--routes--short",
-    "romance--palace--memory--warm--single",
     "romance--palace--memory--warm--single--episode",
     "romance--palace--memory--warm--single--scene",
     "romance--palace--memory--warm--single--short",
-    "romance--palace--talk--bittersweet--perspectives",
     "romance--palace--talk--bittersweet--perspectives--episode",
     "romance--palace--talk--bittersweet--perspectives--scene",
     "romance--palace--talk--bittersweet--perspectives--short",
-    "romance--palace--talk--bittersweet--routes",
     "romance--palace--talk--bittersweet--routes--episode",
     "romance--palace--talk--bittersweet--routes--scene",
     "romance--palace--talk--bittersweet--routes--short",
-    "romance--palace--talk--bittersweet--single",
     "romance--palace--talk--bittersweet--single--episode",
     "romance--palace--talk--bittersweet--single--scene",
     "romance--palace--talk--bittersweet--single--short",
-    "romance--palace--talk--secret--perspectives",
     "romance--palace--talk--secret--perspectives--episode",
     "romance--palace--talk--secret--perspectives--scene",
     "romance--palace--talk--secret--perspectives--short",
-    "romance--palace--talk--secret--routes",
     "romance--palace--talk--secret--routes--episode",
     "romance--palace--talk--secret--routes--scene",
     "romance--palace--talk--secret--routes--short",
-    "romance--palace--talk--secret--single",
     "romance--palace--talk--secret--single--episode",
     "romance--palace--talk--secret--single--scene",
     "romance--palace--talk--secret--single--short",
-    "romance--palace--talk--warm--perspectives",
     "romance--palace--talk--warm--perspectives--episode",
     "romance--palace--talk--warm--perspectives--scene",
     "romance--palace--talk--warm--perspectives--short",
-    "romance--palace--talk--warm--routes",
     "romance--palace--talk--warm--routes--episode",
     "romance--palace--talk--warm--routes--scene",
     "romance--palace--talk--warm--routes--short",
-    "romance--palace--talk--warm--single",
     "romance--palace--talk--warm--single--episode",
     "romance--palace--talk--warm--single--scene",
     "romance--palace--talk--warm--single--short",
@@ -1511,9 +1482,30 @@
       "height": 941
     },
     {
+      "key": "romance--campus--choice--warm--routes",
+      "sha256": "124fb69a07ab7ac712ecabf31f8abd2353b3b0acf5d98aad34da63f46f191190",
+      "generationPromptSha256": "0d89b66d5d63340f31e1c0ec972209a4d01d302687d28fcc6a91083f17aee7b2",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--campus--choice--warm--perspectives",
+      "sha256": "d1d36498c482aaa3418fefa8536f5256ed305f5d38c481069abbf72a95bd83ad",
+      "generationPromptSha256": "d7ae5a8583d2ef522c04c75b48772bd941ea25ccd9e34492ad2604f8695da50a",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--campus--choice--secret",
       "sha256": "4a9d54369c205da3b74002b6b7be60bce4953f19fa362394e7fe762525a51b18",
       "generationPromptSha256": "c81cb157152f3418f01b8b2c57efcb16a7054ac9f36e8b815df7386469319a38",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--campus--choice--secret--single",
+      "sha256": "4e6b01d0dc9557ee43e4e7bd53c436a812a5c1045ff5c0210e6d2061f1c4e027",
+      "generationPromptSha256": "4e15ca0ec9bc2574f77ae370619d9da1fa8680cbe34dabaee47ab0e7dc633d2a",
       "width": 1672,
       "height": 941
     },
@@ -1525,6 +1517,13 @@
       "height": 941
     },
     {
+      "key": "romance--campus--choice--secret--perspectives",
+      "sha256": "e78721e71382f97f86da78e2c4816a9bc32dae19c89a7f2ca9dccf69c8141331",
+      "generationPromptSha256": "309303da54b7a36adae45ca85337827e1b42ec79c3361702ff095126f7d3ca5f",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--campus--choice--bittersweet",
       "sha256": "55d302f9664e91f8b76f281c879c5f3e8dfd8ce07bb0753d4f5e79f9e11c8b9b",
       "generationPromptSha256": "ba33d7d20a2a039148d54bc90f23b6a44c41c8dc720580dd9ddac83e98f4deeb",
@@ -1532,93 +1531,268 @@
       "height": 941
     },
     {
+      "key": "romance--campus--choice--bittersweet--single",
+      "sha256": "d1ecf7177eadb1be7a6df11ac5979775e8e332c7851ef40495da3ecd4fe16826",
+      "generationPromptSha256": "f4c6192b39c5e985f8060dae5250f1f75f0c7ae1adb245db2f29681cf08405d3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes",
+      "sha256": "dc4c4fa6250f610c2e58d46b577baded8f49f11cb8205f81f177df9899446fcd",
+      "generationPromptSha256": "30cab480dc920dac5efba83399f5fda639feea8f15407bbd9f085856627f93d3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives",
+      "sha256": "4e0b30a66947899ce0ab7ad97a8def56f53df15e9de529516ba0b7248e2f22b7",
+      "generationPromptSha256": "470d2747ffd11927acdf2b2d4080960924d2804872c6178c8a442f15f8203397",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--palace",
-      "sha256": "65332626d76f21debaa1cb1b2a8df651216e8f93d39a8b961e0b1d41845e77eb",
-      "generationPromptSha256": "f1b08016e7b21e022eee22ecf6488061ce7a3e7a4e157407ad8bb61435e4c317",
+      "sha256": "ba60506dd743810085ef60ab74b8908a5cbca7e638a220699ee606904038d0ef",
+      "generationPromptSha256": "8c382f168e6254777c564a64e9d31b5a0e30a3de13da3c1b8ed3e61e23fc64f9",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--talk",
-      "sha256": "6614ea73cb648c1a35f052aa8db4a512ad8d2197333af3045e37331a44617895",
-      "generationPromptSha256": "cf2660f11a98b9296a436d679076582ffc0178ceea8c2064e0850caa95b796ba",
+      "sha256": "c35211dcf2647f322522ef0a146df4b0164014b7c0628a11e1bf7cd2f2dc57a9",
+      "generationPromptSha256": "bbfe790af212f268534c83b0c856d6d3e07ea16c460b93875c75eabfb167d63f",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--talk--warm",
-      "sha256": "db5674d1067489d16a0e3d4bd479848c3d446f4111904fe1bb59c7cc12c65f5d",
-      "generationPromptSha256": "74ec2011f3e399644bd71668a4f1d546d4ec9420d4cc169a588f575c53cb7f45",
+      "sha256": "e73113b1eeeb05d6df1fff77854aceeb9a2c33a87ab1afdb751aed36ad0d38b1",
+      "generationPromptSha256": "77d43568f4aa24db5c5571a9d6439b74844aa6c262f4c447927fb4a32fbd431f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--warm--single",
+      "sha256": "0658e6390b745a10e7b01e5ca2e1445ce51108f4e61a788b3ac6fa42818954c2",
+      "generationPromptSha256": "c1fef4426fa67351e90575afeb4977f186573d538fea8c8f53d1dbd6aa7b058b",
+      "width": 1672,
+      "height": 940
+    },
+    {
+      "key": "romance--palace--talk--warm--routes",
+      "sha256": "c8ffa765fae4b516790de96413b256d0d3d0516859673576a26d09ca9c4c6a9f",
+      "generationPromptSha256": "e0d8f5edd10e443f294202b2e8cac941efa0b3e2a839331996d5f850067bfe6f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--warm--perspectives",
+      "sha256": "cc2453d9e204fba2139afa529e3c31aedcd4d5c1b25ac14ecfac08637c68d4be",
+      "generationPromptSha256": "3735743e8e01da7f8ede921baa933b951f2450d7dc06875b6aae49b229a85f8e",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--talk--secret",
-      "sha256": "a25665c80da7f0e714344701bd3c54118a507060a6907b777cfe00d9d3341608",
-      "generationPromptSha256": "eb51cb6088b67479bf30591f831e28a7e8441bdad51f6ba50cb71258d6072945",
+      "sha256": "5cb21549cd57a7cf309f59b70621cbc69a3fb5a5d2b926b380f66524b8bdb902",
+      "generationPromptSha256": "6382b5cbd253970ac2d13a76999424c8a5b66daa1de8d678c6d4c233dc45e92a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--secret--single",
+      "sha256": "54b39ee37f8672a291f96731b8d9a6773cfbb4a7c3cfa7e111bede9d64fb44bc",
+      "generationPromptSha256": "5eddaf85d082805fb64a686580bf06c6527fe055f6e74840f612e5d72d36669d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--secret--routes",
+      "sha256": "ccb4e38bbead438c3f1140accade971e532050f2dd79b0fa5e8abb2591884c5d",
+      "generationPromptSha256": "fd392d81ce62cb92cfee584f83e226508fb1ae6c91a77767d733d4e5d7cf5105",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--secret--perspectives",
+      "sha256": "c14026b8149a5a1a3d8112a73ca2ac181a07d1a642a96ea7e5000b5f87b60395",
+      "generationPromptSha256": "ec25f8482c819451babdf17100336c8be4b7b51c3846a28f87e40c0673bb35e3",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--talk--bittersweet",
-      "sha256": "562cf8fa9234cf6b8e04edb4b035e87701f4b7e00b0ff269e187381f596dd8fb",
-      "generationPromptSha256": "87a239c8939040855f0cc57129aa7756491421295ae2344212799268d6eaaeb4",
+      "sha256": "4c7dfdfae2cb3d8c5a15135c99fea2156daa60e13b8d930aaea72a17c264d8b2",
+      "generationPromptSha256": "65d7e39c1ed3638e5e05ea4c2225b4449c3d3805f261c064e30fd0f0f9b0c0d3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--bittersweet--single",
+      "sha256": "a615ef3c543b2d2decac40c8da7731700d009870aa06786f636594fb728d3977",
+      "generationPromptSha256": "6350332a03873f2e806494fd622e23663cf0d631fde35500eccf950d41408321",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--bittersweet--routes",
+      "sha256": "5fd1bf6fbd44c69b3ebc73150ff55f3e07fe9a1066d77efdbf80ce90213b4912",
+      "generationPromptSha256": "9077dea347e5784160f84f0a2e65c16a0d93bf8580b7fddc99caaf336068096f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--talk--bittersweet--perspectives",
+      "sha256": "2dbf504cafad8eefd79ef89ae42251587a9b925e56405576975877f400e1bd78",
+      "generationPromptSha256": "2f762793d2f4781f2e6ce0a67c5a220c156c20854e668b4e782b1d99bf0fc38f",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--memory",
-      "sha256": "04364a094eafc7ff1da9e2f1bc64e5df9fe6cad7cea989091374019b7319abf6",
-      "generationPromptSha256": "cca442352ca54fb235f8c43b0bc41a3773594b4be2964ae6302ba709cc2d78e4",
+      "sha256": "f9fc3143cd0a09d6f9ea95accbe22ae0aa3618e2a7b5d9b93209b168bf1a6d15",
+      "generationPromptSha256": "1fc2e59018f3f6dbe4fd6ef7f2b2a0b24a0d9d7b9136a00b356bf5b594102aaa",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--memory--warm",
-      "sha256": "58794cbd5fe962066d8f47bb8b31fea9e38941fa05693a624f0683fea2c19b63",
-      "generationPromptSha256": "06af32d25365cacb3ec0b00abbe7a36eb6d3de0434031191cbfc200afc5015ad",
+      "sha256": "854795b705e5473f87ce52ef295a5dbc747d7200bc299bf17de3c9a5fa6b471a",
+      "generationPromptSha256": "4e62f3c50ab58244a23e8a33acb76217babcc5ddcdf220b04808bde26f89f3a8",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--warm--single",
+      "sha256": "19e1af8fbf31a1e982205923a56cceb973fc4411e6f8a936ed81d1a8e748bbc1",
+      "generationPromptSha256": "3285f59c37ac6a9aaaf877d3300c545f891d0f45554a7c10db6ab5be568f6feb",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--warm--routes",
+      "sha256": "cd420735d1ead51e5f95d7767c6fa9d380a458895f6587f265d0f03ada661e9f",
+      "generationPromptSha256": "8f9e62a1936900db6c8d0f27ad7dc3a523560c6789699c31e27fe8f49cb4cc8d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--warm--perspectives",
+      "sha256": "d8d62d5b34e26f8369c1d217586d433ce609ff3bdebfd2319ce6fb0bcddc5e1f",
+      "generationPromptSha256": "cf46b2a130fb0b0662aae55f4a49dd1f73ed7255c545e0c4c083016e7d37acb6",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--memory--secret",
-      "sha256": "b880ed09f32d2b1512dfbbe76924f4b55f7f40c51bb440572428ae7cd90e63f9",
-      "generationPromptSha256": "f9b835790b8f011c523f869b16200d45c14a7e819420ab14a31717e39889c70e",
+      "sha256": "e835e96dd5f673c1633d9c407cb4cb05551109f4343eaa274066dfcb0b8719ce",
+      "generationPromptSha256": "e4af0682076ac4fdd652253464dd72e8363d2c2c928e6c0d1395b8efd691df95",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--secret--single",
+      "sha256": "81eea1a25dd39ab7e648cdf9185d2ace99a5b02dd48ad6b844173cb084b1a0df",
+      "generationPromptSha256": "1f3ff2b5cecbfc7ea7d3e8f3d8a91cbda2fcc7d8fe7d986e171801f94a00132b",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--secret--routes",
+      "sha256": "a1f310e675e32f4fdff9c9d92c2055e6aa96e6453f747e3c77ef695a7604f35a",
+      "generationPromptSha256": "60d88ac858a0f9d4d6c0c3565eb7c190f0ea379b6fbe10b646bda17a7d6a2e07",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--secret--perspectives",
+      "sha256": "d36c74540a4ad3652056a7e61ffc6c5ba78ca4d3d09165a5b5233d68ded902f1",
+      "generationPromptSha256": "00681c9a536b2ce20ac41593a5fc681771209bb2077c42183b437be7f784287c",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--memory--bittersweet",
-      "sha256": "d1fedb6a357de19eaffd05cbe5bc8db438c93062d0d2e3735940170ec73d3a29",
-      "generationPromptSha256": "ecfa270633b02e7dab96ff85de493f3496e8d5829f473e58dd222be6acd52b34",
+      "sha256": "095186395ad530c8afd5249724d4a3730f29ee5cafc8049b462287ad64528b7f",
+      "generationPromptSha256": "edbfc5f7a355e69c0dcb8c9f9f93dde82706ea11151257400f8ab5201b353223",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--bittersweet--single",
+      "sha256": "69be7f2d8ca1f9b89b419c778c3d93315cb6238f7c9cacc2378812113bea9478",
+      "generationPromptSha256": "477778cbd86ecbd8e975f32d633f1a958ddf721f70b7b5bf6b2dccfcfc31542c",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--bittersweet--routes",
+      "sha256": "0b92de132499137b9eeab7ee968e82bd925fad58d4cff5faa5bb28ef8ad71010",
+      "generationPromptSha256": "b408be78bcca31530489bfb755c3ca02db161f5465084e0df543de2e84b70cd1",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--memory--bittersweet--perspectives",
+      "sha256": "f40a06ebea710138812a34cf7e8f6930a85adaca588962fb829c2e178bded9a1",
+      "generationPromptSha256": "1b12bc9b0c1f4bce8e46d5e6faf2e5f29de89c31bba3a645927f4f8575e1ffed",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--choice",
-      "sha256": "2e3b55ee5bede208ec1e5fa657f188ad61b2d1387d2fa987c5295622966c91a3",
-      "generationPromptSha256": "4f08fc635828edd7e437b5f6b2ab4b2ae458e4a0cba853164176214d441df588",
+      "sha256": "f9519f7ba16c56f22368e1e2d856b6c8bd5c88dd00e9e715fb564ceddab857ea",
+      "generationPromptSha256": "0e12b26e64f3e0e5a49803c06b9d3389abe01ba4f3b44078904c4c685b5dcd94",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--choice--warm",
-      "sha256": "2b6c9f09d5939d4c72d25dbdfb8d2b522e9217e65fb4823207a92872894a1e91",
-      "generationPromptSha256": "eb9b7428ae4ef7c040053a9b45018e3abac5b96973d90e8a15cb69b4bd185142",
+      "sha256": "aad9bca0785363d15acd11c7349ecd0d71548e1c87e811831b4a1e2373ed4888",
+      "generationPromptSha256": "f33b4e9db72a59e4488677b336c885498c67764948a41cc2725c71065b1dec12",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--warm--single",
+      "sha256": "0bf33a684a87c461dd896ef20f5ddd105d7ac24f50b33c862acb0feb36dc3f4b",
+      "generationPromptSha256": "c5747fcff114778ba5688db30d1d41cee803c617c0a056901d118e9ffb3617b5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--warm--routes",
+      "sha256": "ee8ea95e7f45f79c33763922689a7894fa56a96914788dc0a96d356ba74d7e0f",
+      "generationPromptSha256": "7729479e0c2f4962de6afaed588d4eb6b2484a433556e1f49ea46c30892af812",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--choice--secret",
-      "sha256": "f286c0c63f450471a7e1f7ace46926ac8963e880d691fbfe30836b83e50ec4e5",
-      "generationPromptSha256": "2b96e5fe09cf546f397cb06dc36fb049cfc42162683e576600d4fcc175c31947",
+      "sha256": "32543db539db80ff9bdfd3ea8afc8452568d17418f3883530932fae079715053",
+      "generationPromptSha256": "1f8b88fe104218d45e91e90fe8c733bc76524f3e4b46972e183fb3e195ec05f0",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--secret--single",
+      "sha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+      "generationPromptSha256": "338ddc97f03982a293527b28ae4263dd8c4004320cf4297bd713a119602ab5cb",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--palace--choice--secret--perspectives",
+      "sha256": "dc5632f411779a768fc5d19dc505d769d19f2335bb5be95234816333ef745848",
+      "generationPromptSha256": "5ed9484b6db46fb22c1a027c7efe0a19f0f92f7d774f42766a8ea853bda806d2",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--palace--choice--bittersweet",
-      "sha256": "8dd8c1a5eea45747fffce9cb3b915fd875e867c40e9e89e580299c80f36c848c",
-      "generationPromptSha256": "6642232be7b65a5a970df51cfa9ae901fc784c33669b75323e671690987464a6",
+      "sha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
+      "generationPromptSha256": "de1430d94686dba11c79840262130af4e973985e54f989466c0145e1b3a658cf",
       "width": 1672,
       "height": 941
     },

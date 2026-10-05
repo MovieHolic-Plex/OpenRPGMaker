@@ -587,7 +587,32 @@
         "review": {
           "sourceSha256": "65332626d76f21debaa1cb1b2a8df651216e8f93d39a8b961e0b1d41845e77eb",
           "promptSha256": "c2599bc136d977995bf08f1206456056573a6178cf4a1a7568653aed0711261e",
-          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "reviewer": "Codex direct native short-prefix palace audit during v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original contains gold fleur-de-lis/heraldic banners; remove all banners/emblems and bare stone architecture only."
+          ],
+          "notes": "Native original directly opened: masks/play visible but unchosen banners and narrative props violate selected-only staging."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace-4-ba60506dd743.png",
+        "sha256": "ba60506dd743810085ef60ab74b8908a5cbca7e638a220699ee606904038d0ef",
+        "promptSha256": "c2599bc136d977995bf08f1206456056573a6178cf4a1a7568653aed0711261e",
+        "generationPromptSha256": "8c382f168e6254777c564a64e9d31b5a0e30a3de13da3c1b8ed3e61e23fc64f9",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "ba60506dd743810085ef60ab74b8908a5cbca7e638a220699ee606904038d0ef",
+          "promptSha256": "c2599bc136d977995bf08f1206456056573a6178cf4a1a7568653aed0711261e",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -598,7 +623,14 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Empty masked ballroom, two prop masks and two vacant chairs; crisp pixel clusters. No guest silhouettes."
+          "notes": "Native short-prefix replacement opened: masks at near vacant palace dressing table, bare stone windows/private threshold. Guarded masquerade only; no forced gameplay outcome. Coarse native hard pixels, no banners/text/people; intimate corner view unlike former grand ballroom staircase."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 206894,
+          "findings": []
         }
       }
     ],
@@ -1301,7 +1333,32 @@
         "review": {
           "sourceSha256": "6614ea73cb648c1a35f052aa8db4a512ad8d2197333af3045e37331a44617895",
           "promptSha256": "8c1874058e289d7f7e2225275890b2920017938e525b998be787cec449940ca4",
-          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "reviewer": "Codex direct native short-prefix palace audit during v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original contains gold fleur-de-lis/heraldic banners; remove all banners/emblems and bare stone architecture only."
+          ],
+          "notes": "Native original directly opened: masks/play visible but unchosen banners and narrative props violate selected-only staging."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk-2-c35211dcf264.png",
+        "sha256": "c35211dcf2647f322522ef0a146df4b0164014b7c0628a11e1bf7cd2f2dc57a9",
+        "promptSha256": "8c1874058e289d7f7e2225275890b2920017938e525b998be787cec449940ca4",
+        "generationPromptSha256": "bbfe790af212f268534c83b0c856d6d3e07ea16c460b93875c75eabfb167d63f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "c35211dcf2647f322522ef0a146df4b0164014b7c0628a11e1bf7cd2f2dc57a9",
+          "promptSha256": "8c1874058e289d7f7e2225275890b2920017938e525b998be787cec449940ca4",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -1312,7 +1369,14 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Vacant facing chairs, shared table and masks express conversation in empty ballroom. Generic architectural ornament is not lettering."
+          "notes": "Native short-prefix replacement opened: near-overhead private palace alcove, two fully visible opposed EMPTY red chairs around table with two plain prop masks. Dialogue focus, bare stone, no emblems/text/people/blur; new intimate overhead composition versus broad grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 193345,
+          "findings": []
         }
       }
     ],
@@ -1333,7 +1397,32 @@
         "review": {
           "sourceSha256": "04364a094eafc7ff1da9e2f1bc64e5df9fe6cad7cea989091374019b7319abf6",
           "promptSha256": "60dc60e12fc6c2561d87cd77670967f65e9cd648b3b366579c20f9a01215dc31",
-          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "reviewer": "Codex direct native short-prefix palace audit during v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original contains gold fleur-de-lis/heraldic banners; remove all banners/emblems and bare stone architecture only."
+          ],
+          "notes": "Native original directly opened: masks/play visible but unchosen banners and narrative props violate selected-only staging."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory-2-f9fc3143cd0a.png",
+        "sha256": "f9fc3143cd0a09d6f9ea95accbe22ae0aa3618e2a7b5d9b93209b168bf1a6d15",
+        "promptSha256": "60dc60e12fc6c2561d87cd77670967f65e9cd648b3b366579c20f9a01215dc31",
+        "generationPromptSha256": "1fc2e59018f3f6dbe4fd6ef7f2b2a0b24a0d9d7b9136a00b356bf5b594102aaa",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f9fc3143cd0a09d6f9ea95accbe22ae0aa3618e2a7b5d9b93209b168bf1a6d15",
+          "promptSha256": "60dc60e12fc6c2561d87cd77670967f65e9cd648b3b366579c20f9a01215dc31",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -1344,7 +1433,14 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Close keepsake chest and two masks in empty ballroom express memory; no identity or words."
+          "notes": "Native short-prefix replacement opened: close oblique revisitable palace alcove, prominent CLOSED PLAIN memory box beside two masks, visible continuous plain threshold. Bare walls, no heraldry/text/people/blur; independent worktable view instead of grand piano hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 148764,
+          "findings": []
         }
       }
     ],
@@ -1397,7 +1493,32 @@
         "review": {
           "sourceSha256": "2e3b55ee5bede208ec1e5fa657f188ad61b2d1387d2fa987c5295622966c91a3",
           "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
-          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "reviewer": "Codex direct native short-prefix palace audit during v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original contains hanging cloth banners and arbitrary letter/dagger story props; remove banners, weapon/letter and use ordinary trust alternatives at actual doors."
+          ],
+          "notes": "Native original directly opened: masks/play visible but unchosen banners and narrative props violate selected-only staging."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice-3-f9519f7ba16c.png",
+        "sha256": "f9519f7ba16c56f22368e1e2d856b6c8bd5c88dd00e9e715fb564ceddab857ea",
+        "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+        "generationPromptSha256": "0e12b26e64f3e0e5a49803c06b9d3389abe01ba4f3b44078904c4c685b5dcd94",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "f9519f7ba16c56f22368e1e2d856b6c8bd5c88dd00e9e715fb564ceddab857ea",
+          "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -1408,7 +1529,14 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Two contrasting ballroom exits, masks, blank sealed letter and dagger express conflict; new divided spatial staging."
+          "notes": "Native short-prefix replacement opened: elevated private palace room with TWO actual opposed doors, respective CLOSED books versus folded scarf alternatives and two masks at near empty table. No weapon/letter/banners, hard native pixels and no writing/people; new intimate trust-choice space."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 143514,
+          "findings": []
         }
       }
     ],
@@ -3118,7 +3246,39 @@
         "review": {
           "sourceSha256": "db5674d1067489d16a0e3d4bd479848c3d446f4111904fe1bb59c7cc12c65f5d",
           "promptSha256": "6a5b4c38f9b3071dba3e40887040152019110035e6b9fdec23230854f383dadc",
-          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "reviewer": "Codex direct original reinspection during v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Published original directly reinspected: several large red hanging banners carry gold fleur-de-lis/heraldic insignia, introducing an unchosen faction/emblem. Remove all flags/banners/tapestries/insignia, use bare palace architecture and plain curtains only."
+          ],
+          "notes": "Directly opened published native original db5674d10674: masquerade masks, two vacant dialogue seats, welcoming candlelit ballroom are appropriate, but multiple gold heraldic banner symbols on rear wall violate selection-only decoration. Revoke prior acceptance and regenerate instead of retaining known defective art."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 334752,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm-2-e73113b1eeeb.png",
+        "sha256": "e73113b1eeeb05d6df1fff77854aceeb9a2c33a87ab1afdb751aed36ad0d38b1",
+        "promptSha256": "6a5b4c38f9b3071dba3e40887040152019110035e6b9fdec23230854f383dadc",
+        "generationPromptSha256": "77d43568f4aa24db5c5571a9d6439b74844aa6c262f4c447927fb4a32fbd431f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e73113b1eeeb05d6df1fff77854aceeb9a2c33a87ab1afdb751aed36ad0d38b1",
+          "promptSha256": "6a5b4c38f9b3071dba3e40887040152019110035e6b9fdec23230854f383dadc",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3129,13 +3289,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Facing vacant chairs, masks and shared candle table with fresh roses and welcoming ballroom lights."
+          "notes": "Native replacement directly opened: bare-stone palace alcove, two fully visible facing empty red seats, two plain prop masks, fresh roses and welcoming candlelit preparations. Unselected fleur-de-lis banners removed entirely. Discrete coarse clusters, no identities/text; side alcove differs from old piano/grand-hall camera. Progression and scope not selected."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 334752,
+          "colors": 266153,
           "findings": []
         }
       }
@@ -3182,7 +3342,39 @@
         "review": {
           "sourceSha256": "a25665c80da7f0e714344701bd3c54118a507060a6907b777cfe00d9d3341608",
           "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
-          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "reviewer": "Codex direct published original reinspection during v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found multiple gold fleur-de-lis/heraldic emblems on red hanging banners. These unchosen insignia violate selected-only staging. Revoke prior acceptance and redraw with completely bare stone walls, no flags/banners/tapestries/insignia."
+          ],
+          "notes": "Published original directly opened: masquerade props, vacant dialogue seats and selected mood present, but repeated gold heraldry is clearly visible. Reject rather than retaining known defective art."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 285659,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret-3-5cb21549cd57.png",
+        "sha256": "5cb21549cd57a7cf309f59b70621cbc69a3fb5a5d2b926b380f66524b8bdb902",
+        "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+        "generationPromptSha256": "6382b5cbd253970ac2d13a76999424c8a5b66daa1de8d678c6d4c233dc45e92a",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "5cb21549cd57a7cf309f59b70621cbc69a3fb5a5d2b926b380f66524b8bdb902",
+          "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3193,13 +3385,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Foreground roses and candle now have sharp square pixel clusters. Two facing empty chairs, shared masks and partly opened private palace doorway preserve the dialogue and secret setting."
+          "notes": "Native replacement directly opened: bare-stone confined palace alcove at night, two fully visible opposed vacant chairs and two plain prop masks at common closed keepsake. Hard moonlight shadow bands, private threshold, no fleur-de-lis/flags/text/people. Intimate alcove differs from former broad grand hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 285659,
+          "colors": 244693,
           "findings": []
         }
       }
@@ -3214,7 +3406,39 @@
         "review": {
           "sourceSha256": "562cf8fa9234cf6b8e04edb4b035e87701f4b7e00b0ff269e187381f596dd8fb",
           "promptSha256": "7f1d06996ff2162ea52589717d7a374a1031c636e8316738be32643fd793f11a",
-          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "reviewer": "Codex direct published original reinspection during v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found multiple gold fleur-de-lis/heraldic emblems on red hanging banners. These unchosen insignia violate selected-only staging. Revoke prior acceptance and redraw with completely bare stone walls, no flags/banners/tapestries/insignia."
+          ],
+          "notes": "Published original directly opened: masquerade props, vacant dialogue seats and selected mood present, but repeated gold heraldry is clearly visible. Reject rather than retaining known defective art."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 327567,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet-2-4c7dfdfae2cb.png",
+        "sha256": "4c7dfdfae2cb3d8c5a15135c99fea2156daa60e13b8d930aaea72a17c264d8b2",
+        "promptSha256": "7f1d06996ff2162ea52589717d7a374a1031c636e8316738be32643fd793f11a",
+        "generationPromptSha256": "65d7e39c1ed3638e5e05ea4c2225b4449c3d3805f261c064e30fd0f0f9b0c0d3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "4c7dfdfae2cb3d8c5a15135c99fea2156daa60e13b8d930aaea72a17c264d8b2",
+          "promptSha256": "7f1d06996ff2162ea52589717d7a374a1031c636e8316738be32643fd793f11a",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3225,13 +3449,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Two empty facing seats and masks, strong night rain through windows and scattered spent petals, fresh staircase framing."
+          "notes": "Native replacement directly opened: side palace balcony, two full opposed vacant blue chairs and two masks express guarded masquerade/dialogue; wet rain-cleared floor, brown leaves and spent petals retain lingering departure. No insignia/writing/people; native coarse pixels, different alcove from former grand hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 327567,
+          "colors": 342495,
           "findings": []
         }
       }
@@ -3246,7 +3470,39 @@
         "review": {
           "sourceSha256": "58794cbd5fe962066d8f47bb8b31fea9e38941fa05693a624f0683fea2c19b63",
           "promptSha256": "d1f53eb517f629cf17b6f9a6b9d6d174686d50c1bf2dffed9b689d4b69240c54",
-          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "reviewer": "Codex direct published native reinspection during v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native parent reinspection found gold fleur-de-lis/heraldic insignia on red hanging banners. Revoke acceptance and redraw with completely bare stone architecture and NO flags/banners/tapestries/emblems/insignia."
+          ],
+          "notes": "Original directly opened: masks, memory box and selected mood present, but clear unselected gold fleur-de-lis banners violate selected-only staging."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 369438,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm-2-854795b705e5.png",
+        "sha256": "854795b705e5473f87ce52ef295a5dbc747d7200bc299bf17de3c9a5fa6b471a",
+        "promptSha256": "d1f53eb517f629cf17b6f9a6b9d6d174686d50c1bf2dffed9b689d4b69240c54",
+        "generationPromptSha256": "4e62f3c50ab58244a23e8a33acb76217babcc5ddcdf220b04808bde26f89f3a8",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "854795b705e5473f87ce52ef295a5dbc747d7200bc299bf17de3c9a5fa6b471a",
+          "promptSha256": "d1f53eb517f629cf17b6f9a6b9d6d174686d50c1bf2dffed9b689d4b69240c54",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3257,13 +3513,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Closed keepsake chest with two masks amid bright welcoming banquet tables and fresh flowers; clear clustered pixel edges."
+          "notes": "Native replacement opened: elevated intimate palace balcony, prominent closed memory box/two masks between fully visible opposed vacant seats. Welcoming flowers/candles and warm light, no heraldry/text/people; native hard coarse clusters and bare-stone walls; new intimate alcove vs former grand hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 369438,
+          "colors": 361185,
           "findings": []
         }
       }
@@ -3278,7 +3534,71 @@
         "review": {
           "sourceSha256": "b880ed09f32d2b1512dfbbe76924f4b55f7f40c51bb440572428ae7cd90e63f9",
           "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
-          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "reviewer": "Codex direct published native reinspection during v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native parent reinspection found gold fleur-de-lis/heraldic insignia on red hanging banners. Revoke acceptance and redraw with completely bare stone architecture and NO flags/banners/tapestries/emblems/insignia."
+          ],
+          "notes": "Original directly opened: masks, memory box and selected mood present, but clear unselected gold fleur-de-lis banners violate selected-only staging."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 314290,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret-2-b57ed6acd6bb.png",
+        "sha256": "b57ed6acd6bb3f5173ff7d6a54134b2683d76de131893dd3ca2527952b469395",
+        "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+        "generationPromptSha256": "66f60cfd214126d14debbb903e7171f2564f74909316c0ddcbb9a93e20ad4f24",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b57ed6acd6bb3f5173ff7d6a54134b2683d76de131893dd3ca2527952b469395",
+          "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW CORRECTION: Foreground doorway/hardware blur: remove ALL near-camera doors/jamb/rail/candle/plant framing; every plane same sharp native pixel focus. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nREDRAW selected THREE-answer prefix only: near-overhead private PALACE alcove, TWO plain prop eye masks beside ONE prominent CLOSED PLAIN memory keepsake, revisitable empty place and TWO facing fully visible EMPTY seats. CONFINED private room AT NIGHT, narrow threshold, partly concealed keepsake and hard discrete moon-shadow bands; no cheerful sunset or exposed garden. Progression/scope not chosen, no forced routes or ending. Completely BARE STONE architecture, no flags/banners/tapestries/fleur-de-lis/emblems/heraldry/insignia. NO foreground plants/flowers/candle framing, all planes sharply coarse square native pixel clusters. No people/identities/silhouettes/portraits/humanoid statues, text/pseudo-writing, papers/documents, clocks/numerals, open books, blur/DOF/soft gradient/bloom, UI or collage. Independent intimate elevated alcove, not previous long grand hall/front mask table/distant castle camera; fully drawn quiet right.\nFINAL OVERRIDE: Foreground doorway/hardware blur: remove ALL near-camera doors/jamb/rail/candle/plant framing; every plane same sharp native pixel focus. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration."
+          ],
+          "notes": "Native replacement opened: confined night palace memory alcove with box/two masks and two full opposed vacant seats. Large extreme-left foreground door/hardware is visibly defocused. Reject native pixel-art; selected scene otherwise present and heraldry absent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 166811,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret-3-e835e96dd5f6.png",
+        "sha256": "e835e96dd5f673c1633d9c407cb4cb05551109f4343eaa274066dfcb0b8719ce",
+        "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+        "generationPromptSha256": "e4af0682076ac4fdd652253464dd72e8363d2c2c928e6c0d1395b8efd691df95",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "e835e96dd5f673c1633d9c407cb4cb05551109f4343eaa274066dfcb0b8719ce",
+          "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3289,13 +3609,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Locked plain memory chest and masks at enclosed shadowed corner, empty dim moonlit hall and discrete shade bands."
+          "notes": "Native redo opened: blurred door-frame removed; moonlit private palace memory alcove, prominent closed box/two masks and full opposed empty chairs, every plane sharply coarse pixel clustered. No insignia/text/people; intimate corner camera vs former open grand hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 314290,
+          "colors": 201917,
           "findings": []
         }
       }
@@ -3310,7 +3630,39 @@
         "review": {
           "sourceSha256": "d1fedb6a357de19eaffd05cbe5bc8db438c93062d0d2e3735940170ec73d3a29",
           "promptSha256": "9c32dfbb1970bb7a3640bc4803e30b5e9780ebe6fe78bc5a4d82de4f9999f007",
-          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "reviewer": "Codex direct native published palace audit during v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found clear gold fleur-de-lis/heraldic insignia on hanging red/blue banners, an unselected faction/symbol. Revoke acceptance and redraw entirely bare stone walls, no flags/banners/tapestries/emblems."
+          ],
+          "notes": "Native original actually opened: selected masks/play props visible, but repeated gold heraldic banner symbols are clear. Reject previous acceptance."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 420515,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--bittersweet-2-095186395ad5.png",
+        "sha256": "095186395ad530c8afd5249724d4a3730f29ee5cafc8049b462287ad64528b7f",
+        "promptSha256": "9c32dfbb1970bb7a3640bc4803e30b5e9780ebe6fe78bc5a4d82de4f9999f007",
+        "generationPromptSha256": "edbfc5f7a355e69c0dcb8c9f9f93dde82706ea11151257400f8ab5201b353223",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "095186395ad530c8afd5249724d4a3730f29ee5cafc8049b462287ad64528b7f",
+          "promptSha256": "9c32dfbb1970bb7a3640bc4803e30b5e9780ebe6fe78bc5a4d82de4f9999f007",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3321,13 +3673,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Worn keepsake chest, separated masks, spent rose petals across vacant large floor and moonlit stair hall convey revisited absence."
+          "notes": "Native replacement opened: bare stone intimate palace alcove, prominent plain closed memory box/two masks between vacant seats. Rain-cleared wet floor, spent leaves outside and vacant threshold retain autumn lingering departure; no banners/emblems/text/people/blur, new intimate corner shot vs old broad staircase hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 420515,
+          "colors": 235464,
           "findings": []
         }
       }
@@ -3374,7 +3726,39 @@
         "review": {
           "sourceSha256": "2b6c9f09d5939d4c72d25dbdfb8d2b522e9217e65fb4823207a92872894a1e91",
           "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
-          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "reviewer": "Codex direct native published palace audit during v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found clear gold fleur-de-lis/heraldic insignia on hanging red/blue banners, an unselected faction/symbol. Revoke acceptance and redraw entirely bare stone walls, no flags/banners/tapestries/emblems."
+          ],
+          "notes": "Native original actually opened: selected masks/play props visible, but repeated gold heraldic banner symbols are clear. Reject previous acceptance."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 449085,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm-3-aad9bca07853.png",
+        "sha256": "aad9bca0785363d15acd11c7349ecd0d71548e1c87e811831b4a1e2373ed4888",
+        "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+        "generationPromptSha256": "f33b4e9db72a59e4488677b336c885498c67764948a41cc2725c71065b1dec12",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "aad9bca0785363d15acd11c7349ecd0d71548e1c87e811831b4a1e2373ed4888",
+          "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3385,13 +3769,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Two opposed banquet and blue balcony doorways, closed personal box, sealed letter and masks keep the consequential trust choice; fresh flowers and welcoming light convey warmth."
+          "notes": "Native replacement opened: bare stone room with two actual opposed closed doors, book/scarf adjacent to their respective thresholds, central common closed box/two masks and vacant chairs. Fresh flowers and inviting candle preparations retain warmth. No banners/heraldry/text/people, coarse native pixel focus; different intimate room vs old hall fork."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 449085,
+          "colors": 279915,
           "findings": []
         }
       }
@@ -3406,7 +3790,39 @@
         "review": {
           "sourceSha256": "f286c0c63f450471a7e1f7ace46926ac8963e880d691fbfe30836b83e50ec4e5",
           "promptSha256": "64d087c79305fc7825990d5dba7556540895fd6165bd901f7c8aad2007ecab0a",
-          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "reviewer": "Codex direct native published palace audit during v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found clear gold fleur-de-lis/heraldic insignia on hanging red/blue banners, an unselected faction/symbol. Revoke acceptance and redraw entirely bare stone walls, no flags/banners/tapestries/emblems."
+          ],
+          "notes": "Native original actually opened: selected masks/play props visible, but repeated gold heraldic banner symbols are clear. Reject previous acceptance."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 336011,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret-2-32543db539db.png",
+        "sha256": "32543db539db80ff9bdfd3ea8afc8452568d17418f3883530932fae079715053",
+        "promptSha256": "64d087c79305fc7825990d5dba7556540895fd6165bd901f7c8aad2007ecab0a",
+        "generationPromptSha256": "1f8b88fe104218d45e91e90fe8c733bc76524f3e4b46972e183fb3e195ec05f0",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "32543db539db80ff9bdfd3ea8afc8452568d17418f3883530932fae079715053",
+          "promptSha256": "64d087c79305fc7825990d5dba7556540895fd6165bd901f7c8aad2007ecab0a",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3417,13 +3833,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Opposed light ballroom and dark corridor exits with two masks and personal chest retain conflict and palace; deep enclosed stepped shadows make secrecy visible."
+          "notes": "Native replacement opened: confined moonlit stone room and narrow closed doors book/scarf alternatives, common closed box/two masks and vacant chairs. Hard moon-shadow bands retain secret mood. No flags/text/people/blur; new private room vs old broad hall fork."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 336011,
+          "colors": 129295,
           "findings": []
         }
       }
@@ -3438,7 +3854,39 @@
         "review": {
           "sourceSha256": "8dd8c1a5eea45747fffce9cb3b915fd875e867c40e9e89e580299c80f36c848c",
           "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
-          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "reviewer": "Codex direct native published palace audit during v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Direct native reinspection found clear gold fleur-de-lis/heraldic insignia on hanging red/blue banners, an unselected faction/symbol. Revoke acceptance and redraw entirely bare stone walls, no flags/banners/tapestries/emblems."
+          ],
+          "notes": "Native original actually opened: selected masks/play props visible, but repeated gold heraldic banner symbols are clear. Reject previous acceptance."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 314868,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-2-ca0155c4c05d.png",
+        "sha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
+        "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+        "generationPromptSha256": "de1430d94686dba11c79840262130af4e973985e54f989466c0145e1b3a658cf",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
+          "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3449,13 +3897,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Opposed palace routes, masks and keepsake chest preserve conflict; spent rose petals and quiet blue moonlight convey the lingering mood in a new frontal composition."
+          "notes": "Native replacement opened: opposing private doors and respective book/scarf alternatives, common closed box/two masks and vacant chairs, wet quiet autumn courtyard/brown leaves at empty threshold. Bare stone no flags/text/people/blur; new small alcove vs old open hall."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 314868,
+          "colors": 231023,
           "findings": []
         }
       }
@@ -8676,6 +9124,36 @@
           "colors": 723847,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--routes-2-124fb69a07ab.png",
+        "sha256": "124fb69a07ab7ac712ecabf31f8abd2353b3b0acf5d98aad34da63f46f191190",
+        "promptSha256": "18894d89eb2ab0fd64c09e9532c3809e04dfc480f63f0c10142416b7e2d06659",
+        "generationPromptSha256": "0d89b66d5d63340f31e1c0ec972209a4d01d302687d28fcc6a91083f17aee7b2",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "124fb69a07ab7ac712ecabf31f8abd2353b3b0acf5d98aad34da63f46f191190",
+          "promptSha256": "18894d89eb2ab0fd64c09e9532c3809e04dfc480f63f0c10142416b7e2d06659",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: real university courtyard fork connects distinct paired vacant meeting nooks. Opposed near door thresholds have closed box versus folded scarf, giving concrete trust alternatives. Two plain closed books, fresh flowers and warm daylight preserve prior choices; clock removed, coarse native pixels and fresh branched composition versus parent exposed book ledge."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 622328,
+          "findings": []
+        }
       }
     ],
     "romance--campus--choice--warm--perspectives": [
@@ -8708,6 +9186,36 @@
           "width": 1672,
           "height": 941,
           "colors": 407060,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--perspectives-2-d1d36498c482.png",
+        "sha256": "d1d36498c482aaa3418fefa8536f5256ed305f5d38c481069abbf72a95bd83ad",
+        "promptSha256": "862af5eefda92d6641e836ee4259e728b9b047589dfc7bdc026e8ff97e4e7a97",
+        "generationPromptSha256": "d7ae5a8583d2ef522c04c75b48772bd941ea25ccd9e34492ad2604f8695da50a",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d1d36498c482aaa3418fefa8536f5256ed305f5d38c481069abbf72a95bd83ad",
+          "promptSha256": "862af5eefda92d6641e836ee4259e728b9b047589dfc7bdc026e8ff97e4e7a97",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: one shared plain closed box between two opposed empty chairs, side window and differently framed opposed real doorways around same event; closed books versus folded scarf provide meaningful competing trust props. Warm flowers/light, all foreground sharply pixellated, no postcard/pseudo-caption or old blur. Fresh interior versus parent exposed courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 467308,
           "findings": []
         }
       }
@@ -8744,6 +9252,36 @@
           "colors": 189369,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret--single-2-4e6b01d0dc95.png",
+        "sha256": "4e6b01d0dc9557ee43e4e7bd53c436a812a5c1045ff5c0210e6d2061f1c4e027",
+        "promptSha256": "3995cf0d68c8e460708d8a9ad2a6d992a7f1827b18308e1b89dcde461c6267c7",
+        "generationPromptSha256": "4e15ca0ec9bc2574f77ae370619d9da1fa8680cbe34dabaee47ab0e7dc633d2a",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "4e6b01d0dc9557ee43e4e7bd53c436a812a5c1045ff5c0210e6d2061f1c4e027",
+          "promptSha256": "3995cf0d68c8e460708d8a9ad2a6d992a7f1827b18308e1b89dcde461c6267c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: two fully visible opposed vacant green chairs around common closed books, one private continuous passage with opposed closed doorways and box versus folded scarf alternatives. Night confined university library, moon-shadow bands, no identity/text, fresh interior instead of parent exposed garden. Missing seat pair and trust alternatives repaired."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 237309,
+          "findings": []
+        }
       }
     ],
     "romance--campus--choice--secret--routes": [
@@ -8774,6 +9312,1386 @@
           "width": 1672,
           "height": 941,
           "colors": 312103,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret--perspectives-1-63ae2a10b179.png",
+        "sha256": "63ae2a10b1794de4980e97c4a7b30deb52d8debfe6f1bbd2cb87a9310e95f77e",
+        "promptSha256": "75c8b6ce243fdb8edb9f8c6d46ca75718214d6054815701f0ea5f05df602901e",
+        "generationPromptSha256": "852d23c517d1dcaad91486b87d9cde43bd591341235c506afd56b5a2fe60931b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "63ae2a10b1794de4980e97c4a7b30deb52d8debfe6f1bbd2cb87a9310e95f77e",
+          "promptSha256": "75c8b6ce243fdb8edb9f8c6d46ca75718214d6054815701f0ea5f05df602901e",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh near-overhead oblique INSIDE view of a modern BRICK UNIVERSITY sheltered library/gallery. Two separated CLOSED PLAIN books signify old friends reunion. CONFINED private library AT NIGHT with partly concealed plain keepake and hard discrete moon-shadow bands; no exposed friendly garden or sunset. SELECTED PROGRESSION: ONE central shared closed plain keepsake BOX between TWO opposed EMPTY chairs; actual side window and differently framed open doorway contrast views around SAME object/event in ONE continuous alcove. No duplicate common keepsake or split-screen. CRITICAL CHOSEN TRUST-DECISION GAMEPLAY MUST REMAIN VISIBLE: TWO actual OPPOSING PRIVATE DOOR thresholds in this SAME space, with a small closed plain BOOK arrangement beside one and a folded ordinary SCARF beside the other, visibly competing physical alternatives. The central common keepsake remains unique; these door props are separate mundane alternatives. Merely books/cups on a generic table with a single doorway FAILS this gameplay requirement. Stage both the chosen progression AND those opposing thresholds/props; neither replaces the other. No people, silhouettes, portraits, writing/pseudo-writing, ALL papers/posters/notices/boards/documents/photos/postcards, clocks/numerals, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse sharp native square pixel clusters/stepped contours; fully drawn quiet right; no previous exposed book ledge/tower composition."
+          ],
+          "notes": "Direct original inspection: one common closed box, opposed empty chairs, window and differently framed door stage perspectives in a moonlit university alcove. However conflicting meaningful trust alternatives are not present: ordinary books/one box and one door read as memory, no actual opposed private thresholds/contrasting props. Selected choice play remains unproven."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 204822,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret--perspectives-2-e78721e71382.png",
+        "sha256": "e78721e71382f97f86da78e2c4816a9bc32dae19c89a7f2ca9dccf69c8141331",
+        "promptSha256": "75c8b6ce243fdb8edb9f8c6d46ca75718214d6054815701f0ea5f05df602901e",
+        "generationPromptSha256": "309303da54b7a36adae45ca85337827e1b42ec79c3361702ff095126f7d3ca5f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e78721e71382f97f86da78e2c4816a9bc32dae19c89a7f2ca9dccf69c8141331",
+          "promptSha256": "75c8b6ce243fdb8edb9f8c6d46ca75718214d6054815701f0ea5f05df602901e",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly reviewed: elevated university library at night; a single closed common box between two opposed empty green chairs. Opposing actual doors with closed books versus scarf preserve trust alternatives; window versus corridor frames preserve same-event perspectives. Hard pixel shadows, no people, writing or heraldry; new interior rather than parent outdoor book ledge."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 291108,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--single-1-028fc8af4868.png",
+        "sha256": "028fc8af4868fae8866aa682ed4c767f5fbb5e13794ffa1990c63573954ab5bd",
+        "promptSha256": "2603f61c52fbc5ea6cf96cab5a6b2056df268ba5dcc6d86238770ed87f836bb0",
+        "generationPromptSha256": "32340059b769061dbec9ae8d2d9d05ca97020d6968fde22238f1b43d59b6f8ce",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "028fc8af4868fae8866aa682ed4c767f5fbb5e13794ffa1990c63573954ab5bd",
+          "promptSha256": "2603f61c52fbc5ea6cf96cab5a6b2056df268ba5dcc6d86238770ed87f836bb0",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh near-overhead oblique INSIDE view of a modern BRICK UNIVERSITY sheltered library/gallery. Two separated CLOSED PLAIN books signify old friends reunion. quiet rain-cleared AUTUMN with spent petals, brown leaves and vacated threshold/lingering departure; no cheerful spring sunset. SELECTED PROGRESSION: ONE pair of fully visible opposed EMPTY chairs around ONE common closed plain keepsake table; one continuous intimate private passage. No lone bench or book ledge as substitute. CRITICAL CHOSEN TRUST-DECISION GAMEPLAY MUST REMAIN VISIBLE: TWO actual OPPOSING PRIVATE DOOR thresholds in this SAME space, with a small closed plain BOOK arrangement beside one and a folded ordinary SCARF beside the other, visibly competing physical alternatives. The central common keepsake remains unique; these door props are separate mundane alternatives. Merely books/cups on a generic table with a single doorway FAILS this gameplay requirement. Stage both the chosen progression AND those opposing thresholds/props; neither replaces the other. No people, silhouettes, portraits, writing/pseudo-writing, ALL papers/posters/notices/boards/documents/photos/postcards, clocks/numerals, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse sharp native square pixel clusters/stepped contours; fully drawn quiet right; no previous exposed book ledge/tower composition."
+          ],
+          "notes": "Direct original inspection: paired vacant seats and common plain book with one private autumn wet arcade preserve single relationship and bittersweet mood. Consequential trust alternatives are missing: no opposed meaningful thresholds or conflicting keepsake arrangement. Reject all-choices check."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 388423,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--single-2-d1ecf7177ead.png",
+        "sha256": "d1ecf7177eadb1be7a6df11ac5979775e8e332c7851ef40495da3ecd4fe16826",
+        "promptSha256": "2603f61c52fbc5ea6cf96cab5a6b2056df268ba5dcc6d86238770ed87f836bb0",
+        "generationPromptSha256": "f4c6192b39c5e985f8060dae5250f1f75f0c7ae1adb245db2f29681cf08405d3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d1ecf7177eadb1be7a6df11ac5979775e8e332c7851ef40495da3ecd4fe16826",
+          "promptSha256": "2603f61c52fbc5ea6cf96cab5a6b2056df268ba5dcc6d86238770ed87f836bb0",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly reviewed: private brick library, one fully visible opposed empty chair pair/shared keepsake, continuous private passage. Actual opposed doors with books versus scarf retain trust choice. Rain-cleared autumn and brown leaves visible through windows, no identities or writing; independent interior camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 353290,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes-1-8d80bf8d0590.png",
+        "sha256": "8d80bf8d05907b6ecf6023485bcc6de557bd9e776bf464422fb66ea2e37e7d14",
+        "promptSha256": "1284da01896013d4f091871271a99009c00f4ed82d47d54e9ad21955d408f8b9",
+        "generationPromptSha256": "2f8f9f3f8f9887e6b3ef6b1681f7e867310f6716ea89355dd2e62014576b9d9f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8d80bf8d05907b6ecf6023485bcc6de557bd9e776bf464422fb66ea2e37e7d14",
+          "promptSha256": "1284da01896013d4f091871271a99009c00f4ed82d47d54e9ad21955d408f8b9",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh near-overhead oblique INSIDE view of a modern BRICK UNIVERSITY sheltered library/gallery. Two separated CLOSED PLAIN books signify old friends reunion. quiet rain-cleared AUTUMN with spent petals, brown leaves and vacated threshold/lingering departure; no cheerful spring sunset. SELECTED PROGRESSION: THREE distinctly separated meeting nooks EACH with TWO fully visible opposed EMPTY chairs and different ordinary keepsakes, connected by THREE REAL continuous branches; no lone scattered benches or diagram. CRITICAL CHOSEN TRUST-DECISION GAMEPLAY MUST REMAIN VISIBLE: TWO actual OPPOSING PRIVATE DOOR thresholds in this SAME space, with a small closed plain BOOK arrangement beside one and a folded ordinary SCARF beside the other, visibly competing physical alternatives. The central common keepsake remains unique; these door props are separate mundane alternatives. Merely books/cups on a generic table with a single doorway FAILS this gameplay requirement. Stage both the chosen progression AND those opposing thresholds/props; neither replaces the other. No people, silhouettes, portraits, writing/pseudo-writing, ALL papers/posters/notices/boards/documents/photos/postcards, clocks/numerals, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse sharp native square pixel clusters/stepped contours; fully drawn quiet right; no previous exposed book ledge/tower composition."
+          ],
+          "notes": "Direct original inspection: three paired empty garden nooks connected by real branches, autumn wet leaves and closed books preserve campus/mood/routes. But no opposed meaningful near trust-decision thresholds or conflicting physical keepsakes, only generic seating/books/cups. Reject selected choice play."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 549905,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes-2-dc4c4fa6250f.png",
+        "sha256": "dc4c4fa6250f610c2e58d46b577baded8f49f11cb8205f81f177df9899446fcd",
+        "promptSha256": "1284da01896013d4f091871271a99009c00f4ed82d47d54e9ad21955d408f8b9",
+        "generationPromptSha256": "30cab480dc920dac5efba83399f5fda639feea8f15407bbd9f085856627f93d3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "dc4c4fa6250f610c2e58d46b577baded8f49f11cb8205f81f177df9899446fcd",
+          "promptSha256": "1284da01896013d4f091871271a99009c00f4ed82d47d54e9ad21955d408f8b9",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly reviewed: elevated brick library gallery with three paired empty meeting nooks, distinct book/vase/cup arrangements and actual branching gallery floor. Opposed near door thresholds with books versus scarf retain trust gameplay. Wet autumn view, spent petals, discrete coarse pixel clusters and no unselected identities/text/heraldry."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 382447,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives-1-2ab7c38119de.png",
+        "sha256": "2ab7c38119deb47237b7a6a934326eb7282226d253ca7a8cee788e4d2a875e87",
+        "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+        "generationPromptSha256": "f771f55f669887ec9d3c640584c86a9492ef6dcef3380b1a21490590860bf3b3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2ab7c38119deb47237b7a6a934326eb7282226d253ca7a8cee788e4d2a875e87",
+          "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh near-overhead oblique INSIDE view of a modern BRICK UNIVERSITY sheltered library/gallery. Two separated CLOSED PLAIN books signify old friends reunion. quiet rain-cleared AUTUMN with spent petals, brown leaves and vacated threshold/lingering departure; no cheerful spring sunset. SELECTED PROGRESSION: ONE central shared closed plain keepsake BOX between TWO opposed EMPTY chairs; actual side window and differently framed open doorway contrast views around SAME object/event in ONE continuous alcove. No duplicate common keepsake or split-screen. CRITICAL CHOSEN TRUST-DECISION GAMEPLAY MUST REMAIN VISIBLE: TWO actual OPPOSING PRIVATE DOOR thresholds in this SAME space, with a small closed plain BOOK arrangement beside one and a folded ordinary SCARF beside the other, visibly competing physical alternatives. The central common keepsake remains unique; these door props are separate mundane alternatives. Merely books/cups on a generic table with a single doorway FAILS this gameplay requirement. Stage both the chosen progression AND those opposing thresholds/props; neither replaces the other. No people, silhouettes, portraits, writing/pseudo-writing, ALL papers/posters/notices/boards/documents/photos/postcards, clocks/numerals, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse sharp native square pixel clusters/stepped contours; fully drawn quiet right; no previous exposed book ledge/tower composition."
+          ],
+          "notes": "Direct original inspection: two opposed empty chairs at common closed-book arrangement, window and arched doorway in one continuous autumn university alcove. Conflicting trust alternatives are absent, so different perspectives staging alone does not establish all prior choices."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 337802,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives-2-4cfd117616c1.png",
+        "sha256": "4cfd117616c10788481c52b5bb4729544908d14501b87635a7dff66c2fea5908",
+        "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+        "generationPromptSha256": "c8f1bb7d293e7d7159435ebc45ee51f8b9de42e4991e48405d35f28c6325c8d3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "4cfd117616c10788481c52b5bb4729544908d14501b87635a7dff66c2fea5908",
+          "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW: native foreground foliage/rail is visibly defocused and fails the pixel-art gate. Remove ALL foreground plants/foliage/flowers and rail framing completely; foreground bare floor and furniture sharply coarse pixel-clustered at the same focus as every other plane. Retain modern brick university at rain-cleared quiet autumn, spent brown leaves OUTSIDE only, ONE common closed plain keepsake between TWO fully visible opposed EMPTY seats; differently framed real side window/doorway express SAME-event perspectives in ONE continuous private interior. Preserve trust-choice gameplay with TWO actual OPPOSING private doors, closed books beside one versus folded scarf beside the other. Keep common keepsake unique, no duplicated box. No people, text/pseudo-writing, insignia/flags/banners/heraldry, paper sheets, clocks/numerals, blur/DOF/soft gradient or collage. Independent near-overhead interior camera, quiet drawn right."
+          ],
+          "notes": "Native original reopened: selected content present, including common box/opposed seats and opposing doors with books versus scarf. But near-left foliage and bottom/right foliage/rail visibly defocused into soft blobs, unlike sharp middle ground. Reject native pixel-art gate; no filtering."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 360271,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives-3-4e0b30a66947.png",
+        "sha256": "4e0b30a66947899ce0ab7ad97a8def56f53df15e9de529516ba0b7248e2f22b7",
+        "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+        "generationPromptSha256": "470d2747ffd11927acdf2b2d4080960924d2804872c6178c8a442f15f8203397",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "4e0b30a66947899ce0ab7ad97a8def56f53df15e9de529516ba0b7248e2f22b7",
+          "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo directly opened: foreground defocus/rail removed; bare floor and fully readable opposed empty chairs with central common closed box. Left closed books and right scarf correspond to two opposite actual closed corridor doors; competing trust alternatives remain visible alongside two differing university courtyard views around SAME keepsake. Wet autumn/brown leaves, no people/text/insignia; sharp native clusters throughout."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 331866,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm--single-1-0658e6390b74.png",
+        "sha256": "0658e6390b745a10e7b01e5ca2e1445ce51108f4e61a788b3ac6fa42818954c2",
+        "promptSha256": "4cdc1082f21d36603c929c15435dc6677211b657ff92a4e7531e5c2d671bc022",
+        "generationPromptSha256": "c1fef4426fa67351e90575afeb4977f186573d538fea8c8f53d1dbd6aa7b058b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "0658e6390b745a10e7b01e5ca2e1445ce51108f4e61a788b3ac6fa42818954c2",
+          "promptSha256": "4cdc1082f21d36603c929c15435dc6677211b657ff92a4e7531e5c2d671bc022",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original and parent comparison: one pair of vacant red seats, shared closed plain box between two masquerade prop eye masks, candlelight/fresh roses and one intimate continuous palace passage/balcony. No people, writing or old heraldic banners. New sheltered balcony/two-seat tableau differs from parent long piano ballroom; coarse visible pixel clusters."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 417269,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm--routes-1-c8ffa765fae4.png",
+        "sha256": "c8ffa765fae4b516790de96413b256d0d3d0516859673576a26d09ca9c4c6a9f",
+        "promptSha256": "3733ee40e071a8496d58ef08443cb9ab3c1cbb813dabbff1547ad23bd7a74b4a",
+        "generationPromptSha256": "e0d8f5edd10e443f294202b2e8cac941efa0b3e2a839331996d5f850067bfe6f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c8ffa765fae4b516790de96413b256d0d3d0516859673576a26d09ca9c4c6a9f",
+          "promptSha256": "3733ee40e071a8496d58ef08443cb9ab3c1cbb813dabbff1547ad23bd7a74b4a",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original and parent comparison: elevated branching palace gallery connects clearly distinct paired vacant meeting nooks with different closed-box/books/cups keepsakes. Two plain masquerade masks and facing near seats preserve dialogue; candlelight/flowers welcome. Real stairs/branches and elevated gallery replace parent single table/piano hall; no heraldic wall banners, no identity/text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 534850,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm--perspectives-1-dc241387274a.png",
+        "sha256": "dc241387274a8bc04d258ae29d385e54110a67eb9a9309b407f5133f369ac4b6",
+        "promptSha256": "e96d82da0d72d53ca40889171e11ebe867e770a9385b746032f7e4b74787b811",
+        "generationPromptSha256": "48bbd9469a9a16a85de89b6057e1f8c1763ebbefae7afc2c205d53e82fa3011a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "dc241387274a8bc04d258ae29d385e54110a67eb9a9309b407f5133f369ac4b6",
+          "promptSha256": "e96d82da0d72d53ca40889171e11ebe867e770a9385b746032f7e4b74787b811",
+          "reviewer": "Codex direct original visual inspection: v2-production-025",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh near-overhead oblique sheltered PALACE MASQUERADE ALCOVE. TWO plain prop eye masks without bodies or faces establish masquerade; TWO opposed completely EMPTY personal seats around ONE common closed plain keepsake BOX express dialogue and different understandings of SAME event. Actual side window and differently framed arch doorway show contrasting views of SAME place in ONE continuous room. Welcoming discrete candlelight, fresh small roses, plain bare stone walls/window curtains only; no unchosen heraldry. EVERY foreground flower/leaf/object must be SHARPLY authored from coarse native square pixel clusters with stepped contours and 2-4-step shades. REMOVE defocused foreground foliage entirely, NO depth-of-field, soft blobs, blur, bloom, smooth shading or painterly texture ANYWHERE. No people/silhouettes/portraits/statues, writing/pseudo-writing, papers/posters/notices/boards, clocks/numerals, flags/banners/tapestries/insignia, open books, diagrams or collage. Fresh alcove framing different from prior front mask table/long piano ballroom or reference bridge/river/castle; quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: shared masquerade-mask arrangement between opposed vacant seats, large side window and differently framed arch doorway show different views in continuous welcoming palace alcove. However near-right foreground flower/foliage is visibly defocused into soft blobs rather than sharp native pixel clusters. Strict pixel style rejects the blur."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 413612,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm--perspectives-2-cc2453d9e204.png",
+        "sha256": "cc2453d9e204fba2139afa529e3c31aedcd4d5c1b25ac14ecfac08637c68d4be",
+        "promptSha256": "e96d82da0d72d53ca40889171e11ebe867e770a9385b746032f7e4b74787b811",
+        "generationPromptSha256": "3735743e8e01da7f8ede921baa933b951f2450d7dc06875b6aae49b229a85f8e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "cc2453d9e204fba2139afa529e3c31aedcd4d5c1b25ac14ecfac08637c68d4be",
+          "promptSha256": "e96d82da0d72d53ca40889171e11ebe867e770a9385b746032f7e4b74787b811",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: two fully visible empty red/blue chairs oppose one central shared closed box; two plain masquerade masks establish palace premise. Window and arched balcony frame the same event, inviting candles and fresh roses retain warm mood. All plants sharp pixel clusters; no flag, insignia, writing or people. Different intimate alcove from former grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 391389,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret--single-1-54b39ee37f86.png",
+        "sha256": "54b39ee37f8672a291f96731b8d9a6773cfbb4a7c3cfa7e111bede9d64fb44bc",
+        "promptSha256": "87732afdb994831665b63a6c083a373c4c708bc3dffb245dd75229b7396268a3",
+        "generationPromptSha256": "5eddaf85d082805fb64a686580bf06c6527fe055f6e74840f612e5d72d36669d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "54b39ee37f8672a291f96731b8d9a6773cfbb4a7c3cfa7e111bede9d64fb44bc",
+          "promptSha256": "87732afdb994831665b63a6c083a373c4c708bc3dffb245dd75229b7396268a3",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: moonlit private palace balcony alcove with two fully visible opposed vacant chairs and shared concealed box/two masks. Continuous narrow candle corridor, hard night shadows, no flags/text/people. One relationship staged in one private continuous space; new side alcove camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 268315,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret--routes-1-ccb4e38bbead.png",
+        "sha256": "ccb4e38bbead438c3f1140accade971e532050f2dd79b0fa5e8abb2591884c5d",
+        "promptSha256": "e322ace6ec37d96d2f5c5cd06d08033fd20e42b34014bc56d515c3f4aac78919",
+        "generationPromptSha256": "fd392d81ce62cb92cfee584f83e226508fb1ae6c91a77767d733d4e5d7cf5105",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ccb4e38bbead438c3f1140accade971e532050f2dd79b0fa5e8abb2591884c5d",
+          "promptSha256": "e322ace6ec37d96d2f5c5cd06d08033fd20e42b34014bc56d515c3f4aac78919",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: elevated night palace gallery with three distinct paired empty meeting nooks connected by actual forked walkways. Mask/coffer, cup and goblet arrangements distinguish places. Hard moonlit shadows and enclosed alcoves retain secret mood; no people/writing/heraldry; new layered gallery composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 279438,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret--perspectives-1-c3888482434e.png",
+        "sha256": "c3888482434e72126c256b10ddd1952dea8b77d7cb4c71983b725c27f1f77d41",
+        "promptSha256": "36d296fad05e53102938935d0b9bf2652159463ef680b181581cd3df66975f5f",
+        "generationPromptSha256": "6b593f75dd7c9d587046f0f080901d3893ff86efbc943562e186eedbb813386b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c3888482434e72126c256b10ddd1952dea8b77d7cb4c71983b725c27f1f77d41",
+          "promptSha256": "36d296fad05e53102938935d0b9bf2652159463ef680b181581cd3df66975f5f",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW: foreground plant obscures left empty chair seat. Remove ALL foreground plants/foliage/flowers; leave bare architectural floor and two chair seats and backs ENTIRELY VISIBLE. ONE common closed plain keepsake between TWO opposed EMPTY seats in ONE continuous confined private PALACE alcove AT NIGHT, two plain prop masks nearby express masquerade and dialogue; one real side window and differently framed door offer contrasting SAME-event views. Hard discrete moon-shadow bands and partly concealed keepsake express secret mood. No people/identities, writing/pseudo-text, insignia/flags/banners/tapestries/heraldry, papers, clocks/numerals, blur/DOF or collage. NEW near-overhead side alcove camera, not front table/distant tower shot."
+          ],
+          "notes": "Native original directly opened: one central common coffer between opposed vacant red chairs, masks, differently framed window/doorway, confined night palace. Near-left plant obscures the full left chair seat, making the required two completely readable vacant places fail composition. Recompose without foreground plants or occlusion."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 268559,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret--perspectives-2-c14026b8149a.png",
+        "sha256": "c14026b8149a5a1a3d8112a73ca2ac181a07d1a642a96ea7e5000b5f87b60395",
+        "promptSha256": "36d296fad05e53102938935d0b9bf2652159463ef680b181581cd3df66975f5f",
+        "generationPromptSha256": "ec25f8482c819451babdf17100336c8be4b7b51c3846a28f87e40c0673bb35e3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "c14026b8149a5a1a3d8112a73ca2ac181a07d1a642a96ea7e5000b5f87b60395",
+          "promptSha256": "36d296fad05e53102938935d0b9bf2652159463ef680b181581cd3df66975f5f",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo directly opened: near-overhead moonlit palace room, two complete opposed empty seats no foreground plant occlusion, one common closed box/two masks. Contrasting real columned window and warm door frame same event in one space; native hard moon shadows, no heraldry/text/people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 226601,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet--single-1-a615ef3c543b.png",
+        "sha256": "a615ef3c543b2d2decac40c8da7731700d009870aa06786f636594fb728d3977",
+        "promptSha256": "31adc843a14be905582ef99fcc0ec9007b32a148093e1af8640ed515a338b74b",
+        "generationPromptSha256": "6350332a03873f2e806494fd622e23663cf0d631fde35500eccf950d41408321",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a615ef3c543b2d2decac40c8da7731700d009870aa06786f636594fb728d3977",
+          "promptSha256": "31adc843a14be905582ef99fcc0ec9007b32a148093e1af8640ed515a338b74b",
+          "reviewer": "Codex direct original visual inspection: v2-production-026",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: one full opposed vacant chair pair around masks/shared box in a continuous private palace balcony passage. Rain-cleared wet floor, brown autumn leaves/spent petals and vacated corridor retain lingering departure. All planes coarse native clusters, no flags/people/writing; intimate side passage differs from parent grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 272122,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet--routes-1-5fd1bf6fbd44.png",
+        "sha256": "5fd1bf6fbd44c69b3ebc73150ff55f3e07fe9a1066d77efdbf80ce90213b4912",
+        "promptSha256": "ab431a62dfd674e26b60077abd41a84eb16f032766abf6c592fb4bc19d1cd028",
+        "generationPromptSha256": "9077dea347e5784160f84f0a2e65c16a0d93bf8580b7fddc99caaf336068096f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "5fd1bf6fbd44c69b3ebc73150ff55f3e07fe9a1066d77efdbf80ce90213b4912",
+          "promptSha256": "ab431a62dfd674e26b60077abd41a84eb16f032766abf6c592fb4bc19d1cd028",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: elevated autumn palace gallery has actual fork with three distant paired vacant nooks and different closed-box/cup/teapot keepsakes plus near masks. Wet floor, brown leaves/spent petals and vacated spaces retain bittersweet tone; no flags/text/people; distinct layered branching shot."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 293803,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet--perspectives-1-d1ec9137f3e1.png",
+        "sha256": "d1ec9137f3e1272f64192b53a9fe98c42086cb0a8663b4e6bda2bdc338d59159",
+        "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+        "generationPromptSha256": "e410794fc9761d2e2d8cf29594ceb7db0e20c74f6aeaee78ba01511a25d9182c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d1ec9137f3e1272f64192b53a9fe98c42086cb0a8663b4e6bda2bdc338d59159",
+          "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW: near-left candle/flowers are visibly blurred, and required SINGLE common closed keepsake missing. REMOVE ALL foreground flowers/plants/candles/rail framing; sharply coarse native pixel architecture/furniture at every plane. A near-overhead sheltered PALACE alcove in rain-cleared quiet AUTUMN, brown leaves/spent petals outside, TWO fully visible opposed EMPTY chairs around ONE unique central CLOSED PLAIN keepsake, two plain prop masks nearby preserve masquerade/DIALOGUE. A differently framed real side window and doorway show contrasting views around SAME central object/event in ONE continuous room. No bright spring celebration, people/identities, text/pseudo-writing, paper sheets, clocks/numerals, heraldry/flags/banners/tapestries, blur/DOF/soft gradients or collage. New near-overhead side alcove camera, not front table/distant tower."
+          ],
+          "notes": "Native original directly opened: wet autumn palace alcove and opposed empty seats/masks/window and doorway. Near-left candles/flowers/rail blurred; no single central common closed keepsake is present. Reject native pixel-art and latest same-event staging; no filter."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 296006,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet--perspectives-2-91185676bde2.png",
+        "sha256": "91185676bde259809eaec7266853c441844d11c3773d5c412d44f7abab31cc17",
+        "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+        "generationPromptSha256": "8cfa5c9fa93d62d89a257087b3d8b636e9b16f690f172bad1da3426f8080e837",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "91185676bde259809eaec7266853c441844d11c3773d5c412d44f7abab31cc17",
+          "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": false,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW CORRECTION: Unselected HUMANOID statue visible outdoors: remove fountain and ALL statues/figures/portraits/silhouettes, use completely vacant bare paved courtyard outside. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nREDRAW: near-left candle/flowers are visibly blurred, and required SINGLE common closed keepsake missing. REMOVE ALL foreground flowers/plants/candles/rail framing; sharply coarse native pixel architecture/furniture at every plane. A near-overhead sheltered PALACE alcove in rain-cleared quiet AUTUMN, brown leaves/spent petals outside, TWO fully visible opposed EMPTY chairs around ONE unique central CLOSED PLAIN keepsake, two plain prop masks nearby preserve masquerade/DIALOGUE. A differently framed real side window and doorway show contrasting views around SAME central object/event in ONE continuous room. No bright spring celebration, people/identities, text/pseudo-writing, paper sheets, clocks/numerals, heraldry/flags/banners/tapestries, blur/DOF/soft gradients or collage. New near-overhead side alcove camera, not front table/distant tower.\nFINAL OVERRIDE: Unselected HUMANOID statue visible outdoors: remove fountain and ALL statues/figures/portraits/silhouettes, use completely vacant bare paved courtyard outside. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration."
+          ],
+          "notes": "Native redo opened: central common box and two masks between opposed empty chairs, different window/door frames, wet quiet autumn palette. Outdoor courtyard fountain includes a clearly humanoid white statue. Reject identityUnset; no drawing of an unselected human appearance, including statues."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 291887,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet--perspectives-3-2dbf504cafad.png",
+        "sha256": "2dbf504cafad8eefd79ef89ae42251587a9b925e56405576975877f400e1bd78",
+        "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+        "generationPromptSha256": "2f762793d2f4781f2e6ce0a67c5a220c156c20854e668b4e782b1d99bf0fc38f",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "2dbf504cafad8eefd79ef89ae42251587a9b925e56405576975877f400e1bd78",
+          "promptSha256": "1fb58346fd625928a2ab161de179a3ad21f59e2bb12f74535ef1e7e409014657",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo opened: outdoor humanoid fountain figure removed; bare autumn courtyard beyond contrasting arched doorway/side window, ONE common closed box/two masks between fully visible opposed EMPTY chairs. Wet autumn/spent leaves, no people/statues/heraldry/text/blur; new near-overhead private room."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 339381,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm--single-1-414e3226663f.png",
+        "sha256": "414e3226663ffde8e0dfa8e7d9c63e542bbaa6a5987db6bffee2e5f888f94fdd",
+        "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+        "generationPromptSha256": "c87c1d998a4bb1e1202a67bde3a7ad328d85fb250aab93a7e1ee6ff1b5b9c1a9",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "414e3226663ffde8e0dfa8e7d9c63e542bbaa6a5987db6bffee2e5f888f94fdd",
+          "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW: selected masquerade masks missing and foreground flower defocused. REMOVE ALL foreground vegetation/flowers and draw bare foreground furniture/floor with hard coarse native pixel clusters, no depth defocus. INSIDE a private PALACE MASQUERADE vestibule, TWO PLAIN eye masks as props MUST be visible beside ONE prominent CLOSED PLAIN memory keepsake. Exactly TWO full facing EMPTY chairs and ONE private continuous alcove passage express one deeply followed relationship. Welcoming thoughtful preparations, fresh small flowers MIDGROUND ONLY and discrete candlelight retain selected warm mood. No humans/silhouettes/portrait/statue, text/pseudo-writing, papers, clocks/numerals, heraldry/flags/banners/tapestries, blur/DOF/bloom/gradient or collage. Independent sheltered side-on vestibule composition, not broad grand hall or reference camera."
+          ],
+          "notes": "Native original directly opened: private palace balcony passage with one fully visible vacant chair pair/shared closed keepsake and welcoming fresh flowers/candles. Two masquerade masks are missing, so selected guarded masquerade premise is not retained; near-right flower cluster is defocused. Reject selected facts and native pixel-art."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 472039,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm--single-2-61622385821b.png",
+        "sha256": "61622385821bae6d6db5cabbb3c3c1bd4551dead1d23ad3b03f536f00894c036",
+        "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+        "generationPromptSha256": "f98041173505516d74845603dc3c4c5e9e1c72012fd08bb22220573a5af578d9",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "61622385821bae6d6db5cabbb3c3c1bd4551dead1d23ad3b03f536f00894c036",
+          "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW CORRECTION: Gold heraldic wall-panel ornaments remain: REMOVE decorative wall panels and mirrors completely; walls are plain bare stone with no signs/insignia/flags/banners/fleur-de-lis at all. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nREDRAW: selected masquerade masks missing and foreground flower defocused. REMOVE ALL foreground vegetation/flowers and draw bare foreground furniture/floor with hard coarse native pixel clusters, no depth defocus. INSIDE a private PALACE MASQUERADE vestibule, TWO PLAIN eye masks as props MUST be visible beside ONE prominent CLOSED PLAIN memory keepsake. Exactly TWO full facing EMPTY chairs and ONE private continuous alcove passage express one deeply followed relationship. Welcoming thoughtful preparations, fresh small flowers MIDGROUND ONLY and discrete candlelight retain selected warm mood. No humans/silhouettes/portrait/statue, text/pseudo-writing, papers, clocks/numerals, heraldry/flags/banners/tapestries, blur/DOF/bloom/gradient or collage. Independent sheltered side-on vestibule composition, not broad grand hall or reference camera.\nFINAL OVERRIDE: Gold heraldic wall-panel ornaments remain: REMOVE decorative wall panels and mirrors completely; walls are plain bare stone with no signs/insignia/flags/banners/fleur-de-lis at all. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration."
+          ],
+          "notes": "Native redo opened: two full facing empty chairs, common closed memory box/two masks, warm preparations/private palace passage. Two wall panels carry gold decorative heraldic emblems despite bare-wall request. Reject selected-only scene: remove all panels/symbols entirely."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 291775,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm--single-3-19e1af8fbf31.png",
+        "sha256": "19e1af8fbf31a1e982205923a56cceb973fc4411e6f8a936ed81d1a8e748bbc1",
+        "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+        "generationPromptSha256": "3285f59c37ac6a9aaaf877d3300c545f891d0f45554a7c10db6ab5be568f6feb",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "19e1af8fbf31a1e982205923a56cceb973fc4411e6f8a936ed81d1a8e748bbc1",
+          "promptSha256": "09ba0e7cb1718f157401bd3c07b53eebca0840994c0904bc5ab6ba1a6d84f362",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo opened: gold wall-panel emblems/mirror removed completely; bare stone palace vestibule, one full vacant pair/common memory box/two masks, continuous private passage and welcoming warm flowers/candles. Coarse native focus, no identities/text/heraldry; independent intimate side room."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 177707,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm--routes-1-cd420735d1ea.png",
+        "sha256": "cd420735d1ead51e5f95d7767c6fa9d380a458895f6587f265d0f03ada661e9f",
+        "promptSha256": "98f359e6bfa6f1d04e86c75d6c8bdffd5aa5b729096b7b8a51d5081f706e044a",
+        "generationPromptSha256": "8f9e62a1936900db6c8d0f27ad7dc3a523560c6789699c31e27fe8f49cb4cc8d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cd420735d1ead51e5f95d7767c6fa9d380a458895f6587f265d0f03ada661e9f",
+          "promptSha256": "98f359e6bfa6f1d04e86c75d6c8bdffd5aa5b729096b7b8a51d5081f706e044a",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: elevated warm palace gallery with actual branching paths to three paired vacant nooks, different closed boxes/mugs, prominent closed keepsake and two masks near left. Welcoming fresh flowers/candles, no people/flags/text; native coarse clusters and new multi-nook gallery unlike parent front box/grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 457233,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm--perspectives-1-d8d62d5b34e2.png",
+        "sha256": "d8d62d5b34e26f8369c1d217586d433ce609ff3bdebfd2319ce6fb0bcddc5e1f",
+        "promptSha256": "d63fa9619c729b938a2665a1cc2bdd3548e8efe6d7db7e55892cea933443cb61",
+        "generationPromptSha256": "cf46b2a130fb0b0662aae55f4a49dd1f73ed7255c545e0c4c083016e7d37acb6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d8d62d5b34e26f8369c1d217586d433ce609ff3bdebfd2319ce6fb0bcddc5e1f",
+          "promptSha256": "d63fa9619c729b938a2665a1cc2bdd3548e8efe6d7db7e55892cea933443cb61",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: intimate palace table with common prominent closed memory keepsake between opposed vacant red/blue chair places, two prop masks, contrasting window and arched balcony frames. Warm fresh flowers/candles, no text/people/flags or defocus; new close view unlike parent grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 404507,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret--single-1-81eea1a25dd3.png",
+        "sha256": "81eea1a25dd39ab7e648cdf9185d2ace99a5b02dd48ad6b844173cb084b1a0df",
+        "promptSha256": "8b9556542ccb1ae28ba12dc1b65c594f56fb5d160428f413b5a4c7154bfeb484",
+        "generationPromptSha256": "1f3ff2b5cecbfc7ea7d3e8f3d8a91cbda2fcc7d8fe7d986e171801f94a00132b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "81eea1a25dd39ab7e648cdf9185d2ace99a5b02dd48ad6b844173cb084b1a0df",
+          "promptSha256": "8b9556542ccb1ae28ba12dc1b65c594f56fb5d160428f413b5a4c7154bfeb484",
+          "reviewer": "Codex direct original visual inspection: v2-production-027",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original directly opened: one full opposed vacant chair pair around common memory box and two prop masks, continuous confined night palace passage and closed distant private door. Hard moon-shadow bands, no flags/text/people/blur; side balcony camera differs from former grand-hall parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 245499,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret--routes-1-a1f310e675e3.png",
+        "sha256": "a1f310e675e32f4fdff9c9d92c2055e6aa96e6453f747e3c77ef695a7604f35a",
+        "promptSha256": "6d31fe77914b746cc6cda322a331adbf874cbe8b4c01bc8ce4460e765a8f39c7",
+        "generationPromptSha256": "60d88ac858a0f9d4d6c0c3565eb7c190f0ea379b6fbe10b646bda17a7d6a2e07",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a1f310e675e32f4fdff9c9d92c2055e6aa96e6453f747e3c77ef695a7604f35a",
+          "promptSha256": "6d31fe77914b746cc6cda322a331adbf874cbe8b4c01bc8ce4460e765a8f39c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: enclosed moonlit palace gallery, real three-way walkways connect three paired vacant nooks with differing coffers/cups. Prominent near closed memory box and masks retain selected premise/play; hard moon shadows, native clusters, no identities/text/flags; new branching gallery."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 254734,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret--perspectives-1-439554e75db8.png",
+        "sha256": "439554e75db8a56c21586fa48715b1ef4fa920888f4bbd9465d507756b53c409",
+        "promptSha256": "88892bbe99cc9f8cd8072c9d894fd059577acc646abdb6a2e0efe429608ec559",
+        "generationPromptSha256": "3a91557678cc3e5a7a255a04b74d48a7abbc8ccd85b76b0a109682080720fefa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "439554e75db8a56c21586fa48715b1ef4fa920888f4bbd9465d507756b53c409",
+          "promptSha256": "88892bbe99cc9f8cd8072c9d894fd059577acc646abdb6a2e0efe429608ec559",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW CORRECTION: Foreground plant hides chair seat: remove ALL foreground vegetation, both opposed EMPTY chair seats/backs must be ENTIRELY VISIBLE. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nProminent closed plain keepsake and revisitable place express discovering memories.\nMOOD: CONFINED private interior AT NIGHT, partly concealed plain keepsake, narrow threshold and hard discrete moonlight-shadow bands. No bright sunset, exposed cheerful flower garden or open celebration.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Different understandings of the SAME event: one central shared keepsake seen between two opposed empty seats and differently framed architectural openings. One continuous physical place, no split-screen or invented faces.\nNEW PHYSICAL CAMERA: near-overhead oblique view INSIDE a sheltered alcove. ONE central plain shared keepsake sits between TWO opposed empty seats, while an actual side window and differently framed doorway show contrasting views around that SAME object/event in one continuous room. Keep chosen premise props nearby; no split panels or duplicate keepsakes. Do not repeat front-on large table against distant tower.\nFINAL OVERRIDE: Foreground plant hides chair seat: remove ALL foreground vegetation, both opposed EMPTY chair seats/backs must be ENTIRELY VISIBLE. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration."
+          ],
+          "notes": "Native original opened: common memory coffer/masks with differently framed window and real private doorway at night, opposed chair places. Foreground foliage hides left chair seat; reject composition rather than accepting obstructed central paired places. Pixel clusters otherwise sharp, no heraldry/identities/text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 230590,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret--perspectives-2-d36c74540a4a.png",
+        "sha256": "d36c74540a4ad3652056a7e61ffc6c5ba78ca4d3d09165a5b5233d68ded902f1",
+        "promptSha256": "88892bbe99cc9f8cd8072c9d894fd059577acc646abdb6a2e0efe429608ec559",
+        "generationPromptSha256": "00681c9a536b2ce20ac41593a5fc681771209bb2077c42183b437be7f784287c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d36c74540a4ad3652056a7e61ffc6c5ba78ca4d3d09165a5b5233d68ded902f1",
+          "promptSha256": "88892bbe99cc9f8cd8072c9d894fd059577acc646abdb6a2e0efe429608ec559",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo opened: foreground foliage removed, TWO full opposed EMPTY chairs and common memory box/two masks at night; differently framed actual side window/private doorway express same event perspectives in continuous room. Hard moon shadows and native sharp clusters, no flags/text/people; new oblique alcove."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 210104,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--bittersweet--single-1-69be7f2d8ca1.png",
+        "sha256": "69be7f2d8ca1f9b89b419c778c3d93315cb6238f7c9cacc2378812113bea9478",
+        "promptSha256": "ffc0758e220e9a68b6ba09bbc4210a57d9368936a2cb57dbdd56a36dba182b1a",
+        "generationPromptSha256": "477778cbd86ecbd8e975f32d633f1a958ddf721f70b7b5bf6b2dccfcfc31542c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "69be7f2d8ca1f9b89b419c778c3d93315cb6238f7c9cacc2378812113bea9478",
+          "promptSha256": "ffc0758e220e9a68b6ba09bbc4210a57d9368936a2cb57dbdd56a36dba182b1a",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: one full opposed empty pair around closed memory box/masks in a private continuous palace passage. Wet autumn floor, spent petals and brown leaves/empty threshold retain lingering mood. No heraldry/text/people/blur, new near side alcove unlike parent staircase grand hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 269615,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--bittersweet--routes-1-0b92de132499.png",
+        "sha256": "0b92de132499137b9eeab7ee968e82bd925fad58d4cff5faa5bb28ef8ad71010",
+        "promptSha256": "168540e18294d1bde792ea726210948beed0534737dd4c1422580cc4a37c6ecd",
+        "generationPromptSha256": "b408be78bcca31530489bfb755c3ca02db161f5465084e0df543de2e84b70cd1",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "0b92de132499137b9eeab7ee968e82bd925fad58d4cff5faa5bb28ef8ad71010",
+          "promptSha256": "168540e18294d1bde792ea726210948beed0534737dd4c1422580cc4a37c6ecd",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: elevated autumn palace gallery with actual three-way fork and three full paired empty meeting nooks, differing memory boxes/mugs, prominent masks/closed keepsake near left. Wet floor, brown leaves/spent petals, no people/heraldry/text; all native hard pixel clusters and independent layered gallery."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 337506,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--bittersweet--perspectives-1-f40a06ebea71.png",
+        "sha256": "f40a06ebea710138812a34cf7e8f6930a85adaca588962fb829c2e178bded9a1",
+        "promptSha256": "42c5147ac362364a684ceba380435f05444c9a3c0c786956bec64c6039bd0b66",
+        "generationPromptSha256": "1b12bc9b0c1f4bce8e46d5e6faf2e5f29de89c31bba3a645927f4f8575e1ffed",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f40a06ebea710138812a34cf7e8f6930a85adaca588962fb829c2e178bded9a1",
+          "promptSha256": "42c5147ac362364a684ceba380435f05444c9a3c0c786956bec64c6039bd0b66",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: one shared closed memory box and masks between two opposed vacant seats; side window and arched doorway offer contrasting views in one continuous palace room. Wet autumn, brown leaves/empty hall retain lingering departure. No people/heraldry/text/blur, two full chair places read clearly and camera differs from prior partial front chair/staircase hall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 291905,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--single-1-75e871f89861.png",
+        "sha256": "75e871f89861be4659679f3483fe14103dcf5e967e52cccb1335e846b7ae1262",
+        "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+        "generationPromptSha256": "041a45c2027fc98795e83d01081246eaf6ce83eebb001d8777296e7d423e4a36",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "75e871f89861be4659679f3483fe14103dcf5e967e52cccb1335e846b7ae1262",
+          "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+          "reviewer": "Codex direct original visual inspection: v2-production-028",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW CORRECTION: Near-right flowers are defocused: remove ALL foreground vegetation/flowers/framing. Small required flowers MIDGROUND ONLY, no object between camera and chair/table. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: Near-right flowers are defocused: remove ALL foreground vegetation/flowers/framing. Small required flowers MIDGROUND ONLY, no object between camera and chair/table. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration."
+          ],
+          "notes": "Native original opened: two full opposed empty chairs around common box/masks, opposing actual doors with closed books versus folded scarf, warm thoughtful flowers/candles and one private continuous passage. Near-right flower framing is visibly defocused; reject native pixel-art despite selected facts present."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 410974,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--single-2-d0f262415cd7.png",
+        "sha256": "d0f262415cd7780b40bad0b6982a884f52e63ca7b46e82a11c487b0e74954798",
+        "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+        "generationPromptSha256": "f827950e9e3f529c2bfc897d3ea8000df39dc977b6656afb32b22d2aa554c039",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d0f262415cd7780b40bad0b6982a884f52e63ca7b46e82a11c487b0e74954798",
+          "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW: TWO plain prop eye masks are MISSING: MUST place both masks clearly near-left at the empty common table alongside the common keepsake, no wearer or face. Native coarse square clusters/hard steps EVERY plane, no foreground plants/flowers/candle/door-jamb/rail framing or blur/DOF/bloom. Preserve ALL chosen scene facts:\nMANDATORY REDRAW CORRECTION: Near-right flowers are defocused: remove ALL foreground vegetation/flowers/framing. Small required flowers MIDGROUND ONLY, no object between camera and chair/table. ALL planes built as coarse square native pixel clusters, NO blur/DOF/bloom/soft gradients. NO people/creatures/humanoid statues/portraits/silhouettes, paper sheets/documents, writing/pseudo-writing, clocks/numerals, heraldry/insignia/flags/banners/tapestries or collage. Preserve ALL chosen scene facts and progression in this self-contained scene specification:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: One deeply followed relationship: exactly one primary pair of vacant personal places linked by a continuous intimate passage, a central shared keepsake. No multiple suitor identity or selection UI.\nNEW PHYSICAL CAMERA: inside a secluded sheltered vestibule looking side-on toward one intimate balcony/alcove and ONE continuous private passage. Exactly TWO SEPARATE EMPTY CHAIRS face each other across a small shared table; BOTH chair backs AND full seats must be ENTIRELY VISIBLE. ONE central closed plain keepsake between these two chairs. Two books or a lone bench alone do NOT substitute for the paired places. The selected premise remains clear through its chosen architecture and props. Do not repeat the previous exposed near table/large right chair/distant tower or long central avenue camera.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: Near-right flowers are defocused: remove ALL foreground vegetation/flowers/framing. Small required flowers MIDGROUND ONLY, no object between camera and chair/table. Completely bare foreground floor and selected furniture; all selected central props fully readable, NO unrelated protagonist or decoration.\nFINAL OVERRIDE: TWO plain prop eye masks are MISSING: MUST place both masks clearly near-left at the empty common table alongside the common keepsake, no wearer or face. No people/statues/portraits, text/pseudo-writing, papers/envelopes, clocks/numerals, heraldry/emblems/insignia or collage. New independent camera emphasizing chosen progression; no copied parent shot."
+          ],
+          "notes": "Native redo opened: foreground defocus removed and full empty chair pair, unique common keepsake/opposed actual book/scarf doors retain trust choice and single relationship. But two masquerade masks completely missing; reject selected premise rather than inferring masquerade from palace alone."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 354022,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--single-3-0bf33a684a87.png",
+        "sha256": "0bf33a684a87c461dd896ef20f5ddd105d7ac24f50b33c862acb0feb36dc3f4b",
+        "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+        "generationPromptSha256": "c5747fcff114778ba5688db30d1d41cee803c617c0a056901d118e9ffb3617b5",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "0bf33a684a87c461dd896ef20f5ddd105d7ac24f50b33c862acb0feb36dc3f4b",
+          "promptSha256": "1a33c8e77dd286cf6edc3c3576ca89b10bf6f5ba55f2326ad417849f47d9fd37",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo opened: two fully visible empty chair seats around common closed box/two masks, one continuous private palace passage and actual opposing doors beside closed books/scarf alternatives. Inviting thoughtful flowers/candles in midground, hard native focus, no heraldry/text/people. New private alcove versus broader selected-three-prefix room."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 342415,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--routes-1-569373c92b97.png",
+        "sha256": "569373c92b97b35bd1da690d0bf123d374e5230ac3df49ebcb832d0cf41a3546",
+        "promptSha256": "f1c0a9a550ac1bef2dd077bca98f5f6f370d5803403e1bf5279d918d46ee9384",
+        "generationPromptSha256": "375d5bccd6d6f73938cbfc3b0dfbf9455f889f87a8bc8642f62fe8b6a32a5f77",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "569373c92b97b35bd1da690d0bf123d374e5230ac3df49ebcb832d0cf41a3546",
+          "promptSha256": "f1c0a9a550ac1bef2dd077bca98f5f6f370d5803403e1bf5279d918d46ee9384",
+          "reviewer": "Codex direct original visual inspection: v2-production-029",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW: Hanging banners remain: REMOVE ALL banners/flags/tapestries and gold wall ornaments, leave completely BARE STONE walls. Two plain eye masks MUST both remain visible near-left. Native coarse square clusters/hard steps EVERY plane, no foreground plants/flowers/candle/door-jamb/rail framing or blur/DOF/bloom. Preserve ALL chosen scene facts:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choosing whom to become closer to: several spatially separate empty meeting nooks with distinct ordinary keepsakes, connected by an actual branching walkway. No people, portraits, route labels or collage.\nNEW PHYSICAL CAMERA: elevated oblique view along an actual three-way walkway fork. THREE clearly separate empty meeting nooks EACH contain a PAIR of facing vacant seats and their own different ordinary shared closed keepsake/book/mug arrangement. Three real continuous branches visibly connect these paired places, not scattered lone benches or a diagram. Retain selected premise/mood/play props on the near LEFT.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: Hanging banners remain: REMOVE ALL banners/flags/tapestries and gold wall ornaments, leave completely BARE STONE walls. Two plain eye masks MUST both remain visible near-left. No people/statues/portraits, text/pseudo-writing, papers/envelopes, clocks/numerals, heraldry/emblems/insignia or collage. New independent camera emphasizing chosen progression; no copied parent shot."
+          ],
+          "notes": "Native original opened: real forks connect four paired empty nooks with differing book/box/cup/scarf objects and actual private doors; warm fresh flowers. Hanging cloth banners remain despite bare-wall restriction. Reject selected-only staging; native pixels and no identities/text otherwise."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 376570,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--routes-2-ee8ea95e7f45.png",
+        "sha256": "ee8ea95e7f45f79c33763922689a7894fa56a96914788dc0a96d356ba74d7e0f",
+        "promptSha256": "f1c0a9a550ac1bef2dd077bca98f5f6f370d5803403e1bf5279d918d46ee9384",
+        "generationPromptSha256": "7729479e0c2f4962de6afaed588d4eb6b2484a433556e1f49ea46c30892af812",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ee8ea95e7f45f79c33763922689a7894fa56a96914788dc0a96d356ba74d7e0f",
+          "promptSha256": "f1c0a9a550ac1bef2dd077bca98f5f6f370d5803403e1bf5279d918d46ee9384",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native redo opened: bare-stone gallery actual branching walkways connect three distinctly paired empty nooks with box/book/scarf keepsakes and two near masks; actual two opposed doors with their adjacent books/scarf places retain trust gameplay. Warm welcoming flowers/candles, no flags/text/people/blur; independent elevated gallery."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 264474,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--perspectives-1-eef73a8102c3.png",
+        "sha256": "eef73a8102c3ebb7a010fefc4443d7b963500b6b3af01bb2710f8d8c6788a666",
+        "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+        "generationPromptSha256": "f6b893eab62bfb8895dfd1f1339f3f32d2655702bdee044c2ef358c560dbfb7c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "eef73a8102c3ebb7a010fefc4443d7b963500b6b3af01bb2710f8d8c6788a666",
+          "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW: ONE common CLOSED PLAIN keepsake is MISSING between the opposed EMPTY seats. Place one unique central CLOSED PLAIN box clearly between seats beside TWO plain eye-mask props; masks alone do NOT substitute for same-event shared object. ALL planes SHARP coarse native square pixels, no blur/DOF/foreground plants/flowers/rail/candle/door-jamb framing. Preserve ALL chosen scene facts:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: Welcoming light, fresh flowers and thoughtful shared preparations.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Different understandings of the SAME event: one central shared keepsake seen between two opposed empty seats and differently framed architectural openings. One continuous physical place, no split-screen or invented faces.\nNEW PHYSICAL CAMERA: near-overhead oblique view INSIDE a sheltered alcove. ONE central plain shared keepsake sits between TWO opposed empty seats, while an actual side window and differently framed doorway show contrasting views around that SAME object/event in one continuous room. Keep chosen premise props nearby; no split panels or duplicate keepsakes. Do not repeat front-on large table against distant tower.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: ONE common CLOSED PLAIN keepsake is MISSING between the opposed EMPTY seats. Place one unique central CLOSED PLAIN box clearly between seats beside TWO plain eye-mask props; masks alone do NOT substitute for same-event shared object. No people/statues/portraits/figures, writing/pseudo-text, papers/letters/envelopes, clocks/numerals, flags/banners/tapestries/heraldry/emblems/insignia, UI/collage. Independent composition, not recolored parent."
+          ],
+          "notes": "Native original opened: two vacant seats and two masks, opposing book/scarf door thresholds, warm palace window/door frames. But ONE common CLOSED keepsake between seats missing; masks alone do not substitute for the same-event shared object. Reject latestChoice rather than infer unseen object."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 379266,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--single-1-c522802ec836.png",
+        "sha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+        "promptSha256": "4caedff62d6106cac3fccf3faf4ad89f4d01ef06bc0407ba5e9387060b4d1155",
+        "generationPromptSha256": "338ddc97f03982a293527b28ae4263dd8c4004320cf4297bd713a119602ab5cb",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+          "promptSha256": "4caedff62d6106cac3fccf3faf4ad89f4d01ef06bc0407ba5e9387060b4d1155",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: one full opposed empty red/blue chair pair around common closed box and two masks, continuous private moonlit palace passage, opposing actual doors with book/scarf alternatives. Secret night/hard shadows, no heraldry/text/people/blur; new intimate passage."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 237283,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--routes-1-650c4ff0ccb8.png",
+        "sha256": "650c4ff0ccb85f53d3e461cfd761d43c721a5da27f822e166d7377cce01be311",
+        "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+        "generationPromptSha256": "5c1c49039fd20404a84ebecf5b933016e7d714f75700921dc972291b9d0b8440",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "650c4ff0ccb85f53d3e461cfd761d43c721a5da27f822e166d7377cce01be311",
+          "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "MANDATORY REDRAW: The CLOSED PLAIN BOOK alternative at opposing door threshold is MISSING. TWO actual opposing PRIVATE doors MUST each have clear contrasting ordinary props: CLOSED plain books beside left door versus folded scarf beside right door, competing trust-choice alternatives. Keep selected multiple paired nooks/real forks/masks/secret mood too. ALL planes SHARP coarse native square pixels, no blur/DOF/foreground plants/flowers/rail/candle/door-jamb framing. Preserve ALL chosen scene facts:\nEmpty masquerade ballroom with two plain prop masks, vacant seats and restrained candles; no humans, faces, portraits or humanoid statues.\nTwo opposed meaningful thresholds with conflicting physical keepsake objects express a consequential trust choice.\nMOOD: CONFINED private interior AT NIGHT, partly concealed plain keepsake, narrow threshold and hard discrete moonlight-shadow bands. No bright sunset, exposed cheerful flower garden or open celebration.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choosing whom to become closer to: several spatially separate empty meeting nooks with distinct ordinary keepsakes, connected by an actual branching walkway. No people, portraits, route labels or collage.\nNEW PHYSICAL CAMERA: elevated oblique view along an actual three-way walkway fork. THREE clearly separate empty meeting nooks EACH contain a PAIR of facing vacant seats and their own different ordinary shared closed keepsake/book/mug arrangement. Three real continuous branches visibly connect these paired places, not scattered lone benches or a diagram. Retain selected premise/mood/play props on the near LEFT.\nPRESERVE CHOSEN TRUST-DECISION PLAY ALONGSIDE THE SELECTED PROGRESSION/SCOPE: TWO actual OPPOSING PRIVATE DOOR thresholds must be visibly present in this SAME continuous space, one beside a small CLOSED PLAIN book arrangement and the other beside a folded ordinary scarf, giving competing physical alternatives. Keep the central COMMON closed keepsake unique and distinct from these door props. Generic chairs/books on a table with one doorway alone FAILS this gameplay choice. The selected pair, multiple paired route nooks or same-event opposed views AND these opposing threshold alternatives must BOTH remain visible. No witnesses, assumed culprit, face or text.\nFINAL OVERRIDE: The CLOSED PLAIN BOOK alternative at opposing door threshold is MISSING. TWO actual opposing PRIVATE doors MUST each have clear contrasting ordinary props: CLOSED plain books beside left door versus folded scarf beside right door, competing trust-choice alternatives. Keep selected multiple paired nooks/real forks/masks/secret mood too. No people/statues/portraits/figures, writing/pseudo-text, papers/letters/envelopes, clocks/numerals, flags/banners/tapestries/heraldry/emblems/insignia, UI/collage. Independent composition, not recolored parent."
+          ],
+          "notes": "Native original opened: actual forks and paired empty nooks with masks/coffer/cups/scarf, night palace and hard moon shadows. CLOSED book alternative at opposing threshold is missing, so earlier trust-choice gameplay is incomplete. Reject allChoices."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 278032,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--perspectives-1-dc5632f41177.png",
+        "sha256": "dc5632f411779a768fc5d19dc505d769d19f2335bb5be95234816333ef745848",
+        "promptSha256": "0d1831802a32a28cd6144957820be35c3e2cb85017c111dd737919d45d44d46d",
+        "generationPromptSha256": "5ed9484b6db46fb22c1a027c7efe0a19f0f92f7d774f42766a8ea853bda806d2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "dc5632f411779a768fc5d19dc505d769d19f2335bb5be95234816333ef745848",
+          "promptSha256": "0d1831802a32a28cd6144957820be35c3e2cb85017c111dd737919d45d44d46d",
+          "reviewer": "Codex direct original visual inspection: v2-production-030",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original opened: elevated private night palace room, one common CLOSED keepsake/two masks between opposed fully visible vacant seats, differently framed real window/two door openings and threshold-adjacent CLOSED books versus scarf. Every selected fact remains visible, hard moon shadows/coarse native focus, no flags/text/people; independent overhead continuous-room camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 256321,
           "findings": []
         }
       }

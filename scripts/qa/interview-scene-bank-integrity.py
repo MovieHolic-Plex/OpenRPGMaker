@@ -15,6 +15,10 @@ for genre in catalog['genres']:
   planned_keys.update('--'.join((genre['id'],*choices)) for choices in itertools.product(*options[:depth]))
 assert len(planned_keys)==manifest['planned']==seed['expectedScenes']
 assert set(manifest['scenes'])<=planned_keys,'Published background does not correspond to an actual fixed-choice prefix'
+for key in manifest['scenes']:
+ parts=key.split('--')
+ for depth in range(1,len(parts)):
+  assert '--'.join(parts[:depth]) in manifest['scenes'],f'Published path has an unpublished ancestor: {key}'
 rows=[];hashes=set()
 for key,scene in manifest['scenes'].items():
  image=root/'public'/scene['url'].lstrip('/');raw=image.read_bytes();digest=hashlib.sha256(raw).hexdigest()

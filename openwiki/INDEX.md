@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **142쪽 / 4829KB / 약 1,402,250 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **142쪽 / 4830KB / 약 1,402,744 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1159,11 +1159,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L34` 서버 확정 → 공용 SQLite 자동 등록 (2026-10-04)
 - `L65` 자동 파생 제안 화면 (2026-10-04)
 
-### `openwiki/harnesses/interview-scene-bank.md` — 9KB · 46줄 · ~2,711 토큰
+### `openwiki/harnesses/interview-scene-bank.md` — 10KB · 50줄 · ~3,205 토큰
 
 - `L5` 제작과 검수
-- `L31` 앱 연결
-- `L41` 현재 제작 결과
+- `L33` 앱 연결
+- `L43` 현재 제작 결과
 
 ### `openwiki/harnesses/joseon-baram.md` — 15KB · 105줄 · ~4,358 토큰
 
