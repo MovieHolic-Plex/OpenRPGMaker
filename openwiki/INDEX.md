@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **143쪽 / 4928KB / 약 1,433,164 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **143쪽 / 4930KB / 약 1,433,879 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1257,7 +1257,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Maker-owned repair loop (2026-10-04)
 - `L45` Reproduction
 
-### `openwiki/harnesses/super-harness-integration.md` — 10KB · 128줄 · ~3,140 토큰
+### `openwiki/harnesses/super-harness-integration.md` — 12KB · 150줄 · ~3,855 토큰
 
 - `L6` 운영 계약
 - `L19` 실행과 경로
@@ -1266,6 +1266,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L78` 이관·복구와 확인
 - `L98` 공간의 실시간 진행 표시 (2026-10-05)
 - `L115` 부품 선택의 판단 순서 (2026-10-05)
+- `L129` 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
 
 ### `openwiki/harnesses/super-harness.md` — 41KB · 390줄 · ~12,786 토큰
 
