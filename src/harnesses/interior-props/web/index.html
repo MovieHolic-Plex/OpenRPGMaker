@@ -178,13 +178,50 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 .prog .pb { width:120px; height:6px; background:#33303a; border-radius:3px; overflow:hidden; }
 .prog .pb i { display:block; height:100%; background:var(--ok); }
 .obj .rb { position:absolute; top:4px; left:6px; font-size:10px; background:#2b3b55; color:#cfe0ff; border-radius:4px; padding:0 4px; }
+
+/* A compact review desk: one current image and one card per candidate. */
+[hidden]{display:none!important} :focus-visible{outline:2px solid var(--sel);outline-offset:3px}
+body{height:100dvh} header{height:auto;min-height:48px;gap:6px;flex-wrap:wrap;padding:7px 14px}
+header h1,header>.chip,header>.pool{display:none}header .tab{padding:7px 14px;font-weight:650}
+#sharedPub{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:37px;background:#20251f}
+#sharedPub button{padding:3px 10px;font-size:12px}#sharedPub.error{background:#402723}
+#sharedPub small{color:var(--dim)}#sharedPub .pending{color:var(--sel)}
+nav{width:230px;display:flex;flex-direction:column;overflow:auto}body[data-view="pick"] nav{overflow:hidden}.navhead{padding:12px;flex:none;border-bottom:1px solid var(--line)}
+.navhead input{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:7px;min-width:0}
+.navfilters{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}.navfilters button{padding:5px 7px;font-size:12px;border:1px solid var(--line);border-radius:6px;background:transparent;cursor:pointer}
+.navfilters button.on{background:#423b26;color:var(--sel);border-color:#71603a}.navlist{overflow:auto;flex:1;min-height:0}
+nav .it{width:100%;border:0;border-left:3px solid transparent;background:transparent;text-align:left;padding:9px 10px;min-height:49px}
+nav .it .eng{display:none}nav .it .th{background:#302e32}nav .n small{display:block;font-size:11px;color:var(--dim);margin-top:2px}
+.navcount{font-size:11px;color:var(--dim);margin-top:8px}.navlist .empty{padding:22px 12px}
+main{padding:18px 24px 150px;min-width:0}.head{align-items:flex-start;text-align:left;gap:5px}.head h2{font-size:25px;letter-spacing:-.04em}
+.itemtop{display:flex;align-items:center;justify-content:space-between;gap:16px}.itemnav{display:flex;gap:6px}.itemnav .btn{padding:6px 11px;font-size:12px}
+.selection-state{font-size:12px;color:var(--dim);margin:8px 0}.selection-state b{color:#b3dba3}
+.itemdetails{margin:8px 0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--dim)}
+.itemdetails summary{cursor:pointer}.itemdetails .meta,.itemdetails .rnote{margin:8px 0}.rounds{margin:8px 0}
+.derive-hint{margin:8px 0;padding:7px 10px}.tools{justify-content:space-between;margin:12px 0;font-size:12px;gap:8px}.tools-extra{display:inline-flex;gap:8px;flex-wrap:wrap}
+.grid,.grid.ctxmode{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid .card{padding:10px;min-height:220px;border-radius:12px}
+.card.cur{background:#24272a}.card .top .eng,.card .olk,.card .nt{display:none}.card .dir{font-size:13px;color:var(--text);font-weight:650}
+.card .pic{min-height:150px;max-height:270px}.card .ctxw{margin-top:8px;max-height:270px}.card .ctxw img{height:100%;max-height:270px;object-fit:contain}
+.card .facts{margin-top:9px}.card .facts .fact.ok,.card .facts .fact.warn{display:none}.outline-switch{display:flex;gap:3px;margin-top:9px}
+.outline-switch button{flex:1;min-width:0;border:1px solid var(--line);border-radius:5px;background:transparent;padding:5px;font-size:11px;cursor:pointer}
+.outline-switch button.on{background:#403828;color:var(--sel);border-color:#766136}.card .candidate-hint{font-size:11px;color:var(--dim);margin-top:9px;text-align:center}.card.sel .candidate-hint{color:var(--sel)}
+.card.wide{grid-column:span 1}.grid.setgrid{grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}.card.redocard{display:none}.cmp{display:block}.cmp summary{cursor:pointer;font-size:12px;color:var(--dim)}.cmp h4{margin-top:12px}
+.keys{font-size:11px}.keys summary{cursor:pointer}.bar{left:230px;padding:10px 24px;flex-wrap:wrap;gap:8px;background:#211e25fa}
+.bar #barL{display:flex!important;align-items:center;gap:8px;width:100%;font-size:12px;color:var(--dim)}
+.bar #barR{display:flex!important;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}.bar textarea{flex:1 1 240px;font-size:12px;min-height:38px}
+.bar .btn{padding:8px 12px}.bar label{font-size:11px}.bar #fromSelLabel{max-width:130px;white-space:normal}.bar .go{min-width:150px}
+.dlg{max-height:90dvh;overflow:auto}.dlg .made{line-height:1.65}.dlg input[type=text]{min-width:100px}
+@media(min-width:1500px){main{padding-left:40px;padding-right:40px}.grid{max-width:1200px}.bar{padding-left:40px;padding-right:40px}}
+@media(max-width:1000px){nav{width:190px}.bar{left:190px}main{padding:14px 14px 160px}.bar{padding:10px 14px}.grid,.grid.ctxmode{gap:8px}.tools-extra{display:none}.card .ctxw{max-height:230px}.bar #fromSelLabel{display:none}}
+@media(max-width:700px){header{padding:6px 8px}header .tab{padding:6px 8px;font-size:12px}nav{width:150px}.navhead{padding:8px}.navfilters button{font-size:11px}nav .it{padding:7px 5px}nav .th{display:none}.bar{left:150px}.bar textarea{flex-basis:100%}.bar #barR{margin:0}.bar .btn{font-size:12px;padding:7px}.bar .go{min-width:0}.grid,.grid.ctxmode{grid-template-columns:repeat(2,minmax(0,1fr))}.card.cur{grid-column:1/-1;min-height:90px}.card.cur .ctxw,.card.cur .pic{max-height:110px;min-height:80px}.grid.setgrid{grid-template-columns:1fr}.head h2{font-size:20px}.itemnav{display:none}#sharedPub{font-size:11px!important;flex-wrap:wrap}.card .x{padding:0 4px}.tools{font-size:11px}.tools .seg button{padding:4px 6px}}
+
 </style>
 </head>
-<body>
+<body data-view="pick">
 <header>
   <h1>기물·파생</h1>
   <button class="tab on" data-v="pick">후보 고르기</button>
-  <button class="tab" data-v="objs">기물 골라 새로 뽑기</button>
+  <button class="tab" data-v="objs">기물 찾기·제작</button>
   <button class="tab" data-v="suggest">자동 제안</button>
   <span class="chip">고를 차례 <b id="cReady">0</b></span>
   <span class="chip">그리는·검수 중 <b id="cDraw">0</b></span>
@@ -202,8 +239,10 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 <script>
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
-const S = { pending:{}, showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
+const S = { navQ:'', navStatus:'ready', outline:{}, pending:{}, showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
             suggestions:null, suggestQ:'', suggestKind:'all', suggestHad:false, suggestGen:0, objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false, drafts:{}, fail:0, errSeen:null };
+try { const prefs=JSON.parse(localStorage.getItem('prop-review-prefs')||'{}'); for(const k of ['mode','bg','zoom'])if(['ctx','one','both','wood','dark','check','fit',3,4,6,8].includes(prefs[k]))S[k]=prefs[k]; } catch {}
+function rememberView(){try{localStorage.setItem('prop-review-prefs',JSON.stringify({mode:S.mode,bg:S.bg,zoom:S.zoom}));}catch{}}
 const DRAW_N = 2;        // 다시 뽑기·새로 뽑기 한 번에 그리는 후보 수(서버 n). 화면 문구도 이것 하나에서 만든다
 const UNDO_MS = 5000;    // 확정·다시 뽑기는 이만큼 기다렸다가 서버에 보낸다 — 그 사이 「되돌리기」(Z)
 const $ = s => document.querySelector(s);
@@ -225,7 +264,7 @@ async function api(p, body) {
   const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.error || r.status), {status:r.status}); return j;
 }
 const engOf = i => [...new Set(i.rounds.at(-1).runs.map(r => r.engine).filter(Boolean))];
-const shown = i => S.eng === 'all' || engOf(i).includes(S.eng);   // 왼쪽 「그린 쪽」 거르개
+const shown = i => (S.eng === 'all' || engOf(i).includes(S.eng)) && (!S.navQ || `${i.name} ${i.id} ${i.category}`.toLowerCase().includes(S.navQ.toLowerCase()));   // 왼쪽 「그린 쪽」 거르개
 // 기물마다 고르던 것(선택·버림·메모)을 따로 들고 있다 — 다른 기물을 봤다 돌아와도 그대로, 다른 기물로 따라가지도 않는다
 function saveDraft() {
   if (!S.cur) return;
@@ -300,14 +339,7 @@ async function load(keep) {
   const all = its.flatMap(i => i.rounds.flatMap(r => r.runs));
   $('#cEng').innerHTML = `<span class="eng codex">Codex</span> ${all.filter(r => r.engine === 'codex').length}장 · <span class="eng claude">Sonnet</span> ${all.filter(r => r.engine === 'claude').length}장`;
   const pub = S.data.sharedPublish || {state:'idle'};
-  $('#sharedPub').textContent = pub.state === 'done' ? `공용 반영 완료 · 선택 ${pub.receipt?.selected ?? 0}종 — 다른 프로젝트에서도 사용 가능` :
-    pub.state === 'publishing' ? '공용 반영 중 — 선택은 저장됐습니다' : pub.state === 'queued' ? '공용 반영 대기 중 — 선택은 저장됐습니다' :
-    pub.state === 'error' ? '공용 반영 실패 — 선택은 보존됐습니다. 자동으로 다시 시도합니다. ' : '확정한 기물은 공용으로 자동 반영됩니다';
-  if (pub.state === 'error') {
-    const retry = document.createElement('button'); retry.className = 'btn'; retry.textContent = '지금 다시 시도';
-    retry.onclick = async () => { try { await api('/api/harness/publish', {}); load(true); } catch (e) { toast(e.message, true); } };
-    $('#sharedPub').append(retry);
-  }
+  renderPublication();
   const p = S.data.pool;
   const left = p.queued + p.running, eta = Math.round(left / Math.max(1, p.par) * 5.7);   // 실측: 16명에서 1분에 약 2.8장 = 한 사람 5.7분/장
   const drawing = its.filter(i => i.status === 'drawing').length;
@@ -327,27 +359,30 @@ async function load(keep) {
   clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || ['publishing','queued','error'].includes(pub.state) || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
 }
 
-function toggleDone() { S.showDone = !S.showDone; if (S.view === 'pick') renderNav(); }   // 기물 고르기 화면에선 목록을 덮지 않는다
+function toggleDone() { S.navStatus=S.navStatus==='done'?'ready':'done'; S.showDone = !S.showDone; if (S.view === 'pick') renderNav(); }   // 기물 고르기 화면에선 목록을 덮지 않는다
 
 function renderNav() {
-  const g = {ready:'고를 차례', drawing:'그리는·검수 중', done:'끝남'};
-  const its = S.data.items.filter(shown);
-  let h = `<div class="engf">그린 쪽 <span class="seg">${[['all', '전체'], ['codex', 'Codex'], ['claude', 'Sonnet']].map(([k, v]) => `<button data-eng="${k}" class="${S.eng === k ? 'on' : ''}">${v}</button>`).join('')}</span></div>`;
-  for (const k of ['ready', 'drawing', 'done']) {
-    const L = its.filter(i => i.status === k); if (!L.length) continue;
-    if (k === 'done') { if (!its.some(i => i.status !== 'done')) h += '<div class="empty" style="padding:14px 12px">고를 차례인 기물이 없다.<br>새로 뽑으려면 위 「기물 골라 새로 뽑기」.</div>'; h += `<h3 class="fold" data-fold>${g[k]} · ${L.length} ${S.showDone ? '▾ 접기' : '▸ 펼치기'}</h3>`; if (!S.showDone) continue; }
-    else h += `<h3>${g[k]} · ${L.length}</h3>`;
-    for (const i of L) {
-      const b = k === 'drawing' ? `${i.rounds.at(-1).runs.length - i.busy}/${i.rounds.at(-1).runs.length}` : k === 'ready' ? `${i.readyCount}장` : '✓';
-      h += `<div class="it ${i.id === S.cur ? 'cur' : ''}" data-id="${esc(i.id)}"><span class="th">${thumbImg(i)}</span>
-            <span class="n" title="${esc(i.desc)}">${esc(i.name)}</span>${engOf(i).map(e => `<span class="eng ${e}" title="마지막 판을 ${ENG_FULL[e]} 가 그렸다">${ENG[e][0]}</span>`).join('')}<span class="b ${k}">${b}</span></div>`;
-    }
-  }
-  $('#nav').innerHTML = h || '<div class="empty" style="padding:20px">아직 판이 없다.<br>위 「기물 골라 새로 뽑기」에서 시작.</div>';
-  $('#nav').querySelectorAll('[data-fold]').forEach(b => b.onclick = toggleDone);
-  $('#nav').querySelectorAll('[data-eng]').forEach(b => b.onclick = () => { S.eng = b.dataset.eng; renderNav(); });
-  $('#nav').querySelectorAll('.it').forEach(e => e.onclick = () => { openItem(e.dataset.id); renderNav(); renderPick(); $('#main').scrollTop = 0; });
-  $('#nav .it.cur')?.scrollIntoView({block:'nearest'});
+  if(!S.data)return;
+  const nav=$('#nav'), focus=document.activeElement?.id==='navSearch', pos=focus?$('#navSearch').selectionStart:0;
+  const scroll=nav.querySelector('.navlist')?.scrollTop||0;
+  const labels={ready:'고를 차례',drawing:'제작 중',done:'선택 완료',all:'전체'};
+  const all=S.data.items, matches=all.filter(shown).filter(i=>S.navStatus==='all'||i.status===S.navStatus);
+  nav.innerHTML=`<div class="navhead"><input id="navSearch" type="search" aria-label="기물 검색" placeholder="기물 이름으로 찾기" value="${esc(S.navQ)}">
+    <div class="navfilters">${Object.entries(labels).map(([k,v])=>`<button data-status="${k}" class="${S.navStatus===k?'on':''}" aria-pressed="${S.navStatus===k}">${v} ${k==='all'?all.length:all.filter(i=>i.status===k).length}</button>`).join('')}</div>
+    <div class="navcount">${matches.length}개 · ↑↓ 이동 · 선택 후 Enter로 확정</div></div>
+    <div class="navlist">${matches.map(i=>`<button class="it ${i.id===S.cur?'cur':''}" data-id="${esc(i.id)}" aria-current="${i.id===S.cur}"><span class="th">${thumbImg(i)}</span><span class="n">${esc(i.name)}<small>${esc(i.category)}</small></span><span class="b ${i.status}">${i.status==='ready'?i.readyCount+'장':i.status==='done'?'✓':'진행'}</span></button>`).join('')||'<div class="empty">조건에 맞는 기물이 없어요.<br>전체 목록이나 다른 이름으로 찾아보세요.</div>'}</div>`;
+  $('#navSearch').oninput=e=>{S.navQ=e.target.value;renderNav();};
+  nav.querySelectorAll('[data-status]').forEach(b=>b.onclick=()=>{S.navStatus=b.dataset.status;renderNav();});
+  nav.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{openItem(b.dataset.id);renderNav();renderPick();$('#main').scrollTop=0;});
+  nav.querySelector('.navlist').scrollTop=scroll;
+  if(focus){$('#navSearch').focus();$('#navSearch').setSelectionRange?.(pos,pos);}
+}
+function moveItem(direction){const ids=[...$('#nav').querySelectorAll('[data-id]')].map(e=>e.dataset.id);if(!ids.length)return;const n=ids[(ids.indexOf(S.cur)+direction+ids.length)%ids.length];openItem(n);renderNav();renderPick();$('#main').scrollTop=0;}
+function renderPublication(){
+ const pub=S.data?.sharedPublish||{}, pending=Object.values(S.pending), waiting=pending.filter(p=>!p.sent).length, saving=pending.some(p=>p.kind==='decide'&&p.sent&&!p.saved);
+ const text=waiting?`확정 ${waiting}건 전송 대기 · 5초 안에 되돌릴 수 있어요`:saving?'선택 저장 확인 중…':pub.state==='done'?`공용 반영 완료 · 선택 ${pub.receipt?.selected??0}종`:['queued','publishing'].includes(pub.state)?'선택 저장됨 · 공용 반영 중':pub.state==='error'?'선택 저장됨 · 공용 반영 재시도 중':'선택을 확정하면 공용으로 자동 반영됩니다';
+ const e=$('#sharedPub');e.classList.toggle('error',pub.state==='error');e.innerHTML=`<span class="${waiting?'pending':''}">${esc(text)}</span><button class="btn" id="showShared">저장·공용 상태 확인 ↗</button>`;
+ $('#showShared').onclick=()=>{if(parent!==window)parent.postMessage({type:'prop-harness:materials'},location.origin);else window.open('/harness#materials','_blank','noopener');};
 }
 
 function vbadge(o) {
@@ -394,6 +429,7 @@ function card(it, key, c, opt) {
 }
 
 function renderPick() {
+  rememberView();
   const it = item(); const m = $('#main');
   if (S.waitNext || !it) {
     const p = S.data.pool, d = S.data.items.filter(i => i.status === 'drawing').length;
@@ -405,26 +441,31 @@ function renderPick() {
   const r = rnd(); S.round = r.id;
   const cur = it.current === 'v5' ? 'v5' : it.current;
   const par = (it.set && it.set.parent) || it.parent;
-  let h = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code>
+  const pending=S.pending[it.id];
+  let h = `<div class="itemtop"><div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.category)} · ${esc(it.kind)} · ${it.canvas[0]}×${it.canvas[1]}px · <code>${esc(it.id)}</code>
       ${canDerive(it) ? ` · <button class="chip" id="dvBtn" title="이 기물의 방향 4·상태·움직임·큰 판을 뽑는다 (D)">＋ 파생 만들기</button>` : ''}</span>
-      ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고르면 원본과 별개의 움직이는 기물이 된다' : ''}</span>` : ''}</div>
-    <div class="meta" style="color:var(--dim)">${it.isNew ? '<b class="nb">새</b> ' : ''}${esc(it.desc)}${it.use && it.use.length ? ` <span class="chip">쓰임 ${esc(it.use.join(' · '))}</span>` : ''}</div>
-    ${canDerive(it) ? '<div class="derive-hint" id="deriveHint">자동 파생 제안을 읽는 중…</div>' : ''}
+      ${par ? `<span class="meta"><span class="chip">파생 · ${DERIVE_KO[(it.set && it.set.derive) || it.derive] || ''} · 원본 <code>${esc(par)}</code></span>${it.set && it.set.derive !== 'loop' ? ' 고르면 칸을 잘라 ' + it.set.slots.filter(x => !x.locked && x.child).map(x => `<code>${esc(x.child)}</code>`).join(' · ') + ' 의 그림으로 들어간다' : it.set ? ' 고르면 원본과 별개의 움직이는 기물이 된다' : ''}</span>` : ''}</div><div class="itemnav"><button class="btn" id="prevItem" aria-label="이전 기물">← 이전</button><button class="btn" id="nextItem" aria-label="다음 기물">다음 →</button></div></div>
+    <div class="selection-state">${pending?'확정 전송 대기 또는 저장 확인 중':it.current!=='v5'?'<b>선택 저장됨</b> · 현재 '+esc(pickName(it.current))+' 사용':it.isNew?'아직 고르지 않은 새 기물':'현재 원본 그림 사용'} · 후보를 누르고 아래에서 확정하세요.</div>
+    <details class="itemdetails"><summary>설명·제작 요청·이전 후보 보기</summary><div class="meta" style="color:var(--dim)">${it.isNew ? '<b class="nb">새</b> ' : ''}${esc(it.desc)}${it.use && it.use.length ? ` <span class="chip">쓰임 ${esc(it.use.join(' · '))}</span>` : ''}</div>
     <div class="rounds">` + it.rounds.map(x => `<button data-r="${x.id}" class="${x.id === r.id ? 'on' : ''}">판 h${x.id}${x.decided ? (x.decided.verdict === 'keep' ? ' · 그대로' : ' · ' + pickName(x.decided.cand)) : ''}</button>`).join('') + `</div>`;
   if (r.note) h += `<div class="rnote">메모: ${esc(r.note)}</div>`;
   if (r.base) h += `<div class="rnote">출발점: ${esc(r.base)}</div>`;
-  h += `<div class="tools">
+  h += `</details>${canDerive(it)?'<div class="derive-hint" id="deriveHint">자동 파생 제안을 읽는 중…</div>':''}<div class="tools">
     <span>보기 <span class="seg">${[['both', '둘 다'], ['one', '단품'], ['ctx', '방 안']].map(([k, v]) => `<button data-mode="${k}" class="${S.mode === k ? 'on' : ''}">${v}</button>`).join('')}</span></span>
-    <span>배경 <span class="seg">${['wood:나무', 'dark:어둠', 'check:체크'].map(x => { const [k, v] = x.split(':'); return `<button data-bg="${k}" class="${S.bg === k ? 'on' : ''}">${v}</button>`; }).join('')}</span></span>
-    <span>확대 <span class="seg">${['fit', 3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z === 'fit' ? '맞춤' : z + '배'}</button>`).join('')}</span></span></div>`;
-  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' && !it.set ? 'ctxmode' : ''}">` + card(it, '0', cur, {cur:1, label:it.set && cur === 'v5' ? '출발(원본 칸만)' : it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
+    <span class="tools-extra"><span>배경 <span class="seg">${['wood:나무', 'dark:어둠', 'check:체크'].map(x => { const [k, v] = x.split(':'); return `<button data-bg="${k}" class="${S.bg === k ? 'on' : ''}">${v}</button>`; }).join('')}</span></span>
+    <span>확대 <span class="seg">${['fit', 3, 4, 6, 8].map(z => `<button data-z="${z}" class="${S.zoom === z ? 'on' : ''}">${z === 'fit' ? '맞춤' : z + '배'}</button>`).join('')}</span></span></span></div>`;
+  h += `<div class="grid bg-${S.bg} ${S.mode === 'ctx' && !it.set ? 'ctxmode' : ''} ${it.set?'setgrid':''}">` + card(it, '0', cur, {cur:1, label:it.set && cur === 'v5' ? '출발(원본 칸만)' : it.isNew && cur === 'v5' ? '지금 그림 없음(새 기물)' : '지금 그림', v:0});
   r.runs.forEach((x, k) => {   // 후보마다 두 장(2026-10-03): 그린 그대로 · 테두리 꼭 필요한 곳만(outline_select.py, 이름 끝 .sel)
     const opt = {label:x.direction || DIRS[x.letter], v:x.v, note:x.note, phase:x.phase, attempt:x.attempt, review:x.review, history:x.history, engine:x.engine, reviewEngine:x.reviewEngine,
       busy:['queued', 'running'].includes(x.status) ? x.status : null, failed:x.status === 'failed' ? (x.error || '실패') : null,
       bad:x.status === 'done' && !x.ok ? (x.error || '하드 검사 불합격') : null};
     const two = x.status === 'done' && x.ok && !NOSEL.has(it.kind) && x.selDiff >= SEL_MIN;   // 거의 같으면 한 장만
-    h += card(it, String(k + 1), x.cand, two ? {...opt, ol:'테두리 전부'} : opt);
-    if (two) h += card(it, String(k + 1) + '′', x.cand + '.sel', {...opt, ol:'꼭 필요한 곳만', olsel:1, note:'', history:null});
+    const selectedOutline=S.sel===x.cand+'.sel'||(S.sel!==x.cand&&S.outline[x.cand]==='light');
+    const candidate=two&&selectedOutline?x.cand+'.sel':x.cand;
+    let html=card(it,String(k+1),candidate,{...opt,label:'후보 '+(k+1),ol:two?(selectedOutline?'필요한 테두리':'원래 테두리'):null});
+    const controls=two?`<div class="outline-switch" aria-label="후보 ${k+1} 테두리"><button data-outline="${esc(x.cand)}" data-light="0" class="${selectedOutline?'':'on'}">원래 테두리</button><button data-outline="${esc(x.cand)}" data-light="1" class="${selectedOutline?'on':''}">필요한 테두리만</button></div>`:'';
+    html=html.slice(0,-6)+controls+`<div class="candidate-hint">${S.sel===candidate?'✓ 고른 후보 · 아래에서 확정':'눌러서 선택'}</div></div>`;
+    h+=html;
   });
   // 후보 다음 자리 = 「다시 뽑기」 카드(2026-10-03 사용자 「1번과 2번만 만들고, 3번은 다시 뽑기 버튼으로」). 그 숫자 키도 같다.
   const rbusy = r.runs.some(x => ['queued', 'running'].includes(x.status));
@@ -432,12 +473,14 @@ function renderPick() {
     <div class="redobig">${rbusy ? '그리는 중…' : '↻<br>다시 뽑기'}<small>메모·버린 후보가 다음 판으로 간다</small></div></div>`;
   h += `</div>`;
   const pick = S.sel && S.sel !== cur && !it.set ? S.sel : null;   // 묶음은 띠 자체가 나란히 보기다
-  if (pick) h += `<div class="cmp bg-${S.bg}"><h4>나란히 — 지금 그림 · 고른 후보 (Space 를 누르고 있으면 고른 자리에 지금 그림이 겹쳐 보인다)</h4><div class="row">
+  if (pick) h += `<details class="cmp bg-${S.bg}"><summary>크게 나란히 비교하기</summary><h4>나란히 — 지금 그림 · 고른 후보 (Space 를 누르고 있으면 고른 자리에 지금 그림이 겹쳐 보인다)</h4><div class="row">
       <div class="col"><div class="pic"><img id="cmpA" src="${curSrc(it)}"></div>지금</div>
       <div class="col"><div class="pic"><img id="cmpB" src="/c/${it.slug}/${pick}.png"></div>고른 것 · ${esc(pickName(pick))}</div>
-      <div class="col"><div class="pic ctxp" style="padding:0;background:#000"><img id="cmpC" src="/ctx/${it.slug}/${pick}.png"></div>방 안</div></div></div>`;
-  h += `<div class="keys"><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> 또는 두 번 누르기 = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>D</kbd> 파생 만들기(방향·상태·움직임·크기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</div>`;
+      <div class="col"><div class="pic ctxp" style="padding:0;background:#000"><img id="cmpC" src="/ctx/${it.slug}/${pick}.png"></div>방 안</div></div></details>`;
+  h += `<details class="keys"><summary>단축키 보기 · 1/2 선택 → Enter 확정 · ↑↓ 이동</summary><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>D</kbd> 파생 만들기(방향·상태·움직임·크기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</details>`;
   m.innerHTML = h;
+  $('#prevItem').onclick=()=>moveItem(-1);$('#nextItem').onclick=()=>moveItem(1);
+  m.querySelectorAll('[data-outline]').forEach(b=>b.onclick=e=>{e.stopPropagation();const c=b.dataset.outline,light=b.dataset.light==='1';S.outline[c]=light?'light':'full';if(S.sel===c||S.sel===c+'.sel')S.sel=c+(light?'.sel':'');renderPick();});
   m.querySelectorAll('.grid .pic img').forEach(img => { sized(img, S.zoom); img.src = img.dataset.src; });
   startAnims(m, it);
   const dv = document.getElementById('dvBtn'); if (dv) dv.onclick = () => openDerive(it.id);
@@ -448,15 +491,15 @@ function renderPick() {
   preloadNext(it);
   ['cmpA', 'cmpB'].forEach(id => { const e = document.getElementById(id); if (e) sized(e, 'big'); });
   const cc = document.getElementById('cmpC'); if (cc) sized(cc, 3);
+  m.querySelectorAll('.card[data-c]:not([data-dis])').forEach(e=>{e.tabIndex=0;e.setAttribute('role','button');e.setAttribute('aria-label',(e.classList.contains('cur')?'현재 그림':e.querySelector('.dir').textContent)+' 선택');e.setAttribute('aria-pressed',String(e.classList.contains('sel')));e.onkeydown=ev=>{if(ev.target===e&&['Enter',' '].includes(ev.key)){ev.preventDefault();ev.stopPropagation();e.click();}};});
   m.querySelectorAll('.card').forEach(e => e.onclick = ev => {
     if (ev.target.dataset.x) { toggleRej(ev.target.dataset.x); return; }
     if (ev.target.dataset.r) { const c = ev.target.dataset.rc, k = ev.target.dataset.r; const L = S.rej[c]; L.includes(k) ? L.splice(L.indexOf(k), 1) : L.push(k); renderPick(); return; }
     if (e.dataset.redo) { redraw(); return; }
     if (e.dataset.dis || e.querySelector('.spin')) return;
-    const c = e.dataset.c, t = Date.now(), again = S.lastClick && S.lastClick.c === c && t - S.lastClick.t < 450;
-    S.lastClick = again ? null : {c, t};   // 같은 카드를 두 번 누르면 확정(그리면서 카드가 다시 만들어져 dblclick 은 안 온다)
-    S.sel = c; if (S.rej[S.sel]) delete S.rej[S.sel];
-    if (again) { const it2 = item(), cur2 = it2.current === 'v5' ? 'v5' : it2.current; decide(c === cur2 ? 'keep' : c); return; }
+    if(ev.target.closest('[data-outline]'))return;
+    const c = e.dataset.c;
+    S.sel=c; if(S.rej[S.sel])delete S.rej[S.sel];
     renderPick();
   });
   m.querySelectorAll('.rounds button').forEach(b => b.onclick = () => { S.round = +b.dataset.r; S.sel = null; S.rej = {}; renderPick(); });   // 메모는 기물 것이라 둔다
@@ -498,13 +541,13 @@ function renderBar() {
   const it = item(); if (!it || S.waitNext) { b.innerHTML = ''; return; }
   const r = rnd(); const cur = it.current === 'v5' ? 'v5' : it.current;
   const busy = r.runs.some(x => ['queued', 'running'].includes(x.status));
-  memoBox('pick', it.id, '메모 — 다시 뽑을 때 작업자에게 그대로 간다(「2x2」처럼 쓰면 크기도 바뀐다). 고를 때 남기면 다음 판의 기억이 된다. Ctrl+Enter 확정');
-  $('#barL').innerHTML = '';
-  $('#barR').innerHTML = `<label title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
+  memoBox('pick', it.id, '수정할 점이나 메모 (선택사항) · Ctrl+Enter로 확정');
+  $('#barL').innerHTML = `<span>${S.sel?'고른 후보: <b>'+esc(S.sel===cur?'현재 그림':pickName(S.sel))+'</b>':'후보를 하나 고르세요'}</span><span style="margin-left:auto">확정 후 자동으로 다음 기물 · 5초 되돌리기</span>`;
+  $('#barR').innerHTML = `<label id="fromSelLabel" title="다시 뽑을 때 지금 고른 후보를 출발점으로"><input type="checkbox" id="fromSel" ${S.fromSel ? 'checked' : ''}> 고른 후보에서 출발</label>
     ${it.set && S.sel && S.sel !== cur && !busy ? `<span class="slotredo">칸만 다시 ${it.set.slots.filter(x => !x.locked).map(x => `<button class="btn" data-slot="${esc(x.key)}" title="고른 묶음에서 이 칸만 다시 그린다 — 다른 칸은 그대로">${esc(x.label)}</button>`).join('')}</span>` : ''}
     <button class="btn redo" id="redo" ${busy ? 'disabled' : ''} title="${busy ? '아직 그리는 중' : '후보 ' + DRAW_N + '장 새로 — 숫자 ' + (r.runs.length + 1)}">다시 뽑기${busy ? ' (그리는 중)' : ''}</button>
     <button class="btn" id="keep" title="지금 그림 그대로 확정 (0 → Enter)">지금 그대로</button>
-    <button class="btn go" id="ok" ${canPick(it, r) ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ ${esc(pickName(S.sel))} 로 확정` : '✓ 확정'}</button>`;
+    <button class="btn go" id="ok" ${canPick(it, r) ? '' : 'disabled'} title="Enter">${S.sel && S.sel !== cur ? `✓ 선택 저장하고 다음` : '선택 후 확정'}</button>`;
   $('#fromSel').onchange = e => S.fromSel = e.target.checked;
   $('#ok').onclick = confirmSel;
   $('#keep').onclick = () => decide('keep');
@@ -557,7 +600,8 @@ function commit(kind, it, body, msg) {
   S.lastUndo = it.id; delete S.drafts[it.id]; S.sel = null; S.rej = {}; S.memo = '';   // 끝낸 기물의 초안을 남기지 않는다
   if (kind === 'decide') { it.status = 'done'; if (body.choice !== 'keep') it.current = body.choice; } else it.status = 'drawing';
   nextItem(); renderNav(); renderPick(); $('#main').scrollTop = 0;   // 다음 기물은 맨 위부터
-  toast(msg, 0, () => undo(it.id));
+  renderPublication();
+  toast(msg+' · 5초 뒤 저장', 0, () => undo(it.id));
 }
 function restore(id, p) {   // 그 기물로 돌아가 고르던 것을 그대로
   saveDraft();
@@ -571,13 +615,15 @@ function undo(id) {
   if (!p) return;
   if (p.sent) { toast(`${p.name}: 이미 서버에 보냈다 — 되돌릴 수 없다`, 1); return; }
   clearTimeout(p.timer); delete S.pending[id]; if (S.lastUndo === id) S.lastUndo = null;
-  restore(id, p); toast(`${p.name}: 되돌렸다`);
+  restore(id, p); renderPublication(); toast(`${p.name}: 되돌렸다`);
 }
 async function send(id) {
   const p = S.pending[id]; if (!p || p.sent) return;
-  p.sent = true; p.at = Date.now(); p.errSeq = S.data.drawErrSeq || 0; if (S.lastUndo === id) S.lastUndo = null;
+  p.sent = true; p.at = Date.now(); p.errSeq = S.data.drawErrSeq || 0; renderPublication(); if (S.lastUndo === id) S.lastUndo = null;
   try {
     const res = await api(p.kind === 'decide' ? '/api/harness/decide' : '/api/harness/draw', p.body);
+    p.saved=true;
+    if(p.kind==='decide')toast(`${p.name}: 선택 저장 완료 · 공용 반영은 자동으로 이어집니다`);
     if (res.resized) toast(`${p.name}: 크기를 ${res.resized.w}×${res.resized.h}칸(${res.resized.canvas.join('×')}px)으로 바꿔 다시 뽑는 중`);
     if (res.children && res.children.length) toast(`${p.name} → ${res.children.map(c => c.name).join(' · ')} 에 들어갔다`);
   } catch (e) {
@@ -626,14 +672,14 @@ async function openDerive(id, onlyMissing = false) {
   const suggested = k => g[k].checked && (!onlyMissing || !had.some(x => x.derive === k));
   const bg = document.createElement('div'); bg.className = 'dlgbg';
   bg.innerHTML = `<div class="dlg"><h3>파생 만들기 — ${esc(g.name)} <code style="font-size:12px">${esc(g.id)}</code></h3>
-    <div class="made">체크는 쓰임새(${esc(g.use.join(' · ') || '없음')})로 고른 제안이다. 고친 뒤 「주문」. 묶음은 작업자 한 명이 원본 칸을 두고 나머지 칸을 한 판에 그린다 — 고르면 칸을 잘라 각 기물에 넣는다.</div>
+    <div class="made">필요할 만한 파생을 미리 골라 뒀어요. 원하는 것만 체크하고 후보를 만들어 보세요. 완성된 후보는 직접 고른 뒤 공용에 반영됩니다.</div>
     ${row('facing', suggested('facing'), g.facing.ok, '방향 4 (남·동·북·서)', g.facing.ok ? (g.facing.siblings.length ? ` 짝 기물 ${g.facing.siblings.map(f => esc(g.id.replace(/ [SENW]$/, ' ' + f))).join(' · ')} 에 들어간다` : ' 새 기물 3개(동·북·서)가 생긴다') : ' ' + esc(g.facing.why))}
     ${row('state', suggested('state'), g.state.ok, '상태 전환', ' 원본 + 다른 상태 한 칸. 이벤트가 그림을 바꾼다', ` <input type="text" id="dvState" value="${esc(g.state.label)}" title="상태 이름(열림·켬·깨짐…)">`)}
     ${row('loop', suggested('loop'), g.loop.ok, `움직임 ${g.loop.frames}프레임`, ` 원본 + 움직이는 부분만 바꾼 ${g.loop.frames - 1}장, ${g.loop.ms}ms 마다.${g.loop.why ? ' (' + esc(g.loop.why) + ')' : ''} 고른 움직임은 칩셋에 따로 추가`)}
     ${row('size', g.size.checked, g.size.ok, '큰 판', ' 원본을 출발 그림으로 새 칸 수에 다시 그린다(늘리기 금지)', ` <input type="number" id="dvW" min="1" max="8" value="${g.size.w}">×<input type="number" id="dvH" min="1" max="8" value="${g.size.h}">칸`)}
     <textarea id="dvNote" placeholder="작업자에게 줄 메모(모든 파생에 같이 간다) — 예: 열린 상자 안에 금화가 보이게"></textarea>
     ${had.length ? `<div class="made">이미 만든 파생: ${had.map(x => esc(x.name)).join(' · ')} — 같은 것을 다시 주문하면 원본의 지금 그림으로 새 판을 연다</div>` : ''}
-    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="dvX">닫기 (Esc)</button><button class="btn go" id="dvGo">주문</button></div></div>`;
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="dvX">닫기 (Esc)</button><button class="btn go" id="dvGo">선택한 파생 후보 만들기</button></div></div>`;
   document.body.append(bg);
   bg.onclick = e => { if (e.target === bg) closeDerive(); };
   $('#dvX').onclick = closeDerive;
@@ -739,7 +785,7 @@ async function startDraw() {
 }
 
 function setView(v) {
-  S.view = v; document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === v));
+  saveDraft(); S.view = v; document.body.dataset.view=v; document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.v === v));
   if (v === 'objs') loadObjs(); else if (v === 'suggest') { renderBar(); loadSuggestions(); } else { renderNav(); renderPick(); }
 }
 document.querySelectorAll('.tab').forEach(t => t.onclick = () => setView(t.dataset.v));
@@ -748,6 +794,7 @@ document.addEventListener('keydown', e => {
   if (document.querySelector('.dlgbg')) { if (e.key === 'Escape') closeDerive(); return; }
   if (S.view !== 'pick' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'z' || e.key === 'Z') { if (S.lastUndo) undo(); else toast('되돌릴 것이 없다(5초가 지나면 서버에 보낸다)'); return; }
+  if (e.target.closest('button,select,summary,a')&&['Enter',' '].includes(e.key))return;
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault(); const L = [...$('#nav').querySelectorAll('.it')].map(x => x.dataset.id); const i = L.indexOf(S.cur);
     const n = L[i < 0 ? 0 : (i + (e.key === 'ArrowDown' ? 1 : -1) + L.length) % L.length]; if (n) { openItem(n); renderNav(); renderPick(); $('#main').scrollTop = 0; }
