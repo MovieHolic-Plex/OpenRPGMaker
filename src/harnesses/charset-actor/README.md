@@ -15,7 +15,7 @@ npm run harness -- charset-actor audit --run RUN --refresh-previews
 npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outside-repo
 ```
 
-- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
+- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 2 --batch-size 2`가 기본이다. 생성/재개는 전체 살아 있는 driver의 동시 예약을 최대 4명으로 제한한다. 사람과 몬스터를 독립 실행 폴더에서 함께 제작할 수 있다.
 - 기본 제작은 원본 ASCII 격자 편집으로 돌아간다(2026-10-04 사용자 피드백). 초기 PNG 첨부·남김/폐기 비교·추가 조형 지시를 자동으로 넣지 않는다. manifest에 `visualReferences: ["pixel-style-reference.png"]`를 명시한 실험만 원본과 실행 폴더 안 참고 최대 4장을 `--image`로 첨부한다. `visual-inputs.json`/후보 meta는 기본 `[]`, 실험은 첨부 순서·파일 SHA256을 기록한다. 경로 지시나 열람 선언만으로 이미지 입력을 증명하지 않는다.
 - UI의 「새 캐릭터 만들기」에서 남긴 그림의 변주 또는 자유 저작을 고른다. 자유 저작의 전체 방향·참고 시트를 비우면 AI가 인물과 복식을 정한다.
 - 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향의 세 자세, 12장을 직접 그린다.
@@ -25,8 +25,10 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 - 영역은 원본 정지 발끝 기준 몸통 중앙 7줄/하단 다리·발 5줄로 고정한다. 현재 24×32 사람형과 원본 비율 유지 계약에 한정한 결함 검사다. 해부학 분할이나 자연스러움의 증명은 아니다. `python3 src/harnesses/charset-actor/harness.py motion-check /absolute/out.chr.txt --base BASE`로 `views/motion.json/png/gif`를 남긴다. 화면 상세에서도 변화 비교와 느린 걷기를 볼 수 있다. 납품은 검사 구현·그림·원본·진단 아티팩트 해시에 묶인다.
 - 옛 실행의 픽셀/사람 선택/납품 정책은 유지한다. 도구 변경 뒤에는 기존 봉인을 고쳐 재개하지 않고 같은 실제 남김에서 현재 계약의 새 기준을 만든다.
 - 산출물은 `reviewMode: human`, `strength: free`. 작업자 종료 후 렌더와 `published.json` 해시가 일치하면 GIF 대기열에 올린다.
+- 기본 화면은 GIF 검토에 집중한다. 작업 이력·일시 정지·재개는 「제작 관리」, 검색·종류·제작 선택은 「필터」를 펼쳐 본다. 새 제작은 기본 12종이며 작업 이름과 날짜를 표시한다. 남김 탭에서 다운로드한다.
+- 에이전트는 CLI `--title`/반복 `--concept` 또는 POST `/api/produce`의 `title`과 선택적인 `concepts` 문장 목록으로 캐릭터별 지시를 남길 수 있다. 기본 도트 도구·원본·납품 봉인은 유지한다.
 - 모든 탭에서 한 화면에 한 캐릭터만 표시한다. 위·오른쪽·아래·왼쪽 걷기와 칸 위 이동 GIF를 항상 함께 보여준다. 다음 후보의 GIF도 미리 불러온다.
-- 걷기는 자홍색 체커 배경이 기본이다. 흰색·검정·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
+- 새 브라우저의 걷기 배경은 검정이며 기존 사용자의 선택은 유지한다. 흰색·자홍색 체커·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
 - alpha 정책은 렌더/선택 binding과 따로 버전을 관리한다. 검사 개선 때 옛 PASS를 다시 계산하되 같은 픽셀의 사용자 선택을 지우지 않는다. 새 옷 안의 투명 구멍과 깊은 머리 면의 열린 틈도 차단한다.
 - `audit --run RUN`은 저장소 밖 데이터 폴더에 전체 12프레임 접촉 시트와 세 배경의 원본/후보 비교, 결손 좌표·해시·PNG 키 색 재읽기 `audit.json`/`SUMMARY.md`를 남긴다. `--refresh-previews`는 같은 격자로 고대비 GIF/RGBA 시트만 추가하며 그림·사용자 결정·공용 DB를 바꾸지 않는다. 차단 후보의 원본/선택 이력은 보존하고 정상 후보 목록·새 팩·공용 게시에서 제외한다.
 - `audit`는 모델 12장 직접 저작의 기록과 현재 격자 해시도 대조한다. `propagate`/`walk-qa`는 이전 전파 실행 재현용이며 모델 12장 후보에 대한 전파 호출은 거절한다.

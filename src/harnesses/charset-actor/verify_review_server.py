@@ -7,10 +7,31 @@ from unittest.mock import patch
 
 import harness as H
 import review_server as S
+import studio
 
 
 def verify(check, isolated_store):
     with tempfile.TemporaryDirectory(prefix='charset-http-') as temp, isolated_store(Path(temp)):
+        producer = H.DATA / 'runs/producer'
+        producer.mkdir(parents=True)
+        H.write_json_atomic(producer / 'driver.json', dict(pid=42, par=2))
+        with patch.object(H, '_alive', side_effect=lambda pid: pid in (42, 43)):
+            studio.reserve_artists(2)
+            check('studio-reserves-slots-before-production-layout-exists', studio.active_productions() == [dict(run='producer', par=2)])
+            other = H.DATA / 'runs/other'
+            other.mkdir()
+            H.write_json_atomic(other / 'driver.json', dict(pid=43))
+            H.write_json_atomic(other / 'production.json', dict(par=2))
+            try:
+                studio.reserve_artists(1)
+            except ValueError:
+                check('studio-blocks-overlapping-producers-over-four-artists', True)
+            else:
+                check('studio-blocks-overlapping-producers-over-four-artists', False)
+            studio.reserve_artists(2, exclude='producer')
+            check('studio-resume-excludes-its-own-reservation', True)
+            H.write_json_atomic(other / 'driver.json', dict(pid=0, par=4))
+            check('studio-ended-producer-releases-slots', studio.active_productions() == [dict(run='producer', par=2)])
         w = H.DATA / 'runs/fixture/candidate__gpt-r1'
         w.mkdir(parents=True)
         (w / 'meta.json').write_text(json.dumps(dict(pid=0)))
