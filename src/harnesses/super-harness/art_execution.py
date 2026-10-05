@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import sqlite3
 import subprocess
 import sys
 
@@ -53,7 +54,6 @@ def prepare(root, request):
                 raise ValueError('수정 실행은 새로 준비한 queued 후보만 받습니다.')
             env['VEH_HARNESS_ATTEMPTS'] = str(attempts)
         elif harness == 'interior-props':
-            import sqlite3
             database = Path(local('data')) / 'harness.sqlite'
             with sqlite3.connect(database.as_uri() + '?mode=ro', uri=True) as db:
                 queued = db.execute("SELECT round,count(*) FROM runs WHERE status='queued' GROUP BY round").fetchall()
@@ -72,6 +72,34 @@ def prepare(root, request):
         else:
             env.update(VEH_HARNESS_MODEL=override['model'], VEH_HARNESS_EFFORT=override['effort'])
     return [sys.executable, *command], env
+
+
+def native_errors(root, request):
+    """Process exit is not a verdict. Quality FAIL is complete; technical ERROR isn't."""
+    try:
+        if request['harness'] == 'interior-props':
+            path = Path(root) / request['data'] / 'harness.sqlite'
+            with sqlite3.connect(path.as_uri() + '?mode=ro', uri=True) as db:
+                db.row_factory = sqlite3.Row
+                rows = [dict(r) for r in db.execute('SELECT * FROM runs')]
+        else:
+            state = json.loads((Path(root) / request['runs'] / request['round'] / 'state.json').read_text())
+            rows = [dict(r, id=k) for k, r in state.get('cands', {}).items()]
+        if not rows: return ['실행할 후보 기록이 없습니다.']
+        errors = []
+        for row in rows:
+            review = row.get('review') or {}
+            if isinstance(review, str): review = json.loads(review)
+            if not isinstance(review, dict):
+                errors.append(f"후보 {row.get('id')}: 검수 결과 객체 없음"); continue
+            verdict = str(review.get('verdict', '')).upper()
+            review_required = request['harness'] == 'modern-chipset' or str(row.get('phase', '')).startswith('review') or row.get('ok')
+            if row.get('status') != 'done' or verdict == 'ERROR' or (review_required and verdict not in ('PASS', 'FAIL', 'HARD')):
+                errors.append(f"후보 {row.get('id')}: {row.get('status')} / {row.get('phase', '')} — " +
+                              str(row.get('error') or review.get('reasons') or '검수 결과 없음'))
+        return errors
+    except (OSError, ValueError, KeyError, TypeError, sqlite3.Error) as error:
+        return ['실행 결과 확인 실패: ' + str(error)]
 
 
 def descendants():
@@ -132,7 +160,9 @@ def main():
             'acceptance': approved.get('acceptance'),
         }, ensure_ascii=False)
     code = subprocess.call(command, cwd=root, env=env)
-    result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code}, ensure_ascii=False))
+    errors = native_errors(root, request)
+    code = code or (1 if errors else 0)
+    result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code, 'nativeErrors': errors}, ensure_ascii=False))
     try:
         while os.waitpid(-1, os.WNOHANG)[0]: pass
     except ChildProcessError: pass

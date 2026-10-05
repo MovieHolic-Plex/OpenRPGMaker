@@ -943,7 +943,7 @@ def on_art_native(meta, code, result):
     wt = os.path.join(DATA, 'art-worktrees', cid)
     if code != 0 or not isinstance(result, dict) or result.get('exitCode') != 0:
         store.update_concept(cid, stage='blocked', status='idle', note='그림 하네스 실행 실패',
-                             reasons=[f'실행 종료 {code}; logs/art-native.log 확인'])
+                             reasons=(result.get('nativeErrors') if isinstance(result, dict) else None) or [f'실행 종료 {code}; logs/art-native.log 확인'])
         return
     prompt = fill(prompt_template('art-collect.md'), ROOT=wt, CDIR=cdir(cid))
     start_codex(cid, 'art', 'collect', prompt, cdir(cid, 'art-result.json'), write_root=wt)

@@ -1,6 +1,7 @@
 """Human chip choices: receipt-bound previews, durable SQLite selections, no installation."""
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import store
@@ -96,6 +97,34 @@ def prepare(data, cid):
                     'caution': '실제 칩으로 조립한 비교용 예시입니다. 완성 맵·통행 검사 결과는 아닙니다.'})
             group['description'] = '같은 배치의 실제 조립 예시로 크기·접합·동선을 비교합니다.'
             groups.append(group)
+        elif receipt.get('harness') == 'interior-props' and receipt.get('runs') and cid != 'underground-prison':
+            # Receipt paths own generic spaces. Prison round numbers are not a schema.
+            by_item = {}
+            for row in receipt['runs']:
+                item = row['item']; slug = re.sub(r'[^A-Za-z0-9]+', '_', item).strip('_')
+                suffix = f"/{slug}/h{row['round']}-{row['letter']}.png"
+                matches = [r for r in receipt.get('candidateImages', []) if r['path'].endswith(suffix)]
+                if len(matches) != 1: raise ValueError('현재 품목의 후보 이미지 경로가 모호하거나 없습니다: ' + item)
+                original = matches[0]; verified(root, original)
+                review = json.loads(row.get('review') or '{}') if isinstance(row.get('review'), str) else row.get('review') or {}
+                passed = row.get('status') == 'done' and bool(row.get('ok')) and review.get('verdict') == 'PASS'
+                previews = []
+                if review.get('pack'):
+                    context = safe(root, str(Path(review['pack']) / 'ctx-cand.png'))
+                    previews.append(ref(root, context, '실제 칩 조립 예시 · 공간 검수 전'))
+                if not previews:
+                    previews = [dict(original, label='칩 원본 · 조립 검수 미완료')]
+                    passed = False
+                group = by_item.setdefault(item, dict(id=item, title=row.get('name_ko') or item,
+                    description='해당 품목의 실제 칩과 조립 예시를 확인합니다.', requiresContextReview=True, candidates=[]))
+                group['candidates'].append(dict(id=f"h{row['round']}-{row['letter']}", title='예시 '+row['letter'],
+                    passed=passed, summary='부품 검수 통과 · 공간 검수 대기' if passed else '검수 미완료 · 선택할 수 없음',
+                    reasons=[] if passed else [row.get('error') or review.get('reasons') or '독립 그림 검수 미완료'],
+                    repairFixes=[dict(category='asset', target=item, problem=review.get('reasons') or '부품 검수 불합격',
+                        change=review['fix'], keep='다른 품목과 원본 판정 기록')] if review.get('fix') and not passed else [],
+                    sources=[receipt_ref, original], images=previews, sheet=original,
+                    caution='품목 검수와 별개로 조립 공간의 시점·접합·동선을 확인해야 합니다.'))
+            groups.extend(by_item.values())
         elif receipt.get('harness') == 'interior-props' and receipt.get('runs'):
             by_round = {(r['round'], r['letter']): r for r in receipt['runs']}
             specs = [('stairs', '남쪽 돌계단', [1]), ('iron-door', '철문 · 닫힘 + 열림', [2, 3]), ('wood-door', '나무문 · 닫힘 + 열림', [4, 5])]

@@ -546,3 +546,34 @@ A/B 두 작업은 한 공간 슬롯과 두 작업 슬롯을 사용한다. DB run
 
 브라우저 근거: `verify-shots/space-live-progress/`의 desktop/detail/mobile PNG.
 실제 서비스에서 기획도 확대, 접히지 않은 상세 진행, 모바일 가로 넘침 없음, JS 오류 없음 확인.
+
+
+### 완성 그림 뒤의 기술 실패와 복구 (2026-10-05)
+
+실측: 하수도 native job 719는 PNG 5개를 만들고 기계 검사를 통과했지만,
+구조 예시 renderer가 `wetstone.first`를 읽어 5개 모두 `phase=review / failed`였다.
+실제 바닥 스펙은 `tiles` 배열이다. 감독은 pool의 exit 0만 보고 수집을 시작했고,
+수집 뒤에는 감옥 전용 고정 경로/판 번호가 하수도에도 적용되어 다시 막혔다.
+
+- `art_execution.native_errors`는 종료 후 실제 SQLite/state의 후보 상태와 검수 ERROR를
+  확인한다. 기술 실패·미완료는 nonzero와 nativeErrors로 상위 UI까지 전달한다.
+  품질 FAIL/HARD는 정상적인 검수 결과이므로 기존 피드백·수정 경로를 유지한다.
+- `interior-props retry-review-errors <rounds> --queue-only`는 failed 검수만 받는다.
+  기존 그림을 기계 검사하고 전후 SHA256이 같을 때만 검수 큐로 복구하며,
+  원인과 해시를 history에 남긴다. 그림 시도 수·품질 판정·수정 상한은 초기화하지 않는다.
+- 구조 renderer는 실제 `wetstone.tiles`로 바닥을 합성한다. 하수도 운영 복구 시
+  기존 5개 그림 보존과 review pack 생성을 확인했다. 변경된 코드/DB의 도면 해시는
+  다시 묶고 독립 도면 검수를 재요청했다. 이전 PASS를 복사하지 않는다.
+- 일반 interior-props 선택 예시는 receipt의 품목/판/후보/실제 이미지 경로를 따른다.
+  감옥의 계단·문 열림/닫힘 묶음은 기존 계약을 유지한다. 일반 공간은 부품 PASS 뒤에도
+  조립 공간 검수를 요구하며 불합격 수정 지시를 피드백에 전달한다.
+- 교실 job 720의 수정안은 상세 `repairPlan.fixes`가 있었지만 `changes` 키만 검사해
+  준비 오류가 났다. changes 요약 또는 target/before/after/modifiedFiles/verificationResult를
+  모두 갖춘 상세 수정안을 받는다. route·폐기 제약·독립 검수는 그대로 요구한다.
+  준비 프롬프트에도 같은 계약과 require_preparation 호출을 명시한다.
+- 진행 관찰기는 seed.contentRoot의 격리 그림 폴더를 따라간다. 루트 폴더만 찾아
+  생성된 PNG 5개를 0개로 표시하던 문제를 수정했다.
+
+공동묘지 job 722는 실제 도면 FAIL이다. 면적을 줄인 뒤 관리열 x13에 맞게 부품 지시서의
+옛 x14를 동기화하지 않은 결함이며 원본 판정으로 수정 큐에 넣었다.
+웹소켓 426 로그는 성공한 작업에도 있어 그것만으로 중단 원인을 단정하지 않는다.

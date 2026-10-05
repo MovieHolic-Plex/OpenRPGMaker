@@ -48,6 +48,14 @@ PASS/FAIL, 필수 항목별 근거와 구체 수정 지시를 반드시 쓰도�
 실행기 전면 재설계와 전체 풀 구동, 후보 선택·설치·공용 게시를 하지 않는다.
 감독이 승인 모델을 주입하므로 모델 변경을 재질문하지 않는다.
 
+## 준비 결과 계약
+layout.repairPlan에는 route(policy.route와 같음), phase, changes(30자 이상 변경 요약),
+supersededConstraints(30자 이상 폐기한 고정 조건 근거)를 쓴다.
+항목별 fixes로 대신 설명할 때는 각 target/before/after/modifiedFiles/verificationResult를 빠짐없이 쓴다.
+최종 제출 전에 import art_repair; art_repair.require_preparation(ROOT, Path(CDIR), layout, feedback)를
+실제 현재 도면·피드백으로 실행한다. build_input만 통과했다고 준비 완료로 끝내지 않는다.
+기존 구조 조립 코드가 있으면 빈 슬롯의 context 조립도 실행해서 필드/파일 오류를 먼저 찾는다.
+
 ## 출력
 art_layout.build_input(ROOT, execution)으로 기계적인 입력 일치를 확인한다. 도면 PASS 선언은 하지 않는다.
 {{CDIR}}/art-result.json에 실제 하네스에 맞는 execution을 기록하고 종료한다.
