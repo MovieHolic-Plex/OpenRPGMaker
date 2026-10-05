@@ -1,0 +1,97 @@
+{
+  "library": "oprn-hand-interior-harness",
+  "revision": "1ada5b3858f53b409eea4d3539d2be2e1cae0525b7d7b10608f0d70be8d723bf",
+  "selected": 808,
+  "kits": 945,
+  "dbReload": true,
+  "projects": [
+    {
+      "kind": "existing",
+      "projectId": "4fb9a15f-8ac9-496d-b250-f8449dbe9654",
+      "projectDir": "/home/main/.local/share/oprn/prop-harness/proof-projects/town300-1ada5b3858f5-existing",
+      "revision": 3,
+      "saved": true,
+      "reopened": true,
+      "objects": 945,
+      "atlasSha256": "b57c4f6642e1685b32f953d3251667171e4a746485de5040ef734212c9b7e70b"
+    },
+    {
+      "kind": "new",
+      "projectId": "f769641a-507d-4bf9-b9e4-ce3c9317c7a4",
+      "projectDir": "/home/main/.local/share/oprn/prop-harness/proof-projects/town300-1ada5b3858f5-new",
+      "revision": 2,
+      "saved": true,
+      "reopened": true,
+      "objects": 945,
+      "atlasSha256": "b57c4f6642e1685b32f953d3251667171e4a746485de5040ef734212c9b7e70b"
+    },
+    {
+      "kind": "placement",
+      "projectId": "36d812de-2bbc-4f38-a776-060046bc0422",
+      "projectDir": "/home/main/.local/share/oprn/prop-harness/proof-projects/town300-1ada5b3858f5-placement",
+      "revision": 2,
+      "saved": true,
+      "reopened": true,
+      "objects": 945,
+      "atlasSha256": "b57c4f6642e1685b32f953d3251667171e4a746485de5040ef734212c9b7e70b"
+    }
+  ],
+  "discovery": {
+    "firstPageCount": 40,
+    "allUserSelected": true,
+    "placements": [
+      {
+        "query": "의무실 침대",
+        "id": "kit:shared_hand_interior_harness/shared_hand-interior:med bay bed",
+        "objectId": "kit:shared_hand_interior_harness/shared_hand-interior:med bay bed",
+        "mapId": "map_blank_start",
+        "layers": "both",
+        "rect": {
+          "x": 2,
+          "y": 2,
+          "width": 2,
+          "height": 3
+        },
+        "clipped": false,
+        "cells": 6,
+        "slotsAdded": 6,
+        "remapped": 6
+      },
+      {
+        "query": "나무 목욕통",
+        "id": "kit:shared_hand_interior_harness/shared_hand-interior:bath bucket",
+        "objectId": "kit:shared_hand_interior_harness/shared_hand-interior:bath bucket",
+        "mapId": "map_blank_start",
+        "layers": "both",
+        "rect": {
+          "x": 7,
+          "y": 2,
+          "width": 2,
+          "height": 3
+        },
+        "clipped": false,
+        "cells": 6,
+        "slotsAdded": 6,
+        "remapped": 6
+      },
+      {
+        "query": "팔선탁",
+        "id": "kit:shared_hand_interior_harness/shared_hand-interior:eight immortals table",
+        "objectId": "kit:shared_hand_interior_harness/shared_hand-interior:eight immortals table",
+        "mapId": "map_blank_start",
+        "layers": "both",
+        "rect": {
+          "x": 11,
+          "y": 2,
+          "width": 2,
+          "height": 3
+        },
+        "clipped": false,
+        "cells": 6,
+        "slotsAdded": 6,
+        "remapped": 6
+      }
+    ],
+    "placementSavedAndReopened": true
+  }
+}
