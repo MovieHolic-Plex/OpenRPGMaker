@@ -16,11 +16,30 @@ import { sha256HexTextSync } from "../../../util/sha256";
 
 interface NodeMemo {
   readonly keys: readonly string[] | null;
-  /** 원시 자식 값. 객체 자식 자리는 undefined(객체는 tokens 로 대조한다). */
+  /** 원시 자식 값. 객체 자식 자리는 undefined(객체는 tokens 로 대조한다). 원시 자식이 없으면 NO_SLOTS. */
   readonly values: readonly unknown[];
-  /** 객체 자식의 토큰. 원시 자식 자리는 undefined. */
+  /** 객체 자식의 토큰. 원시 자식 자리는 undefined. 객체 자식이 없으면 NO_SLOTS. */
   readonly tokens: readonly (string | undefined)[];
+  /** 자식 수. values·tokens 는 비어 있을 수 있어 길이로 대조하지 않는다. */
+  readonly length: number;
   readonly token: string;
+}
+
+/**
+ * 기억을 가볍게 둔다(2026-10-05 실측, 새 프로젝트 기본 자료 · 타일셋 노드 62만 개: 기억이 약 260MB, 조수 턴 시작 뒤 렌더러 힙의 1/3).
+ * - 전부 원시값인 노드(대부분의 잎)는 tokens 를, 전부 객체인 노드는 values 를 같은 빈 배열 하나로 둔다 — 빈 자리 읽기는 undefined 라 대조가 같다.
+ * - 같은 키 목록(같은 모양의 타일 속성 수만 개)은 배열 하나를 함께 쓴다.
+ * 토큰은 그대로라 요약 값도 그대로다.
+ */
+const NO_SLOTS: readonly never[] = Object.freeze([]);
+const internedKeys = new Map<string, readonly string[]>();
+const INTERN_KEYS_LIMIT = 50_000;
+function internKeys(keys: string[]): readonly string[] {
+  const id = keys.join("\u0000");
+  const hit = internedKeys.get(id);
+  if (hit) return hit;
+  if (internedKeys.size < INTERN_KEYS_LIMIT) internedKeys.set(id, keys);
+  return keys;
 }
 
 const memos = new WeakMap<object, NodeMemo>();
@@ -127,7 +146,7 @@ function nodeToken(node: Record<string, unknown>): string {
   const length = keys ? keys.length : items!.length;
   const memo = memos.get(node);
   if (memo && (verifiedInEpoch?.has(node) || (trustingShared && trustedShared.has(node)))) return memo.token;
-  if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) {
+  if (memo && memo.length === length && isFresh(node, keys, items, length, memo)) {
     verifiedInEpoch?.add(node);
     return memo.token;
   }
@@ -135,12 +154,13 @@ function nodeToken(node: Record<string, unknown>): string {
   const values = new Array<unknown>(length);
   const tokens = new Array<string | undefined>(length);
   const pieces = new Array<string | undefined>(length);
+  let objects = 0;
   for (let index = 0; index < length; index++) {
     const key = keys ? keys[index]! : String(index);
     const value = keys ? node[key] : items![index];
     const token = tokenOf(value, key);
     pieces[index] = token;
-    if (isObject(value)) tokens[index] = token;
+    if (isObject(value)) { tokens[index] = token; objects += 1; }
     else values[index] = value;
   }
   let text: string;
@@ -155,7 +175,13 @@ function nodeToken(node: Record<string, unknown>): string {
     text = `[${pieces.map(piece => piece ?? "null").join(",")}]`;
   }
   const token = text.length <= INLINE_TEXT ? text : `#${sha256HexTextSync(text)}`;
-  memos.set(node, { keys, values, tokens, token });
+  memos.set(node, {
+    keys: keys ? internKeys(keys) : null,
+    values: objects === length ? NO_SLOTS : values,
+    tokens: objects === 0 ? NO_SLOTS : tokens,
+    length,
+    token,
+  });
   verifiedInEpoch?.add(node);
   return token;
 }
