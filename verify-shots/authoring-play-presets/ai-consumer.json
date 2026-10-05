@@ -1,0 +1,21 @@
+{
+  "source": "proof.json",
+  "total": 96,
+  "categoryCount": 12,
+  "initialReadTools": [
+    "list_authoring_presets",
+    "read_authoring_preset"
+  ],
+  "piPromptConnected": true,
+  "firstPlayReads": [
+    "list_authoring_presets",
+    "read_authoring_preset"
+  ],
+  "modes": [
+    "read",
+    "read"
+  ],
+  "canonicalContentChanged": false,
+  "modelSelectionExecuted": false,
+  "errors": []
+}

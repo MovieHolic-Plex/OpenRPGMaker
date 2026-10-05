@@ -2,7 +2,7 @@ import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
-import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
+import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
 import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
 import { mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
@@ -3013,7 +3013,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       historyButton.click();
     },
     openTools: () => toolsButton.click(),
-    openAuthoring: (tab: "quests" | "library" | "dialogue" | "inspector") => openAiAuthoringModal(tab, {
+    openAuthoring: (tab: AiAuthoringTab) => openAiAuthoringModal(tab, {
       composer: input.value,
       apply: text => { input.value = input.value.trim() ? `${input.value}\n\n${text}` : text; input.dispatchEvent(new Event("input")); refreshSendEnabled(); input.focus(); },
     }),
