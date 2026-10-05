@@ -1,6 +1,6 @@
 // Live model transport is never replaced. Record the real native composer and
 // canonical host; retain unsuccessful attempts, raw video and public tool events.
-import { firefox } from 'playwright';
+import { chromium } from 'playwright';
 import { resolve } from 'node:path';
 import { mkdirSync,writeFileSync,openSync,closeSync,unlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -35,14 +35,20 @@ for(const entry of cases){
   const lock=resolve(dir,'run.lock'),fd=openSync(lock,'wx');writeFileSync(fd,JSON.stringify({pid:process.pid}));closeSync(fd);
   const proof={case:entry.id,prompt:entry.prompt,realModel:true,nativeComposer:true,projectDir,requests:[],errors:[],startedAt:new Date().toISOString()};
   const persist=()=>save(resolve(dir,'proof.json'),proof);
-  let host,browser,context,page,video,videoOrigin,trimStart,videoEnd;
+  let host,browser,context,page,video,videoOrigin,trimStart,videoEnd,bootObserver;
   try{
     host=await startHost(projectDir,dir);
-    browser=await firefox.launch({firefoxUserPrefs:{'network.notify.changed':false,'network.notify.IPv6':false,'network.captive-portal-service.enabled':false,'network.connectivity-service.enabled':false}});
+    browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage','--js-flags=--max-old-space-size=6144']});
     videoOrigin=Date.now();
-    let editor=await newEditor(browser,host.url,projectDir,{}, {recordVideo:{dir:resolve(dir,'raw-video'),size:{width:1440,height:960}}});
-    page=editor.page;context=editor.context;video=page.video();
-    page.on('pageerror',error=>proof.errors.push(error.message));
+    let editor=await newEditor(browser,host.url,projectDir,{}, {bootTimeoutMs:360000,recordVideo:{dir:resolve(dir,'raw-video'),size:{width:1440,height:960}},onPage(p,c){
+      page=p;context=c;video=p.video();const pending=new Set();
+      p.on('pageerror',error=>{proof.errors.push(error.message);persist();});
+      p.on('request',r=>{if(r.method()==='GET')pending.add(new URL(r.url()).pathname);});
+      p.on('requestfinished',r=>pending.delete(new URL(r.url()).pathname));
+      p.on('requestfailed',r=>pending.delete(new URL(r.url()).pathname));
+      bootObserver=setInterval(()=>{void p.evaluate(()=>({loader:document.querySelector('[data-testid="boot-loader"]')?.textContent?.trim().slice(0,100),mainChildren:document.querySelector('.main')?.childElementCount,ready:window.__oprnAiBridge?.status?.().ready})).then(state=>{proof.boot={...state,pending:[...pending].slice(-12)};persist();console.log(JSON.stringify({case:entry.id,boot:proof.boot}));}).catch(()=>{});},30000);
+    }});
+    page=editor.page;context=editor.context;video=page.video();clearInterval(bootObserver);
     page.on('request',request=>{
       if(request.method()!=='POST'||!/\/v1\/(agent\/run|chat\/completions)/.test(request.url()))return;
       try{const raw=request.postDataBuffer(),body=JSON.parse(raw?.[0]===31?gunzipSync(raw):raw);
@@ -94,7 +100,7 @@ for(const entry of cases){
     console.log(JSON.stringify({case:entry.id,passed:proof.passed,newMaps:proof.newMaps,tools:proof.tools.map(t=>t.name),persistence:proof.persistence}));
   }catch(error){proof.failure=error.message;await page?.screenshot({path:resolve(dir,'failure.png')}).catch(()=>{});console.error(`${entry.id}: ${error.message}`);}
   finally{
-    videoEnd??=(Date.now()-videoOrigin)/1000;persist();await context?.close().catch(()=>{});await browser?.close().catch(()=>{});await host?.close();unlinkSync(lock);
+    clearInterval(bootObserver);videoEnd??=(Date.now()-videoOrigin)/1000;persist();await context?.close().catch(()=>{});await browser?.close().catch(()=>{});await host?.close();unlinkSync(lock);
     if(video&&trimStart!==undefined){const raw=await video.path();
       execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-ss',String(trimStart),'-i',raw,'-t',String(videoEnd-trimStart),'-vf','fps=20','-c:v','libx264','-threads','2','-crf','23','-pix_fmt','yuv420p','-movflags','+faststart',resolve(dir,'assistant.mp4')],{stdio:'inherit'});
       proof.recording={source:raw,mp4:resolve(dir,'assistant.mp4'),speed:1,sourceSeconds:videoEnd-trimStart,trimmedBeforeNativeInput:true};persist();
