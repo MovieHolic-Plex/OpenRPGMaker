@@ -49,7 +49,10 @@ def native(cid):
     counts, previews, outputs = {}, [], []
     try:
         if request.get('harness') == 'interior-props':
-            database = local(root, request['data']) / 'harness.sqlite'
+            data_dir = local(root, request['data'])
+            seed = sh.read_json(data_dir / 'seed.json', {}) or {}
+            content = local(root, seed.get('contentRoot', '.'))
+            database = data_dir / 'harness.sqlite'
             with sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=1) as db:
                 db.row_factory = sqlite3.Row
                 rows = db.execute('SELECT runs.*, rounds.item, rounds.root FROM runs JOIN rounds ON runs.round=rounds.id').fetchall()
@@ -65,7 +68,7 @@ def native(cid):
                 if Path(row['root']).resolve() != root.resolve():
                     continue
                 slug = re.sub(r'[^A-Za-z0-9]+', '_', row['item']).strip('_')
-                path = local(root, f"tiledata/hand-interior/pick/candidates/{slug}/h{row['round']}-{row['letter']}.png")
+                path = local(root, str(content.relative_to(root) / f"tiledata/hand-interior/pick/candidates/{slug}/h{row['round']}-{row['letter']}.png"))
                 if not path.is_file():
                     continue
                 # Fresh queues may reuse h1-A filenames from a prior request.

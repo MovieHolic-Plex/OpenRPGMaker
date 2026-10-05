@@ -99,8 +99,16 @@ def require_preparation(root, folder, layout, feedback):
         raise ValueError('현재 수정 단계와 도면 단계가 다릅니다: ' + policy['phase'])
     if policy:
         plan = layout.get('repairPlan', {})
-        if plan.get('route') != policy['route'] or len(str(plan.get('changes', '')).strip()) < 30:
-            raise ValueError('실패 원인 단계의 구체적인 수정 계획이 필요합니다.')
+        fixes = plan.get('fixes')
+        detailed = isinstance(fixes, list) and bool(fixes) and all(
+            isinstance(f, dict) and all(isinstance(f.get(k), str) and f[k].strip()
+                for k in ('target', 'before', 'after'))
+            and isinstance(f.get('modifiedFiles'), list) and bool(f['modifiedFiles'])
+            and len(str(f.get('verificationResult', '')).strip()) >= 30 for f in fixes)
+        if plan.get('route') != policy['route']:
+            raise ValueError('repairPlan.route가 현재 피드백 policy.route와 달라집니다.')
+        if len(str(plan.get('changes', '')).strip()) < 30 and not detailed:
+            raise ValueError('repairPlan.changes(30자 이상) 또는 fixes의 target/before/after/modifiedFiles/verificationResult가 필요합니다.')
         if policy['route'] == 'spec' and len(str(plan.get('supersededConstraints', '')).strip()) < 30:
             raise ValueError('반복 실패를 만든 기존 고정 조건과 변경 근거를 명시해야 합니다.')
     approval = read(folder / 'art-calibration.json', {})
