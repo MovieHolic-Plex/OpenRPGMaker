@@ -1,0 +1,40 @@
+
+> oprn@0.139.0 build:electron
+> node scripts/build-electron.mjs
+
+staged dist-electron/unrar.wasm
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    scripts/lib/ohMyPiPiAi.mjs:53:121:
+      53 │ ... fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
+         ╵                                                    ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    scripts/lib/aiAuthRuntime.ts:62:97:
+      62 │ ...| fileURLToPath(new URL("./omp-auth-probe.mjs", import.meta.url));
+         ╵                                                    ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    scripts/lib/worldmapBuild.mjs:15:89:
+      15 │ ...lve(dirname(fileURLToPath(import.meta.url)), "..", ".."), "tile...
+         ╵                              ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+built dist-electron/main.cjs
+built dist-electron/preload.cjs
+built dist-electron/browser-bridge.js
+[1.608s]  bundle  2359 modules
+[1.821s] compile  /home/main/.codex/worktrees/99e0/rpg-zzu/dist-electron/oh-my-pi-worker
+built dist-electron/oh-my-pi-worker
+[1384ms]  bundle  2359 modules
+[3.865s] compile  /home/main/.codex/worktrees/99e0/rpg-zzu/dist-electron/oh-my-pi-worker.exe bun-windows-x64-v1.4.2
+built dist-electron/oh-my-pi-worker.exe
+staged dist-electron/pi_natives.linux-x64-baseline.node
+staged dist-electron/pi_natives.win32-x64-baseline.node

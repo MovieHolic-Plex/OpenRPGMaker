@@ -1,0 +1,33 @@
+{
+  "typecheckApp": 0,
+  "targetedTests": {
+    "exitCode": 0,
+    "files": 8,
+    "tests": 71
+  },
+  "packagedBuild": 0,
+  "electronBuild": 0,
+  "toolCensus": {
+    "exitCode": 0,
+    "errors": 0
+  },
+  "harnessRunProcessExit": 143,
+  "harnessRunExitMeaning": "Both raw result/trace/persistence/runtime receipts completed before process termination. Reviewed aggregate, not this exit code, determines the two selected case verdicts.",
+  "reviewCommands": {
+    "npc-golem": 0,
+    "npc-king": 0
+  },
+  "assistantAggregate": {
+    "pass": 2,
+    "fail": 0,
+    "blocked": 0,
+    "pending": 0,
+    "unexecuted": 10,
+    "actualModelTrials": 2
+  },
+  "calibration": {
+    "checks": 61,
+    "pass": true
+  },
+  "sourceCodeCommit": "cffa911b2d315234f3bf7ee53c487b61f6e890e4"
+}

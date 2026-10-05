@@ -1,0 +1,260 @@
+
+> oprn@0.139.0 harness
+> vite-node --script scripts/harness.mts -- assistant-capability self-check --out qa-runs/harnesses/assistant-capability/20261005-full-reference-r1 --case npc-golem,npc-king
+
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:810262) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "schemaVersion": 1,
+  "kind": "checker-calibration",
+  "pass": true,
+  "checks": [
+    {
+      "id": "npc-golem:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-golem:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-golem:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-golem:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-golem:wrong-sheet-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-golem:slot-as-frame-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-king:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-king:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-king:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-king:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-king:wrong-sheet-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-king:slot-as-frame-rejected",
+      "ok": true
+    },
+    {
+      "id": "inspect-readonly:known-good",
+      "ok": true
+    },
+    {
+      "id": "inspect-readonly:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "inspect-readonly:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:known-good",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-line:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-move:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:known-good",
+      "ok": true
+    },
+    {
+      "id": "item-price:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:known-good",
+      "ok": true
+    },
+    {
+      "id": "map-rename:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:known-good",
+      "ok": true
+    },
+    {
+      "id": "inn-price:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:known-good",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "choice:separate-question-accepted",
+      "ok": true
+    },
+    {
+      "id": "choice:missing-branch-rejected",
+      "ok": true
+    },
+    {
+      "id": "choice:cancel-reward-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:known-good",
+      "ok": true
+    },
+    {
+      "id": "reward-once:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward:unguarded-reward-rejected",
+      "ok": true
+    },
+    {
+      "id": "gate:empty-not-pass",
+      "ok": true
+    },
+    {
+      "id": "gate:pending-not-pass",
+      "ok": true
+    },
+    {
+      "id": "gate:failure-overrides-passes",
+      "ok": true
+    },
+    {
+      "id": "persistence:stable-reload",
+      "ok": true
+    },
+    {
+      "id": "persistence:changed-game-rejected",
+      "ok": true
+    },
+    {
+      "id": "persistence:library-change-blocked",
+      "ok": true
+    },
+    {
+      "id": "persistence:other-target-not-library-exception",
+      "ok": true
+    }
+  ]
+}
+(node:828387) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
