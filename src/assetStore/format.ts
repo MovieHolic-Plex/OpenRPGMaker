@@ -34,8 +34,8 @@ export const STORE_BLOB_MIMES = ["image/png", "image/jpeg", "image/webp", "audio
 export type StoreBlobMime = (typeof STORE_BLOB_MIMES)[number];
 
 export const STORE_LIMITS = {
-  /** 매니페스트 JSON 바이트(자리표시로 바꾼 뒤). 참고문서 MD 가 길어도 이 안에 든다. */
-  manifestBytes: 8 * 1024 * 1024,
+  /** 매니페스트 JSON 바이트(자리표시로 바꾼 뒤). 칸 2만 개짜리 타일셋 정의(버들항 8.7MB)와 참고문서 MD 가 이 안에 든다. */
+  manifestBytes: 24 * 1024 * 1024,
   blobBytes: 32 * 1024 * 1024,
   packBytes: 160 * 1024 * 1024,
   blobs: 512,
@@ -164,9 +164,24 @@ export function mapStrings(value: unknown, fn: (text: string) => string): unknow
   return value;
 }
 
-/** 이름·제목에서 URL 조각을 만든다. 한글은 지우지 않고 남으면 접미사로 보충한다. */
+const ROMAN_INITIAL = ["g", "kk", "n", "d", "tt", "r", "m", "b", "pp", "s", "ss", "", "j", "jj", "ch", "k", "t", "p", "h"];
+const ROMAN_MEDIAL = ["a", "ae", "ya", "yae", "eo", "e", "yeo", "ye", "o", "wa", "wae", "oe", "yo", "u", "wo", "we", "wi", "yu", "eu", "ui", "i"];
+const ROMAN_FINAL = ["", "k", "k", "k", "n", "n", "n", "t", "l", "k", "m", "l", "l", "l", "p", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t"];
+
+/** 한글 음절을 국어의 로마자 표기법(단순화: 음운 변화 없음)으로 옮긴다. 주소 조각용. */
+export function romanizeHangul(text: string): string {
+  let out = "";
+  for (const char of text) {
+    const code = char.codePointAt(0)! - 0xac00;
+    if (code < 0 || code > 11171) { out += char; continue; }
+    out += ROMAN_INITIAL[Math.floor(code / 588)]! + ROMAN_MEDIAL[Math.floor((code % 588) / 28)]! + ROMAN_FINAL[code % 28]!;
+  }
+  return out;
+}
+
+/** 이름·제목에서 URL 조각을 만든다. 한글은 로마자로 옮기고, 남는 것이 없으면 item- 으로 시작한다. */
 export function slugify(title: string, suffix: string): string {
-  const base = title.normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  const base = romanizeHangul(title.normalize("NFC")).normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40).replace(/-+$/, "");
   const tail = suffix.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 8) || "item";
   return base.length >= 3 ? `${base}-${tail}` : `item-${tail}`;
 }

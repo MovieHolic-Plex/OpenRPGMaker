@@ -95,6 +95,31 @@ const bridge = {
       return () => ipcRenderer.removeListener(OPRN_CHANNELS.assetBrowserDownload, listener);
     },
   },
+  store: {
+    status: invoke(OPRN_CHANNELS.storeStatus),
+    setUrl: invoke(OPRN_CHANNELS.storeSetUrl),
+    catalog: invoke(OPRN_CHANNELS.storeCatalog),
+    item: invoke(OPRN_CHANNELS.storeItem),
+    blob: invoke(OPRN_CHANNELS.storeBlob),
+    installed: invoke(OPRN_CHANNELS.storeInstalled),
+    install: invoke(OPRN_CHANNELS.storeInstall),
+    uninstall: invoke(OPRN_CHANNELS.storeUninstall),
+    package: invoke(OPRN_CHANNELS.storePackage),
+    mine: invoke(OPRN_CHANNELS.storeMine),
+    login: invoke(OPRN_CHANNELS.storeLogin),
+    logout: invoke(OPRN_CHANNELS.storeLogout),
+    upload: invoke(OPRN_CHANNELS.storeUpload),
+    onProgress: (callback: (payload: unknown) => void): (() => void) => {
+      const listener = (_event: unknown, payload: unknown): void => callback(payload);
+      ipcRenderer.on(OPRN_CHANNELS.storeProgress, listener);
+      return () => ipcRenderer.removeListener(OPRN_CHANNELS.storeProgress, listener);
+    },
+    onChanged: (callback: (payload: unknown) => void): (() => void) => {
+      const listener = (_event: unknown, payload: unknown): void => callback(payload);
+      ipcRenderer.on(OPRN_CHANNELS.storeChanged, listener);
+      return () => ipcRenderer.removeListener(OPRN_CHANNELS.storeChanged, listener);
+    },
+  },
 } as const;
 
 contextBridge.exposeInMainWorld("oprn", bridge);

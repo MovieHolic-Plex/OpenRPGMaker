@@ -1,0 +1,2 @@
+/* 에셋 스토어 화면 — storeWorkspace.ts·leftStorePane.ts 가 불러온다(공방과 같은 지연 시트 방식). */
+@import "./assetStore.css" layer(database);

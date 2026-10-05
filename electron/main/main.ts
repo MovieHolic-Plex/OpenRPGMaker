@@ -7,6 +7,7 @@ import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, 
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
+import { registerAssetStore } from "./assetStore";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
@@ -407,6 +408,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
   registerIpcHandlers(sessions);
   registerAssetBrowser();
+  registerAssetStore();
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

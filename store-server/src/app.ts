@@ -26,7 +26,8 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   const blobs = new BlobStore(config.blobDir);
   const router = new Router();
   const limits = {
-    blob: new RateLimiter(240, 60_000),
+    // 큰 팩은 blob 이 수백 개다(버들항 96개). 사용자마다 센다 — 로그인 없이는 올릴 수 없다.
+    blob: new RateLimiter(1500, 60_000),
     create: new RateLimiter(20, 60_000),
     report: new RateLimiter(20, 60_000),
     login: new RateLimiter(30, 60_000),
@@ -84,8 +85,8 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     sendJson(ctx.res, 200, { missing: list.filter((sha) => !known.has(sha)) });
   });
   router.post("/api/v1/blobs", async (ctx) => {
-    limit(limits.blob, ctx);
     const auth = await requireWriter(db, ctx);
+    if (!limits.blob.take(`u:${auth.user.id}`)) throw new HttpError(429, "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.", "rate_limited");
     const sha = String(ctx.req.headers["x-sha256"] ?? "");
     if (!isSha256(sha)) throw new HttpError(400, "x-sha256 헤더가 필요합니다.", "bad_sha");
     const bytes = new Uint8Array(await readBody(ctx.req, STORE_LIMITS.blobBytes));

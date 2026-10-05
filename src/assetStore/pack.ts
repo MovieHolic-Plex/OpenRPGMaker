@@ -156,6 +156,11 @@ export interface ApplyContext {
   readonly itemUrl: string;
   /** blob sha → 바이트. 메인 프로세스가 해시를 확인한 것만 들어온다. */
   readonly blob: (sha256: string) => Uint8Array;
+  /**
+   * 프로젝트 저장소가 이미 받아 둔 에셋(내용 주소). 있으면 dataUrl 대신 ref 로 넣는다 — 데스크톱 저장소는
+   * 그림을 assets/ 에 따로 두므로 문서에 바이트를 싣지 않는다(uploadedAssetForImport 와 같은 규칙).
+   */
+  readonly storedRefs?: ReadonlyMap<string, NonNullable<UploadedAsset["ref"]>>;
 }
 
 export interface ApplyResult {
@@ -201,11 +206,12 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     const mime = sniffMime(bytes);
     if (!mime || !isStoreMime(mime) || mime !== packAsset.mime) throw new Error(`${packAsset.name}: 받은 파일 형식이 팩 설명과 다릅니다.`);
     const newId = assetIdMap.get(id)!;
+    const ref = context.storedRefs?.get(newId);
     project.assets.uploaded[newId] = {
       id: newId,
       name: packAsset.name,
       kind: packAsset.kind,
-      dataUrl: dataUrlOf(bytes, mime),
+      ...(ref ? { ref } : { dataUrl: dataUrlOf(bytes, mime) }),
       meta: { ...packAsset.meta },
       origin: { ...origin },
     };
@@ -219,6 +225,11 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     project.tilesets[tileset.id] = tileset;
   }
   return { assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced };
+}
+
+/** 팩 에셋이 프로젝트에서 받을 id(넣기 전에 저장소에 미리 넣을 때 쓴다). */
+export function packAssetTargets(manifest: StorePackManifest, slug: string): { id: string; asset: StorePackAsset }[] {
+  return Object.entries(manifest.content.assets).map(([id, asset]) => ({ id: storeProjectId(slug, id), asset }));
 }
 
 export interface ProjectStoreItem {

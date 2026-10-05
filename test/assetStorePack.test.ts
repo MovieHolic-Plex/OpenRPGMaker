@@ -114,6 +114,8 @@ describe("asset store pack", () => {
 
   it("makes stable ascii slugs even from Korean titles", () => {
     expect(slugify("Forest Village Pack!", "Ab12xyz9")).toBe("forest-village-pack-ab12xyz9");
-    expect(slugify("숲 마을", "k9")).toBe("item-k9");
+    expect(slugify("숲 마을", "k9")).toBe("sup-maeul-k9");
+    expect(slugify("버들항 — 로마풍 항구 도시", "ab12")).toBe("beodeulhang-romapung-hanggu-dosi-ab12");
+    expect(slugify("!!", "k9")).toBe("item-k9");
   });
 });
