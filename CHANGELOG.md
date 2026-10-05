@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.141.0 — 2026-10-05
+
+### 기능
+
+- **battle** — author hero magic cels and reuse hydra summon art (#2189) (`e760122`)
+
+### 수정
+
+- **super-harness** — expand concurrent spaces and add full image viewer (#2190) (`0be62ce`)
+- **worldmap** — 적대적 시각 QA로 오토타일 연결·거점 복원 수정 (#2187) (`7ac2fac`)
+- 캐릭터 참조 전수 교정과 실제 조수 선택 검증 (#2186) (`0114daa`)
+
 ## 0.140.0 — 2026-10-05
 
 ### 기능
