@@ -1033,6 +1033,10 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
     권위·기준선·단계 중단은 그대로 실행을 멈춘다. 워커가 거절을 받아 넘기고 `done` 을 보냈으면 `client.ts` 는 첫 거절로 실행을 실패 처리하지 않는다.
     팀 발행 줄(`piTeamRuntime` `publication`)은 거부된 발행 뒤에도 다음 팀원을 받는다 — 2026-10-05 스트레스 g-ashen-chase 에서는
     builder-1 의 빈 맵 삭제를 거절하자 builder-2~8 이 확인 창 없이 첫 쓰기마다 같은 거절로 죽었다. 계약: `test/piApplyModes.bun.test.ts`.
+    팀장은 `wait_agents`·`check_agents` 결과의 `userDeclined` 로 거절을 안다 — 모르면 「요청 일부가 안 됐다」고 보고 같은 요청을 다시 배정했다
+    (p-team-delete-declined: 「작은 숲」 맵을 한 벌 더 짓고 35분 시간 초과). 계약: `test/piAgentTeamRuntime.test.ts`.
+  - **워커 안의 `event_command_assist`.** 이 도구는 안에서 LLM 을 한 번 더 부른다. 워커(Bun)에는 편집기 동반 서비스 주소가 없어
+    기본 주소(상대 `/v1`)로 매번 「fetch() URL is invalid」였다. `piAgentRuntime` 이 실행의 제공자·키로 부르는 `eventAssistChat` 을 넘긴다.
   `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
   다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
   워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,
