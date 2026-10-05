@@ -1,0 +1,92 @@
+{
+  "createdAt": "2026-10-05T10:42:20.063726+00:00",
+  "kind": "eye-placement-correction",
+  "displayName": "검객 · 눈 위치 수정",
+  "parent": "wandering-swordsman/fresh-gat-complete-v1",
+  "parentBinding": "f9b63ce2ea07c72aa6524e4c594755d6d582ac81b338cac869c79826f8d35583",
+  "userRequest": "눈의 위치가 좀 이상하다야",
+  "userCorrection": "눈의 위치가 좀 이상하다야",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "37c4299d-18bd-4c5a-a1e5-5f4d934d49eb",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T10:42:20.073438+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/reference.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/references/current18.png",
+        "-"
+      ],
+      "promptSha256": "a50b563f0b34a74fd6564c34da5377cfdc1e82928479d7e0efe55448cfde709d",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "reference.png": "fec19a3e3388c17a086a281f1b8d694d6428cb8df690763363e914b4aecccac5",
+        "references/current18.png": "660a93ce8f92ad91573ab4beb4204c3b4c20ebc5725273d3de0a9c224594d17c"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T10:50:50.925016+00:00"
+    },
+    {
+      "id": "e2962d29-3b34-46ca-9f7c-e7a121c49a27",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T10:50:52.346257+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/jobs/e2962d29-3b34-46ca-9f7c-e7a121c49a27",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/preview/suite/portrait.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/preview/suite/light.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/preview/suite/dark.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eye-placement/candidates/wandering-swordsman/fresh-eyes-v2/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "522c679336784f4b5310feb47635a610d0c6ffbd7202c29f54d7ad9ebfbaa470",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "preview/suite/portrait.png": "7107454177ae183d636987e685427e5c9a1f388685e632ac235c03886dabc5f8",
+        "preview/suite/light.png": "c1e41bb76bf0a9476e56c959666c816cf297a5e38d3569057c6ec95cb635997d",
+        "preview/suite/dark.png": "1fd0743c6922ea6b21ff31c379859c5a28bd5fbb02685ca739dbd03726bd529f",
+        "preview/suite/checker.png": "ff4882f27366e5bea710115e11b7778bf5447de147e9c86869820ddd04d81a6d"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T10:54:07.756178+00:00"
+    }
+  ]
+}

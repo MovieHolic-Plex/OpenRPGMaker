@@ -1,0 +1,30 @@
+{
+  "swordsmen": [
+    {
+      "key": "wandering-swordsman/fresh-eyes-v2",
+      "parent": "wandering-swordsman/fresh-gat-complete-v1",
+      "phase": "suite",
+      "choice": "pending"
+    },
+    {
+      "key": "wandering-swordsman/fresh-gat-complete-v1",
+      "parent": null,
+      "phase": "suite",
+      "choice": "modify"
+    }
+  ],
+  "nativeImages": 16,
+  "motionTiles": 8,
+  "pauseResume": true,
+  "selection": [
+    "earthen-jar-fiend/motions-v2",
+    "jangseung-spirit/motions-v2",
+    "venom-toad/motions-v2",
+    "wild-boar/motions-v2",
+    "black-cloth-assassin/motions-v1",
+    "cult-sorcerer/motions-v1",
+    "fallen-taoist/motions-v1",
+    "mountain-spearman/motions-v1"
+  ],
+  "errors": []
+}

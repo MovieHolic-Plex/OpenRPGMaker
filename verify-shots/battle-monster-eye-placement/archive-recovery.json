@@ -1,0 +1,10 @@
+{
+  "failedArchiveStep": {
+    "state": "failed",
+    "candidate": "fresh-eyes-v2",
+    "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/harness-data/battle-monster/authored/20261005/wandering-swordsman/fresh-eyes-v2/jobs/e2962d29-3b34-46ca-9f7c-e7a121c49a27'",
+    "finishedAt": "2026-10-05T10:54:09.183849+00:00"
+  },
+  "recoveredBy": "create missing jobs parent folder; copy authentic existing job/result; verify current source/critique/binding",
+  "modelsRerun": false
+}

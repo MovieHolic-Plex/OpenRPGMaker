@@ -1,0 +1,40 @@
+{
+  "parent": "wandering-swordsman/fresh-gat-complete-v1",
+  "candidate": "wandering-swordsman/fresh-eyes-v2",
+  "binding": "0e458117f24224da62ba2618884463032ecdd7a5c997095d09ad0bcafa77d8a9",
+  "changedPixels": {
+    "stun_b": 16,
+    "sleep_b": 8,
+    "poison_b": 15,
+    "skill_a": 16,
+    "skill_b": 16,
+    "poison_a": 15,
+    "sleep_a": 8,
+    "skill_c": 16,
+    "stun_a": 16,
+    "attack": 16,
+    "dead": 4,
+    "idle_a": 16,
+    "idle_c": 16,
+    "idle_b": 16,
+    "windup": 16,
+    "hit": 16,
+    "move": 16,
+    "recover": 16
+  },
+  "outsideEyesAndPalettePreserved": true,
+  "alphaFootprintPreserved": true,
+  "sourceArchiveBindingMatches": true,
+  "independentReviewRecommendation": "keep",
+  "userApprovalCreated": false,
+  "selectionPreserved": [
+    "earthen-jar-fiend/motions-v2",
+    "jangseung-spirit/motions-v2",
+    "venom-toad/motions-v2",
+    "wild-boar/motions-v2",
+    "black-cloth-assassin/motions-v1",
+    "cult-sorcerer/motions-v1",
+    "fallen-taoist/motions-v1",
+    "mountain-spearman/motions-v1"
+  ]
+}

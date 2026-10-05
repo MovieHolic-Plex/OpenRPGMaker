@@ -72,12 +72,12 @@
     "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7"
   },
   {
-    "key": "wandering-swordsman/fresh-gat-complete-v1",
-    "name": "검객 · 새 원안",
+    "key": "wandering-swordsman/fresh-eyes-v2",
+    "name": "검객 · 눈 위치 수정",
     "nativeCell": 64,
     "poses": 18,
     "phase": "suite",
-    "userChoiceRequired": true,
-    "binding": "f9b63ce2ea07c72aa6524e4c594755d6d582ac81b338cac869c79826f8d35583"
+    "binding": "0e458117f24224da62ba2618884463032ecdd7a5c997095d09ad0bcafa77d8a9",
+    "userChoiceRequired": true
   }
 ]
