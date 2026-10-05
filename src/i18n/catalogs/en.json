@@ -15735,5 +15735,15 @@
 "선택한 조수":"Selected assistant",
 "보관 기록을 불러오지 못했어요. 현재 실행 기록은 추출할 수 있어요.":"Could not load saved logs. You can still export the current run.",
 "후속 요청을 보낼 수 있어요.":"You can send a follow-up request.",
-"완료 후 결과를 확인하세요.":"Review the result when it finishes."
+"완료 후 결과를 확인하세요.":"Review the result when it finishes.",
+"첫 요청 시작하기":"Start your first request",
+"무엇을 도와드릴까요?":"What would you like help with?",
+"원하는 일을 적어주세요. 아래 예시로 시작해도 좋아요.":"Describe what you want to do, or start with an example below.",
+"현재 맵 살펴보기":"Look at the current map",
+"만들고 싶은 장면 설명하기":"Describe a scene to create",
+"현재 맵을 살펴보고, 무엇이 있는지와 개선할 점을 알려줘. 아직 수정하지 마.":"Look at the current map and tell me what is there and what could be improved. Do not edit it yet.",
+"만들고 싶은 장면: ":"Scene I want to create: ",
+"표시·실행 기록":"Display and run history",
+"빠른 배치":"Quick placement",
+"계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.":"Place directly without planning or approval. Enable when needed."
 }

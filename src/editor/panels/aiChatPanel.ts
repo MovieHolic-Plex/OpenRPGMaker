@@ -3196,13 +3196,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   // 바로 깔기 설정은 우클릭 드래그 바와 공유한다(stampPlaceMode) — 어느 쪽에서 켜도 양쪽 토글이 같이 선다.
   stampPlaceOn = isStampPlaceOn();
-  composerShell.stampToggle.setAttribute("aria-pressed", String(stampPlaceOn));
+  composerShell.syncStampMode(stampPlaceOn);
   composerShell.stampToggle.addEventListener("click", () => {
     setStampPlaceOn(composerShell.stampToggle.getAttribute("aria-pressed") === "true");
   });
   const unsubscribeStampPlace = subscribeStampPlace((on) => {
     stampPlaceOn = on;
-    composerShell.stampToggle.setAttribute("aria-pressed", String(on));
+    composerShell.syncStampMode(on);
     refreshComposerPlaceholder();
   });
   if (stampPlaceOn) refreshComposerPlaceholder();
@@ -3353,7 +3353,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-deck",
     attrs: { id: "ai-panel-deck" },
     dataset: { testid: "ai-deck" },
-    children: [rail.root, createActivityToolbar(() => store.getProjectIdentity().id), body, outcomeSlot, commandBar],
+    children: [rail.root, el("details", { class: "ai-workspace-view-options", dataset: { testid: "ai-workspace-view-options" }, children: [
+      el("summary", { text: "표시·실행 기록" }), createActivityToolbar(() => store.getProjectIdentity().id),
+    ] }), body, outcomeSlot, commandBar],
   });
   deckRoot = deck;
 
@@ -3389,7 +3391,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
   // The workspace owns the live team surface; wide mode temporarily moves it.
   panel.append(teamSidebar.root);
-  const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar,
+  const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar, input,
     requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
@@ -3520,6 +3522,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // `is-glass-idle`(glass 전용)과 `is-map-first-idle`(dock !== "float" 조건)은 둘 다
     // float 단일 도크에서 절대 참이 될 수 없어 삭제했다. 남는 축은 하나다.
     // 유휴·빈 대화는 입력줄을 좁히고, 턴·대화가 있으면 로그 카드를 펼친다.
+    workspace.setEmpty(idle && !historyOpen);
     panel.classList.toggle("is-assistant-idle", idle);
     panel.classList.toggle("is-assistant-log-open", !idle);
     syncComposerFocus();

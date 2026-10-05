@@ -62,11 +62,12 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const assignment = el("p", { class: "ai-team-member-assignment", dataset: { testid: "ai-member-assignment" }, attrs: { translate: "no" } });
   const currentAction = el("p", { class: "ai-team-current-action", dataset: { testid: "ai-member-current-action" }, attrs: { role: "status", "aria-live": "polite" } });
   const recent = el("ol", { class: "ai-team-recent", dataset: { testid: "ai-member-recent" }, attrs: { "aria-label": "최근 활동" } });
+  const records = el("details", { class: "ai-team-member-records", dataset: { testid: "ai-member-records" }, children: [el("summary", { text: "작업 기록" }), report, recent, activityControl, activityView.root, process] });
   const conversation = el("div", { children: [assignment, el("dl", { class: "ai-team-work-summary", children: [
     el("dt", { text: "지금" }), el("dd", { children: [currentAction] }),
     el("dt", { text: "결과" }), el("dd", { children: [resultText] }),
     el("dt", { text: "다음" }), el("dd", { children: [nextText] }),
-  ] }), report, recent, activityControl, activityView.root, process] });
+  ] }), records] });
   let hasDetailedTrace = false;
   let processOwner: string | null = null;
   bindActivityLevel(conversation, level => { process.hidden = hasDetailedTrace || level === "none" || level === "brief"; process.open = level === "detail" || level === "trace"; });
