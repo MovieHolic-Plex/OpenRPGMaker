@@ -315,8 +315,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
 export function createActivityToolbar(getProjectId: () => string): HTMLElement {
   const historyBody = el("div", { class: "ai-activity-history-body" });
   const history = el("details", { class: "ai-activity-history", children: [el("summary", { text: "실행 기록" }), historyBody] }) as HTMLDetailsElement;
-  // 「턴 사이 기록」은 턴 밖(사람이 누른 프론트 동작)만 담는다 — 턴 안 기록은 위 「실행 기록」이 맡는다.
-  const root = el("div", { class: "ai-activity-toolbar", children: [createActivityLevelControl(), createBetweenTurnLogSection(), history] });
+  const root = el("div", { class: "ai-activity-toolbar", children: [createActivityLevelControl(), history] });
   let generation = 0;
   root.addEventListener("ai-project-switch", () => { generation++; history.open = false; historyBody.replaceChildren(); });
   history.addEventListener("toggle", () => {
@@ -333,5 +332,5 @@ export function createActivityToolbar(getProjectId: () => string): HTMLElement {
       historyBody.append(view.root);
     }, () => { if (token === generation) historyBody.replaceChildren(el("p", { text: "이 기기의 실행 기록을 읽을 수 없어요." })); });
   });
-  return root;
+  return el("div", { children: [root, createBetweenTurnLogSection()] });
 }

@@ -51,12 +51,19 @@ try {
   const restore = page.getByTestId('ai-collapsed-restore');
   if (await restore.isVisible().catch(() => false)) await restore.click();
   await page.getByTestId('ai-panel').waitFor({ state: 'visible', timeout: 60000 });
-  // 「표시·실행 기록」은 접힌 details 안이다 — 먼저 펴야 안의 두 기록 표면이 보인다.
-  await page.getByTestId('ai-workspace-view-options').locator('> summary').click();
+  // 「표시·실행 기록」 행은 빈/유휴 패널에서 기존 설계로 숨는다(형제 「실행 기록」과 같다).
+  // QA 는 턴 하나가 돈 뒤의 상태를 흉내내려고 그 클래스만 걷어낸다 — 제품 변경이 아니다.
+  await page.evaluate(() => document.querySelector('[data-testid="ai-panel"]')?.classList.remove('is-assistant-idle'));
+  await page.evaluate(() => {
+    const view = document.querySelector('[data-testid="ai-workspace-view-options"]');
+    if (view instanceof HTMLDetailsElement) view.open = true;
+  });
   const section = page.getByTestId('ai-between-turns');
   await section.waitFor({ state: 'attached', timeout: 60000 });
+  check('패널이 열려 있다', await page.getByTestId('ai-panel').isVisible());
   check('표면은 접힌 채로 시작한다', (await section.evaluate((node) => node.open)) === false);
-  await page.getByTestId('ai-between-turns-summary').click();
+  await page.evaluate(() => document.querySelector('[data-testid="ai-between-turns"]')?.querySelector('summary')?.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  await page.waitForFunction(() => document.querySelector('[data-testid="ai-between-turns"]')?.hasAttribute('open') === true, null, { timeout: 20000 });
   await page.getByTestId('ai-between-turns-list').waitFor();
 
   const rows = page.getByTestId('ai-between-turns-row');
@@ -89,8 +96,13 @@ try {
   await page.waitForTimeout(1500);
   const restore2 = page.getByTestId('ai-collapsed-restore');
   if (await restore2.isVisible().catch(() => false)) await restore2.click();
-  await page.getByTestId('ai-workspace-view-options').locator('> summary').click();
-  await page.getByTestId('ai-between-turns-summary').click();
+  await page.evaluate(() => document.querySelector('[data-testid="ai-panel"]')?.classList.remove('is-assistant-idle'));
+  await page.evaluate(() => {
+    const view = document.querySelector('[data-testid="ai-workspace-view-options"]');
+    if (view instanceof HTMLDetailsElement) view.open = true;
+  });
+  await page.evaluate(() => document.querySelector('[data-testid="ai-between-turns"]')?.querySelector('summary')?.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  await page.waitForTimeout(500);
   check('새로고침 뒤에도 남아 있다', (await rows.count()) >= 3);
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.screenshot({ path: resolve(out, '03-open-1024.png') });
