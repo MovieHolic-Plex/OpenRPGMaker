@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "id": "activity-1791178941234-1dl9qncvjcli",
+  "projectId": "347980f0-b23f-46d5-9b00-f2636fc7aeaa",
+  "title": "UI 확인용 재생 · 작업 현황과 로그 추출",
+  "startedAt": 1791178941234,
+  "updatedAt": 1791178941244,
+  "phase": "준비",
+  "entries": [
+    {
+      "id": "activity-1791178941234-1dl9qncvjcli:0",
+      "at": 1791178941236,
+      "actor": "workspace-builder",
+      "kind": "agent_spawn",
+      "name": "agent_spawn",
+      "status": "info",
+      "summary": "작업 배정",
+      "output": {
+        "type": "agent_spawn",
+        "agentId": "workspace-builder",
+        "role": "builder",
+        "label": "시공 조수",
+        "memberId": "builder",
+        "mapId": "map_7ef94936-6385-4161-a1d9-c33c1f72f585",
+        "mapName": "시장 마을",
+        "task": "지도 구성 확인"
+      }
+    },
+    {
+      "id": "workspace-builder:workspace-builder-read:1",
+      "at": 1791178941242,
+      "actor": "workspace-builder",
+      "kind": "tool",
+      "name": "inspect_map",
+      "status": "ok",
+      "summary": "지도 구성 확인 완료",
+      "input": {
+        "callId": "workspace-builder-read",
+        "args": {
+          "mapId": "map_7ef94936-6385-4161-a1d9-c33c1f72f585",
+          "apiKey": "[인증 정보 가림]",
+          "evidence": "UI replay only"
+        }
+      },
+      "endedAt": 1791178941243,
+      "durationMs": 1,
+      "output": {
+        "nodes": 3
+      }
+    }
+  ],
+  "actors": {
+    "workspace-builder": "시공 조수"
+  },
+  "dropped": 0,
+  "bytes": 760,
+  "serial": 6
+}
