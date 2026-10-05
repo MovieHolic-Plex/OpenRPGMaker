@@ -10,6 +10,7 @@ import { DatabaseSync } from 'node:sqlite';
 const out = resolve(process.env.QA_OUTPUT_DIR ?? 'verify-shots/ai-team-exploration-20261005');
 const projectDir = resolve(process.env.QA_PROJECT_DIR ?? 'output/qa/ai-team-exploration-20261005/project');
 const resume = process.env.QA_RESUME === '1';
+const parallelOnly = process.env.QA_PARALLEL_ONLY === '1';
 await mkdir(out, { recursive: true });
 const report = { provenance: 'Real browser, SQLite host and live companion/model. No synthetic run events.', projectDir, runs: [], errors: [], started: new Date().toISOString() };
 const save = () => writeFile(out + '/report.json', JSON.stringify(report, null, 2) + '\n');
@@ -27,7 +28,7 @@ const sqlite = () => {
     const p = JSON.parse(row.current_json);
     const maps = db.prepare('SELECT map_id,map_json FROM maps ORDER BY map_id').all().map(row => JSON.parse(row.map_json));
     const records = db.prepare('SELECT entries_json FROM ai_conversations').all();
-    return { projectId: row.project_id, title: row.title, revision: row.revision, hero: p.database.actors.find(a => a.id === 'actor_hero')?.name,
+    return { projectId: row.project_id, title: row.title, revision: row.revision, mapTree: p.mapTree, hero: p.database.actors.find(a => a.id === 'actor_hero')?.name,
       maps: maps.map(m => ({ id: m.id, name: m.name, events: m.events })), conversations: records.length };
   } finally { db.close(); }
 };
@@ -60,6 +61,24 @@ await withTsModule(resolve('electron/local-store/store.ts'), 'team-seed-store.mj
     await store.saveSerialized(serialized, null);
   } finally { store.close(); }
 });
+}
+if (resume && parallelOnly) {
+  // A real map root avoids the currently broken canonical folder roundtrip.
+  // This project's previous host must have closed before this store API is used.
+  await withTsModule(resolve('electron/local-store/store.ts'), 'team-parallel-store.mjs', async ({ initLocalProjectStore }) => {
+    const store = await initLocalProjectStore({ projectDir });
+    try {
+      const snapshot = store.loadSnapshot();
+      const project = snapshot.project;
+      const root = structuredClone(project.maps.team_lighthouse);
+      root.id = 'team_base'; root.name = '항구 입구';
+      root.events = ['team_lighthouse', 'team_dock'].map((id, index) => ({ id: 'exit_' + id, name: id, x: 8 + index * 3, y: 8, trigger: { kind: 'action' }, commands: [{ kind: 'transfer', mapId: id, x: 10, y: 8 }] }));
+      project.maps[root.id] = root;
+      project.mapTree = { mapId: root.id, children: [{ mapId: 'team_lighthouse', children: [] }, { mapId: 'team_dock', children: [] }] };
+      project.startMapId = root.id;
+      await store.saveSerialized(JSON.stringify(project), snapshot.sha256);
+    } finally { store.close(); }
+  });
 }
 report.seed = sqlite(); await save();
 
@@ -177,7 +196,8 @@ await withTsModule(resolve('electron/serve/runtime.ts'), 'team-exploration-host.
       await save();
     };
 
-    if (!resume) await run('01-parallel-read', 'team 읽기 작업이다. 프로젝트를 수정하지 마라. assign_map_agent로 team_lighthouse에 builder를 배정하고 team_dock에 events를 배정한다. 두 맵이 별개이므로 두 배정을 먼저 시작하고 wait_agents 한다. 각 조수는 get_map_region 1회로 안내판 이벤트를 확인하고 원문을 두 문장으로 보고한다. 다른 작업 없이 finish 한다.', { pendingDraft: true });
+    if (!resume || parallelOnly) await run('01-parallel-read', 'team 읽기 작업이다. 프로젝트를 수정하지 마라. assign_map_agent로 team_lighthouse에 builder를 배정하고 team_dock에 events를 배정한다. 두 맵이 별개이므로 두 배정을 먼저 시작하고 wait_agents 한다. 각 조수는 get_map_region 1회로 안내판 이벤트를 확인하고 원문을 두 문장으로 보고한다. 다른 작업 없이 finish 한다.', { pendingDraft: true });
+    if (!parallelOnly) {
     // Exercise the user-visible team toggle with an ordinary instruction.
     await page.getByTestId('ai-composer-settings').click();
     await page.getByTestId('ai-composer-team').click();
@@ -192,6 +212,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), 'team-exploration-host.
     await run('05-translation-reviewed', 'team 두 안내판의 대사를 영어로 번역해라. builder는 team_lighthouse의 ev_lighthouse, events는 team_dock의 ev_dock의 현재 한국어 대사만 영어로 바꾼다. 다른 텍스트·이벤트 id·위치·명령 종류와 순서·맵·캐릭터·DB는 변경하지 않는다. 맵별로 assign_map_agent로 배정하고 완료 후 검수 조수가 원문 의미와 구조 보존을 조회로 확인한다. finish 한다.');
     await run('06-stop', 'team 읽기 전용이다. builder에게 team_lighthouse를, events에게 team_dock을 assign_map_agent로 배정하라. 각 조수는 안내판과 맵 구조를 get_map_region으로 여러 구역 확인하고 10문장으로 상세히 보고한다. 프로젝트는 수정하지 마라. 두 조수가 완료되면 finish 한다.', { stop: true });
     await run('07-retry-after-stop', 'team 직전 읽기 작업 중단 이후 다시 조회한다. builder에게 team_lighthouse의 ev_lighthouse를 조회해 현재 영어 대사 한 문장을 보고하게 한다. 읽기만 하고 다른 작업을 배정하지 마라. 완료되면 finish 한다.');
+    }
     report.finished = new Date().toISOString();
     report.final = sqlite();
     await page.screenshot({ path: out + '/08-reloaded-final.png' });
