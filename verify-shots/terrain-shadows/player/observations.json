@@ -1,0 +1,125 @@
+{
+  "shippingPlayer": true,
+  "editorShell": false,
+  "states": [
+    {
+      "name": "default",
+      "sha256": "4691144a2f4696f8d5f09859250ebcb52fc8a80dd2457bc39c8236896743ff38",
+      "stats": {
+        "builds": 1,
+        "frames": 120,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    },
+    {
+      "name": "northwest",
+      "sha256": "0af0c795a291be3fd5e2a9aa6335248d1d8507d889eef9e26321a72388a21231",
+      "stats": {
+        "builds": 2,
+        "frames": 122,
+        "pending": 118,
+        "visible": 2,
+        "textures": 2,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 45,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    },
+    {
+      "name": "southeast",
+      "sha256": "22329a91bb5dff5db3cf4e4369cc58e1350d8c7a29ad9917acb32e8872198537",
+      "stats": {
+        "builds": 3,
+        "frames": 300,
+        "pending": 0,
+        "visible": 120,
+        "textures": 120,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 135,
+          "altitude": 45,
+          "opacity": 0.32,
+          "softness": 1,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "maxTerrain": 6,
+        "casters": []
+      }
+    }
+  ],
+  "errors": [],
+  "idleCache": true,
+  "offCleanup": true,
+  "houseCasters": [
+    {
+      "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "kind": "house",
+      "height": 7.875,
+      "base": 4,
+      "x": 6,
+      "y": 19.75,
+      "w": 14,
+      "d": 4.25,
+      "components": 3
+    },
+    {
+      "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+      "kind": "house",
+      "height": 5.25,
+      "base": 6,
+      "x": 34,
+      "y": 20.5,
+      "w": 5,
+      "d": 1.5,
+      "components": 1
+    },
+    {
+      "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+      "kind": "house",
+      "height": 5.25,
+      "base": 9,
+      "x": 54,
+      "y": 17.5,
+      "w": 8,
+      "d": 1.5,
+      "components": 1
+    },
+    {
+      "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+      "kind": "house",
+      "height": 7.875,
+      "base": 0,
+      "x": 19,
+      "y": 44.75,
+      "w": 11,
+      "d": 2.25,
+      "components": 1
+    }
+  ],
+  "mapSwitchCleanup": true
+}

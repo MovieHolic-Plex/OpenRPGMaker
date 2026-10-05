@@ -88,7 +88,7 @@ export function inspectFirstScene(base: Project, project: Project, receipt: Firs
   const opening = project.system.opening;
   if (!openingPending && opening?.enabled && opening.scenes.length) {
     if (opening.scenes.every(scene => scene.kind === 'text') && !hasAuthoredTextOpening(opening.scenes)) issues.push('검은 화면의 글만으로 첫 오프닝을 완료할 수 없습니다. 실제 장소에서 짧게 시작하거나 장면에 맞는 그림을 사용하세요.');
-    if (opening.scenes.reduce((sum, scene) => sum + scene.durationMs, 0) > 12_000) issues.push('첫 오프닝의 자동 재생이 12초를 넘습니다. 첫 행동에 필요한 짧은 도입으로 줄이세요.');
+    if (opening.scenes.reduce((sum, scene) => sum + scene.durationMs, 0) > 90_000) issues.push('첫 오프닝의 자동 재생이 90초를 넘습니다. 첫 행동에 필요한 짧은 도입으로 줄이세요.');
   } else if (project.system.genre === 'story-cutscene') {
     const intros = project.maps[project.startMapId]?.events.filter(event => event.pages?.some(page =>
       !page.conditions.length && page.trigger.kind === 'auto' && page.commands.some(command => command.kind === 'text'))) ?? [];

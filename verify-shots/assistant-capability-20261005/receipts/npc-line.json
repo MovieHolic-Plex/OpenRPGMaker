@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "caseId": "npc-line",
+  "title": "첫 대사만 수정",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "f85bb436bdc6602d266bc7e7617dd0840c2a9aa1cbe18ebe32e1cf8b7ebf9174",
+  "startedAt": "2026-10-04T15:45:23.673Z",
+  "gates": {
+    "execution": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": false,
+          "detail": "Generation failed with finish reason: PROHIBITED_CONTENT"
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-first-line",
+          "ok": true,
+          "detail": "동일 이벤트 첫 페이지 첫 문장 정확히 교체"
+        },
+        {
+          "id": "old-line-removed",
+          "ok": true,
+          "detail": "옛 문장 잔존 없음"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"effd3baa-045a-4843-99ef-fbc8ba9f379c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-line/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"80a11548aa6d08d6887778a39d9467da5906f1192a9f5fb46785aa56b39bb357\",\"reloadedSha256\":\"80a11548aa6d08d6887778a39d9467da5906f1192a9f5fb46785aa56b39bb357\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "fail",
+      "reviewer": "codex-evidence-review",
+      "notes": "변경 화면·새 context 렌더 완료 지도·플레이를 직접 읽었다. 플레이의 동문에서 만나자 대사와 캐릭터·대화창은 읽히고 잘림이 없다. 재캡처 지도는 E 마커와 잔디가 정상이다. 원래 적용 화면의 조수 답변이 중간에서 잘리고 PROHIBITED_CONTENT 오류가 노출돼 해당 표시를 시각 실패로 기록한다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/03-first-line.png"
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    }
+  },
+  "elapsedMs": 121639,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791128865677
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "a252e25e-537d-413a-b281-a041a8068882",
+      "at": 1791128871851
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "a252e25e-537d-413a-b281-a041a8068882",
+      "at": 1791128877001
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791128913655
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791128913692
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791128913698
+    }
+  ],
+  "projectId": "effd3baa-045a-4843-99ef-fbc8ba9f379c",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-line/project",
+  "finishedAt": "2026-10-04T15:49:59.968Z",
+  "status": "fail",
+  "verification": {
+    "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+    "priorResultDigest": "87d42139124b08cdf1ee6a2580c8e9f227f6d29014d43e8899adca3376e19dc9",
+    "archive": "verification-history/1791129740887",
+    "at": "2026-10-04T16:02:21.089Z",
+    "newModelTurn": false
+  },
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T15:45:23.673Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

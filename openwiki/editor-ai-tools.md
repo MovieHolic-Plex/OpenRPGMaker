@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 공용 플레이 프리셋 조회 (2026-10-05)
+
+탐험·장치 / NPC 생활 / 생활·경제 / 전투 / 파티 / 성장 / 던전 / 세계·사건 / 시대·인과 / 전리품·장비 / 반복·도전 / 엔딩·회차의 12개 분야·96종 작성 매뉴얼을
+`list_authoring_presets` → `read_authoring_preset`으로 조회한다.
+현재 Pi와 기존 세션의 발견 지침·초기 읽기 도구에 연결하며 선택한 전문만 읽는다.
+단계별 실제 작성 도구·상태 변화·실패/재방문 확인과 조회/작성/완료의 구분은
+[공용 플레이 프리셋](authoring-play-presets.md)을 따른다.
+
 ## 대화 초상 선택과 게임 글꼴 (2026-10-04)
 
 초상을 잘 고르지 못한 경로: `FACE_SCHEMA`가 얼굴 낱장 48×48만 안내했고,
@@ -20,6 +28,9 @@
   같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
 
 `set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+도구 스키마는 string과 허용 ID 설명을 사용한다. 빈 문자열을 enum에 넣으면 Gemini가
+도구를 사용하기 전 요청 전체를 HTTP 400으로 거부한다(2026-10-05 실제 팀 조수 실행).
+실행 경계의 역할별 ID 검사와 빈 문자열 초기화는 그대로 유지한다.
 역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
 `battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
 대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.
@@ -1824,6 +1835,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **Tool JSON schemas must be strict-provider compatible (2026-08-14 실측):** array-typed tool params MUST carry `items`, and union-typed items must not use bare `oneOf` without a `type` — Gemini-backed gateways reject the whole request with 400 `upstream_request_rejected ... properties[yard].items: missing field`, killing every chat turn while OpenAI-style backends accept the same payload. Two such bugs shipped (`build_house_lots` yard items as `oneOf`, `author_house` yard array with no `items`); both fixed in `src/editor/tools/houseLotTools.ts` / `src/editor/tools/authorHouseToolDef.ts`. When adding tool params, run a catalog audit: every `{type:"array"}` node must have `items`, and validate the full exposed tool list through the real gateway (one gateway capped `tools` at 128; session exposure cap 40 stays within it).
 
 - **객체 타입 파라미터는 `properties` 를 반드시 선언한다 (2026-08-23 실측):** `{ type: "object" }` 만 적고 실제 필드를 `description` 문자열에만 써 두면 400 은 안 나지만 strict function-calling 경로에서 모델이 그 객체의 필드를 **표현할 방법이 없어 `{}` 만 보낸다.** 실측 턴: `set_work_plan` 이 `layers:[{}]` 8회, `set_build_spec` 이 `assets:[{}]` 10회 연속 → 계획 폐기 → 스펙 게이트가 `fill_region`/`place_npc` 까지 차단 → 31콜 중 21콜 실패. 배열 길이만 1,2,3,6,5 로 바뀌고 내용은 늘 비어 있었다는 게 모델이 아니라 스키마가 벽이라는 증거다. 카탈로그 전역 109개 노드를 고쳤고(재사용 조각은 `src/editor/tools/schemaShapes.ts`: `COORD_SCHEMA`/`RECT_SCHEMA`/`COMMAND_SCHEMA`/`SIMPLE_PAGE_SCHEMA`/`CUTSCENE_BEAT_SCHEMA`/`CONDITION_SCHEMA`/`LIGHT_SOURCE_SCHEMA`/`VILLAGE_*_PLAN_SCHEMA`), 감사는 `test/toolSchemaProviderCompat.test.ts` 가 고정한다. 유니온 shape 은 `oneOf` 금지 → **키 합집합을 전부 선택 필드로**. 진짜 동적 키 맵(`elementRates`, `priceBySeason`, `inventory` 등)만 `additionalProperties: true` 로 명시 면제. 커맨드 `kind` 는 자유 문자열로 두지 말고 `COMMAND_KINDS`/`CONDITION_KINDS` enum 을 노출한다(자유 문자열이면 모델이 없는 kind 를 만들어 보낸다).
+- **enum 에 빈 문자열을 넣지 않는다 (2026-10-05 실측):** `set_project_settings.fonts` 가 "기본값으로 되돌리기" 를 `enum:["", ...]` 로 열거했더니 CCA(Gemini) 가 `function_declarations[N].parameters...enum[0]: cannot be empty` 로 **요청 전체를 400** 으로 거부했다. 이 도구는 `system` 도메인이라 시공 담당 목록에만 실려, 팀장·검수는 멀쩡하고 시공만 매번 「3턴/0툴콜」로 죽어 "조수가 맵을 안 만든다" 로 보였다(글꼴 도구 자체 수정은 위 `set_project_settings.fonts` 문단). 빈 문자열·빈 `enum:[]`·중복 멤버는 카탈로그 전체에서 금지 — 계약은 `test/toolSchemaProviderCompat.test.ts` 의 `walkEnums`(additionalProperties 안까지). 전송 직전 방어 `stripEmptyEnumMembers`(`scripts/lib/ohMyPiToolEnums.ts`, antigravity onPayload)가 새어 나간 빈 멤버를 빼서 조수 전체가 멈추지는 않게 하지만, 이것은 계약이 아니라 안전망이다. 원 요청은 `~/.omp/logs/http-400-requests/` 에 남는다.
 - **NPC command contract / repair (2026-09-06):** `COMMAND_SCHEMA.kind` exposes only `COMMAND_KINDS`; `CONDITION_SCHEMA.kind` exposes only `CONDITION_KINDS`. `item` and `selfSwitch` are page conditions, not executable commands. Item grants use `{kind:"changeItem",itemId,op:"+=",amount}`; switch writes use `setSelfSwitch` or `setSwitch`. Command `op` is declared explicitly. Command/condition `value` fields are declared without a single-type restriction so boolean, numeric, and supported variable operands are not falsely advertised as strings. This uses no `oneOf`, `anyOf`, or array-valued provider `type`; `jsonSchema.matchesType` treats an omitted type as unconstrained, while the existing command/condition shape validators remain responsible for variant validity. Existing internal type-array consumers remain supported. Rejected `item`/`changeItems`/`gainItem` commands return an `invalid-args` issue containing a standalone `repair: <JSON>` line with `{path,example}`. The example uses canonical `changeItem`, preserves a supplied string item ID and finite numeric amount (otherwise lookup placeholder / amount 1), and is guidance only: none of these names becomes an alias. Read the full issue message, not the 200-character summary. Replace only the command at `path` and use an ID obtained from `get_database_records`; do not remove the grant to make the call succeed. `test/npcCommandContract.test.ts` parses the repair JSON, checks schema/compiler/shape acceptance, and retries through the real `place_npc` runner. Evidence: `.omo/evidence/assistant-tool-reliability/schema`. Live Gemini acceptance is not established by the local provider-compatibility audit.
   - Audit NPC repairs (entries 170/174/196): the real runner keeps missing `pages` invalid. Only an otherwise recognized `place_npc` call with a sole nonempty `dialogue.text` receives `{path:"pages",example:[{lines:[originalText]}]}`; the hint distinguishes dialogue NPCs from object gimmicks. The optional `ToolDefinition.invalidArgsRepair` callback supplies input-specific schema-error guidance without running or mutating the project. Missing-kind `{commandId,fields:{lines}}` for Show Text (`m2-001-show-text`, or the audited invalid `m2-101-show-text`) remains rejected and suggests native `{kind:"text",body:lines.join("\n")}`. This is not an M2 ID alias, and no other ID or extra/conflicting field is guessed away. Sole `{selfSwitch:"A"}` condition shorthand receives canonical `{kind:"selfSwitch",key:"A",value:true}`; explicit boolean false/true is retained (the same omitted-value default as `make_villager.dialogue.when`). Singleton corrections target the actual `pages[i].conditions` field with an array; array corrections target only `pages[i].conditions[j]`, preserving siblings. Extra or malformed conditions get no lossy repair, including `kind:"none"` with additional fields (only bare `{kind:"none"}` still normalizes away). Apply the parsed `example` at `path`, retain other pages and dialogue, and retry through the runner. No story text is invented and canonical pages/condition arrays are unchanged. Focused contract: `test/npcAuditRepair.test.ts`; RED/GREEN and correction evidence: `.omo/evidence/assistant-audit-pr/npc/`.
 - **`kind` 로 허용 키가 갈리는 툴은 스키마가 아니라 파서에서 정규화한다.** `oneOf` 를 못 쓰므로 모델은 두 모드 키를 섞어 보낸다 — 실측: `author_house` 에 `kind:"lots"` + 최상위 `kitId/wings` 를 한 턴에 33회 연속 전송. 에러 문구에 허용 키 전체를 실어도(`rejectUnknownKeys` 개선) 같은 턴에서 교정되지 않았다. `parseAuthorHouseRequest` 의 `normalizeRequestShape` 가 shape 로 모드를 추론하고 단일 모드 키를 `houses[0]` 로 접는다 — 같은 파일의 wings 클램프·`windows:true` 보정과 동일 방침. 실측 결과 33회 실패 → 성공 1회.
@@ -2679,3 +2691,17 @@ legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 
 DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
 전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
 [title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.
+
+## 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+
+`generate_opening_image`의 선택 role:foreground는 실제 알파 단일 대상을 생성하고 투명 픽셀을 검사한다.
+`set_opening`/`edit_opening` image.direction.layers로 별도 그림의 위치·회전·크기·불투명도 시간표를 저장한다.
+`generate_original_bgm` write 도구는 조수가 쓴 음표 악보를 실제 WAV로 합성·등록한다.
+원곡 리소스는 기존 BGM 피커/조회·정본 저장·출하 플레이어로 이어진다. 실제 합성·등록 성공을 청취로
+보고하지 않는다. 세부 계약은 [title-opening-effects.md](title-opening-effects.md)의 마지막 절.
+
+## 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+
+`toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
+
+choices의 `choice1`~`choice5`는 Esc가 해당 선택지를 실행하는 설정이다. 취소하면 아무 일 없이 종료하는 요청은 `cancelBehavior:"branch",cancelBranch:[]`다. 도구 스키마와 Pi 저작 지침에 이 의미를 함께 제공한다. `run_scene_test`도 실제 대화창과 같은 `choiceCancellation.cancelChoiceIndex`를 사용한다. 취소 불가·설정 생략·없는 선택지로 취소는 검사 실패로 알리며 강제로 종료하지 않는다.

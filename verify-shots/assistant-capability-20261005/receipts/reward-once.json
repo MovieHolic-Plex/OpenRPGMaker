@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "caseId": "reward-once",
+  "title": "보상 한 번과 재대화",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+  "startedAt": "2026-10-04T16:19:49.781Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "reward-25",
+          "ok": true,
+          "detail": "실제 25G 보상 명령"
+        },
+        {
+          "id": "first-and-repeat-lines",
+          "ok": true,
+          "detail": "첫 대화·재대화 문장"
+        },
+        {
+          "id": "guarded-reward",
+          "ok": true,
+          "detail": "보상 재실행 방지 구조 존재; 실제 반복 지급은 플레이로 별도 검사"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_ember_village.events.0.pages.0.footprint, maps.map_ember_village.events.0.pages.0.animationType, maps.map_ember_village.events.0.pages.1.animationType, maps.map_ember_village.events.0.pages.1.footprint, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"ec1a8fda-15d8-409e-bc35-3c4a3830dd9c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/reward-once/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"1dd7bdeee3d5e8fb2deb2cb9e4fb991bb603dcdd993224b6d0d9d3082d79f196\",\"reloadedSha256\":\"1dd7bdeee3d5e8fb2deb2cb9e4fb991bb603dcdd993224b6d0d9d3082d79f196\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "변경·재로드 지도와 미루 E 마커가 정상이다. 플레이 첫 대화 처음 선물이야, 재대화 이미 선물을 줬어, 맵 재진입 뒤 이미 선물을 줬어를 타자 완료 그림에서 읽었다. 동일 캐릭터와 대화창이 잘림·가림 없이 표시된다. 125G 유지와 페이지·다른 맵 보존은 각각 플레이·보존 게이트에서 따로 판정했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/03-first-message.png",
+        "runtime/05-repeat-message.png",
+        "runtime/11-after-reentry.png"
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-message",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-reward",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-message",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-no-reward",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-to-exit",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "leave-map",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "return-map",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-back",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "after-reentry",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "after-reentry-no-reward",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-message.png",
+        "runtime/04-first-reward.png",
+        "runtime/05-repeat-message.png",
+        "runtime/06-repeat-no-reward.png",
+        "runtime/07-walk-to-exit.png",
+        "runtime/08-leave-map.png",
+        "runtime/09-return-map.png",
+        "runtime/10-walk-back.png",
+        "runtime/11-after-reentry.png",
+        "runtime/12-after-reentry-no-reward.png"
+      ]
+    }
+  },
+  "elapsedMs": 138812,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130939566
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "7d2a1e1d-7fd5-45e6-b6ec-5c86bd35c4e8",
+      "at": 1791130945920
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "7d2a1e1d-7fd5-45e6-b6ec-5c86bd35c4e8",
+      "at": 1791130951022
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791131002555
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791131002599
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791131002603
+    }
+  ],
+  "projectId": "ec1a8fda-15d8-409e-bc35-3c4a3830dd9c",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/reward-once/project",
+  "finishedAt": "2026-10-04T16:26:24.964Z",
+  "status": "fail",
+  "verification": {
+    "harnessDigest": "5a42f1d9ffad4e0a7f7bef46ace10ce0cb7b57f67e1adebc8d76d6a6368d7ae4",
+    "priorResultDigest": "8d329248d01da813b1dd604dc635de9ecd85a92ea4df5d3ef69ef33cb81be6af",
+    "archive": "verification-history/1791131488628",
+    "at": "2026-10-04T16:31:28.800Z",
+    "newModelTurn": false
+  },
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T16:19:49.781Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

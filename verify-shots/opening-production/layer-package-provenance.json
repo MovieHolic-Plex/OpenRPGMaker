@@ -1,0 +1,10 @@
+{
+  "artifactVersion": "b436b1fa6a82e433",
+  "sourceRevision": "5d85bf9f06",
+  "sourceDigest": "3e156e08559a7c4c52b96add65837037742096080f5b59014c70dbc8d9098fac",
+  "builtAt": "2026-10-04T15:05:07.500Z",
+  "zipSha256": "d57d0f2917c2f83904d820a011729545b38cdee7b88ceb21900c8fd96a05177c",
+  "zipBytes": 380347364,
+  "playerJsMatchedBuild": true,
+  "extraction": "fresh untouched UI ZIP; layer-density edge checks only; continuous canonical tour is separate fc209412f3 artifact"
+}

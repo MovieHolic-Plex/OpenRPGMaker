@@ -1,4 +1,5 @@
 import { parseCinematicPresentation, type CinematicPresentation } from '@/project/cinematicPresentation';
+import { parseCinematicDirection } from '@/project/cinematicDirection';
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   emptySequence,
@@ -214,7 +215,8 @@ export function createDatabaseCinematicActions(options: {
     },
 
     setDirection(id: string, direction: import('@/project/cinematicDirection').CinematicDirection): boolean {
-      return replaceScene(id, '장면 연출', scene => scene.kind === 'image' ? { ...scene, direction } : scene);
+      const value = parseCinematicDirection(direction);
+      return replaceScene(id, '장면 연출', scene => scene.kind === 'image' ? { ...scene, direction: value } : scene);
     },
 
     /** Image/video intents stay in the view until a resource is ready. */

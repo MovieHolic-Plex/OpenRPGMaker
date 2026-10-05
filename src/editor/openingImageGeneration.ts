@@ -13,6 +13,7 @@ export type CinematicStillRequest = {
   readonly signal?: AbortSignal;
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
   readonly resolveReference?: (resourceId: string, signal?: AbortSignal) => Promise<string>;
+  readonly hasTransparentPixels?: (dataUrl: string) => Promise<boolean>;
 };
 
 export type CinematicStillResult =
@@ -69,13 +70,29 @@ export async function generateCinematicStill(
       referenceImages = parseImageReferences([{ mimeType: reference.slice(5, reference.indexOf(';')), data: reference.slice(reference.indexOf(',') + 1) }]);
     }
     const image = await (options.generateImage ?? generateAiImage)({
-      prompt: buildCinematicStillPrompt(prompt, purpose),
+      prompt: purpose === 'opening' && args.role === 'foreground' ? [
+        'Create one isolated illustrated foreground subject for a layered 2D JRPG opening. Actual transparent alpha background, not a checkerboard or painted background. The entire subject must fit without cropped edges. No text, UI, ground plane or cast shadow. Preserve the supplied reference design, palette and painted style. One subject, one viewpoint, no sprite sheet. Respect the requested composition.',
+        prompt,
+      ].join('\n\n') : buildCinematicStillPrompt(prompt, purpose),
       signal: options.signal,
       ...(referenceImages ? { referenceImages } : {}),
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {
       return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다. 다시 시도하세요.", code: "image-invalid" };
+    }
+    if (purpose === 'opening' && args.role === 'foreground') {
+      const inspect = options.hasTransparentPixels ?? (async (dataUrl: string) => {
+        const element = new Image(); element.src = dataUrl; await element.decode();
+        const canvas = document.createElement('canvas'); canvas.width = 160; canvas.height = 160;
+        const context = canvas.getContext('2d'); if (!context) return false;
+        context.drawImage(element, 0, 0, 160, 160);
+        const pixels = context.getImageData(0, 0, 160, 160).data;
+        let clear = 0, solid = 0;
+        for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] < 16) clear++; if (pixels[i] > 240) solid++; }
+        return clear > 256 && solid > 256;
+      });
+      if (!await inspect(image.dataUrl)) return { ok: false, summary: '전경 그림에 실제 투명 배경 또는 대상이 없습니다. 체커보드/단색 배경은 투명하지 않습니다. 실제 alpha PNG로 다시 생성하세요.', code: 'foreground-not-transparent' };
     }
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : "opening_still"), name, prompt, dataUrl: image.dataUrl };
   } catch (error) {

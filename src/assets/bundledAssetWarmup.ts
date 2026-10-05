@@ -49,7 +49,7 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
 
   // Authored uploads and investigated objects were absent from the old bundle-only warmup.
   if (project && referenced) {
-    const cinematicIds = new Set([project.system.titleScreen?.backgroundResourceId, ...(project.system.opening?.scenes ?? []).map(scene => scene.kind === "image" ? scene.resourceId : undefined)]);
+    const cinematicIds = new Set([project.system.titleScreen?.backgroundResourceId, ...(project.system.opening?.scenes ?? []).flatMap(scene => scene.kind === "image" ? [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])] : [])]);
     for (const asset of Object.values(project.assets.uploaded)) {
       if (!['charset', 'monster', 'picture', 'backdrop', 'tileset'].includes(asset.kind)) continue;
       if (!referenced.has(asset.id) || cinematicIds.has(asset.id)) continue;

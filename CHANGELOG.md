@@ -5,6 +5,87 @@
 
 <!-- releases -->
 
+## 0.130.0 — 2026-10-05
+
+### 기능
+
+- **harness** — measure native assistant capabilities with independent gates (`5046fdf`)
+
+### 수정
+
+- route incomplete facility reviews into bounded repairs (#2128) (`9cbc87b`)
+- **ai** — unblock Gemini team tools and preserve failed team reports (`14947f5`)
+- **assistant** — preserve unrelated raster and report cancellation and stream failures accurately (`c479292`)
+
+### 문서
+
+- **qa** — record live team scenarios, remaining issues and MP4 evidence (`e4b5f40`)
+
+### 테스트
+
+- **assistant** — verify native regression fixes and preserve fault-injection evidence (`441b07a`)
+
+### 잡무
+
+- **qa** — separate canonical map folders from parallel team probes (`8b442a2`)
+
+## 0.129.0 — 2026-10-05
+
+### 기능
+
+- demonstrate approved parking chips across twelve bays (#2124) (`4fc9d9d`)
+- **ai** — center team UI on assistant work and support direct team commands (`d0e587b`)
+
+## 0.128.0 — 2026-10-05
+
+### 기능
+
+- 승인 주차장 공용 키트와 실제 보행 맵 완성 (#2120) (`a2a8cb5`)
+
+## 0.127.0 — 2026-10-05
+
+### 기능
+
+- author opening storyboards with independent art motion and original BGM (`69c8b4c`)
+
+### 수정
+
+- freeze art acceptance criteria and adjudicate conflicting reviews (#2118) (`134fc16`)
+- preserve opening depth and record live production evidence (`27d5bc9`)
+- retain painted detail in layered opening handoff (`42f8b86`)
+- keep opening music through map preparation (`40dd88e`)
+- preserve layered opening handoff at logical stage size (`34e96dc`)
+- use the installed image decoder for opening alpha validation (`ccf4204`)
+
+### 문서
+
+- refresh opening handoff wiki index (`c8fdde2`)
+
+## 0.126.1 — 2026-10-05
+
+### 수정
+
+- **editor** — 이벤트 그림 미리보기가 없는 스프라이트를 아이콘으로 보게 한다 (`8e05acb`)
+- **player** — preserve title on navigation and close credits by keyboard (`5365ca7`)
+- 그림 작업자에게 현재 도면 승인 전달 (#2112) (`7a016f8`)
+- show diary and item graphics in event editor (`a48b60a`)
+
+## 0.126.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — expose theme readiness and respect human icon selections (`5e20f70`)
+
+### 수정
+
+- align sunlight with visible terrain and height edits (`7372ae4`)
+- keep charset motion comparison readable at native scale (`42557d4`)
+- validate torso and leg motion before charset publication (`b3c800f`)
+
+### 문서
+
+- verify native terrain shadows in editor and shipped player (`7b086c9`)
+
 ## 0.125.0 — 2026-10-04
 
 ### 기능

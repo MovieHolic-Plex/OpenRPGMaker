@@ -1049,3 +1049,23 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 `eventDraftValidator.checkCallDepth`는 공통 이벤트의 실제 `commands`를 읽는다. 공통 이벤트에 없는 `pages`를 캐스트해 순회하던 경로는 순환·깊이 경고를 전혀 만들지 못했다. 현재 편집 페이지가 호출하는 그래프만 검사하고, 순환 또는 8단계 초과 경고를 호출 명령의 `pageId`/`commandPath`에 붙인다. 다른 이벤트의 무관한 순환은 이 초안의 경고로 표시하지 않는다.
 
 중첩 명령은 기존 `eventCommandBranches` 기반 순회를 쓰며, 호출 인접 목록의 중복 제거와 루트별 `(depth, id)` 완료 캐시로 반복 호출 경로의 지수적 확장을 막는다. 경고는 커밋을 금지하지 않는다. `test/eventDraftValidator.test.ts`에 간접·중첩 순환, 깊이 경계, 무관한 순환, 반복 호출 사례를 추가했으며 이번 세션에서는 실행하지 않았다.
+
+## 일기·사물 이벤트의 그래픽 미리보기 (2026-10-04)
+
+실제 조수에 일기 배치를 요청하면 `upsert_event`로 `ev_diary`를 만들고
+`graphic.sprite.id = cc0-jetrel-notebook`을 지정한다. 맵의 `resolveEventSpriteTexture`는
+이 아이템 그림을 지원하지만, 이벤트 편집기의 옛 `eventGraphicPreview`는 charset
+카탈로그만 조회해 `data-unsupported=true`인 빈 칸을 그렸다. 그림이 저장에서 사라진 문제가 아니다.
+
+`eventGraphicPreviewResource.ts`는 맵과 같은 리소스 조회를 거쳐 캐릭터 시트, 프로젝트
+스프라이트 참조, 업로드 일반 시트, 공용 아이템 그림을 구분한다. 일반 시트는
+`uploadedSpriteGeometry`/`uploadedSpriteFrame`의 행 우선 좌표와 `uploadedAssetUrl`을
+사용하며 알파를 유지한다. 아이템 그림은 전체 이미지를 쓰고 charset의 pattern/방향으로
+자르거나 걷기 애니메이션을 넣지 않는다. 캐릭터 시트만 투명색 처리와 걷기 프레임을 쓴다.
+작은 미리보기는 기존 캐릭터 칸 안에 맞추고, 크기·통행 미리보기는 실제 프레임 크기와
+맵의 아이템 맞춤 배율을 적용한다. 페이지 그림·명령 데이터는 변경하지 않는다.
+
+실제 조수 요청·SQLite 저장, 편집기 화면과 재로드 근거:
+`verify-shots/event-diary-graphic/README.md`. 브라우저 형식 비교는
+`scripts/qa/event-graphic-preview.mjs`, 실제 조수 실행과 재로드는
+`scripts/qa/event-diary-graphic.mjs`/`event-diary-reload.mjs`다.

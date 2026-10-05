@@ -71,6 +71,13 @@ export function createPiPresentationTool(
             data: { resourceId, titleScreen: ctx.project.system.titleScreen } };
         } else {
           const art = await generateOpeningStill(args, { signal, generateImage,
+            hasTransparentPixels: async dataUrl => {
+              const { default: Jimp } = await import('jimp');
+              const { data } = (await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'))).bitmap;
+              let clear = 0, solid = 0;
+              for (let i = 3; i < data.length; i += 4) { if (data[i] < 16) clear++; if (data[i] > 240) solid++; }
+              return clear > data.length / 400 && solid > data.length / 400;
+            },
             resolveReference: async (resourceId, refSignal) => {
               if (!options.renderToolImage) throw new Error('오프닝 참조 그림을 읽을 경로가 없습니다.');
               const png = await options.renderToolImage(ctx.project, 'show_title_opening', { resourceId }, refSignal);

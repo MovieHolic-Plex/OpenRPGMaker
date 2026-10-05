@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "id": "parking-facility-v1",
+  "scope": "12면·차량6대 지하주차장 전체 조립. 기존 2면 표본의 완료와 별개의 범위다.",
+  "authority": "사용자가 확장 그림의 품질 문제와 미완성 판정 후 처리를 요청했다. 누적 수정 10회·Codex 제작·감독 선택 승인은 유지한다.",
+  "changePolicy": "확장판의 실제 미해결 지적을 완료 조건으로 고정한다. 새 취향 기준은 추가하지 않는다.",
+  "requiresFacilityVerdict": true,
+  "criteria": [
+    {
+      "id": "vehicle-scale",
+      "axes": [
+        "proportions",
+        "scale",
+        "specification"
+      ],
+      "passWhen": "12개 주차면과 6대 차량을 실제 1배로 배치한다. 승인된 공용 차량을 축척 기준으로 보존하며 다른 차량도 같은 축척이다. bbox와 지상 점유를 구분한다."
+    },
+    {
+      "id": "three-quarter",
+      "axes": [
+        "projection",
+        "style"
+      ],
+      "passWhen": "기존 승인 시점의 차량 윗면·벽 캡·정면 높이·낮은 턱을 유지한다. 기둥·등·벽은 같은 높이축/접지/가림을 따르며 순수 옆모습이나 떠 있는 소품으로 대체하지 않는다."
+    },
+    {
+      "id": "structure",
+      "axes": [
+        "attachments",
+        "identity",
+        "composition"
+      ],
+      "passWhen": "연속 북벽과 좌우 경계, 차량/보행을 가리지 않는 구조 기둥, 시설 깊이와 반복 구조가 실제 그림에서 읽힌다. 전경을 가리는 남벽만 명시적 컷어웨이로 허용한다. 전체 변을 열린 회색 바닥으로 대체하지 않는다."
+    },
+    {
+      "id": "lighting",
+      "axes": [
+        "style",
+        "composition",
+        "identity"
+      ],
+      "passWhen": "북벽 두 등만으로 끝내지 않는다. 중앙/남쪽에도 부착 근거가 있는 조명 또는 천장 설비가 읽히고 벽·기둥·차량의 접지와 면 명암이 일관된다. 광원과 무관한 바닥 얼룩/노이즈로 대체하지 않는다."
+    },
+    {
+      "id": "entrance-circulation",
+      "axes": [
+        "circulation",
+        "attachments",
+        "specification"
+      ],
+      "passWhen": "차량 진입 경사로/차단기는 외곽 개구와 차로에 연결하고, 보행 출입문은 벽/계단실 경계에 연결한다. 두 주차열과 출구 사이 보행을 기둥·차량·시설이 끊지 않는다. 운전 시뮬레이션 통과는 주장하지 않는다."
+    },
+    {
+      "id": "vehicle-variety",
+      "axes": [
+        "composition",
+        "identity"
+      ],
+      "passWhen": "6대 전부 같은 실루엣·색·방향으로 복제하지 않는다. 최소 2개 차체 형태와 3개 색조를 같은 화풍으로 사용한다. 승인된 공용 재고를 먼저 재사용하고 부족한 종류만 native 하네스로 만든다. 원본 칩 자체는 덮어쓰지 않는다."
+    },
+    {
+      "id": "space-use",
+      "axes": [
+        "spaceUse",
+        "proportions",
+        "composition"
+      ],
+      "passWhen": "차로·주차·보행·출입 시설로 공간을 조직하고 넓은 무용도 바닥을 남기지 않는다. 주차열의 연결과 실제 목적이 그림만으로 읽혀야 하며 설명/라벨/임시 상자로 빈약한 구성을 합격시키지 않는다."
+    }
+  ],
+  "advisoryOnly": [
+    "차량 운전·문 애니메이션 구현 및 실세계 건축법규 수치",
+    "미세한 색 취향, 무작위 바닥 노이즈와 장식량"
+  ],
+  "completion": "도면→native 칩→전체 조립 시각 검수의 같은 기준 통과. 미해결 필수 항목은 수정으로 돌아간다. 공용 등록·정본 저장·실제 보행은 그 뒤 별도 확인한다."
+}

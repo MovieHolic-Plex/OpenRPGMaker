@@ -5,6 +5,7 @@ from pathlib import Path
 
 import store
 import art_layout
+import art_acceptance
 
 
 def digest(path):
@@ -54,7 +55,9 @@ def prepare(data, cid):
         receipt_path = verified(root, receipt_ref)
         receipt = read(receipt_path)
         if receipt.get('harness') == 'modern-chipset' and receipt.get('contractSha256'):
-            contract_path = safe(root, 'harness-data/modern-chipset-parking/parking-contract.json')
+            # Expanded scenes retain their own immutable contract; do not make
+            # them overwrite the small scene's selected source to be collected.
+            contract_path = safe(root, receipt.get('contractPath', 'harness-data/modern-chipset-parking/parking-contract.json'))
             if digest(contract_path) != receipt['contractSha256']:
                 raise ValueError('주차장 부품 명세가 검수 이후 바뀌었습니다.')
             contract = read(contract_path)
@@ -73,9 +76,17 @@ def prepare(data, cid):
                 review = row['independent']
                 failures = [i.get('reasons', '') for i in review.get('items', []) if i.get('verdict') != 'PASS']
                 groups_pass = {i.get('id', i.get('item')) for i in review.get('items', []) if i.get('verdict') == 'PASS'}
-                required = {c['item'] for c in contract['components']}
+                # Scene receipts review acceptance criteria rather than the
+                # original 13 loose pieces. Empty or absent declarations must
+                # not accidentally count as every component having passed.
+                required = set(contract.get('requiredReviewItems') or
+                               [c['item'] for c in contract.get('components', [])])
+                if not required:
+                    raise ValueError('주차장 명세에 필수 검수 항목이 없습니다.')
                 passed = (row['machine'].get('ok') is True and row['machine'].get('imageSha256') == digest(png)
                           and review.get('verdict') == 'PASS' and review.get('png_sha256') == digest(png) and required <= groups_pass)
+                if receipt.get('scope') == 'parking-facility-v1':
+                    passed = passed and review.get('facilityVerdict') == 'PASS' and review.get('assemblySha256') == digest(png)
                 group['candidates'].append({'id': letter, 'title': f'후보 {letter}', 'passed': passed,
                     'summary': f'{len(required)}품목 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음',
                     'reasons': failures or row.get('issues', []),
@@ -176,6 +187,11 @@ def view(data, cid):
                     all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
                         and len(str(checks[k].get('evidence', '')).strip()) >= 12
                         for k in art_layout.SCENE_CHECKS))
+                if context_ok:
+                    try:
+                        art_acceptance.validate(context, art_acceptance.contract(Path(data) / 'concepts' / cid), art_layout.SCENE_CHECKS)
+                    except (ValueError, KeyError, TypeError):
+                        context_ok = False
                 if not context_ok:
                     explanation = context.get('reasons', []) if matches else []
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])
@@ -200,16 +216,34 @@ def view(data, cid):
             g['candidates'].append(item)
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
+    installation = None
+    installation_path = Path(data) / 'concepts' / cid / 'art-installation.json'
+    if installation_path.is_file() and groups and count == len(groups):
+        receipt = read(installation_path)
+        selected = {g['id']: next(i['fingerprint'] for i in g['candidates'] if i['selected']) for g in output}
+        if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
+                and receipt.get('publicRegistered') is True and receipt.get('runtimePassed') is True
+                and receipt.get('projectId') and receipt.get('sha256')):
+            installation = receipt
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
             'maxRevisions': feedback.get('limits', {}).get('maxRevisions', int(store.setting('max_art_revisions'))),
             'repairPolicy': feedback.get('policy', {}),
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
-            'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}
+            'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
+            'installation': installation}
 
 
-def choose(data, cid, body):
+def choose(data, cid, body, *, delegated=False):
     with store._lock:
+        actor = '사람'
+        authority = None
+        if delegated:
+            authorization = Path(data) / 'concepts' / cid / 'supervisor-authorization.json'
+            authority = read(authorization)
+            if authority.get('scope') != cid or authority.get('autonomousCandidateApproval') is not True:
+                raise ValueError('이 개념에 대한 사용자 위임 승인 근거가 필요합니다.')
+            actor = '사용자 위임 감독'
         state = view(data, cid)
         if state['stage'] != 'art-review': raise ValueError('현재는 칩 선택 단계가 아닙니다.')
         group = next((g for g in state['groups'] if g['id'] == body.get('group')), None)
@@ -217,7 +251,7 @@ def choose(data, cid, body):
             if not group: raise ValueError('선택 항목을 찾을 수 없습니다.')
             with store.connect() as con:
                 con.execute('DELETE FROM art_selections WHERE concept=? AND group_id=?', (cid, group['id']))
-            store.log(cid, f'사람 선택 취소: {group["title"]}')
+            store.log(cid, f'{actor} 선택 취소: {group["title"]}')
             store.update_concept(cid, note='칩 선택 필요')
             return view(data, cid)
         candidate = next((c for c in group['candidates'] if c['id'] == body.get('candidate')), None) if group else None
@@ -229,10 +263,15 @@ def choose(data, cid, body):
         context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
         if context_path.is_file():
             chosen = dict(chosen, contextReview=read(context_path).get('groups', {}).get(group['id'], {}).get(candidate['id']))
+        if authority is not None:
+            chosen = dict(chosen, selectionActor={
+                'kind': 'delegated-supervisor', 'authorization': authority,
+                'authorizationSha256': digest(authorization),
+            })
         with store.connect() as con:
             con.execute('INSERT OR REPLACE INTO art_selections VALUES(?,?,?,?,?,?)',
                         (cid, group['id'], candidate['id'], candidate['fingerprint'], json.dumps(chosen, ensure_ascii=False), store.now()))
-        store.log(cid, f'사람 선택: {group["title"]} / {candidate["title"]} — 공용 등록 전')
+        store.log(cid, f'{actor} 선택: {group["title"]} / {candidate["title"]} — 공용 등록 전')
         result = view(data, cid)
         store.update_concept(cid, note='칩 선택 완료 — 공용 등록·조립 연결 필요' if result['complete'] else f'칩 선택 {result["selectedCount"]}/{result["total"]}')
         return result

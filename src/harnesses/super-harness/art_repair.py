@@ -34,6 +34,11 @@ def route(folder, repairs, source):
     brief = read(folder / 'parking-repair-brief.json', {})
     approved = read(folder / 'art-calibration.json', {})
     needs_calibration = bool({'style', 'projection'} & repeated) or bool(brief.get('requireCalibration') and not approved)
+    if read(folder / 'art-acceptance.json', {}).get('requiresFacilityVerdict'):
+        # The full facility contract cannot be satisfied by a miniature. Repair
+        # its projection in the complete scene; never lose outstanding orders
+        # by silently narrowing the accepted scope back to calibration.
+        needs_calibration = False
     return {'route': stage, 'phase': 'calibration' if needs_calibration else 'scene',
             'repeatedChecks': sorted(repeated),
             'reason': '반복 실패/명세 오류는 치수·형태·시점을 재설계한다. 이전 fix의 keep도 재검토 대상이다.' if stage == 'spec'
@@ -42,12 +47,12 @@ def route(folder, repairs, source):
 
 def obligations(feedback):
     result = []
-    for r in feedback.get('repairs', []) + feedback.get('deferredRepairs', []):
+    for r in feedback.get('repairs', []) + feedback.get('deferredRepairs', []) + feedback.get('completionRepairs', []):
         for key, problem in r.get('failedChecks', {}).items():
-            result.append({'id': f"{r['group']}/{r['candidate']}/check/{key}", 'group': r['group'], 'check': key, 'problem': problem})
+            result.append({'id': f"{r['group']}/{r['candidate']}/check/{key}", 'group': r['group'], 'check': key, 'problem': problem, 'required': r.get('required', False)})
         for index, fix in enumerate(r.get('fixes', [])):
             result.append({'id': f"{r['group']}/{r['candidate']}/fix/{index}", 'group': r['group'], 'check': 'fix',
-                           'problem': fix.get('problem', ''), 'target': fix.get('target', '')})
+                           'problem': fix.get('problem', ''), 'target': fix.get('target', ''), 'required': r.get('required', False)})
     # Different generations may report a different defect on the same axis.
     unique = {}
     for item in result:
@@ -64,8 +69,12 @@ def validate_comparison(verdict, request, group_id):
     for key, obligation in expected.items():
         item = comparisons[key]
         status = item.get('status')
-        if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred'):
+        if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred', 'advisory'):
             raise ValueError('실패 전후 비교 상태 오류')
+        if obligation.get('required') and status in ('advisory', 'deferred'):
+            raise ValueError('시설 완료 필수 결함을 권고/보류로 낮출 수 없습니다.')
+        if status == 'advisory' and not request.get('acceptance'):
+            raise ValueError('고정 합격 계약이 있어야 이전 의견을 권고로 분리할 수 있습니다.')
         if any(len(str(item.get(k, '')).strip()) < 20 for k in ('before', 'after', 'evidence')):
             raise ValueError('실패 전후의 좌표·형태와 판정 근거가 필요합니다.')
         if status == 'unresolved' and verdict['verdict'] == 'PASS':
