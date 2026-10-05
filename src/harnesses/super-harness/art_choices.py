@@ -197,6 +197,11 @@ def view(data, cid):
     groups = document.get('groups', [])
     result_file = Path(data) / 'concepts' / cid / 'art-result.json'
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
+    import theme_production
+    theme=theme_production.context(cid)
+    if theme:
+        result=read(result_file) if result_file.is_file() else {}
+        current=current and theme['ready'] and all((result.get('theme') or {}).get(k)==theme[k] for k in ('policyHash','briefSha256'))
     # The manifest owns immutable image/receipt hashes. Preparation responses
     # can replace art-result.previous.json several times before a new drawing.
     previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review', 'art-demo')

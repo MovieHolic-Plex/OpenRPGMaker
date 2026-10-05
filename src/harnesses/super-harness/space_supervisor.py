@@ -21,7 +21,7 @@ import finish_priority
 # assembly/probe/publication keep exclusive access until independently isolated.
 PARALLEL_STAGES = frozenset(('plan', 'plan-review', 'survey', 'material-review',
     'art', 'art-layout-review', 'art-context-review', 'art-demo'))
-PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover'}
+PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover','theme-plan','theme-review'}
 
 
 def admission(concept, jobs, slots, max_jobs):
@@ -130,6 +130,8 @@ def main(ids):
                 waits = {}
                 if not draining and store.setting('paused') == '1':
                     with finish_priority.admissions():
+                        sh.theme_production.tick(sh, ids, slots)
+                        for cid in ids: sh.theme_production.ensure(store.concept(cid))
                         sh.provider_retry.tick(sh, ids + ([None] if keywords else []), slots)
                         if keywords: sh.keyword_seeds.tick(sh, slots)
                         sh.release_waiting(ids)
@@ -148,6 +150,8 @@ def main(ids):
                             if sh.provider_retry.pending(cid):
                                 waits[cid] = 'provider-backoff'
                                 continue
+                            if not sh.theme_production.ensure(store.concept(cid)):
+                                waits[cid]='theme-production';continue
                             recover(cid)
                             c = store.concept(cid)
                             if c['stage'] in ('art-review', 'art-context-review') and sh.art_demo.required(sh.DATA, cid):

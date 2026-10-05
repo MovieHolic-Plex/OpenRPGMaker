@@ -117,6 +117,8 @@ def _tick(sh, ids, slots):
     for r in rows("status='running'"):
         if ids is not None and r['concept'] not in ids: continue
         c=store.concept(r['concept']) if r['concept'] else None
+        if c and not sh.theme_production.current(c['id'],json.loads(r['meta'])):
+            finished(json.loads(r['meta']));continue
         if c and (c['stage']!=r['phase'] or epoch(c['id'])!=r['epoch']):
             # A user decision supersedes this retry; never replay an old result.
             finished(json.loads(r['meta']));continue
@@ -143,8 +145,15 @@ def _tick(sh, ids, slots):
     for r in rows("status='pending' ORDER BY due"):
 
         cid=r['concept']
-        if ids is not None and (cid not in ids or cid is None and r['kind']!='seed-discover'): continue
+        if ids is not None and (cid not in ids or cid is None and r['kind'] not in ('seed-discover','theme-plan','theme-review')): continue
         c=store.concept(cid) if cid else None
+        if c and not sh.theme_production.current(cid,json.loads(r['meta'])):
+            cancel(cid);continue
+        if r['kind'] in ('theme-plan','theme-review'):
+            m=json.loads(r['meta']);p=sh.theme_production.read(sh.theme_production.folder(m['themeSeed'])/'policy.json')
+            if not p or sh.theme_production.token(p)!=m['themePolicyHash']:
+                with store.connect() as db: db.execute("UPDATE provider_retries SET status='cancelled' WHERE id=?",(r['id'],))
+                continue
         if cid is None and r['kind']=='seed-discover':
             with store.connect() as db:
                 seed=db.execute('SELECT active FROM keyword_seeds WHERE id=?',(r['tag'],)).fetchone()
