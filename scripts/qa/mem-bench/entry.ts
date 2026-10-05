@@ -7,3 +7,5 @@ export { planHeavyWire, resetHeavyWireForTests, withHeavyBlobs } from "@/ai/piAg
 export { serializeReusingSharedDictionaries } from "@/project/io/sharedDictionaryJson";
 export { sharedEntryDigest, jsonContentDigest } from "@/project/persistence/core/contentDigest";
 export { serialize } from "@/project/io";
+export { serializeForRoundtripCheck, stringifySharedDictionary, stringifyAssets } from "@/project/io/sharedDictionaryJson";
+export { deserialize } from "@/project/io";
