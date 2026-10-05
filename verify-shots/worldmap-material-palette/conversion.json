@@ -1,0 +1,425 @@
+{
+  "result": {
+    "ok": true,
+    "summary": "세계 지도 world_map — 테마 fantasy, 지형 작업 0개, 장소 31곳, 여정 검사 통과(5.4초)",
+    "diff": {
+      "tilesChanged": 6912,
+      "mapPropertiesChanged": 1,
+      "audioDescriptionsChanged": 0,
+      "monsterMetadataChanged": 0,
+      "eventsAdded": 0,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "dbRecordsChanged": 0,
+      "tilesetsChanged": 1,
+      "switchesAdded": 0,
+      "variablesAdded": 0,
+      "worldEntitiesAdded": 0,
+      "worldEntitiesModified": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "endingsChanged": 0,
+      "sessionChanged": false,
+      "systemChanged": false,
+      "warnings": [
+        "테마 fantasy: 사람 선택이 없거나 발자국이 다른 장소 1곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+      ]
+    },
+    "issues": [
+      {
+        "severity": "warning",
+        "code": "event-unreachable",
+        "mapId": "map_dry_mine",
+        "eventId": "ev_mine_back_exit",
+        "relocation": {
+          "eventId": "ev_mine_back_exit",
+          "searchRadius": 3,
+          "candidates": [
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_dry_mine",
+                "eventId": "ev_mine_back_exit",
+                "x": 11,
+                "y": 4
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_dry_mine",
+                "eventId": "ev_mine_back_exit",
+                "x": 12,
+                "y": 4
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_dry_mine",
+                "eventId": "ev_mine_back_exit",
+                "x": 13,
+                "y": 4
+              }
+            }
+          ]
+        },
+        "x": 13,
+        "y": 2,
+        "message": "이벤트의 상호작용 위치에 도달할 수 없습니다: map_dry_mine ev_mine_back_exit (13, 2) — 통행 가능한 칸으로 옮기세요."
+      }
+    ],
+    "data": {
+      "mapId": "world_map",
+      "created": false,
+      "tilesetId": "worldmap_world_map",
+      "townArt": "테마 fantasy 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. 실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.",
+      "theme": "fantasy",
+      "themeNote": "판타지 (기본): 이 테마는 화풍(팔레트·덧칠·아이콘)만 바꾼다 — 지형·장소 배치는 공용 지형 그대로다. 팔레트 original: 색을 바꾸지 않는다(항등). v9-final3 지형 그림 그대로.",
+      "iconSelection": {
+        "mode": "human-selected",
+        "rendered": [
+          {
+            "placeId": "대성",
+            "iconId": "fantasy/city_capital",
+            "x": 25,
+            "y": 21,
+            "width": 6,
+            "height": 6,
+            "sha256": "97e419901f373be76493ea505b176a526c0073ff86264bff483ea1410a71855a"
+          },
+          {
+            "placeId": "내해 항구",
+            "iconId": "fantasy/city_harbor",
+            "x": 40,
+            "y": 30,
+            "width": 5,
+            "height": 4,
+            "sha256": "286c7f629172f18474fd6b19ece377ca86706541d007931c68c9c42577ee25cb"
+          },
+          {
+            "placeId": "설원 마을",
+            "iconId": "fantasy/log_village",
+            "x": 33,
+            "y": 8,
+            "width": 3,
+            "height": 3,
+            "sha256": "1c6f2ddfc6f346d0722bbab4aa4fea1ed337ae1318795047bf5b0238165871fe"
+          },
+          {
+            "placeId": "눈 촌락",
+            "iconId": "fantasy/igloo_camp",
+            "x": 19,
+            "y": 10,
+            "width": 2,
+            "height": 2,
+            "sha256": "c6664f9954056eb03488601d7ac64c0b7e48b15afb948f3e601b9ade0823f790"
+          },
+          {
+            "placeId": "고원 마을",
+            "iconId": "fantasy/monastery",
+            "x": 15,
+            "y": 21,
+            "width": 2,
+            "height": 2,
+            "sha256": "9c7c95df58fb53becc4b973d751b1ba843f3b71dcc6a8a052431f9d5b4b3d151"
+          },
+          {
+            "placeId": "산기슭 동굴",
+            "iconId": "fantasy/cave_rock",
+            "x": 8,
+            "y": 25,
+            "width": 2,
+            "height": 2,
+            "sha256": "fb115976ffce24ab4d00e1669550c13d4984e3004f8073afcbb496d95341aaab"
+          },
+          {
+            "placeId": "사막 촌락",
+            "iconId": "fantasy/adobe_village",
+            "x": 20,
+            "y": 50,
+            "width": 2,
+            "height": 2,
+            "sha256": "5154deb6b0d4c876968c467d4c1eb7ff606fb526b8162f7408bc56bef4b0b26e"
+          },
+          {
+            "placeId": "사막 폐허",
+            "iconId": "fantasy/desert_colonnade",
+            "x": 21,
+            "y": 56,
+            "width": 2,
+            "height": 2,
+            "sha256": "b52991aaf2cba60aff6fb1eaaf421e8a1773d0301c83503ada75fbf8826eae5e"
+          },
+          {
+            "placeId": "정글 마을",
+            "iconId": "fantasy/treehouse_village",
+            "x": 46,
+            "y": 54,
+            "width": 2,
+            "height": 2,
+            "sha256": "a123b43629d1ef5ed5ef85eb294e3a9879568c9dadd3106423ed81e107955fd1"
+          },
+          {
+            "placeId": "고갯길 요새",
+            "iconId": "fantasy/pass_fortress",
+            "x": 45,
+            "y": 24,
+            "width": 3,
+            "height": 3,
+            "sha256": "4f3c8623e1fd1a8ec133aa2a60198abdbc2fe071ab8b256e8ea1017d3d0d8dd2"
+          },
+          {
+            "placeId": "해협 감시탑",
+            "iconId": "fantasy/mage_spire",
+            "x": 33,
+            "y": 50,
+            "width": 1,
+            "height": 2,
+            "sha256": "3b332cde23a72bda7246a654df4da708f2761789ab6ecf9ea581f988f010f0dd"
+          },
+          {
+            "placeId": "화산",
+            "iconId": "fantasy/volcano_altar",
+            "x": 77,
+            "y": 16,
+            "width": 2,
+            "height": 2,
+            "sha256": "5593b3b1ff10810f347b68a9c625647caede1a758d96afadc021c9dfa9707086"
+          },
+          {
+            "placeId": "화염 요새",
+            "iconId": "fantasy/flame_fortress",
+            "x": 71,
+            "y": 16,
+            "width": 3,
+            "height": 3,
+            "sha256": "116ca5274f704cb342a173ec63a2e802bdde6bb37feb48792c14bc97a339826b"
+          },
+          {
+            "placeId": "사바나 마을",
+            "iconId": "fantasy/city_fort",
+            "x": 72,
+            "y": 24,
+            "width": 4,
+            "height": 4,
+            "sha256": "b80df34dfb46ef9e50a420e9c2b83e488d0bb755ef6501e15662d6463c481823"
+          },
+          {
+            "placeId": "오아시스 촌락",
+            "iconId": "fantasy/oasis_camp",
+            "x": 84,
+            "y": 34,
+            "width": 2,
+            "height": 2,
+            "sha256": "c37fbb21cdbc976e2cd10817af4a27c4186584f234b02694fe1793dca57ccbcd"
+          },
+          {
+            "placeId": "협곡 폐허",
+            "iconId": "fantasy/stepped_pyramid",
+            "x": 75,
+            "y": 36,
+            "width": 2,
+            "height": 2,
+            "sha256": "0e97f002f7d8eebe7c1afe1cee666743c53cba38aae27f56638a848b39b13682"
+          },
+          {
+            "placeId": "북동 눈 촌락",
+            "iconId": "fantasy/mine_town",
+            "x": 85,
+            "y": 14,
+            "width": 2,
+            "height": 2,
+            "sha256": "0231023203a121864fba6b9b741c1d80b1d67e50fe4769edd7a1e3492e1d75c7"
+          },
+          {
+            "placeId": "동쪽 항구",
+            "iconId": "fantasy/harbor_town",
+            "x": 86,
+            "y": 24,
+            "width": 3,
+            "height": 3,
+            "sha256": "01728729ed2e631e5b15d2a252490ebe077ef8fb424964db9b9037e16a37deb9"
+          },
+          {
+            "placeId": "독늪 탑",
+            "iconId": "fantasy/witch_tower",
+            "x": 64,
+            "y": 12,
+            "width": 1,
+            "height": 2,
+            "sha256": "f81bb113f24bd5a79b2a1297d5e4f82cfb3ed2d39bbeba38c262b02958f903b4"
+          },
+          {
+            "placeId": "섬 동굴",
+            "iconId": "fantasy/cave_vine",
+            "x": 51,
+            "y": 64,
+            "width": 2,
+            "height": 2,
+            "sha256": "fc69ccdefe212f6177cdb9a013cd9ea04626e788ed41be1e69031d64d62ff632"
+          },
+          {
+            "placeId": "섬 탑",
+            "iconId": "fantasy/lighthouse",
+            "x": 61,
+            "y": 65,
+            "width": 1,
+            "height": 2,
+            "sha256": "e55f05e0cc0fb2524ef2805a8cdd63e846dab13ef2a8e74f7f6318bec6b353f3"
+          },
+          {
+            "placeId": "남섬 마을",
+            "iconId": "fantasy/stilt_village",
+            "x": 69,
+            "y": 62,
+            "width": 2,
+            "height": 2,
+            "sha256": "01679b2a14d02282335cac700557402e9ce47f22e6836acb42a8a649e33bb731"
+          },
+          {
+            "placeId": "섬 폐허",
+            "iconId": "fantasy/crypt",
+            "x": 85,
+            "y": 55,
+            "width": 2,
+            "height": 2,
+            "sha256": "17588372f8b3f9cb80cfcd8caaddc7a263e3622c7656419fb4e8e2b60d5da433"
+          },
+          {
+            "placeId": "북섬 촌락",
+            "iconId": "fantasy/tent_camp",
+            "x": 57,
+            "y": 3,
+            "width": 2,
+            "height": 2,
+            "sha256": "71ac75a3e8a1dcfdd8fc6e52c6fdd3dfa59e48ae50b4ea9740b220ee1596aebd"
+          },
+          {
+            "placeId": "거대한 탑",
+            "iconId": "fantasy/giant_tower",
+            "x": 49,
+            "y": 30,
+            "width": 2,
+            "height": 4,
+            "sha256": "6723e9fafb24b0ec19416da2a40c52548dc58e31ef9add1984fae54b926cb59e"
+          },
+          {
+            "placeId": "폐허 도시",
+            "iconId": "fantasy/ruined_city",
+            "x": 78,
+            "y": 24,
+            "width": 4,
+            "height": 3,
+            "sha256": "4686c2c2f722625c5c8cb24ad0d377f7f7cfbd98ef564a1b8d6643ace9d689db"
+          },
+          {
+            "placeId": "거목",
+            "iconId": "fantasy/giant_tree",
+            "x": 15,
+            "y": 34,
+            "width": 3,
+            "height": 3,
+            "sha256": "ac74f2998bbe983f9e7d82490b312d6cad6ac404b4e5a86d2d7138f7a8be7e4f"
+          },
+          {
+            "placeId": "사막 신전",
+            "iconId": "fantasy/desert_temple",
+            "x": 33,
+            "y": 60,
+            "width": 3,
+            "height": 3,
+            "sha256": "e5adb0093f6c8faafd3fb02dcd51fbd38089c0d02739dfa55e08651b6acdb666"
+          },
+          {
+            "placeId": "고대 돌원",
+            "iconId": "fantasy/stone_circle",
+            "x": 48,
+            "y": 37,
+            "width": 2,
+            "height": 2,
+            "sha256": "7fdc7092dc3db951c88c1bd93ac4fda402d6cea7a700950f03bb46fb01a7a082"
+          },
+          {
+            "placeId": "천공섬",
+            "iconId": "fantasy/sky_island",
+            "x": 58,
+            "y": 49,
+            "width": 5,
+            "height": 4,
+            "sha256": "b67219af138cd9017e71470d2e163ec7f09f6a145485191e532ff6178d35098a"
+          }
+        ],
+        "pending": [
+          {
+            "placeId": "강가 마을",
+            "iconId": "fantasy/windmill_farm",
+            "x": 38,
+            "y": 26,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          }
+        ]
+      },
+      "ops": [],
+      "ascii": "범례: ~ 바다 r 강 L 용암 x 독늪 . 초원 f 밭 p 곡식밭 v 사바나 s 사막 d 모래언덕 D 흙 b 협곡토 a 화산재 B 현무암 w 늪 m 습지 c 균열 o 분화구 t 툰드라 n 설원 g 빙하 j 정글 | ^ 산 M 메사 V 화산 * 숲 = 길 / 경사로 @ 장소. 첫 줄은 x 의 10 자리, 줄 머리는 y\n    0         1         2         3         4         5         6         7         8         9     \n00  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n01  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n02  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnn~~~ggggg~~~~~~~~~~~~~~~~~~~~~~~~~~\n03  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~g~~~~~~~~~~~~~~~~~~~~~~~~n@@nnn~~~gggggg~~~~~~~~~~~~~~~~~~~~~~~~~\n04  ~~~~~~~~~~~~~~~~~~~~~~~~~~gggggggg~~~~~~~~~~~~~~~~~~~~~*n@@nnn~~~gggggg~~~~~~~~~~~~~~~~~~~~~~~~~\n05  ~~~~~~~~~~~~~~~~~~~~~~~~~*ggg*ggggg*~~~~**n~~~~~~~~~~~~*nnnn~~~~~~~~~~g~~~~~~~~~~~~~~~~~~~~~~~~~\n06  ~~~~~~~~~~~~~~~*~~~~~~~~**ggg*ggggg***g***nn~~~~~~~~~~~~~*~~~~~~~~~~~~~~~~~~vvv~~~~~~~~~~~~~~~~~\n07  ~~~~~~~~~~~~~nn**~~~~~~***ggg*gnnggnn*******~~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvv^^^^~~~~~~~~~~~~~~~~\n08  ~~~~~~~~~~~~~nnnn^*~~*^==========@@@g********~~~~~~~~~~~~~~~~~~~~~~~~~~~v^^^^^^^^~~~~~~~~~~~~~~~\n09  ~~~~~~~~~~~~nnnnnnnn====^^nn=n^nn@@@n*******^~~~~~~~~~~~~~~~~~~~~~~vaaaa^^^^^^^^^^^^^~~~~~~~~~~~\n10  ~~~~~~~~~~~~nnnnnnn@@nn^^^^^=nnnn@@@n***^nn**n~~~~~~~~~~~~~~~~~~~~====^aaa^aa^aa^aaa*a~~~~~~~~~~\n11  ~~~~~~~~~~~~nn^^^^n@@n^^^^^n=nnnnnnnnn**nnn^^^n~~~~~~~~~~~~~~~~~~==mm=aaaB^aaa*a^aaa*aa~~~~~~~~~\n12  ~~~~~~~~~~~n^^^^^^nnnn^^^nnn=^r^nnnnnnnnn**^^^ttt~~~~~~~~~~~~~~~@=mmm=aaa=======^aaaaaa~~~~~~~~~\n13  ~~~~~~~~~~^^^^^^^^^^^^^nnnnt=trtttnnnnn^nnt^^^^ttt~~~~~~~~~~~~~m@mmmm=aaa=^**VV===BBBBvn~~~~~~~~\n14  ~~~~~~~~~^^^nnnn^^^^^^..^tt^=trrrttttttttt^^^tttttt~~~~~~~~~~~mmmmmmm=aaa=B*VooVB=BBB@@n*~~~~~~~\n15  ~~~~~~~~t***************t***==ttrttttttttt^^^tttttt~~~~~~~~~~~xx***mm===a=BVooooV=BBB@@=*~~~~~~~\n16  ~~~~~~~~t**^*..**************=ttrtt*tttttt^^^^tttttt~~~~~~~~~mxxxx****a@@@Voo@@===BBBBv=nn~~~~~~\n17  ~~~~~~~~~*****************ttt=ttrrr*tttttt^^^^ttttt~~~~~~~~~~mxxxxxmm*a@@@Voo@@ooVBBBBv=vnn~~~~~\n18  ~~~~~~~~~t..******..***tttttt=ttttrr*ttttt^^^^^tttt~~~~~~~~~~mmxxxxmmma@@@=VooooVBBBBBB=vvv~~~~~\n19  ~~~~~~~~~.......ttt....tttttt=*tt.*r*ttttt^^^^^tt^tt~~~~~~~~vv^^^xxxmmmaaa=VVooLLBBBBBB=vvv~~~~~\n20  ~~~~~~~~......tttttt...tttttt=t...*rr...^ttr^^^ttttt~~~~~~~~vv^^^*^xmm****=BBV*BLLLLBBB=vvv~~~~~\n21  ~~~~~~~~......t@@ttt...tt@@@@@@.....r.***.rr^^^^tttt~~~~~~~~vxxx^m*mmmr*aa=*****BBBLLLv=vvv~~~~~\n22  ~~~~~~~~....*tt@@=ttt....@@@@@@.....rpp.rrr^^^^t^ttt~~~~~~~~v^xxxmxxxrr*aa=******BB**L*=vvv~~~~~\n23  ~~~~~~~~~t..*tttt=ttt....@@@@@@.....rrprr.^^^^^^^...~~~~~~~~v^xx^^xxxrxaaa=aaaBBBBa**vv=vvv~~~~~\n24  ~~~~~~~~tt..*tttt=tt.....@@@@@@.....rrrr.....@@@....~~~~~~~~v^^^^vvxrrxv@@@@aa@@@@a*vv@@@vv~~~~~\n25  ~~~~~~~~@@..*.tttttt.....@@@@@@==============@@@....~~~~~~~~v^^v^vvvrvvv@@@@va@@@@vvvv@@@vvv~~~~\n26  ~~~~~~~~@@.**....//......@@@@@@=..rrr.@@@.=^.@@@=...~~~~~~~~^^vvvvvrrvvv@@@@vv@@@@vvvv@@@vvv~~~~\n27  ~~~~~~~~.=.**....//......f=....=.rrr..@@@f=^.^^^=*..~~~~~~~~vvvrrrrrpppp@@@@===========vvv*v~~~~\n28  ~~~~~~~~.=***....=......ff=....=.rr...@@@f=.^^^^=..~~~~~~~~~vv^v^^vrrrrrrvvvvvvvvvr=rrrrrr*~~~~~\n29  ~~~~~~~~.=***...==........=....=.rrf...=ff=..^^^=...~~~~~~~~v^^^^^vvvvvvrrrrrrrrrrr=rrrrrrr~~~~~\n30  ~~~~~~~.*===..w//.....prr.=....=.rrf...=@@@@@^^^=@@.~~~~~~~~...^^^v^vvvvvvvvvvrrrrr=vv****r~~~~~\n31  ~~~~~~~wwww=w**//.....==========.rrf....@@@@@^^^=@@..~~~~~~~**.^^...vvvvvvvvvvvvcvv=vvsssss~~~~~\n32  ~~~~~~~wwww=====/.....=r*........rr.....@@@@@^^^=@@.*~~~~~~~**^^^**.vbbbvvvvbbbbccc=sssssss~~~~~\n33  ~~~~~~~wwwwww*w====**f=r***.......rr.~~~@@@@@^^^=@@..~~~~~~~**f^^**bbbbbbvvbbbbbccc=sssssss~~~~~\n34  ~~~~~~wwwwwwwww@@@=*===rr***......r~~~~~~~~~~^^^=....~~~~~~~*.f^^**bbbbbbbbbbbbbbcc=@@sss*~~~~~~\n35  ~~~~~~wwwwwwwww@@@===.*.r***......~~~~~~~~~~~~..=.....~~~~~~~.f^^**bbbbbbbbbbbbbbbs=@@sss~~~~~~~\n36  ~~~~~~wwwwwwwww@@@=.....r**.....~~~~~~~~~~~~~~~==.....~~~~~~~^.^***bbbbbbbb@@bbbbcs==rrrr~~~~~~~\n37  ~~~~~~wwwwwwwwww..=*....r.......~~~~~~~~~~~~~~~=@@....~~~~~~~*.****bbbb====@@bbbbccs=rrrr~~~~~~~\n38  ~~~~~~wwwww*wwww*.=*....rrr.....~~~~~~~~~~~~~~~=@@....~~~~~~~~*****brrb=bbbbbbbbbbcs=rrr~~~~~~~~\n39  ~~~~~~wwwwwwwwww*.=**.....r.....~~~~~~~~~~~~~~~=......~~~~~~~~*****brrb=bbbbbbbbbbcc=srs~~~~~~~~\n40  ~~~~~~~wwwwwwww*wv=****v..rr.....~~~~~~~~~~~~~~=......~~~~~~~~~***.bbbb=bbbbbbbbbbbc=s*~~~~~~~~~\n41  ~~~~~~~wwww*wwwvvv=vvvvvvvvrr....~~~~~~~~~~~~~~=.....~~~~~~~~~~***.bbbb=bbb==========s~~~~~~~~~~\n42  ~~~~~~~www**wwvvvv=vvvvvvvvvrrr..~~~~~~~~~~~~~.=.....~~~~~~~~~~***..bbb=bbb=bbbbbbbb~~~~~~~~~~~~\n43  ~~~~~~~~ww**vvvvvv=vvvvvvvvvvrrr.~~~~~~~~~~~~~.=....~~~~~~~~~~~~.*..../bbbb=bbbbbbbb~~~~~~~~~~~~\n44  ~~~~~~~~ww**vvvvvv=vvvvvvvvvvbbrbb~~~~~~~~~~~..=...j~~~~~~~~~~~~~~..../vvvv=bbbbbbbb~~~~~~~~~~~~\n45  ~~~~~~~~ww*vvvvvvv=vssvvvvvvvbbbbbb~~~~~~~~~~..=jjjj*~~~~~~~~~~~~~....======vbbbbbbb~~~~~~~~~~~~\n46  ~~~~~~~~~vvvvsMsss=ssssssssssbDDDDD~~~~~~~~~~===jj***~~~~~~~~~~~~~~~~vvvvvvvvvvvvvbb~~~~~~~~~~~~\n47  ~~~~~~~~~svsssssss=ssssssssDDDDDDDDD~~~~~~..==j******~~~~~~~~~~~~~~~~~~vvvvvvvvvvvvv~~~~~~~~~~~~\n48  ~~~~~~~~~sssssssss=ssssssssDDDDDDDDDDD~~~~..=*jj*****~~~~~~~~~~~~~~~~~~~~vvvvvvvvvvv~~~~~~~~~~~~\n49  ~~~~~~~~~sMssMMssM=ssssssssDDDDDDDDDDD~~~~.*=*jj*^^**~~~~~@@@@@~~~~~~~~~~~~vvvv~~~~~~~~~~~~~~~~~\n50  ~~~~~~~~~ssssMMsss==@@sssssDDDDDD@DDDD~~~~~*=*^*^^***~~~~~@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n51  ~~~~~~~~~~sssMMMssMs@@sssssDDDDDD@DDDD~~~~~j=*^^^j**~~~~~~@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n52  ~~~~~~~~~~sssMMMMMMsssssdddDDDD===DDDD~~~~~^=**^^^~~~~~~~~@@@@@~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~\n53  ~~~~~~~~~~~dddMMMMdddddddddDDDD=DDDDDs~~~~~j=jjjj~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aaaa^~~~~~~~\n54  ~~~~~~~~~~~dddMMMMdddddddddDDDD=DDDDssd~~~~j==@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aaaa^a~~~~~~\n55  ~~~~~~~~~~~dddddMMMddddddddddDD=DDDdddd~~~~jjj@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~a@@a^~~~~~~~\n56  ~wwww~~~~~~~dddddMMMd@@ddddddd//dDDdddd~~~~**jj~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~b~~~~a@@a^a~~~~~~\n57  wwwwww~~~~~~~dddddMMd@@ddddddd//dddddd~~~~~***~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbb~~~aaaaa~~~~~~~\n58  wwwwwww~~~~~~ddddddddddddddddddddddddd~~~~~***~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MMbbbb~~~~aa~~~~~~~~\n59  ~wwwwww~~~~~~~dddddMdddddddddddddddddd~~~~~jj~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MMMMbbb~~~~~~~~~~~~~\n60  ~~wwww~~~~~~~~~~~dddddddddddddddd@@@dd~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*j*~~~MMMMbbbb~~~~~~~~~~~~\n61  ~~www~~~~~~~~~~~~~ddddddddddddddd@@@dd~~~~~~~~~~~~~~~~~~~~~~~~~~~~~j******~~~MMMMbbb~~~~~~~~~~~~\n62  ~~~~~~~~~~~~~~~~~~~~ddddddddddddd@@@dd~~~~~~~~~~~~~~~~~~~~~~~~~~~~~j*@@****~~M~MMM~~~~~~~~~~~~~~\n63  ~~~~~~~~~~~~~~~~~~~~~dddddddddddddddd~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*j@@jj**~~~~~~~~~~~~~~~~~~~~~\n64  ~~~~~~~~~~~~~~~~~~~~~~~~~~dddddddd~~~~~~~~~~~~~~.*.@@.**~~~ssss~~~~**jj*j**j~~~~~~~~~~~~~~~~~~~~\n65  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~d~~~~~~~~~~~~~~~~~*.@@*.****ss@sssss********~~~~~~~~~~~~~~~~~~~~~\n66  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**..*.****ss@sssss~*****~~~~~~~~~~~~~~~~~~~~~~~\n67  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.**....~***sss**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n68  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**..~~****~***~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n69  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n70  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n71  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
+      "places": [
+        "대성(capital) 25,21 6×6 입구 28,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 고갯길 요새, 산기슭 동굴, 서 고원 아랫 경사로, 설원 마을",
+        "강가 마을(large_town) 38,26 3×3 입구 39,28 — 1막에 걷기(으)로 처음 닿는다 · 길: 내해 항구, 대성, 사막 촌락",
+        "내해 항구(harbor_city) 40,30 5×4 입구 42,33 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 고갯길 요새",
+        "설원 마을(large_town) 33,8 3×3 입구 34,10 — 1막에 걷기(으)로 처음 닿는다 · 길: 눈 촌락, 대성",
+        "눈 촌락(village) 19,10 2×2 입구 20,11 — 1막에 걷기(으)로 처음 닿는다 · 길: 설원 마을",
+        "고원 마을(village) 15,21 2×2 입구 16,22 — 1막에 걷기(으)로 처음 닿는다 · 길: 서 고원 윗 경사로",
+        "산기슭 동굴(cave) 8,25 2×2 입구 9,26 — 1막에 걷기(으)로 처음 닿는다 · 요새 통행증 을(를) 주는 열쇠 장소 — 「1막 · 시작 대륙 서부」 안쪽에 있어야 한다 · 길: 대성",
+        "사막 촌락(village) 20,50 2×2 입구 21,51 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을",
+        "사막 폐허(ruin) 21,56 2×2 입구 22,57 — 4막에 사막선(으)로 처음 닿는다 · 사막선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "정글 마을(village) 46,54 2×2 입구 47,55 — 2막에 요새 통행증(으)로 처음 닿는다 · 범선 을(를) 주는 열쇠 장소 — 「2막 · 관문 너머 동쪽 띠」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 고갯길 요새",
+        "고갯길 요새(castle) 45,24 3×3 입구 46,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 내해 항구, 대성, 정글 마을",
+        "해협 감시탑(tower_small) 33,50 1×2 입구 33,51 — 4막에 사막선(으)로 처음 닿는다 · 사막선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 사막 고원 경사로",
+        "화산(volcano) 77,16 2×2 입구 78,17 — 3막에 범선(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 화염 요새",
+        "화염 요새(castle) 71,16 3×3 입구 72,18 — 3막에 범선(으)로 처음 닿는다 · 길: 독늪 탑, 사바나 마을, 화산",
+        "사바나 마을(fort_city) 72,24 4×4 입구 74,27 — 3막에 범선(으)로 처음 닿는다 · 길: 동 고원 아랫 경사로, 동쪽 항구, 오아시스 촌락, 폐허 도시, 화염 요새",
+        "오아시스 촌락(camp) 84,34 2×2 입구 85,35 — 3막에 범선(으)로 처음 닿는다 · 사막선 을(를) 주는 열쇠 장소 — 「3막 · 동대륙과 섬들」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 사바나 마을",
+        "협곡 폐허(ruin) 75,36 2×2 입구 76,37 — 3막에 범선(으)로 처음 닿는다 · 길: 동 고원 아랫 경사로",
+        "북동 눈 촌락(village) 85,14 2×2 입구 86,15 — 3막에 범선(으)로 처음 닿는다 · 길: 동쪽 항구",
+        "동쪽 항구(large_town) 86,24 3×3 입구 87,26 — 3막에 범선(으)로 처음 닿는다 · 범선 타고 내리는 자리 · 길: 북동 눈 촌락, 사바나 마을",
+        "독늪 탑(tower_small) 64,12 1×2 입구 64,13 — 3막에 범선(으)로 처음 닿는다 · 길: 화염 요새",
+        "섬 동굴(cave) 51,64 2×2 입구 52,65 — 3막에 범선(으)로 처음 닿는다",
+        "섬 탑(tower_small) 61,65 1×2 입구 61,66 — 3막에 범선(으)로 처음 닿는다",
+        "남섬 마을(village) 69,62 2×2 입구 70,63 — 3막에 범선(으)로 처음 닿는다 · 범선 타고 내리는 자리",
+        "섬 폐허(ruin) 85,55 2×2 입구 86,56 — 3막에 범선(으)로 처음 닿는다 · 범선 타고 내리는 자리",
+        "북섬 촌락(camp) 57,3 2×2 입구 58,4 — 3막에 범선(으)로 처음 닿는다 · 범선 타고 내리는 자리",
+        "거대한 탑(tower_great) 49,30 2×4 입구 50,33 — 2막에 요새 통행증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 고대 돌원",
+        "폐허 도시(ruin_city) 78,24 4×3 입구 80,26 — 3막에 범선(으)로 처음 닿는다 · 길: 사바나 마을",
+        "거목(landmark_nature) 15,34 3×3 입구 16,36 — 1막에 걷기(으)로 처음 닿는다 · 길: 서 고원 아랫 경사로",
+        "사막 신전(shrine) 33,60 3×3 입구 34,62 — 4막에 사막선(으)로 처음 닿는다 · 사막선 타고 내리는 자리 · 비공정 을(를) 주는 열쇠 장소 — 「4막 · 대사막 속」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "고대 돌원(circle) 48,37 2×2 입구 49,38 — 2막에 요새 통행증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 거대한 탑",
+        "천공섬(floating) 58,49 5×4 입구 60,52 — 5막에 비공정(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)"
+      ],
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "warnings": [
+        "테마 fantasy: 사람 선택이 없거나 발자국이 다른 장소 1곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+      ],
+      "seconds": 5.4
+    }
+  },
+  "passageDifferences": 0,
+  "movementDifferences": 0,
+  "existingMapsPreserved": true,
+  "startPreserved": true,
+  "count": 5005,
+  "materials": 34,
+  "props": 36,
+  "identityRaster": false,
+  "projectId": "2d707f2a-96dd-41f4-a02b-6bfeceebc23b",
+  "revision": 4,
+  "sha256": "77ac635dc566f5634a377b81c81f4358fce171a50919847e2ca366668fe34663",
+  "reopenedSameDocument": true,
+  "reopenedSameMaps": true
+}

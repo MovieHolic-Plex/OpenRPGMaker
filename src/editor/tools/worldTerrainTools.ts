@@ -3,13 +3,13 @@
  *
  * 지형은 키트의 공용 지형(96×72칸) 위에 「작업(ops)」을 차례로 얹어 만든다. 작업은 칸 좌표 다각형·꺾은선이고,
  * 키트가 같은 노이즈 왜곡으로 그려 손으로 만든 지형과 결이 같다. 빌드는 호스트의 Python 키트가 한다
- * (src/editor/worldmap/worldmapBuild.ts). 결과 지도는 `worldmap_<mapId>` 타일셋(지도 그림을 칸마다 한 타일)과
+ * (src/editor/worldmap/worldmapBuild.ts). 결과 지도는 `worldmap_<mapId>` 타일셋(재사용 지형 재료와 별도 위층 거점)과
  * 키트의 걷기 표로 통행을 갖는 맵이 된다. 장소는 맵의 이름 붙은 로케이션으로 들어간다.
  *
  * 작업 문법·검사의 정본: tiledata/worldmap-kit/kit/lib/kit_terrain.py (이 파일의 스키마는 그 거울).
  */
 import { mapCharacterSizeFactor } from "@/project/characterScale";
-import type { GameMap, MapId, MapNamedLocation, PassFlag, Project, TilesetDef, TilesetId } from "@/project/types";
+import type { GameMap, MapId, MapNamedLocation, Project, TilesetId } from "@/project/types";
 import {
   buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_REGIONS, WORLDMAP_STYLES,
   type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
@@ -17,6 +17,7 @@ import {
 import { PLACE_REFERENCES } from "@/project/regionReferences";
 import themeCatalog from "@/assets/worldmapThemeCatalog.json";
 import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID } from "@/project/defaults/worldmapSelected";
+import { makeWorldmapTilemap } from "@/editor/worldmap/worldmapTilemap";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const WORLDMAP_THEMES = [
@@ -24,8 +25,6 @@ export const WORLDMAP_THEMES = [
   "sea-isles", "prehistoric", "alien", "steampunk", "modern-town", "modern-sf", "starmap",
 ] as const;
 const TILE = 16;
-const OPEN: PassFlag = { up: true, down: true, left: true, right: true };
-const CLOSED: PassFlag = { up: false, down: false, left: false, right: false };
 
 const point: JsonSchema = { type: "array", items: { type: "number" } };
 const opSchema: JsonSchema = {
@@ -236,21 +235,6 @@ function slug(text: string, i: number): string {
   return `wm_${ascii || "place"}_${i}`;
 }
 
-/** 지도 그림을 칸마다 한 타일로 쓰는 타일셋 + 걷기 표 통행. */
-function worldmapTileset(id: TilesetId, assetId: string, name: string, walk: readonly string[], width: number, height: number): TilesetDef {
-  const count = width * height;
-  const passability: PassFlag[] = new Array(count);
-  for (let y = 0; y < height; y += 1) {
-    const row = walk[y] ?? "";
-    for (let x = 0; x < width; x += 1) passability[y * width + x] = row[x] === "1" ? OPEN : CLOSED;
-  }
-  return {
-    id, name, image: { type: "uploaded", id: assetId }, kind: "custom", family: "worldmap-kit",
-    tileSize: TILE, tilesPerRow: width, count, passability,
-    priority: new Array(count).fill("lower"), terrain: new Array(count).fill(0),
-  };
-}
-
 function applyWorldmap(
   draft: Project, mapId: MapId, name: string | undefined, request: WorldmapBuildRequest,
   result: Extract<WorldmapBuildResult, { ok: true }>,
@@ -271,31 +255,19 @@ function applyWorldmap(
     throw new ToolError("위층·이식 아이콘이 있는 지도는 지형 재생성으로 크기를 바꾸지 않습니다. 새 mapId로 만드세요.", { code: "authored-worldmap-resize" });
   }
   draft.assets.uploaded[assetId] = {
-    id: assetId, name: `${mapName} 지도 그림`, kind: "tileset", dataUrl: result.imageDataUrl,
+    id: assetId, name: `${mapName} 지도 그림`, kind: "picture", dataUrl: result.imageDataUrl,
     meta: { tileSize: TILE, width: world.width * TILE, height: world.height * TILE },
   };
-  draft.tilesets[tilesetId] = worldmapTileset(tilesetId, assetId, `${mapName} (월드맵 키트)`, world.walk, world.width, world.height);
-  // 지형 그림을 다시 구워도 따로 저작한 아이콘의 소스·칸 번호·통행은 보존한다.
-  if (oldTileset?.tileGrafts?.length) {
-    const fresh = draft.tilesets[tilesetId]!;
-    fresh.tileGrafts = structuredClone(oldTileset.tileGrafts);
-    fresh.count = Math.max(fresh.count, oldTileset.count);
-    for (let i = world.width * world.height; i < fresh.count; i++) {
-      fresh.passability[i] = { up: true, down: true, left: true, right: true };
-      fresh.priority[i] = "upper";
-      fresh.terrain[i] = 0;
-    }
-    fresh.tileMeta ??= [];
-    for (const graft of fresh.tileGrafts) {
-      const i = graft.targetTile;
-      fresh.passability[i] = { ...oldTileset.passability[i]! };
-      fresh.priority[i] = oldTileset.priority[i]!;
-      fresh.terrain[i] = oldTileset.terrain[i] ?? 0;
-      if (oldTileset.tileMeta?.[i]) fresh.tileMeta[i] = { ...oldTileset.tileMeta[i]! };
-    }
-  }
-  const size = world.width * world.height;
-  const lowerTiles = Array.from({ length: size }, (_, i) => i);
+  const materialAssetId = `worldmap_${mapId}_materials`;
+  let tilemap: ReturnType<typeof makeWorldmapTilemap>;
+  try { tilemap = makeWorldmapTilemap(draft, tilesetId, materialAssetId, result, existing); }
+  catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "worldmap-materials-unavailable" }); }
+  draft.assets.uploaded[materialAssetId] = {
+    id: materialAssetId, name: "세계 지도 지형 재료", kind: "tileset", dataUrl: result.tilemap!.imageDataUrl,
+    meta: { tileSize: TILE, width: result.tilemap!.tilesPerRow * TILE, height: Math.ceil(result.tilemap!.tiles.length / result.tilemap!.tilesPerRow) * TILE },
+  };
+  draft.tilesets[tilesetId] = tilemap.tileset;
+  const lowerTiles = tilemap.lower;
   const locations: MapNamedLocation[] = world.places.map((p, i) => ({
     id: slug(p.id, i), name: p.label ?? p.id, x: p.x, y: p.y, w: p.w, h: p.h, tags: [p.role, `act${p.act}`],
     note: `월드맵 장소(${p.role}, ${p.act + 1}막${p.label ? `, 키트 id ${p.id}` : ""}) — 입구(성문) ${placeEntrance(p, world.walk).x},${placeEntrance(p, world.walk).y}: 고을·던전 맵은 이 칸에 출입구를 둔다`,
@@ -309,13 +281,13 @@ function applyWorldmap(
   const map: GameMap = {
     ...(existing ?? { events: [] as GameMap["events"] }),
     id: mapId, name: mapName, width: world.width, height: world.height, tilesetId, tileSize: TILE,
-    lowerTiles, upperTiles: existing?.width === world.width && existing.height === world.height
-      ? [...existing.upperTiles] : new Array<number>(size).fill(-1),
+    lowerTiles, upperTiles: tilemap.upper,
     locations,
     worldmapSource: {
       theme: request.theme, ops: request.terrain?.ops ?? [], terrainId: world.terrain, palette: world.palette,
       base: request.terrain?.base ?? (world.layout ? "generate" : "shared-v9"),
       ...(world.layout ? { fitSalt: world.layout.salt } : {}),
+      tilemap: tilemap.baseline,
     },
   } as GameMap;
   if (existing?.width !== world.width || existing.height !== world.height) {

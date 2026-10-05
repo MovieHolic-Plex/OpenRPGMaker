@@ -142,6 +142,10 @@ function collapsedEntrySources(tileset: TilesetDef): readonly CollapsedEntrySour
       collapsedTiles: variantOutputTiles(group),
     });
   }
+  if (tileset.family === 'worldmap-kit') for (const group of tileset.tileGroups ?? []) {
+    if (!group.id.startsWith('worldmap-material-')) continue;
+    sources.push({ id: group.id, name: group.name, representativeTile: group.tileIds[0] ?? -1, collapsedTiles: group.tileIds });
+  }
   return sources;
 }
 
@@ -250,7 +254,7 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
   let shown = 0;
   for (const entry of model.autotiles) {
     if (!passesFilter(args, entry.representativeTile)) continue;
-    grid.append(makeGridCell(args, entry.representativeTile, entry.name, imageDecor));
+    grid.append(makeGridCell(args, entry.representativeTile, entry.id.startsWith('worldmap-material-') ? undefined : entry.name, imageDecor));
     shown += 1;
   }
   for (const tileId of model.tileIds) {

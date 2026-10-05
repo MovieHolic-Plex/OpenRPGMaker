@@ -397,6 +397,40 @@ def review(rounds_):
     if n: ensure_pool()
 
 
+def retry_review_errors(rounds_, queue_only=False):
+    """Retry technical review failures without drawing again or changing verdicts."""
+    n = 0
+    for rid in rounds_:
+        for r in store.runs(rid):
+            if r['status'] != 'failed' or r.get('phase') not in ('review', 'review2'):
+                continue
+            png = os.path.join(r['root'], _folder(r), _out(r) + '.png')
+            if not os.path.isfile(png):
+                raise ValueError('기존 그림 없이 검수만 재개할 수 없습니다: ' + _out(r))
+            # Re-run the actual checker. A pool exception used to erase ok, so
+            # neither that flag nor a stale check.json proves the current pixels.
+            import hashlib
+            before = hashlib.sha256(open(png, 'rb').read()).hexdigest()
+            base = png[:-4]
+            check_path = base + '.check.json'
+            if os.path.exists(check_path): os.replace(check_path, check_path + '.before-review-retry')
+            ck = subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/check_candidate.py', base + '.pxg'],
+                                cwd=r['root'], capture_output=True, text=True)
+            after = hashlib.sha256(open(png, 'rb').read()).hexdigest()
+            if before != after: raise ValueError('검수 재개 중 원본 그림이 변경됨: ' + _out(r))
+            checked = json.load(open(check_path))
+            from common import objects_by_id
+            locks = derive.lock_check(objects_by_id().get(r['item']) or {}, png, r.get('brief'))
+            if ck.returncode or not checked.get('ok') or checked.get('hard') or locks:
+                raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))
+            history = _hist(r) + [dict(stage='technical-review-retry', at=store.now(), error=r.get('error'), imageSha256=after)]
+            store.update_run(r['id'], status='queued', pid=None, ok=1, error='', history=json.dumps(history, ensure_ascii=False))
+            n += 1
+    print(f'기존 그림 보존 · 기술 오류 검수 {n}개 재개 대기', flush=True)
+    if n and not queue_only: ensure_pool()
+    return n
+
+
 def _alive(pid):
     try:
         os.kill(pid, 0)
@@ -567,10 +601,12 @@ def main():
     d = sp.add_parser('draw'); d.add_argument('items', nargs='+'); d.add_argument('--n', type=int, default=N_DEFAULT)
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
+    rr = sp.add_parser('retry-review-errors'); rr.add_argument('rounds', nargs='+', type=int); rr.add_argument('--queue-only', action='store_true')
     sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
     rd = sp.add_parser('redo'); rd.add_argument('items', nargs='*'); rd.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
+    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
     elif a.cmd == 'review': review(a.rounds)
     elif a.cmd == 'pool': pool()

@@ -513,3 +513,67 @@ A/B 두 작업은 한 공간 슬롯과 두 작업 슬롯을 사용한다. DB run
 이유만으로 FAIL하지 않는다. 시점·벽/문 접합·통행·정체성 결함은 계속 필수 수정이다.
 수정자는 직전 fixes와 파일/좌표/수정 전후를 항목별로 대조하고, 남은 오래된 좌표와 방향별
 벽 마스크를 확인한다. 검수 기준 변경은 기존 판정을 PASS로 바꾸지 않으며 다음 독립 검수에 적용한다.
+
+
+### 첫 화면의 실제 진행·산출물 카드 (2026-10-05)
+
+`web/gallery.html`의 상단 live-board는 진행/대기/막힘 상태의 요청 공간을 접지 않고 표시한다.
+현재 작업 설명, 모델/시작 후 경과/최근 출력, 산출물·검수 확인률, 기획도/칩/조립 이미지 수,
+실제 그림 확대, 후보 큐 상태, 부족한 재료, 최근 반려 근거, 최근 이벤트, 다음 산출물을 제공한다.
+상세 창에서도 concept-progress를 문서 details 밖에 두어 진행 상황을 숨기지 않는다.
+예시/결과 선택 UI는 기존 Allow/Deny/수정 동작을 그대로 사용한다.
+
+관측은 `space_progress.py`의 읽기 전용 observer가 담당한다. 운영 서비스는
+`super-harness-space-progress.service`이며 실행기는 unified 체크아웃의 이 파일을 실행한다.
+`monitoring/space-progress/latest.json`을 10초 간격으로 원자적으로 교체하고 기존 `/data/` 경로로
+제공한다. 단일 flock으로 중복 observer를 막는다. 독립 서비스라 그림 제작/공용 게시 작업을
+재시작하지 않고 UI를 배포할 수 있다. 현재 실행 상태는 기존 activity API로 5초마다 갱신한다.
+
+- %는 시간 추정이 아니라 8개 산출물/관문의 현재 확인 비율이다. 기획 작성/승인과 재료 준비는
+  기존 gate의 읽기 전용 report, 칩 확보는 해시 검증한 후보 또는 승인 재료, 공간 조립은 현재
+  단계의 예제 PNG, 시각 검수는 현재 review report, 시험은 시각 검수 후 result-review/bake/done,
+  등록은 done 기록으로 확인한다. 자동 수정 시 내려갈 수 있으며 예상 남은 시간은 표시하지 않는다.
+- 기획도는 planning-visual fingerprint와 그림 hash가 현재 기획에 맞을 때만 노출한다.
+  기획도를 실제 칩·공간 이미지 수에 더하지 않는다. 생성 그림이 없으면 아직 확인되지 않았다고 표시한다.
+- native 후보 큐는 현재 art-execution의 worktree 내부 DB/round state만 읽는다. 내부 후보의
+  처리 완료와 품질 PASS를 구분한다. interior-props의 제작 중 PNG는 현재 run이 실제 시작한 뒤
+  나온 파일 또는 해당 run의 검사 결과가 있는 파일만 노출하고 검수 전으로 표시한다.
+  제작 중 파일은 어떤 승인 milestone도 만족시키지 않는다. 이전 요청의 동명 h1-A 파일을 세지 않는다.
+- 하위 제작 로그의 내용은 읽지 않고 수정 시각만 읽어 native 관리 프로세스가 조용한 동안에도
+  실제 하위 출력 시각을 보여준다. 모델 사고 과정/명령/프롬프트를 제품 화면에 싣지 않는다.
+- 35초 이상 오래된 snapshot과 fetch 실패는 마지막 확인 자료임을 표시한다. 실패를 이미지 0개나
+  새로운 진행률로 바꾸지 않는다. 오류가 난 공간만 오류 표시하며 나머지 카드는 계속 관측한다.
+
+브라우저 근거: `verify-shots/space-live-progress/`의 desktop/detail/mobile PNG.
+실제 서비스에서 기획도 확대, 접히지 않은 상세 진행, 모바일 가로 넘침 없음, JS 오류 없음 확인.
+
+
+### 완성 그림 뒤의 기술 실패와 복구 (2026-10-05)
+
+실측: 하수도 native job 719는 PNG 5개를 만들고 기계 검사를 통과했지만,
+구조 예시 renderer가 `wetstone.first`를 읽어 5개 모두 `phase=review / failed`였다.
+실제 바닥 스펙은 `tiles` 배열이다. 감독은 pool의 exit 0만 보고 수집을 시작했고,
+수집 뒤에는 감옥 전용 고정 경로/판 번호가 하수도에도 적용되어 다시 막혔다.
+
+- `art_execution.native_errors`는 종료 후 실제 SQLite/state의 후보 상태와 검수 ERROR를
+  확인한다. 기술 실패·미완료는 nonzero와 nativeErrors로 상위 UI까지 전달한다.
+  품질 FAIL/HARD는 정상적인 검수 결과이므로 기존 피드백·수정 경로를 유지한다.
+- `interior-props retry-review-errors <rounds> --queue-only`는 failed 검수만 받는다.
+  기존 그림을 기계 검사하고 전후 SHA256이 같을 때만 검수 큐로 복구하며,
+  원인과 해시를 history에 남긴다. 그림 시도 수·품질 판정·수정 상한은 초기화하지 않는다.
+- 구조 renderer는 실제 `wetstone.tiles`로 바닥을 합성한다. 하수도 운영 복구 시
+  기존 5개 그림 보존과 review pack 생성을 확인했다. 변경된 코드/DB의 도면 해시는
+  다시 묶고 독립 도면 검수를 재요청했다. 이전 PASS를 복사하지 않는다.
+- 일반 interior-props 선택 예시는 receipt의 품목/판/후보/실제 이미지 경로를 따른다.
+  감옥의 계단·문 열림/닫힘 묶음은 기존 계약을 유지한다. 일반 공간은 부품 PASS 뒤에도
+  조립 공간 검수를 요구하며 불합격 수정 지시를 피드백에 전달한다.
+- 교실 job 720의 수정안은 상세 `repairPlan.fixes`가 있었지만 `changes` 키만 검사해
+  준비 오류가 났다. changes 요약 또는 target/before/after/modifiedFiles/verificationResult를
+  모두 갖춘 상세 수정안을 받는다. route·폐기 제약·독립 검수는 그대로 요구한다.
+  준비 프롬프트에도 같은 계약과 require_preparation 호출을 명시한다.
+- 진행 관찰기는 seed.contentRoot의 격리 그림 폴더를 따라간다. 루트 폴더만 찾아
+  생성된 PNG 5개를 0개로 표시하던 문제를 수정했다.
+
+공동묘지 job 722는 실제 도면 FAIL이다. 면적을 줄인 뒤 관리열 x13에 맞게 부품 지시서의
+옛 x14를 동기화하지 않은 결함이며 원본 판정으로 수정 큐에 넣었다.
+웹소켓 426 로그는 성공한 작업에도 있어 그것만으로 중단 원인을 단정하지 않는다.

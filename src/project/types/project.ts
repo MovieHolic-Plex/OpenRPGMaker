@@ -106,7 +106,7 @@ export interface GameMap {
   /**
    * 월드맵 키트(tiledata/worldmap-kit)로 만든 세계 지도의 원본(2026-10-03). 조수의 edit_world_terrain 이
    * 여기 쌓인 지형 작업(ops)에 새 작업을 덧붙여 다시 빌드한다. 칸 그림은 타일셋 `worldmap_<mapId>`
-   * (지도 PNG 를 칸마다 한 타일로 자른 것)에 있고, 통행은 키트가 계산한 걷기 표다. 없으면 일반 맵.
+   * (재사용 지형 재료와 별도 위층 거점)에 있고, 통행은 키트가 계산한 걷기 표다. tilemap 없는 옛 형식은 지도 PNG를 칸마다 잘랐다. 없으면 일반 맵.
    */
   worldmapSource?: WorldmapSource;
   /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
@@ -417,6 +417,8 @@ export interface WorldmapSource {
   base?: "shared-v9" | "generate";
   /** 생성 지형의 배치 번호 — 같은 작업이면 같은 배치를 다시 쓰게 저장한다. */
   fitSalt?: number;
+  /** Baseline generated tile arrays, used to preserve subsequent hand edits on regeneration. */
+  tilemap?: { version: 1; lowerTiles: number[]; upperTiles: number[]; materialKeys: string[] };
 }
 
 export interface MapNamedLocation {

@@ -1,0 +1,27 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/harnesses/assistant-capability/worldmap-film-20261005-03/default/project",
+  "nativeConversionButton": true,
+  "modelCalled": false,
+  "errors": [],
+  "phase": "native-conversion",
+  "stages": [
+    {
+      "phase": "editor-boot",
+      "at": "2026-10-05T04:23:51.582Z"
+    },
+    {
+      "phase": "before-conversion",
+      "at": "2026-10-05T04:25:14.230Z"
+    },
+    {
+      "phase": "native-conversion",
+      "at": "2026-10-05T04:25:21.753Z"
+    }
+  ],
+  "before": {
+    "projectId": "65d2e492-1fbf-43ef-8895-9c82427ed6ea",
+    "revision": 8,
+    "sha256": "825f5d589752d7f0dfe63f1d5380c2a84da4223f5302b72d660e4235d3f0c089"
+  },
+  "failure": "'edit_world_terrain' 실행 실패: 월드맵 빌드 실패: 월드맵 빌드 요청을 보내지 못했다(동반 서비스가 떠 있어야 한다): NetworkError when attempting to fetch resource. 같은 ops 의 앞부분만 read_world_terrain(ops) 로 미리 보면 어디가 깨졌는지 글자 지도로 보인다. 작업(ops, 칸 좌표 96×72, x 오른쪽·y 아래): la…"
+}
