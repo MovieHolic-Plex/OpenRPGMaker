@@ -1,0 +1,337 @@
+{
+  "kind": "runtime-checker-calibration",
+  "harnessDigest": "78a2c420c64c5ee3d41787d56ba4ffcacad7978032083c3ab74fbb034798cd3f",
+  "pass": true,
+  "checks": [
+    {
+      "caseId": "npc-line",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    },
+    {
+      "caseId": "npc-move",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    },
+    {
+      "caseId": "npc-delete",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "deleted-position",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-through-deleted-npc",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-deleted-position.png",
+        "runtime/04-walk-through-deleted-npc.png"
+      ]
+    },
+    {
+      "caseId": "inn-price",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "price-dialogue",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "offer",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "decline",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "offer-again",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "accept",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-price-dialogue.png",
+        "runtime/04-offer.png",
+        "runtime/05-decline.png",
+        "runtime/06-offer-again.png",
+        "runtime/07-accept.png"
+      ]
+    },
+    {
+      "caseId": "reward-once",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-message",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-reward",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-message",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-no-reward",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-to-exit",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "leave-map",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "return-map",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-back",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "after-reentry",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "after-reentry-no-reward",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-message.png",
+        "runtime/04-first-reward.png",
+        "runtime/05-repeat-message.png",
+        "runtime/06-repeat-no-reward.png",
+        "runtime/07-walk-to-exit.png",
+        "runtime/08-leave-map.png",
+        "runtime/09-return-map.png",
+        "runtime/10-walk-back.png",
+        "runtime/11-after-reentry.png",
+        "runtime/12-after-reentry-no-reward.png"
+      ]
+    },
+    {
+      "caseId": "dialogue-choice",
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "question",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "choices",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "east-branch",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "east-close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "reopen",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "inn-branch",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "inn-close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "reopen-cancel",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "cancel",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-question.png",
+        "runtime/04-choices.png",
+        "runtime/05-east-branch.png",
+        "runtime/06-east-close.png",
+        "runtime/07-reopen.png",
+        "runtime/08-inn-branch.png",
+        "runtime/09-inn-close.png",
+        "runtime/10-reopen-cancel.png",
+        "runtime/11-cancel.png"
+      ]
+    }
+  ]
+}

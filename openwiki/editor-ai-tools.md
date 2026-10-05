@@ -20,6 +20,9 @@
   같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
 
 `set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+도구 스키마는 string과 허용 ID 설명을 사용한다. 빈 문자열을 enum에 넣으면 Gemini가
+도구를 사용하기 전 요청 전체를 HTTP 400으로 거부한다(2026-10-05 실제 팀 조수 실행).
+실행 경계의 역할별 ID 검사와 빈 문자열 초기화는 그대로 유지한다.
 역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
 `battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
 대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.
@@ -2691,3 +2694,9 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 ## OST·효과음 직접 작곡 (2026-10-05)
 
 `get_soundtrack`으로 유효 맵 음악/사용처를 읽고 `generate_original_bgm(score.loop:true)`을 맵 `set_map_properties.bgm` custom에 연결한다. 타이틀·오프닝·전투도 공통 도구를 쓴다. `generate_original_se`은 실제 음향 패치를 WAV로 등록해 타이틀 sounds나 image direction.soundResourceId/컷신 se에 연결한다. 범위·저장·오디오 모델과의 구분은 [BGM 카탈로그](bgm-catalog.md)의 2026-10-05 절. map 예약은 기존 실행기 계약을 따른다.
+
+## 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+
+`toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
+
+choices의 `choice1`~`choice5`는 Esc가 해당 선택지를 실행하는 설정이다. 취소하면 아무 일 없이 종료하는 요청은 `cancelBehavior:"branch",cancelBranch:[]`다. 도구 스키마와 Pi 저작 지침에 이 의미를 함께 제공한다. `run_scene_test`도 실제 대화창과 같은 `choiceCancellation.cancelChoiceIndex`를 사용한다. 취소 불가·설정 생략·없는 선택지로 취소는 검사 실패로 알리며 강제로 종료하지 않는다.

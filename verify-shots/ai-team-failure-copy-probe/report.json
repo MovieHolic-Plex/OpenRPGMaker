@@ -1,0 +1,10 @@
+{
+  "provenance": "Controlled browser response reproducing real failed-child/no-change case. No live model call.",
+  "phase": "실패",
+  "applied": "작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요.",
+  "finalReport": true,
+  "failureCaption": true,
+  "falseSuccess": false,
+  "text": "2026년 10월 5일 월\nteam 안내판을 읽고 보고해. 프로젝트를 수정하지 마라.\n작업 결과\n실패 · 0:04\n·\n작업 시작\n!\n작업 실패\n✓\n맡은 작업 완료\n팀장\n!\n실패\n\n안내판 조회 미완료: 조수 실행 실패.\n\n작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.\n\n작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요.",
+  "passed": true
+}

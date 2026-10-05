@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "caseId": "item-price",
+  "title": "아이템 가격만 수정",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "83dd8a0b2e3d08d3241379bff2d932fa31d661143d626a30d08c391bf69cd048",
+  "startedAt": "2026-10-04T16:07:26.624Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-price",
+          "ok": true,
+          "detail": "동일 회복약 가격 30"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "not-required",
+      "evidence": []
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"deedbf2d-f285-4a36-93f9-49ab3c072330\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4/item-price/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"501eeba8a5f6635b888c0e136d153fe81f1344db773820c291230f3f4610b0ee\",\"reloadedSha256\":\"501eeba8a5f6635b888c0e136d153fe81f1344db773820c291230f3f4610b0ee\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "修改 카드의 회복약 그림과 가격 30을 확인했다. DB 상세 화면의 가격 30, HP 50 회복, 이름·설명·소모 방식이 읽힌다. 렌더 완료 재로드 지도와 패널이 정상이며 모달 글자·컨트롤에 잘림이 없다. 다른 맵 변경은 보존 게이트에서 별도 실패다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "database.png"
+      ]
+    }
+  },
+  "elapsedMs": 124479,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130173711
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "c474d158-de04-4fcf-85ed-87154b1a651e",
+      "at": 1791130179188
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "c474d158-de04-4fcf-85ed-87154b1a651e",
+      "at": 1791130184642
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130218588
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130218687
+    }
+  ],
+  "projectId": "deedbf2d-f285-4a36-93f9-49ab3c072330",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4/item-price/project",
+  "finishedAt": "2026-10-04T16:11:38.810Z",
+  "status": "fail",
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T16:01:14.240Z",
+      "status": "blocked",
+      "nativeInput": false
+    },
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-item-r4",
+      "startedAt": "2026-10-04T16:07:26.624Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

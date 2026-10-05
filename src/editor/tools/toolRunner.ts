@@ -15,7 +15,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
-import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
+import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
@@ -305,19 +305,24 @@ export function runToolDefinition(
 
   try {
     const builtHouses = newlyBuiltHouseSnapshots(draft, protectedHouses);
-    // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
-    // Canonical maps include frozen, digest-owned output. Never repair unrelated raster implicitly.
-    const treeRepairNote = draft.spatialAuthoring === undefined && tool.preservesAuthoredRaster !== true
-      ? formatTreePairRepairSummary(repairTreePairsOnProject(draft, {
-        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
-      })) : null;
-    // 나무 밑 그림자: 이 호출이 타일을 바꾼 숲마을 맵만. 밑동 칸·발치 칸의 2층에 그림자 칸을 맞춘다(forestHarmonyTreeShadows.ts).
-    // 동결된 저작 래스터(spatialAuthoring·preservesAuthoredRaster)는 위 수리와 같은 이유로 건드리지 않는다.
+    // Capture the tool's raster changes BEFORE either repair can add changes.
+    // Event/DB/name edits must not normalize trees in this or any other map.
+    let treeRepairNote: string | null = null;
     if (draft.spatialAuthoring === undefined && tool.preservesAuthoredRaster !== true) {
-      for (const id of tileChangedMapIds(before, draft)) {
+      const rasterMapIds = tileChangedMapIds(before, draft);
+      const repaired = { canopiesPlaced: 0, orphanTrunksRemoved: 0 };
+      const repairOptions = rasterMapIds.length ? {
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
+      } : {};
+      for (const id of rasterMapIds) {
         const map = draft.maps[id];
-        if (map) applyForestTreeShadows(map, draft.tilesets[map.tilesetId]);
+        if (!map) continue;
+        const trees = repairTreePairsOnMap(map, draft.tilesets[map.tilesetId], repairOptions);
+        repaired.canopiesPlaced += trees.canopiesPlaced;
+        repaired.orphanTrunksRemoved += trees.orphanTrunksRemoved;
+        applyForestTreeShadows(map, draft.tilesets[map.tilesetId]);
       }
+      treeRepairNote = formatTreePairRepairSummary(repaired);
     }
     assertHouseProtection(protectedHouses, draft, builtHouses);
 

@@ -701,8 +701,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         finishAccepted = true;
         if (seamErrors.length > 0) finished += `
 남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
-        const failedTasks = [...tasks.keys()].map(id => outcomes.get(id)).filter(outcome => outcome && !outcome.ok);
-        if (failedTasks.length) finished += `\n실패한 작업 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome!.agentId}: ${outcome!.summary}`).join("; ")}`;
+        const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
+        if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
         emit({ type: "team_report", text: finished });
         return text({ ok: true });

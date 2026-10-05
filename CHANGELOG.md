@@ -5,6 +5,37 @@
 
 <!-- releases -->
 
+## 0.130.0 — 2026-10-05
+
+### 기능
+
+- **harness** — measure native assistant capabilities with independent gates (`5046fdf`)
+
+### 수정
+
+- route incomplete facility reviews into bounded repairs (#2128) (`9cbc87b`)
+- **ai** — unblock Gemini team tools and preserve failed team reports (`14947f5`)
+- **assistant** — preserve unrelated raster and report cancellation and stream failures accurately (`c479292`)
+
+### 문서
+
+- **qa** — record live team scenarios, remaining issues and MP4 evidence (`e4b5f40`)
+
+### 테스트
+
+- **assistant** — verify native regression fixes and preserve fault-injection evidence (`441b07a`)
+
+### 잡무
+
+- **qa** — separate canonical map folders from parallel team probes (`8b442a2`)
+
+## 0.129.0 — 2026-10-05
+
+### 기능
+
+- demonstrate approved parking chips across twelve bays (#2124) (`4fc9d9d`)
+- **ai** — center team UI on assistant work and support direct team commands (`d0e587b`)
+
 ## 0.128.0 — 2026-10-05
 
 ### 기능
