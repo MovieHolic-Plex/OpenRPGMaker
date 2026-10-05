@@ -119,6 +119,25 @@ export function splitInteractWalkSteps(args: unknown): { input: unknown; split: 
   return split.length > 0 ? { input: { ...(args as object), steps }, split } : { input: args, split };
 }
 
+/**
+ * `{kind:"move", dir:"up", count:3}` 을 한 칸 이동 세 번으로 편다. 스키마가 count(구매 수량)를 스텝 공통 필드로
+ * 보여 주므로 모델이 이동 반복에도 쓴다(2026-10-05 스트레스: ashen-manor-chase 가 그대로 거부돼 재시도했다).
+ * 뜻이 하나뿐일 때만(dir 있는 move 에 count 만 더해진 경우) 편다. to·다른 필드가 섞이면 원래 오류를 낸다.
+ */
+export function expandRepeatedMoveSteps(args: unknown): { input: unknown; expanded: number[] } {
+  if (!args || typeof args !== "object" || !Array.isArray((args as { steps?: unknown }).steps)) return { input: args, expanded: [] };
+  const expanded: number[] = [];
+  const steps = ((args as { steps: unknown[] }).steps).flatMap((step, index) => {
+    if (!step || typeof step !== "object") return [step];
+    const { count, ...rest } = step as Record<string, unknown>;
+    if (rest.kind !== "move" || count === undefined || Object.keys(rest).some(key => key !== "kind" && key !== "dir")) return [step];
+    if (!Number.isInteger(count) || (count as number) < 1 || (count as number) > 99 || typeof rest.dir !== "string") return [step];
+    expanded.push(index);
+    return Array.from({ length: count as number }, () => ({ ...rest }));
+  });
+  return expanded.length > 0 ? { input: { ...(args as object), steps }, expanded } : { input: args, expanded };
+}
+
 const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
@@ -178,14 +197,16 @@ const runSceneTestTool: ToolDefinition = {
   },
   run(project, rawArgs): ToolExecResult {
     const { input: flatArgs, flattened } = flattenNestedExpectSteps(rawArgs);
-    const { input: args, split } = splitInteractWalkSteps(flatArgs);
+    const { input: splitArgs, split } = splitInteractWalkSteps(flatArgs);
+    const { input: args, expanded } = expandRepeatedMoveSteps(splitArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
-      ...(flattened.length + split.length > 0 ? { warnings: [
+      ...(flattened.length + split.length + expanded.length > 0 ? { warnings: [
         ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
         ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
+        ...(expanded.length > 0 ? [`move 스텝 ${expanded.join(", ")} 의 count 를 한 칸 이동 반복으로 펴서 실행했다 — 스텝 번호가 그만큼 밀린다. 좌표까지 걷기는 {kind:"move",to:{x,y}} 가 짧다.`] : []),
       ] } : {}),
       summary: result.ok
         ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
