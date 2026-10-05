@@ -125,6 +125,12 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 .progress-footer{color:#9eafc1;font-size:12px;margin-top:12px}.progress-card{font-size:12px;color:#acbdcf;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 .progress-stale{color:#ffd294!important}.progress-action{font-weight:600;margin-top:12px}
 @media(max-width:600px){#activity-overview{margin:12px 12px 0}.progress-panel{padding:12px}.progress-panel h2{font-size:18px}.live-jobs button{width:100%}}
+
+.choice-checklist{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.choice-checklist button{flex:1;min-width:160px;text-align:left;padding:10px}.choice-checklist small{display:block;color:#afbdcd;margin-top:4px}.choice-checklist [aria-current=step]{border-color:#86c6ff;background:#263d55}
+.choice-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.choice-option{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;background:#151a20}.choice-option.selected{border:2px solid #77c799}.choice-option h3{margin:0 0 10px;font-size:18px}.choice-option h4{margin:14px 0 6px}.choice-badge{font-size:12px;float:right;color:#a7d8b8}.unavailable .choice-badge{color:#ecb3a6}
+.choice-part{height:196px;width:100%;display:flex;align-items:center;justify-content:center;background:#20252e;border:0;cursor:zoom-in}.choice-part img{image-rendering:pixelated;max-width:100%;max-height:180px;height:auto;object-fit:contain}.choice-option .choose-candidate{width:100%;padding:12px;margin:8px 0}.choice-option .choice-scene{max-height:300px;object-fit:contain}.choice-only{padding:12px;background:#342f23;border-radius:8px;color:#f5db9b!important}.choice-reject{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.choice-reject small{color:var(--dim)}.choice-group .choice-states{align-items:center;flex-wrap:wrap;margin:12px 0}.choice-group{padding-top:6px}.choice-option .choice-caption{min-height:40px;margin:6px 0}
+#choice-status{margin-top:18px}#choice-status>summary{cursor:pointer;color:#a9bfd5;padding:8px 0}
+@media(max-width:600px){.choice-compare{grid-template-columns:1fr}.choice-checklist button{min-width:100%;}.choice-lead{font-size:17px}.choice-panel h1{font-size:23px}}
 </style>
 </head>
 <body>
@@ -322,7 +328,17 @@ async function documentView(target, path, { modal = false } = {}) {
         const docs = document.createElement('details'); docs.className = 'choice-docs';
         const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
         docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
-        renderChoices(panel, choice, refresh, url => { $('big').querySelector('img').src=url; $('big').classList.add('on'); });
+        if (choice.stage === 'art-review') {
+          const statusDetails=document.createElement('details');statusDetails.id='choice-status';
+          const statusLabel=document.createElement('summary');statusLabel.textContent='제작 단계·실행 기록 보기';
+          statusDetails.append(statusLabel,progress);target.insertBefore(statusDetails,docs);
+        }
+        renderChoices(panel, choice, refresh, url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); }, group => {
+          const field=target.querySelector('#fix');if(!field)return;
+          field.closest('details').open=true;
+          if(!field.value.trim())field.value=`${group.title} 후보 수정 요청: `;
+          field.scrollIntoView({block:'center'});field.focus();
+        });
       }
       const actions = document.createElement('section');
       actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
