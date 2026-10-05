@@ -19,6 +19,16 @@ export interface UploadCandidate {
 }
 
 const UPLOADABLE: ReadonlySet<string> = new Set(STORE_ASSET_KINDS);
+/** 남이 만든 유료·제3자 팩 계열(2026-10-06 결정: Rasak·REFMAP·MV 팩·PAW 제외). 이름·id 로 막는 안전장치일 뿐, 권리 확인은 올리는 사람 몫이다. */
+const THIRD_PARTY = /\b(paw|rasak|refmap|rtp)\b|rpg ?maker|_mv_|\bmv\b|\bmz\b/i;
+
+/** 직접 만든 것만 올린다: 공용 자료집(`shared_`)·제3자 팩 이름은 막는다. 막는 이유 문장, 괜찮으면 null. */
+export function uploadBlockReason(id: string, name: string, origin: unknown): string | null {
+  if (origin) return "스토어에서 받은 것은 다시 올릴 수 없습니다.";
+  if (id.startsWith("shared_")) return "공용 자료집에서 온 것은 올릴 수 없습니다. 직접 만든 것만 올립니다.";
+  if (THIRD_PARTY.test(`${id} ${name}`.replace(/_/g, " ")) || THIRD_PARTY.test(id)) return "제3자 팩(PAW·Rasak·REFMAP·RPG Maker 계열)은 올릴 수 없습니다.";
+  return null;
+}
 const referenceCount = (tileset: TilesetDef): number => (tileset.referenceDocuments ?? []).reduce((n, c) => n + c.documents.length, 0);
 
 /** 올릴 수 있는 후보. 번들 그림을 쓰는 타일셋(직접 올린 그림이 아님)과 스토어에서 받은 것은 막는다. */
@@ -33,7 +43,7 @@ export function uploadCandidates(project: Project): UploadCandidate[] {
       kind: "tileset", id: tileset.id, name: tileset.name,
       detail: `${tileset.tileSize}px · ${tileset.count}칸${refs > 0 ? ` · 참고문서 ${refs}` : ""}`,
       withReferences: refs > 0, fromStore,
-      blocked: !asset ? "그림이 프로젝트에 없습니다." : fromStore ? "스토어에서 받은 것은 다시 올릴 수 없습니다." : null,
+      blocked: !asset ? "그림이 프로젝트에 없습니다." : uploadBlockReason(tileset.id, tileset.name, asset.origin) ?? uploadBlockReason(asset.id, asset.name, null),
     });
   }
   const tilesetImages = new Set(Object.values(project.tilesets).flatMap((t) => (t.image.type === "uploaded" ? [t.image.id] : [])));
@@ -41,10 +51,10 @@ export function uploadCandidates(project: Project): UploadCandidate[] {
     if (tilesetImages.has(asset.id) || !UPLOADABLE.has(asset.kind)) continue;
     out.push({
       kind: "asset", id: asset.id, name: asset.name, detail: asset.kind, withReferences: false, fromStore: Boolean(asset.origin),
-      blocked: asset.origin ? "스토어에서 받은 것은 다시 올릴 수 없습니다." : null,
+      blocked: uploadBlockReason(asset.id, asset.name, asset.origin),
     });
   }
-  return out.sort((a, b) => Number(b.withReferences) - Number(a.withReferences) || a.name.localeCompare(b.name, "ko"));
+  return out.sort((a, b) => Number(Boolean(a.blocked)) - Number(Boolean(b.blocked)) || Number(b.withReferences) - Number(a.withReferences) || a.name.localeCompare(b.name, "ko"));
 }
 
 export function previewGrade(project: Project, selection: PackSelection): StoreGrade {

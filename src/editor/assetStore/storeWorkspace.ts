@@ -206,7 +206,9 @@ async function logout(): Promise<void> {
 }
 
 function switchTab(tab: Tab): void {
+  const reload = tab === "browse" && state.tab !== "browse";
   state.tab = tab;
+  if (reload) void loadCatalog();
   if (tab === "upload" && state.status?.loggedIn && state.mine === null) void refreshMine();
   render();
 }
@@ -457,7 +459,7 @@ function uploadView(): HTMLElement {
     ...(area ? { text: form[key] } : {}),
     on: { input: (event) => { form[key] = (event.target as HTMLInputElement).value; } },
   });
-  const list = el("div", { class: "store-pick", children: candidates.length > 0 ? candidates.map((c) => el("label", {
+  const pickRow = (c: (typeof candidates)[number]) => el("label", {
     class: "store-pick-row" + (c.blocked ? " is-blocked" : ""), dataset: { testid: `store-upload-candidate-${c.id}` },
     children: [
       el("input", { attrs: { type: "checkbox", ...(form.picked.has(c.id) ? { checked: "" } : {}), ...(c.blocked ? { disabled: "" } : {}) },
@@ -466,7 +468,16 @@ function uploadView(): HTMLElement {
       el("span", { class: "store-card-meta", text: c.blocked ?? c.detail }),
       ...(c.withReferences ? [el("span", { class: "store-badge pack", text: "참고문서" })] : []),
     ],
-  })) : [el("p", { class: "store-empty", text: "올릴 수 있는 타일셋·그림이 이 프로젝트에 없습니다. 직접 올린 그림만 올릴 수 있습니다." })] });
+  });
+  const open = candidates.filter((c) => !c.blocked);
+  const blocked = candidates.filter((c) => c.blocked);
+  const list = el("div", { class: "store-pick", children: [
+    ...(open.length > 0 ? open.map(pickRow) : [el("p", { class: "store-empty", text: "올릴 수 있는 타일셋·그림이 이 프로젝트에 없습니다. 직접 만든 그림만 올릴 수 있습니다." })]),
+    ...(blocked.length > 0 ? [el("details", { class: "store-pick-blocked", dataset: { testid: "store-upload-blocked" }, children: [
+      el("summary", { text: `올릴 수 없는 것 ${blocked.length}개 (스토어에서 받은 것·공용 자료집·제3자 팩)` }),
+      ...blocked.map(pickRow),
+    ] })] : []),
+  ] });
   const mine = (state.mine ?? []).filter((item) => item.status !== "removed");
   const submit = el("button", { class: "store-button", text: "올리기", attrs: { type: "button" }, dataset: { testid: "store-upload-submit" }, on: { click: () => void submitUpload(selection) } });
   return el("div", { class: "store-upload", children: [

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { STORE_BLOB_PREFIX, slugify, storeProjectId, validateManifest, packGrade } from "@/assetStore/format";
 import { applyPackToProject, basicTilesetFor, buildPack, closeSelection, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
+import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
 import type { Project, TilesetDef, UploadedAsset } from "@/project/types";
 
 function png(width: number, height: number, salt = 0): Uint8Array {
@@ -117,5 +118,15 @@ describe("asset store pack", () => {
     expect(slugify("숲 마을", "k9")).toBe("sup-maeul-k9");
     expect(slugify("버들항 — 로마풍 항구 도시", "ab12")).toBe("beodeulhang-romapung-hanggu-dosi-ab12");
     expect(slugify("!!", "k9")).toBe("item-k9");
+  });
+
+  it("only lets people upload what they made: no store, shared-library or third-party packs", () => {
+    expect(uploadBlockReason("my_forest", "내 숲 칩셋", undefined)).toBeNull();
+    expect(uploadBlockReason("store_x__forest", "숲", { itemSlug: "x" })).toContain("스토어에서 받은 것");
+    expect(uploadBlockReason("shared_tileset_interior_materials", "실내", undefined)).toContain("공용 자료집");
+    expect(uploadBlockReason("paw_public_direct", "PAW 직접 배치 · 공공", undefined)).toContain("제3자");
+    expect(uploadBlockReason("t1", "Rasak Fantasy 마을", undefined)).toContain("제3자");
+    expect(uploadBlockReason("t2", "RPG Maker MV 실내", undefined)).toContain("제3자");
+    expect(uploadBlockReason("pawn_shop", "전당포 pawnshop", undefined)).toBeNull();
   });
 });

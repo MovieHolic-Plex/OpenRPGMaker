@@ -1,5 +1,5 @@
-.store-host { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; background: var(--bg-scrim, rgb(15 23 42 / 0.45)); }
-.store { position: relative; display: grid; grid-template-rows: auto auto 1fr auto; width: min(1360px, 96vw); height: min(900px, 94vh); background: var(--bg-raised, #fff); color: var(--text-1, #0f172a); border: 1px solid var(--border-default, rgba(15,23,42,0.13)); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 64px rgb(15 23 42 / 0.28); }
+.store-host { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: 52px 16px 16px; background: var(--bg-scrim, rgb(15 23 42 / 0.45)); }
+.store { position: relative; display: flex; flex-direction: column; width: min(1360px, 100%); height: min(900px, 100%); background: var(--bg-raised, #fff); color: var(--text-1, #0f172a); border: 1px solid var(--border-default, rgba(15,23,42,0.13)); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 64px rgb(15 23 42 / 0.28); }
 .store-head { display: flex; align-items: center; gap: 16px; padding: 10px 16px; background: #161b2e; color: #f1e8d4; border-bottom: 3px solid #e0a63a; }
 .store-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 15px; white-space: nowrap; }
 .store-mark { width: 18px; height: 18px; background: linear-gradient(#7a4a8c 0 22%, #b07d22 22% 40%, #f3c66b 40% 52%, #e0a63a 52%); border-radius: 3px; image-rendering: pixelated; }
@@ -19,7 +19,7 @@
 .store-error { display: grid; gap: 4px; padding: 10px 16px; background: #fbe4e0; color: #6b1d14; font-size: 13px; border-bottom: 1px solid #f0c3bb; }
 .store-error ul { margin: 0; padding-left: 18px; }
 .store-error .store-link { justify-self: start; color: #6b1d14; }
-.store-main { overflow: auto; min-height: 0; padding: 16px; background: var(--bg-canvas, #f6f3ec); }
+.store-main { flex: 1; overflow: auto; min-height: 0; padding: 16px; background: var(--bg-canvas, #f6f3ec); }
 .store-foot { display: flex; align-items: center; gap: 12px; padding: 6px 16px; font-size: 12px; color: var(--text-2, #475569); border-top: 1px solid var(--border-default, rgba(15,23,42,0.13)); }
 .store-url-input { flex: 1; max-width: 420px; font-size: 12px; }
 .store-hint { font-size: 12px; color: var(--text-2, #64748b); margin: 4px 0; }
@@ -108,3 +108,13 @@
   .store-browse.has-detail, .store-upload { grid-template-columns: 1fr; }
   .store-detail { position: static; max-height: none; }
 }
+.store-form input:not([type="radio"]):not([type="checkbox"]), .store-form select, .store-form textarea {
+  width: 100%; box-sizing: border-box; padding: 7px 10px; border-radius: 7px; font: inherit; font-size: 13px; font-weight: 400;
+  color: var(--text-1, #0f172a); background: var(--bg-canvas, #fbfaf6); border: 1px solid var(--border-strong, rgba(15,23,42,0.22));
+}
+.store-form textarea { resize: vertical; min-height: 64px; }
+.store-form input:focus-visible, .store-form select:focus-visible, .store-form textarea:focus-visible { outline: 2px solid #e0a63a; outline-offset: 1px; border-color: #b07d22; }
+.store-form { gap: 10px; }
+.store-form .store-button { padding: 11px 14px; font-size: 14px; }
+.store-pick-blocked { margin-top: 8px; border-top: 1px dashed var(--border-default, rgba(15,23,42,0.13)); padding-top: 6px; }
+.store-pick-blocked summary { cursor: pointer; font-size: 12px; color: var(--text-2, #475569); padding: 4px 8px; }
