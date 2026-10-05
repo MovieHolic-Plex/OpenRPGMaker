@@ -1,0 +1,34 @@
+{
+  "realWrites": 0,
+  "mockOnly": true,
+  "largerUndo": true,
+  "customSizeValidation": true,
+  "sizePrefixOverridesMemo": true,
+  "failedRequestRestoresDraft": true,
+  "smallerOneRequest": true,
+  "noHorizontalOverflow": true,
+  "catalogOpens": true,
+  "posts": [
+    {
+      "ids": [
+        "treadmill"
+      ],
+      "note": "3x2칸으로 크기를 바꿔 다시 그려 주세요. 원래 디자인과 재질을 살려 새 크기에 맞게 도트를 다시 그려 주세요.\n기존 2x2 느낌과 나무색 유지",
+      "base": "",
+      "n": 2,
+      "round": 534,
+      "rejects": {}
+    },
+    {
+      "ids": [
+        "treadmill"
+      ],
+      "note": "1x1칸으로 크기를 바꿔 다시 그려 주세요. 원래 디자인과 재질을 살려 새 크기에 맞게 도트를 다시 그려 주세요.\n기존 2x2 느낌과 나무색 유지",
+      "base": "",
+      "n": 2,
+      "round": 534,
+      "rejects": {}
+    }
+  ],
+  "errors": []
+}

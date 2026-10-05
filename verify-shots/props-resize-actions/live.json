@@ -1,0 +1,22 @@
+{
+  "htmlMatches": true,
+  "controls": "크기 바꿔 다시 뽑기\n현재 1×2칸 · 16×48px\n＋ 크게 · 2×3칸\n− 작게 · 1×1칸\n크기 직접 지정…",
+  "boundary": {
+    "min": [
+      1,
+      1
+    ],
+    "max": [
+      8,
+      8
+    ],
+    "oversize": [
+      10,
+      2
+    ],
+    "floor": "32×64px",
+    "hang": "32×48px"
+  },
+  "errors": [],
+  "realWrites": 0
+}
