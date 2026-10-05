@@ -9,6 +9,7 @@ import harness as H
 import review_server as S
 import studio
 import catalog_sources as CS
+import continuous
 from PIL import Image
 
 
@@ -66,6 +67,23 @@ def verify(check, isolated_store):
         check('catalog-100-plan-visits-every-walking-sheet', len({r['assetId'] for r in chosen}) == 20)
         check('catalog-single-character-artists-retain-global-two-slot-budget', sum(r['par'] for r in started) == 2 and all(r['batchSize'] == 1 for r in started))
         check('catalog-reference-is-not-a-fake-human-acceptance', all('acceptance' not in s for s in frozen['seeds']) and not H.DECISIONS.exists())
+        original_bytes = {r['run']:(H.run_dir(r['run']) / 'manifest.json').read_bytes() for r in started}
+        for row in started:
+            H.write_json_atomic(H.run_dir(row['run']) / 'driver.json', dict(pid=0, par=row['par']))
+        evidence = Path(temp) / 'continuous-allocation'
+        evidence.mkdir()
+        cohorts, transfers = continuous.prepare(evidence, [r['run'] for r in started])
+        next_plans = [json.loads((H.run_dir(r['run']) / 'manifest.json').read_text()) for r in cohorts]
+        check('continuous-allocates-all-100-original-rows-exactly-once', sum(r['planned'] for r in cohorts) == 100 and
+              all(sum(r['planned'] for r in cohorts if r['source'] == t['run']) + t['completed'] == t['ordered'] for t in transfers))
+        check('continuous-preserves-original-order-manifests', all((H.run_dir(run) / 'manifest.json').read_bytes() == raw for run, raw in original_bytes.items()))
+        check('continuous-entire-cohort-fits-review-buffer', all(1 <= len(m['characters']) == m['productionPolicy']['maxReviewPending'] <= 40 for m in next_plans))
+        check('continuous-keeps-animal-profile-and-same-sealed-recipe', all(CS.R.verify_run(H.run_dir(m['run']), m, check_tools=True) for m in next_plans) and
+              any(m['animalPolicy'] == 1 and m['motionPolicy'] is None for m in next_plans))
+        summaries = studio.runs(items=[], decisions={})
+        relevant = {r['run'] for r in started + cohorts}
+        check('continuous-workshop-does-not-double-count-transferred-orders', sum(r['planned'] for r in summaries if r['run'] in relevant) == 100)
+        check('continuous-does-not-create-human-choices', not H.DECISIONS.exists())
         w = H.DATA / 'runs/fixture/candidate__gpt-r1'
         w.mkdir(parents=True)
         (w / 'meta.json').write_text(json.dumps(dict(pid=0)))
