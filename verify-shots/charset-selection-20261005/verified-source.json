@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-05T02:28:24.698465+00:00",
+  "baseCommit": "ed89479aedb3a8c2a58af8de06028d5eff8c5f5d",
+  "scope": "feature source after final packaged build, recorded during r3 verification; r4 adds library snapshot isolation in the harness",
+  "files": {
+    "src/ai/charsetPreview.ts": "4a0c69f4a6399391271af55ff134dd83e17d786f3a0887113f7de36129619a30",
+    "src/ai/piAgent/charsetSelectionGate.ts": "169dc69e33205c20d37b48e95e0b17fcb15cb9c611ba2a7f3a4fe13d682dd18b",
+    "src/ai/piAgent/systemPrompt.ts": "07dbb23a678091d3487064e527bf549aadadf2212b465e2405a1c423e77cd25f",
+    "src/ai/piAgent/toolAdapter.ts": "6cb2899eb3fc9947732a2377253a7ecc0e2f96bcde112c0fd98a367684690435",
+    "src/ai/toolImageRenderer.ts": "6b60bfd1f1d7fe3eb9e7b338ed386028a219ae7ef479ba3e28df83b8152fd5a5",
+    "src/editor/tools/queryTools.ts": "21823cb9ea0dcfa5c70c80ccc1c5cdee2a410ca61eb13c42bb4b160aade259d2",
+    "src/editor/tools/eventCompile.ts": "152bc2c0e91d7fc7edb4a561e66a3e4d6feedc9ae975dca040042cb88ee50549",
+    "src/editor/tools/eventTools.ts": "f88a4372867fa456643a93985405a5c7e23d6cc761fefed00dc7709e2a47fa99",
+    "src/editor/tools/schemaShapes.ts": "ed7291ee0f53b47b8ceec7274675ab204cf0c6371f1436eb6e07460aaf2f6da5",
+    "scripts/lib/piAgentRuntime.ts": "6d16d5f8aa12cb065fd9edd97fe984c149bf9488f7c0407ed712b1367be77dc1",
+    "scripts/qa-game/render.mts": "0c2163c97f6ec43907d37b0268bc86a491f30a3f34986bdc42936f77ffcb7a2d",
+    "test/charsetSelectionEvidence.test.ts": "72e60a58754386262ce130fc69c2254c493f649f75ba2ab1282293dba6b51eef",
+    "harness-data/assistant-capability/seed.json": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+    "src/harnesses/assistant-capability/node/cli.ts": "3b05de750b04081af1b0125edabbbf072dee5ca1b044d2e287d5d80b6750676f",
+    "src/harnesses/assistant-capability/node/fixture.ts": "8698d18ad75046fa5fc10d9a18c2046a9ffe958dfbace025540ae8e7e0c5a5c5",
+    "src/harnesses/assistant-capability/node/toolRegression.ts": "f7b8f68b1d640edc3a934a284fd53c7fc0799e0b5d2d1b5c63a45fc8fd5c4626",
+    "src/harnesses/assistant-capability/node/runtimeProjection.ts": "2552631f4124b39a95532b4fbd32d4a9afc22756d4c96c5cb687082803253892",
+    "src/harnesses/assistant-capability/node/runner.mjs": "12e7aef22e3478e7648e38f31275bb5d654418f4429159fee78db4bf3ed38677",
+    "src/harnesses/assistant-capability/node/checks.mjs": "851186cccc249b18404413ce5fc890dd1bf188f47e42bc1b73a5a4844bf38d30",
+    "src/harnesses/assistant-capability/node/editorDriver.mjs": "6a8f4224c681e42b1f8e78c65644f54f5b380e89b3b11d1847aee127979c8a7a",
+    "src/harnesses/assistant-capability/node/runtimeVerifier.mjs": "7c8ab9fad5397928ade1dc217f48d57283f2ded4291b7c42ccdfd8431c6f68d3",
+    "src/harnesses/assistant-capability/node/errorControls.mjs": "201927696291f14908aa4aa2869ad999b87eeca36e66e5f8015a4c47271bf51e"
+  }
+}

@@ -1,4 +1,6 @@
 import { drawMapTileLayer } from "@/editor/mapTileDraw";
+import { drawCharsetPreview, type CharsetPreviewCandidate } from './charsetPreview';
+import { encodePng, type RgbaImage } from '@/editor/cutsceneArt/imageProcess';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { presentationArtIds } from '@/editor/tools/presentationTools';
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
@@ -17,6 +19,7 @@ import {
   drawTile,
   EMPTY_TILE,
   keyedTilesetImage,
+  loadKeyedCharsetImage,
   loadTilesetImage,
   tileDrawSize,
 } from "./toolImageCanvas";
@@ -77,6 +80,21 @@ export async function renderPiMapImage(project: Project, data: unknown): Promise
 
 /** Media refs stay in SQLite/assets. Resolve through the browser's real asset bridge. */
 export async function renderPiToolImage(project: Project, toolName: string, data: unknown): Promise<string> {
+  const candidates = (data as { charsetCandidates?: readonly CharsetPreviewCandidate[] } | undefined)?.charsetCandidates;
+  if (candidates?.length) {
+    const sheets = new Map<string, RgbaImage>();
+    for (const id of new Set(candidates.map(row => row.textureKey))) {
+      const url = resolveAssetResourceUrl(id, { project });
+      if (!url) throw new Error(`캐릭터 칩 원본을 찾을 수 없습니다: ${id}`);
+      const image = await loadKeyedCharsetImage(url);
+      const pair = createCanvas(image.naturalWidth, image.naturalHeight);
+      if (!pair) throw new Error('캐릭터 칩 미리보기 캔버스를 만들 수 없습니다.');
+      pair.context.drawImage(image, 0, 0);
+      const rgba = pair.context.getImageData(0, 0, pair.canvas.width, pair.canvas.height);
+      sheets.set(id, { width: rgba.width, height: rgba.height, data: rgba.data });
+    }
+    return encodePng(drawCharsetPreview(candidates, id => sheets.get(id)!));
+  }
   if (toolName !== 'show_title_opening') return renderPiMapImage(project, data);
   const resourceId = (data as { resourceId?: unknown } | undefined)?.resourceId;
   if (typeof resourceId !== 'string') throw new Error('presentation-rendering-unavailable: resource id missing');
