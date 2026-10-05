@@ -24,7 +24,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
-import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
@@ -293,6 +293,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     for (const report of done.interiorCompletion) interiorReports.set(report.mapId, report);
   };
   let publication: Promise<unknown> = Promise.resolve();
+  // 사용자가 맵 소실 확인에서 거절한 변경. 팀장은 이걸 모르면 「요청 일부가 안 됐다」고 보고 같은 요청을 새 팀원에게 다시 맡긴다
+  // (2026-10-05 스트레스 p-team-delete-declined: 시작 맵 삭제를 거절하자 팀장이 요청 전체를 두 번 더 배정해 「작은 숲」을 한 벌 더 짓고
+  // 타이틀·BGM·장비까지 손대다 35분 시간 초과). 팀장이 받는 결과마다 싣는다.
+  const userDeclined: string[] = [];
+  const userDecisions = (): Record<string, unknown> => userDeclined.length === 0 ? {} : { userDeclined: {
+    changes: userDeclined,
+    note: "사용자가 직접 거절한 변경이다. 요청의 이 부분은 사용자 결정으로 끝났다 — 다시 배정하거나 다른 팀원에게 맡기지 말고, 나머지가 끝났으면 finish 보고에 「사용자가 거절해 하지 않음」으로 적는다.",
+  } };
   const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
     const next = publication.then(async () => {
       // 팀원 체크포인트는 안 바뀐 무거운 키(타일셋·DB)를 비워서 온다. 작업 사본에서 다시 붙인 뒤에만
@@ -316,7 +324,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         ...rest, project: wire.project, unchangedKeys: wire.unchangedKeys,
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
         spatialProof: exportSpatialToolProof(proposed),
-      }, signal);
+      }, signal).catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.startsWith(PI_MAP_LOSS_DECLINED_PREFIX)) {
+          const notice = message.slice(PI_MAP_LOSS_DECLINED_PREFIX.length).trim();
+          if (!userDeclined.includes(notice)) userDeclined.push(notice);
+        }
+        throw error;
+      });
       working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
       return working;
     });
@@ -634,7 +649,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       parameters: { type: "object", properties: { agentIds: { type: "array", items: { type: "string" } } }, required: [], additionalProperties: false },
       async execute(_id, params) {
         const ids = selectAgents((params as Record<string, unknown>)?.agentIds);
-        return text({ agents: ids.map(reportFor) });
+        return text({ agents: ids.map(reportFor), ...userDecisions() });
       },
     },
     {
@@ -651,7 +666,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (parentSignal?.aborted) controller.abort();
         try {
           const reason = await waitForTeam(inflight.filter(entry => ids.includes(entry.agentId)).map(entry => entry.promise), controller.signal);
-          return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1") });
+          return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1"), ...userDecisions() });
         } finally { controller.abort(); parentSignal?.removeEventListener("abort", abort); }
       },
     },

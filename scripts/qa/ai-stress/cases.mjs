@@ -53,4 +53,8 @@ export const CASES = [
   { id: 'p-team-romance-edit', kind: 'prompt', pack: 'story-cutscene', team: true,
     prompt: '팀으로 작업해 줘. 시작 맵에 카페 장면을 만들어 줘: 바리스타 NPC 「하윤」과 대화하면 「커피를 주문한다 / 오늘 기분을 묻는다」 선택지가 나오고, 고른 쪽에 따라 호감도 변수가 +1 또는 +2 오르고 대사가 달라진다. 두 번째로 말을 걸면 호감도가 2 이상이면 다른 인사를 한다.',
     expect: '팀 경로 연애형: 변수·선택·조건 대사' },
+  // 드라이버는 결정 카드에서 「그만두기」를 누른다 — 삭제만 거절되고 나머지 작업은 이어져야 한다.
+  { id: 'p-team-delete-declined', kind: 'prompt', pack: 'adventure-jrpg', team: true,
+    prompt: '팀으로 작업해 줘. 새 맵 「작은 숲」(20×15)을 만들어 시작 위치를 그리로 옮기고, 지금 시작 맵은 지워 줘. 그다음 작은 숲에 나무꾼 NPC 한 명을 세워 대사 두 줄을 넣어 줘.',
+    expect: '맵 삭제 거절(드라이버) 뒤에도 실행 계속: 작은 숲·시작 위치·나무꾼 NPC, 옛 시작 맵은 남음' },
 ];
