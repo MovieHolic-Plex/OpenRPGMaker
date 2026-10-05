@@ -1,0 +1,10 @@
+{
+  "role": "rival",
+  "label": "라이벌",
+  "variant": "C · 소년",
+  "description": "작은 체형 · 내려오는 녹색 머리 · 흰 셔츠와 멜빵",
+  "identity": "소년 · 짧은 보폭 · 좁은 어깨",
+  "collection": "distinct-v2",
+  "base": "wally",
+  "sourceNote": "에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님."
+}

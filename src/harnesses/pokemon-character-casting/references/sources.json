@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "wally",
+      "file": "wally.png",
+      "sha256": "13e4c15ed996858feea6ebff6d858c26fcb54415933a2f57ae6488c76612f111",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/wally.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    },
+    {
+      "id": "may-walking",
+      "file": "may-walking.png",
+      "sha256": "7f185cda9854f7812545c306795b454dc750be440e582974518ba8a63c9b7e87",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/may/walking.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    },
+    {
+      "id": "hiker",
+      "file": "hiker.png",
+      "sha256": "c08f8bd92c246f8a2f1237756705c02c289811bccfd8f13612ff894e6fe70243",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/hiker.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    },
+    {
+      "id": "sailor",
+      "file": "sailor.png",
+      "sha256": "209c5f7a08c05949b802735914a10379d4a72eb48d72f0d9c263aa920b871f95",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/sailor.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    },
+    {
+      "id": "camper",
+      "file": "camper.png",
+      "sha256": "f224bc031a9ce0de74f075e615a966a8dff6754cabaf8c7c11065af35ab0fd8c",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/camper.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    },
+    {
+      "id": "expert_m",
+      "file": "expert_m.png",
+      "sha256": "b6cfbb12a64c5dbbc67e478d4ead063f90a9817dbd2fdb11cc9e77aac196b280",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/expert_m.png",
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+    }
+  ]
+}

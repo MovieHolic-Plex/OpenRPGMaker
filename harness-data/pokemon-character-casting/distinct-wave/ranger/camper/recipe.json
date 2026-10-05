@@ -1,0 +1,67 @@
+{
+  "method": "lossless-distinct-original-npc-adoption",
+  "source": {
+    "id": "camper",
+    "file": "camper.png",
+    "sha256": "f224bc031a9ce0de74f075e615a966a8dff6754cabaf8c7c11065af35ab0fd8c",
+    "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/camper.png",
+    "originalArtwork": "Nintendo / Game Freak / Creatures",
+    "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+  },
+  "sourceSha256": "f224bc031a9ce0de74f075e615a966a8dff6754cabaf8c7c11065af35ab0fd8c",
+  "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/camper.png",
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "independentlyAuthored": false,
+  "bodyBase": "camper",
+  "frameMapping": [
+    [
+      "up",
+      [
+        5,
+        1,
+        6
+      ],
+      false
+    ],
+    [
+      "right",
+      [
+        7,
+        2,
+        8
+      ],
+      true
+    ],
+    [
+      "down",
+      [
+        3,
+        0,
+        4
+      ],
+      false
+    ],
+    [
+      "left",
+      [
+        7,
+        2,
+        8
+      ],
+      false
+    ]
+  ],
+  "seed": {
+    "role": "ranger",
+    "label": "레인저",
+    "variant": "C · 야영소년",
+    "base": "camper",
+    "description": "작은 녹색 모자 · 조끼 · 야영 장비와 반바지",
+    "identity": "소년 · 작은 등짐 · 가벼운 걸음",
+    "palette": {}
+  },
+  "generatorSha256": "60ddc3a7e0f07cefed039eaa91a4f073d2e97c12a2e0147aa4cdf170d09f74ca",
+  "resizingAuthoredPixels": false,
+  "colorEdits": false,
+  "scope": "Walking only; original-game art adoption. Context is a scale mockup, not runtime play."
+}

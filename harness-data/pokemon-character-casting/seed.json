@@ -1,12 +1,61 @@
 {
-  "version":1,
-  "reference":"Emerald Brendan native16x32 walking; original-derived bodies and explicitly edited heads/palettes",
-  "candidates":[
-    {"role":"rival","label":"라이벌","variant":"A","head":"hair","description":"갈색 짧은 머리 · 남색 재킷 · 초록 가방","palette":{"5":"57433b","9":"9a6844","E":"c09262","A":"769950","B":"466c43","C":"7497b9","D":"46688b"}},
-    {"role":"rival","label":"라이벌","variant":"B","head":"hair","description":"짙은 회갈색 머리 · 붉은 재킷 · 회색 가방","palette":{"5":"373a46","9":"595361","E":"81777e","A":"8994a0","B":"596978","C":"df7861","D":"a64e4c"}},
-    {"role":"explorer","label":"탐험가","variant":"A","head":"brim","description":"모래색 챙 모자 · 청록 재킷 · 갈색 장비","palette":{"5":"5c5145","9":"b99a63","E":"e7ca8b","A":"d4b477","B":"92774f","C":"6dabb0","D":"427a8c"}},
-    {"role":"explorer","label":"탐험가","variant":"B","head":"brim","description":"남색 챙 모자 · 황토색 재킷 · 청록 장비","palette":{"5":"354862","9":"59738c","E":"96b2c4","A":"739d97","B":"416e74","C":"d8ad68","D":"9f794b"}},
-    {"role":"ranger","label":"레인저","variant":"A","head":"cap","description":"숲색 모자 · 올리브 제복 · 갈색 가방","palette":{"5":"3b5548","9":"71956a","E":"a7ba88","A":"ad9563","B":"726343","C":"88a36d","D":"5b7654"}},
-    {"role":"ranger","label":"레인저","variant":"B","head":"cap","description":"푸른 모자 · 회색 제복 · 주황 가방","palette":{"5":"3b4e70","9":"789abb","E":"b7cbda","A":"d3a267","B":"966441","C":"acb4bb","D":"77838e"}}
+  "version": 2,
+  "collection": "distinct-v2",
+  "reference": "Six different actual Emerald NPC bodies, faces, outfits and original walking poses. Original-game art adoption, not independent redraw.",
+  "candidates": [
+    {
+      "role": "rival",
+      "label": "라이벌",
+      "variant": "C · 소년",
+      "base": "wally",
+      "description": "작은 체형 · 내려오는 녹색 머리 · 흰 셔츠와 멜빵",
+      "identity": "소년 · 짧은 보폭 · 좁은 어깨",
+      "palette": {}
+    },
+    {
+      "role": "rival",
+      "label": "라이벌",
+      "variant": "D · 소녀",
+      "base": "may-walking",
+      "description": "양갈래 머리 · 머리띠 · 허리와 치마가 드러나는 옷",
+      "identity": "소녀 · 머리 양옆 돌출 · 가벼운 걸음",
+      "palette": {}
+    },
+    {
+      "role": "explorer",
+      "label": "탐험가",
+      "variant": "C · 산악인",
+      "base": "hiker",
+      "description": "넓은 어깨와 배 · 등산모 · 조끼와 큰 배낭",
+      "identity": "성인 · 넓은 몸통 · 무게감 있는 보폭",
+      "palette": {}
+    },
+    {
+      "role": "explorer",
+      "label": "탐험가",
+      "variant": "D · 선원",
+      "base": "sailor",
+      "description": "넓은 흰 모자 · 세일러복 · 굵은 팔과 짧은 바지",
+      "identity": "성인 · 팔 노출 · 넓은 발",
+      "palette": {}
+    },
+    {
+      "role": "ranger",
+      "label": "레인저",
+      "variant": "C · 야영소년",
+      "base": "camper",
+      "description": "작은 녹색 모자 · 조끼 · 야영 장비와 반바지",
+      "identity": "소년 · 작은 등짐 · 가벼운 걸음",
+      "palette": {}
+    },
+    {
+      "role": "ranger",
+      "label": "레인저",
+      "variant": "D · 노년대원",
+      "base": "expert_m",
+      "description": "벗겨진 이마 · 흰 수염 · 긴 도복과 낮은 자세",
+      "identity": "노년 · 긴 옷 · 좁은 보폭",
+      "palette": {}
+    }
   ]
 }
