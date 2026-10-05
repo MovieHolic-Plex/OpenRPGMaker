@@ -20,6 +20,7 @@ STAGE = {
     "art-context-review": (3, "조립 그림 독립 검수"), "art-review": (3, "후보 선택·등록 확인"),
     "build": (4, "공간 조립·예제 렌더"), "review": (5, "완성 그림 적대적 검수"),
     "probe": (6, "조수 배치 시험"), "judge": (6, "조수 시험 판정"),
+    "result-review": (7, "결과 Allow / Deny 대기"),
     "bake": (7, "공용 등록"), "done": (8, "공용 등록 완료"),
     "blocked": (-1, "자동 진행 중단"), "waiting": (-1, "선행 재료 대기"),
     "discarded": (-1, "폐기"), "unbake": (7, "공용 등록 해제"),
@@ -128,9 +129,11 @@ def snapshot(cid=None):
         action = "지금 누를 버튼은 없습니다. 단계가 끝나면 다음 판정을 확인합니다."
         if c["stage"] == "blocked":
             reason = c.get("note") or "검수 또는 결과 처리에서 멈췄습니다."
-            action = "아래 반려 사유를 확인해 교정해야 합니다. 자동 재시작은 예약되지 않았습니다."
+            action = "운영 조치가 필요합니다. 기존 예시와 사용자 결정은 보존됩니다."
         elif c["stage"] == "art-review":
-            action = "아래 후보의 선택 가능 여부와 등록 상태를 확인해 주세요."
+            action = "예시를 보고 Allow / Deny만 눌러 주세요. 선택이 끝났다면 추가 입력은 없습니다."
+        elif c["stage"] == "result-review":
+            action = "결과를 보고 수정 / Allow / Deny를 선택해 주세요."
         elif c["stage"] in ("done", "discarded"):
             action = "현재 실행 중인 단계가 없습니다."
         elif own and not live:

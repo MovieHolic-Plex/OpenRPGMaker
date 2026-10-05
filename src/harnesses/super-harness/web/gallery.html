@@ -134,6 +134,10 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 
 .example-option .choice-scene{width:100%;max-height:none;image-rendering:pixelated}.example-option .scene-open{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.example-option .scene-open img{height:100%;object-fit:contain}
 .example-option .choose-candidate{margin:8px 0 14px}.example-caption{font-size:12px;color:#b1becd;margin:8px 0;line-height:1.6}.example-guide{color:#e0e7ef!important;font-size:15px;line-height:1.8}.example-evaluation{border-top:1px solid #36414e;padding-top:14px;margin-top:10px}.example-evaluation fieldset{border:0;padding:0;margin:0;min-width:0}.example-evaluation legend{font-weight:600;margin-bottom:10px}.example-ratings,.example-tags{display:flex;flex-wrap:wrap;gap:7px}.example-ratings label,.example-tags label{padding:7px 8px;border:1px solid #42536a;border-radius:7px;cursor:pointer;font-size:13px}.example-ratings label:has(:checked),.example-tags label:has(:checked){background:#284a65;border-color:#8ac8f7}.example-ratings input,.example-tags input{margin:0 5px 0 0;accent-color:#82c7ff}.example-text{display:block;margin:12px 0 8px;font-size:13px}.example-text textarea{margin-top:6px;min-height:80px}.example-evaluation small{display:block;margin:8px 0;color:#aebdce}.save-evaluation{padding:9px 15px}.example-source{border-top:1px solid #36414e;margin-top:16px;padding-top:10px;font-size:12px;color:#aebdce}.example-source summary{cursor:pointer;padding:6px 0}.example-source .choice-part{margin:10px 0}.example-storage-note{color:#aebdce;font-size:13px;margin-top:16px}
+.decision-intro{font-size:18px;line-height:1.7;margin:16px 0;color:#d8e4f1}
+.binary-actions{display:flex;gap:10px;margin-top:14px}.binary-actions button{flex:1;padding:14px 10px;font-size:18px;font-weight:700;min-height:60px}.binary-actions small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:#c6d3df}.binary-actions [data-decision=allow]{background:#204d3a;border-color:#4e916e}.binary-actions [data-decision=deny]{background:#40303a;border-color:#926577}.binary-actions [aria-pressed=true]{outline:2px solid #e2eaf3;outline-offset:2px}.binary-actions button:disabled{opacity:.55;cursor:default}
+.example-pictures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.example-pictures figure{margin:0;min-width:0}.example-pictures figcaption{font-size:12px;color:var(--dim);margin-top:5px}.choice-option.denied{border-style:dashed}.decided-examples>summary{cursor:pointer;padding:14px 0;font-size:16px}.choice-panel form{margin-top:20px}.choice-panel form button{padding:12px 20px}.choice-panel .choice-lead{color:#aec3d8}
+@media(max-width:600px){.example-pictures{grid-template-columns:1fr}.binary-actions button{font-size:16px}}
 </style>
 </head>
 <body>
@@ -151,11 +155,11 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 <div id="big"><img></div>
 <script type="module">
 import { renderMarkdown } from "/markdown.js";
-import { renderChoices } from "/art-choice.js";
+import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
-let requestId = 0;
+let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '예시 평가·선택'], ['wait', '작업 대기'], ['stop', '막힘'], ['discarded', '폐기']];
+const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내가 볼 그림'], ['wait', '작업 대기'], ['stop', '막힘'], ['discarded', '폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -198,6 +202,10 @@ async function refresh() {
   $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
   if (!ordersPage) { render(); paintProgress(); }
+  const opened=L.items.find(i=>i.id===openId);
+  if(opened && modalStage && opened.stage!==modalStage && !$('box').querySelector('[data-busy=true]') && !$('box').querySelector('textarea')?.value.trim()) {
+    modalStage=opened.stage; await openConcept(openId);
+  }
 }
 
 
@@ -324,30 +332,25 @@ async function documentView(target, path, { modal = false } = {}) {
       target.insertBefore(progress, target.querySelector('.doc-tools'));
       paintProgress();
       refreshActivity();
-      const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
-      const choice = response.ok ? await response.json() : null;
+      const [choiceResponse, detailResponse] = await Promise.all([
+        fetch('/api/art-choices?id=' + encodeURIComponent(cid)), fetch('/api/concept?id=' + encodeURIComponent(cid))]);
+      const choice = choiceResponse.ok ? await choiceResponse.json() : null;
+      const detail = detailResponse.ok ? await detailResponse.json() : null;
       if (current !== requestId) return;
-      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
-        const panel = document.createElement('section'); panel.className = 'choice-panel';
-        const docs = document.createElement('details'); docs.className = 'choice-docs';
-        const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
-        docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
-        if (choice.stage === 'art-review') {
-          const statusDetails=document.createElement('details');statusDetails.id='choice-status';
-          const statusLabel=document.createElement('summary');statusLabel.textContent='제작 단계·실행 기록 보기';
-          statusDetails.append(statusLabel,progress);target.insertBefore(statusDetails,docs);
-        }
-        renderChoices(panel, choice, refresh, url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); }, group => {
-          const field=target.querySelector('#fix');if(!field)return;
-          field.closest('details').open=true;
-          if(!field.value.trim())field.value=`${group.title} 후보 수정 요청: `;
-          field.scrollIntoView({block:'center'});field.focus();
-        });
+      modalStage = detail?.stage || choice?.stage;
+      const docs = document.createElement('details'); docs.className='choice-docs';
+      const summary=document.createElement('summary');summary.textContent='제작 과정·주문서·검수 기록';
+      docs.append(summary, progress, target.querySelector('.doc-tools'), article);target.append(docs);
+      const panel=document.createElement('section');panel.className='choice-panel';target.insertBefore(panel,docs);
+      const enlarge = url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); };
+      if(detail?.resultReview) {
+        renderResult(panel, detail.resultReview, refresh, enlarge);
+      } else if (['art-review','art-layout-review','art-context-review','art','blocked'].includes(choice?.stage) && choice.groups.length) {
+        renderChoices(panel, choice, refresh, enlarge);
+      } else {
+        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 선택할 그림은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p>`;
       }
-      const actions = document.createElement('section');
-      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
-      const correction = document.createElement('details'); correction.className='choice-docs';
-      const label=document.createElement('summary');label.textContent='교정 지시·재료 재확인·폐기';correction.append(label,actions);target.append(correction);
+
     }
   } catch (error) {
     if (current !== requestId) return;
@@ -364,7 +367,7 @@ async function openConcept(id) {
   await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
 }
 
-function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; }
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; modalStage = null; }
 $('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
 document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
 function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }

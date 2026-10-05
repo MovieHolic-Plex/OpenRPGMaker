@@ -40,6 +40,7 @@ import art_repair  # noqa: E402
 import art_layout  # noqa: E402
 import art_acceptance  # noqa: E402
 import activity  # noqa: E402
+import space_decisions  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -386,8 +387,13 @@ def on_judge(meta, code, result):
     if reasons:
         reject(cid, reasons[:12], '조수 시험')
     else:
-        store.update_concept(cid, stage='bake', status='queued', reasons=[])
-        store.log(cid, f'조수 시험 통과 → 굽기: {(result or {}).get("summary", "")[:200]}')
+        snapshot = space_decisions.result_view(DATA, c, example_images(cid))
+        if not snapshot['images']:
+            reject(cid, ['사용자가 확인할 결과 이미지가 없다'], '결과 확인 준비')
+            return
+        write_json(cdir(cid, 'result-review.json'), snapshot)
+        store.update_concept(cid, stage='result-review', status='idle', reasons=[], note='결과를 확인해 주세요')
+        store.log(cid, '조수 시험 통과 → 사용자 결과 Allow / Deny 대기')
 
 
 def on_bake(meta, code, result):
@@ -1035,6 +1041,13 @@ def require_visual(c):
 def start_bake(c, remove=False):
     if not remove and not require_visual(c):
         return
+    if not remove:
+        snapshot = space_decisions.result_view(DATA, c, example_images(c['id']))
+        allowed = next((e for e in reversed(c.get('feedback', [])) if e.get('kind') == 'result-decision'), {})
+        if not snapshot['images'] or allowed.get('decision') != 'allow' or allowed.get('fingerprint') != snapshot['fingerprint']:
+            write_json(cdir(c['id'], 'result-review.json'), snapshot)
+            store.update_concept(c['id'], stage='result-review', status='idle', note='결과 확인 필요')
+            return
     if not BAKING.acquire(blocking=False):
         return
     cid = c['id']
@@ -1279,6 +1292,13 @@ def action(body):
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
+    if kind in ('decide-example', 'decide-result'):
+        try:
+            if kind == 'decide-example':
+                return {'ok': True, 'choices': space_decisions.decide_example(DATA, cid, body)}
+            return space_decisions.decide_result(DATA, cid, body, example_images(cid))
+        except (ValueError, KeyError, OSError, TypeError) as error:
+            return {'ok': False, 'error': str(error)}
     if kind == 'evaluate-art':
         try:
             return {'ok': True, 'choices': art_choices.evaluate(DATA, cid, body)}
@@ -1328,7 +1348,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'result-review': 'pick', 'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1340,6 +1360,8 @@ def first_sentence(text, limit=90):
 
 def plain_status(c):
     stage, n = c['stage'], c['attempt'] or 1
+    if stage == 'result-review':
+        return '완성된 결과 확인 · Allow / Deny'
     if stage == 'discovered':
         return '차례 기다림'
     if stage == 'waiting':
@@ -1474,6 +1496,7 @@ def gallery_detail(cid):
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
     kids = [{'id': k['id'], 'title': k['title']} for k in store.concepts('parent=?', (cid,))]
     return {'id': cid, 'title': c['title'], 'status': plain_status(c), 'stage': c['stage'],
+            'resultReview': space_decisions.result_view(DATA, c, imgs) if c['stage'] in ('result-review', 'done') else None,
             'about': concept_about(c, card), 'variants': variants, 'images': imgs[:8], 'tried': tried[:4],
             'why': [re.sub(r'^\[[AB]\]\s*', '', r) for r in (c['reasons'] or [])][:3],
             'orders': [{'ko': o.get('ko') or o.get('id'), 'size': f'{o["w"]}×{o["h"]}칸' if o.get('w') and o.get('h') else '', 'desc': first_sentence(o.get('desc'), 120)} for o in orders][:20],
