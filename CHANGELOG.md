@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.142.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — prioritize themes and separate concept-led sets from kit extensions (#2197) (`7d1924f`)
+- make worldmap brushes adapt to terrain and simplify assistant authoring (`afca1a1`)
+
+### 수정
+
+- 대량 캐릭터 주문이 검토 대기로 멈추지 않게 연속 제작 (`a241adc`)
+- **super-harness** — require dedicated theme plans and authored material coverage (#2193) (`d65bda7`)
+
+### 문서
+
+- record vertical worldmap brush verification (`31841c1`)
+
 ## 0.141.1 — 2026-10-05
 
 ### 수정
