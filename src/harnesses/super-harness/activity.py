@@ -77,7 +77,7 @@ def job_view(job, now):
                 outputAgeSeconds=max(0, int(now-modified)) if modified else None)
 
 
-def batches(now):
+def runners(now):
     """Only fresh heartbeats with explicit membership establish a dedicated queue."""
     result = []
     for path in Path(store.DATA, "monitoring").glob("*/latest.json"):
@@ -88,10 +88,14 @@ def batches(now):
                 continue
             members = {c["id"] for c in value.get("concepts", [])}
             if members:
-                result.append(members)
+                result.append(dict(value, members=members))
         except (OSError, ValueError, KeyError, TypeError):
             continue
     return result
+
+
+def batches(now):
+    return [r["members"] for r in runners(now)]
 
 
 def events(cid):
@@ -116,7 +120,7 @@ def snapshot(cid=None):
     names = {c["id"]: c["title"] for c in concepts}
     jobs = store.jobs("status='running'")
     views = [dict(job_view(j, now), title=names.get(j["concept"], "공간 탐색")) for j in jobs]
-    managed = batches(now)
+    managed = runners(now)
     paused = store.setting("paused") == "1"
     items = []
     for c in concepts:
@@ -124,7 +128,8 @@ def snapshot(cid=None):
             continue
         own = [j for j in views if j["concept"] == c["id"]]
         live = [j for j in own if j["alive"]]
-        group = next((g for g in managed if c["id"] in g), None)
+        runner = next((g for g in managed if c["id"] in g["members"]), None)
+        group = runner["members"] if runner else None
         index, label = STAGE.get(c["stage"], (-1, c["stage"]))
         if live:
             label = live[0]['label']
@@ -164,7 +169,17 @@ def snapshot(cid=None):
             action = "진행 중으로 간주하지 않습니다. 실행기 확인이 필요합니다."
         elif not own and c["stage"] not in ("blocked", "done", "discarded", "art-review"):
             siblings = [j for j in views if j['alive'] and group and j['concept'] in group]
-            if group and siblings:
+            if runner and runner.get('parallelSpaces', 1) > 1:
+                wait_kind = runner.get('waits', {}).get(c['id'], 'scheduling')
+                reason = {
+                    'space-capacity': f"공간 {runner['parallelSpaces']}개가 동시에 작업 중입니다. 빈 슬롯에 배정합니다.",
+                    'worker-capacity': '검수 작업자를 포함한 동시 실행 한도에 도달했습니다.',
+                    'shared-stage': '공용 조립·시험·반영 단계의 충돌을 막기 위해 실행 중 작업의 종료를 기다립니다.',
+                }.get(wait_kind, '공간별 병렬 실행기가 다음 단계를 배정 중입니다.')
+                action = '사용자 입력 없이 실행기가 배정합니다.'
+                if wait_kind != 'scheduling':
+                    waiting_for = [{'id': j['id'], 'concept': j['concept'], 'title': j['title'], 'step': j['label']} for j in siblings]
+            elif group and siblings:
                 wait_kind = 'pipeline-order'
                 waiting_for = [{'id': j['id'], 'concept': j['concept'], 'title': j['title'], 'step': j['label']} for j in siblings]
                 reason = '전용 실행기가 한 단계씩 처리합니다. 현재: ' + ' · '.join(dict.fromkeys(j['title'] + ' / ' + j['label'] for j in siblings))

@@ -114,7 +114,9 @@ def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=Non
 
 
 def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=None):
-    os.makedirs(WORK, exist_ok=True)
+    # Separate scratch/output roots even for simultaneous A/B reviewers.
+    work = os.path.join(WORK, cid or '_discovery', kind + '-' + tag)
+    os.makedirs(work, exist_ok=True)
     stamp = time.strftime('%m%d-%H%M%S')
     log_path = (cdir(cid, 'logs') if cid else os.path.join(DATA, 'logs')) + f'/{kind}-{tag}-{stamp}.log'
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
@@ -122,11 +124,13 @@ def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=N
     with open(prompt_path, 'w', encoding='utf-8') as f:
         f.write(prompt)
     cmd = [CODEX, 'exec', '-m', MODEL, '-c', f'model_reasoning_effort="{EFFORT}"', '--skip-git-repo-check',
-           '-s', 'workspace-write', '--add-dir', write_root or ROOT, '--add-dir', DATA]
+           '-s', 'workspace-write', '--add-dir', cdir(cid) if cid else DATA]
+    if write_root or kind in ('build', 'review', 'judge', 'discover'):
+        cmd += ['--add-dir', write_root or ROOT]
     for d in extra_dirs:
         cmd += ['--add-dir', d]
-    cmd += ['-C', WORK, '-']
-    return start_proc(cid, kind, tag, cmd, WORK, log_path, CODEX_TIMEOUT, {'result': result_path}, stdin_path=prompt_path)
+    cmd += ['-C', work, '-']
+    return start_proc(cid, kind, tag, cmd, work, log_path, CODEX_TIMEOUT, {'result': result_path}, stdin_path=prompt_path)
 
 
 def running(kinds=None):
