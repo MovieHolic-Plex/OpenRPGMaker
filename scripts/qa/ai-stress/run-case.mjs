@@ -151,7 +151,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   await cdp.send('Performance.enable').catch(() => {});
   result.memory = [];
   const sampleMemory = async (label) => {
-    const m = await cdp.send('Performance.getMetrics').catch(() => null);
+    const m = await timed(cdp.send('Performance.getMetrics')).catch(() => null);
     if (!m) return null;
     const get = name => m.metrics.find(x => x.name === name)?.value ?? 0;
     const sample = { t: Math.round((Date.now() - t0) / 1000), label, heapMB: Math.round(get('JSHeapUsedSize') / 1048576),
