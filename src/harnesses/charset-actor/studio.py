@@ -290,6 +290,11 @@ def _control(run, resume):
         (root / 'pause-request.json').unlink(missing_ok=True)
         return launch(root, par=layout.get('par', 4), batch_size=layout['batchSize'])
     H.write_json_atomic(root / 'pause-request.json', dict(at=H.now()))
+    if not H._alive(driver.get('pid')):
+        state_file = root / 'production-state.json'
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+        if state.get('phase') == 'queued':
+            H.write_json_atomic(state_file, dict(state, phase='paused', at=H.now()))
     return dict(run=run, phase='pausing')
 
 

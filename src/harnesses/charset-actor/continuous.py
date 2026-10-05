@@ -27,7 +27,9 @@ def completed(root, row):
     return (work / 'published.json').is_file() and H.human_ready(work, H.current_gate(work))
 
 
-def prepare(folder, runs):
+def prepare(folder, runs, cohort_size=40):
+    if type(cohort_size) is not int or not 1 <= cohort_size <= 40:
+        raise ValueError('Cohorts must have 1–40 candidates')
     originals = []
     with H.data_lock('studio'):
         for run in runs:
@@ -64,7 +66,8 @@ def prepare(folder, runs):
             source = H.run_dir(original['run'])
             pause_file = source / 'pause-request.json'
             current_pause = json.loads(pause_file.read_text()) if pause_file.exists() else None
-            driver = json.loads((source / 'driver.json').read_text())
+            driver_file = source / 'driver.json'
+            driver = json.loads(driver_file.read_text()) if driver_file.exists() else {}
             if current_pause != original['pause'] or H._alive(driver.get('pid')):
                 transfers.append(dict(run=source.name, skipped='user control changed'))
                 continue
@@ -74,8 +77,8 @@ def prepare(folder, runs):
             done = len(manifest['characters']) - len(missing)
             prepared = []
             try:
-                for offset in range(0, len(missing), 40):
-                    rows = missing[offset:offset + 40]
+                for offset in range(0, len(missing), cohort_size):
+                    rows = missing[offset:offset + cohort_size]
                     run = datetime.now().strftime('%Y%m%d-%H%M%S') + '-continuous-' + uuid.uuid4().hex[:8]
                     root = H.run_dir(run)
                     root.mkdir(parents=True)
@@ -83,7 +86,7 @@ def prepare(folder, runs):
                     shutil.copytree(source / 'recipe', root / 'recipe')
                     next_manifest = copy.deepcopy(manifest)
                     next_manifest.update(run=run, continuationOf=source.name, collectionId=folder.name,
-                                         title=(manifest.get('title') or '캐릭터') + f' · 이어 제작 {offset // 40 + 1}',
+                                         title=(manifest.get('title') or '캐릭터') + f' · 이어 제작 {offset // cohort_size + 1}',
                                          characters=[], sourcePlanKeys=[r['key'] for r in rows])
                     next_manifest['productionPolicy'] = dict(manifest['productionPolicy'], maxReviewPending=len(rows))
                     for row in rows:
@@ -92,7 +95,7 @@ def prepare(folder, runs):
                         next_manifest['characters'].append(candidate)
                     H.write_json_atomic(root / 'manifest.json', next_manifest)
                     H.write_json_atomic(root / 'production.json', dict(par=1, batchSize=1))
-                    H.write_json_atomic(root / 'production-state.json', dict(phase='paused', at=H.now(),
+                    H.write_json_atomic(root / 'production-state.json', dict(phase='queued', at=H.now(),
                                                                            remaining=len(rows), active=0))
                     R.verify_run(root, next_manifest, check_tools=True)
                 allocated = sum(len(json.loads((p / 'manifest.json').read_text())['characters']) for p in prepared)
@@ -131,6 +134,21 @@ def execute(folder, jobs, transfers, par):
         with H.data_lock('studio'):
             active = S.active_productions()
             used = sum(r['par'] for r in active)
+            waiting = []
+            for job in pending:
+                root = H.run_dir(job['run'])
+                state = json.loads((root / 'production-state.json').read_text())
+                if any(r['run'] == root.name for r in active):
+                    started.append(dict(job, alreadyRunning=True))
+                elif state.get('phase') in ('completed', 'continued'):
+                    started.append(dict(job, alreadyComplete=True))
+                elif (root / 'pause-request.json').exists():
+                    started.append(dict(job, userPaused=True))
+                else:
+                    waiting.append(job)
+            if len(waiting) != len(pending):
+                pending = waiting
+                status(folder, 'running', pending=pending, started=started, transfers=transfers)
             while pending and used < par:
                 job = pending.pop(0)
                 root = H.run_dir(job['run'])
@@ -158,14 +176,15 @@ def main():
     parser.add_argument('--run', action='append', required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--par', type=int, default=2)
+    parser.add_argument('--cohort-size', type=int, default=40)
     args = parser.parse_args()
-    if not 1 <= args.par <= 2 or len(args.run) != len(set(args.run)):
+    if not 1 <= args.par <= 2 or len(args.run) != len(set(args.run)) or not 1 <= args.cohort_size <= 40:
         raise ValueError('Use 1–2 artists and unique source orders')
     if args.out.exists():
         raise ValueError('Use a new evidence folder; do not replace an existing allocation')
     args.out.mkdir(parents=True)
     try:
-        jobs, transfers = prepare(args.out, args.run)
+        jobs, transfers = prepare(args.out, args.run, args.cohort_size)
         execute(args.out, jobs, transfers, args.par)
     except Exception as error:
         status(args.out, 'needs-attention', error=str(error))
