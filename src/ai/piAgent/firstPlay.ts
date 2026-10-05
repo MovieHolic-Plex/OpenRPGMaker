@@ -3,6 +3,7 @@ import type { GameEvent, Project } from '../../project/types';
 /** A hard execution boundary, including discovery and unexposed-call fallback. */
 export const FIRST_PLAY_TOOLS = [
   'find_tools', 'get_project_summary', 'get_map_region', 'find_events', 'get_event',
+  'list_authoring_presets', 'read_authoring_preset',
   'get_database_records', 'list_npc_graphics', 'list_resources', 'list_endings',
   'run_lint', 'check_reachability', 'find_switch_usage', 'upsert_event', 'place_npc',
   'define_ending', 'upsert_database_utility', 'upsert_actor', 'upsert_item',

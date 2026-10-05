@@ -1,4 +1,5 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
 // 기존 세션의 긴 규칙 텍스트는 대부분 툴 설명으로 옮겨져 있으므로 여기서는 범위·절차만 말한다.
@@ -40,6 +41,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     ]
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   return [
+    authoringPresetDiscoveryText(),
     '선택지의 취소를 종료로 요청하면 choices에 cancelBehavior:"branch",cancelBranch:[]를 명시한다. choice1~choice5는 Esc가 해당 선택지를 실행하는 동작이며 cancelBranch를 무시한다. 완료 보고 전에 양쪽 선택과 취소를 각각 확인한다. run_scene_test의 {kind:"choose",index:-1}은 취소이며, 그 뒤 대사·보상·상태 변화가 요청과 맞는지 확인한다.',
     "태양 그림자: inspect_terrain.sunlight와 shadowCasters를 먼저 읽고 set_map_properties.sunlight로 enabled/azimuth/altitude/opacity/softness/heightScale만 수정한다. 태양 방향은 0° 북,90° 동,180° 남,270° 서이며 고도가 낮으면 그림자가 길다. 생략한 설정을 유지하고 설정 뒤 show_map_region으로 실제 그림을 확인한다. 집·등록된 나무의 높이는 배치 그림의 크기로 추정한다. 태양 그림자는 시각 효과이므로 지형 높이·집·통행·시야 차단을 함께 바꾸지 않는다. 설정이 없는 기존 맵은 꺼짐이다.",
     "기존 높이 지형 수정: inspect_terrain({mapId,includeCatalog:false})에서 features의 id/options, 집의 placementId/parts와 잠금 칸을 읽는다. 윤곽·능선·계곡·호수는 design_terrain editId, 도로는 lay_terrain_road editId를 사용한다. 생략한 점·설정은 유지되며 폭만 바꾸려고 새 지형을 겹쳐 만들지 않는다. 기존 버들항 조립 집의 지붕만 넓히려면 resize_terrain_house_roof를 사용한다. 잠금과 집 전체/문 앞 높이를 보존하고 마지막 수정 뒤 모든 집의 실제 통행과 그림을 다시 확인한다.",

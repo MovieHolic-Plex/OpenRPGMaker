@@ -18,6 +18,8 @@ import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCom
 /** Read/control tools that must remain reachable before any search round. */
 export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
   "find_tools",
+  "list_authoring_presets",
+  "read_authoring_preset",
   "read_project_wiki",
   "get_project_summary",
   "get_map_region",
