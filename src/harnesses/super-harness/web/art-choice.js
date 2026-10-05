@@ -98,3 +98,52 @@ export function renderResult(host, state, onUpdate, enlarge) {
   }
   render();
 }
+
+/** One top-layer viewer for live images, documents and Allow/Deny examples. */
+export function createImageViewer(dialog) {
+  dialog.innerHTML=`<div class="image-toolbar"><strong>그림 크게 보기</strong><button data-zoom="out" aria-label="축소">−</button><output aria-live="polite">불러오는 중…</output><button data-zoom="in" aria-label="확대">＋</button><button data-zoom="actual">100%</button><button data-zoom="fit">화면 맞춤</button><a target="_blank" rel="noopener">원본 열기</a><button data-close aria-label="확대 보기 닫기">닫기 ×</button></div><p class="image-help">휠로 확대·축소 · 드래그로 이동 · Esc로 닫기</p><div class="image-viewport" tabindex="0" aria-label="확대 이미지. 방향키로 이동, 더하기 빼기로 배율 조절"><div class="image-canvas"><img draggable="false" alt="확대 이미지"></div></div>`;
+  const viewport=dialog.querySelector('.image-viewport'), canvas=dialog.querySelector('.image-canvas'), img=dialog.querySelector('img'), output=dialog.querySelector('output');
+  let scale=1, drag=null, opener=null, ready=false;
+  function resize(next, point) {
+    if(!ready)return;
+    const v=viewport.getBoundingClientRect(), old=img.getBoundingClientRect();
+    const anchor=point || {x:v.left+v.width/2,y:v.top+v.height/2};
+    const pixel={x:(anchor.x-old.left)/scale,y:(anchor.y-old.top)/scale};
+    scale=Math.min(16,Math.max(.05,next));
+    img.style.width=`${img.naturalWidth*scale}px`;img.style.height=`${img.naturalHeight*scale}px`;
+    canvas.style.width=`${Math.max(viewport.clientWidth,img.naturalWidth*scale+32)}px`;
+    canvas.style.height=`${Math.max(viewport.clientHeight,img.naturalHeight*scale+32)}px`;
+    const rect=img.getBoundingClientRect();
+    viewport.scrollLeft+=rect.left+pixel.x*scale-anchor.x;
+    viewport.scrollTop+=rect.top+pixel.y*scale-anchor.y;
+    output.textContent=`${Math.round(scale*100)}% · ${img.naturalWidth}×${img.naturalHeight}`;
+    dialog.querySelector('[data-zoom="out"]').disabled=scale<=.05;
+    dialog.querySelector('[data-zoom="in"]').disabled=scale>=16;
+  }
+  function fit(){resize(Math.min((viewport.clientWidth-32)/img.naturalWidth,(viewport.clientHeight-32)/img.naturalHeight));viewport.scrollTo(0,0);}
+  dialog.querySelector('[data-close]').onclick=()=>dialog.close();
+  dialog.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>b.dataset.zoom==='fit'?fit():resize(b.dataset.zoom==='actual'?1:scale*(b.dataset.zoom==='in'?1.5:1/1.5)));
+  viewport.addEventListener('wheel',e=>{if(!ready)return;e.preventDefault();resize(scale*Math.exp(-Math.max(-120,Math.min(120,e.deltaY))*.002),{x:e.clientX,y:e.clientY});},{passive:false});
+  viewport.onpointerdown=e=>{if(e.button!==0||!ready)return;drag={x:e.clientX,y:e.clientY,left:viewport.scrollLeft,top:viewport.scrollTop};viewport.setPointerCapture(e.pointerId);viewport.classList.add('dragging');};
+  viewport.onpointermove=e=>{if(drag){viewport.scrollLeft=drag.left+drag.x-e.clientX;viewport.scrollTop=drag.top+drag.y-e.clientY;}};
+  const release=()=>{drag=null;viewport.classList.remove('dragging');};
+  viewport.onpointerup=release;viewport.onpointercancel=release;viewport.onlostpointercapture=release;
+  dialog.addEventListener('keydown',e=>{if(['+','=','-','0'].includes(e.key)){e.preventDefault();e.stopPropagation();e.key==='0'?fit():resize(scale*(e.key==='-'?1/1.5:1.5));}if(e.key==='Escape')e.stopPropagation();});
+  dialog.onclick=e=>{if(e.target===dialog)dialog.close();};
+  dialog.addEventListener('close',()=>{release();if(opener?.isConnected)opener.focus({preventScroll:true});});
+  window.addEventListener('resize',()=>{if(dialog.open&&ready)resize(scale);});
+  return function open(url, label='공간 그림') {
+    const source=new URL(url,location.href);
+    if(source.origin!==location.origin || !['/thumb','/data/'].some(p=>source.pathname.startsWith(p)))return;
+    // Inspect original pixels, not the resized thumbnail (same server access checks).
+    if(source.pathname==='/thumb'){
+      const path=source.searchParams.get('p');if(!path)return;
+      const version=source.searchParams.get('v');source.pathname='/data/'+path.split('/').map(encodeURIComponent).join('/');source.search='';if(version)source.searchParams.set('v',version);
+    }
+    opener=document.activeElement;ready=false;release();img.hidden=true;output.textContent='불러오는 중…';
+    img.alt=label;dialog.querySelector('a').href=source.href;
+    img.onload=()=>{ready=true;img.hidden=false;scale=1;fit();viewport.focus({preventScroll:true});};
+    img.onerror=()=>{ready=false;output.textContent='이미지를 불러오지 못했습니다. 원본 열기를 확인해 주세요.';};
+    if(!dialog.open)dialog.showModal();img.src=source.href;
+  };
+}

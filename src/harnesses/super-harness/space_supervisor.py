@@ -100,9 +100,9 @@ def main(ids):
                 'build': sh.start_build, 'review': sh.start_reviews, 'probe': sh.step_probe, 'bake': sh.start_bake}
     base_ids = list(ids)
     cursor = 0
-    slots = max(1, int(os.environ.get('SUPER_HARNESS_SPACE_PARALLEL', '3')))
-    # Bound inner prop pools too: three spaces must not fan out to 96 workers.
-    sh.ENV['PROP_HARNESS_PAR'] = os.environ.get('SUPER_HARNESS_SPACE_PROP_PAR', '4')
+    slots = max(1, int(os.environ.get('SUPER_HARNESS_SPACE_PARALLEL', '6')))
+    # Bound inner prop pools too: six spaces use at most twelve prop workers.
+    sh.ENV['PROP_HARNESS_PAR'] = os.environ.get('SUPER_HARNESS_SPACE_PROP_PAR', '2')
     draining = False
     def drain(*_):
         nonlocal draining

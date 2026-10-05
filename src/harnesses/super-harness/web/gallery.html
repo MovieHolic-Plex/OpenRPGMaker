@@ -49,9 +49,12 @@ textarea{width:100%;min-height:70px;background:#121418;color:var(--ink);border:1
 .primary{background:#2d5d8a;border-color:#2d5d8a}
 .danger{background:#5a2a26;border-color:#5a2a26}
 .close{float:right}
-#big{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;overflow:auto;cursor:zoom-out}
-#big.on{display:block}
-#big img{display:block;margin:20px auto;max-width:none;image-rendering:pixelated}
+#big{width:calc(100vw - 24px);height:calc(100dvh - 24px);max-width:none;max-height:none;margin:auto;padding:0;border:1px solid #60748e;border-radius:12px;background:#111821;color:#edf2fa;overflow:hidden}
+#big[open]{display:flex;flex-direction:column}#big::backdrop{background:rgba(0,0,0,.85)}
+.image-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px;border-bottom:1px solid #40526a}.image-toolbar strong{margin-right:auto}.image-toolbar output{min-width:120px;text-align:center;font-size:13px}.image-toolbar button,.image-toolbar a{min-height:38px}.image-toolbar a{padding:8px}
+.image-help{margin:8px 14px;color:#bac8d9;font-size:13px}.image-viewport{flex:1;min-height:0;overflow:auto;touch-action:none;cursor:grab;background:repeating-conic-gradient(#202833 0 25%,#293340 0 50%) 0/24px 24px}.image-viewport.dragging{cursor:grabbing}.image-canvas{display:grid;place-items:center;min-width:100%;min-height:100%}#big img{display:block;max-width:none;max-height:none;image-rendering:pixelated;user-select:none;pointer-events:none}
+@media(max-width:600px){.image-toolbar{gap:5px;padding:8px}.image-toolbar strong{width:100%}.image-toolbar output{min-width:95px}}
+
 a{color:var(--run)}
 
 .header-link,.doc-tools a{display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none}
@@ -162,11 +165,11 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
-<div id="big"><img></div>
+<dialog id="big" aria-label="이미지 확대 보기"></dialog>
 <script type="module">
 import { mountKeywordSeeds } from "/keyword-seeds.js";
 import { renderMarkdown } from "/markdown.js";
-import { renderChoices, renderResult } from "/art-choice.js";
+import { renderChoices, renderResult, createImageViewer } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
@@ -179,6 +182,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
 const cards = new Map();
+const enlargeImage = createImageViewer($('big'));
 let seedFilter = null, seedOrigins = new Map(), selectedSeed = '';
 if (ordersPage) $('keyword-seeds').hidden=true;
 else mountKeywordSeeds($('keyword-seeds'), (seeds, selected, clicked) => {
@@ -257,7 +261,7 @@ function outputHtml(item, out) {
     <p class="subtle">시간 기준 진행률은 아닙니다. 현재 근거가 확인된 공정 수이며 재수정 시 낮아질 수 있습니다.</p>
     <h4>지금까지 나온 그림</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
     ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
-    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)}</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
+    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)} · 크게 보기 ↗</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
     ${out.nativeAvailable?`<p class="subtle">최근 준비된 후보 큐 · ${Object.entries(out.native).map(([k,n])=>esc(({queued:'대기',running:'제작 중',drawing:'제작 중',reviewing:'검수 중',done:'처리 완료',failed:'실행 실패'})[k]||k)+' '+n).join(' · ')}<br>후보 처리 완료는 품질 합격과 다릅니다.</p>`:''}
     ${out.missingCount?`<details data-live-section="materials"><summary>부족한 재료 ${out.missingCount}종</summary><ul>${out.missing.map(m=>`<li>${esc(m)}</li>`).join('')}</ul></details>`:''}`;
 }
@@ -293,7 +297,7 @@ function paintLiveBoard() {
       <button class="live-open" data-live-open="${esc(item.id)}">그림·기획서·검수 기록 자세히 보기</button>`;
     for(const d of el.querySelectorAll('details'))d.open=expanded.includes(d.dataset.liveSection);
     el.querySelector('[data-live-open]').onclick=()=>openConcept(item.id);
-    for(const b of el.querySelectorAll('[data-live-image]'))b.onclick=()=>{const img=$('big').querySelector('img');img.style.width='';img.src=b.dataset.liveImage;$('big').classList.add('on');};
+    for(const b of el.querySelectorAll('[data-live-image]'))b.onclick=()=>enlargeImage(b.dataset.liveImage,b.querySelector('img').alt);
   }
   if(!list.length)health.textContent=outputError||'현재 제작 중인 공간은 없습니다. 아래에서 준비된 예시나 결과를 확인하세요.';
 }
@@ -315,11 +319,14 @@ function paintProgress() {
   if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
   paintLiveBoard();
   const alive = activityState.jobs.filter(j => j.alive);
-  $('line').textContent = `워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개`;
+  const activeSpaces=new Set(alive.map(j=>j.concept).filter(Boolean)).size;
+  const capacity=activityState.limits?.spaces;
+  $('line').textContent = `공간 ${activeSpaces}${capacity?' / '+capacity:''}개 동시 진행 · 작업 ${alive.length}개 · 칩 제작 묶음 ${activityState.workers?.nativeDrawing ?? 0}개`;
   const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
   $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
   const queued = activityState.items.filter(i => i.managed && !i.jobs.length && (i.state === 'queued' || i.waitKind === 'provider-backoff'));
-  overview.innerHTML = `<h2>워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
+  overview.innerHTML = `<h2>작업 ${alive.length}개 실행 · 칩 제작 묶음 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
+    <p>동시 공간 한도 ${capacity || '확인 중'}개 · 단계 작업 한도 ${activityState.limits?.jobs ?? '확인 중'}개. 칩 제작 묶음 안에서는 후보 제작·검수가 따로 진행됩니다.</p>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
     <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
     ${queued.length ? `<div class="queue-reasons">${queued.map(i => `<p><b>${esc(i.title)}</b> · ${esc(i.label)} 대기<br><small>${esc(i.reason)}</small></p>`).join('')}</div>` : ''}
@@ -441,7 +448,7 @@ async function documentView(target, path, { modal = false } = {}) {
       const summary=document.createElement('summary');summary.textContent='제작 과정·주문서·검수 기록';
       docs.append(summary, target.querySelector('.doc-tools'), article);target.append(docs);
       const panel=document.createElement('section');panel.className='choice-panel';target.insertBefore(panel,progress);
-      const enlarge = url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); };
+      const enlarge = enlargeImage;
       if(detail?.resultReview) {
         renderResult(panel, detail.resultReview, refresh, enlarge);
       } else if (['art-review','art-layout-review','art-context-review','art-demo','art','blocked'].includes(choice?.stage) && choice.groups.length) {
@@ -469,9 +476,8 @@ async function openConcept(id) {
 
 function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; modalStage = null; }
 $('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
-document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
-function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }
-$('big').onclick = () => $('big').classList.remove('on');
+document.onkeydown = e => { if(e.key==='Escape' && !$('big').open)closeModal(); };
+function big(img) { enlargeImage(img.dataset.full || img.src,img.alt); }
 
 async function act(kind) {
   const text = $('fix')?.value ?? '';
