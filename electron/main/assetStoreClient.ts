@@ -6,7 +6,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { isSha256, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
+import { isSha256, STORE_LIMITS, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
 import { sniffMime } from "../../src/assetStore/sniff";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
@@ -80,7 +80,9 @@ export class AssetStoreClient {
 
   private async json<T>(path: string, init: RequestInit & { json?: unknown; auth?: boolean } = {}): Promise<T> {
     const response = await this.request(path, init);
-    const body = await response.json().catch(() => ({})) as { message?: string; details?: string[] };
+    const text = new TextDecoder().decode(await readCapped(response, STORE_LIMITS.manifestBytes + 65_536).catch(() => new Uint8Array()));
+    let body: { message?: string; details?: string[] } = {};
+    try { body = JSON.parse(text) as typeof body; } catch { /* 빈 응답·잘린 응답 */ }
     if (!response.ok) throw new StoreError(body.message ?? `스토어 오류 ${response.status}`, response.status, body.details ?? []);
     return body as T;
   }
@@ -108,7 +110,7 @@ export class AssetStoreClient {
     if (existsSync(path)) return new Uint8Array(readFileSync(path));
     const response = await this.request(`/api/v1/blobs/${sha}`, { auth: false });
     if (!response.ok) throw new StoreError(`파일을 받지 못했습니다(${response.status}).`, response.status);
-    const bytes = new Uint8Array(await response.arrayBuffer());
+    const bytes = await readCapped(response, STORE_LIMITS.blobBytes);
     if (createHash("sha256").update(bytes).digest("hex") !== sha) throw new StoreError("받은 파일의 해시가 맞지 않습니다. 다시 시도해 주세요.");
     if (!sniffMime(bytes)) throw new StoreError("받은 파일이 그림·소리 형식이 아닙니다.");
     writeAtomic(path, bytes);
@@ -132,6 +134,8 @@ export class AssetStoreClient {
   async install(slug: string, progress: Progress, version?: number): Promise<InstalledItem> {
     const detail = await this.item(slug);
     const target = version ?? detail.latestVersion;
+    // 판본 번호는 캐시 파일 이름에 들어간다 — 서버가 준 값이라도 양의 정수만 믿는다.
+    if (!Number.isSafeInteger(target) || target < 1) throw new StoreError("스토어가 알려 준 판본 번호가 올바르지 않습니다.");
     const raw = await this.json<unknown>(`/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/manifest`);
     const checked = validateManifest(raw);
     if (!checked.ok) throw new StoreError("팩 형식이 올바르지 않아 받지 않았습니다.", 0, checked.errors);
@@ -240,8 +244,32 @@ function normalizeUrl(url: string): string {
 }
 
 /** 스테이징(Tailscale·사설망·루프백)만 http 를 허용한다. */
-function isPrivateHost(host: string): boolean {
-  return host === "localhost" || host === "127.0.0.1" || host === "[::1]" || /^10\./.test(host) || /^192\.168\./.test(host) || /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(host) || !host.includes(".");
+export function isPrivateHost(host: string): boolean {
+  const octet = "(25[0-5]|2[0-4]\\d|1?\\d?\\d)";
+  const ip = (prefix: string, rest: number) => new RegExp(`^${prefix}(\\.${octet}){${rest}}$`).test(host);
+  return host === "localhost" || host === "[::1]" || ip("127", 3) || ip("10", 3) || ip("192\\.168", 2) || ip("172\\.(1[6-9]|2\\d|3[01])", 2)
+    || ip("100\\.(6[4-9]|[7-9]\\d|1[01]\\d|12[0-7])", 2) || /^[a-z0-9-]+$/i.test(host);
+}
+
+/** 응답 본문을 max 바이트까지만 읽는다. 넘으면 끊는다(악의적인 서버가 메모리를 채우지 못하게). */
+async function readCapped(response: Response, max: number): Promise<Uint8Array> {
+  const declared = Number(response.headers.get("content-length") ?? 0);
+  if (declared > max) { await response.body?.cancel(); throw new StoreError("스토어 응답이 너무 큽니다."); }
+  if (!response.body) return new Uint8Array();
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) { await reader.cancel(); throw new StoreError("스토어 응답이 너무 큽니다."); }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.byteLength; }
+  return out;
 }
 
 function writeAtomic(path: string, data: string | Uint8Array): void {
@@ -249,4 +277,12 @@ function writeAtomic(path: string, data: string | Uint8Array): void {
   const temp = `${path}.${process.pid}.tmp`;
   writeFileSync(temp, data);
   renameSync(temp, path);
+}
+
+/** url 이 base 와 같은 출처(프로토콜·호스트·포트)일 때만 정규화한 주소를 돌려준다. */
+export function sameOriginUrl(url: string, base: string): string | null {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin === new URL(base).origin ? parsed.toString() : null;
+  } catch { return null; }
 }

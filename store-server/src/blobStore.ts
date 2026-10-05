@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 /** sha256 주소의 불변 파일 저장소. 같은 바이트는 한 번만 쓴다. */
@@ -26,6 +26,10 @@ export class BlobStore {
     const temp = `${target}.${process.pid}.${Date.now()}.tmp`;
     writeFileSync(temp, bytes, { flag: "wx" });
     renameSync(temp, target);
+  }
+
+  remove(sha256: string): void {
+    rmSync(this.pathOf(sha256), { force: true });
   }
 
   read(sha256: string): Buffer {

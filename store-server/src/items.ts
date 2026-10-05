@@ -58,7 +58,7 @@ export async function listCatalog(db: Db, query: CatalogQuery): Promise<{ items:
   if (query.kind && (STORE_ITEM_KINDS as readonly string[]).includes(query.kind)) { args.push(query.kind); where.push(`i.kind = $${args.length}`); }
   if (query.grade === "pack" || query.grade === "single") { args.push(query.grade); where.push(`i.grade = $${args.length}`); }
   const order = query.sort === "popular" ? "i.downloads desc, i.updated_at desc" : "i.updated_at desc";
-  const page = Math.max(1, Math.min(500, Math.floor(query.page ?? 1)));
+  const page = Number.isFinite(query.page) ? Math.max(1, Math.min(500, Math.floor(query.page!))) : 1;
   const total = await db.query(`select count(*)::int as n from store_items i join store_users u on u.id = i.author_id where ${where.join(" and ")}`, args);
   const rows = await db.query(`${ITEM_SELECT} where ${where.join(" and ")} order by ${order} limit ${PAGE_SIZE} offset ${(page - 1) * PAGE_SIZE}`, args);
   return { items: rows.rows.map(summary), total: Number(total.rows[0].n), page, pageSize: PAGE_SIZE };
@@ -184,8 +184,12 @@ export async function createItem(db: Db, config: StoreConfig, store: BlobStore, 
   });
 }
 
-/** 같은 상품의 새 판본. 이전 판본은 그대로 남는다. 상태는 바꾸지 않는다(사전 확인 중이면 계속 대기). */
-export async function addVersion(db: Db, store: BlobStore, auth: Auth, slug: string, input: unknown): Promise<{ slug: string; version: number; status: StoreItemStatus }> {
+/**
+ * 같은 상품의 새 판본. 이전 판본은 그대로 남는다.
+ * 아직 신뢰받지 못한 작가가 공개 상품에 새 판본을 올리면 다시 확인 대기로 돌린다 —
+ * 무해한 판본으로 승인받은 뒤 내용을 바꿔치기하는 우회를 막는다(2026-10-06 보안 검토).
+ */
+export async function addVersion(db: Db, config: StoreConfig, store: BlobStore, auth: Auth, slug: string, input: unknown): Promise<{ slug: string; version: number; status: StoreItemStatus }> {
   const manifest = parseManifest(input);
   return inTx(db, async (tx) => {
     const row = await findItem(tx, slug);
@@ -194,14 +198,17 @@ export async function addVersion(db: Db, store: BlobStore, auth: Auth, slug: str
     const totalBytes = await checkBlobs(tx, store, manifest);
     const version = Number(row.latest_version) + 1;
     await insertVersion(tx, Number(row.id), version, manifest, totalBytes);
+    const trusted = auth.user.role === "admin" || await approvedCount(tx, Number(row.author_id)) >= config.trustThreshold;
+    const status: StoreItemStatus = row.status === "visible" && !trusted ? "pending" : row.status as StoreItemStatus;
+    if (status !== row.status) await tx.query("update store_items set status=$2 where id=$1", [row.id, status]);
     await tx.query(
       `update store_items set title=$2, summary=$3, description=$4, credits=$5, kind=$6, grade=$7, license=$8, ai_generated=$9, tags=$10,
        latest_version=$11, cover_sha=$12, previews=$13, counts=$14, updated_at=now() where id=$1`,
       [row.id, manifest.title, manifest.summary, manifest.description, manifest.credits, manifest.kind, packGrade(manifest.content), manifest.license,
         manifest.aiGenerated, manifest.tags, version, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest)],
     );
-    await audit(tx, auth.user.id, "version", Number(row.id), { version });
-    return { slug, version, status: row.status as StoreItemStatus };
+    await audit(tx, auth.user.id, "version", Number(row.id), { version, status });
+    return { slug, version, status };
   });
 }
 
@@ -241,14 +248,18 @@ export async function adminSetStatus(db: Db, auth: Auth, slug: string, status: S
 
 const REPORT_REASONS = ["copyright", "inappropriate", "broken", "spam", "other"] as const;
 
-/** 신고. 같은 신고자는 한 번만 센다. 서로 다른 신고자가 기준에 닿으면 자동으로 숨긴다. */
-export async function reportItem(db: Db, config: StoreConfig, slug: string, reporterKey: string, reason: string, detail: string): Promise<{ hidden: boolean }> {
+/**
+ * 신고. 같은 신고자는 한 번만 센다. 서로 다른 신고자가 기준에 닿으면 자동으로 숨긴다.
+ * 자동 숨김에는 `counts`(가입 하루가 지난 로그인 계정)인 신고만 센다. 익명 신고는 운영자 확인 목록에만 들어간다
+ * — 새 계정·IP 를 바꿔 가며 남의 상품을 숨기는 것을 막는다(2026-10-06 보안 검토).
+ */
+export async function reportItem(db: Db, config: StoreConfig, slug: string, reporter: { key: string; counts: boolean }, reason: string, detail: string): Promise<{ hidden: boolean }> {
   if (!(REPORT_REASONS as readonly string[]).includes(reason)) throw new HttpError(400, "신고 사유를 골라 주세요.", "bad_reason");
   return inTx(db, async (tx) => {
     const row = await findItem(tx, slug);
     if (!row || row.status === "removed" || row.status === "pending") throw new HttpError(404, "상품을 찾지 못했습니다.", "not_found");
-    await tx.query("insert into store_reports (item_id, reporter_key, reason, detail) values ($1,$2,$3,$4) on conflict do nothing", [row.id, reporterKey, reason, detail.slice(0, 2000)]);
-    const { rows } = await tx.query("select count(*)::int as n from store_reports where item_id=$1 and status='open'", [row.id]);
+    await tx.query("insert into store_reports (item_id, reporter_key, reason, detail, counts) values ($1,$2,$3,$4,$5) on conflict do nothing", [row.id, reporter.key, reason, detail.slice(0, 2000), reporter.counts]);
+    const { rows } = await tx.query("select count(*)::int as n from store_reports where item_id=$1 and status='open' and counts", [row.id]);
     if (row.status === "visible" && Number(rows[0].n) >= config.reportHideThreshold) {
       await tx.query("update store_items set status='hidden', hidden_by='reports', updated_at=now() where id=$1", [row.id]);
       await audit(tx, null, "auto_hide_reports", Number(row.id), { reports: Number(rows[0].n) });
@@ -338,4 +349,20 @@ export async function singleManifest(db: Db, store: BlobStore, input: SingleInpu
     previews: audio ? [] : [input.blob],
     blobs: [{ sha256: input.blob, mime: mime as StorePackManifest["blobs"][number]["mime"], bytes: Number(rows[0].bytes) }],
   };
+}
+
+/**
+ * 아무 판본에도 들지 않은 채 하루가 지난 blob 을 지운다. 올리기 도중 끊긴 것과, 디스크를 채우려고 올린 것을 치운다.
+ * 판본에 든 blob 은 판본이 불변이므로 지우지 않는다.
+ */
+export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours = 24): Promise<number> {
+  const { rows } = await db.query(
+    `delete from store_blobs b where b.created_at < now() - make_interval(hours => $1)
+       and not exists (select 1 from store_version_blobs v where v.sha256 = b.sha256)
+       and not exists (select 1 from store_items i where i.cover_sha = b.sha256 or b.sha256 = any(i.previews))
+     returning sha256`,
+    [olderThanHours],
+  );
+  for (const row of rows) store.remove(String(row.sha256));
+  return rows.length;
 }

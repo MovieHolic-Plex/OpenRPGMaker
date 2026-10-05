@@ -41,6 +41,8 @@ export const STORE_LIMITS = {
   blobs: 512,
   assets: 256,
   tilesets: 32,
+  /** 타일셋 하나의 칸 수 상한(가장 큰 공식 팩 버들항이 2만 4천 칸). */
+  tilesetCells: 131_072,
   previews: 6,
   title: 80,
   summary: 160,
@@ -274,10 +276,13 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       } else if (tileset.image.type === "uploaded" && !assetIds.has(tileset.image.id)) {
         errors.push(`타일셋 ${id} 의 그림(${tileset.image.id})이 팩에 없습니다.`);
       }
-      if (![16, 24, 32, 48].includes(tileset.tileSize) || !Number.isSafeInteger(tileset.count) || tileset.count <= 0 || !Number.isSafeInteger(tileset.tilesPerRow) || tileset.tilesPerRow <= 0) {
+      // 칸 수에 상한을 둔다 — 편집기가 칸마다 도는 곳이 많아 터무니없는 값은 편집기를 멈춘다.
+      if (![16, 24, 32, 48].includes(tileset.tileSize) || !Number.isSafeInteger(tileset.count) || tileset.count <= 0 || tileset.count > STORE_LIMITS.tilesetCells
+        || !Number.isSafeInteger(tileset.tilesPerRow) || tileset.tilesPerRow <= 0 || tileset.tilesPerRow > 4096) {
         errors.push(`타일셋 ${id} 의 칸 크기·칸 수가 올바르지 않습니다.`);
       }
       if (!Array.isArray(tileset.passability) || !Array.isArray(tileset.priority)) errors.push(`타일셋 ${id} 의 통행·층 정보가 없습니다.`);
+      else if (tileset.passability.length > STORE_LIMITS.tilesetCells || tileset.priority.length > STORE_LIMITS.tilesetCells) errors.push(`타일셋 ${id} 의 통행·층 정보가 너무 깁니다.`);
       if (tileset.referenceSourceTilesetId !== undefined && !Object.hasOwn(tilesets, tileset.referenceSourceTilesetId)) {
         errors.push(`타일셋 ${id} 이 팩 밖의 참고문서(${tileset.referenceSourceTilesetId})를 가리킵니다.`);
       }

@@ -3,7 +3,7 @@ import type { StoreConfig } from "./config";
 import type { Db } from "./db";
 import { HttpError, type Ctx } from "./http";
 
-export interface User { id: number; email: string; displayName: string; role: "user" | "admin"; blocked: boolean }
+export interface User { id: number; email: string; displayName: string; role: "user" | "admin"; blocked: boolean; createdAt: string }
 export interface Auth { user: User; via: "session" | "token"; csrf: string | null }
 
 export const SESSION_COOKIE = "oprn_store_session";
@@ -15,7 +15,7 @@ export const hashToken = (token: string): string => createHash("sha256").update(
 export const newToken = (bytes = 32): string => randomBytes(bytes).toString("base64url");
 
 function rowUser(row: Record<string, unknown>): User {
-  return { id: Number(row.id), email: String(row.email), displayName: String(row.display_name), role: row.role === "admin" ? "admin" : "user", blocked: Boolean(row.blocked) };
+  return { id: Number(row.id), email: String(row.email), displayName: String(row.display_name), role: row.role === "admin" ? "admin" : "user", blocked: Boolean(row.blocked), createdAt: new Date(row.created_at as string | Date).toISOString() };
 }
 
 export async function upsertUser(db: Db, config: StoreConfig, input: { email: string; displayName: string; googleSub?: string }): Promise<User> {
@@ -62,7 +62,7 @@ export async function authenticate(db: Db, ctx: Ctx): Promise<Auth | null> {
   if (header.startsWith("Bearer ")) {
     const { rows } = await db.query(
       `update store_tokens t set last_used_at = now() from store_users u
-       where t.token_hash = $1 and t.revoked_at is null and u.id = t.user_id returning u.*`,
+       where t.token_hash = $1 and t.revoked_at is null and t.expires_at > now() and u.id = t.user_id returning u.*`,
       [hashToken(header.slice(7).trim())],
     );
     if (rows.length === 0) throw new HttpError(401, "로그인이 만료되었습니다. 다시 로그인해 주세요.", "invalid_token");

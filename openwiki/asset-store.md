@@ -83,13 +83,35 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
   - 신고로 숨겨진 상품은 작가가 다시 공개할 수 없다(409).
   - 운영자 조치는 `/admin` 에서 한다.
 
+## 보안 검토 반영 (2026-10-06)
+
+적대적 검토에서 나온 항목과 막은 방법:
+
+- **용량:** 한 사람이 한 시간에 올리는 blob 바이트는 `STORE_UPLOAD_BYTES_PER_HOUR`(기본 1GiB)까지다.
+  판본에 들지 않은 채 하루가 지난 blob 은 한 시간마다 지운다(`sweepOrphanBlobs`).
+- **신고 남용:** 자동 숨김에는 가입한 지 하루가 지난 로그인 계정의 신고만 센다. 익명 신고는 운영자 목록에만 들어간다.
+  IPv6 주소는 /64 단위로 묶는다.
+- **판본 바꿔치기:** 아직 신뢰받지 못한 작가가 공개 상품에 새 판본을 올리면 상품이 다시 `pending` 이 된다.
+- **로그인 주소:**
+  - `next=` 는 같은 사이트 경로만 받는다(`//`, `/\`, 제어 문자는 거절).
+  - 기기 코드 확인 화면에는 앱이 스스로 밝힌 이름을 보여 주지 않는다.
+  - 허락 요청 횟수를 제한한다.
+  - 앱 토큰은 180일 뒤 만료된다(`migrations/002_hardening.sql`).
+- **개발 로그인:** `STORE_DEV_LOGIN=1` 은 https 공개 주소에서는 서버가 아예 켜지지 않는다.
+- **앱(메인 프로세스):**
+  - `shell.openExternal` 은 스토어와 같은 출처 주소만 연다.
+  - 서버가 준 판본 번호는 양의 정수만 받는다(캐시 파일 이름에 쓰이기 때문).
+  - 응답 본문은 상한까지만 읽는다.
+  - `http` 를 허용하는 사설 주소 판정은 IP 전체 모양으로 한다(`10.evil.com` 은 거절).
+- **매니페스트:** 타일셋 칸 수는 131,072 칸까지만 받는다.
+
 ## 실행·시험
 
 ```bash
 npm --prefix store-server run build                 # dist/server.mjs, dist/local.mjs
-npm --prefix store-server test                      # 서버 통합 8건 (임시 Postgres 클러스터)
+npm --prefix store-server test                      # 서버 통합 11건 (임시 Postgres 클러스터)
 node store-server/scripts/typecheck.mjs             # 이 패키지 파일 오류만
-npx vitest run test/assetStorePack.test.ts          # 팩 형식 7건
+npx vitest run test/assetStorePack.test.ts test/assetStoreClient.test.ts test/titleLicenseNotice.test.ts  # 팩 형식·주소 규칙·크레딧 창 18건
 # 실제 앱 e2e — 사전 빌드: npm run build:app && npm run build:electron
 xvfb-run -a npx playwright test -c playwright.electron.config.ts electronAssetStore
 store-server/scripts/dev-unit.sh start 18391        # 임시 로컬 서버(시드 포함), stop 으로 끔

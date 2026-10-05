@@ -90,7 +90,7 @@ export function item(config: StoreConfig, auth: Auth | null, detail: StoreItemDe
   const gallery = detail.previews.length > 0
     ? `<div class="gallery">${detail.previews.map((sha, index) => `<figure class="${index === 0 ? "main" : "thumb"}"><img src="${blobUrl(sha)}" alt="${esc(detail.title)} 미리보기 ${index + 1}"></figure>`).join("")}</div>`
     : `<div class="gallery"><figure class="main audio"><span class="cover-icon">♪</span></figure></div>`;
-  const versions = detail.versions.map((v) => `<li><b>판본 ${v.version}</b> <span>${esc(v.createdAt.slice(0, 10))}</span> <span>${(v.bytes / 1024 / 1024).toFixed(2)}MB</span></li>`).join("");
+  const versions = detail.versions.map((v) => `<li><b>판본 ${v.version}</b> <span>${esc(seoulTime(v.createdAt).slice(0, 10))}</span> <span>${fileSize(v.bytes)}</span></li>`).join("");
   const report = detail.status === "visible" || detail.status === "hidden"
     ? `<details class="report"><summary>신고하기</summary><form method="post" action="/items/${esc(detail.slug)}/report">
 <input type="hidden" name="token" value="${esc(formToken(config, `report:${detail.slug}`))}">
@@ -144,11 +144,21 @@ ${it.status === "visible" || (it.status === "hidden" && it.hiddenBy === "author"
   return layout(config, auth, "내 상품", body);
 }
 
+/** 화면 시각은 서울 기준(운영자·첫 사용자가 한국). ISO(UTC) → "YYYY-MM-DD HH:MM". */
+function seoulTime(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? iso : date.toLocaleString("sv-SE", { timeZone: "Asia/Seoul", hour12: false }).slice(0, 16);
+}
+
+function fileSize(bytes: number): string {
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(2)}MB` : `${Math.max(1, Math.round(bytes / 1024))}KB`;
+}
+
 export function admin(config: StoreConfig, auth: Auth, queue: { pending: StoreItemSummary[]; reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[] }): string {
   const action = (slug: string, status: string, label: string, cls = "") => `<form method="post" action="/admin/items/${esc(slug)}/status" class="inline"><input type="hidden" name="csrf" value="${esc(auth.csrf ?? "")}"><input type="hidden" name="status" value="${status}"><button class="button small ${cls}" data-testid="admin-${status}-${esc(slug)}">${esc(label)}</button></form>`;
   const pending = queue.pending.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a><p>${esc(it.author)} · ${esc(STORE_KIND_LABELS[it.kind])} ${badges(it)}</p></div><div class="actions">${action(it.slug, "visible", "공개")}${action(it.slug, "removed", "내리기", "danger")}</div></li>`).join("");
   const reported = queue.reported.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a> <span class="status ${esc(it.status)}">${esc(STATUS_LABELS[it.status as StoreItemStatus])}</span>
-<ul class="reports">${it.reports.map((r) => `<li><b>${esc(r.reason)}</b> ${esc(r.detail)} <small>${esc(r.createdAt.slice(0, 16).replace("T", " "))}</small></li>`).join("")}</ul></div>
+<ul class="reports">${it.reports.map((r) => `<li><b>${esc(r.reason)}</b> ${esc(r.detail)} <small>${esc(seoulTime(r.createdAt))}</small></li>`).join("")}</ul></div>
 <div class="actions">${action(it.slug, "visible", "문제없음 · 공개")}${action(it.slug, "hidden", "숨김 유지")}${action(it.slug, "removed", "내리기", "danger")}</div></li>`).join("");
   const body = `<section><h1>운영</h1><h2>확인 대기 ${queue.pending.length}</h2><ul class="queue" data-testid="admin-pending">${pending || "<li class=empty>없음</li>"}</ul>
 <h2>신고 ${queue.reported.length}</h2><ul class="queue" data-testid="admin-reported">${reported || "<li class=empty>없음</li>"}</ul></section>`;
@@ -170,7 +180,9 @@ export function device(config: StoreConfig, auth: Auth, code: string, found: { c
   else if (done === "denied") content = `<p class="notice">거절했습니다.</p>`;
   else if (done === "expired") content = `<p class="notice">코드가 만료되었거나 이미 쓰였습니다. 에디터에서 다시 시작해 주세요.</p>`;
   else if (code && found?.status === "pending") {
-    content = `<p class="lead"><b>${esc(found.clientName)}</b>가 <b>${esc(auth.user.email)}</b> 계정으로 로그인하려고 합니다.</p>
+    // 앱이 밝힌 이름(clientName)은 누구나 정할 수 있어 보여 주지 않는다 — 공식 앱처럼 꾸민 낚시를 막는다.
+    content = `<p class="lead"><b>OPRN 데스크톱 앱</b>이 <b>${esc(auth.user.email)}</b> 계정으로 로그인하려고 합니다.</p>
+<p class="notice">내가 직접 에디터에서 「로그인」을 누른 경우에만 허락하세요. 다른 사람이 보내 준 코드라면 거절하세요.</p>
 <p>에디터 화면의 코드와 같은지 확인하세요.</p><p class="user-code" data-testid="device-code">${esc(code)}</p>
 <form method="post" action="/device" class="row"><input type="hidden" name="csrf" value="${esc(auth.csrf ?? "")}"><input type="hidden" name="code" value="${esc(code)}">
 <button class="button" name="decision" value="approve" data-testid="device-approve">허락</button><button class="button ghost" name="decision" value="deny">거절</button></form>`;

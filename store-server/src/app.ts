@@ -14,7 +14,7 @@ import type { Db } from "./db";
 import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, type Ctx } from "./http";
 import {
   addVersion, adminQueue, adminSetStatus, authorVisibility, blobServable, createItem, itemDetail, listCatalog, myItems,
-  recordDownload, reportItem, singleManifest, versionManifest, type SingleInput,
+  recordDownload, reportItem, singleManifest, sweepOrphanBlobs, versionManifest, type SingleInput,
 } from "./items";
 import * as pages from "./web/pages";
 
@@ -32,11 +32,21 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     report: new RateLimiter(20, 60_000),
     login: new RateLimiter(30, 60_000),
     device: new RateLimiter(60, 60_000),
+    approve: new RateLimiter(30, 60_000),
+    download: new RateLimiter(120, 60_000),
+    // 사람마다 한 시간에 올리는 바이트(기본 1GiB). 요청 수 제한만으로는 32MB×1500 을 막지 못한다.
+    bytes: new RateLimiter(config.uploadBytesPerHour, 3_600_000),
   };
+  const sweep = setInterval(() => { void sweepOrphanBlobs(db, blobs).catch((error) => console.error("[store] sweep", error)); }, 3_600_000);
+  sweep.unref();
   const limit = (limiter: RateLimiter, ctx: Ctx): void => {
     if (!limiter.take(ctx.ip)) throw new HttpError(429, "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.", "rate_limited");
   };
-  const clientKey = (ctx: Ctx, auth: Auth | null): string => auth ? `u:${auth.user.id}` : `ip:${createHash("sha256").update(`oprn-store:${ctx.ip}`).digest("hex").slice(0, 32)}`;
+  // IPv6 는 /64 하나가 한 가입자다 — 주소를 바꿔 가며 다른 사람인 척하지 못하게 /64 로 묶는다.
+  const ipBucket = (ip: string): string => (ip.includes(":") && !ip.startsWith("::ffff:") ? ip.split(":").slice(0, 4).join(":") : ip.replace(/^::ffff:/, ""));
+  const clientKey = (ctx: Ctx, auth: Auth | null): string => auth ? `u:${auth.user.id}` : `ip:${createHash("sha256").update(`oprn-store:${ipBucket(ctx.ip)}`).digest("hex").slice(0, 32)}`;
+  /** 자동 숨김에 세는 신고자: 가입한 지 하루가 지난 로그인 계정. */
+  const establishedReporter = (auth: Auth | null): boolean => auth !== null && Date.now() - Date.parse(auth.user.createdAt) >= 86_400_000;
   const viewer = async (ctx: Ctx): Promise<Auth | null> => {
     try { return await authenticate(db, ctx); } catch (error) { if (error instanceof HttpError && error.status === 401) return null; throw error; }
   };
@@ -45,7 +55,11 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     sendHtml(ctx.res, status, await body(auth));
   };
   const loginRedirect = (ctx: Ctx): void => redirect(ctx.res, `/login?next=${encodeURIComponent(ctx.url.pathname + ctx.url.search)}`);
-  const safeNext = (value: string | null): string => (value && value.startsWith("/") && !value.startsWith("//") ? value : "/");
+  /** 로그인 뒤 돌아갈 곳: 같은 사이트의 경로만. `//x`, `/\\x`, 제어 문자는 밖으로 나가는 주소가 될 수 있어 거른다. */
+  const safeNext = (value: string | null): string => {
+    if (!value || !/^\/(?![\/\\])[^\\\x00-\x1f\x7f]*$/.test(value)) return "/";
+    try { return new URL(value, config.publicUrl).origin === new URL(config.publicUrl).origin ? value : "/"; } catch { return "/"; }
+  };
 
   // ── JSON API (/api/v1) ─────────────────────────────────────────────
   router.get("/healthz", (ctx) => sendJson(ctx.res, 200, { ok: true }));
@@ -64,6 +78,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     sendJson(ctx.res, 200, manifest, { "cache-control": "private, max-age=60" });
   });
   router.post("/api/v1/items/:slug/downloads", async (ctx) => {
+    limit(limits.download, ctx);
     const auth = await viewer(ctx);
     await recordDownload(db, ctx.params.slug!, clientKey(ctx, auth));
     sendJson(ctx.res, 200, { ok: true });
@@ -90,6 +105,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const sha = String(ctx.req.headers["x-sha256"] ?? "");
     if (!isSha256(sha)) throw new HttpError(400, "x-sha256 헤더가 필요합니다.", "bad_sha");
     const bytes = new Uint8Array(await readBody(ctx.req, STORE_LIMITS.blobBytes));
+    if (!limits.bytes.take(`u:${auth.user.id}`, bytes.byteLength)) throw new HttpError(429, "한 시간에 올릴 수 있는 용량을 넘었습니다. 잠시 뒤에 다시 시도해 주세요.", "upload_quota");
     const actual = createHash("sha256").update(bytes).digest("hex");
     if (actual !== sha) throw new HttpError(400, "파일 해시가 맞지 않습니다. 전송 중에 깨졌을 수 있습니다.", "sha_mismatch");
     const mime = sniffMime(bytes);
@@ -121,7 +137,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     limit(limits.create, ctx);
     const auth = await requireWriter(db, ctx);
     const body = await readJson<{ manifest?: unknown }>(ctx.req, STORE_LIMITS.manifestBytes + 4096);
-    sendJson(ctx.res, 201, await addVersion(db, blobs, auth, ctx.params.slug!, body.manifest));
+    sendJson(ctx.res, 201, await addVersion(db, config, blobs, auth, ctx.params.slug!, body.manifest));
   });
   router.post("/api/v1/items/:slug/visibility", async (ctx) => {
     const auth = await requireWriter(db, ctx);
@@ -132,7 +148,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     limit(limits.report, ctx);
     const auth = await viewer(ctx);
     const body = await readJson<{ reason?: unknown; detail?: unknown }>(ctx.req, 16 * 1024);
-    sendJson(ctx.res, 200, await reportItem(db, config, ctx.params.slug!, clientKey(ctx, auth), String(body.reason ?? ""), String(body.detail ?? "")));
+    sendJson(ctx.res, 200, await reportItem(db, config, ctx.params.slug!, { key: clientKey(ctx, auth), counts: establishedReporter(auth) }, String(body.reason ?? ""), String(body.detail ?? "")));
   });
   router.get("/api/v1/me", async (ctx) => {
     const auth = await authenticate(db, ctx);
@@ -184,7 +200,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const form = await readForm(ctx.req);
     if (!pages.checkFormToken(config, `report:${ctx.params.slug}`, form.get("token") ?? "")) throw new HttpError(403, "신고 양식이 만료되었습니다. 페이지를 새로고침해 주세요.", "form_token");
     const auth = await viewer(ctx);
-    await reportItem(db, config, ctx.params.slug!, clientKey(ctx, auth), form.get("reason") ?? "", form.get("detail") ?? "");
+    await reportItem(db, config, ctx.params.slug!, { key: clientKey(ctx, auth), counts: establishedReporter(auth) }, form.get("reason") ?? "", form.get("detail") ?? "");
     redirect(ctx.res, `/items/${encodeURIComponent(ctx.params.slug!)}?reported=1`);
   });
   router.post("/items/:slug/visibility", async (ctx) => {
@@ -237,7 +253,9 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   });
   router.get("/auth/google/callback", async (ctx) => {
     limit(limits.login, ctx);
-    const [state, nextRaw] = (ctx.cookies.oprn_store_oauth ?? "").split(".");
+    const cookie = ctx.cookies.oprn_store_oauth ?? "";
+    const dot = cookie.indexOf(".");
+    const [state, nextRaw] = dot > 0 ? [cookie.slice(0, dot), cookie.slice(dot + 1)] : [cookie, "/"];
     const code = ctx.url.searchParams.get("code");
     if (!state || state !== ctx.url.searchParams.get("state") || !code) throw new HttpError(400, "로그인 요청이 만료되었습니다. 다시 시도해 주세요.", "oauth_state");
     const info = await googleUser(config, code);
@@ -258,6 +276,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     sendHtml(ctx.res, 200, pages.device(config, auth, code, code ? await findDeviceCode(db, code) : null, ctx.url.searchParams.get("done")));
   });
   router.post("/device", async (ctx) => {
+    limit(limits.approve, ctx);
     const form = await readForm(ctx.req);
     const auth = await requireWriter(db, ctx, form.get("csrf"));
     const code = (form.get("code") ?? "").toUpperCase();
@@ -300,7 +319,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   server.requestTimeout = 120_000;
   return {
     server,
-    close: () => new Promise<void>((resolve) => { server.close(() => resolve()); server.closeAllConnections(); }),
+    close: () => new Promise<void>((resolve) => { clearInterval(sweep); server.close(() => resolve()); server.closeAllConnections(); }),
   };
 }
 

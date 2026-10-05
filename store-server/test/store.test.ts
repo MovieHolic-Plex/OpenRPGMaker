@@ -10,6 +10,8 @@ import { basicTilesetFor, buildPack, type PackMeta } from "../../src/assetStore/
 import { bytesToBase64 } from "../../src/assetStore/sniff";
 import type { Project, UploadedAsset } from "../../src/project/types";
 import { createApp, type App } from "../src/app";
+import { BlobStore } from "../src/blobStore";
+import { sweepOrphanBlobs } from "../src/items";
 import { loadConfig } from "../src/config";
 import { createDb, migrate, type Db } from "../src/db";
 import { Client, freePort, startPostgres, type TempPostgres } from "./harness";
@@ -257,8 +259,13 @@ describe("OPRN asset store server", () => {
     await admin.devLogin("boss@openrpgmaker.com", "운영자");
     const item = await uploadPack(admin, "신고될 팩", 40);
     assert.equal(item.status, "visible");
+    // 방금 만든 계정의 신고는 운영자 목록에만 들어가고 자동 숨김에는 세지 않는다.
+    const fresh = new Client(base);
+    await fresh.devLogin("fresh-reporter@example.com", "새 계정");
+    assert.deepEqual(await (await fresh.api(`/api/v1/items/${item.slug}/reports`, { reason: "spam" })).json(), { hidden: false });
     const reporters = [new Client(base), new Client(base), new Client(base)];
     for (const [index, reporter] of reporters.entries()) await reporter.devLogin(`reporter${index}@example.com`, `신고${index}`);
+    await db.query("update store_users set created_at = now() - interval '2 days' where email like 'reporter%@example.com'");
     const first = await reporters[0]!.api(`/api/v1/items/${item.slug}/reports`, { reason: "copyright", detail: "원작 주소" });
     assert.deepEqual(await first.json(), { hidden: false });
     await reporters[0]!.api(`/api/v1/items/${item.slug}/reports`, { reason: "copyright" });
@@ -272,7 +279,7 @@ describe("OPRN asset store server", () => {
     const formReport = await guest.form(`/items/${item.slug}/report`, { reason: "spam", token: "1.forged" });
     assert.equal(formReport.status, 403, "anonymous form reports need a signed token");
     const queue = await (await admin.api("/api/v1/admin/queue")).json() as { reported: { slug: string; reports: unknown[] }[] };
-    assert.equal(queue.reported.find((entry) => entry.slug === item.slug)?.reports.length, 3);
+    assert.equal(queue.reported.find((entry) => entry.slug === item.slug)?.reports.length, 4);
     assert.equal((await admin.api(`/api/v1/admin/items/${item.slug}/status`, { status: "removed", note: "저작권 확인" })).status, 200);
     assert.equal((await guest.fetch(`/api/v1/items/${item.slug}/versions/1/manifest`)).status, 404);
     assert.equal((await guest.fetch(`/api/v1/blobs/${item.manifest.content.assets.sheet!.blob}`)).status, 404, "removed bytes stop being served");
@@ -289,5 +296,46 @@ describe("OPRN asset store server", () => {
     assert.equal((await author.form(`/items/${item.slug}/visibility`, { csrf: "wrong", hidden: "0" })).status, 403);
     assert.equal((await author.form(`/items/${item.slug}/visibility`, { csrf: author.csrf, hidden: "0" })).status, 303);
     assert.equal((await (await author.api(`/api/v1/items/${item.slug}`)).json() as { status: string }).status, "visible");
+  });
+
+  it("sends a new version from a not-yet-trusted author back to review", async () => {
+    const author = new Client(base);
+    await author.devLogin("second-version@example.com", "둘째 판본");
+    const item = await uploadPack(author, "바꿔치기 시험 팩", 60);
+    assert.equal(item.status, "pending");
+    const admin = new Client(base);
+    await admin.devLogin("boss@openrpgmaker.com", "운영자");
+    assert.equal((await admin.api(`/api/v1/admin/items/${item.slug}/status`, { status: "visible" })).status, 200);
+    const pack = await makePack("바꿔치기 시험 팩 v2", 61);
+    const check = await (await author.api("/api/v1/blobs/check", { sha256s: [...pack.blobs.keys()] })).json() as { missing: string[] };
+    for (const key of check.missing) await author.fetch("/api/v1/blobs", { method: "POST", body: Buffer.from(pack.blobs.get(key)!), headers: { "x-sha256": key, "x-csrf-token": author.csrf } });
+    const versioned = await (await author.api(`/api/v1/items/${item.slug}/versions`, { manifest: pack.manifest })).json() as { status: string; version: number };
+    assert.deepEqual(versioned, { slug: item.slug, version: 2, status: "pending" });
+    assert.equal((await new Client(base).fetch(`/api/v1/items/${item.slug}`)).status, 404, "hidden from guests until re-approved");
+  });
+
+  it("only redirects to same-site paths after login", async () => {
+    for (const next of ["//evil.example", "/\\evil.example", "/\tevil", "https://evil.example/"]) {
+      const client = new Client(base);
+      const response = await client.form("/auth/dev", { email: "redirect@example.com", name: "넘김", next });
+      assert.equal(response.status, 303);
+      assert.equal(response.headers.get("location"), "/", `rejects ${JSON.stringify(next)}`);
+    }
+    const ok = await new Client(base).form("/auth/dev", { email: "redirect@example.com", name: "넘김", next: "/me?tab=1" });
+    assert.equal(ok.headers.get("location"), "/me?tab=1");
+  });
+
+  it("sweeps blobs that never made it into a version", async () => {
+    const uploader = new Client(base);
+    await uploader.devLogin("sweeper@example.com", "청소");
+    const orphan = png(4, 4, 777);
+    const kept = await uploadPack(uploader, "청소 시험 팩", 70);
+    assert.equal((await uploader.fetch("/api/v1/blobs", { method: "POST", body: Buffer.from(orphan), headers: { "x-sha256": sha(orphan), "x-csrf-token": uploader.csrf } })).status, 200);
+    await db.query("update store_blobs set created_at = now() - interval '2 days'");
+    const store = new BlobStore(blobDir);
+    const removed = await sweepOrphanBlobs(db, store);
+    assert.ok(removed >= 1);
+    assert.equal(store.has(sha(orphan)), false);
+    for (const blob of kept.manifest.blobs) assert.equal(store.has(blob.sha256), true, "blobs in a version stay");
   });
 });

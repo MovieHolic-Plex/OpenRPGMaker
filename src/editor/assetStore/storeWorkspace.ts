@@ -481,6 +481,9 @@ function uploadView(): HTMLElement {
   const mine = (state.mine ?? []).filter((item) => item.status !== "removed");
   const submit = el("button", { class: "store-button", text: "올리기", attrs: { type: "button" }, dataset: { testid: "store-upload-submit" }, on: { click: () => void submitUpload(selection) } });
   return el("div", { class: "store-upload", children: [
+    ...(state.uploadResult ? [el("p", { class: "store-ok store-upload-done", dataset: { testid: "store-upload-result" }, text: state.uploadResult.status === "pending"
+      ? `올렸습니다 (판본 ${state.uploadResult.version}). 새 작가의 첫 공개는 운영자가 한 번 확인한 뒤 목록에 보입니다.`
+      : `올렸습니다 (판본 ${state.uploadResult.version}). 지금 스토어에 보입니다.` })] : []),
     el("section", { class: "store-upload-col", children: [
       el("h3", { text: "1. 올릴 것 고르기" }),
       el("p", { class: "store-hint", text: "타일셋을 고르면 그림·이식 원본·참고문서가 함께 들어갑니다. 참고문서가 있으면 「조수 사용 가능」으로 표시됩니다." }),
@@ -510,9 +513,6 @@ function uploadView(): HTMLElement {
       ] }),
       state.busy.has("__upload") ? el("span", { class: "store-progress", dataset: { progress: form.title, testid: "store-progress" }, text: state.busy.get("__upload") ?? "" }) : submit,
       ...(state.uploadError ? [errorBanner(state.uploadError)] : []),
-      ...(state.uploadResult ? [el("p", { class: "store-ok", dataset: { testid: "store-upload-result" }, text: state.uploadResult.status === "pending"
-        ? `올렸습니다 (판본 ${state.uploadResult.version}). 새 작가의 첫 공개는 운영자가 한 번 확인한 뒤 목록에 보입니다.`
-        : `올렸습니다 (판본 ${state.uploadResult.version}). 지금 스토어에 보입니다.` })] : []),
     ] }),
   ] });
 }
@@ -546,6 +546,7 @@ async function submitUpload(selection: { tilesetIds: string[]; assetIds: string[
       unsubscribe();
     }
     state.upload = blankUpload();
+    host?.querySelector(".store-main")?.scrollTo({ top: 0 });
     void refreshMine();
   } catch (error) {
     state.uploadError = storeFailure(error);

@@ -130,15 +130,16 @@ export function esc(value: unknown): string {
 export class RateLimiter {
   private readonly hits = new Map<string, { count: number; reset: number }>();
   constructor(private readonly limit: number, private readonly windowMs: number) {}
-  take(key: string): boolean {
+  /** cost 만큼 쓴다(요청 수면 1, 바이트 예산이면 바이트 수). */
+  take(key: string, cost = 1): boolean {
     const now = Date.now();
     const entry = this.hits.get(key);
     if (!entry || entry.reset <= now) {
       if (this.hits.size > 50_000) this.hits.clear();
-      this.hits.set(key, { count: 1, reset: now + this.windowMs });
-      return true;
+      this.hits.set(key, { count: cost, reset: now + this.windowMs });
+      return cost <= this.limit;
     }
-    entry.count += 1;
+    entry.count += cost;
     return entry.count <= this.limit;
   }
 }

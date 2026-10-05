@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { app, ipcMain, safeStorage, shell, webContents } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { storeCatalogSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema, storeBlobSchema } from "../shared/schemas";
-import { AssetStoreClient, StoreError } from "./assetStoreClient";
+import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 import type { StorePackManifest } from "../../src/assetStore/format";
 
 let client: AssetStoreClient | null = null;
@@ -98,7 +98,12 @@ export function registerAssetStore(): void {
     const store = storeClient();
     const started = await store.startLogin("OPRN 에디터");
     const seq = ++loginSeq;
-    if (input.openBrowser !== false) void shell.openExternal(started.verification_uri_complete);
+    // 서버가 준 주소를 그대로 열지 않는다: 스토어와 같은 출처의 /device 주소일 때만 브라우저로 연다.
+    if (input.openBrowser !== false) {
+      const verify = sameOriginUrl(started.verification_uri_complete, store.url);
+      if (!verify) throw new StoreError("스토어가 알려 준 로그인 주소가 스토어 주소와 다릅니다.");
+      void shell.openExternal(verify);
+    }
     // 승인될 때까지 메인이 기다린다. 창을 닫거나 다시 시작하면 이전 기다림은 멈춘다.
     const deadline = Date.now() + started.expires_in * 1000;
     void (async () => {
@@ -121,3 +126,4 @@ export function registerAssetStore(): void {
     return result;
   }));
 }
+

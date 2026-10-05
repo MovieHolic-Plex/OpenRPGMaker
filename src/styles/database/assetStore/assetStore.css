@@ -118,3 +118,4 @@
 .store-form .store-button { padding: 11px 14px; font-size: 14px; }
 .store-pick-blocked { margin-top: 8px; border-top: 1px dashed var(--border-default, rgba(15,23,42,0.13)); padding-top: 6px; }
 .store-pick-blocked summary { cursor: pointer; font-size: 12px; color: var(--text-2, #475569); padding: 4px 8px; }
+.store-upload-done { grid-column: 1 / -1; margin: 0; font-weight: 600; }

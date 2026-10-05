@@ -17,6 +17,8 @@ export interface StoreConfig {
   readonly trustThreshold: number;
   /** 서로 다른 신고자 수가 이 값에 닿으면 자동으로 숨긴다. */
   readonly reportHideThreshold: number;
+  /** 한 사람이 한 시간에 올릴 수 있는 blob 바이트. 디스크를 채우는 공격을 막는다. */
+  readonly uploadBytesPerHour: number;
   readonly trustProxy: boolean;
   /** 익명 양식(신고) 토큰 서명 키. 없으면 실행마다 새로 만든다(재시작 뒤 열린 양식만 다시 받게 된다). */
   readonly secret: string;
@@ -33,6 +35,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): StoreConfig {
   const publicUrl = (env.STORE_PUBLIC_URL ?? `http://${host}:${port}`).replace(/\/+$/, "");
   const googleId = env.STORE_GOOGLE_CLIENT_ID?.trim();
   const googleSecret = env.STORE_GOOGLE_CLIENT_SECRET?.trim();
+  // 개발 로그인은 아무 이메일로나 들어간다(운영자 이메일 포함). https 공개 주소에서는 켜지 못하게 막는다.
+  if (env.STORE_DEV_LOGIN === "1" && publicUrl.startsWith("https://")) throw new Error("STORE_DEV_LOGIN=1 은 https 공개 주소에서 쓸 수 없습니다(스테이징·테스트 전용).");
   return {
     port,
     host,
@@ -51,6 +55,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): StoreConfig {
     contactEmail: env.STORE_CONTACT_EMAIL ?? "admin@openrpgmaker.com",
     trustThreshold: Number(env.STORE_TRUST_THRESHOLD ?? 3),
     reportHideThreshold: Number(env.STORE_REPORT_HIDE_THRESHOLD ?? 3),
+    uploadBytesPerHour: Number(env.STORE_UPLOAD_BYTES_PER_HOUR ?? 1024 * 1024 * 1024),
     trustProxy: env.STORE_TRUST_PROXY === "1",
     secret: env.STORE_SECRET?.trim() || randomBytes(32).toString("hex"),
   };

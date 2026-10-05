@@ -105,6 +105,7 @@ async function openStore(page: Page, tab: "browse" | "installed" | "project" | "
     // 사이드바는 마지막에 연 칸을 기억한다 — 이미 열려 있으면 다시 누르면 닫힌다.
     const opener = page.locator('[data-testid="left-store-open"]');
     const toggle = page.locator('[data-testid="sidebar-store"]');
+    await toggle.waitFor({ timeout: 90_000 }).catch(async (error) => { await page.screenshot({ path: join(scratch, "debug-open.png") }); throw error; });
     if ((await toggle.getAttribute("aria-pressed")) !== "true") await toggle.click();
     await expect(toggle).toHaveAttribute("aria-pressed", "true");
     await opener.click();
@@ -139,7 +140,7 @@ test.afterAll(async () => {
     server.kill("SIGTERM");
     await new Promise((done) => { server.once("exit", done); setTimeout(done, 15_000); });
   }
-  if (scratch) rmSync(scratch, { recursive: true, force: true });
+  if (scratch && !process.env.KEEP_STORE_E2E) rmSync(scratch, { recursive: true, force: true });
 });
 
 test("browse, add to project, save, reload, log in, upload from the editor, admin approves", async () => {
