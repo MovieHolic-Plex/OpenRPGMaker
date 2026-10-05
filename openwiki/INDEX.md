@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **147쪽 / 5106KB / 약 1,488,142 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **147쪽 / 5107KB / 약 1,488,408 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
-| `openwiki/charset-actor-harness.md` | 65KB | 7KB | 479 | ~20,358 |
+| `openwiki/charset-actor-harness.md` | 65KB | 7KB | 479 | ~20,529 |
 | `openwiki/editor-ai-panel.md` | 636KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4052 | ~186,195 |
 | `openwiki/editor-ai-tools.md` | 339KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 2772 | ~98,075 |
 | `openwiki/editor-database.md` | 414KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2475 | ~121,519 |
@@ -392,7 +392,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` 그림의 접촉점
 - `L50` 저장과 증거
 
-### `openwiki/charset-actor-harness.md` — 65KB · 479줄 · ~20,358 토큰 · 통째읽기 잘림
+### `openwiki/charset-actor-harness.md` — 65KB · 479줄 · ~20,529 토큰 · 통째읽기 잘림
 
 - `L3` GIF 공방: AI 자유 저작과 사람 선택 (2026-10-04)
   - `L22` 검토 화면과 제작 관리 (2026-10-05)
@@ -1176,7 +1176,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L88` 수정 확인 — 2026-10-05
 - `L92` 월드맵 생성 MP4 증거
 
-### `openwiki/harnesses/charset-actor.md` — 9KB · 60줄 · ~2,694 토큰
+### `openwiki/harnesses/charset-actor.md` — 9KB · 60줄 · ~2,789 토큰
 
 절 제목 없음 (평면 목록 페이지).
 

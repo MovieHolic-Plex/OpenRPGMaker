@@ -137,10 +137,20 @@ const name=it=>it.desc?.label||it.name;
 let noticeTimer=null;
 function notice(text,error=false){clearTimeout(noticeTimer);$('notice').textContent=text;$('notice').classList.toggle('error',error);if(text&&!error)noticeTimer=setTimeout(()=>{$('notice').textContent=''},3500)}
 async function post(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:path==='/api/decide'?AbortSignal.timeout(12000):undefined});const result=await response.json();if(!response.ok){const error=Error(result.error||'저장 실패');error.status=response.status;throw error}return result}
-function scoped(){
+function runScope(selected=run){
   const parents=new Map(state.runs.map(r=>[r.run,r.continuationOf]));
-  const includes=id=>{if(run==='all')return true;const seen=new Set();while(id&&!seen.has(id)){if(id===run)return true;seen.add(id);id=parents.get(id)}return false};
+  return id=>{if(selected==='all')return true;const seen=new Set();while(id&&!seen.has(id)){if(id===selected)return true;seen.add(id);id=parents.get(id)}return false}
+}
+function scoped(){
+  const includes=runScope();
   return state.items.map(displayed).filter(it=>includes(it.run)&&(kind==='all'||(kind==='creatures')===isCreature(it)))
+}
+function productionProgress(){
+  const includes=runScope(), jobs=state.runs.filter(r=>includes(r.run)), ready=jobs.reduce((n,r)=>n+r.ready,0);
+  const planned=Math.max(ready,jobs.reduce((n,r)=>n+r.planned,0)), items=state.items.map(displayed).filter(it=>includes(it.run)&&it.status==='done');
+  return {jobs,ready,planned,remaining:planned-ready,kept:items.filter(it=>it.decision?.decision==='accept').length,
+    todo:items.filter(it=>!it.decision).length,active:jobs.filter(r=>['running','waiting-review','pausing'].includes(r.phase)),
+    queued:jobs.filter(r=>r.phase==='queued')}
 }
 function visible(){return scoped().filter(it=>{if(dismissed.has(imageKey(it)))return false;const decision=it.decision?.decision;if(tab==='todo'&&(decision||it.status!=='done'))return false;if(tab==='accept'&&decision!=='accept')return false;if(tab==='reject'&&decision!=='reject')return false;return [name(it),it.desc?.appearance,it.desc?.role,...(it.desc?.tags||[])].join(' ').toLowerCase().includes(query.toLowerCase())})}
 function move(step){const rows=visible(),idx=rows.findIndex(it=>it.id===current);if(!rows.length)return;current=rows[Math.max(0,Math.min(rows.length-1,idx+step))].id;render()}
@@ -157,18 +167,20 @@ function runLabel(id){
   return prefix+(m?` · ${m[2]}/${m[3]} ${m[4]}:${m[5]}`:'');
 }
 function productionCards(rows){
-  return rows.map(r=>{
+  return rows.map(original=>{
+    const includes=runScope(original.run), descendants=original.phase==='continued'?state.runs.filter(r=>includes(r.run)):null;
+    const r=descendants?Object.assign({},original,...['planned','ready','awaiting','kept','rejected','blocked'].map(key=>({[key]:descendants.reduce((n,item)=>n+(item[key]||0),0)}))):original;
     const active=['running','waiting-review','pausing','queued'].includes(r.phase);
     return `<section class="production"><h3>${esc(runLabel(r.run))}</h3><p>${esc(phaseLabels[r.phase]||r.phase)} · ${r.ready} / ${r.planned}종 완성</p><div class="progress" role="progressbar" aria-label="${esc(runLabel(r.run))} 완성" aria-valuenow="${r.ready}" aria-valuemin="0" aria-valuemax="${r.planned}"><i style="width:${Math.min(100,r.ready/Math.max(1,r.planned)*100)}%"></i></div><div class="row"><span class="badge">검토 ${r.awaiting} · 남김 ${r.kept} · 폐기 ${r.rejected}${r.blocked?` · 결손 차단 ${r.blocked}`:''}</span>${['completed','continued'].includes(r.phase)?'':`<button data-control="${active?'pause':'resume'}" data-run="${esc(r.run)}" ${r.phase==='pausing'?'disabled':''}>${active?'일시 정지':'이어 만들기'}</button>`}</div>${r.continuedIn?'<p>남은 캐릭터는 새 작업에서 이어 만들고 있습니다.</p>':''}${r.error?`<p class="error">${esc(r.error)}</p>`:''}</section>`;
   }).join('');
 }
 function renderProduction(){
-  const active=state.runs.filter(r=>['running','waiting-review','pausing'].includes(r.phase));
+  const progress=productionProgress(), active=progress.active;
   const count=active.length, allWaiting=count&&active.every(r=>r.phase==='waiting-review');
   $('manage').textContent=`제작 관리${count?' '+count:''}`;
-  $('productionSummary').innerHTML=count?`<span class="live-dot" aria-hidden="true"></span>${count}개 작업 · ${allWaiting?'GIF 검토를 기다리는 중':'AI가 다음 캐릭터를 그리는 중'}`:'새 캐릭터를 만들거나 남긴 그림을 다시 볼 수 있습니다.';
-  const recent=state.runs.filter(r=>!['completed','continued'].includes(r.phase));
-  for(const [id,rows]of [['production',recent],['productionPast',state.runs.filter(r=>['completed','continued'].includes(r.phase))]]){
+  $('productionSummary').innerHTML=run!=='all'&&progress.planned?`${count?'<span class="live-dot" aria-hidden="true"></span>':''}완성 ${progress.ready} / ${progress.planned}종 · 미완성 ${progress.remaining} · 검토 ${progress.todo} · 남김 ${progress.kept}${count?' · 제작 중':progress.queued.length?' · 자동 제작 대기':''}`:count?`<span class="live-dot" aria-hidden="true"></span>${count}개 작업 · ${allWaiting?'GIF 검토를 기다리는 중':'AI가 다음 캐릭터를 그리는 중'}`:'새 캐릭터를 만들거나 남긴 그림을 다시 볼 수 있습니다.';
+  const recent=progress.jobs.filter(r=>!['completed','continued'].includes(r.phase));
+  for(const [id,rows]of [['production',recent],['productionPast',progress.jobs.filter(r=>['completed','continued'].includes(r.phase))]]){
     const html=productionCards(rows)||'<p>진행 중인 제작이 없습니다.</p>';
     if($(id).innerHTML===html)continue;
     $(id).innerHTML=html;
@@ -199,10 +211,16 @@ function render(){
   const artists=state.runs.filter(r=>['running','waiting-review','pausing'].includes(r.phase)).reduce((n,r)=>n+(r.artists??2),0);
   $('capacityNote').hidden=artists<=2;$('start').disabled=createSubmitting||artists>2;
   const rows=visible();if(!rows.some(it=>it.id===current))current=rows[0]?.id;const idx=rows.findIndex(it=>it.id===current);
-  $('position').textContent=rows.length?`${idx+1} / ${rows.length}종${run!=='all'?' · '+runLabel(run):''}`:'검토 목록';$('previous').disabled=idx<=0;$('next').disabled=idx<0||idx>=rows.length-1;
+  $('position').textContent=rows.length?`${{todo:'검토',accept:'남김',reject:'폐기',all:'현재 목록'}[tab]} ${idx+1} / ${rows.length}종${run!=='all'?' · '+runLabel(run):''}`:'검토 목록';$('previous').disabled=idx<=0;$('next').disabled=idx<0||idx>=rows.length-1;
   const existing=new Map([...$('stage').querySelectorAll('[data-card]')].map(el=>[el.dataset.card,el]));
   if(!rows.length){
-    const drawing=state.items.filter(it=>it.status==='running').length, filtered=run!=='all'||kind!=='all'||!!query;
+    const progress=productionProgress(), filtered=kind!=='all'||!!query;
+    if(!filtered&&tab==='todo'&&progress.remaining>0&&(progress.active.length||progress.queued.length)){
+      $('stage').innerHTML=`<div class="empty"><h2>${progress.active.length?'다음 캐릭터를 제작하고 있습니다':'다음 제작을 기다리고 있습니다'}</h2><p>${run!=='all'?`${progress.planned}종 중 ${progress.ready}종 완성 · ${progress.remaining}종 미완성`:'완성된 캐릭터부터 검토할 수 있습니다.'}</p><p>현재 검토할 완성본은 ${progress.todo}종입니다. 새 GIF가 완성되면 여기에 자동으로 나타납니다.</p><div class="row">${kept?`<button id="showFinished">남긴 ${kept}종 보기</button>`:''}<button id="emptyManage">제작 상태 보기</button></div></div>`;
+      if($('showFinished'))$('showFinished').onclick=()=>{tab='accept';dismissed.clear();render()};
+      $('emptyManage').onclick=()=>$('manage').click();return;
+    }
+    const drawing=progress.active.length;
     $('stage').innerHTML=`<div class="empty"><h2>${filtered?'조건에 맞는 캐릭터가 없습니다':tab==='todo'?(drawing?'다음 캐릭터를 그리는 중':'검토를 모두 마쳤습니다'):'아직 캐릭터가 없습니다'}</h2><p>${filtered?'필터를 바꾸면 다른 캐릭터를 볼 수 있습니다.':tab==='todo'?(drawing?'완성된 GIF가 도착하면 여기에 나타납니다.':'새 인물을 만들거나 남긴 캐릭터를 다시 살펴보세요.'):'GIF를 보고 선택한 캐릭터가 여기에 나타납니다.'}</p><div class="row">${filtered?'<button id="showAllRuns">필터 초기화</button>':`<button id="emptyGenerate" class="keep">새 캐릭터 만들기</button>${kept?`<button id="showFinished">남긴 ${kept}종 보기</button>`:''}`}</div></div>`;
     if($('showFinished'))$('showFinished').onclick=()=>{tab='accept';dismissed.clear();render()};
     if($('showAllRuns'))$('showAllRuns').onclick=resetFilters;
