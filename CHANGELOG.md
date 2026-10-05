@@ -5,6 +5,50 @@
 
 <!-- releases -->
 
+## 0.141.1 — 2026-10-05
+
+### 수정
+
+- **assistant** — team lead reads the live team project, not its start copy (`10d0ff9`)
+- **assistant** — event_command_assist works inside Pi runs (`63f444c`)
+- **assistant** — run_scene_test moves a stray adjacent onto a walk step (`88d9284`)
+- **assistant** — team lead hears which changes the user declined (`7cdc5ed`)
+- **assistant** — make_chase_scene refuses a lost switch that is also the wake switch (`9fa1f1d`)
+- **assistant** — scene test rejections name the expected shape for every expect field (`605a8d2`)
+- **assistant** — one declined map deletion no longer ends the whole team run (`d27c25b`)
+- **assistant** — find_tools only offers tools the run can call (`ac174a5`)
+- **assistant** — team lead learns what a reportless member already applied (`c43ea84`)
+- **assistant** — refresh request keys during long Pi runs (`e224b0b`)
+- **assistant** — Pi client watchdog listens past a page freeze before cutting the run (`101c33f`)
+- **assistant** — warn when a boss victory branch pays gold on top of the troop reward (`254ced9`)
+- **assistant** — enumerate hand-interior floor/wall/ceiling ids in the tool schema (`4724c7f`)
+- **assistant** — expand run_scene_test move count into repeated one-tile moves (`2971f14`)
+- **assistant** — infer referencePurpose from the one fully read reference group (`d908b74`)
+- **assistant** — skip malformed commands in story-flag pre-pass so shape errors reach the model (`f51ffca`)
+
+### 성능
+
+- **assistant** — heavy wire hashes one value once and remembers recent digests (`59cd6ca`)
+- **assistant** — heavy wire keeps hashes only, builds blob JSON on 409 (`4efa7a9`)
+- **persistence** — slim contentDigest node memos (identity digest retained 259→198MB) (`0b4fb35`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX (`6acbcb6`)
+- **openwiki** — team lead reads the live working copy (`ccd1502`)
+- **openwiki** — team userDeclined and worker event_command_assist (`59111e1`)
+- **openwiki** — find_tools run scope and recoverable checkpoint rejections (`e270143`)
+
+### 테스트
+
+- **qa** — stress driver treats in-panel decision prompts as human questions (`970321b`)
+- **qa** — stress driver stays multi-process and unpins its renderers from the OOM killer (`c37ae04`)
+- **qa** — time-box CDP metric reads in stress driver (`06cf87e`)
+- **qa** — stress cases export the canonical snapshot for qa:game check (`0635945`)
+- **qa** — stress driver samples live heap allocations after send (heap-sampling.json) (`7026638`)
+- **qa** — stress driver tolerates editor freezes; replay awaits async reference images (`4e148f3`)
+- **qa** — add real-path assistant stress suite (genre team first builds + hard prompts) (`ed58920`)
+
 ## 0.141.0 — 2026-10-05
 
 ### 기능
