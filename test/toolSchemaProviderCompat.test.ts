@@ -17,6 +17,11 @@
 // 모델이 9회 연속 재제출에서 단 한 번도 낼 수 없었다. 같은 턴의 confirmDestroy(선언돼 있음)는
 // 정상적으로 나왔다 — 차이는 오직 선언 여부였다. 결과: 영역 턴이 24콜 예산을 태우고
 // max-tool-calls 로 잘려 313칸이 미적용으로 남았다. 검증기가 이름을 부르는 필드는 선언돼야 한다.
+//
+// 2026-10-05 추가: enum 안의 빈 문자열. set_project_settings.fonts 가 "기본값으로 되돌리기" 를 `""` 로
+// 열거했더니 CCA 가 `enum[0]: cannot be empty` 로 요청 전체를 400 으로 거부했다. 이 도구를 받는 시공 담당만
+// 매 턴 0툴콜로 죽고 팀장·검수는 멀쩡해서 "조수가 맵을 안 만든다" 로 보였다. 빈 enum·중복 멤버도 같이 막는다.
+// 전송 직전 방어(scripts/lib/ohMyPiToolEnums.ts stripEmptyEnumMembers)는 새어 나간 것을 살릴 뿐 계약이 아니다.
 import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { SET_BUILD_SPEC_TOOL, SPEC_REMEDY_FIELDS, WORK_PLAN_TOOLS } from "@/ai/assistantSession";
@@ -35,6 +40,26 @@ type SchemaNode = {
   readonly oneOf?: readonly SchemaNode[];
   readonly anyOf?: readonly SchemaNode[];
 };
+
+/** enum 은 비지 않은 배열이고, 멤버에 빈 문자열·중복이 없어야 한다. additionalProperties 스키마 안까지 본다. */
+function walkEnums(node: SchemaNode, path: string, violations: string[]): void {
+  if (node.enum !== undefined) {
+    if (!Array.isArray(node.enum) || node.enum.length === 0) violations.push(`${path}: enum 은 비지 않은 배열이어야 합니다`);
+    else {
+      node.enum.forEach((value, index) => {
+        if (value === "") violations.push(`${path}.enum[${index}]: 빈 문자열은 CCA 가 400 으로 거부합니다 — "default" 같은 실제 값을 쓰세요`);
+      });
+      if (new Set(node.enum).size !== node.enum.length) violations.push(`${path}: enum 멤버가 중복됩니다 ${JSON.stringify(node.enum)}`);
+    }
+  }
+  for (const [key, child] of Object.entries(node.properties ?? {})) walkEnums(child, `${path}.${key}`, violations);
+  if (node.items) walkEnums(node.items, `${path}[]`, violations);
+  if (typeof node.additionalProperties === "object" && node.additionalProperties !== null) {
+    walkEnums(node.additionalProperties as SchemaNode, `${path}{*}`, violations);
+  }
+  for (const [index, child] of (node.oneOf ?? []).entries()) walkEnums(child, `${path}.oneOf[${index}]`, violations);
+  for (const [index, child] of (node.anyOf ?? []).entries()) walkEnums(child, `${path}.anyOf[${index}]`, violations);
+}
 
 /** 모델에 노출되는 전체 파라미터 스키마 — 레지스트리 툴 + 세션 전용 툴. */
 function exposedSchemas(): { name: string; parameters: SchemaNode }[] {
@@ -92,6 +117,23 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
     const violations: string[] = [];
     for (const { name, parameters } of exposedSchemas()) walk(parameters, name, violations, true);
     expect(violations.filter((v) => v.includes("oneOf/anyOf"))).toEqual([]);
+  });
+
+  it("enum 에 빈 문자열·빈 배열·중복 멤버가 없다 (CCA enum[0]: cannot be empty 400 방지)", () => {
+    const violations: string[] = [];
+    for (const { name, parameters } of exposedSchemas()) walkEnums(parameters, name, violations);
+    expect(violations).toEqual([]);
+  });
+
+  it("실측 회귀: walkEnums 가 빈 문자열·빈 배열·중복을 실제로 잡는다", () => {
+    const violations: string[] = [];
+    walkEnums({ type: "object", properties: {
+      font: { type: "string", enum: ["", "neodgm"] },
+      member: { type: "string", enum: [] },
+      kind: { type: "string", enum: ["switch", "switch"] },
+      map: { type: "object", additionalProperties: { type: "string", enum: [""] } },
+    } }, "probe", violations);
+    expect(violations).toHaveLength(4);
   });
 
   it("실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다", () => {
