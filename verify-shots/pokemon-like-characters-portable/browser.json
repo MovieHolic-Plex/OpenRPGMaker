@@ -1,0 +1,236 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "portable collection displays 16 roles",
+      "pass": true
+    },
+    {
+      "name": "hero source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "hero requires five observations",
+      "pass": true
+    },
+    {
+      "name": "hero opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "rival source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "rival requires five observations",
+      "pass": true
+    },
+    {
+      "name": "rival opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "professor source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "professor requires five observations",
+      "pass": true
+    },
+    {
+      "name": "professor opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "nurse source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "nurse requires five observations",
+      "pass": true
+    },
+    {
+      "name": "nurse opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "merchant source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "merchant requires five observations",
+      "pass": true
+    },
+    {
+      "name": "merchant opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "mother source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "mother requires five observations",
+      "pass": true
+    },
+    {
+      "name": "mother opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "resident source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "resident requires five observations",
+      "pass": true
+    },
+    {
+      "name": "resident opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "gym_leader source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "gym_leader requires five observations",
+      "pass": true
+    },
+    {
+      "name": "gym_leader opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "company_agent source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "company_agent requires five observations",
+      "pass": true
+    },
+    {
+      "name": "company_agent opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "captain source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "captain requires five observations",
+      "pass": true
+    },
+    {
+      "name": "captain opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "worker source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "worker requires five observations",
+      "pass": true
+    },
+    {
+      "name": "worker opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "explorer source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "explorer requires five observations",
+      "pass": true
+    },
+    {
+      "name": "explorer opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "student source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "student requires five observations",
+      "pass": true
+    },
+    {
+      "name": "student opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "ranger source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "ranger requires five observations",
+      "pass": true
+    },
+    {
+      "name": "ranger opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "moon_leader source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "moon_leader requires five observations",
+      "pass": true
+    },
+    {
+      "name": "moon_leader opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "hiker source/edit/change images and GIF load",
+      "pass": true
+    },
+    {
+      "name": "hiker requires five observations",
+      "pass": true
+    },
+    {
+      "name": "hiker opposite step preview",
+      "pass": true
+    },
+    {
+      "name": "role filter selects explorer",
+      "pass": true
+    },
+    {
+      "name": "Allow enabled after observations",
+      "pass": true
+    },
+    {
+      "name": "browser Allow enables export",
+      "pass": true
+    },
+    {
+      "name": "browser approval survives reload",
+      "pass": true
+    },
+    {
+      "name": "browser approved ZIP contains output",
+      "pass": true
+    },
+    {
+      "name": "Deny revokes download",
+      "pass": true
+    },
+    {
+      "name": "320px no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "zero browser/resource errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "syntheticDecisionsOnly": true,
+  "liveStoreWrites": 0
+}

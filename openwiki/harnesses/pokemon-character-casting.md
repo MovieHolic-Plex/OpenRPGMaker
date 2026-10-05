@@ -2,7 +2,27 @@
 
 User-requested reusable human selection harness. `src/harnesses/pokemon-character-casting/` owns the producer, review server, SQLite decisions, live approval checks and approved output. It uses the existing `pokemon-character-motion` native import/check/preview/review/gate/build without changing its implementation hashes. Genre: monster-collect. CLI and standalone review page exist; editor workshop integration/assistant tools do not yet exist and are honestly false in the manifest.
 
-## Start and reuse
+
+## Portable harness (2026-10-05)
+
+For new editor-independent work, use **`harness/pokemon-like-characters/`**. Copy that directory alone;
+`node cli.mjs doctor|templates|prepare|new|render|queue|serve|status|verify|export` runs without the editor,
+Vite, project storage, API credentials, or runtime npm packages. Node24 and Python3.10+/Pillow12.1.1 are required.
+The original `src/harnesses/` adapter and live review records stay intact; the portable store has a separate approval history.
+
+It owns readable `core/` sources plus a prebuilt Node bundle, pinned template references, all sixteen row-edit recipes,
+Python render/replay/GIF/clone checks, SQLite review, a browser UI, author instructions, and focused portable tests.
+`new` copies an editable draft; the agent must author its pixel rows. It does not invent artwork from a name.
+The default `.data/` lives beside the tool or `--data` selects an external store. Store relocation was verified after Allow.
+Engine-neutral export is 48×128 PNG, four-direction GIF, 16×32 frame metadata at130ms, provenance and human receipt.
+No editor slot/asset ID is part of the portable contract. The background preview is light/dark/green contrast, not game QA.
+`node scripts/copy.mjs --out <new-directory>` copies a dependency-free distribution with file hashes, excluding all review data.
+
+Read the portable README and AGENTS for future character work. Verify portability with `node tests/verify.mjs` (copies the
+whole tool outside the repo), and UI with `node tests/browser.mjs --data <store>` (backups to disposable SQLite before voting).
+Synthetic QA votes never touch the real review store. Evidence: `verify-shots/pokemon-like-characters-portable/`.
+
+## Legacy editor adapter: start and reuse
 
 ```bash
 npm run harness -- pokemon-character-casting prepare

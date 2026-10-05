@@ -1,0 +1,153 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "portable copy has no editor, node_modules, or symlinks",
+      "pass": true
+    },
+    {
+      "name": "CLI doctor",
+      "pass": true
+    },
+    {
+      "name": "doctor outside repository succeeds",
+      "pass": true
+    },
+    {
+      "name": "CLI prepare",
+      "pass": true
+    },
+    {
+      "name": "16 roles and 192 poses generated with zero auto approval",
+      "pass": true
+    },
+    {
+      "name": "CLI prepare",
+      "pass": true
+    },
+    {
+      "name": "repeat generation keeps identical IDs",
+      "pass": true
+    },
+    {
+      "name": "CLI verify",
+      "pass": true
+    },
+    {
+      "name": "all 16 packages and exact GIF/replay checks pass",
+      "pass": true
+    },
+    {
+      "name": "CLI status",
+      "pass": true
+    },
+    {
+      "name": "new store has 16 pending candidates",
+      "pass": true
+    },
+    {
+      "name": "CLI export --id hero-3b3a28634d028191 --out /tmp/character-harness-isolated-ivyL4H/pending-export",
+      "pass": true
+    },
+    {
+      "name": "CLI new --from explorer --name QA 새 탐험가 --out /tmp/character-harness-isolated-ivyL4H/draft",
+      "pass": true
+    },
+    {
+      "name": "CLI render --draft /tmp/character-harness-isolated-ivyL4H/draft --out /tmp/character-harness-isolated-ivyL4H/bundle",
+      "pass": true
+    },
+    {
+      "name": "new author draft renders and registers pending",
+      "pass": true
+    },
+    {
+      "name": "CLI render --draft /tmp/character-harness-isolated-ivyL4H/draft --out /tmp/character-harness-isolated-ivyL4H/bad-foot",
+      "pass": true
+    },
+    {
+      "name": "CLI render --draft /tmp/character-harness-isolated-ivyL4H/draft --out /tmp/character-harness-isolated-ivyL4H/bad-source",
+      "pass": true
+    },
+    {
+      "name": "missing CSRF rejected",
+      "pass": true
+    },
+    {
+      "name": "cross-origin vote rejected",
+      "pass": true
+    },
+    {
+      "name": "incomplete observations rejected",
+      "pass": true
+    },
+    {
+      "name": "stale candidate digest rejected",
+      "pass": true
+    },
+    {
+      "name": "Deny needs repair reason",
+      "pass": true
+    },
+    {
+      "name": "isolated complete Allow recorded",
+      "pass": true
+    },
+    {
+      "name": "isolated Deny recorded",
+      "pass": true
+    },
+    {
+      "name": "CLI export --id hero-3b3a28634d028191 --out /tmp/character-harness-isolated-ivyL4H/approved-export",
+      "pass": true
+    },
+    {
+      "name": "engine-neutral export has native dimensions and matching GIF timing",
+      "pass": true
+    },
+    {
+      "name": "exported source PNG is byte exact",
+      "pass": true
+    },
+    {
+      "name": "CLI export --id rival-2a9feb123a90ecdf --out /tmp/character-harness-isolated-ivyL4H/denied-export",
+      "pass": true
+    },
+    {
+      "name": "approved browser ZIP works",
+      "pass": true
+    },
+    {
+      "name": "CLI export --data /tmp/character-harness-isolated-ivyL4H/relocated-store --id hero-3b3a28634d028191 --out /tmp/character-harness-isolated-ivyL4H/relocated-export",
+      "pass": true
+    },
+    {
+      "name": "Allow survives store relocation",
+      "pass": true
+    },
+    {
+      "name": "Allow and Deny survive process restart",
+      "pass": true
+    },
+    {
+      "name": "CLI status",
+      "pass": true
+    },
+    {
+      "name": "tampered candidate becomes stale",
+      "pass": true
+    },
+    {
+      "name": "CLI export --id hero-3b3a28634d028191 --out /tmp/character-harness-isolated-ivyL4H/tampered-export",
+      "pass": true
+    },
+    {
+      "name": "CLI verify",
+      "pass": true
+    }
+  ],
+  "copyOutsideRepository": true,
+  "runtimeNpmDependencies": 0,
+  "syntheticDecisionsOnly": true,
+  "liveStoresTouched": false
+}

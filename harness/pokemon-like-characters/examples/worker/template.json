@@ -1,0 +1,573 @@
+{
+  "version": 1,
+  "templateId": "man_1",
+  "templateSourceSha256": "cd71f4ec4dd2b634cf48d79020be960127434fcfcc56ed536f4e7084d6ffc57c",
+  "paletteOverrides": {
+    "5": "#d5a850",
+    "6": "#ac7a36",
+    "7": "#69512f",
+    "8": "#6f91ae",
+    "9": "#456680",
+    "A": "#283e54",
+    "B": "#e59d4b",
+    "C": "#b76b37",
+    "D": "#674634",
+    "E": "#efc879"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 12,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 16,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 17,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "rows": [
+        ".437556BB65EE7.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 11,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 14,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 16,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "rows": [
+        ".755556BB655557."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 12,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 16,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 17,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "rows": [
+        "..7EE56BB655734."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 12,
+      "rows": [
+        ".....77777......"
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 16,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "....75EBB5E7...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 11,
+      "rows": [
+        ".....77777......"
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 14,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 15,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "....75EBB5E7...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 12,
+      "rows": [
+        ".....77777......"
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 16,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "....75EBB5E7...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 12,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 16,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 17,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        ".4375EEBBEE5E7.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 11,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 14,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 16,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        ".7555EEBBEE5557."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 12,
+      "rows": [
+        "......7777......"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 16,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 17,
+      "rows": [
+        "..777555555777.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        "..7E5EEBBEE5734."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 12,
+      "rows": [
+        "......77777....."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 16,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....7E5BBE57...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 11,
+      "rows": [
+        "......77777....."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 14,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 15,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....7E5BBE57...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 12,
+      "rows": [
+        "......77777....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....75EEEE57...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "...75EEEEEE57..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 15,
+      "rows": [
+        "..75EEEEEEEE57.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 16,
+      "rows": [
+        "..775555555577.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....7E5BBE57...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "노란 안전모와 황토색 작업조끼, 남색 작업바지",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

@@ -1,0 +1,6 @@
+.data/
+.exports/
+.venv/
+node_modules/
+__pycache__/
+*.pyc

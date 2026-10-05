@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4658KB / 약 1,344,109 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4660KB / 약 1,344,540 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -80,7 +80,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/pokemon-character-casting.md` | 3 | `author-cast-wave.py`, `data/waves/full-cast-v1.json`, `prepare-cast.mjs` |
+| `openwiki/harnesses/pokemon-character-casting.md` | 1 | `data/waves/full-cast-v1.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 1 | `map-from-sheet.png` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
@@ -1136,16 +1136,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L171` 시험
 - `L180` 아직 없는 것
 
-### `openwiki/harnesses/pokemon-character-casting.md` — 18KB · 107줄 · ~4,509 토큰
+### `openwiki/harnesses/pokemon-character-casting.md` — 19KB · 127줄 · ~4,940 토큰
 
-- `L5` Start and reuse
-- `L20` Current distinct-body wave (supersedes first wave)
-- `L36` Human review
-- `L47` Freshness and shipping gate
-- `L55` Focused verification
-- `L65` Newly authored candidate workflow (2026-10-05)
-- `L80` Template edits (current strategy, user-directed 2026-10-05)
-- `L96` Complete sixteen-role template collection (2026-10-05)
+- `L6` Portable harness (2026-10-05)
+- `L25` Legacy editor adapter: start and reuse
+- `L40` Current distinct-body wave (supersedes first wave)
+- `L56` Human review
+- `L67` Freshness and shipping gate
+- `L75` Focused verification
+- `L85` Newly authored candidate workflow (2026-10-05)
+- `L100` Template edits (current strategy, user-directed 2026-10-05)
+- `L116` Complete sixteen-role template collection (2026-10-05)
 
 ### `openwiki/harnesses/pokemon-character-motion.md` — 35KB · 247줄 · ~9,580 토큰
 
