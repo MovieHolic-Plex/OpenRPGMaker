@@ -1,0 +1,196 @@
+{
+  "provenance": "Actual editor UI; captured live spawn/tool receipts replayed and one completion injected. No live model request or canonical write.",
+  "checks": [
+    {
+      "name": "rail-releases-canvas-space",
+      "ok": true,
+      "detail": {
+        "before": {
+          "teamWidth": 300,
+          "collapsed": "false",
+          "canvasWidth": 538,
+          "teamHeight": 951,
+          "dividerVisible": null,
+          "teamFits": true
+        },
+        "folded": {
+          "teamWidth": 44,
+          "collapsed": "true",
+          "canvasWidth": 794,
+          "teamHeight": 951,
+          "dividerVisible": null,
+          "teamFits": true
+        }
+      }
+    },
+    {
+      "name": "hidden-details-inert",
+      "ok": true
+    },
+    {
+      "name": "restore-accessible",
+      "ok": true
+    },
+    {
+      "name": "update-keeps-folded",
+      "ok": true
+    },
+    {
+      "name": "running-count-updates",
+      "ok": true
+    },
+    {
+      "name": "draft-selection-node-preserved",
+      "ok": true,
+      "detail": {
+        "sameNode": true,
+        "text": "같은 조수의 초안을 유지해주세요.",
+        "start": 2,
+        "end": 6
+      }
+    },
+    {
+      "name": "expanded-width-restored",
+      "ok": true
+    },
+    {
+      "name": "reload-remembers-fold",
+      "ok": true
+    },
+    {
+      "name": "new-activity-keeps-folded",
+      "ok": true
+    },
+    {
+      "name": "wide-collapse-1600",
+      "ok": true,
+      "detail": {
+        "open": {
+          "teamWidth": 930,
+          "collapsed": "false",
+          "canvasWidth": 838,
+          "wideWidth": 1550,
+          "chatWidth": 611,
+          "teamHeight": 891,
+          "dividerVisible": true,
+          "teamFits": true
+        },
+        "shut": {
+          "teamWidth": 44,
+          "collapsed": "true",
+          "canvasWidth": 838,
+          "wideWidth": 1550,
+          "chatWidth": 1506,
+          "teamHeight": 891,
+          "dividerVisible": false,
+          "teamFits": true
+        }
+      }
+    },
+    {
+      "name": "wide-restores-1600",
+      "ok": true,
+      "detail": {
+        "teamWidth": 930,
+        "collapsed": "false",
+        "canvasWidth": 838,
+        "wideWidth": 1550,
+        "chatWidth": 611,
+        "teamHeight": 891,
+        "dividerVisible": true,
+        "teamFits": true
+      }
+    },
+    {
+      "name": "wide-collapse-1024",
+      "ok": true,
+      "detail": {
+        "open": {
+          "teamWidth": 584.390625,
+          "collapsed": "false",
+          "canvasWidth": 518,
+          "wideWidth": 974,
+          "chatWidth": 380.609375,
+          "teamHeight": 891,
+          "dividerVisible": true,
+          "teamFits": true
+        },
+        "shut": {
+          "teamWidth": 44,
+          "collapsed": "true",
+          "canvasWidth": 518,
+          "wideWidth": 974,
+          "chatWidth": 930,
+          "teamHeight": 891,
+          "dividerVisible": false,
+          "teamFits": true
+        }
+      }
+    },
+    {
+      "name": "wide-restores-1024",
+      "ok": true,
+      "detail": {
+        "teamWidth": 584.390625,
+        "collapsed": "false",
+        "canvasWidth": 518,
+        "wideWidth": 974,
+        "chatWidth": 380.609375,
+        "teamHeight": 891,
+        "dividerVisible": true,
+        "teamFits": true
+      }
+    },
+    {
+      "name": "wide-collapse-700",
+      "ok": true,
+      "detail": {
+        "open": {
+          "teamWidth": 682,
+          "collapsed": "false",
+          "canvasWidth": 194,
+          "wideWidth": 682,
+          "chatWidth": 682,
+          "teamHeight": 402.75,
+          "dividerVisible": false,
+          "teamFits": true
+        },
+        "shut": {
+          "teamWidth": 682,
+          "collapsed": "true",
+          "canvasWidth": 194,
+          "wideWidth": 682,
+          "chatWidth": 682,
+          "teamHeight": 44,
+          "dividerVisible": false,
+          "teamFits": true
+        }
+      }
+    },
+    {
+      "name": "wide-restores-700",
+      "ok": true,
+      "detail": {
+        "teamWidth": 682,
+        "collapsed": "false",
+        "canvasWidth": 194,
+        "wideWidth": 682,
+        "chatWidth": 682,
+        "teamHeight": 402.75,
+        "dividerVisible": false,
+        "teamFits": true
+      }
+    },
+    {
+      "name": "wide-returns-live-sidebar",
+      "ok": true
+    },
+    {
+      "name": "no-browser-errors",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

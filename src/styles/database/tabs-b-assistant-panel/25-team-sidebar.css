@@ -6,6 +6,9 @@
 }
 .ai-team-rail-tabs { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border-subtle); }
 .ai-team-sidebar button { cursor: pointer; font: 500 12px var(--font-ui); }
+.ai-team-collapse { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; gap: 4px; width: 30px; min-height: 30px; padding: 5px; border: 0; border-radius: var(--radius-s); color: var(--text-2); background: transparent; }
+.ai-team-collapse:hover { background: var(--bg-inset); }
+.ai-team-collapse-status { display: none; }
 .ai-team-rail-tab { padding: 8px 5px; border: 0; border-radius: var(--radius-s); color: var(--text-2); background: transparent; }
 .ai-team-rail-tab[aria-pressed="true"] { background: var(--accent-muted); color: var(--accent); }
 .ai-team-avatar-list { display: grid; align-content: start; gap: 10px; padding: 12px; flex: 1; overflow-y: auto; min-height: 0; }
@@ -114,3 +117,13 @@
   .ai-team-avatar-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ai-team-sidebar.has-detail > .ai-team-avatar-list { max-height: 40%; }
 }
+
+/* Manual folding preserves live content and reserves only a restore rail. */
+.ai-team-sidebar.is-collapsed { flex-basis: 44px; width: 44px; min-width: 44px; }
+.ai-team-sidebar.is-collapsed > :not(.ai-team-rail-tabs) { display: none !important; }
+.ai-team-sidebar.is-collapsed .ai-team-rail-tabs { display: flex; flex-direction: column; gap: 8px; padding: 6px; border: 0; }
+.ai-team-sidebar.is-collapsed .ai-team-counts { display: none; }
+.ai-team-sidebar.is-collapsed .ai-team-rail-tab { writing-mode: vertical-rl; padding: 8px 4px; }
+.ai-team-sidebar.is-collapsed .ai-team-collapse { order: -1; flex-direction: column; }
+.ai-team-sidebar.is-collapsed .ai-team-collapse svg { transform: rotate(180deg); }
+.ai-team-sidebar.is-collapsed .ai-team-collapse-status:not(:empty) { display: block; font-variant-numeric: tabular-nums; color: var(--success); }
