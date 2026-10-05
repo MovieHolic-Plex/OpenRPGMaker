@@ -770,3 +770,35 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 전체 paused=1은 유지한다. `/api/seeds`의 실제 정책 상태와 데스크톱/390px 모바일 화면을
 확인했다(`verify-shots/dedicated-theme/`). Python/JS 문법 확인만 수행했고 gates/vitest는 실행하지 않았다.
 아직 새 전용 그림·데모의 완성이나 검수 PASS를 뜻하지 않는다.
+
+
+## 제작 범위 분기·우선 세계관·컨셉아트 (2026-10-05)
+
+- 키워드 발견 모델은 공간 제안 전에 `production`을 함께 결정한다. `production_strategy.py`가
+  `dedicated`/`extend-kit`, 근거, 등록된 native 키트 후보, 재사용/추가 제작 조사 목록을 검증한다.
+  기존 키트 후보는 사용 승인이 아니다. 실제 참고문서/그림과 재료 검수는 계속 필요하다.
+  고유 세계관은 전체 세트를 계획하고, 일반 중세 공동묘지 같은 장소는 기존 키트에 부족한 재료만
+  보충한다. 문자열 목록으로 고유명사를 분류하지 않는다. 이후 공간 제안은 확정 전략을 유지한다.
+- `production_priority_seed` 설정은 해당 키워드의 실행 가능한 작업을 먼저 입장시킨다.
+  이미 실행 중인 다른 작업은 종료시키지 않는다. 우선 테마가 그림/사용자 판단을 기다릴 때는
+  다른 작업이 빈 슬롯을 사용할 수 있다. 기존 completion_priority는 그 다음 순서다.
+- `theme_concepts.py`는 실제 컨셉 그림의 등록 → 별도 모델 시각 검수 → 사용자 Allow/Deny를
+  제공한다. 현재 기획 SHA와 실제 PNG SHA를 확인하고 두 근거에 사용자 결정을 묶는다.
+  컨셉아트 승인 전에는 공간별 전용 칩 제작으로 넘어가지 않는다. 컨셉 PNG를 게임 타일로 자르지 않는다.
+- 생성 접점: built-in image_gen으로 만든 실제 PNG와 최종 프롬프트를
+  `theme_concepts.submit(seed, image_path, prompt)`에 전달한다. `concept-request.json`은 미생성/
+  반려 시 생성 요청을 보존한다. **현재 데몬에는 built-in image_gen 호출 권한이 없으므로 생성·재생성
+  요청은 이미지 도구를 가진 운영 에이전트가 처리한다.** 자동 완료를 주장하지 않고 UI에도 요청 대기로 표시한다.
+  검수는 데몬이 `theme-concept-review` 작업으로 실행하며 429는 기존 예약 재시도를 쓴다.
+- `/spaces`의 키워드 카드에 전략/우선순위/실제 컨셉 그림/확대/Allow/Deny를 표시한다.
+  독립 검수 불합격은 사용자 Allow로 우회하지 않는다. 판정은 원본 PNG와 기획이 바뀌면 만료한다.
+- 해리포터 v2 컨셉 원본과 생성 프롬프트는 `docs/art-direction/harry-potter/`에 보존한다.
+  이는 새 타일 팩·공용 등록·프로젝트 정본 저장 완료가 아니다.
+
+
+운영 근거: 해리포터를 production_priority_seed로 저장했다. v2 실제 컨셉 시안은 독립 검수에서
+정체성/재질 PASS, 시점/상대 크기 FAIL을 받아 승인하지 않았다. 지적을 전달한 v3 편집 시안을
+새 해시로 등록하고 다시 검수한다. v2의 PNG/판정은 기록으로 보존한다. 현재 실행기는
+`super-harness-priority-spaces.service`이며 이전 실행기는 drain한다. 전체 paused=1 유지.
+브라우저에서 실제 그림과 원본 확대 다이얼로그를 확인했고 390px 가로 넘침 및 pageerror는 0이었다.
+근거: `verify-shots/theme-concepts/`. Python/JS 문법 확인만 수행했으며 gates/vitest는 실행하지 않았다.

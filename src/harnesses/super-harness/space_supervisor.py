@@ -21,7 +21,7 @@ import finish_priority
 # assembly/probe/publication keep exclusive access until independently isolated.
 PARALLEL_STAGES = frozenset(('plan', 'plan-review', 'survey', 'material-review',
     'art', 'art-layout-review', 'art-context-review', 'art-demo'))
-PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover','theme-plan','theme-review'}
+PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover','theme-plan','theme-review','theme-concept-review'}
 
 
 def admission(concept, jobs, slots, max_jobs):
@@ -139,10 +139,10 @@ def main(ids):
                             if store.concept(cid)['stage'] == 'discovered':
                                 store.update_concept(cid, stage='plan', status='queued')
                         ids = finish_priority.order(ids)
-                        start = 0 if finish_priority.waiting() else cursor
+                        start = 0 if finish_priority.waiting() or finish_priority.preferred() else cursor
                         exclusive = next((c['id'] for c in (store.concept(cid) for cid in ids)
                             if c['stage'] in handlers and c['stage'] not in PARALLEL_STAGES
-                            and c['status'] != 'running'), None)
+                            and c['status'] != 'running' and not finish_priority.reason(c)), None)
                         for offset in range(len(ids)):
                             index = (start + offset) % len(ids)
                             cid = ids[index]

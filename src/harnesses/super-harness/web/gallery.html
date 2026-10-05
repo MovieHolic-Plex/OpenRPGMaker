@@ -194,7 +194,7 @@ else mountKeywordSeeds($('keyword-seeds'), (seeds, selected, clicked) => {
   if(clicked || selected!==selectedSeed) tab=chosen?'all':'pick';
   selectedSeed=selected;
   if(L)render();
-});
+}, enlargeImage);
 
 function cardHtml(it) {
   return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
