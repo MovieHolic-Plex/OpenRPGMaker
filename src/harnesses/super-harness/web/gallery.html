@@ -275,6 +275,7 @@ function paintLiveBoard() {
   const ids=new Set(list.map(i=>i.id));
   for(const [id,el]of liveCards)if(!ids.has(id)){el.remove();liveCards.delete(id);}
   for(const item of list){
+    const reasons=(item.reasons||[]).map(r=>typeof r==='string'?r:r?.reason||r?.message||JSON.stringify(r));
     let el=liveCards.get(item.id);
     if(!el){el=document.createElement('article');el.className='live-space';el.dataset.concept=item.id;liveCards.set(item.id,el);grid.append(el);}
     const expanded=[...el.querySelectorAll('details[open]')].map(d=>d.dataset.liveSection);
@@ -283,10 +284,10 @@ function paintLiveBoard() {
     el.innerHTML=`<header><h3>${esc(item.title)}</h3><span class="live-phase">${esc(item.label)}</span></header>
       <p class="doing">${esc(out?.task||item.note||item.label)}</p>
       ${item.jobs.map(j=>jobHtml(j.kind==='art-native' && out?.nativeOutputAgeSeconds!=null?{...j,outputAgeSeconds:Math.min(j.outputAgeSeconds??Infinity,out.nativeOutputAgeSeconds),outputLabel:'하위 제작 포함 마지막 출력'}:j)).join('')}
-      ${!item.jobs.length?`<p class="live-problem">${esc(item.reason||item.note)}</p>`:''}
+      ${(!item.jobs.length||item.waitKind==='provider-backoff')?`<p class="live-problem">${esc(item.reason||item.note)}</p>`:''}
       ${outputHtml(item,out)}
       ${out?.layoutVerdict?`<p class="subtle">최근 제작 전 도면 검수: ${out.layoutVerdict==='PASS'?'통과':out.layoutVerdict==='FAIL'?'반려 · 수정 필요':esc(out.layoutVerdict)}</p>`:''}
-      ${item.reasons.length?`<p class="live-problem">최근 반려 기록: ${esc(item.reasons[0].slice(0,150))}${item.reasons[0].length>150?'…':''}</p><details data-live-section="reasons"><summary>반려 근거 ${item.reasons.length}건 보기</summary><ul>${item.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>`:''}
+      ${item.reasons.length?`<p class="live-problem">최근 반려 기록: ${esc(reasons[0].slice(0,150))}${reasons[0].length>150?'…':''}</p><details data-live-section="reasons"><summary>반려 근거 ${item.reasons.length}건 보기</summary><ul>${item.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>`:''}
       <h4>최근 바뀐 점</h4>${events.length?events.map(e=>`<p class="live-event">${esc(e.at.slice(11))} · ${esc(e.text)}</p>`).join(''):'<p class="subtle">처리 기록 확인 중…</p>'}
       <p class="live-next"><b>다음에 나올 것</b><br>${esc(out?.deliverable||item.next)}</p>
       <button class="live-open" data-live-open="${esc(item.id)}">그림·기획서·검수 기록 자세히 보기</button>`;
@@ -317,7 +318,7 @@ function paintProgress() {
   $('line').textContent = `워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개`;
   const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
   $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
-  const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
+  const queued = activityState.items.filter(i => i.managed && !i.jobs.length && (i.state === 'queued' || i.waitKind === 'provider-backoff'));
   overview.innerHTML = `<h2>워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
     <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>

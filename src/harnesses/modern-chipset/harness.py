@@ -19,6 +19,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 import palette as PAL  # noqa: E402
+sys.path.insert(0, os.path.dirname(HERE))
+from provider_errors import tail as provider_tail, classify as provider_classify, BOUNDED_CONTEXT
 
 DATA = os.path.join(ROOT, 'harness-data/modern-chipset')
 RUNS = os.path.join(ROOT, 'qa-runs/harnesses/modern-chipset')
@@ -234,16 +236,22 @@ def review_prompt(st, letter, att, prev):
 
 
 def do_candidate(rid, letter):
-    st = load_state(rid); out = os.path.join(rdir(rid), letter); prev = ''; hist = []
-    for att in range(1, MAX_ATTEMPTS + 1):
-        upd(rid, letter, status='drawing', attempt=att)
-        redraw = ''
-        if att > 1:
-            for ext in ('.pxg', '.png', '-x4.png', '.note'):
-                if os.path.exists(out + ext): shutil.copyfile(out + ext, f'{out}.a{att-1}{ext}')
-            redraw = (f'\n**다시 그리기 ({att}/{MAX_ATTEMPTS})**: `{os.path.relpath(out, ROOT)}.pxg` 가 지난 시도다. 복사하지 말고 그 파일을 고쳐 다시 굽는다. 지난 시도의 지적:\n{prev}\n')
-        bd = os.path.join(rdir(rid), 'brief'); imgs = [p for p in (os.path.join(bd, 'ref-x8.png'), os.path.join(bd, 'old-x8.png'), out + '-x4.png' if att > 1 else '') if p and os.path.exists(p)]
-        code = run_claude(worker_prompt(st, letter, redraw), os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.log'), EFFORT, imgs)
+    st = load_state(rid); out = os.path.join(rdir(rid), letter); prev = ''; row=st['cands'][letter]; hist = list(row.get('history') or [])
+    start = int(row.get('attempt') or 1) if row.get('resumePhase') else 1
+    resume_review = row.get('resumePhase') == 'review'
+    for att in range(start, MAX_ATTEMPTS + 1):
+        code = 0
+        if not resume_review:
+            upd(rid, letter, status='drawing', attempt=att)
+            redraw = ''
+            if att > 1:
+                for ext in ('.pxg', '.png', '-x4.png', '.note'):
+                    if os.path.exists(out + ext): shutil.copyfile(out + ext, f'{out}.a{att-1}{ext}')
+                redraw = (f'\n**다시 그리기 ({att}/{MAX_ATTEMPTS})**: `{os.path.relpath(out, ROOT)}.pxg` 가 지난 시도다. 복사하지 말고 그 파일을 고쳐 다시 굽는다. 지난 시도의 지적:\n{prev}\n')
+            bd = os.path.join(rdir(rid), 'brief'); imgs = [p for p in (os.path.join(bd, 'ref-x8.png'), os.path.join(bd, 'old-x8.png'), out + '-x4.png' if att > 1 else '') if p and os.path.exists(p)]
+            code = run_claude(worker_prompt(st, letter, redraw) + BOUNDED_CONTEXT, os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.log'), EFFORT, imgs)
+            if code and provider_classify(provider_tail(os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.log'))):
+                upd(rid, letter, status='failed', error=f'공급자 오류({code})', resumePhase='draw'); return
         if not os.path.exists(out + '.pxg'):
             upd(rid, letter, status='failed', error=f'후보 파일 없음({code})'); return
         ck = check(st, letter)
@@ -255,14 +263,18 @@ def do_candidate(rid, letter):
         upd(rid, letter, status='reviewing', check=ck)
         rp, pack = review_prompt(st, letter, att, prev)
         vfile = os.path.join(pack, 'verdict.json')
+        if os.path.exists(vfile): os.remove(vfile)
         for _ in range(2):
-            run_claude(rp, os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.review.log'), EFFORT, [os.path.join(pack, n) for n in ('pair-x8.png', 'street-x3.png')])
+            review_code = run_claude(rp + BOUNDED_CONTEXT, os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.review.log'), EFFORT, [os.path.join(pack, n) for n in ('pair-x8.png', 'street-x3.png')])
+            if review_code and provider_classify(provider_tail(os.path.join(rdir(rid), 'logs', f'{letter}.a{att}.review.log'))):
+                upd(rid, letter, status='failed', review=dict(verdict='ERROR', reasons='공급자 오류'), resumePhase='review'); return
             if os.path.exists(vfile): break
         try: v = json.load(open(vfile, encoding='utf-8')); v['verdict'] = str(v.get('verdict', '')).upper()
         except Exception: v = dict(verdict='ERROR', reasons='검수자가 결과를 못 냈다')
         v['attempt'] = att; hist.append(dict(stage='review', attempt=att, review=v)); upd(rid, letter, history=hist, review=v)
         if v['verdict'] == 'PASS' or v['verdict'] == 'ERROR' or att == MAX_ATTEMPTS:
             upd(rid, letter, status='done', ok=v['verdict'] == 'PASS'); return
+        resume_review = False
         prev = f'검수 불합격 {v.get("codes")}: {v.get("reasons")}\n고칠 것: {v.get("fix")}'
     upd(rid, letter, status='done', ok=False)
 
@@ -284,8 +296,10 @@ def cmd_draw(a):
 
 def run_round(rid):
     st = load_state(rid)
-    with cf.ThreadPoolExecutor(max_workers=len(st['cands'])) as ex:
-        list(ex.map(lambda l: do_candidate(rid, l), list(st['cands'])))
+    pending = [letter for letter, row in st['cands'].items() if row.get('status') == 'queued']
+    if pending:
+        with cf.ThreadPoolExecutor(max_workers=len(pending)) as ex:
+            list(ex.map(lambda l: do_candidate(rid, l), pending))
     upd(rid, ended=now()); cmd_sheet(argparse.Namespace(round=rid))
 
 

@@ -63,3 +63,20 @@ interior-props: {"execution":{"harness":"interior-props","data":"새 data 상대
 modern-chipset: {"execution":{"harness":"modern-chipset","data":"새 data 상대경로","runs":"새 runs 상대경로","viz":"격리 viz 상대경로","round":"새 queued 판 id","feedbackSha256":"현재 피드백 해시","layout":{"path":"새 도면 상대경로","sha256":"도면 해시"}},"remaining":[]}
 감독이 도면 독립 검수 후 native 실행을 담당한다. 준비가 실패해도 출력 파일을 생략하지 말고
 {"candidates":[],"reasons":["실제 기술 원인과 수정 시도"]}를 남긴다.
+
+## 입력과 생성 출력 구분
+reference-source.json의 sources 배열이 있으면 각 references의 directory/INDEX.json에서 현재 용도를 고른다.
+생성 과정에서 덮어쓰는 art-output 아래 장면 PNG/assembly-evidence.json을 제작 전 기준으로 쓸 때는
+layout.sources의 해당 ref에 role="generated-preview"를 지정한다. 감독이 독립 검수 전에 불변 사본을 만든다.
+원본 아틀라스·시드·명세·코드를 generated-preview로 분류하지 않는다. 생성 결과 자체는 수집 후 실제 그림으로 다시 검수한다.
+문맥 예산: 대형 JSON·소스·격자를 통째로 출력하지 않는다. rg로 위치를 찾고 최대 120줄씩 읽고,
+해당 용도 MD 전 페이지는 나누어 확인하며 진행 메모로 중복 열람을 줄인다. PNG/base64 텍스트 출력 금지.
+
+## 기존 결과의 실행 입력이 없는 경우
+이전 버전의 art-execution/art-layout 파일이 없다는 사실만으로 중단하지 않는다.
+planning.json의 승인 기획, art-demo-input.json의 components, art-result.previous.json,
+실제 native 영수증·완료 후보 저장소에서 근거를 읽어 새로운 layout/repairPlan을 준비한다.
+기존 그림 자체가 합격이고 지적이 배치·문 방향·통행·출구 명세 수정이면 원본 도트를 다시 그릴 필요가 없다.
+수정 도면에서 기존 그림을 써서 해결할 수 있음을 구체적으로 명세하고 execution.resumeMode="collect-existing"를
+제출할 수 있다. 완료된 native 후보만 허용되며 감독은 새 도면의 독립 검수 후 수집→데모 재조립→시각 검수를 수행한다.
+없는 PASS를 만들거나 완료 후보를 queued로 바꾸지 않는다. 실제 그림 결함/필수 조각 누락은 기존 제작 경로를 따른다.

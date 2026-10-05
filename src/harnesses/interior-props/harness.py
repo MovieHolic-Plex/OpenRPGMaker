@@ -21,6 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 from . import derive, store  # noqa: E402
+from ..provider_errors import tail as provider_tail, classify as provider_classify, BOUNDED_CONTEXT
 
 # 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
 ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
@@ -255,6 +256,7 @@ def _start(r):
         except OSError: pass
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
+    prompt += BOUNDED_CONTEXT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.' + phase if phase != 'draw' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
     if phase != 'review2': store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
     if eng == 'codex': return _start_codex(r, prompt, effort if phase != 'draw' else EFFORT, log)
@@ -377,6 +379,9 @@ def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
+    actual = next((row for row in store.runs() if row['id']==r['id']), r)
+    if code and provider_classify(provider_tail(actual.get('log') or '')):
+        return store.update_run(r['id'],status='failed',ended=store.now(),error=f'공급자 오류({code})')
     _recover_candidate(r)
     phase = r.get('phase') or 'draw'
     if phase in ('review', 'review2'):

@@ -119,3 +119,11 @@ monster-collect-species는 monster-collect 게임 전용이며 일반 생물/적
 기존 선택 원본·공용 판본·참고문서와 실제 그림을 확인한다. 사용자의 결정이나 native 판정을 대신 쓰지 않는다.
 부족한 연결은 어느 단계(실행/결과 수집/사용자 결정/공용 등록/프로젝트 설치)인지 기록한다.
 통합 설계: `{{ROOT}}/docs/superpowers/specs/2026-10-05-unified-harness-production.md`.
+
+## 입력과 생성 출력 구분
+reference-source.json의 sources 배열이 있으면 각 references의 directory/INDEX.json에서 현재 용도를 고른다.
+생성 과정에서 덮어쓰는 art-output 아래 장면 PNG/assembly-evidence.json을 제작 전 기준으로 쓸 때는
+layout.sources의 해당 ref에 role="generated-preview"를 지정한다. 감독이 독립 검수 전에 불변 사본을 만든다.
+원본 아틀라스·시드·명세·코드를 generated-preview로 분류하지 않는다. 생성 결과 자체는 수집 후 실제 그림으로 다시 검수한다.
+문맥 예산: 대형 JSON·소스·격자를 통째로 출력하지 않는다. rg로 위치를 찾고 최대 120줄씩 읽고,
+해당 용도 MD 전 페이지는 나누어 확인하며 진행 메모로 중복 열람을 줄인다. PNG/base64 텍스트 출력 금지.

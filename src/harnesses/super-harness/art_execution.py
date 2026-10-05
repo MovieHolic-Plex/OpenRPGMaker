@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 
-def prepare(root, request):
+def prepare(root, request, resume=False):
     root = Path(root).resolve()
     if not isinstance(request, dict):
         raise ValueError('그림 실행 요청 형식 오류')
@@ -55,7 +55,7 @@ def prepare(root, request):
             state = json.loads((Path(local('runs')) / request['round'] / 'state.json').read_text())
             if not state.get('cands') or len(state['cands']) > count:
                 raise ValueError(f'수정 후보는 최대 {count}개여야 합니다. 기본 풀 재실행 금지.')
-            if any(c.get('status') != 'queued' for c in state['cands'].values()):
+            if not resume and any(c.get('status') != 'queued' for c in state['cands'].values()):
                 raise ValueError('수정 실행은 새로 준비한 queued 후보만 받습니다.')
             env['VEH_HARNESS_ATTEMPTS'] = str(attempts)
         elif harness == 'interior-props':
@@ -153,8 +153,17 @@ def main():
     signal.signal(signal.SIGTERM, stop); signal.signal(signal.SIGINT, stop)
     request = json.loads(request_file.read_text())
     import art_layout
-    approved = art_layout.require_approval(root, request)
-    command, env = prepare(root, request)
+    snapshot = result_file.with_suffix('.approved.json')
+    resume = '--resume-technical' in sys.argv[4:]
+    if resume:
+        approved=json.loads(snapshot.read_text())
+        art_layout.require_completed(root, request, approved)
+        import native_retry
+        native_retry.reset(root, request)
+    else:
+        approved = art_layout.require_approval(root, request)
+        snapshot.write_text(json.dumps(approved,ensure_ascii=False))
+    command, env = prepare(root, request, resume=resume)
     # Prepared briefs necessarily predate independent review. Pass the current
     # validated approval separately instead of mutating hash-bound instructions.
     if request['harness'] == 'modern-chipset':

@@ -126,6 +126,7 @@ def main(ids):
                 # named requests while global discovery remains paused.
                 waits = {}
                 if not draining and store.setting('paused') == '1':
+                    sh.provider_retry.tick(sh, ids + ([None] if keywords else []), slots)
                     if keywords: sh.keyword_seeds.tick(sh, slots)
                     sh.release_waiting(ids)
                     for cid in ids:
@@ -139,6 +140,9 @@ def main(ids):
                         index = (start + offset) % len(ids)
                         cid = ids[index]
                         if store.jobs("concept=? AND status='running'", (cid,)): continue
+                        if sh.provider_retry.pending(cid):
+                            waits[cid] = 'provider-backoff'
+                            continue
                         recover(cid)
                         c = store.concept(cid)
                         if c['stage'] in ('art-review', 'art-context-review') and sh.art_demo.required(sh.DATA, cid):

@@ -110,8 +110,14 @@ def prepare(data, cid):
                 passed = row.get('status') == 'done' and bool(row.get('ok')) and review.get('verdict') == 'PASS'
                 previews = []
                 if review.get('pack'):
-                    context = safe(root, str(Path(review['pack']) / 'ctx-cand.png'))
-                    previews.append(ref(root, context, '실제 칩 조립 예시 · 공간 검수 전'))
+                    # Native scene adapters use a ground context rather than the
+                    # legacy furniture ctx-cand filename. Both remain rooted and hashed.
+                    for name in ('ctx-cand.png', 'ground-context-x1.png'):
+                        candidate = Path(review['pack']) / name
+                        if not (root / candidate).is_file(): continue
+                        context = safe(root, str(candidate))
+                        previews.append(ref(root, context, '실제 칩 조립 예시 · 공간 검수 전'))
+                        break
                 if not previews:
                     previews = [dict(original, label='칩 원본 · 조립 검수 미완료')]
                     passed = False
