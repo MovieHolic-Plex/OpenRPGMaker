@@ -8,6 +8,7 @@ import {
 } from "@/editor/actions";
 import { comboBrushPlacement, evaluateComboBrushPlacement, isComboBrush } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
+import { worldmapBrushMaterial } from '@/project/worldmapAutoBrush';
 import {
   clusterRecoveryOffer,
   freehandPaintOptions,
@@ -230,9 +231,9 @@ export class TilePaintEngine {
           paintTilesBulk(
             mid,
             points.map((point) => ({ ...point, layer: tileLayer, tile: selectedTile })),
-            freehandPaintOptions({
+            { ...freehandPaintOptions({
               autoConnect: autoConnectMode,
-              clusterAssist: clusterAssistMode,
+              clusterAssist: editorState.get().worldmapAutoBackground && worldmapBrushMaterial(store.getCurrent().tilesets[store.getCurrent().maps[mid]!.tilesetId], selectedTile) ? true : clusterAssistMode,
               onRejected: (rejection) => {
                 // 드래그 중 같은 말을 수십 번 띄우지 않되, 스트로크의 **첫 거부**에서는
                 // 반드시 규칙·좌표와 복구 버튼을 보여 준다(붓이 잠긴 것처럼 보이던 원인).
@@ -240,7 +241,7 @@ export class TilePaintEngine {
                 this.placementNoticeShown = true;
                 presentClusterRecovery(clusterRecoveryOffer(mid, rejection));
               },
-            }),
+            }), worldmapAutoBackground: editorState.get().worldmapAutoBackground },
           );
         });
         break;
@@ -248,7 +249,7 @@ export class TilePaintEngine {
         if (firstStrokeTile) {
           if (selectedTile < 0 && tileLayer === "lower") break;
           this.applyStrokeEdit(mid, () => {
-            fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
+            fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode, worldmapAutoBackground: editorState.get().worldmapAutoBackground });
           });
         }
         break;

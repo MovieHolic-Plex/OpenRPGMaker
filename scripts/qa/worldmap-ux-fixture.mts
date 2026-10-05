@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {openLocalProjectStore,initLocalProjectStore} from '../../electron/local-store/store.ts';
+import {createBlankMap} from '../../src/project/defaults/defaultMaps.ts';
+import {shapeAllAutotileGroupsAround} from '../../src/project/defaults/autotileEngine.ts';
+const root=path.resolve('qa-runs/worldmap-brush-ux-20261005'), target=path.resolve(process.argv[2]??root+'/baseline/project');
+const source=await openLocalProjectStore({projectDir:path.resolve('qa-runs/worldmap-authoring-20261005/project-r7')});
+const project=source.loadSnapshot()!.project, t=project.tilesets.worldmap_authoring;
+const media=await Promise.all(source.listAssets().map(async row=>({row,bytes:await source.assetBytes(row.sha256)})));source.close();
+const map=createBlankMap('초원·사막·설원 여행 지도',60,36,t.id);map.id='ux_world';
+const group=(id:string)=>t.tileGroups!.find(g=>g.id==='worldmap-brush-'+id)!.tileIds[0];
+for(let y=0;y<map.height;y++)for(let x=0;x<map.width;x++)map.lowerTiles[y*map.width+x]=group('plain-'+(x<20?'grass':x<40?'sand':'snow'));
+for(let y=2;y<34;y++)for(const x of [12,31,49])map.lowerTiles[y*map.width+x]=group('river-'+(x<20?'grass':x<40?'sand':'snow'));
+shapeAllAutotileGroupsAround(map,t.autotileGroups!,Array.from({length:2160},(_,i)=>({x:i%60,y:Math.floor(i/60)})));
+project.tilesets={worldmap_authoring:t,worldmap_selected:project.tilesets.worldmap_selected};project.maps={[map.id]:map};project.startMapId=map.id;project.startPos={x:4,y:18};project.meta.title='월드맵 UX · 실제 조수 시험';
+fs.mkdirSync(target,{recursive:true});const out=await initLocalProjectStore({projectDir:target});
+for(const {row,bytes}of media)await out.putAsset(bytes,{mime:row.mime,extension:row.extension,originalName:row.originalName??undefined,kind:row.kind??undefined});
+const save=await out.saveProject(project);if(save.kind!=='saved')throw Error(JSON.stringify(save));console.log(out.info());out.close();

@@ -79,7 +79,7 @@ export interface PiIntentNoteTargetMap extends IntentNoteTargetMap {
 /** 선언 → Pi 본문 노트 재료. 전부 코드가 아는 값이다. */
 export interface PiIntentNoteInput {
   readonly intent: IntentDeclaration;
-  readonly project?: Pick<Project, "defaultVillagePresetId" | "villagePresets"> & { system?: Pick<Project['system'], 'genre'> };
+  readonly project?: Pick<Project, "defaultVillagePresetId" | "villagePresets"> & { system?: Pick<Project['system'], 'genre'> } & Partial<Pick<Project, 'maps' | 'tilesets' | 'startMapId'>>;
   /** 선언이 가리킨 맵, 없으면 지금 열린 맵. 시공 규모 노트가 «키워라/충분하다» 를 이 크기로 판단한다. */
   readonly targetMap: PiIntentNoteTargetMap | null;
   /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계와 author_village target 을 못박는다. */
@@ -112,7 +112,7 @@ export interface PiIntentNoteInput {
 export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   // 개념 카드(미궁·카타콤…)는 맨 앞 — 재료·이벤트·금지 규칙이 뒤의 일반 노트보다 먼저 읽혀야 한다.
   const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
-  const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project);
+  const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const preset = defaultVillageDesign(input);
   // Generic scale advice must not override a saved design or resize before its validation.
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
