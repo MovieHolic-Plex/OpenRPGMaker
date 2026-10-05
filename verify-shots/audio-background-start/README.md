@@ -4,7 +4,7 @@
 
 - 프로젝트 `f25d1f04-88f9-475b-92ee-95a891286d33` / **멈춘 시계의 기억**.
 - SQLite: `output/qa/first-presentation/project/.oprn-projects/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/project.sqlite`와 같은 폴더의 assets.
-- 정본 revision **78**, editor store의 저장 응답과 `verifyPersistedRevision` verified, 새 페이지 재로드 후 같은 배치. 호스트의 SQLite를 직접 수정하지 않았다.
+- 조수 저장·재로드 revision **78**, editor store의 저장 응답과 `verifyPersistedRevision` verified. 내보내기 세션 이후 최종 정본 revision **79**의 system·맵·생성 음원은 실제 검수한 ZIP과 완전히 일치한다(`final-storage.json`). 호스트의 SQLite를 직접 수정하지 않았다.
 - 원래 타일·이벤트·타이틀 그림/연출·오프닝 6컷과 원곡은 보존했다(`preservation.json`).
 
 | 배치 | 실제 조수 저작 | 길이 | 구성 |
@@ -40,3 +40,5 @@ Vite app/player 빌드 완료. 로컬 Vitest/gates/전체 typecheck는 AGENTS.md
 검증 도구 교정 이력: 첫 UI SE 시도는 keyboard-only 화면에서 포인터 클릭을 써 중단됐다. 다음 시도는 8초 fixture가 cold map 준비보다 먼저 끝나 `map ready && opening visible` 관측을 놓쳤다. 실제 마지막 화면 유지와 상태 활성화 순서는 기록됐고 로딩 카드 관측은 0이었다. 냉기동 중 상태 동결 측정은 긴 fixture, 짧은/skip 지연 측정은 8초 fixture로 분리했다. 이 이력은 제품 합격 수에 합치지 않는다.
 
 엔진 모듈 503 주입은 기존 자동 새로고침 복구를 먼저 거친다. 재시작해도 503이면 시네마틱을 취소하고 명시적 복구 패널을 보여 준다. 오류 관측은 이미 통과한 정상/느린/skip 3건을 영수증 해시로 보존한 뒤 남은 오류 사례만 실행한다.
+
+최신 main 병합 후 app/player Vite 빌드도 완료했다. `integrated-build.json`의 출하 JS/CSS 6파일이 실제 검수한 ZIP과 바이트/해시까지 동일하므로 같은 런타임 관측을 재사용한다. 이번 세션에서 띄운 QA 호스트는 종료했고 SQLite/assets와 ZIP은 보존했다.
