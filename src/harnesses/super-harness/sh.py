@@ -633,6 +633,7 @@ def start_art(c):
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_LAYOUT_MODULE=os.path.join(HERE, 'art_layout.py'),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
+    prompt += art_choices.example_feedback_prompt(c)
     acceptance = art_acceptance.contract(cdir(cid))
     if acceptance:
         prompt += '\n고정 합격 계약이 이전 반려 의견보다 우선합니다. 필수 결함을 수정하고 권고만으로 재설계 범위를 늘리지 마세요. 계약 파일을 변경하지 마세요. 준비 결과 형식은 그대로 유지합니다.\n' + json.dumps(acceptance, ensure_ascii=False)
@@ -751,6 +752,7 @@ def start_art_context_review(c):
     prompt = fill(prompt_template('art-context-review.md'), CDIR=cdir(cid), INPUT=input_path,
                   OUTPUT=output_path, ROOT=request['root'])
     prompt += art_acceptance.instructions(request.get('acceptance'))
+    prompt += art_choices.example_feedback_prompt(c)
     jid = start_codex(cid, 'art-context-review', f'r{c.get("art_revision", 0)}-v{attempt}', prompt, output_path)
     PROCS[jid][2]['context_input'] = request
     store.update_concept(cid, status='running', art_review_attempt=attempt, note='조립 예시 독립 검수 중')
@@ -1234,6 +1236,11 @@ def action(body):
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
+    if kind == 'evaluate-art':
+        try:
+            return {'ok': True, 'choices': art_choices.evaluate(DATA, cid, body)}
+        except (ValueError, KeyError, OSError, TypeError) as error:
+            return {'ok': False, 'error': str(error)}
     if kind in ('choose-art', 'clear-art'):
         try:
             return {'ok': True, 'choices': art_choices.choose(DATA, cid, body)}
@@ -1314,7 +1321,7 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
-        return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'내 선택 필요 · {choices["selectedCount"]}/{choices["total"]} 선택' if choices['total'] else '선택 예시 준비 필요'
+        return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
         if c.get('art_revision'):
             return f'피드백 반영 재생성 {c["art_revision"]}차 ' + ('진행 중' if c['status'] == 'running' else '대기 · 전체 멈춤' if store.setting('paused') == '1' else '대기')

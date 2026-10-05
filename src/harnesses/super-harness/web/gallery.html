@@ -131,6 +131,9 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 .choice-part{height:196px;width:100%;display:flex;align-items:center;justify-content:center;background:#20252e;border:0;cursor:zoom-in}.choice-part img{image-rendering:pixelated;max-width:100%;max-height:180px;height:auto;object-fit:contain}.choice-option .choose-candidate{width:100%;padding:12px;margin:8px 0}.choice-option .choice-scene{max-height:300px;object-fit:contain}.choice-only{padding:12px;background:#342f23;border-radius:8px;color:#f5db9b!important}.choice-reject{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.choice-reject small{color:var(--dim)}.choice-group .choice-states{align-items:center;flex-wrap:wrap;margin:12px 0}.choice-group{padding-top:6px}.choice-option .choice-caption{min-height:40px;margin:6px 0}
 #choice-status{margin-top:18px}#choice-status>summary{cursor:pointer;color:#a9bfd5;padding:8px 0}
 @media(max-width:600px){.choice-compare{grid-template-columns:1fr}.choice-checklist button{min-width:100%;}.choice-lead{font-size:17px}.choice-panel h1{font-size:23px}}
+
+.example-option .choice-scene{width:100%;max-height:none;image-rendering:pixelated}.example-option .scene-open{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.example-option .scene-open img{height:100%;object-fit:contain}
+.example-option .choose-candidate{margin:8px 0 14px}.example-caption{font-size:12px;color:#b1becd;margin:8px 0;line-height:1.6}.example-guide{color:#e0e7ef!important;font-size:15px;line-height:1.8}.example-evaluation{border-top:1px solid #36414e;padding-top:14px;margin-top:10px}.example-evaluation fieldset{border:0;padding:0;margin:0;min-width:0}.example-evaluation legend{font-weight:600;margin-bottom:10px}.example-ratings,.example-tags{display:flex;flex-wrap:wrap;gap:7px}.example-ratings label,.example-tags label{padding:7px 8px;border:1px solid #42536a;border-radius:7px;cursor:pointer;font-size:13px}.example-ratings label:has(:checked),.example-tags label:has(:checked){background:#284a65;border-color:#8ac8f7}.example-ratings input,.example-tags input{margin:0 5px 0 0;accent-color:#82c7ff}.example-text{display:block;margin:12px 0 8px;font-size:13px}.example-text textarea{margin-top:6px;min-height:80px}.example-evaluation small{display:block;margin:8px 0;color:#aebdce}.save-evaluation{padding:9px 15px}.example-source{border-top:1px solid #36414e;margin-top:16px;padding-top:10px;font-size:12px;color:#aebdce}.example-source summary{cursor:pointer;padding:6px 0}.example-source .choice-part{margin:10px 0}.example-storage-note{color:#aebdce;font-size:13px;margin-top:16px}
 </style>
 </head>
 <body>
@@ -152,7 +155,7 @@ import { renderChoices } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내 선택 필요'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
+const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '예시 평가·선택'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

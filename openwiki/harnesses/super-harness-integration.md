@@ -125,3 +125,25 @@ python3 src/harnesses/super-harness/unified.py serve --port 18315 --legacy-port 
 - 선택·공용 등록·맵 완성을 구분한다. 설치 완료 상태에서는 선택 변경 버튼을 비활성화한다.
 - 실제 UI 확인은 `verify-shots/super-harness-choices/` 참조. 저장 흐름 확인은 브라우저에서 POST 응답만
   가로채 확인했고, 정본의 사용자 선택은 0/3 그대로 보존했다.
+
+## 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
+
+위 부품 우선 비교 화면을 예시 우선으로 바꿨다. 원본 부품·A/B·검수 수치는 접힌 상세에 두고,
+공간에 배치한 실제 그림과 용도 설명을 먼저 보여 준다. 지하 감옥의 ‘남쪽 돌계단’은 native h1 brief의
+북쪽 낮은 감옥 바닥 → 남쪽 높은 랜딩 의도를 ‘출입구로 올라가는 계단’으로 설명한다.
+예시는 기존 검수 방의 배치 표본이며, 실제 전체 감옥 맵이나 통행 승인으로 표시하지 않는다.
+
+- `POST /api/action`, action=`evaluate-art`: group/candidate/fingerprint, imagePath/imageHash,
+  rating(like/revise/replace), tags, text(최대 2,000자). 그림/판정 fingerprint와 표시된 상태 이미지를 함께 확인한다.
+- 평가는 기존 `sh.sqlite.concepts.feedback`에 `kind=art-example` 레코드로 덧붙인다. 단계·선택·paused를 변경하지 않는다.
+  기존 기획 의견과 구분하고, 텍스트 요약과 구조화된 의견, 이미지 경로/해시, 시각을 저장한다.
+- GET art-choices는 현재 fingerprint/이미지에 해당하는 최근 평가를 `candidate.evaluations`로 돌려준다.
+  열림·닫힘 각각의 평가가 보존된다. 잘못된 후보/그림 해시와 빈 수정 의견은 서버도 거부한다.
+- `start_art`와 `start_art_context_review`는 저장한 의견을 다음 작업 프롬프트에 넣는다. 이전 판의
+  의견일 수 있음을 표시하고 이미지/해시를 확인하도록 한다. 사용자 호감은 기술 PASS를 대신하지 않는다.
+- ‘이 예시로 진행’은 기존 해시 결합 선택 API를 사용한다. 선택 후에도 같은 장면에 남아 평가할 수 있다.
+  평가만 저장해도 되며, 평가 저장은 자동 재제작을 시작하지 않는다. 그림이 바뀌면 이전 평가를 새 그림에 덮어 표시하지 않는다.
+- 화면 내 장면·열림/닫힘 전환에서 평가 초안을 유지한다. 전체 페이지 재로드 전 미저장 초안은 저장해야 한다.
+
+확인: `verify-shots/super-harness-example-evaluation/`. 원본 DB의 피드백/선택은 변경하지 않고,
+SQLite 사본에 저장→재조회와 낡은 해시 거부를 확인했다. 서비스 재시작 전후 별도 작업 689 생존 유지.
