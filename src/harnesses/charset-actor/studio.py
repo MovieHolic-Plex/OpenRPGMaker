@@ -105,6 +105,8 @@ def _create(options):
     concepts = options.get('concepts', [])
     if not isinstance(concepts, list) or len(concepts) > 500 or any(not isinstance(c, str) or not c.strip() or len(c) > 500 for c in concepts):
         raise ValueError('캐릭터별 콘셉트는 500자 이하 문장의 목록입니다')
+    if options.get('allSources'):
+        return _create_catalog(options, count, par)
     if options.get('creatures') or options.get('recipe') or options.get('seedRun'):
         return _create_variations(options, count, par)
     root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + '-free-' + uuid.uuid4().hex[:8])
@@ -137,6 +139,96 @@ def _create(options):
                     title=str(options.get('title') or '자유 캐릭터')[:80])
     H.write_json_atomic(root / 'manifest.json', manifest)
     return dict(launch(root, par, batch_size), count=count)
+
+
+def _create_catalog(options, count, par):
+    import catalog_sources as S
+    import recipes as R
+    if any(options.get(k) for k in ('image', 'reference', 'creatures', 'seedRun', 'recipe')):
+        raise ValueError('에디터 전체 원본 제작에 다른 원본 방식을 섞지 않습니다')
+    animal_count = min(8, count // 12)
+    if animal_count and par < 2:
+        raise ValueError('사람/몬스터와 동물의 합동 제작은 동시 작업 2개 이상이 필요합니다')
+    limit, rounds = int(options.get('maxReviewPending', 12)), int(options.get('repairRounds', 2))
+    if not par <= limit <= 40 or not 0 <= rounds <= 2:
+        raise ValueError('검토 대기는 동시작업~40명, 기술 수정은 0~2회입니다')
+    title = str(options.get('title') or f'에디터 전체 원본 {count}종')[:80]
+    cid = datetime.now().strftime('%Y%m%d-%H%M%S') + '-catalog-' + uuid.uuid4().hex[:8]
+    collection = H.DATA / 'collections' / cid
+    collection.mkdir(parents=True)
+    H.write_json_atomic(collection / 'request.json', dict(options, count=count, par=par))
+    prepared = []
+    try:
+        if options.get('catalogRecipe'):
+            rid = R.safe_name(options['catalogRecipe'])
+            recipe = R.load(H.DATA / 'recipes' / rid, check_tools=True)
+            if recipe.get('sourceMode') != 'bundled-editor-reference':
+                raise ValueError('에디터 전체 원본 기준이 아닙니다')
+            sources = dict(id=rid, sha256=R.sha(H.DATA / 'recipes' / rid / 'recipe.json'),
+                           seeds=len(recipe['seeds']), sheets=len({s['catalogReference']['assetId'] for s in recipe['seeds']}))
+        else:
+            sources = S.create()
+        recipe = R.load(H.DATA / 'recipes' / sources['id'], check_tools=True)
+        root = H.run_dir(cid)
+        root.mkdir()
+        prepared.append((root, par - bool(animal_count)))
+        manifest = R.bind(root, sources['id'], count-animal_count)
+        S.enrich_manifest(manifest, recipe)
+        for index, row in enumerate(manifest['characters']):
+            if options.get('prompt'):
+                row['brief'] += ' ' + str(options['prompt'])[:4000]
+            if options.get('concepts'):
+                row['brief'] += ' 이번 캐릭터: ' + options['concepts'][index % len(options['concepts'])]
+        manifest.update(title=title, collectionId=cid,
+                        productionPolicy=dict(maxReviewPending=limit, repairRounds=rounds))
+        H.write_json_atomic(root / 'manifest.json', manifest)
+        H.write_json_atomic(root / 'production.json', dict(par=prepared[0][1], batchSize=1))
+        R.verify_run(root, manifest, check_tools=True)
+        if animal_count:
+            animals = R.create_creatures(name=title+' · 동물')
+            animal_root = H.run_dir(cid+'-animals-'+uuid.uuid4().hex[:8])
+            animal_root.mkdir()
+            prepared.append((animal_root, 1))
+            animal_manifest = R.bind(animal_root, animals['id'], animal_count, options.get('prompt', ''))
+            animal_manifest.update(title=title+' · 동물', collectionId=cid,
+                                   productionPolicy=dict(maxReviewPending=min(limit, max(1, animal_count)), repairRounds=rounds))
+            H.write_json_atomic(animal_root / 'manifest.json', animal_manifest)
+            H.write_json_atomic(animal_root / 'production.json', dict(par=1, batchSize=1))
+            R.verify_run(animal_root, animal_manifest, check_tools=True)
+    except Exception:
+        for root, _ in prepared:
+            shutil.rmtree(root)
+        H.write_json_atomic(collection / 'state.json', dict(phase='failed', at=H.now()))
+        raise
+    record = dict(id=cid, title=title, planned=count, sourceRecipe=sources,
+                  runs=[dict(run=root.name, planned=len(json.loads((root/'manifest.json').read_text())['characters']), par=slots)
+                        for root, slots in prepared], started=[])
+    H.write_json_atomic(collection / 'manifest.json', record)
+    try:
+        for root, slots in prepared:
+            record['started'].append(launch(root, slots, 1))
+            H.write_json_atomic(collection / 'state.json', dict(record, phase='running', at=H.now()))
+    except Exception as error:
+        H.write_json_atomic(collection / 'state.json', dict(record, phase='partial-start', error=str(error), at=H.now()))
+        raise ValueError('일부 제작 시작 실패. 제작 관리에서 중단된 작업을 이어 만들 수 있습니다: '+cid) from error
+    return dict(run=prepared[0][0].name, count=count, seeds=sources['seeds']+animal_count,
+                sheets=sources['sheets']+bool(animal_count), collection=cid, runs=record['started'])
+
+
+def annotate_catalog_items(items):
+    """Expose immutable source labels without putting them in sealed artist metadata."""
+    for run in {it['run'] for it in items}:
+        file = H.run_dir(run) / 'manifest.json'
+        if not file.exists():
+            continue
+        manifest = json.loads(file.read_text())
+        if not manifest.get('catalogSources'):
+            continue
+        rows = {r['key']:r.get('catalogReference') for r in manifest['characters']}
+        for item in items:
+            if item['run'] == run and rows.get(item['dir'].split('__')[0]):
+                item['catalog_reference'] = rows[item['dir'].split('__')[0]]
+    return items
 
 
 def _create_variations(options, count, par):
@@ -309,11 +401,12 @@ if __name__ == '__main__':
     parser.add_argument('--seed-run', help='이 실행에서 현재 남긴 그림만 변주 원본으로 고정한다')
     parser.add_argument('--recipe', help='보존한 제작 기준 ID로 같은 조건의 새 실행을 만든다')
     parser.add_argument('--creatures', action='store_true', help='동물 8종을 원본으로 필드 몬스터를 직접 저작한다')
+    parser.add_argument('--all-sources', action='store_true', help='에디터 Actor/People/Monster/Scarloxy/농장 동물을 섞어 변주한다')
     parser.add_argument('--start-index', type=int, default=0, help='새 기준에서 이어 만들 때 생략할 원본/콘셉트 순번 수')
     parser.add_argument('--max-review-pending', type=int, default=12)
     parser.add_argument('--repair-rounds', type=int, default=2)
     args = parser.parse_args()
     print(json.dumps(create(dict(count=args.count, prompt=args.prompt, reference=args.reference,
                                  title=args.title, concepts=args.concept, par=args.par if args.par is not None else 2,
-                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures, startIndex=args.start_index,
+                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures, allSources=args.all_sources, startIndex=args.start_index,
                                  maxReviewPending=args.max_review_pending, repairRounds=args.repair_rounds)), ensure_ascii=False))

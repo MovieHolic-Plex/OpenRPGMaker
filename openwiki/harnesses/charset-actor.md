@@ -6,6 +6,7 @@ GPT 6.1 sol high가 정지 4장·걷기 8장, 24×32 캐릭터의 12프레임 �
 ```bash
 npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png
 npm run harness -- charset-actor produce --creatures --count 100 --par 2 --max-review-pending 12
+npm run harness -- charset-actor produce --all-sources --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor recipe --source-run RUN
 npm run harness -- charset-actor produce --seed-run RUN --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor serve --port 18314
@@ -16,6 +17,9 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ```
 
 `produce`는 작업을 터미널과 독립적으로 시작한다. 화면에서도 개수·선택적인 전체 방향·참고 그림을 넣어 시작할 수 있다.
+「에디터 전체 원본으로 다양하게」/`--all-sources`는 실제 `charsetCatalog.ts` 공급자 목록을 읽어 Actor/People/Monster1~6/Scarloxy/농장 동물/Template 원본을 고루 섞는다.
+100종은 일반 92종+Animal 전용 8종의 같은 공방 제작 묶음이다. Animal의 몸통/앞·뒷발 정책을 유지한다. 전체 21시트·호환 원본 141칸을 봉인하고 빈 칸/정지 기물/팔레트 상한 초과는 원본 입고에서 제외한다.
+`catalog_sources.py`는 원본 배경 처리만 명시적으로 정규화한다. 크기/불투명 RGB/팔레트는 바꾸지 않고 재읽는다. 원본·카탈로그 사본·라이선스·작업자 지시·입고 제외 사유·도구 해시는 기준과 선택 팩에 보존된다.
 「남긴 그림으로 변주」는 현재 남긴 실제 12프레임을 원본으로 고정하고 각 기준의 `grid`/좌표 저작 방식을 보존한다.
 제작 지시·선택 binding·원본·도구 해시를 `recipes/ID`와 실행의 `recipe/`에 보존한다. 한 작업자는 1명만 저작한다.
 납품 시 12장 저작 기록/좌표 재적용·투명·PNG/RGBA·네 배경 GIF·설명·정확한 중복을 검사해 `delivery.json`에 묶는다.

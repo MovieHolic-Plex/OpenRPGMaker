@@ -8,6 +8,8 @@ from unittest.mock import patch
 import harness as H
 import review_server as S
 import studio
+import catalog_sources as CS
+from PIL import Image
 
 
 def verify(check, isolated_store):
@@ -32,6 +34,38 @@ def verify(check, isolated_store):
             check('studio-resume-excludes-its-own-reservation', True)
             H.write_json_atomic(other / 'driver.json', dict(pid=0, par=4))
             check('studio-ended-producer-releases-slots', studio.active_productions() == [dict(run='producer', par=2)])
+        opaque = Image.new('RGBA', (2, 1), (0, 0, 0, 0))
+        opaque.putpixel((1, 0), (0, 0, 0, 255))
+        flat = CS.normalize(opaque)
+        check('catalog-keeps-opaque-black-separate-from-transparent-black', flat.getpixel((0, 0)) == CS.C.KEY and flat.getpixel((1, 0)) == (0, 0, 0))
+        opaque.putpixel((1, 0), (*CS.C.KEY, 255))
+        try:
+            CS.normalize(opaque)
+        except ValueError:
+            check('catalog-refuses-body-using-output-transparent-key', True)
+        else:
+            check('catalog-refuses-body-using-output-transparent-key', False)
+        assets = CS.editor_catalog()
+        check('catalog-reads-all-six-editor-monster-sheets', sum(a['group'] == 'Monster' for a in assets) == 6)
+        check('catalog-includes-scarloxy-and-farm-provider-assets', sum(a['group'] == 'Scarloxy' for a in assets) == 2 and sum(a['group'] == 'Farm' for a in assets) == 2)
+        source = CS.create()
+        frozen = CS.R.load(H.DATA / 'recipes' / source['id'], check_tools=True)
+        check('catalog-frozen-sources-retain-all-20-walking-sheets', source['sheets'] == 20 and source['seeds'] >= 100)
+        started = []
+
+        def launch(root, par, batch_size):
+            started.append(dict(run=root.name, par=par, batchSize=batch_size))
+            return dict(run=root.name, pid=0)
+
+        with patch.object(studio, 'launch', side_effect=launch):
+            collection = studio.create(dict(allSources=True, count=100, par=2, catalogRecipe=source['id']))
+        plans = [json.loads((H.run_dir(r['run']) / 'manifest.json').read_text()) for r in started]
+        check('catalog-plans-100-instead-of-dropping-eight-animals', sum(len(m['characters']) for m in plans) == collection['count'] == 100)
+        check('catalog-splits-animal-policy-without-dropping-body-checks', len(plans) == 2 and plans[0]['motionPolicy'] == CS.M.VERSION and plans[1]['animalPolicy'] == 1 and plans[1]['motionPolicy'] is None)
+        chosen = [r['catalogReference'] for r in plans[0]['characters']]
+        check('catalog-100-plan-visits-every-walking-sheet', len({r['assetId'] for r in chosen}) == 20)
+        check('catalog-single-character-artists-retain-global-two-slot-budget', sum(r['par'] for r in started) == 2 and all(r['batchSize'] == 1 for r in started))
+        check('catalog-reference-is-not-a-fake-human-acceptance', all('acceptance' not in s for s in frozen['seeds']) and not H.DECISIONS.exists())
         w = H.DATA / 'runs/fixture/candidate__gpt-r1'
         w.mkdir(parents=True)
         (w / 'meta.json').write_text(json.dumps(dict(pid=0)))

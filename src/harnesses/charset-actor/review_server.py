@@ -90,7 +90,7 @@ class ReviewState:
             try:
                 revision = item_revision()
                 if revision != previous:
-                    items = H._items()
+                    items = studio.annotate_catalog_items(H._items())
                     blocked = {r['run']: r['blocked'] for r in studio.runs(items)}
                     with self.lock:
                         self.items, self.blocked_by_run, self.error = items, blocked, None
