@@ -106,6 +106,8 @@ def _create(options):
     concepts = options.get('concepts', [])
     if not isinstance(concepts, list) or len(concepts) > 500 or any(not isinstance(c, str) or not c.strip() or len(c) > 500 for c in concepts):
         raise ValueError('캐릭터별 콘셉트는 500자 이하 문장의 목록입니다')
+    if options.get('distinctSources') and not any(options.get(k) for k in ('allSources', 'creatures', 'recipe', 'seedRun')):
+        raise ValueError('원본 중복 방지는 에디터 전체 원본·남긴 그림·동물 원본 제작에서 사용할 수 있습니다')
     if options.get('allSources'):
         return _create_catalog(options, count, par)
     if options.get('creatures') or options.get('recipe') or options.get('seedRun'):
