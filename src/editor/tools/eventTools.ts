@@ -599,6 +599,50 @@ function unguardedItemSpendWarnings(event: GameEvent): string[] {
 }
 
 /**
+ * 전투 승리 분기에서 골드를 또 준다 — 적 그룹의 전투 보상 골드(enemy.rewards.gold)는 승리 때 이미 지급된다.
+ * 2026-10-05 스트레스 실측: 「이기면 500G」를 적 보상 500 과 victoryBranch changeGold +500 으로 둘 다 넣어
+ * 실제로는 1000G 가 들어왔다. 일부러 추가 보상을 주는 경우도 있으니 거부하지 않고 합계를 알린다.
+ */
+function doubleBattleGoldWarnings(project: Project, event: GameEvent): string[] {
+  const warnings: string[] = [];
+  const troopGold = (troopId: unknown): number => {
+    const troop = project.database.troops.find((entry) => entry.id === troopId);
+    if (!troop) return 0;
+    const enemyIds = troop.members?.length ? troop.members.map((member) => member.enemyId) : troop.enemyIds ?? [];
+    return enemyIds.reduce((sum, enemyId) => sum + (project.database.enemies.find((enemy) => enemy.id === enemyId)?.rewards?.gold ?? 0), 0);
+  };
+  const branchGold = (commands: readonly Command[] | undefined): number => {
+    let total = 0;
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object" || command.kind !== "changeGold") continue;
+      const amount = (command as { amount?: unknown }).amount;
+      const op = (command as { op?: unknown }).op;
+      if (typeof amount === "number" && amount > 0 && op !== "-=") total += amount;
+    }
+    return total;
+  };
+  const walk = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "battleProcessing") {
+        const rewarded = troopGold((command as { troopId?: unknown }).troopId);
+        const extra = branchGold((command as { victoryBranch?: readonly Command[] }).victoryBranch);
+        if (rewarded > 0 && extra > 0) {
+          warnings.push(`이벤트 '${event.id}': 적 그룹 ${(command as { troopId?: string }).troopId} 의 전투 보상 골드 ${rewarded} 가 승리 때 이미 지급되는데 `
+            + `victoryBranch 에서 changeGold +${extra} 를 또 줍니다 — 실제 합계 ${rewarded + extra}G. 요청한 보상이 한 번이면 적의 rewards.gold 나 이 changeGold 중 하나를 빼세요.`);
+        }
+      }
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const list of nested) walk(list);
+    }
+  };
+  walk(event.commands);
+  for (const page of event.pages ?? []) walk(page.commands);
+  return warnings;
+}
+
+/**
  * 모든 선택지의 분기가 비어 있는 choices 명령 — 무엇을 골라도 아무 일도 없다.
  *
  * 2026-09-23 등대지기 재시험: 동료 카일의 「동행을 제안한다」와 보스의 「정령과 맞선다!」가 둘 다
@@ -740,6 +784,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
     for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
+    if (project) for (const warning of doubleBattleGoldWarnings(project, event)) warnings?.push(warning);
     if (project && (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "pages") || Object.prototype.hasOwnProperty.call(supplied, "commands"))) {
       relocateImpassableTransfers(project, event, warnings);
     }
