@@ -3,6 +3,7 @@ export const USER_FACING_REPORT_RULE = "사용자에게 보내는 최종 답변�
 
 export function friendlyExecutionError(message: string): string {
   if (/중단했습니다|aborted/i.test(message)) return "작업을 중단했어요.";
+  if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";
   if (/401|403|auth|credential|로그인|인증/i.test(message)) return "AI 연결을 확인하지 못했어요. 설정에서 로그인 상태를 확인해 주세요.";
   if (/429|rate.limit|quota|한도/i.test(message)) return "AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.";
   if (/timeout|timed.out|시간.*상한/i.test(message)) return "응답을 기다리다가 작업이 멈췄어요. 다시 시도해 주세요.";

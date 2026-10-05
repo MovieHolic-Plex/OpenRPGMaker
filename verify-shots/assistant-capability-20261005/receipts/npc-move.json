@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "caseId": "npc-move",
+  "title": "기존 NPC 이동",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "d7d1d55a953bc5cdf7aa4106eb70e91ea3c08856216e7d73ad4ce653f29d026f",
+  "startedAt": "2026-10-04T15:50:00.028Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-position",
+          "ok": true,
+          "detail": "기존 ID가 (9,7)에 위치"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"d768e72e-6b82-4731-b99d-9080c23350e7\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-move/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"2586bc3d07da1b1caec5f5bcd8f735c6a6622927d19cbb99746ad3f049fdfb4e\",\"reloadedSha256\":\"2586bc3d07da1b1caec5f5bcd8f735c6a6622927d19cbb99746ad3f049fdfb4e\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "변경·재로드 지도에서 미루 E 마커가 오른쪽 한 칸 이동한 위치에 표시된다. 전용 플레이어에서 해당 위치 앞의 주인공이 같은 미루에게 말하고 옛 대사가 표시된다. 캐릭터·대화창 잘림이나 겹친 이벤트 표시는 없다. 다른 맵 보존은 별도 게이트 실패다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/03-first-line.png"
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    }
+  },
+  "elapsedMs": 122857,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129168459
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "12e333d7-32f2-4622-95c5-1891237e2c94",
+      "at": 1791129174114
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "12e333d7-32f2-4622-95c5-1891237e2c94",
+      "at": 1791129179006
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129214746
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129214777
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129214781
+    }
+  ],
+  "projectId": "d768e72e-6b82-4731-b99d-9080c23350e7",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-move/project",
+  "finishedAt": "2026-10-04T15:55:02.681Z",
+  "status": "fail",
+  "verification": {
+    "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+    "priorResultDigest": "c952b5105cfaf02594b08244b6a15c042226a5e0df9b7a54c3743182f111057a",
+    "archive": "verification-history/1791129872845",
+    "at": "2026-10-04T16:04:33.076Z",
+    "newModelTurn": false
+  },
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T15:50:00.028Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

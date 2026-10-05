@@ -416,7 +416,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const hasPendingDraft = !applied && unpublishedChanges && changedCount > 0 && (!isLiveApplyMode(applyMode) || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
-        : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
+        : streamErrors.length > 0 ? "failed" : "response-final",
       hasPendingDraft,
       hasApplied: applied || publication.count > 0,
       persistence: "none",
@@ -451,7 +451,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     // 단계 기록은 이 행에 실린다 — 행을 만드는 자리가 하나라(startPiRunLog), 계측 때문에 두 번째 행을
     // 만들면 `npm run ai:log` 가 같은 실행을 두 건으로 세게 된다. 스냅숏은 읽기 전용이라 몇 번 찍어도 같다.
     const timing = options.timing?.snapshot();
-    void runLog.finish({ ...facts, board: boardState, ...(runNotes.length ? { notes: [...runNotes] } : {}), ...(timing ? { timing } : {}) }).then(
+    void runLog.finish({ ...facts, ...(facts.error === undefined && streamErrors.length ? { error: streamErrors.join("\n") } : {}), board: boardState, ...(runNotes.length ? { notes: [...runNotes] } : {}), ...(timing ? { timing } : {}) }).then(
       (rows) => surface.onRunAudit?.(rows),
       () => { /* 기록 실패는 이미 삼켜진다 — 감사 전달도 실행을 막지 않는다 */ },
     );
@@ -757,8 +757,8 @@ ${contractReleased.message}`);
     // 「적용됨」은 커밋된 실행에만 쓴다 — 계획 턴과 답(질문) 턴은 바뀌지 않는 것이 정상이고,
     // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
     ghost.dispose();
-    boardState = droppedEverything
-      ? markTeamBoardFailed(boardState, spillReason)
+    boardState = droppedEverything || streamErrors.length > 0
+      ? markTeamBoardFailed(boardState, droppedEverything ? spillReason : friendlyExecutionError(streamErrors[0]!))
       : markTeamBoardDone(
         boardState,
         options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
@@ -1019,7 +1019,9 @@ ${contractReleased.message}`);
     const appliedText = team
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
-    boardState = markTeamBoardApplied(boardState, appliedText); sync();
+    boardState = streamErrors.length
+      ? markTeamBoardFailed(boardState, `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
+      : markTeamBoardApplied(boardState, appliedText); sync();
     observeActivitySave((name, summary, status, data) => {
       if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
       board.update(boardState);
@@ -1027,7 +1029,8 @@ ${contractReleased.message}`);
       if (!background && currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,

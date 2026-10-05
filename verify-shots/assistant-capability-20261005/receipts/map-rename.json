@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "caseId": "map-rename",
+  "title": "맵 이름만 수정",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+  "startedAt": "2026-10-04T16:03:12.816Z",
+  "gates": {
+    "execution": {
+      "status": "blocked",
+      "detail": "모델 요청 영수증은 있으나 원본 SSE done 기록이 누락되어 실행 증거를 완성할 수 없다. 이전 실행기 재시작 관측 장애는 보존·요구 판정과 구분한다."
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-map-renamed",
+          "ok": true,
+          "detail": "동일 맵 ID의 이름 교체"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "not-required",
+      "evidence": []
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"c36de1f6-b8d0-4549-b7ac-1c65464b5a15\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/map-rename/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"029a44b30fdf079d7f172d9077a0bd53c8f338c3da804c4e11f1a7b9c76ebc1a\",\"reloadedSha256\":\"029a44b30fdf079d7f172d9077a0bd53c8f338c3da804c4e11f1a7b9c76ebc1a\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "새 저장 결과를 렌더 완료 후 직접 읽었다. 왼쪽 맵 선택기와 오른쪽 조수 대상 이름이 모두 새벽 마을로 표시된다. E 마커 네 개와 지도·패널은 정상으로 보인다. 다른 맵 타일 변경은 보존 게이트 실패로 남긴다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png"
+      ]
+    }
+  },
+  "elapsedMs": 109759,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129926219
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "71c461d9-221d-45c1-88ef-82fd27018148",
+      "at": 1791129931477
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "71c461d9-221d-45c1-88ef-82fd27018148",
+      "at": 1791129937471
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129964359
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129964482
+    }
+  ],
+  "projectId": "c36de1f6-b8d0-4549-b7ac-1c65464b5a15",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/map-rename/project",
+  "finishedAt": "2026-10-04T16:07:16.716Z",
+  "status": "fail",
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T16:03:12.816Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

@@ -59,11 +59,14 @@ def review_input(data, cid):
         if candidates: groups.append({'id': group['id'], 'title': group['title'], 'candidates': candidates})
     previous = read(folder / 'art-feedback.json', {})
     previous_images = []
-    for repair in previous.get('repairs', []) + previous.get('deferredRepairs', []):
+    for repair in previous.get('repairs', []) + previous.get('deferredRepairs', []) + previous.get('completionRepairs', []):
         for ref in repair.get('archivedEvidence', []):
             if Path(ref['path']).suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp'): continue
             if art_choices.digest(ref['path']) != ref['sha256']: raise ValueError('이전 실패 그림 해시 불일치')
             if ref not in previous_images: previous_images.append(ref)
+    required_groups = {r['group'] for r in previous.get('completionRepairs', [])}
+    if not required_groups <= {g['id'] for g in manifest.get('groups', [])}:
+        raise ValueError('시설 수정 대상 그룹을 다른 후보로 대체할 수 없습니다.')
     return {'manifestSha256': art_choices.digest(manifest_path), 'groups': groups,
             'root': str(Path(data) / 'art-worktrees' / cid),
             'previousFeedback': previous, 'previousImages': previous_images,
@@ -166,6 +169,9 @@ def queue_repair(data, cid):
             'preserveGroups': [g['id'] for g in state['groups'] if g not in failed],
             'repairBrief': read(folder / 'parking-repair-brief.json', {}), 'created': store.now()}
         feedback['policy'] = art_repair.route(folder, repairs, source)
+        # A new generation must not silently drop unresolved facility findings.
+        if previous.get('completionRepairs'):
+            feedback['completionRepairs'] = previous['completionRepairs']
         # Calibration may defer composition/space defects, but must not erase them.
         if previous.get('policy', {}).get('phase') == 'calibration':
             feedback['deferredRepairs'] = previous.get('deferredRepairs', []) or previous.get('repairs', [])

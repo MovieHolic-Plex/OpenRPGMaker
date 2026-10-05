@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "caseId": "plan-readonly",
+  "title": "계획만 세우기",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "2b88e1fc2bcca170a36265de364341db1666245e8c21bad0c3230738f11336b5",
+  "startedAt": "2026-10-04T15:41:28.130Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "plan-answer",
+          "ok": true,
+          "detail": "실제 계획 답변 존재"
+        },
+        {
+          "id": "plan-no-write",
+          "ok": true,
+          "detail": "계획 단계 게임 콘텐츠 전체 불변"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": true,
+          "detail": "허용 필드 이외의 프로젝트 전체 보존"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "not-required",
+      "evidence": []
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"f46dc3de-c40a-4fa4-b269-a34529a0a4c6\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/plan-readonly/project\",\"beforeRevision\":3,\"afterRevision\":3,\"afterSha256\":\"16058410865aa3d8a26a81056f06d9484216083405bf33a25e4c1939635deaa5\",\"reloadedSha256\":\"16058410865aa3d8a26a81056f06d9484216083405bf33a25e4c1939635deaa5\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-independent-evidence-review",
+      "notes": "실행 후 지도 E 마커 네 개·잔디·패널이 정상 표시되고 변경 없음이 보인다. 조수 답변은 계획만 세웠다고 표시한다. 새 context 재로드에서 동일 지도·표시 상태를 확인했다. 대사·보상 실행은 이 과제의 시각 범위 밖이며 데이터 불변은 별도 게이트로 확인했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png"
+      ]
+    }
+  },
+  "elapsedMs": 92693,
+  "models": [
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "fcb4f327-1dcd-4ccd-83e1-8aefee0ca926",
+      "at": 1791128630159
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "fcb4f327-1dcd-4ccd-83e1-8aefee0ca926",
+      "at": 1791128633698
+    }
+  ],
+  "projectId": "f46dc3de-c40a-4fa4-b269-a34529a0a4c6",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/plan-readonly/project",
+  "finishedAt": "2026-10-04T15:45:23.645Z",
+  "status": "pass",
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T15:41:28.130Z",
+      "status": "pass",
+      "nativeInput": true
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "caseId": "dialogue-choice",
+  "title": "선택지 양쪽과 취소",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+  "startedAt": "2026-10-04T16:13:00.193Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "two-choices",
+          "ok": true,
+          "detail": "요청 질문·선택지 두 개·순서(선행 질문 대사도 허용)"
+        },
+        {
+          "id": "both-branches",
+          "ok": true,
+          "detail": "두 분기에 서로 다른 정확한 대사"
+        },
+        {
+          "id": "no-reward",
+          "ok": true,
+          "detail": "보상·전역 상태 변경·이동 없음(취소 분기 포함)"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"27ba5ccd-8471-4825-ad61-00423eab3741\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/dialogue-choice/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"8416b40f68059d69f27a8d8bf7ddca2090d597f813849adcfe2a9bc239f9b80f\",\"reloadedSha256\":\"8416b40f68059d69f27a8d8bf7ddca2090d597f813849adcfe2a9bc239f9b80f\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "fail",
+      "reviewer": "codex-evidence-review",
+      "notes": "실제 변경·재로드 지도와 새 플레이 그림을 읽었다. 동문·여관 선택지 두 개와 여관에서 쉬자 대사가 정상으로 보인다. 실제 Esc 취소 뒤 동문에서 만나자 대화창과 다음 표시가 남아 종료 요구의 시각 실패다. 질문의 선행 대사 표현은 허용했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/04-choices.png",
+        "runtime/08-inn-branch.png",
+        "runtime/11-cancel.png"
+      ]
+    },
+    "runtime": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "question",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "choices",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "east-branch",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "east-close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "reopen",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "inn-branch",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "inn-close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "reopen-cancel",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "cancel",
+          "ok": false,
+          "detail": "op waitFor 실패: page.waitForFunction: Timeout 10000ms exceeded.; testid 잔존: dialogue-box"
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-question.png",
+        "runtime/04-choices.png",
+        "runtime/05-east-branch.png",
+        "runtime/06-east-close.png",
+        "runtime/07-reopen.png",
+        "runtime/08-inn-branch.png",
+        "runtime/09-inn-close.png",
+        "runtime/10-reopen-cancel.png",
+        "runtime/11-cancel.png"
+      ]
+    }
+  },
+  "elapsedMs": 126263,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130520829
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "7a4eaa9e-3672-4344-9b98-b613469d6a71",
+      "at": 1791130526483
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "7a4eaa9e-3672-4344-9b98-b613469d6a71",
+      "at": 1791130531590
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130571765
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130571799
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130571802
+    }
+  ],
+  "projectId": "27ba5ccd-8471-4825-ad61-00423eab3741",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/dialogue-choice/project",
+  "finishedAt": "2026-10-04T16:19:49.734Z",
+  "status": "fail",
+  "verification": {
+    "harnessDigest": "5a42f1d9ffad4e0a7f7bef46ace10ce0cb7b57f67e1adebc8d76d6a6368d7ae4",
+    "priorResultDigest": "f7ea8b7a76af1b7c8f95eba566f633fa55ea1ab76a921f26b1c14bda9efbe571",
+    "archive": "verification-history/1791131398672",
+    "at": "2026-10-04T16:29:58.829Z",
+    "newModelTurn": false
+  },
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T16:13:00.193Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

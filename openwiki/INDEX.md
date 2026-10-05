@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4884KB / 약 1,419,445 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **142쪽 / 4903KB / 약 1,425,373 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,8 +17,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
 | `openwiki/charset-actor-harness.md` | 52KB | 7KB | 419 | ~16,431 |
-| `openwiki/editor-ai-panel.md` | 622KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3924 | ~181,789 |
-| `openwiki/editor-ai-tools.md` | 325KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2693 | ~93,943 |
+| `openwiki/editor-ai-panel.md` | 623KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3928 | ~182,013 |
+| `openwiki/editor-ai-tools.md` | 326KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2699 | ~94,238 |
 | `openwiki/editor-database.md` | 413KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2457 | ~120,993 |
 | `openwiki/editor-event-authoring.md` | 178KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1072 | ~52,055 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -30,7 +30,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
 | `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1547 | ~60,143 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
-| `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,940 |
+| `openwiki/testing.md` | 220KB | 48KB | 2092 | ~61,141 |
 | `openwiki/tileset-reference-documents.md` | 55KB | 4KB | 564 | ~16,695 |
 
 ## 한국어 산문이 깨진 페이지
@@ -86,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/interior-prop-derivations.md` | 1 | `.png` |
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
-| `openwiki/harnesses/modern-chipset.md` | 1 | `previous-tileset.json` |
+| `openwiki/harnesses/modern-chipset.md` | 2 | `.input.json`, `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
 | `openwiki/harnesses/super-harness.md` | 15 | `B.json`, `art-context-review.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `supervisor-authorization.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
@@ -436,7 +436,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 설치 지점
 - `L66` 테스트
 
-### `openwiki/editor-ai-panel.md` — 622KB · 3924줄 · ~181,789 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/editor-ai-panel.md` — 623KB · 3928줄 · ~182,013 토큰 · 통째읽기 잘림 · 깨진 줄 26
 
 - `L5` UX 추가 조사 2 — 공간 체크포인트·사람 칸 비교 (2026-10-04)
 - `L24` UX 추가 조사 2 — 활동 그림 캡처·그림판·보관 정리 (2026-10-04)
@@ -558,8 +558,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3878` 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
   - `L3903` 조수창
   - `L3912` 재현·증거
+- `L3925` 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
 
-### `openwiki/editor-ai-tools.md` — 325KB · 2693줄 · ~93,943 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 326KB · 2699줄 · ~94,238 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L35` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -670,6 +671,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2668` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
 - `L2676` 글자·장면 오프닝 연출 (2026-10-04)
 - `L2686` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+- `L2694` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
 
 ### `openwiki/editor-database.md` — 413KB · 2457줄 · ~120,993 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1134,6 +1136,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L36` 기존 것과의 관계 (2026-10-01 실측)
 - `L42` 하네스 목록
 
+### `openwiki/harnesses/assistant-capability.md` — 13KB · 85줄 · ~3,979 토큰
+
+- `L5` 실행 경로
+- `L11` 단계
+- `L32` 판정
+- `L49` 시각 검수
+- `L62` 산출물과 확장
+- `L68` 최초 실측 — 2026-10-05
+- `L76` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L82` 수정 확인 — 2026-10-05
+
 ### `openwiki/harnesses/charset-actor.md` — 6KB · 46줄 · ~1,748 토큰
 
 절 제목 없음 (평면 목록 페이지).
@@ -1197,7 +1210,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` pick 절차 (사람)
 - `L76` 복제에서 바꾼 점 (modern-chipset 대비)
 
-### `openwiki/harnesses/modern-chipset.md` — 7KB · 75줄 · ~2,228 토큰
+### `openwiki/harnesses/modern-chipset.md` — 10KB · 101줄 · ~2,941 토큰
 
 - `L8` 왜 만들었나 (2026-10-01)
 - `L14` 흐름
@@ -1206,6 +1219,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` 도시 조립 (2026-10-03)
 - `L47` 굽기 `bake` → 번들 타일셋 modern_city (2026-10-03)
 - `L54` 승인 주차장 두 면 공용 등록 (2026-10-05)
+- `L76` 기존 칩 확장 실험 (2026-10-05)
+  - `L90` 미완성 판정의 후속 처리
 
 ### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
 
@@ -1238,7 +1253,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 공간 제작에서의 공용 재료 사용
 - `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 39KB · 368줄 · ~12,129 토큰
+### `openwiki/harnesses/super-harness.md` — 40KB · 382줄 · ~12,510 토큰
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1260,6 +1275,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L333` 시점 표본 합격 후 저장 오류 복구 (2026-10-04)
   - `L342` 고정 합격 기준·권고 분리·판정 충돌 재검수 (2026-10-05)
   - `L361` 선택 구역의 설치 완료 근거
+  - `L369` 확장판 미완성 → 실제 수정 큐 (2026-10-05)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -1387,7 +1403,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L105` 남은 일 (B/D)
 - `L119` 검증 좌표
 
-### `openwiki/modern-city.md` — 9KB · 72줄 · ~2,629 토큰
+### `openwiki/modern-city.md` — 9KB · 78줄 · ~2,764 토큰
 
 - `L5` 식별자
 - `L15` 파일
@@ -1398,6 +1414,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L51` 자동 검사 (구조·통행만)
 - `L56` 번들 장소
 - `L60` 승인된 작은 지하 주차장 (2026-10-05)
+  - `L73` 12면 확장 실험
 
 ### `openwiki/monster-resource-editor.md` — 4KB · 75줄 · ~1,199 토큰
 
@@ -2295,7 +2312,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` 저장·크기 변경
 - `L77` 확인
 
-### `openwiki/testing.md` — 219KB · 2088줄 · ~60,940 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 220KB · 2092줄 · ~61,141 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
@@ -2393,6 +2410,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2030` 공식 1024×1024 저작 상한과 성능 검증
 - `L2048` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
   - `L2064` Maker repair and click-first startup (2026-10-04)
+- `L2089` 조수 기능별 실제 수행 점검 (2026-10-05)
 
 ### `openwiki/tile-geometry.md` — 12KB · 145줄 · ~3,629 토큰
 
