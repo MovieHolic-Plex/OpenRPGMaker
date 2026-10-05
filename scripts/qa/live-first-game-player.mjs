@@ -278,6 +278,15 @@ try {
         }
         assert(audio.record.audio.some(s => s.prepared && !s.paused && s.currentTime > 1), 'Selected opening music must actually play');
         if (index === 0) assert(audio.record.audio.some(s => s.rms > 0.001), 'Native opening audio must contain an audible PCM signal');
+        assert.equal(audio.record.visibleLoadingSamples, 0, 'The actual opening handoff must not show a loading card');
+        assert(audio.record.background.some(s => s.pending), 'The actual map must be prepared behind the opening');
+        if (index === 0 && completion.generatedResources?.length) {
+          for (const map of [start, route]) assert(audio.record.fieldAudio.some(s => s.mapId === map.id && s.resourceId === map.bgm.resourceId && s.currentTime > 0.1), 'Both actual map OSTs must play');
+          for (const scene of opening.scenes.filter(s => s.direction?.soundResourceId?.startsWith('original_se_'))) {
+            const sha = project.assets.uploaded[scene.direction.soundResourceId].ref.sha256;
+            assert(audio.record.media.some(s => s.sha256 === sha && s.played), 'The actual generated opening SE must play');
+          }
+        }
         if (opening.scenes.some(s => s.kind === 'image' && s.direction?.layers?.length)) {
           const byScene = new Map();
           for (const sample of audio.record.layers) {
