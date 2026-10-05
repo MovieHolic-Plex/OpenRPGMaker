@@ -288,7 +288,10 @@ class Harness:
                       'Files: source/palette.json (one ASCII symbol -> #RRGGBB; dot is transparent and absent in palette), '
                       'source/poses/<pose>.pxgrid. Every row and canvas must exactly match cell size. '
                       'All art has 1px transparent border; lowest ink y<=cell-4. '
-                      + ('Create only idle_a and palette. This is the user steering checkpoint.\n' if phase == 'idle' else
+                      + ('Create all nine poses and palette as one complete candidate for the user to judge. '
+                         'When source grids already exist, revise them according to the user correction. '
+                         'Hand-author every changed cluster; keep identity and palette consistent across all nine poses.\n'
+                         if phase == 'full' else 'Create only idle_a and palette. This is the user steering checkpoint.\n' if phase == 'idle' else
                          'Preserve palette.json and idle_a byte-for-byte. Hand-author the other eight poses, '
                          'including distinct windup/move/attack/recover/hit/dead anatomy and a readable death pose.\n')
                       + f'User correction: {correction or "follow the silhouette and action brief"}\n'
@@ -297,6 +300,8 @@ class Harness:
             images = []
             if phase == 'poses':
                 images = [directory / 'preview/idle/checker.png']
+            elif phase == 'full' and (directory / 'reference.png').exists():
+                images = [directory / 'reference.png']
         else:
             report = self.bake(directory, phase)
             if not report['pass']:
@@ -344,7 +349,7 @@ class Harness:
         if stage == 'author':
             if frozen and self.pixels(directory, 'idle')[2]['binding'] != frozen:
                 raise ValueError('동작 저작 중 선택한 기본 자세/팔레트가 변함. 이전 선택은 무효입니다.')
-            return self.bake(directory, phase)
+            return self.bake(directory, 'poses' if phase == 'full' else phase)
         if self.pixels(directory, phase)[2]['binding'] != frozen:
             raise ValueError('검수 중 원본이 바뀜. 결과는 현재 그림에 적용되지 않습니다.')
         result = load(job / 'result.json')
@@ -533,7 +538,7 @@ def main():
     parser.add_argument('--root', default=str(REPO / 'qa-runs/harnesses/battle-monster'))
     parser.add_argument('--monster')
     parser.add_argument('--candidate', default='baseline')
-    parser.add_argument('--phase', choices=('idle', 'poses'), default='idle')
+    parser.add_argument('--phase', choices=('idle', 'poses', 'full'), default='idle')
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--source')
     parser.add_argument('--palette')
@@ -543,6 +548,8 @@ def main():
     parser.add_argument('--note')
     parser.add_argument('--out')
     args = parser.parse_args()
+    if args.phase == 'full' and args.stage != 'author':
+        parser.error('--phase full은 author 전용입니다.')
     if args.stage == 'decide' and not args.choice:
         parser.error('decide에는 --choice 필요')
     try:

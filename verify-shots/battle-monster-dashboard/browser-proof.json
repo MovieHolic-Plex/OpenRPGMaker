@@ -1,0 +1,25 @@
+{
+  "layouts": [
+    {
+      "width": 1360,
+      "content": 1360
+    },
+    {
+      "width": 800,
+      "content": 800
+    },
+    {
+      "width": 375,
+      "content": 375
+    },
+    {
+      "width": 320,
+      "content": 320
+    }
+  ],
+  "errors": [],
+  "modifyShortcutWorks": true,
+  "escapeClosesDialog": true,
+  "playPaused": true,
+  "noInternalDetails": true
+}

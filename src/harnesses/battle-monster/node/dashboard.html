@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="review-token" content="__TOKEN__">
+  <title>몬스터 작업실</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/dashboard.js" defer></script>
+</head>
+<body>
+  <header class="top"><div><span class="eyebrow">__THEME__</span><h1>몬스터 작업실</h1></div><p id="activity" role="status">결과를 불러오는 중…</p></header>
+  <main>
+    <aside aria-label="결과 목록">
+      <nav class="filters" aria-label="결과 상태">
+        <button data-filter="pending" aria-pressed="true">검토 대기 <span id="pending-count">0</span></button>
+        <button data-filter="allow" aria-pressed="false">Allow <span id="allow-count">0</span></button>
+        <button data-filter="history" aria-pressed="false">지난 결과</button>
+      </nav>
+      <div id="list" class="result-list"></div>
+      <p id="list-empty" class="empty" hidden>검토할 결과가 없습니다.</p>
+    </aside>
+    <section class="viewer" aria-label="선택한 몬스터">
+      <div id="empty-view" class="empty-view" hidden><h2>검토를 마쳤습니다</h2><p>새 결과가 준비되면 여기에 표시됩니다.</p></div>
+      <div id="result-view">
+        <div class="result-heading"><div><span id="edition" class="eyebrow">새 결과</span><h2 id="name"></h2></div><span id="choice" class="choice">검토 대기</span></div>
+        <div class="art-area" id="art-area">
+          <figure id="before-figure" hidden><figcaption>이전</figcaption><canvas id="before" width="192" height="192" role="img" aria-label="수정 전 몬스터"></canvas></figure>
+          <figure><figcaption id="after-label" hidden>수정 후</figcaption><canvas id="art" width="192" height="192" role="img" aria-label="몬스터 그림과 움직임"></canvas></figure>
+        </div>
+        <div class="motion-tools"><div class="motion-buttons" aria-label="움직임"><button data-motion="idle" aria-pressed="true">대기</button><button data-motion="attack" aria-pressed="false">공격</button><button data-motion="hit" aria-pressed="false">피격</button><button data-motion="dead" aria-pressed="false">쓰러짐</button></div><button id="play" aria-pressed="true">일시 정지</button></div>
+        <p id="note" class="correction" hidden></p>
+        <p id="progress" class="progress-note" role="status" hidden></p>
+        <div class="decisions" aria-label="이 결과 선택">
+          <button id="allow" class="allow"><strong>Allow</strong><span>이 결과 보관</span><kbd>A</kbd></button>
+          <button id="modify" class="modify"><strong>Modify</strong><span>고쳐서 다시 보기</span><kbd>M</kbd></button>
+          <button id="deny" class="deny"><strong>Deny</strong><span>이 결과 제외</span><kbd>D</kbd></button>
+        </div>
+        <a id="download" class="download" hidden>선택한 결과 받기 ↓</a>
+        <p class="help">선택하면 다음 결과로 넘어갑니다.</p>
+      </div>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="modify-dialog" aria-labelledby="modify-title">
+    <form id="modify-form">
+      <h2 id="modify-title">어떻게 고칠까요?</h2>
+      <p>AI가 수정한 결과를 다시 가져옵니다.</p>
+      <label for="instruction">수정할 내용</label>
+      <textarea id="instruction" rows="4" maxlength="4000" placeholder="예: 다리를 더 짧고 튼튼하게. 엄니는 눈에 띄게 해줘." required></textarea>
+      <div class="dialog-actions"><button type="button" id="cancel-modify">취소</button><button type="submit" class="submit-modify">수정 요청</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

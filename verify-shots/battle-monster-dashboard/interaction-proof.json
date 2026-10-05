@@ -1,0 +1,61 @@
+{
+  "scope": "isolated dashboard fixture; production choices untouched",
+  "choices": [
+    {
+      "key": "earthen-jar-fiend/baseline",
+      "choice": "deny",
+      "working": false,
+      "note": "deny"
+    },
+    {
+      "key": "jangseung-spirit/baseline",
+      "choice": "pending",
+      "working": false,
+      "note": ""
+    },
+    {
+      "key": "mortar-rabbit/baseline",
+      "choice": "pending",
+      "working": false,
+      "note": ""
+    },
+    {
+      "key": "venom-toad/baseline",
+      "choice": "modify",
+      "working": true,
+      "note": "QA용: 볼을 둥글게 하고 앞발을 더 짧게."
+    },
+    {
+      "key": "wild-boar/baseline",
+      "choice": "allow",
+      "working": true,
+      "note": "allow"
+    }
+  ],
+  "afterReload": [
+    {
+      "key": "earthen-jar-fiend/baseline",
+      "choice": "deny"
+    },
+    {
+      "key": "jangseung-spirit/baseline",
+      "choice": "pending"
+    },
+    {
+      "key": "mortar-rabbit/baseline",
+      "choice": "pending"
+    },
+    {
+      "key": "venom-toad/baseline",
+      "choice": "modify"
+    },
+    {
+      "key": "wild-boar/baseline",
+      "choice": "allow"
+    }
+  ],
+  "duplicateStatus": 200,
+  "staleStatus": 409,
+  "missingTokenStatus": 403,
+  "errors": []
+}

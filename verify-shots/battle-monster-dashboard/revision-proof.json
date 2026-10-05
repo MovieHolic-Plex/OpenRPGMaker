@@ -1,0 +1,62 @@
+{
+  "scope": "isolated real model run; original human instruction preserved in ledger",
+  "request": {
+    "id": "41aacb5d-e243-4a9e-a49b-53c1fc2d561a",
+    "key": "venom-toad/baseline",
+    "action": "modify",
+    "note": "QA용: 볼을 둥글게 하고 앞발을 더 짧게.",
+    "bindings": {
+      "poses": "7f3c04c65b119df1420dbefea1cfdb02fa8c20f8f545a15082132ca38fa7a329",
+      "idle": "a3ea59ee162b1f00912d7c6fb8aec172b1604b361afb02b4058612de6d6dcc3a"
+    },
+    "phase": "poses",
+    "createdAt": "2026-10-05T03:01:45.281007+00:00",
+    "state": "done",
+    "target": "venom-toad/rev-41aacb5de2434a9e",
+    "finishedAt": "2026-10-05T03:17:32.364055+00:00",
+    "previousFailure": "idle_a: 접지 기준 y60에 닿지 않음",
+    "authored": true,
+    "diagnosticRecovery": {
+      "initialFailure": "idle_a: 접지 기준 y60에 닿지 않음",
+      "technicalInstruction": "QA용: 볼을 둥글게 하고 앞발을 더 짧게.\n기술 수정: 기본 자세의 접지 y=60을 유지하면서 볼과 앞발을 고쳐 주세요.",
+      "originalDecisionNote": "QA용: 볼을 둥글게 하고 앞발을 더 짧게."
+    }
+  },
+  "authorModel": "gpt-6.1-sol",
+  "effort": "high",
+  "jobs": [
+    {
+      "id": "e2990729-a7e2-43e8-9a3d-2a87001e43a7",
+      "stage": "author",
+      "phase": "full",
+      "exitCode": 0
+    },
+    {
+      "id": "6cee0127-9942-42ec-9c54-d9e356c29de8",
+      "stage": "critique",
+      "phase": "poses",
+      "exitCode": 0
+    },
+    {
+      "id": "6510d48d-413f-42b1-bfc1-20167ea11311",
+      "stage": "author",
+      "phase": "full",
+      "exitCode": 0
+    }
+  ],
+  "pixelPass": true,
+  "changedPoses": [
+    "idle_a",
+    "idle_b",
+    "idle_c",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "hit",
+    "dead"
+  ],
+  "independentCritiqueComplete": true,
+  "critiqueRecommendation": "rework",
+  "binding": "5b43c97b288d1b4efa0f70b4b71d7dfd99fcf22be778369ca22fabc8bfca7258"
+}

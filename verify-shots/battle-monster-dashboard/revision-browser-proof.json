@@ -1,0 +1,23 @@
+{
+  "scope": "isolated actual GPT revision, not installed or accepted in user library",
+  "returnedToPending": true,
+  "hasBeforeAfter": true,
+  "correction": "QA용: 볼을 둥글게 하고 앞발을 더 짧게.",
+  "phase": "poses",
+  "choice": "pending",
+  "layouts": [
+    {
+      "width": 1360,
+      "content": 1360
+    },
+    {
+      "width": 375,
+      "content": 375
+    },
+    {
+      "width": 320,
+      "content": 320
+    }
+  ],
+  "errors": []
+}
