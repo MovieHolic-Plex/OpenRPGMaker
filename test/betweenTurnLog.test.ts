@@ -132,7 +132,7 @@ describe("턴 사이 기록 표면", () => {
 
   it("복사는 클립보드로 보이고 실패도 알린다", async () => {
     const section = open();
-    const writeText = vi.fn(async () => undefined);
+    const writeText = vi.fn(async (_text: string) => undefined);
     vi.stubGlobal("navigator", { clipboard: { writeText } });
     (section.querySelector('[data-testid="ai-between-turns-copy"]') as HTMLButtonElement).click();
     await vi.waitFor(() => expect(writeText).toHaveBeenCalled());
