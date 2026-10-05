@@ -145,7 +145,7 @@ def _tick(sh, ids, slots):
     for r in rows("status='pending' ORDER BY due"):
 
         cid=r['concept']
-        if ids is not None and (cid not in ids or cid is None and r['kind'] not in ('seed-discover','theme-plan','theme-review')): continue
+        if ids is not None and (cid not in ids or cid is None and r['kind'] not in ('seed-discover','theme-plan','theme-review','theme-concept-review')): continue
         c=store.concept(cid) if cid else None
         if c and not sh.theme_production.current(cid,json.loads(r['meta'])):
             cancel(cid);continue
@@ -161,6 +161,7 @@ def _tick(sh, ids, slots):
                     db.execute("UPDATE provider_retries SET status='cancelled' WHERE id=?",(r['id'],));continue
         if c and (c['stage']!=r['phase'] or epoch(cid)!=r['epoch']):
             cancel(cid); continue
+        if c and sh.finish_priority.reason(c):continue
         if r['due']>time.time(): continue
         jobs=store.jobs("status='running'")
         if len(jobs)>=int(store.setting('max_codex')): return

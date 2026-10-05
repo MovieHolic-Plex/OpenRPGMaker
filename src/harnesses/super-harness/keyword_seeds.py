@@ -10,6 +10,7 @@ import store
 import provider_retry
 import finish_priority
 import theme_production
+import production_strategy
 
 BATCH = 6
 BACKLOG = 12
@@ -88,12 +89,16 @@ def snapshot():
                           '공간 제안 재시도 대기' if s['retry_after'] > time.time() else
                           '제작·확인 중인 공간 12개 · 처리되면 계속 추가' if pending >= BACKLOG else
                           '다음 공간 제안 대기 · 작업 자리가 나면 자동 시작')
+            s['priority']=s['id']==store.setting('production_priority_seed')
+            s['production']=production_strategy.get(s['id'])
+            s['conceptArt']=theme_production.theme_concepts.snapshot(s['id'])
             p=theme_production.read(theme_production.folder(s['id'])/'policy.json')
             if p:
                 state=theme_production.read(theme_production.folder(s['id'])/'state.json',{})
                 labels={'theme-plan':'테마 전체 미술 기획 중','theme-review':'공통 미술 기획 독립 검수 중','ready':'전용 세트 기준으로 공간별 제작','error':'공통 기획 수정·재시도 대기'}
                 s['theme']={'label':labels.get(state.get('stage'),'전용 세트 공통 기획 대기'),'error':state.get('error',''),'attempt':state.get('attempt',0),'limit':int(store.setting('max_art_revisions') or 10)}
                 if s['theme']['attempt']>=s['theme']['limit']:s['theme']['label']='공통 기획 수정 한도 도달 · 운영 점검 필요'
+            if s.get('theme') and s['conceptArt']['required'] and not s['conceptArt']['approved']:s['theme']['label']=s['conceptArt']['label']
             items.append(s)
     return {'items': items, 'batch': BATCH, 'backlog': BACKLOG,
             'schedulerOnline': time.time()-float(store.setting('keyword_scheduler_tick') or 0) < 30}
@@ -125,7 +130,7 @@ def tick(sh, slots=3):
         if any(j['kind'] not in ('plan','plan-review','survey','material-review','art','art-native',
                                 'art-layout-review','art-context-review','art-demo','seed-discover') for j in jobs):
             return  # shared assembly/publication remains exclusive
-        candidates = sorted(snapshot()['items'], key=lambda s: (s['wave'], s['updated']))
+        candidates = sorted(snapshot()['items'], key=lambda s: (not s['priority'],s['wave'], s['updated']))
         for s in candidates:
             if any(m.get('kind') == 'seed-discover' and m.get('tag') == s['id'] for m in sh.provider_retry.pending_meta()): continue
             if not s['active'] or s['running'] or s['pending'] >= BACKLOG or s['retry_after'] > time.time():
@@ -146,6 +151,9 @@ def tick(sh, slots=3):
 저장할 JSON 경로: {dest}
 정확한 형식: {{"seed": "{s['id']}", "wave": {wave}, "spaces": [{{"title":"구체적 장소 이름", "why":"기획 의도"}}]}}
 spaces는 1~{count}개. 응답만 하지 말고 해당 JSON 파일을 저장하라. 저장소 탐색은 필요 없다.'''
+            prompt+='\n먼저 production 제작 방식을 결정하고 출력 JSON에 포함한다. 키워드라는 이유만으로 전용 제작을 택하지 않는다. 해리포터 같은 고유 세계관은 dedicated: 컨셉아트 → 미술 방향 검수/선택 → 전체 전용 세트. 중세 판타지 공동묘지 같은 기존 세계관의 장소는 extend-kit: 기존 키트 실물 조사 → 재사용 → 부족한 것만 추가 제작. 정체성·시대·재질·건축·생물의 변경 범위를 근거로 정한다.\n'
+            prompt+='production 형식: {"mode":"dedicated|extend-kit","reason":"구체 선택 근거","kitCandidates":["등록된 native 타일셋 id"],"reuse":["조사해서 재사용할 재료"],"create":["추가 제작 또는 부족 여부를 확인할 재료"]}. 읽을 기존 키트 목록: '+str(production_strategy.ROOT/'harness-data/super-harness/seed.json')+'\n'
+            if s.get('production'):prompt+='현재 확정 production은 그대로 복사한다: '+json.dumps(s['production'],ensure_ascii=False)
             try:
                 sh.start_codex(None, 'seed-discover', s['id'], prompt, str(dest))
             except Exception as error:
@@ -162,6 +170,9 @@ def on_result(meta, code, result):
     try:
         if code or not isinstance(result, dict) or result.get('seed') != sid:
             raise ValueError(f'공간 제안 출력 미완료 (exit {code})')
+        strategy=production_strategy.validate(result.get('production'))
+        old=production_strategy.get(sid)
+        if old and old!=strategy:raise ValueError('확정 제작 방식 변경 금지')
         proposals = result.get('spaces')
         if not isinstance(proposals, list) or not 1 <= len(proposals) <= BATCH:
             raise ValueError('공간 제안은 1~6개여야 합니다.')
@@ -195,6 +206,7 @@ def on_result(meta, code, result):
                 raise ValueError('새 공간 없이 중복만 제안되어 다시 요청합니다.')
             db.execute('UPDATE keyword_seeds SET wave=?,errors=0,error=?,retry_after=0,updated=? WHERE id=?',
                        (result['wave'],'',store.now(),sid))
+        production_strategy.apply(sid,strategy)
         for cid in added:
             store.log(cid, f'키워드에서 공간 기획 시작 — {s["keyword"]}')
     except (ValueError, TypeError, KeyError) as error:
