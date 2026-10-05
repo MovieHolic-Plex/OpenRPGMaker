@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **145쪽 / 4978KB / 약 1,448,725 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **145쪽 / 4982KB / 약 1,450,202 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,6 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
 | `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
+| `openwiki/harnesses/super-harness.md` | 50KB | 4KB | 486 | ~15,742 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
 | `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1555 | ~60,403 |
@@ -1177,7 +1178,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L191` 2026-10-05 화면에서 저장 상태 확인
   - `L205` 그림 우선 UI 후속 배포 (2026-10-05)
 
-### `openwiki/harnesses/interior-prop-derivations.md` — 31KB · 374줄 · ~9,640 토큰
+### `openwiki/harnesses/interior-prop-derivations.md` — 34KB · 407줄 · ~10,578 토큰
 
 - `L9` 1. 사용자가 결정한 제품 흐름
 - `L32` 2. 세 계층과 현재 완료 범위
@@ -1197,6 +1198,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L303` 2026-10-05 기물 선택 화면과 공용 반영 확인
   - `L332` 실제 DB와 픽셀 확인
   - `L348` 2026-10-05 후속 개편: 이름·그림 먼저, 더블클릭으로 다음
+  - `L376` 2026-10-05 크기 변경 후 다시 뽑기
 
 ### `openwiki/harnesses/interior-props.md` — 8KB · 84줄 · ~2,442 토큰
 
@@ -1276,7 +1278,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L129` 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
 
-### `openwiki/harnesses/super-harness.md` — 49KB · 468줄 · ~15,203 토큰
+### `openwiki/harnesses/super-harness.md` — 50KB · 486줄 · ~15,742 토큰 · 통째읽기 잘림
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1302,6 +1304,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L391` 그림 중심의 Allow / Deny (2026-10-05)
   - `L418` 운영 오류의 책임과 지정 공간 실행기 (2026-10-05)
   - `L452` open 공간도 면적 축소를 검토한다 (2026-10-05)
+  - `L469` 대기 원인과 실제 그림 실행 구분 (2026-10-05)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
