@@ -1,0 +1,87 @@
+{
+  "createdAt": "2026-10-05T08:39:50.428750+00:00",
+  "kind": "fresh-original",
+  "displayName": "검객 · 새 원안",
+  "userCorrection": "검객 다 지우고 다시만들어바",
+  "sourceStartsBlank": true,
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "7e56a3c3-6299-4cb9-9e65-07ae18229268",
+      "stage": "author",
+      "phase": "idle",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T08:39:50.430776+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/references/cc0-body-reference.png",
+        "-"
+      ],
+      "promptSha256": "d0475ae4e2baa51fd97e6b1b349c24531e85b3d4a968feb9372792efa6dcb6ca",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "references/cc0-body-reference.png": "8c7dc7f35054732e81dfe99fb079886519c2ab8a9aec47cc945a9a3c9d9dac93"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T08:52:02.207654+00:00"
+    },
+    {
+      "id": "44dcef8a-7de9-4eca-b4c8-25b7aea5eea0",
+      "stage": "critique",
+      "phase": "idle",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T08:52:02.363954+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/jobs/44dcef8a-7de9-4eca-b4c8-25b7aea5eea0",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/preview/idle/portrait.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/preview/idle/light.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/preview/idle/dark.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-swordsman-fresh/candidates/wandering-swordsman/fresh-gat-v1/preview/idle/checker.png",
+        "-"
+      ],
+      "promptSha256": "7165d480149bd4d668d729c72e3a2c90267e89794800fe0fffa874c921ae3d05",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "preview/idle/portrait.png": "6ba6a281808972a3024f7d5c94004ebda899e88d27873a78096cd105e9bfc652",
+        "preview/idle/light.png": "7bae888158d7100fc319db1893c75122a54c98cfc0ad791b81620dcd45cc34c7",
+        "preview/idle/dark.png": "a6b7e85fd7bdb295953983dcf13293a4fca8d5a4fd3f968cc199692f8f3bb08d",
+        "preview/idle/checker.png": "a7027661b8f63f37b607cf73327a59e540d9d14e29a2c6980fe089bed5313084"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T08:54:39.906828+00:00"
+    }
+  ]
+}

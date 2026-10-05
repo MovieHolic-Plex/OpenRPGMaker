@@ -1,0 +1,17 @@
+{
+  "monster": "wandering-swordsman",
+  "candidate": "fresh-gat-v1",
+  "nativeCell": 64,
+  "phase": "idle",
+  "poses": 1,
+  "motionGifs": 1,
+  "binding": "cf07f0e107fed52a2ef8a76c1cb1dec4f72350cedf20669d3aced833742aa787",
+  "userChoiceRequired": true,
+  "sourceStartsBlank": true,
+  "independentReviewRecommendation": "keep",
+  "sourceHashes": {
+    "source/AUTHORING.md": "836ed145eaf807b73728cf733d95e6347166d13ebd14d72fcef4c0fcfeac904a",
+    "source/palette.json": "4ac80fed1442600a88cb1862f91616444431e48695417dbcd383f0e4a175c739",
+    "source/poses/idle_a.pxgrid": "0285460045670e52800648b2eaaa0a1545e5a4be5234654879d8243150847b2c"
+  }
+}

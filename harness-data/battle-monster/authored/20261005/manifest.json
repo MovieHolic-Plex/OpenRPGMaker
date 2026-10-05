@@ -64,19 +64,20 @@
     "binding": "3deb59b70d863292550e186d428b7b8d78f88edde92086e79d9569a708fe81e0"
   },
   {
-    "key": "wandering-swordsman/motions-v1",
-    "name": "방랑 검객",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "9565b4849603a8271dd658d28c9ba3be38209f948b54734929548c84dbfc396c"
-  },
-  {
     "key": "wild-boar/motions-v2",
     "name": "멧돼지",
     "nativeCell": 64,
     "poses": 18,
     "userChoiceRequired": true,
     "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7"
+  },
+  {
+    "key": "wandering-swordsman/fresh-gat-complete-v1",
+    "name": "검객 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "userChoiceRequired": true,
+    "binding": "f9b63ce2ea07c72aa6524e4c594755d6d582ac81b338cac869c79826f8d35583"
   }
 ]

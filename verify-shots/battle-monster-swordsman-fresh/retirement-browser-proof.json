@@ -1,0 +1,38 @@
+{
+  "visited": [
+    {
+      "filter": "pending",
+      "keys": []
+    },
+    {
+      "filter": "allow",
+      "keys": [
+        "black-cloth-assassin/motions-v1",
+        "cult-sorcerer/motions-v1",
+        "earthen-jar-fiend/motions-v2",
+        "fallen-taoist/motions-v1",
+        "jangseung-spirit/motions-v2",
+        "mountain-spearman/motions-v1",
+        "venom-toad/motions-v2",
+        "wild-boar/motions-v2"
+      ]
+    },
+    {
+      "filter": "deny",
+      "keys": [
+        "mortar-rabbit/baseline",
+        "mountain-bandit/motions-v1"
+      ]
+    },
+    {
+      "filter": "history",
+      "keys": [
+        "earthen-jar-fiend/baseline",
+        "jangseung-spirit/baseline",
+        "venom-toad/baseline",
+        "wild-boar/baseline"
+      ]
+    }
+  ],
+  "errors": []
+}

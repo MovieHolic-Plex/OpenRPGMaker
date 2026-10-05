@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Recommend localized attack-frame repair. Inspected all four supplied PNGs at native 1x and the sheets' exact nearest-neighbor 3x. The broad black gat, blue-gray robe, dark vest, red sash and separated shoes form a coherent Joseon swordsman silhouette. Both eyebrows and eyes are distinguishable; the face and clothing have consistent upper-left highlights and darker lower/right planes. Black hat and shoe edges have limited contrast on the dark sheet. Standing frames visibly meet the common ground line; the fallen body and detached hat read as death. No conspicuous missing body outline or accidental interior transparency is visible; the small spaces between sleeve, grip and blade, and between the hanging arm and torso, read as separation between parts. Windup, wide stepping movement, horizontal attack, lowered recovery and recoil are distinct, but the attack blade ends as a flat bar and the exposed scabbard loses its established silhouette. The last nine frames contain distinct authored states: backward lowered charged blade, a forward crescent cut, short broken afterglow with hands returning to the sheath, two distressed poison poses, two slack-armed stun poses with overhead stars, and two closed-eye sleep poses with subtle torso/fabric changes. These are more than color substitutions. The crescent joins the actual blade tip and the blade runs continuously to the gripping hand; detached recovery fragments read as residual light. Poison's rusty red motes alone are ambiguous, although the facial and body changes support distress. Static pose previews cannot establish dash speed, 220 ms idle timing, interpolation, transitions or readability in battle. PNGs also cannot verify palette-index source authorship, author identity or runtime alpha handling. This is a visual recommendation, not a final asset selection or an approval inferred from geometry checks.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 62,
+      "y": 35,
+      "message": "The blade ends at x=62 as a four-pixel-high square cap spanning y=34..37, with only x=63 left as background. At both 1x and 3x it reads as a cut-off rectangular bar. Rework the final columns around x=58..62 into a visibly tapered single-edged point, preserving the bright upper edge, shaded underside, one-pixel canvas margin and continuous connection to the grip. Shift or shorten the blade locally if needed to give the point room."
+    },
+    {
+      "pose": "attack",
+      "x": 43,
+      "y": 39,
+      "message": "The recognizable diagonal black scabbard in windup and move becomes a tiny dark spur beneath the extended hands in attack. The change reads as the sheath shrinking during the cut. Restore a short, clearly outlined scabbard segment consistent with the neighboring frames, emerging from the lower hand or visibly occluded by the robe; redraw the dark cluster around x=41..45, y=38..44 so its attachment and length remain understandable without merging it into the horizontal blade."
+    }
+  ]
+}

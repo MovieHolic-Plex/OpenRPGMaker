@@ -1,6 +1,0 @@
-{
-  "purpose": "Inspect original own pixels only; nearest enlarged eye crop is not a new sprite",
-  "sourceCandidate": "wandering-swordsman/silhouette-wuxia-b",
-  "sourceBinding": "9a846b71eb7cfc1d8390d0f443ffb81a9c9a737dfc79caa35c4d0fb43388ea94",
-  "referencePngSha256": "87bfacd5a9bda174b38a4abecf0bf3a35480d408867cb844fc6f563d8f17d7c4"
-}

@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed all four actual PNGs at native 1x and nearest-neighbor 3x. The broad black gat, dark hair, blue-gray long robe, navy inner garment and red belt give a consistent Joseon swordsman silhouette. The face shows two separate eyes and eyebrows, with the nose and shaded right cheek supporting the right-facing three-quarter view. Upper-left highlights describe the sleeves and robe folds; the hat and shoes remain readable on the light and checker backgrounds, though their darkest areas have subdued contrast on dark. No conspicuous missing outline or unintended transparent hole is visible. Standing poses retain two separated grounded shoes; move and attack widen the stance, while dead places the body, dropped hat and sword along the ground. Windup shows the short blade emerging beside the sheath, move raises it, attack extends it horizontally from the gripping hand, and recover lowers it. The idle changes are restrained sleeve and robe motion. Skill preparation lowers the connected blade behind the body; contact joins the raised blade to the silver-blue crescent on the right; recovery brings the hand back toward the sheath with short broken remnants. These read as a coherent skill sequence distinct from the ordinary attack. Poison changes the hunched posture and floating marks; stun changes the hanging arm and star positions; sleep closes the eyes and subtly changes the sleeve and lower robe between frames. These are visible shape changes rather than tint-only states. No required pixel repair identified. This is visual approval of the supplied still previews only: actual battle timing, transitions, target contact, literal pxgrid authorship and author/reviewer model provenance cannot be verified from PNGs. This recommendation leaves the acceptance decision to the user.",
+  "issues": [],
+  "binding": "f9b63ce2ea07c72aa6524e4c594755d6d582ac81b338cac869c79826f8d35583",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "6ba6a281808972a3024f7d5c94004ebda899e88d27873a78096cd105e9bfc652",
+    "preview/suite/light.png": "47766997fbe28a36dd74a29b58417a3684bb9ae6f3cdf3456502139001072dff",
+    "preview/suite/dark.png": "c792b42e872aa96a45a58c3d2fdaf3bc924328f5031604d54b55fe297e771b40",
+    "preview/suite/checker.png": "660a93ce8f92ad91573ab4beb4204c3b4c20ebc5725273d3de0a9c224594d17c"
+  },
+  "jobId": "e19d6495-e9a1-40ca-ab36-4d6a4c47c616",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T09:56:07.583159+00:00",
+  "userApproved": false
+}

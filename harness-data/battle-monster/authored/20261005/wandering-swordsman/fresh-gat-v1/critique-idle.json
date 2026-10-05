@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Inspected all four supplied PNGs at native 1x and nearest 3x. idle_a reads as a right-facing Joseon swordsman: broad black gat, coherent adult SD proportions, two distinct eyes and eyebrows, blue-gray long robe, dark blue vest, red sash, and short exposed black scabbard. Broad upper-left sleeve highlights and darker right-side folds give the cloth volume; the pale blade reads as metal. The gripping hand meets the sword base, and the other hand rests at the scabbard mouth. Two separate black shoes meet baseline y=60. No visible accidental transparent holes or broken body outline; the sword tip remains diagonally connected. The pale tip has weaker contrast on the light background, but the weapon remains readable at 1x. These are four background presentations of idle_a, not separate animation frames or battle footage: idle variation, attack/skill poses, motion continuity, and runtime readability cannot be assessed. This recommendation covers only the supplied idle pose and does not approve the full animation set.",
+  "issues": [],
+  "binding": "cf07f0e107fed52a2ef8a76c1cb1dec4f72350cedf20669d3aced833742aa787",
+  "phase": "idle",
+  "imageHashes": {
+    "preview/idle/portrait.png": "6ba6a281808972a3024f7d5c94004ebda899e88d27873a78096cd105e9bfc652",
+    "preview/idle/light.png": "7bae888158d7100fc319db1893c75122a54c98cfc0ad791b81620dcd45cc34c7",
+    "preview/idle/dark.png": "a6b7e85fd7bdb295953983dcf13293a4fca8d5a4fd3f968cc199692f8f3bb08d",
+    "preview/idle/checker.png": "a7027661b8f63f37b607cf73327a59e540d9d14e29a2c6980fe089bed5313084"
+  },
+  "jobId": "44dcef8a-7de9-4eca-b4c8-25b7aea5eea0",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T08:54:39.923738+00:00",
+  "userApproved": false
+}

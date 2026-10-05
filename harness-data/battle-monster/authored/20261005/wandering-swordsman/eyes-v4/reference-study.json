@@ -1,6 +1,0 @@
-{
-  "purpose": "Inspect original own pixels only; nearest enlarged eye crop is not a new sprite",
-  "sourceCandidate": "wandering-swordsman/reference-v3",
-  "sourceBinding": "3e3a0faf25c4052a712bf56d8d8793f66da4831cc22439bb7a81c91a7fd97eb4",
-  "referencePngSha256": "f064d0ab166e189f1bc927aad851f712e61fb334c29c68aa22f5f6d5b9465254"
-}

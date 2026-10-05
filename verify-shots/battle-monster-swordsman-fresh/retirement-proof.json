@@ -1,0 +1,59 @@
+{
+  "removed": [
+    {
+      "candidate": "wandering-swordsman/eyes-sd-a",
+      "phase": "idle",
+      "binding": "ee9fd231e8f2f48e5ea545a5b80e67a9e48fee5860b55570e7139595d9171dc9",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/eyes-v4",
+      "phase": "suite",
+      "binding": "8cc09f2ac81a8037df1ea1ce39d85761014ae7738e01f289f0cc240e273c34dc",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/eyes-wuxia-b",
+      "phase": "idle",
+      "binding": "164818abbb40892ffdb46306a618d087a60c8271da2efbf115c8edcafbbd4343",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/motions-v1",
+      "phase": "suite",
+      "binding": "9565b4849603a8271dd658d28c9ba3be38209f948b54734929548c84dbfc396c",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/reference-v3",
+      "phase": "suite",
+      "binding": "3e3a0faf25c4052a712bf56d8d8793f66da4831cc22439bb7a81c91a7fd97eb4",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/silhouette-sd-a",
+      "phase": "idle",
+      "binding": "19ae74f0921747d134b681eee37da641de1b0f4f85f568531a2869dde35a9533",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    },
+    {
+      "candidate": "wandering-swordsman/silhouette-wuxia-b",
+      "phase": "idle",
+      "binding": "9a846b71eb7cfc1d8390d0f443ffb81a9c9a737dfc79caa35c4d0fb43388ea94",
+      "discardedBy": "chat-user",
+      "userRequest": "검객 다 지우고 다시만들어바"
+    }
+  ],
+  "unrelatedChoicesPreserved": true,
+  "retiredStagingDirectories": [
+    "qa-runs/battle-monster-reference-wave/candidates/wandering-swordsman",
+    "qa-runs/battle-monster-human-wave/candidates/wandering-swordsman",
+    "qa-runs/battle-monster-silhouette-wave/candidates/wandering-swordsman"
+  ]
+}

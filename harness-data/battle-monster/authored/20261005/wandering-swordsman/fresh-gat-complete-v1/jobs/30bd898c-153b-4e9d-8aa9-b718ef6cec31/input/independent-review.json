@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs, including the suite's native 1x cells and nearest 3x panels on light, dark and checker backgrounds. The broad black gat, visible two-eye face, blue robe layers, red belt and separate black shoes make the swordsman recognizable. Shoulder highlights and darker inner garment folds give useful volume; the steel reads separately from cloth. Standing soles stay at y=60, the wide attack stance reads clearly, and the fallen body and detached hat read as death. No obvious accidental transparent holes in the opaque anatomy were visible; the black brim and sheath have low contrast on dark. The main weakness is weapon continuity: windup does not convincingly show extraction along the sheath, and move makes the long sword look abruptly shortened. Skill preparation, connected crescent contact and partial sheathing with broken afterglow form a recognizable related sequence; the contact effect reaches the actual blade rather than floating independently. Poison pairs change the strained body and face, stun pairs change the loose-arm sway and stars, and sleep pairs use closed eyes with subtle robe breathing; these are distinct states rather than palette tints, although sleep motion is restrained at 1x. This pose preview cannot establish battle timing, dash motion, interpolated continuity, source authorship or source alpha compliance. Geometry alone does not resolve the weapon readability issues.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 40,
+      "y": 41,
+      "message": "At the grip around (38-42,40-43), the exposed silver blade runs up-right toward (44,37), while the black sheath runs down-right toward (47,49). The opposing ends do not share an extraction axis, so the short silver segment reads as a separate small blade rather than the long sword being pulled from its sheath. Re-author the sheath mouth, grip and exposed blade on one coherent draw axis, retaining a visible supporting hand at the mouth."
+    },
+    {
+      "pose": "move",
+      "x": 52,
+      "y": 33,
+      "message": "The visible blade from approximately (43,38) to the tip at (52,33) is only about 11 native pixels long, compared with the roughly 28-pixel diagonal blade in idle_a. It still points diagonally in the image plane, without a clear foreshortening cue or aligned sheath to explain partial exposure. Extend and re-author this blade from the existing grip to preserve the long single-edged sword's apparent length through the dash into attack; check the recovery blade against the same weapon proportions."
+    }
+  ],
+  "binding": "6b7a087b94001f7108351da795cf1638546bc4389df0393d3b9a70e6971885d0",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "6ba6a281808972a3024f7d5c94004ebda899e88d27873a78096cd105e9bfc652",
+    "preview/suite/light.png": "452cd6d8b518275c9277fed094c675605b22788f6ce030a090d2eca7ea632f87",
+    "preview/suite/dark.png": "26b3e21997f245fc2f09c5dd1e34b521aa28763125f9d5e6fbe4db028c680eaa",
+    "preview/suite/checker.png": "331e0b242c12059f732cb46d070b31ab3c8e97fe766945bc7c632dc6815e3520"
+  },
+  "jobId": "a0485b26-0c88-4f91-8be4-d818dc2e4c42",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T09:44:07.503652+00:00",
+  "userApproved": false
+}
