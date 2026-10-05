@@ -33,6 +33,7 @@ const laneLabel: Record<LaneState["status"], string> = {
   discarded: "버림", failed: "실패", stopped: "중단",
 };
 const terminalPhases = new Set(["적용됨", "완료", "버림", "중단", "실패"]);
+const COLLAPSED_KEY = "oprn:ai-team-sidebar-collapsed";
 
 export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; dispose(): void } {
   const manager = laneSession();
@@ -41,6 +42,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   let view: "team" | "settings" = "team";
   let tab: "chat" | "changes" = "chat";
   let disposed = false;
+  let collapsed = false;
+  try { collapsed = localStorage.getItem(COLLAPSED_KEY) === "1"; } catch { /* Storage can be unavailable. */ }
   const drafts = new Map<string, string>();
   const followUps = new Map<string, string>();
   const notices = new Map<string, string>();
@@ -89,17 +92,23 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     on: { click: () => { tab = id; renderDetail(); } },
   }));
   const detail = el("section", {
-    class: "ai-team-member-detail", attrs: { hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
+    class: "ai-team-member-detail", attrs: { id: "ai-team-sidebar-detail", hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
     children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), close] }), tabs, content, notice, actions, composer],
   });
-  const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { view = "team"; render(); } } });
+  const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { setCollapsed(false); view = "team"; render(); } } });
   const counts = el("span", { class: "ai-team-counts", dataset: { testid: "ai-team-counts" } });
+  const collapseStatus = el("span", { class: "ai-team-collapse-status", attrs: { "aria-hidden": "true" } });
+  const collapse = el("button", {
+    class: "ai-team-collapse", attrs: { type: "button", "aria-controls": "ai-team-sidebar-roster ai-team-sidebar-detail" },
+    dataset: { testid: "ai-team-sidebar-collapse" }, children: [deckIcon("chevron-right"), collapseStatus],
+    on: { click: () => setCollapsed(!collapsed) },
+  });
   const request = el("p", { class: "ai-team-request", attrs: { translate: "no" } });
   const leadText = el("span");
   const lead = el("div", { class: "ai-team-lead", dataset: { testid: "ai-team-lead" }, children: [deckIcon("user"), leadText] });
   const overview = el("div", { class: "ai-team-overview", children: [el("span", { class: "ai-team-overview-label", text: "팀에 맡긴 일" }), request, lead] });
   const outcome = el("p", { class: "ai-team-outcome", dataset: { testid: "ai-team-outcome" }, attrs: { role: "status" } });
-  const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { "aria-label": "팀원" } });
+  const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { id: "ai-team-sidebar-roster", "aria-label": "팀원" } });
   const empty = el("p", { class: "ai-team-sidebar-empty", text: "팀 작업\n없음" });
   const settings = el("button", {
     class: "ai-team-settings-button", attrs: { type: "button", "aria-label": "AI 팀 설정", title: "AI 팀 설정" },
@@ -108,8 +117,26 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   });
   const root = el("aside", {
     class: "ai-team-sidebar", dataset: { testid: "ai-team-sidebar" }, attrs: { "aria-label": "AI 팀 패널" },
-    children: [el("div", { class: "ai-team-rail-tabs", children: [team, counts] }), overview, roster, empty, detail, outcome, settings],
+    children: [el("div", { class: "ai-team-rail-tabs", children: [team, counts, collapse] }), overview, roster, empty, detail, outcome, settings],
   });
+
+  function syncCollapsed(): void {
+    root.classList.toggle("is-collapsed", collapsed);
+    root.dataset.collapsed = String(collapsed);
+    const label = collapsed ? "AI 팀 펼치기" : "AI 팀 접기";
+    collapse.setAttribute("aria-expanded", String(!collapsed));
+    collapse.setAttribute("aria-label", label);
+    collapse.setAttribute("title", label);
+    // Keep the same live nodes and drafts; hidden controls must leave the tab order.
+    for (const node of [overview, roster, empty, detail, outcome, settings]) node.inert = collapsed;
+  }
+  function setCollapsed(next: boolean): void {
+    if (next === collapsed) return;
+    collapsed = next;
+    try { localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0"); } catch { /* Folding still works without storage. */ }
+    syncCollapsed();
+    root.dispatchEvent(new Event("oprn:ai-team-sidebar-collapse", { bubbles: true }));
+  }
 
   const members = (): Member[] => [
     ...(activity?.mode === "team" ? activity.agents : []).filter(a =>
@@ -300,6 +327,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     const waiting = rows.filter(m => m.state === "대기").length;
     const complete = rows.filter(m => ["완료", "적용됨"].includes(m.state)).length;
     counts.textContent = [`활동 중 ${running}`, waiting ? `대기 ${waiting}` : "", complete ? `완료 ${complete}` : ""].filter(Boolean).join(" · ");
+    collapseStatus.textContent = running ? String(running) : "";
+    collapse.setAttribute("aria-description", counts.textContent);
     outcome.hidden = !activity || activity.mode !== "team";
     outcome.textContent = activity?.error ? friendlyExecutionError(activity.error) : activity?.applied || (activity ? `팀 작업 · ${activity.phase}` : "");
     root.classList.toggle("has-detail", selected !== null || view === "settings");
@@ -307,6 +336,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     root.classList.toggle("is-idle", rows.length === 0 && view === "team" && selected === null);
     team.setAttribute("aria-pressed", String(view === "team"));
     renderDetail();
+    syncCollapsed();
   }
   async function sendFollowUp(): Promise<void> {
     const m = member(); const text = input.value.trim();
@@ -354,7 +384,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     }
     if (!disposed) render();
   }
-  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !detail.hidden && root.contains(document.activeElement)) { event.stopPropagation(); closeDetail(); } };
+  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !collapsed && !detail.hidden && root.contains(document.activeElement)) { event.stopPropagation(); closeDetail(); } };
   root.addEventListener("keydown", onKey);
   const unsubscribeTeam = subscribeTeamActivity(next => {
     if (activity?.task !== next?.task) { if (!selected?.startsWith("lane:")) selected = null; followUps.clear(); }
@@ -373,5 +403,5 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (change?.projectSwitch) { selected = null; view = "team"; drafts.clear(); followUps.clear(); activity = null; render(); }
   });
   render();
-  return { root, openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } }, openSettings: () => { view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; clearInterval(clock); unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
+  return { root, openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } }, openSettings: () => { setCollapsed(false); view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; clearInterval(clock); unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }
