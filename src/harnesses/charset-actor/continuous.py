@@ -124,6 +124,8 @@ def prepare(folder, runs, cohort_size=40):
 
 
 def execute(folder, jobs, transfers, par):
+    if type(par) is not int or not 1 <= par <= S.MAX_ARTISTS:
+        raise ValueError(f'Use 1–{S.MAX_ARTISTS} artists')
     pending = jobs.copy()
     started = []
     status(folder, 'starting', pending=pending, started=started, transfers=transfers)
@@ -178,8 +180,8 @@ def main():
     parser.add_argument('--par', type=int, default=2)
     parser.add_argument('--cohort-size', type=int, default=40)
     args = parser.parse_args()
-    if not 1 <= args.par <= 2 or len(args.run) != len(set(args.run)) or not 1 <= args.cohort_size <= 40:
-        raise ValueError('Use 1–2 artists and unique source orders')
+    if not 1 <= args.par <= S.MAX_ARTISTS or len(args.run) != len(set(args.run)) or not 1 <= args.cohort_size <= 40:
+        raise ValueError(f'Use 1–{S.MAX_ARTISTS} artists and unique source orders')
     if args.out.exists():
         raise ValueError('Use a new evidence folder; do not replace an existing allocation')
     args.out.mkdir(parents=True)

@@ -17,7 +17,7 @@ from PIL import Image
 import harness as H
 import chr as C
 
-MAX_ARTISTS = 4
+MAX_ARTISTS = 6
 
 
 def active_productions():
