@@ -16,17 +16,17 @@ type ParkingRecipe = {
 /** A new canonical project only. Never overwrite an existing author's project. */
 export async function saveParkingProject(projectDir: string, evidenceDir: string, repo: string, recipePath?: string) {
   if (existsSync(join(projectDir, 'project.sqlite'))) throw new Error('Destination already contains a project');
+  const recipe: ParkingRecipe | null = recipePath ? JSON.parse(readFileSync(recipePath, 'utf8')) : null;
   const tileset = createModernCityTileset();
-  const kit = tileset.structureKits!.find(k => k.id === 'mc-parking-two-bays');
+  const kit = tileset.structureKits!.find(k => k.id === (recipe?.id === 'mc-parking-facility' ? recipe.id : 'mc-parking-two-bays'));
   if (!kit) throw new Error('Publish the approved parking kit first');
   const map = createBlankMap('지하 주차장 · 두 면', kit.width, kit.height, tileset.id, 16);
   map.id = 'map_approved_parking';
   map.lowerTiles = kit.rows.flatMap(r => r.tiles);
   map.upperTiles = kit.rows.flatMap(r => r.upperTiles ?? Array(kit.width).fill(-1));
-  const recipe: ParkingRecipe | null = recipePath ? JSON.parse(readFileSync(recipePath, 'utf8')) : null;
   if (recipe) {
-    if (recipe.id !== 'mc-parking-wide-experiment' || recipe.tilesetId !== tileset.id) throw new Error('Unsupported assembly recipe');
-    map.id = 'map_parking_wide'; map.name = recipe.name;
+    if (!['mc-parking-wide-experiment','mc-parking-facility'].includes(recipe.id) || recipe.tilesetId !== tileset.id) throw new Error('Unsupported assembly recipe');
+    map.id = recipe.id === 'mc-parking-facility' ? 'map_parking_facility' : 'map_parking_wide'; map.name = recipe.name;
     map.width = recipe.width; map.height = recipe.height;
     map.lowerTiles = recipe.rows.flatMap(r => r.tiles);
     map.upperTiles = recipe.rows.flatMap(r => r.upperTiles);
@@ -44,7 +44,7 @@ export async function saveParkingProject(projectDir: string, evidenceDir: string
   old.id = tileset.id; old.image = tileset.image;
   old.referenceDocuments = [{ id: 'authored', name: '보존', description: '사용자 참고문서 보존 검사', documents: [], images: [] }];
   ensureModernCityTileset(old); ensureModernCityReferences(old);
-  if (!old.structureKits!.some(k => k.id === kit.id) || !old.referenceDocuments!.some(c => c.id === 'mc-parking') || !old.referenceDocuments!.some(c => c.id === 'authored')) throw new Error('Existing project migration failed');
+  if (!old.structureKits!.some(k => k.id === kit.id) || !old.referenceDocuments!.some(c => c.id === (recipe?.id === 'mc-parking-facility' ? 'mc-parking-facility' : 'mc-parking')) || !old.referenceDocuments!.some(c => c.id === 'authored')) throw new Error('Existing project migration failed');
   const start = [project.startPos.x, project.startPos.y];
   const queue = [start], reached = new Set([start.join(',')]);
   const moves = [[1,0],[-1,0],[0,1],[0,-1]];

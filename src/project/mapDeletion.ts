@@ -305,6 +305,17 @@ export function applyMapDeletions(draft: Project, mapIds: readonly MapId[], opti
       edges: draft.worldGraph.edges.filter((edge) => !deleted.has(edge.from.mapId) && !deleted.has(edge.to.mapId)),
     };
   }
+  if (draft.worldAtlases) {
+    draft.worldAtlases = draft.worldAtlases.flatMap(atlas => {
+      if (atlas.overviewMapId && deleted.has(atlas.overviewMapId)) return [];
+      const nodes = atlas.nodes.filter(node => !deleted.has(node.mapId));
+      if (nodes.length < 2) return [];
+      const ids = new Set(nodes.map(node => node.id));
+      return [{ ...atlas, nodes, startNodeId: ids.has(atlas.startNodeId) ? atlas.startNodeId : nodes[0]!.id,
+        edges: atlas.edges.filter(edge => ids.has(edge.from) && ids.has(edge.to)),
+        pins: atlas.pins.filter(pin => ids.has(pin.nodeId)) }];
+    });
+  }
 
   // 이벤트 일정, 명령(transfer/changeTile), 생활 이동 목적지에서 삭제 맵 참조 제거.
   for (const map of Object.values(draft.maps)) {

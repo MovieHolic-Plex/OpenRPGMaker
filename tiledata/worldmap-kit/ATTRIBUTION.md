@@ -1,5 +1,7 @@
 # 월드맵 키트 출처 표기 (기존 `tiledata/atlas-pick/worldmap-easyrpg-plus/ATTRIBUTION-NOTE.md` 규약을 따른다)
 
+- 연결 붓(2026-10-05): `public/assets/worldmap-icons/worldmap-authoring.png`. 기존 키트의 지형 질감과 숲/산 사분면을 재사용하고, `authoring/pixels.json`에 저작한 경계·길·다리 픽셀을 조립했다. 완성 대륙을 잘라 만든 시트가 아니다. 기존 EasyRPG RTP 파생물과 같은 CC BY 4.0 표기를 따른다. 빌드: `scripts/content/build-worldmap-authoring.py`. 사람 선택 아이콘은 이 시트에 다시 저작하지 않으며 기존 승인 번들에서 전체 키트로 이식한다.
+
 `public/assets/ATTRIBUTION.md` 의 「EasyRPG RTP bundled map and object assets」 항목이 `easyrpg-chipset-world.png`(`ChipSet/World.png`,
 EasyRPG RTP, CC BY 4.0 — 원작 JasonPerry, CC0)를 이미 싣고 있다. 이 폴더의 그림은 전부 그 파일의 팔레트·결을 따라 코드 안에서 좌표로 찍은 손 도트이거나 그 파생물이므로
 같은 **CC BY 4.0 파생물** 표기를 따른다. 월드맵은 EasyRPG 월드 칩셋을 쓰는 예외 영역이다(다른 장소의 EasyRPG 칩셋은 폐기됨).

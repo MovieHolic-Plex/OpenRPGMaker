@@ -1,0 +1,28 @@
+[
+  {
+    "type": "execution_status",
+    "name": "charset.image.received",
+    "ok": true,
+    "summary": "실제 제공자 입력에 검색 결과와 칩 이미지가 포함된 뒤 모델 응답이 완료됐습니다.",
+    "data": {
+      "selectionIds": [
+        "charset:tex_easyrpg_charset_monster2:4",
+        "charset:tex_easyrpg_charset_monster4:5"
+      ]
+    },
+    "at": 1791189992480
+  },
+  {
+    "type": "execution_status",
+    "name": "charset.image.received",
+    "ok": true,
+    "summary": "실제 제공자 입력에 검색 결과와 칩 이미지가 포함된 뒤 모델 응답이 완료됐습니다.",
+    "data": {
+      "selectionIds": [
+        "charset:tex_easyrpg_charset_monster2:4",
+        "charset:tex_easyrpg_charset_monster4:5"
+      ]
+    },
+    "at": 1791190010189
+  }
+]

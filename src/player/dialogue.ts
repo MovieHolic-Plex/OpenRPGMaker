@@ -1,4 +1,5 @@
 import { playerTextDelay } from '@/player/playerPreferences';
+import { cancelChoiceIndex } from '@/project/choiceCancellation';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
@@ -1636,17 +1637,6 @@ function effectivePosition(model: {
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";
   return model.settings.position;
-}
-
-function cancelChoiceIndex(
-  behavior: ChoiceCancelBehavior | undefined,
-  optionCount: number
-): number | null {
-  if (!behavior || behavior === "disallow") return null;
-  if (behavior === "branch") return -1;
-  const index = Number(behavior.replace("choice", "")) - 1;
-  if (Number.isInteger(index) && index >= 0 && index < optionCount) return index;
-  return null;
 }
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {

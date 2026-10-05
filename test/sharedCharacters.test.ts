@@ -61,4 +61,35 @@ describe('Human-kept shared character catalog', () => {
     expect(value.assets.uploaded[id]).toBe(pixels);
     expect(validateSharedCharacterGraphics(document).mappings.some(row=>row.textureKey===id)).toBe(false);
   });
+  it.each([
+    ['고양이형 갑각 짐승', '바위 지대의 필드 몬스터'],
+    ['붉은 갑피를 가진 소 계열 사족 마수', '근거리 돌진'],
+    ['닭 계열의 언데드 조류 몬스터', '묘지 길목'],
+  ])('classifies the authored species rather than requiring an exact tag: %s', (kind, role) => {
+    const value = library(), description = value.characters![id]!.description;
+    description.attributes = {kind}; description.role = role; install(value);
+    expect(sharedCharacterSemantics()[0]?.tags).toContain('몬스터');
+    expect(queryNpcGraphics('monster', 100).some(match => match.entry.textureKey === id)).toBe(true);
+    expect(queryNpcGraphics('people', 100).some(match => match.entry.textureKey === id)).toBe(false);
+    const p = project(); ensureSharedCharacters(p);
+    expect(p.charsetLabels![0]?.tags).toContain('몬스터');
+  });
+  it('does not classify a human hunter by a monster word in their role or clothes', () => {
+    const value = library(), description = value.characters![id]!.description;
+    description.attributes = {kind:'사람',clothing:'몬스터 문양 재킷'};
+    description.role = '몬스터 사냥꾼'; install(value);
+    expect(sharedCharacterSemantics()[0]?.tags).not.toContain('몬스터');
+    expect(queryNpcGraphics('monster', 100).some(match => match.entry.textureKey === id)).toBe(false);
+  });
+  it('does not index absent traits or a removed feather as visible features', () => {
+    const value = library(), description = value.characters![id]!.description;
+    description.attributes = {kind:'몬스터',hair:'청록 비늘; 긴 털과 갈기 없음',clothing:'옷 없음; 별도 갑피 없이 이마의 작은 황금빛 표식'};
+    description.appearance = '청록 몸과 황금빛 표식. 원본의 깃털과 큰 무기는 제거했다.';
+    install(value);
+    for (const query of ['깃털','갈기','갑피','옷']) {
+      expect(queryNpcGraphics(query,100).some(match => match.entry.textureKey === id)).toBe(false);
+    }
+    expect(queryNpcGraphics('황금빛 표식',100).some(match => match.entry.textureKey === id)).toBe(true);
+    expect(description.appearance).toContain('깃털');
+  });
 });

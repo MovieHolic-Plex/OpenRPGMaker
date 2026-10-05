@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT, type SharedContentLibrary, type SharedContentScope, type SharedContentSnapshot } from '../../src/project/sharedContentSchema';
+import { normalizeWorldAtlases } from '../../src/project/worldAtlas';
 import { validateTilesetReferences, type TilesetReferenceCategory } from '../../src/project/tilesetReferences';
 import { parseSharedReferenceImage, sharedReferenceImageAddress, SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 export const sharedContentFile = () => process.env.OPRN_SHARED_CONTENT_SQLITE || join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), 'oprn', 'shared-content.sqlite');
@@ -178,6 +179,11 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     if(t.referenceDocuments) validateTilesetReferences(t.referenceDocuments);
     for (const kit of t.structureKits ?? []) if (kit.referenceDocuments) validateTilesetReferences(kit.referenceDocuments);
     if(t.referenceSourceTilesetId && !value.tilesets[t.referenceSourceTilesetId]) throw new Error('Missing reference owner');
+  }
+  for(const [id,reference] of Object.entries(value.worldmapStructures??{})){
+    if(id!==reference.id||reference.authorArgs.structure!==id||reference.example.structure!==id)throw new Error('Worldmap structure reference mismatch');
+    normalizeWorldAtlases([reference.example]);
+    validateTilesetReferences(reference.referenceDocuments);
   }
   for(const root of value.roots) if(!value.places[root]) throw new Error('Missing place root');
   for (const place of Object.values(value.places)) if (place.referenceDocuments) validateTilesetReferences(place.referenceDocuments);

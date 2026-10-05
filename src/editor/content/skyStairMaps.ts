@@ -816,7 +816,7 @@ function mistwoodMap(): GameMap {
     motherEvent(),
     ...scarfClues(),
     lostChildEvent(),
-    villager("ev_sky_m_herbalist", 10, 20, "약초꾼 이내", "녹색 후드 여인", [
+    villager("ev_sky_m_herbalist", 10, 20, "약초꾼 이내", "빨간 모자 녹색 코트 여인", [
       "안개는 소리를 지워. 아이가 울어도 안 들려.",
       "색을 찾아. 목도리는 빨간색이야. 안개가 못 지우는 건 그것뿐이야.",
     ]),
@@ -1124,7 +1124,7 @@ function mineMap(): GameMap {
     ]),
     minerEvent(),
     mimicEvent(),
-    villager("ev_sky_mine_engineer", 21, 10, "갱도 기사 쇠비", "회색 옷 젊은 여성", [
+    villager("ev_sky_mine_engineer", 21, 10, "갱도 기사 쇠비", "하늘색 재킷 젊은 여성", [
       "이 아래는 무너진 게 아니야. 누가 막은 거야, 안쪽에서.",
       "잔당이 넷씩 몰려다녀. 등불에서 멀어지지 마.",
     ]),

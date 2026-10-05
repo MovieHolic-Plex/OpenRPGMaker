@@ -1,0 +1,142 @@
+{
+  "provenance": "Actual editor UI; controlled team state, one bubble and restore status injected for layout checks. No model call or canonical write.",
+  "checks": [
+    {
+      "name": "conversation-releases-canvas-width",
+      "ok": true,
+      "details": {
+        "before": {
+          "dock": 416,
+          "canvas": 538,
+          "team": 300,
+          "folded": false,
+          "fits": true,
+          "leftPane": "tools"
+        },
+        "folded": {
+          "dock": 44,
+          "canvas": 910,
+          "team": 300,
+          "folded": true,
+          "fits": true,
+          "leftPane": "tools"
+        }
+      }
+    },
+    {
+      "name": "team-and-left-pane-independent",
+      "ok": true,
+      "details": {
+        "before": {
+          "dock": 416,
+          "canvas": 538,
+          "team": 300,
+          "folded": false,
+          "fits": true,
+          "leftPane": "tools"
+        },
+        "folded": {
+          "dock": 44,
+          "canvas": 910,
+          "team": 300,
+          "folded": true,
+          "fits": true,
+          "leftPane": "tools"
+        }
+      }
+    },
+    {
+      "name": "deck-inert-and-hidden",
+      "ok": true
+    },
+    {
+      "name": "conversation-header-hidden",
+      "ok": true
+    },
+    {
+      "name": "restore-visible-and-focused",
+      "ok": true
+    },
+    {
+      "name": "state-update-does-not-expand",
+      "ok": true
+    },
+    {
+      "name": "draft-and-cursor-preserved",
+      "ok": true,
+      "details": {
+        "sameNode": true,
+        "text": "작성 중인 AI 지시를 유지해주세요.",
+        "start": 3,
+        "end": 8
+      }
+    },
+    {
+      "name": "conversation-node-and-content-preserved",
+      "ok": true
+    },
+    {
+      "name": "restore-by-keyboard",
+      "ok": true
+    },
+    {
+      "name": "both-can-collapse",
+      "ok": true
+    },
+    {
+      "name": "folded-layout-1024",
+      "ok": true,
+      "details": {
+        "dock": 44,
+        "canvas": 590,
+        "team": 44,
+        "folded": true,
+        "fits": true,
+        "leftPane": "tools"
+      }
+    },
+    {
+      "name": "folded-layout-1600",
+      "ok": true,
+      "details": {
+        "dock": 44,
+        "canvas": 1166,
+        "team": 44,
+        "folded": true,
+        "fits": true,
+        "leftPane": "tools"
+      }
+    },
+    {
+      "name": "reload-restores-choice",
+      "ok": true,
+      "details": {
+        "dock": 44,
+        "canvas": 1166,
+        "team": 44,
+        "folded": true,
+        "fits": true,
+        "leftPane": "tools"
+      }
+    },
+    {
+      "name": "public-open-restores-ai-only",
+      "ok": true,
+      "details": {
+        "dock": 416,
+        "canvas": 794,
+        "team": 44,
+        "folded": false,
+        "fits": true,
+        "leftPane": "tools"
+      }
+    },
+    {
+      "name": "no-browser-errors",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

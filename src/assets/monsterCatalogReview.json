@@ -1826,5 +1826,14 @@
     "f6f857eeb77750f2fcfe604acd11976d978220cd"
   ],
   "sourceWorkingTree": true,
-  "refreshDate": "2026-10-03"
+  "refreshDate": "2026-10-03",
+  "metadataReview": {
+    "date": "2026-10-05",
+    "scope": "160 selectable monster portraits; names, tags and descriptions compared with original pixels independently.",
+    "correctedItems": 62,
+    "renamedItems": 55,
+    "evidence": "verify-shots/full-character-reference-audit-20261005/SUMMARY.md",
+    "beforeAfter": "verify-shots/full-character-reference-audit-20261005/metadata-corrections.json",
+    "pixelHashMismatches": []
+  }
 }

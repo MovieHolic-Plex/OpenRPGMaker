@@ -1,0 +1,21 @@
+{
+  "nativeOnly": true,
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/project-r7",
+  "errors": [],
+  "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+  "captureStartSeconds": 111.586,
+  "ramps": 2,
+  "groundUnchanged": true,
+  "propsUnchanged": true,
+  "levelsUnchanged": true,
+  "saved": {
+    "projectId": "d37612d4-9453-4395-8a09-fe65a7192e01",
+    "revision": 9,
+    "sha256": "d4d2503bf41038c9c308a5469dc07e8462cfb9632b961eff8061aaf504f013da"
+  },
+  "captureEndSeconds": 120.039,
+  "videoPath": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/native-height-r1/video/page@6c738c629e99f9a383dd36686cb2a5b3.webm",
+  "freshBrowserLoadedSameMap": true,
+  "sameReopenedStoredMap": true,
+  "passed": true
+}

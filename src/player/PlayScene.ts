@@ -60,6 +60,8 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { createWorldAtlasController } from './worldAtlasOverlay';
+import { visitAtlasMap } from '@/project/worldAtlas';
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import { installReliefSpriteLift, spriteReliefLiftPx } from "@/player/playSceneRelief";
@@ -178,6 +180,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
+  private worldAtlasController: ReturnType<typeof createWorldAtlasController> | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
@@ -251,6 +254,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   create(): void {
+    this.initialPresentationActivated = false;
     const reportStage = (stage: "map" | "ready"): void => {
       const handler: unknown = this.game.registry.get("onPlayLoadStage");
       if (typeof handler === "function") {
@@ -308,6 +312,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncFollowerSprites(this);
     this.centerCamera();
     void this.syncMinimap();
+    this.worldAtlasController = createWorldAtlasController(this);
+    const destroyAtlas = (): void => { this.worldAtlasController?.destroy(); this.worldAtlasController = null; };
+    this.events.once('shutdown', destroyAtlas);
+    this.events.once('destroy', destroyAtlas);
     // M = minimap toggle. Input abstraction doesn't expose Phaser keyboard; use document.
     const toggleMinimap = (): void => {
       if (!this.minimap) return;
@@ -316,6 +324,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
     };
     const onDocKey = (e: KeyboardEvent): void => {
+      if (this.game.registry.get('initialPresentationPending') === true) return;
       if (e.key.toLowerCase() === "m" && !e.repeat) toggleMinimap();
     };
     document.addEventListener("keydown", onDocKey);
@@ -324,16 +333,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     };
     this.events.once("shutdown", detachMinimapKey);
     this.events.once("destroy", detachMinimapKey);
-    updateNpcSchedules(this, false);
-    // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
-    // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
-    // 게임 생성 후 registry에 설정한다 — 비동기이므로 준비될 때까지 기다린다.
-    const initialEventTestId = this.initialEventTestId();
-    if (initialEventTestId) {
-      void this.runInitialEventTestWhenReady(initialEventTestId);
-    } else {
-      void this.fireAutoTriggersWhenReady();
-    }
+    this.input_.setEnabled(this.game.registry.get('initialPresentationPending') !== true);
+    if (this.game.registry.get('initialPresentationPending') !== true) this.activateInitialPresentation();
     // 자동화(E2E)용 입력 주입 훅. headless Chromium에서는 window keydown이
     // Phaser keyboard 매니저에 도달하지 않아 실제 키보드 입력이 잡히지 않는다.
     // 테스트는 이 훅으로 Input에 action 엣지/방향을 직접 주입한다.
@@ -343,10 +344,6 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     if (qaInstrumentation) {
       installPlaySceneTestHooks(this, this.input_, () => this.session, () => this.syncRuntimeState());
     }
-    // 세이브 로드로 진입한 세션이면 저장된 BGM/BGS 를 재개(원샷은 복원 안 함).
-    resumeAudioState(this.session.audio, project);
-    // 새 게임(저장된 BGM 없음)이면 시작 맵의 BGM 으로 시작한다 — 이게 없으면 게임이 무음으로 켜진다.
-    if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
     this.events.once("shutdown", () => clearAllSceneEmotes(this));
     this.events.once("destroy", () => clearAllSceneEmotes(this));
@@ -396,6 +393,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
+    if (this.game.registry.get('initialPresentationPending') === true) return;
+    this.worldAtlasController?.update();
+    if (this.worldAtlasController?.isOpen) {
+      this.input_.resetEdges();
+      this.input_.clearDirectionTaps();
+      return;
+    }
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
@@ -426,6 +430,24 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     }
   }
 
+  private initialPresentationActivated = false;
+  /** Exactly once: the player hands over the prepared map after the opening cover fades. */
+  activateInitialPresentation(): void {
+    if (this.initialPresentationActivated) return;
+    this.initialPresentationActivated = true;
+    this.game.registry.set('initialPresentationPending', false);
+    this.input_.releaseAllKeys();
+    this.input_.resetEdges();
+    this.input_.setEnabled(true);
+    updateNpcSchedules(this, false);
+    const project = store.getCurrent();
+    resumeAudioState(this.session.audio, project);
+    if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
+    const eventId = this.initialEventTestId();
+    if (eventId) void this.runInitialEventTestWhenReady(eventId);
+    else void this.fireAutoTriggersWhenReady();
+  }
+
   private syncHandSlotChip(): void {
     const host = dialogueHost(this) ?? null;
     if (host !== this.handSlotHost) {
@@ -450,6 +472,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
+    visitAtlasMap(store.getCurrent(), this.session, mapId);
     syncVehicleSprites(this);
     syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);

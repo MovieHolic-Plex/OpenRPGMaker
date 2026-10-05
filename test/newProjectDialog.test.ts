@@ -113,14 +113,14 @@ describe("새 프로젝트 다이얼로그", () => {
     const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
     click("new-project-back");
     click(newProjectGenreOptionTestId(null)); click("new-project-confirm");
-    expect(await pending).toEqual({ title: "달빛 항구", choiceId: null, screenSize: "classic", startMode: "blank" });
+    expect(await pending).toEqual({ title: "달빛 항구", choiceId: null, screenSize: "wide", startMode: "blank" });
   });
   it("the example path needs no AI connection or interview", async () => {
     let gateCalls = 0;
     const pending = showNewProjectDialog({ ensureAiConnected: async () => { gateCalls++; return false; } });
     click("new-project-back");
     click(newProjectGenreOptionTestId("monster-collect")); click("new-project-confirm");
-    expect(await pending).toMatchObject({ choiceId: "monster-collect", startMode: "example", screenSize: "classic" });
+    expect(await pending).toMatchObject({ choiceId: "monster-collect", startMode: "example", screenSize: "wide" });
     expect(gateCalls).toBe(0); expect(document.querySelector('[data-testid="project-interview"]')).toBeNull();
   });
   it("an AI gate decline keeps the dialog and draft intact", async () => {

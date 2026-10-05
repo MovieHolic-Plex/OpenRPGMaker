@@ -1,0 +1,7 @@
+{
+  "scenario": "worldmap-autotile-visual",
+  "playerUrl": "http://127.0.0.1:35847/player.html",
+  "message": "page.waitForSelector: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\\'title-screen\\']') to be visible\u001b[22m\n",
+  "errors": [],
+  "at": "2026-10-05T08:31:56.474Z"
+}

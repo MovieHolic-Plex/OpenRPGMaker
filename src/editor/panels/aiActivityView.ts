@@ -1,4 +1,5 @@
 import { activityEntryIndex, majorActivityKinds as majorKinds } from "./aiActivityIndex";
+import { createBetweenTurnLogSection } from "./aiBetweenTurnLog";
 import { createActivityMedia } from "./aiActivityMedia";
 import { el } from "@/util/dom";
 import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
@@ -331,5 +332,5 @@ export function createActivityToolbar(getProjectId: () => string): HTMLElement {
       historyBody.append(view.root);
     }, () => { if (token === generation) historyBody.replaceChildren(el("p", { text: "이 기기의 실행 기록을 읽을 수 없어요." })); });
   });
-  return root;
+  return el("div", { children: [root, createBetweenTurnLogSection()] });
 }

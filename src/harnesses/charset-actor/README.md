@@ -3,6 +3,18 @@
 AI는 자유롭게 도트를 만들고 사용자는 걷는 GIF를 보며 **남기기 / 폐기**만 결정한다.
 화면: http://mdc-server:18314/ · 기본 모델 **GPT 6.1 sol high**가 **정지 4장·걷기 8장 모두 직접 저작**한다.
 
+### 에디터 전체 원본 100종 변주
+
+```bash
+npm run harness -- charset-actor produce --all-sources --count 100 --par 2 --max-review-pending 12
+```
+
+- 실제 `charsetCatalog.ts`의 EasyRPG/Scarloxy/Farming/OPRN 공급자를 읽는다. Actor1~4, People1~5, Monster1~6, Scarloxy 2시트, 농장 닭·소, Template 3칸을 동등하게 순회한다. 같은 시트의 두 번째 칸보다 모든 시트의 첫 칸을 먼저 배치한다.
+- 현재 일반 원본 20시트 133칸+Animal 8종이다. 100종은 일반 92종과 Animal 8종의 두 독립 실행을 같은 공방 목록에 표시한다. Animal은 기존 고정 몸통/앞·뒷발 정책이며 일반 원본은 현재 원본 중앙/하단의 공간 변화 검사를 유지한다. 슬라임/유령의 해부학이나 자연스러운 이동을 증명하지는 않는다. 작업자는 원본 종/형태/이동을 이어가고 사람 다리를 붙이지 않는다.
+- 원본 RGBA 투명 또는 왼쪽 위 RGB 색 키를 엔진 키로 옮긴다. 원본 불투명 RGB와 크기를 보존하고 팔레트 축소/리사이즈를 하지 않는다. 62색 초과·빈/구조 결손·정지 프레임 칸은 사유와 함께 제외한다. 문·일반 기물·탈것 그룹은 걷는 캐릭터 원본에 넣지 않는다.
+- 기준은 사람의 남김으로 위장하지 않는다. 원본 PNG/정규화 입력/격자/에디터 카탈로그/출처·라이선스/지시/도구 해시와 입고 보고서를 봉인한다. 실제 남김은 기존 공용 SQLite 게시 및 라이선스 포함 선택 ZIP 경로를 쓴다.
+- `collections/<id>/request.json`, `manifest.json`, `state.json`이 총 주문 수와 두 실행의 할당/시작 결과를 보존한다. 일부 시작 실패는 `partial-start`로 기록하며 시작한 실행을 지우지 않는다. 실패한 준비 실행만 제거한다. 전체 동시 예약 제한과 검토 대기/기술 수정 정책을 유지한다.
+
 ## 지금 사용하는 자유 저작
 
 ```bash
@@ -15,7 +27,7 @@ npm run harness -- charset-actor audit --run RUN --refresh-previews
 npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outside-repo
 ```
 
-- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
+- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 2 --batch-size 2`가 기본이다. 생성/재개는 전체 살아 있는 driver의 동시 예약을 최대 4명으로 제한한다. 사람과 몬스터를 독립 실행 폴더에서 함께 제작할 수 있다.
 - 기본 제작은 원본 ASCII 격자 편집으로 돌아간다(2026-10-04 사용자 피드백). 초기 PNG 첨부·남김/폐기 비교·추가 조형 지시를 자동으로 넣지 않는다. manifest에 `visualReferences: ["pixel-style-reference.png"]`를 명시한 실험만 원본과 실행 폴더 안 참고 최대 4장을 `--image`로 첨부한다. `visual-inputs.json`/후보 meta는 기본 `[]`, 실험은 첨부 순서·파일 SHA256을 기록한다. 경로 지시나 열람 선언만으로 이미지 입력을 증명하지 않는다.
 - UI의 「새 캐릭터 만들기」에서 남긴 그림의 변주 또는 자유 저작을 고른다. 자유 저작의 전체 방향·참고 시트를 비우면 AI가 인물과 복식을 정한다.
 - 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향의 세 자세, 12장을 직접 그린다.
@@ -25,8 +37,10 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 - 영역은 원본 정지 발끝 기준 몸통 중앙 7줄/하단 다리·발 5줄로 고정한다. 현재 24×32 사람형과 원본 비율 유지 계약에 한정한 결함 검사다. 해부학 분할이나 자연스러움의 증명은 아니다. `python3 src/harnesses/charset-actor/harness.py motion-check /absolute/out.chr.txt --base BASE`로 `views/motion.json/png/gif`를 남긴다. 화면 상세에서도 변화 비교와 느린 걷기를 볼 수 있다. 납품은 검사 구현·그림·원본·진단 아티팩트 해시에 묶인다.
 - 옛 실행의 픽셀/사람 선택/납품 정책은 유지한다. 도구 변경 뒤에는 기존 봉인을 고쳐 재개하지 않고 같은 실제 남김에서 현재 계약의 새 기준을 만든다.
 - 산출물은 `reviewMode: human`, `strength: free`. 작업자 종료 후 렌더와 `published.json` 해시가 일치하면 GIF 대기열에 올린다.
+- 기본 화면은 GIF 검토에 집중한다. 작업 이력·일시 정지·재개는 「제작 관리」, 검색·종류·제작 선택은 「필터」를 펼쳐 본다. 새 제작은 기본 12종이며 작업 이름과 날짜를 표시한다. 남김 탭에서 다운로드한다.
+- 에이전트는 CLI `--title`/반복 `--concept` 또는 POST `/api/produce`의 `title`과 선택적인 `concepts` 문장 목록으로 캐릭터별 지시를 남길 수 있다. 기본 도트 도구·원본·납품 봉인은 유지한다.
 - 모든 탭에서 한 화면에 한 캐릭터만 표시한다. 위·오른쪽·아래·왼쪽 걷기와 칸 위 이동 GIF를 항상 함께 보여준다. 다음 후보의 GIF도 미리 불러온다.
-- 걷기는 자홍색 체커 배경이 기본이다. 흰색·검정·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
+- 새 브라우저의 걷기 배경은 검정이며 기존 사용자의 선택은 유지한다. 흰색·자홍색 체커·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
 - alpha 정책은 렌더/선택 binding과 따로 버전을 관리한다. 검사 개선 때 옛 PASS를 다시 계산하되 같은 픽셀의 사용자 선택을 지우지 않는다. 새 옷 안의 투명 구멍과 깊은 머리 면의 열린 틈도 차단한다.
 - `audit --run RUN`은 저장소 밖 데이터 폴더에 전체 12프레임 접촉 시트와 세 배경의 원본/후보 비교, 결손 좌표·해시·PNG 키 색 재읽기 `audit.json`/`SUMMARY.md`를 남긴다. `--refresh-previews`는 같은 격자로 고대비 GIF/RGBA 시트만 추가하며 그림·사용자 결정·공용 DB를 바꾸지 않는다. 차단 후보의 원본/선택 이력은 보존하고 정상 후보 목록·새 팩·공용 게시에서 제외한다.
 - `audit`는 모델 12장 직접 저작의 기록과 현재 격자 해시도 대조한다. `propagate`/`walk-qa`는 이전 전파 실행 재현용이며 모델 12장 후보에 대한 전파 호출은 거절한다.
@@ -45,6 +59,7 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ### 남긴 그림으로 같은 계열을 계속 만들기 (2026-10-04)
 
 ```bash
+npm run harness -- charset-actor produce --creatures --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor recipe --source-run RUN
 npm run harness -- charset-actor produce --seed-run RUN --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor produce --recipe RECIPE_ID --count 100 --par 2
@@ -84,6 +99,26 @@ API 시작과 선택 저장 뒤 자동 등록하며 위 `publish-shared` 명령�
 `studio.py`는 생성/재개를 저장 대상 잠금으로 직렬화하며 `driver.json`, `production-state.json`, `production.log`에 진행과 실패를 남긴다.
 `bulk.py`의 외부 manifest도 각 행에 `reviewMode: "human"`, `strength: "free"`를 넣으면 같은 자유 저작 계약을 사용한다.
 그 경우 최상위 manifest에도 `reviewMode: "human"`을 넣어 내보내기에서 사람 선택만 사용하게 한다.
+
+## 선택 저장과 공용 등록 (2026-10-05)
+
+`serve`의 현재 진입점은 `review_server.py`다. 봉인된 도트 저작 도구와 HTTP 동기화를 분리하여
+제작 중인 모델/12프레임/원본/납품 해시를 유지한 채 화면을 고친다. `harness.py serve`는 이전 실행용이다.
+
+- 선택은 후보의 현재 binding과 기술 적격성을 확인하고 journal을 fsync한 뒤 응답한다. 공용 등록 실패는 저장한 선택을 되돌리지 않는다.
+- 공용 SQLite 등록과 accepted 사본 복구는 단일 작업자가 뒤에서 묶어 처리한다. 동시에 새 선택이 들어오면 최신 journal로 이어 등록한다.
+- 동일 mutation의 재시도는 같은 영수증을 반환하며 옛 남기기 재시도가 뒤의 폐기/되돌리기를 복원하지 않는다.
+- 목록 검사는 입력/그림/납품/원본/모델 종료가 바뀔 때 한 작업자만 갱신한다. 선택과 생산 상태는 매 조회에 다시 읽으며 남기기 시 기술 검사는 현재 파일로 수행한다.
+- 다운로드는 선택 목록만 잠금 안에서 복사하고 패킹은 별도 잠금으로 진행한다. 다운로드 중에도 선택을 저장한다.
+- 숨은 탭은 주기 조회를 쉬며 GIF 로드 전에는 버튼에 대기 상태를 표시한다. 공용 등록 중/실패/재시도는 journal 저장과 따로 보여준다.
+- 서버의 legacy 내보내기/사본도 저장소 밖 `decisions-export.json`/`accepted-legacy/`에 둔다. 기존 기록과 원본을 덮지 않는다.
+
+별도 저장소의 3탭 브라우저에서 공용 등록을 6초 늦춘 상태로 연속 남기기/폐기, 되돌리기와 옛 재전송,
+재접속, 숨은 탭, SQLite 재로드를 확인했다. 카드 이동 53~95ms, 저장 응답 91~298ms,
+동시 목록 조회 37~43ms, 브라우저 오류 0이었다. 이 값은 확인용 저장소의 측정이며 실제 서버 측정은
+`evidence/review-save-20261005/live-state-proof.json`에 별도로 보존한다.
+자동 CI의 `verify_review_server.py`는 journal 재읽기/중복/해시 변경/등록 지연·실패·재시도 계약을 확인한다.
+이 세션에서 전체 테스트/게이트를 직접 실행하지 않는다.
 
 ## 선택적인 좌표 저작 비교 실험
 
@@ -200,7 +235,7 @@ http://mdc-server:18314/ — 비포(Actor1 원본 걷기·돌기·시트·얼굴
 서버는 사용자 유닛(transient) — 죽었으면:
 ```bash
 export XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
-systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/harness.py serve --port 18314
+systemd-run --user --unit=charset-actor-harness -p Restart=on-failure /usr/bin/python3 <체크아웃>/src/harnesses/charset-actor/review_server.py --port 18314
 ```
 
 ## 지시문 쓰는 법 — 실루엣은 뼈대 그대로 (2026-10-02 사용자: 「무기나 모자 추가는 별로」)
@@ -344,3 +379,43 @@ python3 $H describe --accepted                       # 받은 것에 설명 채�
 ## 아직 없는 것
 - 받은 캐릭터를 번들 CharSet(288×256, 8명)으로 묶어 `src/assets/bundled.ts` 에 넣는 단계.
 - 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록.
+
+## 동물 기반 필드 몬스터
+
+화면의 「새 캐릭터 만들기 → 동물 기반 몬스터」 또는 `produce --creatures`를 쓴다.
+Animal.png의 개·고양이·닭·양·소·말·호랑이·사자 8종을 원본으로 삼아
+숲·화염·서리·독·그림자·바위·물·전기·균류·갑각·언데드·정령·마수 계열을 직접 찍는다.
+100종 계획, 동시 작업 2종, 검토 대기 12종이 기본이다. 사용자의 GIF 선택이 대기 슬롯을 열면 이어 만든다.
+
+`recipes.create_creatures`는 원본 atlas/12프레임/저작 지시/ROI/라이선스/모델·도구 해시를 봉인한다.
+번들 참고 그림은 `sourceMode: bundled-animal-reference`이며 사람이 남긴 그림으로 기록하지 않는다.
+모델은 GPT 6.1 sol high, 초기 이미지 첨부는 0장, `grid`로 12장 모두 직접 저작한다.
+`animalPolicy: 1`과 각 원본의 `animalProfile`을 봉인·manifest·행·meta·납품에 묶는다.
+사람형 `motionPolicy`는 null이며 `motion.py`의 기존 사람형 계약은 보존한다.
+
+`animal_motion.py`는 미리 표시한 몸통 중앙의 정지↔각 걸음 변화와 보이는 발의 0↔2 교대를 읽는다.
+사족보행 옆 방향은 앞발/뒷발을 따로 요구하며 앞/뒤 방향의 겹친 발은 보이는 발만 검사한다.
+닭은 조류용 몸통/두 발 영역을 쓴다. 몸통은 실제 RGBA/공간 경계 각각 4px·두 줄·두 열,
+발은 각각 2px 이상이며 색 치환·전체 정지 이동은 걸음으로 인정하지 않는다.
+영역은 결과에서 재탐색하지 않는다. 이 작은 원본 체형을 유지하는 결함 검사이며 자연스러운 보행의 증명이 아니다.
+`views/motion.json/png/gif`에 좌표·방향별 차이·느린 GIF를 보존하고 구현/원본/현재 그림 해시를 납품에 묶는다.
+정책·영역·진단 증거를 제거하거나 바꾸면 선택/내보내기/공용 등록에 사용할 수 없다.
+
+기존 투명/12장 직접 저작/세 배경 GIF 재읽기/중복/설명 검사도 함께 적용한다.
+기술 오류는 최대 2회 같은 모델이 직접 수정한다. 미감과 서식지 설정의 적합성은 사용자가 결정한다.
+남긴 몬스터도 `--seed-run RUN`으로 다시 봉인해 같은 동물 영역/저작 지시로 변주할 수 있다.
+옛 봉인 기준의 도구 해시를 새 해시로 덮어쓰지 않는다.
+
+사람 캐릭터와 몬스터는 `http://mdc-server:18314/`의 같은 공방에서 검토한다.
+기본은 모든 제작이며 특정 작업만 볼 때 실행 선택을 쓴다. 옛 `collection=monsters` 링크도 같은 화면으로 정리한다.
+상단의 몬스터 완성/대기 집계와 카드 표시로 확인하며 이미 고른 그림은 남김/폐기 탭에서 본다.
+새 제작을 시작해도 전체 목록을 유지하고 기존 선택은 보존한다.
+옛 사람형 메타데이터에 run/동물 정책이 없으면 동물 검사를 새로 강제하지 않는다.
+새 봉인 실행은 manifest와 meta의 recipe binding도 일치해야 한다.
+도구 변경 뒤에는 기존 봉인을 고치지 않고 새 기준/실행을 만든다.
+`--start-index N`은 새 기준에서 앞의 N개 제작 순서를 생략한다. 이전 산출·사용자 선택은 복사하거나 바꾸지 않는다.
+동물 원본 순환과 13가지 속성을 서로 교차해 처음 대기열에도 서로 다른 계열을 넣는다.
+
+이전 실행을 새 기준에서 이어 만든 경우 `production-state.json`의 `phase: continued`와 `continuedIn`을 기록한다.
+화면은 완료한 GIF를 계속 검토하게 하고 이어지는 실행으로 연결한다. 옛 실행을 다시 생성하지 않는다.
+일반 봉인 실행의 재개도 작업자 실행 전 도구 해시를 확인하므로 원본 선택/정지 상태를 먼저 바꾸지 않는다.

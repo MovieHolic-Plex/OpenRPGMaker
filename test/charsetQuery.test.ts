@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charsetGraphicKey, pickNpcGraphic, resolveNpcGraphic } from "@/assets/charsetQuery";
+import { charsetGraphicKey, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic } from "@/assets/charsetQuery";
 
 describe("charsetQuery", () => {
   it("할머니 질의를 elder+female 엔트리로 해석한다", () => {
@@ -52,5 +52,32 @@ describe("charsetQuery", () => {
     const elder = pickNpcGraphic("할머니");
     expect(elder?.gender).toBe("female");
     expect(elder?.age).toBe("elder");
+  });
+
+  it("finds each golem and never a king, in Korean and English", () => {
+    for (const query of ["골렘", "golem"]) {
+      expect(queryNpcGraphics(query, 100).map(match => charsetGraphicKey(match.entry)).sort()).toEqual([
+        "tex_easyrpg_charset_monster2#4", "tex_easyrpg_charset_monster4#5",
+      ]);
+    }
+    expect(charsetGraphicKey(resolveNpcGraphic("king")!)).toBe("tex_easyrpg_charset_people3#0");
+  });
+
+  it("keeps literal hair and prop searches on the visually audited slots", () => {
+    expect(charsetGraphicKey(resolveNpcGraphic("보라 머리 여성 마법사")!)).toBe("tex_easyrpg_charset_actor4#6");
+    expect(charsetGraphicKey(resolveNpcGraphic("파란 머리 여성 마법사")!)).toBe("tex_easyrpg_charset_actor4#3");
+    expect(queryNpcGraphics("흑발 여성 마법사", 100).some(match => match.entry.textureKey === "tex_easyrpg_charset_actor4")).toBe(false);
+    expect(charsetGraphicKey(resolveNpcGraphic("나무 보물상자")!)).toBe("tex_easyrpg_charset_object1#7");
+    expect(queryNpcGraphics("나무 통", 100)).toEqual([]);
+    expect(queryNpcGraphics("금고", 100)).toEqual([]);
+    expect(queryNpcGraphics("후드", 100).map(match => charsetGraphicKey(match.entry))).not.toContain("tex_easyrpg_charset_actor2#5");
+    expect(queryNpcGraphics("날개", 100).map(match => charsetGraphicKey(match.entry))).not.toContain("tex_easyrpg_charset_people3#7");
+  });
+
+  it("includes Scarloxy residents and farm animals in their actual categories", () => {
+    const people = queryNpcGraphics("people", 100).filter(match => match.entry.textureKey.startsWith("tex_scarloxy_"));
+    expect(people).toHaveLength(10);
+    expect(queryNpcGraphics("object", 100).some(match => match.entry.textureKey.startsWith("tex_scarloxy_"))).toBe(false);
+    expect(queryNpcGraphics("animal", 100).filter(match => match.entry.textureKey.startsWith("tex_farming_")).map(match => match.entry.label).sort()).toEqual(["농장 닭", "농장 젖소"]);
   });
 });

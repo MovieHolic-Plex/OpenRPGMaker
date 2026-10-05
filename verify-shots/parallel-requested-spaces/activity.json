@@ -1,0 +1,71 @@
+{
+  "at": 1791172758.0605657,
+  "paused": true,
+  "workers": {
+    "active": 3,
+    "nativeDrawing": 0,
+    "preparing": 2,
+    "reviewing": 1
+  },
+  "jobs": [
+    {
+      "id": 715,
+      "concept": "cemetery",
+      "kind": "art",
+      "label": "그림 주문서·제작 입력 준비",
+      "reviewer": null,
+      "alive": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "elapsedSeconds": 62,
+      "outputAgeSeconds": 2,
+      "title": "공동묘지"
+    },
+    {
+      "id": 714,
+      "concept": "classroom",
+      "kind": "plan-review",
+      "label": "기획·도면 독립 검수",
+      "reviewer": "B",
+      "alive": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "elapsedSeconds": 117,
+      "outputAgeSeconds": 35,
+      "title": "교실"
+    },
+    {
+      "id": 710,
+      "concept": "sewer",
+      "kind": "art",
+      "label": "그림 주문서·제작 입력 준비",
+      "reviewer": null,
+      "alive": true,
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "elapsedSeconds": 443,
+      "outputAgeSeconds": 29,
+      "title": "하수도"
+    }
+  ],
+  "items": [
+    {
+      "id": "classroom",
+      "stage": "plan-review",
+      "state": "running",
+      "label": "기획·도면 독립 검수"
+    },
+    {
+      "id": "sewer",
+      "stage": "art",
+      "state": "running",
+      "label": "그림 주문서·제작 입력 준비"
+    },
+    {
+      "id": "cemetery",
+      "stage": "art",
+      "state": "running",
+      "label": "그림 주문서·제작 입력 준비"
+    }
+  ]
+}

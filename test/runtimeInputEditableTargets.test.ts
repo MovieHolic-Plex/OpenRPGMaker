@@ -67,6 +67,23 @@ describe("isTextEntryTarget", () => {
 });
 
 describe("Input 은 텍스트 입력 컨트롤에 친 키를 게임 입력으로 받지 않는다", () => {
+  it("document 에서 소비한 짧은 탭을 Phaser 가 다음 프레임에 다시 전달해도 새 탭을 만들지 않는다", () => {
+    const scene = keyboardStubScene();
+    const handlers = new Map<string, (event: KeyboardEvent) => void>();
+    scene.input.keyboard!.on = ((name: string, callback: (event: KeyboardEvent) => void) => {
+      handlers.set(name, callback);
+      return scene.input.keyboard!;
+    }) as NonNullable<typeof scene.input.keyboard>["on"];
+    const input = new Input(scene);
+    const down = new KeyboardEvent("keydown", { key: "ArrowRight" });
+    const up = new KeyboardEvent("keyup", { key: "ArrowRight" });
+    document.dispatchEvent(down);
+    document.dispatchEvent(up);
+    expect(input.update()).toMatchObject({ x: 1, y: 0 });
+    handlers.get("keydown")!(down);
+    handlers.get("keyup")!(up);
+    expect(input.update()).toMatchObject({ x: 0, y: 0 });
+  });
   it("숫자 입력창에서 친 방향키는 걸음도 탭도 만들지 않는다", () => {
     const field = document.createElement("input");
     field.type = "number";

@@ -1,0 +1,643 @@
+{
+  "ok": true,
+  "summary": "월드맵 6종 · 실제 맵 57개 저작",
+  "diff": {
+    "tilesChanged": 0,
+    "mapPropertiesChanged": 1,
+    "audioDescriptionsChanged": 0,
+    "monsterMetadataChanged": 0,
+    "eventsAdded": 135,
+    "eventsModified": 0,
+    "eventsRemoved": 0,
+    "mapsAdded": 57,
+    "mapsRemoved": 0,
+    "dbRecordsChanged": 0,
+    "tilesetsChanged": 0,
+    "switchesAdded": 175,
+    "variablesAdded": 0,
+    "worldEntitiesAdded": 0,
+    "worldEntitiesModified": 0,
+    "palettePresetsAdded": 0,
+    "palettePresetsModified": 0,
+    "endingsChanged": 0,
+    "sessionChanged": false,
+    "systemChanged": false,
+    "warnings": []
+  },
+  "data": {
+    "atlasIds": [
+      "examples_region_routes",
+      "examples_scaled_world",
+      "examples_field_overview",
+      "examples_stage_nodes",
+      "examples_room_network",
+      "examples_run_path"
+    ],
+    "startMapId": "map_blank_start",
+    "atlases": [
+      {
+        "id": "examples_region_routes",
+        "name": "지역 · 마을과 도로",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "region-routes",
+        "startNodeId": "examples_region_routes_n0",
+        "startMapId": "examples_region_routes_map0",
+        "maps": [
+          {
+            "mapId": "examples_region_routes_map0",
+            "name": "새싹 마을",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map1",
+            "name": "1번 도로",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map2",
+            "name": "솔바람 시티",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": [
+              "examples_region_routes_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_region_routes_map3",
+            "name": "2번 도로",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map4",
+            "name": "호수 마을",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map5",
+            "name": "물결 도로",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map6",
+            "name": "별빛 리그",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map7",
+            "name": "숲샛길",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_scaled_world",
+        "name": "축척 월드 · 대륙 걷기",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 7,
+        "reachableAfterUnlocks": 8,
+        "structure": "scaled-world",
+        "startNodeId": "examples_scaled_world_n0",
+        "startMapId": "examples_scaled_world_overworld",
+        "maps": [
+          {
+            "mapId": "examples_scaled_world_map0",
+            "name": "모래 나루",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map1",
+            "name": "잎새 마을",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": [
+              "examples_scaled_world_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_scaled_world_map2",
+            "name": "눈빛 관문",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map3",
+            "name": "고원 수도",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map4",
+            "name": "호수 항구",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map5",
+            "name": "돌빛 탑",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map6",
+            "name": "새벽 성",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map7",
+            "name": "동쪽 유적",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_field_overview",
+        "name": "필드 · 지형과 능력",
+        "ok": true,
+        "issues": [],
+        "nodes": 9,
+        "edges": 12,
+        "reachableAfterUnlocks": 9,
+        "structure": "field-overview",
+        "startNodeId": "examples_field_overview_n6",
+        "startMapId": "examples_field_overview_map6",
+        "maps": [
+          {
+            "mapId": "examples_field_overview_map0",
+            "name": "북서 숲",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": [
+              "examples_field_overview_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_field_overview_map1",
+            "name": "산길",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map2",
+            "name": "고대 성문",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": [
+              "examples_field_overview_ability1"
+            ]
+          },
+          {
+            "mapId": "examples_field_overview_map3",
+            "name": "서쪽 강변",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map4",
+            "name": "중앙 들판",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map5",
+            "name": "동쪽 호수",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map6",
+            "name": "시작 마을",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map7",
+            "name": "나루터",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map8",
+            "name": "묻힌 신전",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_stage_nodes",
+        "name": "스테이지 · 클리어와 비밀길",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "stage-nodes",
+        "startNodeId": "examples_stage_nodes_n0",
+        "startMapId": "examples_stage_nodes_map0",
+        "maps": [
+          {
+            "mapId": "examples_stage_nodes_map0",
+            "name": "새싹 언덕",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map1",
+            "name": "개울길",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map2",
+            "name": "햇살 숲",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": [
+              "examples_stage_nodes_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_stage_nodes_map3",
+            "name": "호수 요새",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map4",
+            "name": "돌 고개",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map5",
+            "name": "별빛 성",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map6",
+            "name": "비밀 섬",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map7",
+            "name": "무지개 샛길",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_room_network",
+        "name": "방 · 발견과 재탐색",
+        "ok": true,
+        "issues": [],
+        "nodes": 10,
+        "edges": 11,
+        "reachableAfterUnlocks": 10,
+        "structure": "room-network",
+        "startNodeId": "examples_room_network_n0",
+        "startMapId": "examples_room_network_map0",
+        "maps": [
+          {
+            "mapId": "examples_room_network_map0",
+            "name": "지상의 우물",
+            "entry": {
+              "x": 2,
+              "y": 25
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map1",
+            "name": "잊힌 교차로",
+            "entry": {
+              "x": 2,
+              "y": 19
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map2",
+            "name": "순례자의 방",
+            "entry": {
+              "x": 2,
+              "y": 23
+            },
+            "grants": [
+              "examples_room_network_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_room_network_map3",
+            "name": "푸른 회랑",
+            "entry": {
+              "x": 2,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map4",
+            "name": "바람의 탑",
+            "entry": {
+              "x": 2,
+              "y": 37
+            },
+            "grants": [
+              "examples_room_network_ability1"
+            ]
+          },
+          {
+            "mapId": "examples_room_network_map5",
+            "name": "이끼 저장고",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map6",
+            "name": "깊은 수로",
+            "entry": {
+              "x": 2,
+              "y": 13
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map7",
+            "name": "침묵의 서고",
+            "entry": {
+              "x": 2,
+              "y": 27
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map8",
+            "name": "어둠의 관문",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map9",
+            "name": "깊은 성소",
+            "entry": {
+              "x": 2,
+              "y": 25
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_run_path",
+        "name": "런 · 일방향 분기",
+        "ok": true,
+        "issues": [],
+        "nodes": 13,
+        "edges": 19,
+        "reachableAfterUnlocks": 13,
+        "structure": "run-path",
+        "startNodeId": "examples_run_path_n0",
+        "startMapId": "examples_run_path_map0",
+        "maps": [
+          {
+            "mapId": "examples_run_path_map0",
+            "name": "출발 캠프",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map1",
+            "name": "1층 전투",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map2",
+            "name": "1층 사건",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map3",
+            "name": "1층 전투",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map4",
+            "name": "2층 보물",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map5",
+            "name": "2층 정예",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map6",
+            "name": "2층 상점",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map7",
+            "name": "3층 휴식",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map8",
+            "name": "3층 전투",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map9",
+            "name": "3층 사건",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map10",
+            "name": "4층 정예",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map11",
+            "name": "4층 휴식",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map12",
+            "name": "5층 최종 관문",
+            "entry": {
+              "x": 2,
+              "y": 21
+            },
+            "grants": []
+          }
+        ]
+      }
+    ],
+    "help": "플레이 중 「세계 지도」 버튼 또는 M. 마을·필드·방은 실제 출입구로, 스테이지·런은 지도에서 열린 인접 장소를 고릅니다. 관문의 인물과 대화하면 클리어/해금됩니다."
+  }
+}

@@ -1154,6 +1154,8 @@ export function rebindEventFollowCamera(scene: PlaySceneContext): void {
 }
 
 export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
+  // Map loading and surface refresh also call this path before PlayScene.create ends.
+  if (scene.game.registry.get('initialPresentationPending') === true) return;
   // Map refresh can run before player.ts installs dialogue. Do not consume the
   // one-shot key before runEvent/runCommands can actually accept this event.
   if (!dialogueUi(scene) || scene.sys?.isActive() === false) return;

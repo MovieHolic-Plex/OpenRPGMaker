@@ -20,6 +20,8 @@ export interface SharedContentLibrary {
   roots: string[];
   /** Complete, saved region examples; keys address maps in this same library. */
   regions?: Record<string, SharedRegionReference>;
+  /** Shared navigation recipes and canonical examples; generation creates fresh map/switch IDs. */
+  worldmapStructures?: Record<string, SharedWorldmapStructureReference>;
   places: Record<string, PlaceDesign>;
   tilesets: Record<string, TilesetDef>;
   assets: Project['assets']['uploaded'];
@@ -29,6 +31,15 @@ export interface SharedContentLibrary {
   previews: Record<string,string>;
   /** Human-kept sprites and their author descriptions; owned by this host's local catalog. */
   characters?: Record<string, SharedCharacter>;
+}
+export interface SharedWorldmapStructureReference {
+  id: import('./worldAtlas').WorldAtlasStructure;
+  name: string;
+  sourceProjectId: string;
+  preview: string;
+  authorArgs: { structure: import('./worldAtlas').WorldAtlasStructure; seed: number };
+  example: import('./worldAtlas').WorldAtlas;
+  referenceDocuments: TilesetReferenceCategory[];
 }
 export interface SharedCharacter {
   assetId: string;

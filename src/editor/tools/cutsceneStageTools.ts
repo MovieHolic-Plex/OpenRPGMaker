@@ -1,7 +1,7 @@
 // script_cutscene_staged — 연출을 «배우 + 관계 + 타이밍» 으로 선언한다. 전용 도구 없이도 충돌·횡단·등장·퇴장·날아감을 쓴다.
 // 컴파일(좌표·접촉·시각표)은 src/editor/cutsceneStage/compile.ts 가 하고, 결과는 기존 script_cutscene beat 로 들어가
 // 같은 검증·커밋 게이트를 지난다. 조수는 JSON 만 쓰고, 임의 코드는 실행되지 않는다.
-import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { sharedFaceIdForCharset as reviewedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import { cropCharsetFrames, fetchPictureDataUrl, type CharsetAnyRole } from "@/editor/cutsceneArt/charsetFrames";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { pictureSize, pngSize } from "@/editor/cutsceneArt/pictureSize";

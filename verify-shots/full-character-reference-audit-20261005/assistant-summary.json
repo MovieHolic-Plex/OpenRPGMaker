@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "suite": "core",
+  "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+  "counts": {
+    "pass": 2,
+    "fail": 0,
+    "blocked": 0,
+    "pending": 0,
+    "unexecuted": 10
+  },
+  "total": 12,
+  "strictPassRate": 0.16666666666666666,
+  "executed": 2,
+  "bootstrapAttempts": 0,
+  "actualModelTrials": 2,
+  "coverageGaps": [
+    "타일·선택 영역 저작",
+    "실내 생성",
+    "맵 간 이동 저작",
+    "전투",
+    "장기 연속 지시",
+    "중단·저장 충돌 복구",
+    "모호한 지시",
+    "표현·모델별 반복 성공률"
+  ],
+  "results": [
+    {
+      "schemaVersion": 1,
+      "caseId": "npc-golem",
+      "title": "골렘 칩 선택",
+      "inputMode": "pi-command",
+      "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+      "codeCommit": "cffa911b2d315234f3bf7ee53c487b61f6e890e4",
+      "harnessDigest": "093440563d5b3c5973a4913a3c641e8bfc0237b25b5e221e309cb118b0889ea8",
+      "startedAt": "2026-10-05T08:44:55.368Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-character-cell",
+              "ok": true,
+              "detail": "요청한 실제 칩 tex_easyrpg_charset_monster2 frame 73"
+            },
+            {
+              "id": "actual-candidate-image-received",
+              "ok": true,
+              "detail": "실제 제공자 입력의 검색 결과와 후보 PNG를 포함한 모델 응답 완료 영수증"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-line",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-close",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "requiredVisualEvidence": [
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/05-repeat.png"
+          ],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/04-close.png",
+            "runtime/05-repeat.png",
+            "runtime/06-repeat-close.png"
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"8a99efc2-e579-4193-a10f-720beac7c679\",\"projectDir\":\"/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1/npc-golem/project\",\"beforeRevision\":2,\"afterRevision\":3,\"afterSha256\":\"756a261e226ce14b2e5cf72403303818246c94f3d769c2e765171a70f101277f\",\"reloadedSha256\":\"756a261e226ce14b2e5cf72403303818246c94f3d769c2e765171a70f101277f\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "root",
+          "notes": "출하 플레이어에서 바위 몸·빨간 눈의 스톤 골렘을 확인했다. 첫 대사와 재대화는 기존 미루 대사이고 이벤트 위치·다른 NPC가 유지된다. 편집기 변경/재로드 캡처는 E 위치 표시 상태이며 실제 칩 식별은 런타임 및 제공자 후보 이미지로 확인했다. SQLite 전체 문서 해시는 저장 후 새 context에서 일치한다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/05-repeat.png"
+          ]
+        }
+      },
+      "elapsedMs": 109872,
+      "models": [
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "09c86e11-52cd-4956-8648-6dc2a236415f",
+          "at": 1791189962543
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "09c86e11-52cd-4956-8648-6dc2a236415f",
+          "at": 1791189966785
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "febb2a6c-7d70-4a27-ba41-09f209217cae",
+          "at": 1791189992551
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791190027147
+        }
+      ],
+      "projectId": "8a99efc2-e579-4193-a10f-720beac7c679",
+      "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1/npc-golem/project",
+      "finishedAt": "2026-10-05T08:49:42.603Z",
+      "status": "pass",
+      "sourceDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1",
+          "startedAt": "2026-10-05T08:44:55.368Z",
+          "status": "pass",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "npc-king",
+      "title": "왕 칩 선택",
+      "inputMode": "pi-command",
+      "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+      "codeCommit": "cffa911b2d315234f3bf7ee53c487b61f6e890e4",
+      "harnessDigest": "093440563d5b3c5973a4913a3c641e8bfc0237b25b5e221e309cb118b0889ea8",
+      "startedAt": "2026-10-05T08:49:42.661Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-character-cell",
+              "ok": true,
+              "detail": "요청한 실제 칩 tex_easyrpg_charset_people3 frame 25"
+            },
+            {
+              "id": "actual-candidate-image-received",
+              "ok": true,
+              "detail": "실제 제공자 입력의 검색 결과와 후보 PNG를 포함한 모델 응답 완료 영수증"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "first-line",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "repeat-close",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "requiredVisualEvidence": [
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/05-repeat.png"
+          ],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/04-close.png",
+            "runtime/05-repeat.png",
+            "runtime/06-repeat-close.png"
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"5a1e4849-39bc-4e6b-92b9-823ebead704c\",\"projectDir\":\"/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1/npc-king/project\",\"beforeRevision\":2,\"afterRevision\":3,\"afterSha256\":\"5899f14379d1954bb51e4d80257a31f49114abc1216b2ea8b174acc906efce1e\",\"reloadedSha256\":\"5899f14379d1954bb51e4d80257a31f49114abc1216b2ea8b174acc906efce1e\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "root",
+          "notes": "출하 플레이어에서 금관·회색 수염·빨간 망토의 왕을 확인했다. 첫 대사와 재대화는 기존 미루 대사이고 이벤트 위치·다른 NPC가 유지된다. 편집기 변경/재로드 캡처는 E 위치 표시 상태이며 실제 칩 식별은 런타임 및 제공자 후보 이미지로 확인했다. SQLite 전체 문서 해시는 저장 후 새 context에서 일치한다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/02-start.png",
+            "runtime/03-first-line.png",
+            "runtime/05-repeat.png"
+          ]
+        }
+      },
+      "elapsedMs": 114589,
+      "models": [
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "44661b17-83c6-4817-89f1-538b055cb8b7",
+          "at": 1791190245948
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "44661b17-83c6-4817-89f1-538b055cb8b7",
+          "at": 1791190249401
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "2cad2041-c0ef-4760-8b44-325660eb54ed",
+          "at": 1791190276185
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791190311039
+        }
+      ],
+      "projectId": "5a1e4849-39bc-4e6b-92b9-823ebead704c",
+      "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1/npc-king/project",
+      "finishedAt": "2026-10-05T08:54:38.129Z",
+      "status": "pass",
+      "sourceDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1",
+      "nativeInput": true,
+      "attempts": [
+        {
+          "sourceDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-full-reference-r1",
+          "startedAt": "2026-10-05T08:49:42.661Z",
+          "status": "pass",
+          "nativeInput": true
+        }
+      ]
+    },
+    {
+      "caseId": "inspect-readonly",
+      "title": "조회만 하기",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "plan-readonly",
+      "title": "계획만 세우기",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "npc-line",
+      "title": "첫 대사만 수정",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "npc-move",
+      "title": "기존 NPC 이동",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "npc-delete",
+      "title": "대상 NPC만 삭제",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "item-price",
+      "title": "아이템 가격만 수정",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "map-rename",
+      "title": "맵 이름만 수정",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "inn-price",
+      "title": "숙박 요금과 안내 일치",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "dialogue-choice",
+      "title": "선택지 양쪽과 취소",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    },
+    {
+      "caseId": "reward-once",
+      "title": "보상 한 번과 재대화",
+      "status": "unexecuted",
+      "gates": {},
+      "attempts": []
+    }
+  ]
+}

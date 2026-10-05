@@ -1,0 +1,892 @@
+{
+  "scenarioId": "live-first-game-release",
+  "projectPath": "output/qa/audio-background-start/game-web/project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "정상 motion으로 실제 타이틀 연출 완료",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null,
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "title-screen",
+          "attr": "data-seq-state",
+          "value": "done",
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "opening-1",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_01_prologue",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "opening-2",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_02_study_wide",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "따스한 볕이 머무는, 조용한 오후의 서재.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "opening-3",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_03_watch_detail",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "opening-4",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_04_watch_light_event",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "opening-5",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_05_seorin_over_shoulder",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "opening-6",
+      "note": "실제 오프닝을 건너뛰지 않고 자연 재생",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "cinematic-sequence",
+          "attr": "data-scene-id",
+          "value": "op_scene_06_desk_transition",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "cinematic-sequence",
+          "timeoutMs": 10000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "cinematic-sequence",
+          "text": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+          "timeoutMs": 10000
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "field",
+      "note": "짧은 실제 도입 완료 뒤 조작 반환",
+      "shot": "08-field.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitFor",
+          "testid": "cinematic-sequence",
+          "state": "absent",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "opening-map-handoff",
+          "state": "absent",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 18,
+          "timeoutMs": 350
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "map_blank_start|10|12|true|false",
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "clock",
+      "note": "정상 이동으로 회중시계 조사",
+      "shot": "09-clock.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 12,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 12,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 11,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 10,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "runtime-choices",
+          "state": "present",
+          "timeoutMs": 350,
+          "maxPresses": 18
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "response",
+      "note": "실제 선택과 각기 다른 결과 대사",
+      "shot": "10-response.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "2"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "dialogue-box"
+        },
+        {
+          "kind": "waitForText",
+          "testid": "dialogue-box",
+          "text": "지나간 시간에 얽매이기보다, 이제는 그만 무거운 미련을 내려놓고 싶어. 안녕..."
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "route",
+      "note": "대사 종료 → 동쪽 문 → 기억의 길",
+      "shot": "11-route.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_segment_route",
+        "x": 0,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 18,
+          "timeoutMs": 350
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 14,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 15,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 16,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 17,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 18,
+          "y": 9,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 0,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 0,
+          "y": 7
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "id": "ending",
+      "note": "전환 완료 뒤 정상 이동·조사로 첫 구간 종료",
+      "shot": "12-ending.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_segment_route",
+        "x": 22,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_segment_route",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 22,
+              "y": 5,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 2
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "map_segment_route|0|7|true|false"
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 1,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 2,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 3,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 4,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 5,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 6,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 7,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 8,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 9,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 10,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 11,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 12,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 13,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 14,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 15,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 16,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 17,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 18,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 19,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 20,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 21,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 22,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "ending-screen",
+          "state": "present",
+          "maxPresses": 18,
+          "timeoutMs": 350
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "ending-screen",
+          "attr": "data-phase",
+          "value": "epilogue",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "ending-screen",
+          "descendant": ".ending-heading",
+          "minAlpha": 0.95
+        },
+        {
+          "kind": "waitForText",
+          "testid": "ending-screen",
+          "text": "멈춘 시계의 기억 (첫 구간 완료)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:1813636) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"namedSlots":319,"npcRows":319,"resourceRows":319,"paginatedResources":319,"pairedWalkingDescriptions":116,"firstSceneCharsetObjects":16,"failures":0}

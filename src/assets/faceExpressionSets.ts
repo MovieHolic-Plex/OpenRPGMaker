@@ -69,7 +69,7 @@ export const FACE_EXPRESSION_SETS = [
   },
   {
     id: "shared-pink-hat-expressions",
-    name: "분홍 모자 여성",
+    name: "분홍 머리 보라 모자 여성",
     faces: AUTHORABLE_FACESET_FACE_ASSETS.filter(face => face.sheetResourceId === "shared-pink-hat-expressions"),
   },
   {
@@ -159,7 +159,7 @@ export const FACE_EXPRESSION_SETS = [
   },
   {
     id: "shared-actor2-blue-hat-woman-expressions",
-    name: "푸른 모자 여성",
+    name: "붉은 모자 푸른 머리 여성",
     faces: AUTHORABLE_FACESET_FACE_ASSETS.filter(face => face.sheetResourceId === "shared-actor2-blue-hat-woman-expressions"),
   },
   {

@@ -1,0 +1,13 @@
+{
+  "mockOnly": true,
+  "realWrites": 0,
+  "nativeDoubleClickAdvances": true,
+  "oneDecisionPerDoubleClick": true,
+  "undoBeforeSend": true,
+  "failedSaveRestoresDraft": true,
+  "successfulSaveNotifies": true,
+  "outlineDoubleClickDoesNotSubmit": true,
+  "memoCollapsePreservesText": true,
+  "narrowViewportNoOverflow": true,
+  "errors": []
+}

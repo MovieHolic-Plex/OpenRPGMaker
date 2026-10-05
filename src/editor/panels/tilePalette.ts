@@ -12,6 +12,7 @@ import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
+import { hasWorldmapBrushes, makeWorldmapBrushShelf } from './worldmapBrushShelf';
 import { comboBrushShelfEntries, makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
 import { makeTileBrushAssistControls, makeTileBrushAssistPanel, syncTileBrushAssistSelection } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
@@ -34,7 +35,7 @@ import {
 } from "@/editor/panels/tilePaletteFilter";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
-import type { TilesetDef } from "@/project/types";
+import type { GameMap, TilesetDef } from "@/project/types";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { isCustomTileset } from "@/project/tilesetKind";
 import { uiLabel } from "@/editor/uiCopy";
@@ -84,13 +85,14 @@ type PaletteScroll = {
  * 레이어·필터 전환마다 다시 짓던 것이 사라진다. 기본 리플로우 판은 칸 집합 자체가 레이어·필터로 바뀌므로 넣는다.
  */
 function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
-  if (isCustomTileset(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, "custom"].join("|");
+  if (usesSourceSheet(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, "custom"].join("|");
   return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, "grid"].join("|");
 }
 
 /** 필터가 켜져 있으면 기본 판은 칸 집합이 달라져 못 살린다. 커스텀 판은 언제나 살린다. */
 function canRetainPalette(tileset: TilesetDef): boolean {
-  return isCustomTileset(tileset) || !isFilterActive();
+  if(hasWorldmapBrushes(tileset))return false;
+  return usesSourceSheet(tileset) || !isFilterActive();
 }
 
 /**
@@ -148,6 +150,15 @@ function swapPaneAroundSheet(pane: HTMLElement, sheet: HTMLElement, next: HTMLEl
  * 팔레트 안의 컨트롤(필터·보조 창 등)은 renderTilePalette 를 직접 불러 항상 다시 그린다.
  */
 const renderedPaletteInputs = new WeakMap<HTMLElement, { readonly shell: Element; readonly inputs: readonly unknown[] }>();
+
+/** Generated world materials have no source-sheet layout to preserve in the palette. */
+function usesMaterialGrid(tileset: TilesetDef): boolean {
+  return hasWorldmapBrushes(tileset) || tileset.family === 'worldmap-kit' && tileset.tileGroups?.some(group => group.id.startsWith('worldmap-material-')) === true;
+}
+
+function usesSourceSheet(tileset: TilesetDef): boolean {
+  return isCustomTileset(tileset) && !usesMaterialGrid(tileset);
+}
 
 /** 타일 레이어 팔레트가 읽는 값. 이벤트 레이어(이벤트 목록)는 맵 내용을 읽으므로 null — 항상 그린다. */
 function paletteRenderInputs(): readonly unknown[] | null {
@@ -271,6 +282,28 @@ export function renderTilePalette(container: HTMLElement): void {
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
+  }
+
+  if (map.worldmapSource && !map.worldmapSource.tilemap && tileset.family === 'worldmap-kit') {
+    const pane = el('div', { class: 'palette-work-pane is-paint', dataset: { testid: 'worldmap-material-upgrade' } });
+    pane.style.display = 'flex'; pane.style.flexDirection = 'column';
+    pane.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
+    const status = el('p', { class: 'empty-hint', text: '지형과 거점을 재료로 분리하면 붓으로 편집할 수 있습니다.', attrs: { 'aria-live': 'polite' } });
+    const button = el('button', { class: 'btn', text: '지형·거점 재료로 바꾸기', attrs: { type: 'button' }, dataset: { testid: 'worldmap-material-upgrade-confirm' } }) as HTMLButtonElement;
+    button.onclick = async () => {
+      button.disabled = true; status.textContent = '기존 지형을 재료로 분리하고 있습니다…';
+      try {
+        const [{ getTool }, { applyToolToStore }] = await Promise.all([import('@/editor/tools'), import('@/editor/tools/applyChangesetToStore')]);
+        const args = { mapId: map.id, ops: [] };
+        await getTool('edit_world_terrain')!.prepare?.(args, store.getCurrent());
+        const result = applyToolToStore('edit_world_terrain', args);
+        if (!result.ok) throw Error(result.summary);
+        toast('지형과 거점을 분리했습니다.', 'ok');
+        renderPalettePreservingViewport();
+      } catch (error) { status.textContent = error instanceof Error ? error.message : String(error); button.disabled = false; }
+    };
+    pane.append(status, button); shell.append(pane); container.append(shell);
+    applyRovingTabindex(container); restoreFocus(container, focusSnapshot); return;
   }
 
   const body = makePaletteSurface({ map, state, tileLayer, tileset, retainedSheet: inPlace ? inPlace.sheet : null });
@@ -422,7 +455,7 @@ function makeSelectedTileStatus(
  * then utilities. Auxiliary work opens without taking height from the sheet.
  */
 function makePaletteSurface(input: {
-  readonly map: { readonly id: string; readonly name: string; readonly tilesetId: string };
+  readonly map: GameMap;
   readonly state: ReturnType<typeof editorState.get>;
   readonly tileLayer: Exclude<Layer, "event">;
   readonly tileset: TilesetDef;
@@ -445,11 +478,25 @@ function makePaletteSurface(input: {
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
   if (assist.clusterRow) options.append(assist.clusterRow);
   root.append(options);
+  if(hasWorldmapBrushes(tileset)) {
+    const palette=makeWorldmapBrushShelf(tileset,tileLayer,state.selectedTile,selectPaletteTile,renderPalettePreservingViewport);
+    palette.dataset.testid='tile-palette';palette.dataset.retainKey=paintSheetRetainKey(tileset,tileLayer);
+    if(tileLayer==='upper'&&tileset.structureKits?.length)palette.append(makeStructureKitShelf({tileset,title:'거점 · 전체 아이콘',activeKitId:state.activePaletteStamp?.kitId??null,rerender:renderPalettePreservingViewport})!);
+    root.append(palette);return{root,palette,sheetSlot:null};
+  }
+  if (usesMaterialGrid(tileset) && tileLayer === 'upper' && tileset.structureKits?.length) {
+    const palette = makeStructureKitShelf({ tileset, title: '거점 · 전체 아이콘', activeKitId: state.activePaletteStamp?.kitId ?? null,
+      rerender: renderPalettePreservingViewport })!;
+    palette.dataset.testid = 'tile-palette';
+    palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
+    root.append(palette);
+    return { root, palette, sheetSlot: null };
+  }
   const visibleTiles = filteredTileIdSet(tileset);
   root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
   const emptyHint = makePaletteEmptyHint(tileLayer);
 
-  const palette = retainedSheet ?? (isCustomTileset(tileset)
+  const palette = retainedSheet ?? (usesSourceSheet(tileset)
     ? makeCustomPalette({
         onCreatePaletteStamp: selectPaletteStamp,
         layer: tileLayer,
@@ -474,8 +521,8 @@ function makePaletteSurface(input: {
   if (retainedSheet) {
     // 살린 판은 칸을 다시 짓지 않는다 — 그림(이식 베이크)과 필터·선택만 제자리에서 맞춘다.
     applyPaletteSheetImage(palette, tilesetImageUrl(tileset));
-    if (isCustomTileset(tileset)) setCustomPaletteFilter(palette, visibleTiles, state.selectedTile);
-    const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+    if (usesSourceSheet(tileset)) setCustomPaletteFilter(palette, visibleTiles, state.selectedTile);
+    const displayTile = usesSourceSheet(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
     movePaletteActiveCell(palette, displayTile);
   }
   if (showQuickTileNumbers) palette.classList.add("show-index");
@@ -675,7 +722,7 @@ function refreshPaletteFilter(): void {
   const map = project.maps[currentMapId()];
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   if (!root || !pane || !sheet || !bar || !tileset || state.layer === "event"
-    || root.querySelector("[data-sidebar-surface]") || !isCustomTileset(tileset)
+    || root.querySelector("[data-sidebar-surface]") || !usesSourceSheet(tileset)
     || sheet.dataset.retainKey !== paintSheetRetainKey(tileset, state.layer)) {
     renderPalettePreservingViewport();
     return;
@@ -750,7 +797,7 @@ function paletteMatchCount(
   selectedTile: number,
   visibleTiles: ReadonlySet<number> | null,
 ): number {
-  if (isCustomTileset(tileset)) return visibleTiles ? visibleTiles.size : tileset.count;
+  if (usesSourceSheet(tileset)) return visibleTiles ? visibleTiles.size : tileset.count;
   return gridPaletteVisibleCount({ layer: tileLayer, selectedTile, tileset, visibleTiles });
 }
 
@@ -793,9 +840,9 @@ export function syncMountedPaletteSelection(): boolean {
   if (state.layer === "event") return false;
   const tileset = currentTilesetForPalette();
   if (!tileset) return false;
-  const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+  const displayTile = usesSourceSheet(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
 
-  const custom = isCustomTileset(tileset);
+  const custom = usesSourceSheet(tileset);
   if (isFilterActive() && !custom) return false;
   const sheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
   if (!sheet || sheet.dataset.retainKey !== paintSheetRetainKey(tileset, state.layer)) return false;
@@ -885,7 +932,7 @@ function rememberMountedPaletteInputs(root: HTMLElement): void {
 export function syncMountedPaletteLayerSelection(): boolean {
   if (typeof document === "undefined") return false;
   const tileset = currentTilesetForPalette();
-  if (!tileset || !isCustomTileset(tileset)) return false;
+  if (!tileset || !usesSourceSheet(tileset)) return false;
   if (!syncMountedPaletteSelection()) return false;
   const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
   if (!controls) return false;
@@ -1005,7 +1052,7 @@ function revealChipsetTileInPalette(tile: number): void {
   if (!root) return;
   // Custom atlases expose exact source cells; RM2K chipsets collapse authored autotile variants.
   const tileset = currentTilesetForPalette();
-  const displayTile = tileset && !isCustomTileset(tileset) ? gridPaletteDisplayTile(tileset, tile) : tile;
+  const displayTile = tileset && !usesSourceSheet(tileset) ? gridPaletteDisplayTile(tileset, tile) : tile;
   const virtualSheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
   const cell =
     (virtualSheet ? revealVirtualPaletteTile(virtualSheet, displayTile) : null) ??

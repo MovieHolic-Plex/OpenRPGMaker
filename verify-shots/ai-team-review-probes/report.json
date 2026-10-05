@@ -1,0 +1,64 @@
+{
+  "provenance": "Controlled browser regression probes; no live model execution.",
+  "receipts": {
+    "latestCompletion": true,
+    "interruptedNoSuccess": true,
+    "o": {
+      "scope": "a",
+      "assignment": "read",
+      "action": "다음 모델 응답을 기다리는 중",
+      "result": "맵을 살펴봤어요",
+      "startedAt": 1000,
+      "lastAt": 5000,
+      "recent": [
+        {
+          "label": "작업 배정",
+          "at": 1000,
+          "failed": false
+        },
+        {
+          "label": "earlier",
+          "at": 4000,
+          "failed": false
+        },
+        {
+          "label": "latest",
+          "at": 5000,
+          "failed": false
+        }
+      ]
+    },
+    "stopped": {
+      "scope": "a",
+      "assignment": "read",
+      "action": "다음 모델 응답을 기다리는 중",
+      "result": "실행 중 · 종료 응답 없음",
+      "startedAt": 1000,
+      "lastAt": 7000,
+      "recent": [
+        {
+          "label": "earlier",
+          "at": 4000,
+          "failed": false
+        },
+        {
+          "label": "latest",
+          "at": 5000,
+          "failed": false
+        },
+        {
+          "label": "실행 중 · 종료 응답 없음",
+          "at": 7000,
+          "failed": false
+        }
+      ]
+    }
+  },
+  "draft": {
+    "value": "배정 전 초안 유지",
+    "owner": "builder-1",
+    "start": 2,
+    "end": 6
+  },
+  "passed": true
+}

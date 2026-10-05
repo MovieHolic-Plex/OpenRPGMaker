@@ -1,5 +1,40 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 캐릭터 칩 선택의 실제 이미지와 적용 관문 (2026-10-05)
+
+Pi의 `list_npc_graphics` 및 `list_resources(kind:"charset")`는 응답 후보 순서의 번호를 붙인 실제 아래방향 정지 칩 이미지를 모델에 전달한다. 텍스트에는 시트·칸·외형과 `selectionId`/`nativeGraphic`을 유지한다. 고수준 `graphic:{selectionId,query?}`는 슬롯→프레임 계산을 도구가 맡으며, query를 함께 주면 해당 외형의 후보인지 검사한다. 저수준 페이지는 `nativeGraphic`을 그대로 쓴다.
+
+`PiCharsetSelectionGate`는 결과 본문과 그 미리보기 PNG가 실제 제공자 요청에 함께 실리고 성공한 모델 응답이 끝났을 때만 후보를 본 것으로 기록한다. 새 이벤트·변경 외형·배우·동료의 실제 시트/칸을 그 기록과 비교하여 확인되지 않은 선택이면 쓰기를 원자적으로 되돌린다. 같은 이벤트·페이지 ID의 기존 외형을 유지하는 대사/위치 수정은 허용한다. 텍스트만 전달, 잘린 본문, 다른 이미지, 실패/중단 응답은 증거가 아니다. 검색 이후 같은 응답에서 함께 제출한 쓰기도 후보 이미지를 아직 읽지 않았으므로 거부한다.
+
+그림은 브라우저의 실제 자산 브리지 또는 헤드리스 PNG 로더로 원본을 크롭하며 생성 그림을 쓰지 않는다. 업로드 시트는 `list_resources(kind:"charset",query:파일명/ID)`에서 실제 8칸을 보고 `nativeGraphic`을 쓴다. 전달 경로가 없거나 원본을 읽지 못하면 선택을 승인하지 않는다. `charset.image.delivered`는 도구 응답에 이미지가 포함된 기록이며 `charset.image.received`는 실제 제공자 입력을 포함한 성공 응답 기록이다. Gemini는 여러 텍스트 블록을 합치므로 번호 설명은 하나의 JSON 응답 안에 넣는다. 이 관문은 같은 그림을 보고 모델이 뜻을 잘 이해했다는 보증은 아니며, 원하는 외형 질의와 실제 후보 그림을 함께 비교해야 한다.
+
+### 칩 이름·태그 전수 조사 (2026-10-05)
+
+`verify-shots/charset-mapping-audit-20261005/SUMMARY.md`는 번들 24시트와 고정한 공용 판본 155시트의 실제 322칸, 접근 가능한 프로젝트 44개와 프로젝트 전용 17칸을 대조한 근거다. 이름/태그/외형 설명 오류 18칸을 교정하고 Monster3의 6칸·자체 Monster4~6의 24칸·농장 동물 2칸을 등록했다. Template의 3칸은 저작용 원형으로 남긴다. Monster3#6은 일반 걷기가 아니라 마법진→불꽃→마법사 변신 연출임을 설명한다.
+
+Scarloxy 주민은 `people`, 농장 동물은 `animal`로 분류한다. `animal`은 범주 조회이며 RTP Animal.png 한 시트 조회는 전체 textureKey로 한다. 공용 저작 캐릭터의 `attributes.kind`가 긴 몬스터/마수 설명이면 검색용 `몬스터` 태그를 보충한다. 동물형 짐승은 kind와 저작 역할을 함께 확인하며 인간 사냥꾼의 역할/옷/장소에서 종을 추측하지 않는다. 영문 king/golem 별칭도 해당 한글 이름표로 검색한다.
+
+공용 설명의 세미콜론/마침표로 분리된 `없음`·`제거했다` 절은 검색 외형과 태그에서 뺀다. `옷 없음`·`갈기 없음`·`깃털을 제거했다` 때문에 그 특징이 있는 후보로 검색되던 것을 막는다. 현재 자료의 `별도 갑피 없이`도 없는 갑피가 검색되지 않게 한다. 저자가 작성한 원문은 라이브러리와 자산 프로필에 남는다. 일반 자연어 부정 전체를 해석하는 파서는 아니다.
+
+재조사는 `npx vite-node --script scripts/content/audit-charset-mappings.mts --out <새 폴더> --shared-db <SQLite 사본> [--projects-root <프로젝트 부모>]` → `python3 scripts/content/render-charset-mapping-audit.py --out <같은 폴더>`다. 원본 픽셀과 이름표를 따로 추출하며 시트 해시·공용 판본·모든 칸/프레임/좌표·실제 이름 검색 결과를 기록한다. 좌표 통과와 자기 이름 검색 통과만으로 의미 매핑을 승인하지 않는다. 출력 PNG 전부와 전체 태그/외형 문장을 별도로 대조한다. SQLite는 조회만 하며 앞선 inventory가 있는 출력 폴더를 덮어쓰지 않는다.
+
+후속 경로 확인에서는 별도 `resourceSearch`가 왕의 영문 검색을 누락하고, 골렘 한 종과 농장 동물을 빠뜨리며,
+흑발 여성 마법사에 다른 외형 32개를 반환했다. 이제 `findNpcGraphicMatches`를 NPC·리소스 조회가 함께 쓴다.
+리소스는 전체 결과를 페이지로 나누고 NPC 조회만 상위 20개로 제한한다. 정확한 미등록 업로드 시트 ID/전체 이름은
+그 시트의 8칸을 우선하며 ID의 `golem` 같은 낱말로 공용 후보를 섞지 않는다.
+얼굴 검색의 짝 걷기 설명은 프로젝트 저자 이름 → 현재 걷기 이름표 → 대응표 원문 순서로 읽는다.
+얼굴 그림 자체와 짝 관계의 정본은 기존 대응표다. 기본 데모의 옛 이름 조회 두 곳도 현재 이름으로 갱신했다.
+`verify-shots/charset-reference-evidence-20261005/SUMMARY.md`는 고정 공용 판본의 319개 칩을 실제 두 조회 도구에서
+이름·태그·외형·프레임까지 대조한 응답과 누락 발견·실패 이력을 담는다. 기존 Pi 실행과 이번 모델 없는 도구 검사를 구분한다.
+
+## 공용 플레이 프리셋 조회 (2026-10-05)
+
+탐험·장치 / NPC 생활 / 생활·경제 / 전투 / 파티 / 성장 / 던전 / 세계·사건 / 시대·인과 / 전리품·장비 / 반복·도전 / 엔딩·회차의 12개 분야·96종 작성 매뉴얼을
+`list_authoring_presets` → `read_authoring_preset`으로 조회한다.
+현재 Pi와 기존 세션의 발견 지침·초기 읽기 도구에 연결하며 선택한 전문만 읽는다.
+단계별 실제 작성 도구·상태 변화·실패/재방문 확인과 조회/작성/완료의 구분은
+[공용 플레이 프리셋](authoring-play-presets.md)을 따른다.
+
 ## 대화 초상 선택과 게임 글꼴 (2026-10-04)
 
 초상을 잘 고르지 못한 경로: `FACE_SCHEMA`가 얼굴 낱장 48×48만 안내했고,
@@ -20,6 +55,9 @@
   같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
 
 `set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+도구 스키마는 string과 허용 ID 설명을 사용한다. 빈 문자열을 enum에 넣으면 Gemini가
+도구를 사용하기 전 요청 전체를 HTTP 400으로 거부한다(2026-10-05 실제 팀 조수 실행).
+실행 경계의 역할별 ID 검사와 빈 문자열 초기화는 그대로 유지한다.
 역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
 `battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
 대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.
@@ -598,6 +636,25 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 `pending` / `no-face` / 없는 항목은 시트 번호나 나이로 추정하지 않는다.
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
+
+### 캐릭터 참조 전수 교정 (2026-10-05)
+
+현재 조수의 얼굴 검색·NPC 후보·명시 얼굴 대조는 `sharedCharacterFaceResolver.ts`의 승인된 호스트 대응표를 읽는다.
+플레이어 기본값·저장본 교정은 배포된 `reviewedCharsetFaces.ts` 정본을 읽는다. 고정 JSON을 읽던 조수 검색 경로는 제거했다.
+알려진 옛 공용 행 전체가 일치하는 경우만 `characterReferenceCorrections.json`으로 이전하고 저자 변경은 보존한다.
+빈 얼굴 19칸은 생성 목록·DB 피커·이벤트 제안·조수 조회에서 제외한다. 업로드 대체 그림에는 이 제외와 공용 외형을 적용하지 않는다.
+기존 기본 프로필 이름 33개는 `previousFaceReferenceNames.json`으로 교정한다.
+
+걷기 321개·얼굴 1,344장·초상 2,432장·몬스터 160개·전투 대표 자세 73개와 로컬 SQLite 47개를 조사했다.
+대응표 105행(이름 56·속성 81, 중복 포함), 얼굴 이름 3개, 몬스터 62항목을 고쳤다.
+Monster3 #1/#4/#6·Actor4 #5의 자동 얼굴을 해제했고 18쌍을 근사로 낮췄다. Animal1 #1은 갈색 고양이다.
+원본 얼굴→표정/흉상/전신은 출처 sheet/cell로 연결하며 각 그림의 장식 차이를 별도로 설명한다.
+옛 generated-face-actor1-full은 실제 흉상 그림을 쓰는 배치 ID이며 공용 전신으로 설명하지 않는다.
+
+원본 연락 시트 136쪽·변경 전후·도구 결과·범위 한계: `verify-shots/full-character-reference-audit-20261005/SUMMARY.md`.
+재현 입구: `scripts/content/audit-character-reference-catalog.mts`, `render-character-reference-audit.py`,
+`verify-character-reference-routes.mts`. 비공개 그림과 원본 프로젝트 정보는 git에 넣지 않는다.
+브라우저 IndexedDB·외부 접근 불가 호스트·전투 전체 애니메이션은 이 판의 전수 검수 범위 밖이다.
 
 ### 얼굴 짝 전수 교정 (2026-09-28)
 
@@ -1778,6 +1835,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **조수 예산은 후하다 (2026-09-01):** 채팅 기본 `maxTokens=200000` · `maxToolCalls=2000`. 영역 AI 천장도 2000 (`REGION_SURFACE_MAX_TOOL_CALLS`). 저장된 옛 공장 기본(토큰 32768/툴콜 200)은 로드 시 새 기본으로 승격. WorkPlan Ralph 자동 이어가기 256단계. 시스템 프롬프트 문자 예산 100000. 타일셋 분석의 `max_tokens` 8192 핀은 그대로다(동반 서비스/Antigravity 는 제한 없음). Tests: `test/aiLlmClient.test.ts`, `test/assistantEndpoint.test.ts`, `test/regionTaskRun.test.ts`.
 - **볼륨 오케스트레이션은 코드가 강제한다 (2026-09-01):** 예산만 올려서는 모델이 한 줄 NPC 로 퇴장한다. `volumeContract.ts` 가 턴 시작 스냅샷 대비 델타 막대(RPG=맵3·상태별 NPC6·상점1·퀘스트1 / 마을=맵1·NPC3·상점1)를 재고, 플래너 `direct` 를 거부하며, 툴 없는 종료에 `HARNESS CONTINUE` 를 최대 8회 재주입한다. 사용자 「계속」은 안전 상한(Ralph 256 / 자율 런 48) 뒤에만 남는다. Tests: `test/volumeContract.test.ts`, `test/volumeContractSession.test.ts`.
 - **런이 끝나면 토큰·시간을 남긴다 (2026-09-01):** `runRecap.ts` 가 호출 지점 토큰 델타와 경과, 플래너/Ralph/볼륨/툴 과정을 감사 `run-recap` JSON 과 활동 로그에 기록한다. 채팅에는 토큰 한 줄만 보인다. Tests: `test/runRecap.test.ts`.
+- **AI 가 깐 NPC 는 기본으로 배회한다 — 정지는 이제 명시여야 한다 (2026-10-05):** 사용자 신고 "다 멈춤이 기본값이네" — `place_npc` 로 흔한 이름("농부"·"촌장 보좌"·"나그네")으로 NPC 를 깔면 `resolveNpcMovement` 가 아키타입 미매치를 `ambiguous → PASSIVE(fixed)` 로 되돌려 **경고도 없이** 전부 제자리에 얼어붙었다(실측: `place_npc` 9개 중 7개가 `fixed`). 이제 미매치는 `default → WANDER(random, speed 2, frequency 3)` 이고 추론 근거를 경고로 남긴다(`이동 추론 → random(배회)`). 확실히 고정인 역할(상점·주인·점주·여관·문지기·경비·간판·안내판·접수·동상·표지판)만 anchored 로 남고, 추격·매복은 그대로 approach 다. `eventCompile.compileSimplePage` 의 movement 미지정 폴백도 `PASSIVE_MOVEMENT`(fixed) → `DEFAULT_NPC_MOVEMENT`(random) 로 바뀌었다 — 제자리 페이지가 필요하면 호출자가 `movement: PASSIVE_MOVEMENT` 를 명시한다. **좌표 자동 착지·점유 판정(`priority==="same" && overlapForbidden`)은 손대지 않았다** — 그건 RM2K3 정상 동작이고(자기 몸은 `findBlockingEventOverlappingRect` 의 `excludeEventId` 로 제외, 형제 차단은 의도), 통로를 끊는 영구 차단은 `eventPassageBlock.ts` 가 옆 칸으로 옮긴다. 런타임은 `fixed` 면 무버를 아예 만들지 않으므로(`playScenePageMoveRoutes.ts` `case "fixed": return null`) 정지는 런타임 결함이 아니라 **저작 기본값** 결함이었다. Tests: `test/npcMovementInference.test.ts`, `test/npcMovementSelection.test.ts`.
 - **복잡한 NPC 는 조회 후 상태별 다중 페이지 (2026-09-01):** 한 줄 인사 `place_npc` 만 부르는 단편 저작을 막는다. 프롬프트 블록 `EVENT_PAGE_SEMANTICS_BLOCK` + 수칙 8이 조회 순서(`find_events`/`get_event`/`get_story_state`/`get_database_records`)와 상태별 페이지 패턴을 고정하고, `place_npc.characterId`·페이지별 `name`/`graphic`, `make_villager` 의 `pages`/`dialogue.when`(switch·selfSwitch·friendship) 이 그 패턴을 실제로 받는다. `find_events` 매치는 pageCount/conditionKinds 를 포함한다. 상세는 `openwiki/editor-event-authoring.md`. Tests: `test/aiEventPageSemantics.test.ts`, `test/toolsMapManagement.test.ts`.
 
 - **들어가서 걷는 집은 `author_house(interior:"linked-interior")` 한 번이 정답 (2026-09-04):** 외장만 짓고 `create_transfer_pair`/`start_interior_room_session` 으로 잇는 3단계는 가짜 출입구(같은 맵 teleport)와 점유된 문 칸에서 깨진다. `linked-interior` 는 실내맵+문/출구 양방향 전이를 원자적으로 만든다(`houseKitDomain` → `createHouseInteriorMap`). `interior` 생략도 이 모드가 기본. `space:"both"`·야외 집·영역 위 집은 이 경로, 외장 없는 독립 실내만 세션, 개념 시설은 `place_concept`. Tests: `test/intentDeclaration.test.ts`, `test/proposalCompleteness.test.ts`, `test/interiorRoomPipeline.test.ts`, `test/constructionContracts.test.ts`.
@@ -1824,6 +1882,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **Tool JSON schemas must be strict-provider compatible (2026-08-14 실측):** array-typed tool params MUST carry `items`, and union-typed items must not use bare `oneOf` without a `type` — Gemini-backed gateways reject the whole request with 400 `upstream_request_rejected ... properties[yard].items: missing field`, killing every chat turn while OpenAI-style backends accept the same payload. Two such bugs shipped (`build_house_lots` yard items as `oneOf`, `author_house` yard array with no `items`); both fixed in `src/editor/tools/houseLotTools.ts` / `src/editor/tools/authorHouseToolDef.ts`. When adding tool params, run a catalog audit: every `{type:"array"}` node must have `items`, and validate the full exposed tool list through the real gateway (one gateway capped `tools` at 128; session exposure cap 40 stays within it).
 
 - **객체 타입 파라미터는 `properties` 를 반드시 선언한다 (2026-08-23 실측):** `{ type: "object" }` 만 적고 실제 필드를 `description` 문자열에만 써 두면 400 은 안 나지만 strict function-calling 경로에서 모델이 그 객체의 필드를 **표현할 방법이 없어 `{}` 만 보낸다.** 실측 턴: `set_work_plan` 이 `layers:[{}]` 8회, `set_build_spec` 이 `assets:[{}]` 10회 연속 → 계획 폐기 → 스펙 게이트가 `fill_region`/`place_npc` 까지 차단 → 31콜 중 21콜 실패. 배열 길이만 1,2,3,6,5 로 바뀌고 내용은 늘 비어 있었다는 게 모델이 아니라 스키마가 벽이라는 증거다. 카탈로그 전역 109개 노드를 고쳤고(재사용 조각은 `src/editor/tools/schemaShapes.ts`: `COORD_SCHEMA`/`RECT_SCHEMA`/`COMMAND_SCHEMA`/`SIMPLE_PAGE_SCHEMA`/`CUTSCENE_BEAT_SCHEMA`/`CONDITION_SCHEMA`/`LIGHT_SOURCE_SCHEMA`/`VILLAGE_*_PLAN_SCHEMA`), 감사는 `test/toolSchemaProviderCompat.test.ts` 가 고정한다. 유니온 shape 은 `oneOf` 금지 → **키 합집합을 전부 선택 필드로**. 진짜 동적 키 맵(`elementRates`, `priceBySeason`, `inventory` 등)만 `additionalProperties: true` 로 명시 면제. 커맨드 `kind` 는 자유 문자열로 두지 말고 `COMMAND_KINDS`/`CONDITION_KINDS` enum 을 노출한다(자유 문자열이면 모델이 없는 kind 를 만들어 보낸다).
+- **enum 에 빈 문자열을 넣지 않는다 (2026-10-05 실측):** `set_project_settings.fonts` 가 "기본값으로 되돌리기" 를 `enum:["", ...]` 로 열거했더니 CCA(Gemini) 가 `function_declarations[N].parameters...enum[0]: cannot be empty` 로 **요청 전체를 400** 으로 거부했다. 이 도구는 `system` 도메인이라 시공 담당 목록에만 실려, 팀장·검수는 멀쩡하고 시공만 매번 「3턴/0툴콜」로 죽어 "조수가 맵을 안 만든다" 로 보였다(글꼴 도구 자체 수정은 위 `set_project_settings.fonts` 문단). 빈 문자열·빈 `enum:[]`·중복 멤버는 카탈로그 전체에서 금지 — 계약은 `test/toolSchemaProviderCompat.test.ts` 의 `walkEnums`(additionalProperties 안까지). 전송 직전 방어 `stripEmptyEnumMembers`(`scripts/lib/ohMyPiToolEnums.ts`, antigravity onPayload)가 새어 나간 빈 멤버를 빼서 조수 전체가 멈추지는 않게 하지만, 이것은 계약이 아니라 안전망이다. 원 요청은 `~/.omp/logs/http-400-requests/` 에 남는다.
 - **NPC command contract / repair (2026-09-06):** `COMMAND_SCHEMA.kind` exposes only `COMMAND_KINDS`; `CONDITION_SCHEMA.kind` exposes only `CONDITION_KINDS`. `item` and `selfSwitch` are page conditions, not executable commands. Item grants use `{kind:"changeItem",itemId,op:"+=",amount}`; switch writes use `setSelfSwitch` or `setSwitch`. Command `op` is declared explicitly. Command/condition `value` fields are declared without a single-type restriction so boolean, numeric, and supported variable operands are not falsely advertised as strings. This uses no `oneOf`, `anyOf`, or array-valued provider `type`; `jsonSchema.matchesType` treats an omitted type as unconstrained, while the existing command/condition shape validators remain responsible for variant validity. Existing internal type-array consumers remain supported. Rejected `item`/`changeItems`/`gainItem` commands return an `invalid-args` issue containing a standalone `repair: <JSON>` line with `{path,example}`. The example uses canonical `changeItem`, preserves a supplied string item ID and finite numeric amount (otherwise lookup placeholder / amount 1), and is guidance only: none of these names becomes an alias. Read the full issue message, not the 200-character summary. Replace only the command at `path` and use an ID obtained from `get_database_records`; do not remove the grant to make the call succeed. `test/npcCommandContract.test.ts` parses the repair JSON, checks schema/compiler/shape acceptance, and retries through the real `place_npc` runner. Evidence: `.omo/evidence/assistant-tool-reliability/schema`. Live Gemini acceptance is not established by the local provider-compatibility audit.
   - Audit NPC repairs (entries 170/174/196): the real runner keeps missing `pages` invalid. Only an otherwise recognized `place_npc` call with a sole nonempty `dialogue.text` receives `{path:"pages",example:[{lines:[originalText]}]}`; the hint distinguishes dialogue NPCs from object gimmicks. The optional `ToolDefinition.invalidArgsRepair` callback supplies input-specific schema-error guidance without running or mutating the project. Missing-kind `{commandId,fields:{lines}}` for Show Text (`m2-001-show-text`, or the audited invalid `m2-101-show-text`) remains rejected and suggests native `{kind:"text",body:lines.join("\n")}`. This is not an M2 ID alias, and no other ID or extra/conflicting field is guessed away. Sole `{selfSwitch:"A"}` condition shorthand receives canonical `{kind:"selfSwitch",key:"A",value:true}`; explicit boolean false/true is retained (the same omitted-value default as `make_villager.dialogue.when`). Singleton corrections target the actual `pages[i].conditions` field with an array; array corrections target only `pages[i].conditions[j]`, preserving siblings. Extra or malformed conditions get no lossy repair, including `kind:"none"` with additional fields (only bare `{kind:"none"}` still normalizes away). Apply the parsed `example` at `path`, retain other pages and dialogue, and retry through the runner. No story text is invented and canonical pages/condition arrays are unchanged. Focused contract: `test/npcAuditRepair.test.ts`; RED/GREEN and correction evidence: `.omo/evidence/assistant-audit-pr/npc/`.
 - **`kind` 로 허용 키가 갈리는 툴은 스키마가 아니라 파서에서 정규화한다.** `oneOf` 를 못 쓰므로 모델은 두 모드 키를 섞어 보낸다 — 실측: `author_house` 에 `kind:"lots"` + 최상위 `kitId/wings` 를 한 턴에 33회 연속 전송. 에러 문구에 허용 키 전체를 실어도(`rejectUnknownKeys` 개선) 같은 턴에서 교정되지 않았다. `parseAuthorHouseRequest` 의 `normalizeRequestShape` 가 shape 로 모드를 추론하고 단일 모드 키를 `houses[0]` 로 접는다 — 같은 파일의 wings 클램프·`windows:true` 보정과 동일 방침. 실측 결과 33회 실패 → 성공 1회.
@@ -2654,6 +2713,10 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 
 ## 세계 지도 지형 도구 (2026-10-03)
 
+2026-10-05: `list_worldmap_structures`·`read_worldmap_structure_reference`·`author_worldmap_structure`·
+`inspect_worldmap_structure`로 지역/대륙/필드/스테이지/방/런의 실제 맵과 이동을 만든다.
+`structure:"all"`은 57맵. UI·공용 PNG/문서·정본 계약은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
 `read_world_terrain`(읽기)·`edit_world_terrain`(쓰기, 도메인 world). 세계 지도는 타일을 찍지 않고 지형 작업(ops)을 월드맵 키트가 다시 그린다.
 prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기다리고 run 은 결과를 맵·타일셋·로케이션으로 쓴다. 도구 결과에 지도 그림(미리보기는 도식)을 붙인다.
 흐름·계약·함정: `openwiki/worldmap-terrain-editing.md`.
@@ -2687,3 +2750,22 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 `generate_original_bgm` write 도구는 조수가 쓴 음표 악보를 실제 WAV로 합성·등록한다.
 원곡 리소스는 기존 BGM 피커/조회·정본 저장·출하 플레이어로 이어진다. 실제 합성·등록 성공을 청취로
 보고하지 않는다. 세부 계약은 [title-opening-effects.md](title-opening-effects.md)의 마지막 절.
+
+## OST·효과음 직접 작곡 (2026-10-05)
+
+`get_soundtrack`으로 유효 맵 음악/사용처를 읽고 `generate_original_bgm(score.loop:true)`을 맵 `set_map_properties.bgm` custom에 연결한다. 타이틀·오프닝·전투도 공통 도구를 쓴다. `generate_original_se`은 실제 음향 패치를 WAV로 등록해 타이틀 sounds나 image direction.soundResourceId/컷신 se에 연결한다. 범위·저장·오디오 모델과의 구분은 [BGM 카탈로그](bgm-catalog.md)의 2026-10-05 절. map 예약은 기존 실행기 계약을 따른다.
+
+## 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+
+`toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
+
+choices의 `choice1`~`choice5`는 Esc가 해당 선택지를 실행하는 설정이다. 취소하면 아무 일 없이 종료하는 요청은 `cancelBehavior:"branch",cancelBranch:[]`다. 도구 스키마와 Pi 저작 지침에 이 의미를 함께 제공한다. `run_scene_test`도 실제 대화창과 같은 `choiceCancellation.cancelChoiceIndex`를 사용한다. 취소 불가·설정 생략·없는 선택지로 취소는 검사 실패로 알리며 강제로 종료하지 않는다.
+
+## 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
+
+`publish_shared.mjs`가 실제 채택된 기본/크기 변경/함께 쓰기 변형 킷에만 `사용자 선택` 태그를 붙인다.
+`list_spatial_designs`의 이름/id 일치 우선순위는 유지하고 동일 점수 안에서 이 태그를 우선한다.
+Pi 시스템 지침과 `HAND_INTERIOR_POLICY_LINE`은 시대·장소·용도에 맞는 선택 기물을 먼저 검색하도록 한다.
+실내 골조를 만든 뒤 `stamp_object`로 공용 킷을 놓는다. 고정 실내 도구에 동적 공용 id를 전달하지 않는다.
+동일 호스트의 새/기존 프로젝트 설치·새로고침 경계와 제작 목록은
+[마을 기물 300종](harnesses/town-props-300.md)을 따른다.

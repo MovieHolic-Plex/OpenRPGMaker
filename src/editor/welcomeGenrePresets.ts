@@ -171,6 +171,7 @@ export const MOON_CUTSCENE_STAGING_LINE =
  */
 export const MONSTER_COLLECT_AUTHORING_GUIDE = [
   "몬스터 수집 저작 요령:",
+  '- 세계 지도는 포켓몬풍 마을·도로 방식이다. 지역 전도가 필요하면 read_worldmap_structure_reference({structure:"region-routes"})와 author_worldmap_structure({id,structure:"region-routes"})로 만든다. 일반 기본 대륙 월드맵이나 theme:"monster"로 대신하지 않는다. 생성된 마을·도로를 재사용해 아래 시설·풀숲·조우를 보충한다.',
   "- 전투는 잡은 몬스터가 싸운다 — configure_monster_system 을 부를 때는 battleParty:true 를 함께 준다.",
   "- 첫 파트너는 give_starter_monsters(3종 선택 + 재지급 방지)로 만든다.",
   "- 도로·필드 맵은 create_map 뒤 author_wild_route({mapId, exits, grassPatches, encounters:[{troopId,weight}]}) 로 흙길·숲·키큰 풀숲과 「풀숲에서만」 나오는 야생 조우를 한 번에 시공한다. 결과 exits 칸에 create_transfer_pair 로 문을 달고, trainerSpots 에 트레이너를 둔다.",

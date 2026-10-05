@@ -124,8 +124,9 @@ export const COMMAND_SCHEMA: JsonSchema = {
         required: ["branch"],
       },
     },
-    cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"] },
-    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "choices: 취소 분기. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때." },
+    cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"],
+      description: 'choices의 Esc 동작. 취소하면 아무 일 없이 종료: cancelBehavior:"branch",cancelBranch:[]. choice1~choice5는 취소 시 해당 선택지를 실행하므로 종료가 아니다. disallow는 취소 불가. branch일 때만 cancelBranch를 실행한다.' },
+    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: 'choices: cancelBehavior:"branch"일 때만 실행하는 취소 명령. 빈 배열이면 종료. choice1~choice5/disallow에서는 무시된다. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때.' },
     itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체, 소지한 것만 뜬다." },
     otherwiseBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
     consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
@@ -147,11 +148,12 @@ export const COMMAND_SCHEMA: JsonSchema = {
   },
 };
 
-/** `GraphicSpec` (eventCompile.ts): `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
+/** `GraphicSpec` (eventCompile.ts): `{selectionId,query?}` | `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
 export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
   type: "object",
-  description: "{query} | {textureKey,characterIndex} | {transparent:true}",
+  description: "검색의 실제 칩 이미지를 확인한 뒤 {selectionId,query?}로 같은 후보를 선택한다. {query} | {textureKey,characterIndex} | {transparent:true}도 지원한다.",
   properties: {
+    selectionId: { type: 'string', description: 'list_npc_graphics/list_resources의 charset:<시트>:<칸>을 그대로 복사. 프레임 계산은 도구가 한다. query를 함께 주면 원하는 외형과 일치하는지도 검사한다.' },
     query: { type: "string", description: "별칭 또는 자유 질의(예: '할머니', 'old woman')" },
     textureKey: { type: "string", description: "charset textureKey 직접 지정" },
     characterIndex: { type: "integer", description: "charset 내 캐릭터 인덱스(기본 0)" },

@@ -18,6 +18,8 @@ import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCom
 /** Read/control tools that must remain reachable before any search round. */
 export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
   "find_tools",
+  "list_authoring_presets",
+  "read_authoring_preset",
   "read_project_wiki",
   "get_project_summary",
   "get_map_region",
@@ -97,6 +99,9 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
   appendUnique(tools, seen, core);
   appendUnique(tools, seen, toolSchemasForNames(DISCOVERY_CONTROL_TOOL_NAMES) as OpenAiTool[]);
   appendUnique(tools, seen, schemasForIntent(input.intent));
+  if (/(월드맵|세계\s*지도|지역\s*지도|포켓몬.*(?:도로|지도)|마리오.*(?:맵|지도)|할로우.*지도|스파이어.*지도|world\s*map|overworld)/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain']) as OpenAiTool[]);
+  }
   if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);
   }

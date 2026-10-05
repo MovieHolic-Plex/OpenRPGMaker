@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "suite": "core",
+  "fixtureVersion": 1,
+  "description": "같은 초기 상태의 별도 정본에서 기능을 하나씩 시험한다. 현재 묶음은 골렘·왕 외형 선택을 포함한 12개이며 타일 저작·전투·중단 복구 등은 아직 측정 범위 밖이다.",
+  "mapId": "map_ember_village",
+  "eventId": "ev_ember_child",
+  "timeoutMs": 240000,
+  "cases": [
+    {"id":"npc-golem","title":"골렘 칩 선택","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child) 첫 페이지의 맵 위 캐릭터 그림만 스톤 골렘으로 바꿔줘. 실제 칩 그림을 확인해서 바위 몸과 빨간 눈인 골렘을 골라. 왕이나 사람 그림으로 대신하면 안 돼. 같은 이벤트 ID와 위치·대사·명령·조건·다른 페이지·다른 이벤트·타일·DB는 그대로 둬.","mode":"balanced","check":"graphic","textureKey":"tex_easyrpg_charset_monster2","frame":73,"runtime":"graphic","visual":"editor-and-runtime"},
+    {"id":"npc-king","title":"왕 칩 선택","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child) 첫 페이지의 맵 위 캐릭터 그림만 왕으로 바꿔줘. 실제 칩 그림을 확인해서 금관과 회색 수염·빨간 망토인 왕을 골라. 골렘이나 여왕으로 대신하면 안 돼. 같은 이벤트 ID와 위치·대사·명령·조건·다른 페이지·다른 이벤트·타일·DB는 그대로 둬.","mode":"balanced","check":"graphic","textureKey":"tex_easyrpg_charset_people3","frame":25,"runtime":"graphic","visual":"editor-and-runtime"},
+    {"id":"inspect-readonly","title":"조회만 하기","prompt":"현재 열린 잿불 마을을 읽기만 해. 꼬마 미루와 여관 주인 마사의 위치, 미루의 첫 대사, 숙박 요금을 알려줘. 맵·이벤트·설정은 수정하지 마.","mode":"balanced","check":"inspect","runtime":"none","visual":"editor"},
+    {"id":"plan-readonly","title":"계획만 세우기","prompt":"꼬마 미루의 대사를 바꾸고 일회성 보상을 붙이는 계획을 세워줘. 지금은 계획만 세우고 프로젝트를 수정하지 마.","mode":"confirm","check":"plan","runtime":"none","visual":"editor"},
+    {"id":"npc-line","title":"첫 대사만 수정","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child)의 첫 페이지 첫 대사만 정확히 '동문에서 만나자.'로 바꿔줘. 같은 페이지 두 번째 대사와 다른 페이지, 조건, 그림, 위치는 그대로 둬. NPC나 맵을 새로 만들지 마.","mode":"balanced","check":"line","runtime":"line","visual":"editor-and-runtime"},
+    {"id":"npc-move","title":"기존 NPC 이동","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child)를 타일 좌표 x=9, y=7로 옮겨줘. 이 NPC의 위치만 바꾸고 대사·페이지·조건·그림과 다른 NPC는 그대로 둬. 새 NPC를 만들지 마.","mode":"balanced","check":"move","runtime":"move","visual":"editor-and-runtime"},
+    {"id":"npc-delete","title":"대상 NPC만 삭제","prompt":"현재 잿불 마을에서 꼬마 미루(ev_ember_child)만 삭제해줘. 다른 이벤트와 맵, 타일, 데이터베이스는 그대로 둬.","mode":"balanced","check":"delete","runtime":"delete","visual":"editor-and-runtime"},
+    {"id":"item-price","title":"아이템 가격만 수정","prompt":"데이터베이스의 회복약(item_potion) 가격만 정확히 30으로 바꿔줘. ID·이름·효과·설명과 다른 아이템, 맵, 이벤트는 그대로 둬. 새 아이템은 만들지 마.","mode":"balanced","check":"item","runtime":"none","visual":"database"},
+    {"id":"map-rename","title":"맵 이름만 수정","prompt":"현재 잿불 마을(map_ember_village)의 맵 이름만 '새벽 마을'로 바꿔줘. 맵 ID·크기·타일·이벤트와 다른 맵은 그대로 둬. 맵을 새로 만들지 마.","mode":"balanced","check":"rename","runtime":"none","visual":"editor"},
+    {"id":"inn-price","title":"숙박 요금과 안내 일치","prompt":"현재 잿불 마을의 여관 주인 마사(ev_ember_inn) 숙박 요금을 25G로 바꾸고 안내 대사의 15G도 25G로 고쳐줘. 같은 NPC의 위치·그림·조건과 다른 이벤트는 그대로 둬.","mode":"balanced","check":"inn","runtime":"inn","visual":"editor-and-runtime"},
+    {"id":"dialogue-choice","title":"선택지 양쪽과 취소","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child) 첫 페이지 대사를 교체해. '어디로 갈까?'라는 질문에 '동문'과 '여관' 두 선택지를 주고, 동문을 고르면 '동문에서 만나자.', 여관을 고르면 '여관에서 쉬자.'라고 말하고 대화가 종료돼야 해. 취소하면 아무 보상이나 변경 없이 종료돼야 해. 재대화하면 다시 선택할 수 있게 해. NPC 위치·그림과 다른 페이지·이벤트는 그대로 둬.","mode":"balanced","check":"choice","runtime":"choice","visual":"editor-and-runtime"},
+    {"id":"reward-once","title":"보상 한 번과 재대화","prompt":"현재 잿불 마을의 꼬마 미루(ev_ember_child)를 고쳐줘. 처음 대화하면 '처음 선물이야.'라고 말하고 25G를 딱 한 번 줘. 이후 대화하면 '이미 선물을 줬어.'라고만 말하고 돈을 더 주지 마. 맵을 나갔다 돌아와도 보상이 중복되면 안 돼. 이 NPC의 위치·그림과 기존 완료 조건 페이지, 다른 이벤트는 보존해.","mode":"balanced","check":"reward","runtime":"reward","visual":"editor-and-runtime"}
+  ],
+  "coverageGaps": ["타일·선택 영역 저작", "실내 생성", "맵 간 이동 저작", "전투", "장기 연속 지시", "중단·저장 충돌 복구", "모호한 지시", "표현·모델별 반복 성공률"]
+}

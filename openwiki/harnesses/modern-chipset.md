@@ -86,3 +86,42 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 이 표본은 조립/보행 PASS지만 **완성 시설 판정은 INCOMPLETE**다. 기둥·천장등·외곽 벽/출입 시설이 부족하여
 큰 회색 바닥과 반복 차량이 드러난다. 같은 칩의 확장 결과와 부족 소재를 보여주는 실험으로 공용 참고문서에 함께 싣고,
 두 면 표본의 합격을 12면 시설 전체의 합격으로 재사용하지 않는다. 전후 원본/플레이 화면과 독립 판정은 함께 보존한다.
+
+### 미완성 판정의 후속 처리
+
+`npm run harness -- modern-chipset parking-followup harness-data/modern-chipset/parking-wide/followup.json`
+은 위 확장 검수의 실제 scene/plan 해시와 네 지적의 수정 주문을 확인하고 super-harness art 큐에 넣는다.
+전역 pause와 해당 개념의 실행 작업 없음이 전제다. 같은 입력은 한 번만 회차를 소비한다.
+기존 작은 표본의 승인·선택·설치·피드백은 scene-followup-history에 보존하고,
+`parking-facility-v1`의 구조·조명·출입 연결·차량 다양성·공간 구성 조건으로 별도 범위를 연다.
+원래 assembly PASS/facility INCOMPLETE 기록을 FAIL로 위조하지 않는다.
+현재 누적 회차에서 한 번 증가하며 10회를 초기화하지 않는다. 상한이면 blocked이고 제작을 시작하지 않는다.
+수정 결과는 기존 도면→native 제작→독립 전체 조립 검수 경로로 돌아온다. 필수 결함을 모두 해결하기 전
+선택/시설 완료를 승인하지 않는다. 공용 게시/정본 저장은 그 뒤의 별도 작업이다.
+
+### 공급자 오류 재개 (2026-10-05)
+
+Super-harness의 기술 재시도는 queued 후보만 `_run`하며 이미 끝난 후보/품질 판정은 보존한다.
+`resumePhase`가 review이면 원래 attempt에서 기계 검사와 독립 검수만 다시 수행한다.
+429 등 실제 공급자 오류는 native 품질 수정 회차를 소비하지 않고 감독의 지속 예약으로 넘긴다.
+오래된 verdict.json은 새 검수 전에 제거하고, 문맥 예산은 파일 절 단위 읽기로 제한한다.
+
+Codex뿐 아니라 Claude도 `VEH_HARNESS_WORK`의 외부 작업 폴더에서 실행한다.
+Claude는 같은 native interior-props 실행기의 최소 도구/MCP 설정을 사용하고 저장소는
+`--add-dir`로 제공한다. 모델/노력 수준/그림 계약은 바꾸지 않고 불필요한 저장소 문맥만 제거한다.
+
+### 전체 시설 Allow 이후 공용 등록 (2026-10-05)
+
+`publish-parking --facility`는 `space-demo/demo-1`의 현재 선택 해시, native 시설 PASS,
+전체 공간 COMPLETE, 고정 수용 조건과 실제 그림 해시를 재검증한다.
+`parking_facility_bundle.py`가 선택 원본을 `tiledata/modern-city/parking-facility/`에 보존하고
+환경 아래층/차량·차단봉 위층의 `mc-parking-facility` 28×18 키트를 굽는다.
+두 층 재조립은 승인 이미지와 화소가 같아야 한다. 공용 참고문서는 전체 배열,
+원본 픽셀 좌표, 정상/위층 누락 비교 그림을 함께 제공한다.
+
+정본 저장은 `save-parking-project --project-dir <새 폴더> --evidence <증거 폴더>
+--recipe tiledata/modern-city/parking-facility/recipe.json`으로 한다.
+기존 칩셋 사본 `previous-tileset.json`으로 기존 프로젝트 갱신도 확인하며 저자 문서는 보존한다.
+2026-10-05 실측: 577키트 재조립 불일치 0, 시설 12면/차량6대, 보행 연결313칸.
+정본 `parking-facility-20261005`는 저장 후 닫고 다시 읽었다. 플레이어 최종 검수는 별도이며
+기존 두 면/확장판의 런타임 PASS를 새 시설에 재사용하지 않는다.

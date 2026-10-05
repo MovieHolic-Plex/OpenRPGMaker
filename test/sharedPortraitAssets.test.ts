@@ -54,7 +54,8 @@ describe("공용 표정 세트 흉상·전신", () => {
     expect(dialogueFaceForEmotion("shared-monster-slime-expressions-bust-wink", undefined, undefined)).toBe("shared-monster-slime-expressions-bust-wink");
     expect(sharedExpressionSetIdOf("shared-people1-girl-expressions-07")).toBe("shared-people1-girl-expressions");
     expect(sharedExpressionSetIdOf("shared-people1-girl-expressions-bust-angry")).toBe("shared-people1-girl-expressions");
-    expect(sharedExpressionSetIdOf("easyrpg-faceset-people1-01")).toBeUndefined();
+    expect(sharedExpressionSetIdOf("easyrpg-faceset-people1-01")).toBe("shared-people1-girl-expressions");
+    expect(sharedExpressionSetIdOf("easyrpg-faceset-actor5-01")).toBeUndefined();
   });
 
   it("외형의 전신 칸: 전신 → 흉상 → 얼굴 순으로 내려간다", () => {

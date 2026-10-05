@@ -7,7 +7,7 @@
   variant_meta(META) 「함께 쓰기」 변형(<원 id>#2 …)의 메타 항목을 META['objects'] 에 덧붙이고,
                      크기를 바꾼 기물의 이름·설명 속 옛 칸 수(「(2×2, …)」「1칸」)를 새 칸 수로 고친다.
   새 기물(new/items.json) 선택이 있으면 install() 이 kit4.OBJ 에 새로 등록하고(new_items.register), variant_meta 가 meta 항목을 덧붙인다.
-                     선택이 없으면 시트·메타는 한 바이트도 바뀌지 않는다. 새 기물은 크기 변경(resize.json)·변형을 받지 않는다. 모션 파생 자식은 고른 프레임 띠를 함께 등록한다.
+                     선택이 없으면 시트·메타는 한 바이트도 바뀌지 않는다. 새 기물은 resize.json 크기로 geometry 전체를 재구성한다. 함께 쓰기 변형은 받지 않는다. 모션 파생 자식은 고른 프레임 띠를 함께 등록한다.
   REPORT             넣은 것·건너뛴 것(이유) — build_tileset 이 pickedFrom 으로 남긴다. 새 기물이 들어가면 REPORT['newItems'] 가 생긴다.
 
 정본 v5(tiledata/hand-interior/v5)는 읽기만 한다. 끄려면 HAND_INTERIOR_PICKS=0.
@@ -16,7 +16,7 @@
 """
 import copy, hashlib, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CAND, PICK, PXGRID, geom, objects_by_id, objects_by_slug, slug  # noqa: E402
+from common import CAND, PICK, PXGRID, geom, objects_by_id, objects_by_slug, slug, new_item_object  # noqa: E402
 import outline_select  # noqa: E402
 import new_items  # noqa: E402
 from PIL import Image  # noqa: E402
@@ -79,9 +79,24 @@ def _plan():
             _SELECTED_SETS[i] = o['set']
             skip('파생 묶음 그림 — 칸을 잘라 자식 기물에 넣었다(derive.slice_pick), 묶음 자체는 안 굽는다'); continue
         im, G = _png(s, ch), geom(o)
-        if o.get('new'):   # 새 기물: 아틀라스 칸 자리가 없다 → 캔버스 크기 그대로만, 크기 변경·변형 없음(모션 파생은 별도 띠)
-            if G['resized']: skip('새 기물은 resize.json 을 받지 않는다 — new/items.json 의 canvas·footprint 를 고친다'); continue
-            if list(im.size) != G['canvas']: skip(f"그림 {im.size[0]}×{im.size[1]} 이 캔버스 {G['canvas'][0]}×{G['canvas'][1]} 와 다름"); continue
+        if o.get('new'):   # 새 기물: 아틀라스 자리 없음. 현재 geometry로 등록(모션 파생은 별도 띠)
+            canvas = list(G['canvas'])
+            # Historical selected rasters sometimes extend a few rows above the
+            # declared canvas. Preserve every pixel; add transparent rows only.
+            # A pending resize or an animation must still match its exact spec.
+            if (not G['resized'] and not o.get('animation') and o['kind'] in ('floor', 'wall')
+                    and im.width == canvas[0] and 0 < im.height - canvas[1] < 16):
+                height = ((im.height + 15) // 16) * 16
+                padded = Image.new('RGBA', (im.width, height))
+                padded.paste(im, (0, height - im.height))
+                REPORT.setdefault('padded', []).append({'id': i, 'choice': ch,
+                    'sourceCanvas': list(im.size), 'canvas': [im.width, height], 'top': height - im.height})
+                im, canvas = padded, [im.width, height]
+            if list(im.size) != canvas:
+                skip(f"그림 {im.size[0]}×{im.size[1]} 이 캔버스 {canvas[0]}×{canvas[1]} 와 다름"); continue
+            # Rebuild all geometry (rise, collision rows and placement rules),
+            # not just atlas dimensions: apply_resize leaves these fields old.
+            o = new_item_object(dict(o, canvas=canvas, footprint=G['footprint']))
             if o.get('derive') == 'loop':
                 try: _LOOPS[i] = _loop_frames(o, ch, im)
                 except (OSError, ValueError, KeyError, TypeError) as e:

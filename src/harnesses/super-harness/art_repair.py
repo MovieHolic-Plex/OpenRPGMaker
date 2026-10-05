@@ -34,6 +34,11 @@ def route(folder, repairs, source):
     brief = read(folder / 'parking-repair-brief.json', {})
     approved = read(folder / 'art-calibration.json', {})
     needs_calibration = bool({'style', 'projection'} & repeated) or bool(brief.get('requireCalibration') and not approved)
+    if read(folder / 'art-acceptance.json', {}).get('requiresFacilityVerdict'):
+        # The full facility contract cannot be satisfied by a miniature. Repair
+        # its projection in the complete scene; never lose outstanding orders
+        # by silently narrowing the accepted scope back to calibration.
+        needs_calibration = False
     return {'route': stage, 'phase': 'calibration' if needs_calibration else 'scene',
             'repeatedChecks': sorted(repeated),
             'reason': '반복 실패/명세 오류는 치수·형태·시점을 재설계한다. 이전 fix의 keep도 재검토 대상이다.' if stage == 'spec'
@@ -42,12 +47,12 @@ def route(folder, repairs, source):
 
 def obligations(feedback):
     result = []
-    for r in feedback.get('repairs', []) + feedback.get('deferredRepairs', []):
+    for r in feedback.get('repairs', []) + feedback.get('deferredRepairs', []) + feedback.get('completionRepairs', []):
         for key, problem in r.get('failedChecks', {}).items():
-            result.append({'id': f"{r['group']}/{r['candidate']}/check/{key}", 'group': r['group'], 'check': key, 'problem': problem})
+            result.append({'id': f"{r['group']}/{r['candidate']}/check/{key}", 'group': r['group'], 'check': key, 'problem': problem, 'required': r.get('required', False)})
         for index, fix in enumerate(r.get('fixes', [])):
             result.append({'id': f"{r['group']}/{r['candidate']}/fix/{index}", 'group': r['group'], 'check': 'fix',
-                           'problem': fix.get('problem', ''), 'target': fix.get('target', '')})
+                           'problem': fix.get('problem', ''), 'target': fix.get('target', ''), 'required': r.get('required', False)})
     # Different generations may report a different defect on the same axis.
     unique = {}
     for item in result:
@@ -66,6 +71,8 @@ def validate_comparison(verdict, request, group_id):
         status = item.get('status')
         if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred', 'advisory'):
             raise ValueError('실패 전후 비교 상태 오류')
+        if obligation.get('required') and status in ('advisory', 'deferred'):
+            raise ValueError('시설 완료 필수 결함을 권고/보류로 낮출 수 없습니다.')
         if status == 'advisory' and not request.get('acceptance'):
             raise ValueError('고정 합격 계약이 있어야 이전 의견을 권고로 분리할 수 있습니다.')
         if any(len(str(item.get(k, '')).strip()) < 20 for k in ('before', 'after', 'evidence')):
@@ -92,8 +99,16 @@ def require_preparation(root, folder, layout, feedback):
         raise ValueError('현재 수정 단계와 도면 단계가 다릅니다: ' + policy['phase'])
     if policy:
         plan = layout.get('repairPlan', {})
-        if plan.get('route') != policy['route'] or len(str(plan.get('changes', '')).strip()) < 30:
-            raise ValueError('실패 원인 단계의 구체적인 수정 계획이 필요합니다.')
+        fixes = plan.get('fixes')
+        detailed = isinstance(fixes, list) and bool(fixes) and all(
+            isinstance(f, dict) and all(isinstance(f.get(k), str) and f[k].strip()
+                for k in ('target', 'before', 'after'))
+            and isinstance(f.get('modifiedFiles'), list) and bool(f['modifiedFiles'])
+            and len(str(f.get('verificationResult', '')).strip()) >= 30 for f in fixes)
+        if plan.get('route') != policy['route']:
+            raise ValueError('repairPlan.route가 현재 피드백 policy.route와 달라집니다.')
+        if len(str(plan.get('changes', '')).strip()) < 30 and not detailed:
+            raise ValueError('repairPlan.changes(30자 이상) 또는 fixes의 target/before/after/modifiedFiles/verificationResult가 필요합니다.')
         if policy['route'] == 'spec' and len(str(plan.get('supersededConstraints', '')).strip()) < 30:
             raise ValueError('반복 실패를 만든 기존 고정 조건과 변경 근거를 명시해야 합니다.')
     approval = read(folder / 'art-calibration.json', {})

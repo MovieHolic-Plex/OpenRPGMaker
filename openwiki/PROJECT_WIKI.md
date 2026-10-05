@@ -29,6 +29,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - World generation rules (authored water/forest/road numbers + natural-language keyword rules): `openwiki/world-generation-rules.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`, `openwiki/ai-context-compaction.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - 세계 지도 이동 구조 6종(실제 필드·문·해금·M 지도·핀·공용 자료·정본): `openwiki/worldmap-navigation-structures.md`
    - Editor validation: `openwiki/editor-validation.md`
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`

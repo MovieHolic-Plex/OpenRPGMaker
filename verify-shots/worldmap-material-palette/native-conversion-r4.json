@@ -1,0 +1,129 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/harnesses/assistant-capability/worldmap-film-20261005-03/default/project",
+  "nativeConversionButton": true,
+  "modelCalled": false,
+  "errors": [
+    {
+      "message": "NetworkError when attempting to fetch resource.",
+      "stack": "TypeError: NetworkError when attempting to fetch resource.\n    at runHealthCheck (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32688)\n    at async*startHealthCheck/n< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32220)\n    at setInterval handler*startHealthCheck (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32210)\n    at scheduleAutoSaveRetry (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32067)\n    at saveCurrentWithAutoSaveState/s< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:35065)\n    at async*saveCurrentWithAutoSaveState (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:35165)\n    at scheduleAutoSave/r< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:31324)\n    at setTimeout handler*scheduleAutoSave (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:31239)\n    at replace (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:22455)\n    at ua (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:4:26762)\n    at En/h.onclick (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:26555)\n    at async*En (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:26237)\n    at Ib (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:24445)\n    at render (http://127.0.0.1:40221/assets/workspaceStore-DxzJoAYz.js:1:158)\n    at Ny (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:92:73581)\n    at By (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:12390)\n    at ou (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20783)\n    at s (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20251)\n    at FrameRequestCallback*Gi (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20512)\n    at $P/rd< (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:11514)\n    at v9 (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:33076)\n    at c (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35196)\n    at async*a (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35575)\n    at YEe (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35644)\n    at iSe (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:403:176767)\n    at Dl (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:35234)\n    at click (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:22185)\n    at EventListener.handleEvent*G (http://127.0.0.1:40221/assets/startIntent-By2y5M4e.js:1:2134)\n    at Al (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:21529)\n    at Al (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:24943)\n    at xa (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:17968)\n    at body (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:37265)\n    at bn (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:4:105158)"
+    },
+    {
+      "message": "NetworkError when attempting to fetch resource.",
+      "stack": "TypeError: NetworkError when attempting to fetch resource.\n    at runHealthCheck (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32688)\n    at async*startHealthCheck/n< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32220)\n    at setInterval handler*startHealthCheck (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32210)\n    at scheduleAutoSaveRetry (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:32067)\n    at saveCurrentWithAutoSaveState/s< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:35065)\n    at async*saveCurrentWithAutoSaveState (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:35165)\n    at scheduleAutoSave/r< (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:31324)\n    at setTimeout handler*scheduleAutoSave (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:31239)\n    at replace (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:148:22455)\n    at ua (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:4:26762)\n    at En/h.onclick (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:26555)\n    at async*En (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:26237)\n    at Ib (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:16:24445)\n    at render (http://127.0.0.1:40221/assets/workspaceStore-DxzJoAYz.js:1:158)\n    at Ny (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:92:73581)\n    at By (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:12390)\n    at ou (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20783)\n    at s (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20251)\n    at FrameRequestCallback*Gi (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:20512)\n    at $P/rd< (http://127.0.0.1:40221/assets/editor-BVu1tzig.js:96:11514)\n    at v9 (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:33076)\n    at c (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35196)\n    at async*a (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35575)\n    at YEe (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:391:35644)\n    at iSe (http://127.0.0.1:40221/assets/main-D7m1wSfn.js:403:176767)\n    at Dl (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:35234)\n    at click (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:22185)\n    at EventListener.handleEvent*G (http://127.0.0.1:40221/assets/startIntent-By2y5M4e.js:1:2134)\n    at Al (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:21529)\n    at Al (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:24943)\n    at xa (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:17968)\n    at body (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:15:37265)\n    at bn (http://127.0.0.1:40221/assets/tilePalette-DBqIMYDz.js:4:105158)"
+    }
+  ],
+  "phase": "save",
+  "stages": [
+    {
+      "phase": "editor-boot",
+      "at": "2026-10-05T04:28:24.445Z"
+    },
+    {
+      "phase": "before-conversion",
+      "at": "2026-10-05T04:29:49.123Z"
+    },
+    {
+      "phase": "native-conversion",
+      "at": "2026-10-05T04:29:53.108Z"
+    },
+    {
+      "phase": "converted-lower",
+      "at": "2026-10-05T04:30:45.788Z"
+    },
+    {
+      "phase": "save",
+      "at": "2026-10-05T04:31:11.168Z"
+    }
+  ],
+  "networkFailures": [
+    {
+      "url": "http://127.0.0.1:40221/assets/generated/faceset/missing-people/15.png",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/assets/easyrpg/faceset/Monster/12.png",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/assets/generated/faceset/missing-people/12.png",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/shared-content?scope=rest",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/assets/generated/faceset/missing-people/14.png",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/assets/easyrpg/faceset/Monster/14.png",
+      "method": "GET",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    },
+    {
+      "url": "http://127.0.0.1:40221/__oprn/bridge",
+      "method": "POST",
+      "error": "NS_ERROR_ABORT"
+    }
+  ],
+  "before": {
+    "projectId": "65d2e492-1fbf-43ef-8895-9c82427ed6ea",
+    "revision": 8,
+    "sha256": "825f5d589752d7f0dfe63f1d5380c2a84da4223f5302b72d660e4235d3f0c089"
+  },
+  "endpoint": "http://127.0.0.1:40221/v1/worldmap/build",
+  "build": {
+    "ok": true,
+    "seconds": 7.5,
+    "materials": 4636
+  },
+  "lowerPaletteCount": 34,
+  "wholeIcons": 36,
+  "failure": "page.waitForFunction: Timeout 120000ms exceeded."
+}

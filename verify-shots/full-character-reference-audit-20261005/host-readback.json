@@ -1,0 +1,11 @@
+{
+  "endpoint": "http://127.0.0.1:9900/__oprn/shared-character-graphics",
+  "beforeRevision": "aa67627a7d7a4f5529bc232c61a19c9540a9940ba758ac08836a2babfca93fc7",
+  "afterRevision": "c44fa8fb9f017b01565efa1622e22984b41a963c7d78a709a681483a917f994f",
+  "changedRows": {
+    "mappings": 105,
+    "faces": 3
+  },
+  "readbackEqualsSubmitted": true,
+  "timestamp": "2026-10-05T08:17:37.018189+00:00"
+}

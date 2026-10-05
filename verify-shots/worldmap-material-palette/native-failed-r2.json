@@ -1,0 +1,29 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/harnesses/assistant-capability/worldmap-film-20261005-03/default/project",
+  "nativeConversionButton": true,
+  "modelCalled": false,
+  "errors": [
+    "undefined has no properties"
+  ],
+  "phase": "native-conversion",
+  "stages": [
+    {
+      "phase": "editor-boot",
+      "at": "2026-10-05T04:13:18.819Z"
+    },
+    {
+      "phase": "before-conversion",
+      "at": "2026-10-05T04:16:22.126Z"
+    },
+    {
+      "phase": "native-conversion",
+      "at": "2026-10-05T04:16:31.447Z"
+    }
+  ],
+  "before": {
+    "projectId": "65d2e492-1fbf-43ef-8895-9c82427ed6ea",
+    "revision": 8,
+    "sha256": "825f5d589752d7f0dfe63f1d5380c2a84da4223f5302b72d660e4235d3f0c089"
+  },
+  "failure": "locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for getByTestId('tile-palette') to be visible\u001b[22m\n"
+}

@@ -21,6 +21,7 @@ from pathlib import Path
 import harness as H
 import chr as C
 import motion as M
+import animal_motion as A
 
 LOCK = threading.Lock()
 
@@ -40,7 +41,8 @@ def needs_draw(w):
     meta = json.loads((w / 'meta.json').read_text()) if (w / 'meta.json').exists() else {}
     gate = H.current_gate(w)
     return (meta.get('animationMode') == H.FRAME_AUTHOR_MODE
-            and (not H.model_frames_fresh(w, gate) or (meta.get('motionPolicy') is not None and not M.fresh(w, gate))))
+            and (not H.model_frames_fresh(w, gate) or not A.fresh(w, gate)
+                 or (meta.get('motionPolicy') is not None and not M.fresh(w, gate))))
 
 
 def motion_instructions(policy):
@@ -306,6 +308,7 @@ def produce_recipe_batch(run, rows, index):
                                   strength='free', reviewMode='human', batch=index, src=None,
                                   animationMode=H.FRAME_AUTHOR_MODE, visualInputs=[], authoringMode=row['authoringMode'],
                                   recipe=manifest['recipe'], seed=row['seed'], motionPolicy=manifest.get('motionPolicy'),
+                                  animalPolicy=manifest.get('animalPolicy'), animalProfile=row.get('animalProfile'),
                                   attempt=attempt, attemptPath=str(archive)))
         log(f'{row["key"]}: GPT high 직접 저작, 기술 수정 {attempt}, pid={process.pid}')
         process.wait()

@@ -17,6 +17,7 @@ export const MODERN_CHIPSET_HARNESS = defineHarness({
   seed: "harness-data/modern-chipset/seed.json",
   doc: "openwiki/harnesses/modern-chipset.md",
   stages: [
+    { id: "parking-followup", title: "시설 미완성 후속 처리", summary: "해시에 묶인 확장판 검수를 실제 수정 큐로 연결한다. 필수 결함을 보존하고 누적 수정 상한을 유지한다." },
     { id: "parking-wide", title: "주차장 확장 조립", summary: "별도 기획 검수 후 승인 칩을 12면 실험 맵으로 조립한다. 전체 시설 완성 판정은 별도다." },
     { id: "save-parking-project", title: "주차장 정본 저장", summary: "선택한 공용 키트를 새 SQLite 프로젝트에 저장하고 재로드·통행을 확인한다." },
     { id: "publish-parking", title: "선택한 주차장 등록", summary: "현재 검수·선택 해시의 주차장 표본을 두 층 키트와 공용 참고문서로 굽는다." },

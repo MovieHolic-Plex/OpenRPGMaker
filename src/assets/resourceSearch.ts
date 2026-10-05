@@ -3,8 +3,7 @@
 
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
-import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
-import { sharedCharacterSemantics } from '@/project/sharedCharacters';
+import { findNpcGraphicMatches } from "@/assets/charsetQuery";
 import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
 import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
@@ -66,7 +65,23 @@ type ResourceCandidate = Omit<ResourceSearchResult, "score">;
 export function searchResources(kind: ResourceSearchKind, query: string, options: ResourceSearchOptions = {}): ResourceSearchResult[] {
   const trimmed = query.trim();
   if (!trimmed) return [];
+  if (kind === "charset") {
+    // NPC and resource tools expose the same authored traits, aliases and intent
+    // filters. A loose partial-word search can turn a different hair colour into
+    // a positive match. Keep the full result for the resource tool's pagination.
+    return findNpcGraphicMatches(trimmed, options.charsetLabels).map(({entry, score}): ResourceSearchResult => ({
+      id: `charset:${entry.textureKey}:${entry.characterIndex}`, label: entry.label,
+      tags: entry.tags, score,
+      ...(entry.appearance ? { description: entry.appearance } : {}),
+      nativeGraphic: { sprite: { type: entry.spriteType ?? "bundled", id: entry.textureKey },
+        direction: "down", pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }) },
+    }));
+  }
   const candidates = candidatesForKind(kind, options);
+  // A concrete resource ID is an identity lookup, independent of semantic tags.
+  const exact = candidates.filter(candidate => candidate.id.toLowerCase() === trimmed.toLowerCase()
+    || candidate.resourceId?.toLowerCase() === trimmed.toLowerCase());
+  if (exact.length) return exact.map(candidate => ({ ...candidate, score: 1000 }));
   // "*" / "all" / "전체"는 브라우징용 전체 목록 — LLM이 후보를 몰라 훑어볼 때 쓴다.
   if (trimmed === "*" || trimmed.toLowerCase() === "all" || trimmed === "전체") {
     return candidates.map((candidate) => ({ ...candidate, score: 1 }));
@@ -112,25 +127,6 @@ function matchScore(query: string, label: string, tags: readonly string[]): numb
   }
   score += Math.min(40, tagScore);
   return score;
-}
-
-// 차셋 textureKey에서 파생되는 검색 태그.
-// LLM은 "people1"/"npc"/"villager" 같은 영문 질의를 우선 시도하므로(감사 로그로 확인)
-// 한국어 라벨만으로는 0건이 된다 — 시트명·카테고리 동의어를 태그로 보강한다.
-const CHARSET_CATEGORY_SYNONYMS: Record<string, readonly string[]> = {
-  actor: ["actor", "hero", "영웅", "주인공", "동료", "파티"],
-  animal: ["animal", "동물"],
-  monster: ["monster", "enemy", "몬스터", "적"],
-  object: ["object", "사물", "오브젝트"],
-  people: ["people", "npc", "human", "villager", "사람", "주민", "마을", "마을 사람"],
-  vehicle: ["vehicle", "탈것"],
-  vehicles: ["vehicle", "탈것"],
-};
-
-function charsetDerivedTags(textureKey: string): string[] {
-  const shortKey = textureKey.replace(/^tex_(?:easyrpg|scarloxy)_charset_/, "");
-  const base = shortKey.replace(/\d+$/, "");
-  return [shortKey, base, ...(CHARSET_CATEGORY_SYNONYMS[base] ?? [])];
 }
 
 function idWords(id: string): string[] {
@@ -222,22 +218,10 @@ function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
   }));
 }
 
-function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOptions): ResourceCandidate[] {
+function candidatesForKind(kind: Exclude<ResourceSearchKind, "charset">, options: ResourceSearchOptions): ResourceCandidate[] {
   switch (kind) {
     case "tile":
       return tileCandidates(options.tileset);
-    case "charset":
-      return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], options.charsetLabels).map((entry): ResourceCandidate => ({
-        id: `charset:${entry.textureKey}:${entry.characterIndex}`,
-        label: entry.label,
-        tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
-        ...(entry.appearance ? { description: entry.appearance } : {}),
-        nativeGraphic: {
-          sprite: { type: entry.spriteType ?? "bundled", id: entry.textureKey },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
-        },
-      }));
     case "monster":
       return listMonsterResources(options.monsterProject ?? { resourceProfiles: [], assets: { uploaded: {} } }).map(resource => ({
         id: resource.resourceId,

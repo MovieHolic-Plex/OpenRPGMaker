@@ -2,7 +2,7 @@
 // 조수는 배경·탈것 그림 id, 피해자 캐릭터(게임 캐릭터셋), 대사만 고른다. 어디서 출발해 어디서 닿고 어디로 튕겨 나가는지의
 // 좌표·타이밍은 여기서 계산해 script_cutscene 의 picture/flash/shake/music beat 로 컴파일한다.
 // 모든 그림은 게임 해상도(320×240, 16px 타일) 그대로 100% 배율로 놓는다 — 확대하면 도트 크기가 섞여 이질감이 난다.
-import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { sharedFaceIdForCharset as reviewedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import { cropCharsetFrames, CHARSET_FRAME_ROLES, type CharsetFramePictures, type CharsetFrameRole } from "@/editor/cutsceneArt/charsetFrames";
 import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";

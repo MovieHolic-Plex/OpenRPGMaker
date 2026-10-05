@@ -39,7 +39,9 @@ assert.deepEqual(project.endings, canonical.document.endings, 'The actual author
 const presentationAssets = [];
 const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
   ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').flatMap(scene => [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]),
-  project.system.opening?.musicResourceId].filter(Boolean))];
+  project.system.opening?.musicResourceId, ...Object.values(project.system.titleScreen?.sounds ?? {}),
+  ...Object.values(project.maps).map(map => map.bgm?.resourceId),
+  ...(project.system.opening?.scenes ?? []).map(scene => scene.direction?.soundResourceId)].filter(Boolean))];
 for (const id of artIds) {
   const saved = canonical.document.assets.uploaded[id];
   if (!saved) continue; // Legacy fixtures can use bundled artwork.
@@ -224,7 +226,9 @@ try {
         ...introduction,
         {id:'field',note:'짧은 실제 도입 완료 뒤 조작 반환',ops:[
           ...(opening?.enabled && opening.scenes?.length?[
-            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}, advance]:[advance]),
+            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},
+            {kind:'waitFor',testid:'opening-map-handoff',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'},
+            {kind:'waitFor',testid:'dialogue-box',state:'present',timeoutMs:30000}, advance]:[advance]),
           {kind:'waitForAttr',testid:'runtime-state-json',attr:'data-live-flags',
             value:`${start.id}|${project.startPos.x}|${project.startPos.y}|true|false`,timeoutMs:30000}],
           expect:{mapId:start.id,x:project.startPos.x,y:project.startPos.y,playerSpriteTextureLoaded:true},shot:true},
@@ -274,6 +278,15 @@ try {
         }
         assert(audio.record.audio.some(s => s.prepared && !s.paused && s.currentTime > 1), 'Selected opening music must actually play');
         if (index === 0) assert(audio.record.audio.some(s => s.rms > 0.001), 'Native opening audio must contain an audible PCM signal');
+        assert.equal(audio.record.visibleLoadingSamples, 0, 'The actual opening handoff must not show a loading card');
+        assert(audio.record.background.some(s => s.pending), 'The actual map must be prepared behind the opening');
+        if (index === 0 && completion.generatedResources?.length) {
+          for (const map of [start, route]) assert(audio.record.fieldAudio.some(s => s.mapId === map.id && s.resourceId === map.bgm.resourceId && s.currentTime > 0.1), 'Both actual map OSTs must play');
+          for (const scene of opening.scenes.filter(s => s.direction?.soundResourceId?.startsWith('original_se_'))) {
+            const sha = project.assets.uploaded[scene.direction.soundResourceId].ref.sha256;
+            assert(audio.record.media.some(s => s.sha256 === sha && s.played), 'The actual generated opening SE must play');
+          }
+        }
         if (opening.scenes.some(s => s.kind === 'image' && s.direction?.layers?.length)) {
           const byScene = new Map();
           for (const sample of audio.record.layers) {

@@ -24,6 +24,7 @@ import { normalizeWorld } from "../world/guards";
 import { normalizeProjectFactions } from "../factions";
 import type { ProjectWorld } from "../world/types";
 import { normalizeWorldGraph } from "../worldGraph";
+import { normalizeWorldAtlases } from "../worldAtlas";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
@@ -200,6 +201,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   }
   if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
   if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
+  if (data.worldAtlases !== undefined) project.worldAtlases = normalizeWorldAtlases(data.worldAtlases);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);

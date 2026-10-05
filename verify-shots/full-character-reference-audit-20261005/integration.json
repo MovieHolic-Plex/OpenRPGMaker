@@ -1,0 +1,215 @@
+{
+  "recordedAt": "2026-10-05T09:05:58.815756+00:00",
+  "testedSourceCommit": "cffa911b2d315234f3bf7ee53c487b61f6e890e4",
+  "rebasedSourceCommit": "fdcb3d0229e00aa2617dd85701664d2dbc19adbf",
+  "integratedMainCommit": "6e6da0ff4a5060a4a717851a972213fe13a85668",
+  "auditedFiles": [
+    {
+      "path": "scripts/content/audit-character-reference-catalog.mts",
+      "sha256": "a601a9d3e2488078ed23ef1b8ea503698bc5bc6ae9a2e449e734ffccf320dc13",
+      "sameAsTested": true
+    },
+    {
+      "path": "scripts/content/render-character-reference-audit.py",
+      "sha256": "ffd55100f8fb7bb85c6c72b7d2005582fd25afe83f1412b8682f1032c387ca75",
+      "sameAsTested": true
+    },
+    {
+      "path": "scripts/content/verify-character-reference-routes.mts",
+      "sha256": "2f9db01e8ef60ee1ab2ede67f576d0c03962b62a71e544e99bc372b2b69b0a8c",
+      "sameAsTested": true
+    },
+    {
+      "path": "scripts/shared-face-expression-sources.json",
+      "sha256": "4821fb70bbb72c28c81184e3d7db861b5801e66c9adaae4e2f98565aaa70ae25",
+      "sameAsTested": true
+    },
+    {
+      "path": "scripts/slice-faceset-sheets.mjs",
+      "sha256": "6fef7c06fcdf38764812f62c13b1f7e6715a6f19ea27995ee30ad936d7ff9fb0",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/ai/eventResourceCatalog.ts",
+      "sha256": "4178283bcba49f14be80e7a6ce602a7c764c48716ef886b2b716be119e42dd48",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/characterReferenceCorrections.json",
+      "sha256": "0cf6dacf34e5fe49a360b539335b50616bbb09f6dc265ea0347910522292acb6",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/charsetAppearances.ts",
+      "sha256": "ed3eec0693e715fedc5f2a82f05dca539a7d533b76d90b6329f5f9f34d0d6af4",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/charsetSemantics.ts",
+      "sha256": "f6297e33e944ebc053b562a6422360a7746a136e0acdc123f586cdd096c688cc",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/faceExpressionSets.ts",
+      "sha256": "975afeb201f28296ab95535a63b1ae0a5dbc93d7f5bd287d2310ae93442f66fc",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/facesetFaceAssets.ts",
+      "sha256": "b82700ef85abb58fac41e33d73b82f8fc0cb32793e79e73d4dd500006f0fff26",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/monsterCatalogData.json",
+      "sha256": "17d310b0c2e4f8285c4c3d6b95f71f6ac8348f9d11f487b620ae5a4de4d45a2f",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/monsterCatalogReview.json",
+      "sha256": "6d69678ed94e7e1db80f753e8d7816f4ace5ff9bf11a592dda70d55f5a20e534",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/previousFaceReferenceNames.json",
+      "sha256": "20ff0d13ab372908982b6285632f385f5fb8cf123c7423f69a0c18534bae0cce",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/resourceSearch.ts",
+      "sha256": "12b058e9e1c3a54b4b893aa6aeec64cc72757eb21b9471edc563af0fd531f70e",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/sharedCharacterGraphics.json",
+      "sha256": "b5caa1975601f15f1edf4158245d253afc1d850c2f0b3df653fd68bdd810cdb4",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/assets/sharedPortraitAssets.ts",
+      "sha256": "b604c8d8ac69f1593d727362e01482cb3e7b6b6fcb81e6a483924daa9827b060",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/followerPresets.ts",
+      "sha256": "d8d37ae6d5c3b98796beeb081bb8258568cd90e0296f3fdbe6d7efabaa280709",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/resourceOptions.ts",
+      "sha256": "69e5b925ea3a1dcd640822a13685c6e47eada64064bccbfee5587c6de354f930",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/cutsceneStageTools.ts",
+      "sha256": "08c7c930bf1b070a944e8d158f4ea549a0993fd8f692fd65102786b2e33ac0e8",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/dbTools.ts",
+      "sha256": "b5895f45552a2467c3851bfd2726d44b859ccb8fedaa058ac3981874d3991265",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/eventCompile.ts",
+      "sha256": "19ab1ffeb482edcb4e74ff0979e6db2e28f30151520ef9277168ba5c4b4d3f8d",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/eventTools.ts",
+      "sha256": "e0f6726c762e2ed550c83bd1b7f7eeea49ff3120009f4a161e7dd13a92575c32",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/impactCutsceneTools.ts",
+      "sha256": "eb76c5ccbf1209d377a933e08340b8587261b2dcb424f65fb02f1e99a963352e",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/editor/tools/queryTools.ts",
+      "sha256": "54f7dec8cc65ecef04e9c6aa778904020df0514fde9d018e03ea32a7f3e4d4f0",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/i18n/catalogs/en.json",
+      "sha256": "98f291f2d9964b28c51d9eeda56934eee7587ddc7b375ae4a7978497e64c26dd",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/i18n/catalogs/ja.json",
+      "sha256": "00c19f2cbafc0cad95fa54edaff8c95439d05292f34b69220e697a1e157c9072",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/i18n/catalogs/zh.json",
+      "sha256": "b0c927584768fd4313422af9c4f814fc4609b4d0e35db83776e97e98a0dd9d8d",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/project/characterGraphics.ts",
+      "sha256": "aa460ffcfda4db12145daa005c868b2a4e313e01ead1d4d36a16f7ee3a695ed7",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/project/defaults/defaultAssets.ts",
+      "sha256": "77f8a59a34178ca11c6e364b81f016a605afb061ff9cbed4f59c90fc07472aa5",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/project/faceReferenceMetadata.ts",
+      "sha256": "0ac2e653da1ce2a3b8d84d75c6a1be1853cfa6efb3a5ea798e16f67999eb8329",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/project/sharedCharacterFaceResolver.ts",
+      "sha256": "4b5df9d35cc3a88a05e53b4785ecb3569ce6b0da1fd2f8529accf08906b4d3e2",
+      "sameAsTested": true
+    },
+    {
+      "path": "src/project/sharedCharacterGraphicsSchema.ts",
+      "sha256": "67553f9a58d2aed8fd0a765b6c2fb5a9b25ebef49b706beefa60692a4cf32ec8",
+      "sameAsTested": true
+    },
+    {
+      "path": "test/fixtures/eventEditorShellSurface.baseline.json",
+      "sha256": "d34353091eac6131616bc7a36cf29da61cfd90ca392749319d211ad4ba744554",
+      "sameAsTested": true
+    },
+    {
+      "path": "test/fullCharacterReferenceAudit.test.ts",
+      "sha256": "5fa739ca2a64d384d4358be89ef31ecfcc24cace9d1f4ffab50a287338130ff0",
+      "sameAsTested": true
+    },
+    {
+      "path": "test/sharedPortraitAssets.test.ts",
+      "sha256": "22b71d1372e0e41d7dcb6ababad8e58bb660f0cfe816ba60773f9e006798ed51",
+      "sameAsTested": true
+    }
+  ],
+  "allAuditedFileBytesUnchanged": true,
+  "mainChangesInExecutableOrAssetPaths": [
+    "src/harnesses/charset-actor/README.md",
+    "src/harnesses/charset-actor/animal-worker.md",
+    "src/harnesses/charset-actor/animal_motion.py",
+    "src/harnesses/charset-actor/bulk.py",
+    "src/harnesses/charset-actor/catalog-worker.md",
+    "src/harnesses/charset-actor/catalog_sources.py",
+    "src/harnesses/charset-actor/delivery.py",
+    "src/harnesses/charset-actor/harness.py",
+    "src/harnesses/charset-actor/node/cli.ts",
+    "src/harnesses/charset-actor/recipes.py",
+    "src/harnesses/charset-actor/review_server.py",
+    "src/harnesses/charset-actor/studio.py",
+    "src/harnesses/charset-actor/verify.py",
+    "src/harnesses/charset-actor/verify_animal.py",
+    "src/harnesses/charset-actor/verify_review_server.py",
+    "src/harnesses/charset-actor/web/index.html",
+    "src/harnesses/super-harness/art_choices.py",
+    "src/harnesses/super-harness/art_execution.py",
+    "src/harnesses/super-harness/art_receipts.py",
+    "src/harnesses/super-harness/classroom_choices.py"
+  ],
+  "editorRuntimeAssetsAndAssistantCapabilityUnchanged": true,
+  "packageDependencyAndScriptChanges": false,
+  "packageVersionChange": "0.139.0 -> 0.140.0",
+  "interpretation": "Targeted tests, typecheck, builds and two real Pi cases were run on the tested source commit. Rebase adds unrelated character-production/super-harness files and release version only. This is a byte-level integration receipt, not a repeat execution claim."
+}

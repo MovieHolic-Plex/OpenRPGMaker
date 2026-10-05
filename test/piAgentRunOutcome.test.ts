@@ -323,6 +323,24 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
   });
 
+  it("변경 없는 팀의 실패한 조수는 최종 보고·캡션·반환값에서 실패로 남는다", async () => {
+    h.results.push({ project: h.project, toolCalls: 0 });
+    h.toolEvents.push(
+      { type: "agent_spawn", agentId: "builder-1", role: "builder", mapId: "map_a", task: "조회" },
+      { type: "agent_done", agentId: "builder-1", ok: false, summary: "도구 정의를 거부해 조회하지 못했습니다.",
+        stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] },
+      { type: "team_report", text: "안내판 조회 미완료: 조수 실행 실패." },
+    );
+    const { outcomeCalls, surface } = harness();
+    const ok = await runPiCommand({ mode: "team", mapIds: [], task: "맵 조회" }, surface());
+    expect(ok).toBe(false);
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "blocked", delivery: "no-change" });
+    expect(h.boardStates.at(-1)).toMatchObject({ phase: "실패", applied: expect.stringContaining("끝내지 못했어요") });
+    expect(h.bubbles).toContain("assistant:안내판 조회 미완료: 조수 실행 실패.");
+    expect(h.bubbles.some(line => line.includes("확인을 마쳤어요"))).toBe(false);
+    expect(h.statuses.at(-1)).toBe("작업 실패");
+  });
+
   // 깨질 것: 질문 턴(툴 0 · 변경 0 · 답 본문)이 「적용됨」 배지와 실패 톤 캡션으로 끝나면
   // 성공한 답변이 "아무것도 못 한 실행"으로 읽힌다(2026-09-12 실측 스크린샷).
   it("답이 남은 변경-0 턴: 보드는 「완료」·본문 말풍선이 시스템 줄보다 먼저 온다", async () => {

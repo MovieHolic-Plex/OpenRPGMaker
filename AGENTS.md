@@ -16,6 +16,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 
 ## 하네스 (hard rule)
 
+- **에디터 조수의 자연어 명령 수행·기존 콘텐츠 보존·플레이·시각·SQLite 재로드를 기능별로 점검할 때**
+  → `assistant-capability` · 시드 `harness-data/assistant-capability/seed.json`
+  → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
+  → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
+
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 

@@ -403,7 +403,7 @@ export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" 
   if (scene.timeSleepInProgress) return true;
   if (isCutsceneInputLocked(scene.session)) return true;
   const root = scene.game.canvas.parentElement?.closest(".play-stage") ?? scene.game.canvas.ownerDocument;
-  return root.querySelector("[data-testid='main-menu'], [data-testid='battle-scene'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
+  return root.querySelector("[data-testid='main-menu'], [data-testid='world-atlas'], [data-testid='battle-scene'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
 }
 
 function hideTimeTint(scene: PlaySceneContext): void {
