@@ -20,6 +20,7 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
   const savedOpen = new Set();
   function render() {
     host.dataset.busy=String(busy);
+    host.classList.toggle('whole-space-demo', Boolean(state.demo));
     const deciding=state.stage==='art-review' && !state.installation;
     const working=['art','art-layout-review','art-context-review','art-demo'].includes(state.stage);
     const pending=state.groups.filter(g=>!g.candidates.some(c=>c.decision==='allow') && g.candidates.some(c=>(c.eligible || state.demo) && !c.decision));
