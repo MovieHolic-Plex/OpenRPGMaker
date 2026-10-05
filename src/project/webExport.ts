@@ -59,11 +59,21 @@ function withoutLibraryReferences(library: SpatialLibrary): SpatialLibrary {
  * editor reference documents. Copying those only to discard them can crash the
  * renderer. The final clone also isolates retained uploaded assets from edits. */
 function exportProjection(project: Project): Project {
+  const usedTilesets = new Set(Object.values(project.maps).map(map => map.tilesetId));
+  // Grafted frames can depend on a tileset not used directly by any map.
+  // Retain that source closure, including custom uploaded source textures.
+  for (const id of usedTilesets) {
+    for (const graft of project.tilesets[id]?.tileGrafts ?? []) {
+      if (project.tilesets[graft.sourceChipset]) usedTilesets.add(graft.sourceChipset);
+      for (const [sourceId, source] of Object.entries(project.tilesets))
+        if (source.image.id === graft.sourceChipset) usedTilesets.add(sourceId);
+    }
+  }
   const projection: Project = {
     ...project,
     maps: Object.fromEntries(Object.entries(project.maps).map(([id, map]) =>
       [id, { ...map, events: committedEvents(map.events) }])),
-    tilesets: Object.fromEntries(Object.entries(project.tilesets).map(([id, tileset]) =>
+    tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => usedTilesets.has(id)).map(([id, tileset]) =>
       [id, { ...tileset, ...(tileset.structureKits ? {
         structureKits: tileset.structureKits.map(kit => ({ ...kit })),
       } : {}) }])),

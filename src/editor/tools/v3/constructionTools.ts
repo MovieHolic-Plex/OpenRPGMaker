@@ -1456,7 +1456,8 @@ const tileErase: ToolDefinition = {
       cleared += 1;
     }
     // MV 팩: 지운 자리 둘레의 울타리·차선·흙 가장자리를 다시 맞춘다(지운 끝이 끊긴 모양으로 남지 않게).
-    const reshaped = tileset?.mvPack ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), filtered.cells) : 0;
+    const reshaped = tileset?.mvPack || tileset?.autotileGroups?.some(group => group.id.startsWith('worldmap-brush-'))
+      ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), filtered.cells) : 0;
     compactMapLayers(map);
     return {
       summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${groundTile === null ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,

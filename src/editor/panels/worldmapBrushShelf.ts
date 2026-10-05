@@ -36,6 +36,8 @@ export function makeWorldmapBrushShelf(t: TilesetDef, layer: 'lower' | 'upper', 
             continue;
         if (layer === 'lower' && brush.background !== background && brush.background !== 'water')
             continue;
+        if (brush.background === 'water' && background !== 'sea' && background !== 'grass')
+            continue;
         const group = tileGroups.get(brush.id);
         if (!group)
             continue;

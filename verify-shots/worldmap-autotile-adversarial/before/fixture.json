@@ -1,0 +1,24 @@
+{
+  "projectId": "5a9994a1-685a-4495-8d48-0fb3919bfdf7",
+  "target": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-autotile-visual-20261005/before-project",
+  "revision": 1,
+  "maps": [
+    {
+      "id": "qa_coast",
+      "name": "QA 01 · 海岸 / 凹角 / 一格地峡"
+    },
+    {
+      "id": "qa_water",
+      "name": "QA 02 · 河川 / 橋 / 河口 / 溶岩"
+    },
+    {
+      "id": "qa_forest",
+      "name": "QA 03 · 森林 / 山脈 / 地面変更"
+    },
+    {
+      "id": "qa_roads",
+      "name": "QA 04 · 道 16接続 / 異なる地面"
+    }
+  ],
+  "reloaded": true
+}

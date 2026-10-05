@@ -35,6 +35,7 @@ import {
   type StructureTiles,
 } from "@/project/structurePlacements";
 import { store } from "@/project/store";
+import { shapeWorldmapOutsideRestoredPlacement } from "@/project/worldmapBrushStamp";
 import type { GameMap, MapId, SectionStructureKitDef, StructurePlacement, TilesetDef } from "@/project/types";
 
 /**
@@ -173,6 +174,7 @@ export function eraseStructurePlacement(mapId: MapId, placementId: string): Eras
     counts.restored = result.restored;
     counts.skipped = result.skipped;
     removeStructurePlacement(draft, placementId);
+    shapeWorldmapOutsideRestoredPlacement(draft, store.getCurrent().tilesets[draft.tilesetId], placement);
   });
   return { kind: "erased", restored: counts.restored, skipped: counts.skipped };
 }
@@ -233,6 +235,7 @@ export async function restampStructurePlacement(
   const skipCells = cellsOwnedByLaterPlacements(map, placementId);
   store.updateMap(mapId, (draft) => {
     restoreStructurePlacementTiles(draft, placement, { skipCells });
+    shapeWorldmapOutsideRestoredPlacement(draft, store.getCurrent().tilesets[draft.tilesetId], placement);
   });
 
   // 2) 새 before 는 "이 시공 직전 그 자리" — 복원 뒤, 새 rect 기준으로 뜬다.

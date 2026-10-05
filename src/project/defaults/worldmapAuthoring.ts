@@ -11,18 +11,22 @@ function materialName(name: string, background: string): string {
 /** Refresh only bundle-owned liquid flags, including prototypes saved before deployment. */
 function ensureWaterFlags(t: TilesetDef): boolean {
     const own = t.image.type === 'bundled' && t.image.id === WORLDMAP_AUTHORING_TEXTURE;
-    const cells = own ? sheet.tiles.map((_, i) => ({sourceTile: i, targetTile: i}))
-        : (t.tileGrafts ?? []).filter(g => g.sourceChipset === WORLDMAP_AUTHORING_TEXTURE);
+    const grafts = t.tileGrafts ?? [];
+    const authored = grafts.filter(g => g.sourceChipset === WORLDMAP_AUTHORING_TEXTURE);
+    const occupied = new Set(grafts.map(g => g.targetTile));
+    const cells = own ? [...sheet.tiles.flatMap((_, i) => occupied.has(i) ? [] : [{sourceTile: i, targetTile: i}]), ...authored] : authored;
     let changed = false;
     for (const {sourceTile, targetTile} of cells) {
         const kind = sheet.tiles[sourceTile]?.kind;
-        if (!kind || !['sea', 'river', 'lava', 'toxic'].includes(kind)) continue;
+        if (!kind || !['sea', 'river', 'lava', 'toxic'].includes(kind) && !kind.startsWith('bridge-')) continue;
         const meta = t.tileMeta?.[targetTile];
         if (meta?.source !== 'bundled-default') continue;
         const pass = t.passability[targetTile];
-        if (!pass || pass.up || pass.down || pass.left || pass.right) {
-            t.passability[targetTile] = {up: false, down: false, left: false, right: false};
-            meta.passage = 'solid';
+        const horizontal = kind === 'bridge-horizontal', vertical = kind === 'bridge-vertical';
+        const expected = {up: vertical, down: vertical, left: horizontal, right: horizontal};
+        if (!pass || JSON.stringify(pass) !== JSON.stringify(expected)) {
+            t.passability[targetTile] = expected;
+            meta.passage = horizontal || vertical ? 'passable' : 'solid';
             changed = true;
         }
         if (['sea', 'river'].includes(kind) && !meta.tags?.includes('water')) {
@@ -39,7 +43,7 @@ function groups(remap: (tile: number) => number): AutotileGroup[] {
         // Cross-background paths join. River mouths meet the sea; coasts meet all land.
         const connects = sheet.tiles.flatMap((t, i) => (b.background === 'sea'
             ? t.layer === 'lower' && !['sea', 'river', 'lava', 'toxic'].includes(t.kind)
-            : b.kind === 'river' ? ['river', 'sea'].includes(t.kind)
+            : b.kind === 'river' || b.kind.startsWith('bridge-') ? ['river', 'sea'].includes(t.kind) || t.kind.startsWith('bridge-')
                 : b.kind === 'road' ? t.kind === 'road' || t.kind.startsWith('bridge-')
                     : forests.includes(b.kind) ? forests.includes(t.kind)
                         : mountains.includes(b.kind) ? mountains.includes(t.kind) : t.kind === b.kind) ? [remap(i)] : []);
@@ -50,17 +54,24 @@ function groups(remap: (tile: number) => number): AutotileGroup[] {
 }
 /** Append-only: original raster materials and every authored cell keep their IDs. */
 export function attachWorldmapAuthoringBrushes(t: TilesetDef): boolean {
-    if (t.autotileGroups?.some(g => g.id === 'worldmap-brush-grass-sea'))
-        return ensureWaterFlags(t);
+    let changed = false;
     const own = t.image.type === 'bundled' && t.image.id === WORLDMAP_AUTHORING_TEXTURE;
     const mapping = new Map<number, number>();
     const existing = new Map(t.tileGrafts?.filter(g => g.sourceChipset === WORLDMAP_AUTHORING_TEXTURE).map(g => [g.sourceTile, g.targetTile]));
     for (let tile = 0; tile < sheet.count; tile++) {
-        const before = own ? tile : existing.get(tile), target = before ?? t.count++;
-        if (!own && before === undefined)
+        // New source frames may overlap an existing atlas's appended icon grafts.
+        // In that case append an authoring graft; never renumber or replace an icon.
+        const occupied = t.tileGrafts?.some(g => g.targetTile === tile);
+        const before = existing.get(tile) ?? (own && !occupied ? tile : undefined), target = before ?? t.count++;
+        if (before === undefined) {
             (t.tileGrafts ??= []).push({ targetTile: target, sourceChipset: WORLDMAP_AUTHORING_TEXTURE, sourceTile: tile });
+            changed = true;
+        }
+        if (own && target >= t.count) { t.count = target + 1; changed = true; }
         mapping.set(tile, target);
         const m = sheet.tiles[tile]!;
+        if (t.tileMeta?.[target]) continue;
+        changed = true;
         t.passability[target] = { up: m.walkable, down: m.walkable, left: m.walkable, right: m.walkable };
         t.priority[target] = m.layer === 'upper' ? 'upper' : 'lower';
         t.terrain[target] = 0;
@@ -74,13 +85,29 @@ export function attachWorldmapAuthoringBrushes(t: TilesetDef): boolean {
     for (const g of added)
         if (g.id.endsWith('-sea'))
             g.connectTileIds!.push(...historical.filter(m => !['바다', '강', '용암', '독수'].includes(m.label)).map(m => m.i));
-    t.autotileGroups = [...(t.autotileGroups ?? []), ...added];
-    t.tileGroups = [...(t.tileGroups ?? []), ...sheet.brushes.map(b => ({ id: b.id, name: materialName(b.name, b.background), role: 'terrain' as const,
+    t.autotileGroups ??= [];
+    for (const g of added) {
+        const before = t.autotileGroups.find(old => old.id === g.id);
+        if (!before) { t.autotileGroups.push(g); changed = true; }
+        else if (JSON.stringify(before.memberTileIds) === JSON.stringify(g.memberTileIds)
+            && JSON.stringify(before.variantMap) === JSON.stringify(g.variantMap)
+            && JSON.stringify(before.connectTileIds) !== JSON.stringify(g.connectTileIds)) {
+            before.connectTileIds = g.connectTileIds; changed = true;
+        }
+    }
+    const paletteGroups = [...sheet.brushes.map(b => ({ id: b.id, name: materialName(b.name, b.background), role: 'terrain' as const,
             defaultLayer: b.layer === 'upper' ? 'upper' as const : 'lower' as const, tileIds: b.tiles.map(remap),
             description: `연결 붓 · 바탕 ${b.background}`, placementRules: '대표 칸을 칠하면 이웃 연결을 계산한다. 숲·산은 위층, 길·다리는 아래층.', source: 'bundled-default' as const })),
         ...sheet.tiles.slice(0, 15).map((m, i) => ({ id: 'worldmap-brush-plain-' + m.kind, name: m.label, role: 'terrain' as const, defaultLayer: 'lower' as const, tileIds: [remap(i)], description: '단일 바탕 칸. 주변 연결 붓도 다시 맞춘다.', placementRules: '아래층 바탕을 채운다. 바다로 칠하면 땅을 깎는다.', source: 'bundled-default' as const }))];
-    ensureWaterFlags(t);
-    return true;
+    t.tileGroups ??= [];
+    for (const g of paletteGroups) {
+        const before = t.tileGroups.find(old => old.id === g.id);
+        if (!before) { t.tileGroups.push(g); changed = true; }
+        else if (before.source === 'bundled-default' && JSON.stringify(before.tileIds) !== JSON.stringify(g.tileIds)) {
+            before.tileIds = g.tileIds; changed = true;
+        }
+    }
+    return ensureWaterFlags(t) || changed;
 }
 export function createWorldmapAuthoringTileset(): TilesetDef {
     const t: TilesetDef = { id: WORLDMAP_AUTHORING_ID, name: '월드맵 · 연결 지형 붓', family: 'worldmap-kit', kind: 'custom',

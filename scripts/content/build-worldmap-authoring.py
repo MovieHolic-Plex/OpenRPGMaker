@@ -28,7 +28,9 @@ class Sea:
     G = np.zeros((3, 3), np.int16)
     def inb(self, x, y): return 0 <= x < 3 and 0 <= y < 3
 texture['sea'] = V.water_tile(Sea(), 1, 1, V.SEA)
-texture['river'] = T._recolor_river(texture['sea'])
+# Water has one shared surface at ports, including river mouths and bridges.
+# A recolored river body previously made a rectangular seam against the sea.
+texture['river'] = texture['sea'].copy()
 texture['lava'] = V._ramp_recolor(texture['sea'], V.LAVA_R)
 texture['toxic'] = V._ramp_recolor(texture['sea'], V.TOXIC_R)
 
@@ -64,10 +66,19 @@ def blob(kind, bg, mask):
     a = rgba(texture[kind]); a[grid == 'o'] = rgba(texture[bg])[grid == 'o']
     wet = kind in ('river','lava','toxic','sea')
     shore = bg == 'sea' or wet
-    rim = (226,206,146) if bg == 'sea' else (150,214,226) if wet else tuple(texture[kind][5,5])
-    shade = (28,47,39) if kind not in ('snow','glacier') else (110,164,186)
+    icy = kind in ('snow', 'glacier')
+    rim = ((186,216,221) if icy else (165,171,113)) if bg == 'sea' else (111,158,134) if wet else tuple(texture[kind][5,5])
+    shade = (53,91,48) if not icy else (110,164,186)
+    foam = (71,127,159)
+    if kind == 'river' or kind == 'sea':
+        rim = {'grass': (151,163,112), 'sand': (183,153,101), 'snow': (185,215,224)}.get(bg, rim)
+        shade = (26,65,106)
+    elif kind == 'lava':
+        rim, foam, shade = (174,70,19), (132,96,50), (73,20,7)
+    elif kind == 'toxic':
+        rim, foam, shade = (99,128,52), (107,145,69), (43,59,26)
     a[grid == 'e', :3] = rim if shore else texture[kind][grid == 'e']
-    a[grid == 'f', :3] = (214,244,246) if shore else texture[bg][grid == 'f']
+    a[grid == 'f', :3] = foam if shore else texture[bg][grid == 'f']
     a[grid == 'i', :3] = shade if shore else texture[kind][grid == 'i']
     return a
 
@@ -107,19 +118,47 @@ for kind, name, k in [('forest','활엽수 숲',V.BROAD),('conifer','침엽수 �
         a = np.zeros((16,16,4), np.uint8)
         for qx,qy,vb,hb,db in [(0,0,1,8,128),(1,0,1,2,16),(0,1,4,8,64),(1,1,4,2,32)]:
             role = 'iso' if mask == 0 else T.pick_role(bool(mask & vb), bool(mask & hb), bool(mask & db), qx, qy)
-            rgb, alpha = V.obj_cell4(k, role)
+            # The old snow kit uses isolated cones even for its inner/body cells.
+            # Keep the connected mountain silhouette and author its snow ramp.
+            rgb, alpha = V.obj_cell4(V.MOUNT if k == V.SMOUNT else k, role)
+            if k == V.SMOUNT:
+                original = rgb
+                rgb = rgb.copy()
+                for source, color in P['snowMountainPalette'].items():
+                    rgb[np.all(original == tuple(map(int, source.split(','))), axis=2)] = color
             ys,xs = slice(qy*8,qy*8+8), slice(qx*8,qx*8+8)
             a[ys,xs,:3] = rgb[ys,xs]; a[ys,xs,3] = alpha[ys,xs].astype(np.uint8)*255
         return a
     group(kind, name, 'any', obj, layer='upper', walk=False)
 
-for direction in ['horizontal','vertical']:
-    a = rgba(texture['river'])
+def bridge(direction, background, mask):
+    a = blob('river', background, mask)
     grid = np.array([list(row) for row in P['bridgeHorizontal']])
     if direction == 'vertical': grid = grid.T
     for c, color in [('d',(82,53,31)),('l',(201,155,87)),('w',(157,106,54))]: a[grid == c,:3] = color
-    tile = add(a, 'bridge-'+direction, 'water', '다리 · '+('가로' if direction == 'horizontal' else '세로'))
+    return a
+
+# Preserve all previously shipped source IDs, including the two original bridges.
+old_bridges = {}
+for direction in ['horizontal','vertical']:
+    tile = add(bridge(direction, 'grass', 5 if direction == 'horizontal' else 10), 'bridge-'+direction, 'water', '다리 · '+('가로' if direction == 'horizontal' else '세로'))
+    old_bridges[direction] = tile
     brushes.append(dict(id='worldmap-brush-bridge-'+direction, name=meta[tile]['label'],kind=meta[tile]['kind'],background='water',layer='lower',tiles=[tile]))
+
+# Fit the water below a bridge to narrow rivers, lake banks and wider spans.
+# These variants append after the old atlas rather than shifting any saved tile.
+for direction in ['horizontal', 'vertical']:
+    for bg in ['grass', 'sand', 'snow']:
+        default = bg == 'grass'
+        used = {5 if direction == 'horizontal' else 10: old_bridges[direction]} if default else {}
+        variants = {}
+        for mask in range(256):
+            m = canonical(mask)
+            if m not in used: used[m] = add(bridge(direction, bg, m), 'bridge-'+direction, bg, meta[old_bridges[direction]]['label'])
+            variants[str(mask)] = used[m]
+        b = next(b for b in brushes if b['id'] == 'worldmap-brush-bridge-'+direction) if default else dict(id='worldmap-brush-bridge-'+direction+'-'+bg, name=meta[old_bridges[direction]]['label'],kind='bridge-'+direction,background=bg,layer='lower')
+        b.update(neighborhood=8, tiles=list(used.values()), variantMap=variants)
+        if not default: brushes.append(b)
 
 cols = 12
 sheet = Image.new('RGBA', (cols*16, ((len(tiles)+cols-1)//cols)*16))

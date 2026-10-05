@@ -7,7 +7,7 @@
 위층 숲·산, 가로/세로 다리, 기존 사람 선택 판타지 거점 36개를 실제 타일로 놓는다.
 파이프라인은 `scripts/content/build-worldmap-authoring.py` → 번들 PNG/`worldmapAuthoringSheet.json`이다.
 새 경계·길·다리는 `tiledata/worldmap-kit/authoring/pixels.json`의 명시 픽셀 격자, 질감과 숲/산은 현재 키트 원본을 쓴다.
-완성 대륙은 입력이 아니다. 대표 붓 79개(배경별 변형 포함), 그림 3,543칸이다.
+완성 대륙은 입력이 아니다. 대표 붓 83개(배경별 변형 포함), 그림 3,823칸이다.
 
 팔레트 배경(바다/초원/사막/설원)을 고르면 그 바탕을 포함한 불투명 아래층 붓을 보여 준다.
 숲·산은 투명 위층이며 바닥을 바꾸지 않는다. 길과 강은 배경을 자동 추정하지 않는다.
@@ -26,8 +26,33 @@ variantMap, 실제 배열과 정상/오류 PNG를 싣는다. 새/기존 프로�
 
 편집기 페인트·지우기·채우기는 상위 연결도 다시 맞추고 변경 이웃 칸을 통지한다.
 native 증거 실행기는 `scripts/qa/worldmap-palette-authoring-native.mjs`이다. 전체 테스트/게이트와 별개다.
-고개 붓은 월드맵 길에 맞춘 폭 1칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
+고개 붓은 폭 2칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
 실제 빈 지도 저작·통행·공용 사전·정본 재로드 근거는 [검증 기록](../verify-shots/worldmap-authoring/README.md)을 따른다.
+
+## 적대적 시각 검수로 수정한 연결부 (2026-10-05)
+
+이전 저장/통행 영수증은 미적 합격이 아니다. 실제 native 편집기의 고립·대각·1칸 지협·오목 만·구멍,
+수로의 십자·두 방향 다리·하구, 숲/산 9종과 세 바탕, 길 16상태를 별도 SQLite 검수 지도에 놓았다.
+독립 낱말/좌표 oracle은 이전 정본에서 10칸 불일치를 검출했다(강 6, 거점 주변 숲 4).
+원본 접합 픽셀도 외곽/직선 사분면 두 접합에서 6개 글자가 달랐다.
+
+- `authoring/pixels.json` 외곽·직선의 접합면을 `o o f e i . . .`로 맞춘다.
+  해안의 밝은 액자 같은 테두리는 물빛·기슭·그늘 팔레트로 낮춘다. 용암/독수는 별도 기슭 색이다.
+- 강과 바다가 같은 수면 질감을 쓰므로 하구의 색이 사각형으로 끊기지 않는다.
+- 설산은 고립 봉우리 킷 대신 연결 산맥 윤곽과 `snowMountainPalette`의 명시 눈 색을 쓴다.
+- 강·다리는 서로 물 이웃으로 센다. 다리 밑 수면도 47개 상태로 연결되며 초원/사막/설원 붓을 갖는다.
+  가로 다리는 좌우, 세로 다리는 위아래 통행만 열리며 물로 옆걸음하지 않는다.
+- 기존 3,543개 소스 ID와 승인 아이콘 슬롯을 유지한다. 새 280칸은 끝에 추가한다.
+  기존 `worldmap_authoring`의 아이콘 이식 슬롯과 새 소스 프레임이 겹치면 새 타깃 슬롯에 이식한다.
+  `ensureWaterFlags`도 실제 이식 주소를 따라가므로 아이콘 통행을 액체 통행으로 덮지 않는다.
+- native 정확 스탬프는 그 안의 원본 칸을 보존하면서 바깥 숲만 다시 맞춘다.
+  `worldmapBrushStamp.ts`는 구조 키트와 `stamp_layer_block`의 같은 바깥 보정을 담당한다.
+  구조물 우클릭 복원/다시 찍기도 정확한 `before` 안쪽을 보존하고 바깥 연결을 다시 맞춘다.
+  `tile_erase`도 worldmap 연결을 재검사한다.
+
+검수 입구는 `scripts/qa/worldmap-autotile-visual-{fixture.mts,native.mjs,audit.mts}`다.
+실제 PNG·좌표·원본/수정 비교·남은 표현 판정은
+[적대적 검수 기록](../verify-shots/worldmap-autotile-adversarial/README.md)에 있다.
 
 세계 지도(월드맵 키트, 96×72칸·16px)의 큰 지형은 **지형 작업(ops)** 목록을 키트가 다시 그린다. 저장 결과는 재사용 지형 칸과 별도 위층 거점으로 구성되며, 편집기 붓으로도 손 편집할 수 있다.
 조수는 `read_world_terrain` 으로 칸 좌표를 보고 `edit_world_terrain` 으로 작업을 얹는다.
