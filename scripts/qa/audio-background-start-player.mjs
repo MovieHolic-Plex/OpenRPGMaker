@@ -38,7 +38,7 @@ try{
  await page.keyboard.press('ArrowRight');await page.waitForTimeout(1600);const after=await page.evaluate(()=>window.__oprnDebug.readState());
  for(const key of ['x','y','switches','variables','selfSwitches','timers','gameTime','rng'])assert.deepEqual(after[key],before[key],'Opening must freeze '+key);
  await page.screenshot({path:out+'/prepared-behind-opening.png'});await actualPlay(page);assert.equal(await page.evaluate(()=>window.__visibleLoading),0);
- const audio=await page.evaluate(()=>window.__audioPlays);
+ await page.waitForTimeout(400);const audio=await page.evaluate(()=>window.__audioPlays);
  if(fixture.system.titleScreen.sounds){for(const id of Object.values(fixture.system.titleScreen.sounds)){const sha=fixture.assets.uploaded[id]?.ref?.sha256;assert(sha&&audio.some(p=>p.sha256===sha&&p.played),'Actual generated title SE must play: '+id);}const id=fixture.maps[fixture.startMapId].bgm.resourceId;assert(audio.some(p=>p.sha256===fixture.assets.uploaded[id].ref.sha256&&p.loop&&p.played&&p.currentTime>0),'Actual map OST must start after handoff');}
  report.cases.push({audio,name:'cold actual map ready during opening; input, events and clock frozen; natural handoff',passed:true,timeline:await page.evaluate(()=>window.__preparedTimeline)});await page.screenshot({path:out+'/natural-game.png'});await ctx.close();
  }
@@ -50,7 +50,8 @@ try{
  await page.screenshot({path:out+(skip?'/skip-wait.png':'/slow-wait.png')});release();await actualPlay(page);
  assert.equal(await page.evaluate(()=>window.__visibleLoading),0);report.cases.push({name:skip?'early skip with pending engine retains cover':'short opening with pending engine retains cover',passed:true,timeline:await page.evaluate(()=>window.__preparedTimeline)});await ctx.close();
  }
- report.passed=report.cases.length===3&&!report.errors.length;
+ {const{ctx,page}=await open();await page.route('**/assets/phaser.min-*',route=>route.fulfill({status:503,body:'Intentional engine failure'}));await title(page);await page.keyboard.press('Enter');const recovery=page.getByTestId('play-loading-overlay');await page.waitForFunction(()=>document.querySelector('[data-testid="play-loading-overlay"]')?.dataset.stage==='error',null,{timeout:45000});assert(await recovery.isVisible(),'Real boot failures must reveal recovery');assert.equal(await page.getByTestId('cinematic-sequence').count(),0);await page.screenshot({path:out+'/error-recovery.png'});report.cases.push({name:'actual engine failure aborts opening and reveals recovery',passed:true});await ctx.close();}
+ report.passed=report.cases.length===4&&!report.errors.length;
 }catch(error){report.failure=error.message;await lastPage?.screenshot({path:out+'/failure.png',timeout:5000}).catch(()=>{});}
-finally{releases.forEach(r=>r());await writeFile(out+'/result.json',JSON.stringify({...report,requests},null,2));await writeFile(out+'/SUMMARY.md','# Background opening preparation\n\n'+(report.passed?'PASS':'FAIL: '+report.failure)+'\n\n즉시 확인: '+(report.passed?'prepared-behind-opening.png, natural-game.png, slow-wait.png, skip-wait.png':'failure.png')+'\n');await browser.close();await new Promise(r=>server.close(r));}
+finally{releases.forEach(r=>r());await writeFile(out+'/result.json',JSON.stringify({...report,requests},null,2));await writeFile(out+'/SUMMARY.md','# Background opening preparation\n\n'+(report.passed?'PASS':'FAIL: '+report.failure)+'\n\n즉시 확인: '+(report.passed?'prepared-behind-opening.png, natural-game.png, slow-wait.png, skip-wait.png, error-recovery.png':'failure.png')+'\n');await browser.close();await new Promise(r=>server.close(r));}
 console.log(JSON.stringify({passed:report.passed,failure:report.failure,cases:report.cases.length}));process.exitCode=report.passed?0:1;

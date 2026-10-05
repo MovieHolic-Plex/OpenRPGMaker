@@ -5,7 +5,7 @@ export type MapBgmResolution =
   | { readonly kind: "play"; readonly resourceId: string; readonly fadeInMs?: number }
   | { readonly kind: "silence" };
 
-type BgmProject = Pick<Project, "maps" | "mapTree" | "system">;
+export type BgmProject = Pick<Project, "maps" | "mapTree" | "system">;
 
 /**
  * system.defaultBgmResourceId 가 없는 프로젝트의 최종 폴백.

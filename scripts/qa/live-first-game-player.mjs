@@ -226,7 +226,9 @@ try {
         ...introduction,
         {id:'field',note:'짧은 실제 도입 완료 뒤 조작 반환',ops:[
           ...(opening?.enabled && opening.scenes?.length?[
-            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}, advance]:[advance]),
+            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},
+            {kind:'waitFor',testid:'opening-map-handoff',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'},
+            {kind:'waitFor',testid:'dialogue-box',state:'present',timeoutMs:30000}, advance]:[advance]),
           {kind:'waitForAttr',testid:'runtime-state-json',attr:'data-live-flags',
             value:`${start.id}|${project.startPos.x}|${project.startPos.y}|true|false`,timeoutMs:30000}],
           expect:{mapId:start.id,x:project.startPos.x,y:project.startPos.y,playerSpriteTextureLoaded:true},shot:true},

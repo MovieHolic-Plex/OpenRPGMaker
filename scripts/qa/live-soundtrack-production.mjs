@@ -89,18 +89,20 @@ try {
     report.latest=snapshot();save();
     if (!await page.evaluate(()=>window.__oprnAiBridge.status().turnBusy) && (report.requests.length || /지시 해석 실패|worker exited/u.test(report.chatTail))) break;
   }
+  if (await page.evaluate(()=>window.__oprnAiBridge.status().turnBusy)) throw new Error('Assistant deadline reached before save completion');
   if (!report.requests.length) throw new Error('Actual agent run did not start: ' + report.chatTail.slice(-700));
   const html=await(await fetch(base+'/index.html')).text();
   const config=JSON.parse(html.match(/window\.__OPRN_BRIDGE__=(\{[^<]+\})<\/script>/)[1]);
   const wire=await fetch(base+'/v1/agent/run?provider=google-antigravity&runId='+report.requests.at(-1).runId,{headers:{'x-oprn-companion-token':config.companionToken,origin:base},signal:AbortSignal.timeout(5000)});
   const events=(await wire.text()).trim().split('\n').map(line=>JSON.parse(line));
   report.workerCompleted=events.some(e=>e.type==='done');
+  report.workerErrors=events.filter(e=>e.type==='error').map(e=>e.message??e.error??e.summary);
   report.imageGenerationFailures=events.filter(e=>e.type==='tool_end'&&e.name==='generate_opening_image'&&e.ok===false).map(e=>e.summary);
   report.successfulImageGenerations=events.filter(e=>e.type==='tool_end'&&e.name==='generate_opening_image'&&e.ok===true).length;
   // Keep the structured event receipt; image bytes stay in the canonical asset store.
   writeFileSync(out+'/repair-wire.json',JSON.stringify(events.map(({project,...event})=>event),(key,value)=>key==='dataUrl'||key==='base64'?undefined:(value?.type==='image'?{type:'image',mimeType:value.mimeType,base64Length:value.data?.length}:value),2)+'\n');
   // The run now awaits its final save. Also require an accepted, clean editor save before reloading.
-  report.saveProof=await page.evaluate(async()=>{const mod=await import([...document.scripts].find(s=>s.type==='module').src);const store=Object.values(mod).find(v=>v?.getCurrent&&v?.flush);const result=await store.flush();if(result.kind!=='saved'||!result.receipt)throw Error('No accepted project revision: '+result.kind);return {result,proof:await store.verifyPersistedRevision(result.receipt),dirty:store.hasUnsavedChanges()};});
+  report.saveProof=await page.evaluate(async()=>{const mod=await import([...document.scripts].find(s=>s.type==='module').src);const store=Object.values(mod).find(v=>v?.getCurrent&&v?.flush);const result=await store.flush();if(result.kind!=='saved'||!result.receipt)throw Error('No accepted project revision: '+result.kind);return {result:{kind:result.kind,receipt:result.receipt,revision:result.revision,sha256:result.sha256},proof:await store.verifyPersistedRevision(result.receipt),dirty:store.hasUnsavedChanges()};});
   report.beforeReload=snapshot();
   await page.screenshot({path:out+'/authored.png'});
   await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready,null,{timeout:300000});
@@ -120,7 +122,7 @@ try {
   const newIds=new Set(authoredEvents.filter(e=>e.type==='tool_end'&&e.ok&&['generate_original_bgm','generate_original_se'].includes(e.name)).map(e=>e.result?.data?.resourceId));
   report.generatedResources=[...newIds];
   const mapIds=report.afterReload.mapMusic.map(m=>m.bgm?.resourceId);
-  report.passed=report.workerCompleted&&report.persisted&&report.before.mapsHash===report.afterReload.mapsHash
+  report.passed=report.workerCompleted&&!report.workerErrors.length&&report.persisted&&report.before.mapsHash===report.afterReload.mapsHash
     &&JSON.stringify(report.before.titleContent)===JSON.stringify(report.afterReload.titleContent)
     &&JSON.stringify(report.before.openingContent)===JSON.stringify(report.afterReload.openingContent)
     &&report.generatedMusic>=2&&report.generatedSounds>=4&&new Set(mapIds).size>=2

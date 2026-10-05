@@ -20,7 +20,7 @@ import { playAudioCommand, stopAudioChannel } from "@/player/audio";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
 import type { M2RuntimeState } from "@/project/sessionRuntimeTypes";
 
-import { resolveMapBgm, type MapBgmResolution } from '@/project/mapMusic';
+import { resolveMapBgm, type BgmProject, type MapBgmResolution } from '@/project/mapMusic';
 export { resolveMapBgm, mapAncestorIds, FALLBACK_BGM_RESOURCE_ID } from '@/project/mapMusic';
 export type { MapBgmResolution } from '@/project/mapMusic';
 
