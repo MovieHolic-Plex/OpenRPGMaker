@@ -21,6 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 from . import derive, store  # noqa: E402
+from ..provider_errors import tail as provider_tail, classify as provider_classify, BOUNDED_CONTEXT
 
 # 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
 ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
@@ -255,6 +256,7 @@ def _start(r):
         except OSError: pass
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
+    prompt += BOUNDED_CONTEXT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.' + phase if phase != 'draw' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
     if phase != 'review2': store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
     if eng == 'codex': return _start_codex(r, prompt, effort if phase != 'draw' else EFFORT, log)
@@ -377,6 +379,9 @@ def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
+    actual = next((row for row in store.runs() if row['id']==r['id']), r)
+    if code and provider_classify(provider_tail(actual.get('log') or '')):
+        return store.update_run(r['id'],status='failed',ended=store.now(),error=f'공급자 오류({code})')
     _recover_candidate(r)
     phase = r.get('phase') or 'draw'
     if phase in ('review', 'review2'):
@@ -427,6 +432,37 @@ def _finish(r, code):
         return store.update_run(r['id'], status='done', ended=store.now())
     subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/context.py', base + '.pxg'], cwd=r['root'], capture_output=True)
     store.update_run(r['id'], status='queued', phase='review', pid=None)
+
+
+def recheck_format_errors(rounds_, queue_only=False):
+    """After a parser fix, recheck unchanged source and resume real review only."""
+    import hashlib
+    if pool_alive(): raise ValueError('먼저 해당 풀의 실행이 끝나야 합니다.')
+    n = 0
+    for rid in rounds_:
+        for r in store.runs(rid):
+            if r['status'] != 'done' or r.get('ok') or r.get('phase') != 'draw' or 'pxgrid 오류:' not in (r.get('error') or ''):
+                continue
+            path = os.path.join(_folder(r, absolute=True), _out(r) + '.pxg')
+            before = hashlib.sha256(open(path, 'rb').read()).hexdigest()
+            history = _hist(r) + [dict(stage='format-recheck', attempt=r.get('attempt') or 1,
+                                     error=r.get('error'), sourceSha256=before)]
+            store.update_run(r['id'], history=json.dumps(history, ensure_ascii=False))
+            # Do not consume another drawing attempt if parsing still fails.
+            global MAX_ATTEMPTS
+            old_limit = MAX_ATTEMPTS
+            try:
+                MAX_ATTEMPTS = r.get('attempt') or 1
+                _finish(dict(r, history=json.dumps(history, ensure_ascii=False)), 0)
+            finally:
+                MAX_ATTEMPTS = old_limit
+            if hashlib.sha256(open(path, 'rb').read()).hexdigest() != before:
+                raise ValueError('재검사 중 원본이 변경되었습니다.')
+            now = next(row for row in store.runs(rid) if row['id'] == r['id'])
+            if now['status'] == 'queued' and now['phase'] == 'review': n += 1
+    print(f'원본 유지 · 독립 검수 대기열 {n}장', flush=True)
+    if n and not queue_only: ensure_pool()
+    return n
 
 
 def review(rounds_):
@@ -646,10 +682,12 @@ def main():
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
     rr = sp.add_parser('retry-review-errors'); rr.add_argument('rounds', nargs='+', type=int); rr.add_argument('--queue-only', action='store_true')
+    rc = sp.add_parser('recheck-format-errors'); rc.add_argument('rounds', nargs='+', type=int); rc.add_argument('--queue-only', action='store_true')
     sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
     rd = sp.add_parser('redo'); rd.add_argument('items', nargs='*'); rd.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
+    if a.cmd == 'recheck-format-errors': return recheck_format_errors(a.rounds, a.queue_only)
     if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
     elif a.cmd == 'review': review(a.rounds)

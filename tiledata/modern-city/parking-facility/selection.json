@@ -1,0 +1,212 @@
+{
+  "fingerprint": "30144ed336a01d0825d0c6dfedd8f743f56972c9d977b765333f08965f38eb94",
+  "chosen": {
+    "id": "demo-1",
+    "title": "주차장 전체 · 현재 제작 결과",
+    "passed": true,
+    "summary": "데모 조립 완료 · 독립 검수 대기",
+    "reasons": [],
+    "repairFixes": [],
+    "sources": [
+      {
+        "path": "qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/harness-receipt.json",
+        "sha256": "96498e921b6187cda9728355b76ac91357009df422decdd9e7a15afbf4ea60c2"
+      },
+      {
+        "path": "harness-data/parking-facility-spec-r7-boundary-v2/parking-contract.json",
+        "sha256": "3e4e87aa9a291435dcd5cb1c1fc17ad5928e87dcc676d3d31e86e40c9701c757",
+        "label": ""
+      },
+      {
+        "path": "qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/A.png",
+        "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+        "label": "전체 칩 시트"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+        "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+        "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+        "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+        "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+        "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+        "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+        "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+        "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+        "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+        "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+      },
+      {
+        "path": "harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/art-calibration.json",
+        "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+      },
+      {
+        "path": "art-output/space-demos/187dc73cca2f0ada/existing-native-scene.json",
+        "sha256": "53a5dc40a7f68a6e02515513ccf3b753cd250ab46c61ecbce1c150503bf83f58",
+        "label": ""
+      }
+    ],
+    "images": [
+      {
+        "path": "art-output/space-demos/187dc73cca2f0ada/demo-1-0.png",
+        "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+        "label": "현재 주차장 전체 데모 · 12면/6대"
+      }
+    ],
+    "sheet": {
+      "path": "art-output/space-demos/187dc73cca2f0ada/demo-1-0.png",
+      "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+      "label": "현재 주차장 전체 데모 · 12면/6대"
+    },
+    "components": {
+      "parking-kit": "A"
+    },
+    "generation": "187dc73cca2f0ada6200002c9df535664f78f08b13f3662a1b4a10ea10244eb6",
+    "phase": "scene",
+    "caution": "실제 타일을 조립한 공간 데모입니다. 플레이·프로젝트 설치 완료를 뜻하지 않습니다.",
+    "contextReview": {
+      "gateVersion": 3,
+      "fingerprint": "922fd35fa77d83086e65e6909605adf384853593a8bf54f29768ba860301e4c8",
+      "acceptanceSha256": "db0a24c5da4c5a33537c22a31c77064c802099fa7cd731057e965e25915059f7",
+      "verdict": "PASS",
+      "facilityVerdict": "COMPLETE",
+      "imagesSeen": [
+        "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8"
+      ],
+      "previousImagesSeen": [
+        "172b4c7c168a55b34cb2dae1d477c3feb806ae35fe649ab7aaa4e109df1f80fb"
+      ],
+      "checks": {
+        "identity": {
+          "verdict": "PASS",
+          "evidence": "x120/320 두 주차열의12면·6대, 북벽/측벽, x216 기둥열과 공중 트랙, 북서 보행문·남서 경사로/차단기가 보여 라벨 없이 지하주차장 시설로 읽힌다. structure·lighting·vehicle-variety 필수 조건을 충족한다."
+        },
+        "scale": {
+          "verdict": "PASS",
+          "evidence": "448×288 실제 1배에서 x120..216 및 x320..416의 두 열에 32px 간격으로 각 6면, y64/128/192 접지의 차량 각 3대를 확인했다. 공용 원본을 장면 위치와 직접 화소 비교하여 낮은 차체 4대는 각각1583/1583, 높은 차체 2대는2080/2080 불투명 화소가 일치했다. 원본80×48 또는80×32 캔버스와 지상 점유를 구별하며 alpha bbox 높이를 차폭으로 사용하지 않았다."
+        },
+        "attachments": {
+          "verdict": "PASS",
+          "evidence": "북벽 전면y8..32는 북서 문틀x24..48에 맞물리고 좌우벽은 바닥 경계로 이어진다. 반환벽x16..24,y256..280이 남벽y280에 붙으며 경사로 접지 개구y240..272를 막지 않는다. 기둥 상단/벽 브래킷의 조명과 진입 바닥 위 차단기 접지를 확인했다. structure 및 entrance-circulation 조건을 충족한다."
+        },
+        "circulation": {
+          "verdict": "PASS",
+          "evidence": "경사로x0..120,y240..272는 서측 외곽의 지정 개구와 남연결로x24..440,y240..280에 이어진다. 차단기 하우징x52 부근과 봉x60..84는 경사로에 기초/지지다리가 접지한다. 북벽 문x24..48,y8..32의 문틀·하단은 벽 개구와 북보행띠y32..48에 붙는다. 두 차로x24..120/224..320 및 동보행띠x416..440와 남연결로의 바닥 합집합은 이어지고 기둥/차량의 몸통 접지가 끊지 않는다. 도색선과 천장 트랙을 바닥 장애물로 세지 않았으며 운전·충돌·엔진 보행 검증을 주장하지 않는다."
+        },
+        "projection": {
+          "verdict": "PASS",
+          "evidence": "공용 자동차 원본과 승인 표본12548d59… 및 구조 기준6ef35a1f…를 현재1배/3배와 비교했다. 차량 지붕·보닛은 면으로 남고 밝은 윗면 아래 옆면·타이어가 분리된다. 북벽 캡y4..8/전면y8..32, 기둥x216..224의 밝은 캡/24px 전면, 조명 하우징의 밝은 위/어두운 아래가 camera의 수평 지상축과 위쪽 높이축을 따른다. 빈면 턱x198/398의8×14 윗면과2px 전면은 낮은 바닥 기물로 읽히며 점유면에서는 앞타이어 뒤에 가려진다."
+        },
+        "style": {
+          "verdict": "PASS",
+          "evidence": "공용차의 좌상 밝은 지붕·아래 어두운 옆면과 북벽 밝은 캡/어두운 전면, 기둥x216의 높이와 트랙의 얇은 하우징을 대조했다. 턱 전면은2px로 기둥24px 전면과 구별되며 천장트랙은 기둥 상단에서 연결되어 바닥 기물로 대체되지 않는다. three-quarter와 lighting 조건의 위/아래 면·접지 관계가 일관된다."
+        },
+        "spaceUse": {
+          "verdict": "PASS",
+          "evidence": "두96px 차로x24..120/224..320가 각6면에 붙고 남40px 연결로y240..280는 경사로 및 양 차로를 잇는다. 오른쪽은24px 보행띠x416..440와8px 경계벽이며 아래는 출입·횡연결로와 컷어웨이로 실제 쓰인다. 캔버스 대비 두 차로의 직사각 영역은약31.0%, 남연결로12.9%,12면28.6%이며 서로의 중첩과 시설 점유를 별도 고려했다. 넓은 독립 무용도 바닥은 보이지 않고 화살표·문·개구·주차선으로 목적이 설명 없이 읽힌다."
+        },
+        "composition": {
+          "verdict": "PASS",
+          "evidence": "두 차체·세 색조의 차량이 주차열을 구분하고 북벽 패널 이음, 중앙기둥4개와 조명7개가 반복 구조를 만든다. 밝은 차량 윗면/흰 도색, 낮은 대비 콘크리트, 캡·전면·접지띠가 분리된다. 아래는 진입/연결, 오른쪽은 보행으로 조직되어 장식 없이 structure·lighting·vehicle-variety·space-use 필수 조건을 충족한다. 미세 색 취향이나 노이즈량을 새 탈락 기준으로 추가하지 않았다."
+        },
+        "specification": {
+          "verdict": "PASS",
+          "evidence": "approvedLayout의448×288, 두96×32 주차면열 각6면·원본차량6대, 두96px 차로·북16/동24 보행띠·남40px 연결로와 현재 화소를 대조했다. 지상 깊이와 높이가 화면수직으로 평행인 정사영 가설은 윗면·전면으로 분리되어 보이며 bbox를 지상폭으로 취급하지 않는다. 지정 서측 경사로y240..272와 반환벽/남벽 연결이 실제로 구현되어 vehicle-scale 및 entrance-circulation과 모순되는 치수·방향 결함은 보이지 않는다."
+        }
+      },
+      "criterionResults": {
+        "vehicle-scale": {
+          "verdict": "PASS",
+          "evidence": "448×288 실제 1배에서 x120..216 및 x320..416의 두 열에 32px 간격으로 각 6면, y64/128/192 접지의 차량 각 3대를 확인했다. 공용 원본을 장면 위치와 직접 화소 비교하여 낮은 차체 4대는 각각1583/1583, 높은 차체 2대는2080/2080 불투명 화소가 일치했다. 원본80×48 또는80×32 캔버스와 지상 점유를 구별하며 alpha bbox 높이를 차폭으로 사용하지 않았다."
+        },
+        "three-quarter": {
+          "verdict": "PASS",
+          "evidence": "공용 자동차 원본과 승인 표본12548d59… 및 구조 기준6ef35a1f…를 현재1배/3배와 비교했다. 차량 지붕·보닛은 면으로 남고 밝은 윗면 아래 옆면·타이어가 분리된다. 북벽 캡y4..8/전면y8..32, 기둥x216..224의 밝은 캡/24px 전면, 조명 하우징의 밝은 위/어두운 아래가 camera의 수평 지상축과 위쪽 높이축을 따른다. 빈면 턱x198/398의8×14 윗면과2px 전면은 낮은 바닥 기물로 읽히며 점유면에서는 앞타이어 뒤에 가려진다."
+        },
+        "structure": {
+          "verdict": "PASS",
+          "evidence": "북벽x16..448은 문틀 양옆에서 캡과 전면이 연속되고 서벽x16..24·동벽x440..448이 측면 경계를 만든다. 서측 반환벽x16..24의 캡y248..256/전면y256..280은 남컷어웨이y280..288에 연결되어 경사로 밖 추가 개구를 닫는다. 기둥4개 접지x216..224,y80..88/144..152/208..216/272..280은 차로와 북·동 보행띠를 침범하지 않는다. 북벽 이음과 반복 기둥이 시설의 깊이를 읽히게 한다."
+        },
+        "lighting": {
+          "verdict": "PASS",
+          "evidence": "북벽등x149/349 부근 외에 y56/120/184의 서측·중앙 트랙6개와 y248 남쪽 트랙1개를 확인했다. 서측 트랙은 x20..24 벽 브래킷에서, 중앙·남쪽 트랙은 x216..224 기둥 상단에서 연결되어 지상에 누운 선과 구별된다. 남쪽 기둥 접지y272와 트랙y248의 높이 관계가 보이며 밝은 하우징 위/어두운 아래 면, 벽·기둥의 접지띠와 차량의 아래 타이어가 일관된다. 바닥 얼룩으로 조명을 대신하지 않았다."
+        },
+        "entrance-circulation": {
+          "verdict": "PASS",
+          "evidence": "경사로x0..120,y240..272는 서측 외곽의 지정 개구와 남연결로x24..440,y240..280에 이어진다. 차단기 하우징x52 부근과 봉x60..84는 경사로에 기초/지지다리가 접지한다. 북벽 문x24..48,y8..32의 문틀·하단은 벽 개구와 북보행띠y32..48에 붙는다. 두 차로x24..120/224..320 및 동보행띠x416..440와 남연결로의 바닥 합집합은 이어지고 기둥/차량의 몸통 접지가 끊지 않는다. 도색선과 천장 트랙을 바닥 장애물로 세지 않았으며 운전·충돌·엔진 보행 검증을 주장하지 않는다."
+        },
+        "vehicle-variety": {
+          "verdict": "PASS",
+          "evidence": "왼열 회청색 낮은 차체(141..211,y36..64), 빨강 높은 차체(141..211,y88..128), 녹색 낮은 차체(141..211,y164..192)와 오른열 빨강/회청색/녹색이 보여 차체2종·색조3종·양방향을 충족한다. 각 차량의 공용 재고 칩을 장면과 원본1배 화소 비교했고 전부 일치한다. 높은 빨강 지붕과 낮은 회청/녹색 지붕의 외곽이 달라 단순 색 복제6대가 아니다."
+        },
+        "space-use": {
+          "verdict": "PASS",
+          "evidence": "두96px 차로x24..120/224..320가 각6면에 붙고 남40px 연결로y240..280는 경사로 및 양 차로를 잇는다. 오른쪽은24px 보행띠x416..440와8px 경계벽이며 아래는 출입·횡연결로와 컷어웨이로 실제 쓰인다. 캔버스 대비 두 차로의 직사각 영역은약31.0%, 남연결로12.9%,12면28.6%이며 서로의 중첩과 시설 점유를 별도 고려했다. 넓은 독립 무용도 바닥은 보이지 않고 화살표·문·개구·주차선으로 목적이 설명 없이 읽힌다."
+        }
+      },
+      "comparisons": {
+        "parking-kit/expanded-scene/fix/0/0c2bae795506": {
+          "status": "resolved",
+          "before": "이전416×288 그림은 북벽만 이어지고 서벽의 짧은 반환부x8 부근 아래로 좌우/남 경계가 열린 회색 바닥이며 기둥·경사로·문이 없었다.",
+          "after": "현재448×288는 북벽x16..448, 좌우벽x16..24/440..448, 중앙기둥4개와 남컷어웨이, 북서문 및 남서 경사로/차단기로 구조와 출입을 갖춘다.",
+          "evidence": "1배와3배에서 반환벽x16..24의 캡y248..256/전면y256..280이 남벽y280에 이어지고 경사로 개구y240..272만 남는다. 문은 북벽 전면에, 기둥은 차로 밖 접지에 연결되어 structure·entrance-circulation 누락 지적을 해소했다."
+        },
+        "parking-kit/expanded-scene/fix/1/e4a72dd64380": {
+          "status": "resolved",
+          "before": "이전x112..208/304..400 주차열에는 같은 회청색 낮은 차체6대가 같은 방향으로 반복되며 좌우·아래 열린 바닥의 시설 용도가 약했다.",
+          "after": "현재x120..216/320..416 주차열은 낮은차체4대·높은차체2대, 회청/빨강/녹색 각2대와 양방향으로 바뀌고 측벽·기둥·문·진입부가 공간을 조직한다.",
+          "evidence": "빨강차의 높고 넓게 보이는 지붕 외곽과 회청/녹색의 낮은 지붕 외곽을 직접 비교했다. 오른쪽24px는 보행 연결, 아래40px는 경사로와 양 차로 연결로 실제 이어져 vehicle-variety·space-use 조건을 충족한다. 콘크리트 색 유지 자체를 해결 근거로 쓰지 않았다."
+        },
+        "parking-kit/expanded-scene/fix/2/ccd48e973ecc": {
+          "status": "resolved",
+          "before": "이전 북벽x128/320 부근 등2개 외에는 중앙y100..220 및 남쪽y240..288에 조명 하우징이나 부착 설비가 없었다.",
+          "after": "현재y56/120/184 서측·중앙 트랙6개와 남쪽y248 트랙1개가 밝은 하우징/어두운 전면을 갖추고 벽·기둥에 연결된다.",
+          "evidence": "중앙트랙 시작x220 부근은 기둥상단y56/120/184에, 남트랙y248은 남기둥 접지y272보다24px 위에 붙는다. 서측도 벽 경계 브래킷에서 연속되어 떠 있는 소품이나 바닥 노이즈가 아닌 천장 설비로 읽히므로 lighting 지적을 해결했다."
+        },
+        "parking-kit/expanded-scene/fix/3/2996528ddaa5": {
+          "status": "resolved",
+          "before": "이전 두 열린 종방향 차로와 아래 연결 바닥은 보였지만 외곽 차량 개구·경사로·차단기·벽 보행문과 방향 화살표가 없었다.",
+          "after": "현재서측x0..120,y240..272 경사로/차단기와 남연결로, 차로 양방향 화살표 및 북벽x24..48의 보행문이 추가되었다.",
+          "evidence": "외부 경사로 바닥은 서측 지정 개구를 통과하여 남연결로와 두 차로에 붙는다. 북문하단y32와 북띠/동띠/남연결의 보행 바닥 합집합이 이어지고 차량 접지·기둥몸통이 끊지 않는다. 필수 정적 연결은 해결됐고 과거의 운전 회전·엔진 보행 입증 요구는 계약상 advisory 범위로 warnings에만 남긴다."
+        }
+      },
+      "reasons": [
+        "고정 계약의 필수7항목과 아홉 축을 실제 현재1배/3배·이전 그림·공용 기준으로 확인하여 모두 PASS다. 이전 필수 비교4건도 실제 부착·경계·차체 외곽·진입 연결 변경으로 resolved다.",
+        "시설 시각 완료 판정은 현재 이미지 해시에 한정한다. 감독 선택, 공용 등록, 정본 저장·재로드 및 실제 게임 보행 완료를 뜻하지 않는다."
+      ],
+      "fixes": [],
+      "warnings": [
+        "입력 candidates.images에는 조립 장면1장만 있으며 문은 닫힌 상태다. 별도 열림 상태 그림은 제공되지 않았고 문 애니메이션은 고정 계약의 advisory 범위다.",
+        "이전 동선 지적의 운전 회전·차량 문 여유·엔진 보행 입증 부분은 advisory다. 정적 바닥 연결만 직접 판독했으며 충돌 데이터나 시뮬레이션 통과는 검증하지 않았다.",
+        "미세 색 취향·장식량·무작위 바닥 노이즈는 권고 범위이며 강제 수정 사유로 사용하지 않았다."
+      ]
+    }
+  },
+  "selectedAt": "2026-10-05T15:48:46"
+}

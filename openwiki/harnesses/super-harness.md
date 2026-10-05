@@ -650,3 +650,71 @@ PROP_HARNESS_WORK/VEH_HARNESS_WORK로 전달한다. 두 native 실행기는 그 
 Python/JS 문법 확인과 실제 브라우저 로딩(390px에서 가로 넘침 없음)을 확인했다.
 사용자의 실제 키워드는 아직 없으므로 유료 모델의 새 시드 생성 완료를 주장하지 않는다.
 기존 공간의 조립 데모는 시각 미리보기이며 게임 정본 설치/플레이 가능 증거와 구별한다.
+
+## 공급자 오류 자동 복구 (2026-10-05)
+
+`provider_retry.py`는 실제 CLI 오류 줄의 429/502/503/504를 품질 반려와 분리한다.
+`sh.sqlite.provider_retries`에 단계·현재 수정 입력·호출 명세·시각을 저장하고
+2분 → 5분 → 15분 → 30분 간격으로 재시도한다. 이후에도 30분 간격을 유지하며
+`Retry-After` 초가 더 길면 그 시간을 지킨다. 품질 수정 10회와 사용자 결정은 소모/초기화하지 않는다.
+문맥 thrashing은 자료를 절 단위로 읽도록 지시하여 기술 재시도 최대 2회만 한다.
+그 이상과 알려지지 않은 오류는 원본 근거를 보존하고 운영 확인 대상으로 남긴다.
+
+- `job-invocations/<job>.json`: 실제 명령·프롬프트 경로·콜백 입력을 보존한다. UI에 노출하지 않는다.
+- 예약은 SQLite와 실행 잠금으로 중복 시작을 막는다. 대기는 모델 슬롯을 차지하지 않는다.
+  기존 A/B 검수는 대기 중인 형제 검수도 미완료로 계산하여 조기에 FAIL 처리하지 않는다.
+- 프로세스 손실은 저장한 예약에서 재개한다. 단계/피드백/수정 회차가 바뀌면 오래된 예약을 취소한다.
+  키워드 추가를 중지한 경우 새 제안 재시도도 취소하고 이미 만든 공간은 유지한다.
+- `native_retry.py`는 실제 실패 후보 로그를 확인한다. 정상 PASS/품질 FAIL/HARD 후보는 보존하고,
+  검수의 공급자 오류는 기존 PNG에서 해당 검수만 재개한다. 오류 로그/후보 상태를 먼저 보관한다.
+  native 실행은 승인한 원본 입력 사본과 실행 대상이 그대로인지 다시 확인한다.
+- `activity.py`는 원인·예약 시각·횟수 및 슬롯을 기다리는 상태를 보여준다. 일부 검수만 대기하는 경우도 표시한다.
+
+생성 과정에서 바뀌는 조립 예시를 입력 해시에 포함하여 공동묘지 수집이 실패한 원인은
+`layout.sources[].role="generated-preview"`로 분리한다. `art-output` 내부 PNG/JSON에만 허용하며,
+독립 검수 전에 불변 사본으로 동결한다. 시드/코드/기준 아틀라스는 원본 해시를 계속 대조한다.
+현재 출력 그림은 기존 수집 및 독립 시각 검수의 대상이며 자동 PASS로 처리하지 않는다.
+기존 공동묘지는 변경 이력 보관 후 새 도면 검수에 제출하고, 합격하면 이미 만든 그림을 수집한다.
+
+`reference_source.py`는 운영자가 등록한 `DATA/reference-catalog.json`의 정본 스냅샷 SHA와
+projectId 및 추출 문서를 확인하여 새 공간의 `reference-source.json`에 연결한다.
+공용 참고자료 출처는 새 공간의 설치 대상이 아니다. 없는 기능 어댑터나 실제 누락 자료를
+있다고 간주하지 않는다. 설치/저장 완료는 여전히 별도 정본 재로드 근거가 필요하다.
+
+운영 적용: 기존 그림/선택과 전체 paused 상태 보존. 실행 중 워커를 drain하고 새 감독으로 넘긴다.
+이번 변경에서는 Python/JS 문법과 실제 429 예약→재실행, 브라우저 상태를 확인한다.
+AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
+
+레거시 후보에 이전 실행/도면 JSON이 없더라도 완료 영수증·후보·승인 기획이 있으면
+수정 명세를 새로 준비할 수 있다. `resumeMode=collect-existing`은 native 검사 완료를
+확인하고 새 도면의 독립 검수를 통과한 경우에만 수집→데모→시각 검수로 이어진다.
+그림 결함을 자동 PASS하거나 완료 후보를 다시 queued로 바꾸는 우회가 아니다.
+
+수집기는 native 가구 `ctx-cand.png`와 장면 어댑터 `ground-context-x1.png`를 모두 지원한다.
+후보 검수 팩 내부의 실제 파일만 해시로 묶으며, 전체 공간 데모와 시각 검수 의무는 유지한다.
+
+### 마무리 우선 배정·실제 저장 상태 (2026-10-05)
+
+`settings.completion_priority`에 지정한 공간 중 실행 가능한 후반 단계(데모·검수·등록)를
+`finish_priority.py`로 먼저 배정한다. `space_supervisor.py`는 다음 빈 공간 슬롯을 이 순서로
+배정하고, `keyword_seeds.py`는 해당 대기열이 있을 때 새 키워드 제안을 보류한다.
+이미 실행 중인 작업은 끊지 않는다. 반려·사용자 판단 대기·429 대기는 영구 독점하지 않는다.
+현재 기존 5개 운영은 `super-harness-spaces.service`이고 이전 requested/completion 서비스는 drain 후 종료한다.
+
+`art_choices.installationProgress`는 현재 선택 해시와 공용 등록·정본 저장·재로드 증거가
+맞을 때만 노출한다. 플레이 확인이 남았으면 **맵 저장 완료 · 플레이 확인 남음**으로 표시하고
+기존 `installation`의 `runtimePassed` 완료 조건은 유지한다. 저장했다고 게임 검수 PASS를 만들지 않는다.
+
+하수도에서 숫자 팔레트 RLE `2:3`을 해석하지 못해 PNG가 없던 문제를 수정했다.
+`interior-props recheck-format-errors <round> --queue-only`는 기존 pxg 해시와 실패 기록을
+보존해 기계 검사를 다시 실행한다. 통과한 그림만 독립 검수에 올리고 그림 회차는 늘리지 않는다.
+`art_execution.py --resume-review`는 승인 명세가 그대로이고 미완료 행이 전부 검수 대기일 때만
+재개한다. 격리 콘텐츠 루트는 승인된 `tiledata/hand-interior/new/items.json`에서 찾는다.
+공간 슬롯 확인과 실행 예약은 공통 `space-admission.lock`으로 직렬화한다.
+여러 supervisor가 동시에 마지막 슬롯을 보고 작업을 중복 입장시키지 않도록 한다.
+
+교실 `scope:classroom`은 `classroom_choices.py`가 전용 영수증을 읽는다. `contractSha256`이 있다는
+이유만으로 주차장 `candidate/machine/independent` 구조로 읽지 않는다. native 실행 직후
+`art_receipts.py`가 원래 교실 어댑터의 receipt 함수를 호출하여 현재 state/check/verdict와 문 상태
+그림을 묶는다. 오래된 실패 영수증 때문에 PNG 생성 이후에도 멈추던 현상을 방지한다.
+실제 품목/assembly FAIL은 유지하며 전체 데모 → 독립 검수 → 피드백 수정으로 보낸다.

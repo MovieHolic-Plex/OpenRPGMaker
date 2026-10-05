@@ -7,6 +7,3 @@
 page.waitForSelector: Target page, context or browser has been closed
 Call log:
 [2m  - waiting for locator('[data-testid=\'title-screen\']') to be visible[22m
-
-
-

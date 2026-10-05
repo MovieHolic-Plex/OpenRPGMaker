@@ -98,3 +98,30 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 현재 누적 회차에서 한 번 증가하며 10회를 초기화하지 않는다. 상한이면 blocked이고 제작을 시작하지 않는다.
 수정 결과는 기존 도면→native 제작→독립 전체 조립 검수 경로로 돌아온다. 필수 결함을 모두 해결하기 전
 선택/시설 완료를 승인하지 않는다. 공용 게시/정본 저장은 그 뒤의 별도 작업이다.
+
+### 공급자 오류 재개 (2026-10-05)
+
+Super-harness의 기술 재시도는 queued 후보만 `_run`하며 이미 끝난 후보/품질 판정은 보존한다.
+`resumePhase`가 review이면 원래 attempt에서 기계 검사와 독립 검수만 다시 수행한다.
+429 등 실제 공급자 오류는 native 품질 수정 회차를 소비하지 않고 감독의 지속 예약으로 넘긴다.
+오래된 verdict.json은 새 검수 전에 제거하고, 문맥 예산은 파일 절 단위 읽기로 제한한다.
+
+Codex뿐 아니라 Claude도 `VEH_HARNESS_WORK`의 외부 작업 폴더에서 실행한다.
+Claude는 같은 native interior-props 실행기의 최소 도구/MCP 설정을 사용하고 저장소는
+`--add-dir`로 제공한다. 모델/노력 수준/그림 계약은 바꾸지 않고 불필요한 저장소 문맥만 제거한다.
+
+### 전체 시설 Allow 이후 공용 등록 (2026-10-05)
+
+`publish-parking --facility`는 `space-demo/demo-1`의 현재 선택 해시, native 시설 PASS,
+전체 공간 COMPLETE, 고정 수용 조건과 실제 그림 해시를 재검증한다.
+`parking_facility_bundle.py`가 선택 원본을 `tiledata/modern-city/parking-facility/`에 보존하고
+환경 아래층/차량·차단봉 위층의 `mc-parking-facility` 28×18 키트를 굽는다.
+두 층 재조립은 승인 이미지와 화소가 같아야 한다. 공용 참고문서는 전체 배열,
+원본 픽셀 좌표, 정상/위층 누락 비교 그림을 함께 제공한다.
+
+정본 저장은 `save-parking-project --project-dir <새 폴더> --evidence <증거 폴더>
+--recipe tiledata/modern-city/parking-facility/recipe.json`으로 한다.
+기존 칩셋 사본 `previous-tileset.json`으로 기존 프로젝트 갱신도 확인하며 저자 문서는 보존한다.
+2026-10-05 실측: 577키트 재조립 불일치 0, 시설 12면/차량6대, 보행 연결313칸.
+정본 `parking-facility-20261005`는 저장 후 닫고 다시 읽었다. 플레이어 최종 검수는 별도이며
+기존 두 면/확장판의 런타임 PASS를 새 시설에 재사용하지 않는다.

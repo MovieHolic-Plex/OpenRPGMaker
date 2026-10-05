@@ -32,4 +32,3 @@
 ### bridge-exit
 - op waitForPosition 실패: page.waitForFunction: Timeout 4000ms exceeded.
 - x: 기대 6, 실제 4
-

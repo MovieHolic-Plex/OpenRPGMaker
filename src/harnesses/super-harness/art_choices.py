@@ -55,7 +55,10 @@ def prepare(data, cid):
         receipt_ref = batch['receipt']
         receipt_path = verified(root, receipt_ref)
         receipt = read(receipt_path)
-        if receipt.get('harness') == 'modern-chipset' and receipt.get('contractSha256'):
+        if receipt.get('harness') == 'modern-chipset' and receipt.get('scope') == 'classroom':
+            import classroom_choices,sys
+            groups.append(classroom_choices.group(root,receipt,receipt_ref,sys.modules[__name__]))
+        elif receipt.get('harness') == 'modern-chipset' and receipt.get('contractSha256'):
             # Expanded scenes retain their own immutable contract; do not make
             # them overwrite the small scene's selected source to be collected.
             contract_path = safe(root, receipt.get('contractPath', 'harness-data/modern-chipset-parking/parking-contract.json'))
@@ -110,8 +113,14 @@ def prepare(data, cid):
                 passed = row.get('status') == 'done' and bool(row.get('ok')) and review.get('verdict') == 'PASS'
                 previews = []
                 if review.get('pack'):
-                    context = safe(root, str(Path(review['pack']) / 'ctx-cand.png'))
-                    previews.append(ref(root, context, '실제 칩 조립 예시 · 공간 검수 전'))
+                    # Native scene adapters use a ground context rather than the
+                    # legacy furniture ctx-cand filename. Both remain rooted and hashed.
+                    for name in ('ctx-cand.png', 'ground-context-x1.png'):
+                        candidate = Path(review['pack']) / name
+                        if not (root / candidate).is_file(): continue
+                        context = safe(root, str(candidate))
+                        previews.append(ref(root, context, '실제 칩 조립 예시 · 공간 검수 전'))
+                        break
                 if not previews:
                     previews = [dict(original, label='칩 원본 · 조립 검수 미완료')]
                     passed = False
@@ -254,10 +263,14 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     installation = None
+    installation_progress = None
     installation_path = Path(data) / 'concepts' / cid / 'art-installation.json'
     if installation_path.is_file() and groups and count == len(groups):
         receipt = read(installation_path)
         selected = {g['id']: next(i['fingerprint'] for i in g['candidates'] if i['selected']) for g in output}
+        if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
+                and receipt.get('publicRegistered') is True and receipt.get('projectId') and receipt.get('sha256')):
+            installation_progress = receipt
         if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
                 and receipt.get('publicRegistered') is True and receipt.get('runtimePassed') is True
                 and receipt.get('projectId') and receipt.get('sha256')):
@@ -268,7 +281,7 @@ def view(data, cid):
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
             'demo': document.get('demoVersion') == 1, 'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
-            'installation': installation}
+            'installation': installation, 'installationProgress': installation_progress}
 
 
 EVALUATION_TAGS = {

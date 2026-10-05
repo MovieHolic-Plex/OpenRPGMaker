@@ -28,4 +28,3 @@
 
 ### coast
 - op cinematic 실패: page.evaluate: Error: Transition missing: [data-testid="cinematic-sequence"][data-scene-id="cinematic-scene_b4b70c98-471b-4b35-9029-3755cc5c5b51"]
-

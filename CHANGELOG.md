@@ -5,6 +5,50 @@
 
 <!-- releases -->
 
+## 0.140.0 — 2026-10-05
+
+### 기능
+
+- 통합 GIF 공방과 에디터 전체 원본 캐릭터 제작 (#2130) (`d40e451`)
+
+### 수정
+
+- **super-harness** — resume classroom demos from current native receipts (#2184) (`08d8436`)
+- **super-harness** — prioritize finishing spaces and publish approved parking facility (#2183) (`f9d95e7`)
+
+## 0.139.0 — 2026-10-05
+
+### 기능
+
+- **ai** — 조수 「턴 사이 기록」 — 각 턴 밖 프론트 액션만 읽는 표면과 버튼 (`07a68a1`)
+
+### 수정
+
+- **modern-chipset** — isolate Claude worker context as well as Codex (`2c8dfdd`)
+- **super-harness** — persist provider retries and recover approved art inputs (`c1a7f7a`)
+- **ai** — 턴 사이 기록을 툴바 행 밖으로 — 좁은 도크에서 한 글자 폭으로 눌리던 것 (`02903c2`)
+
+### 문서
+
+- **ai** — 턴 사이 기록 위키를 배치·검증 실측에 맞춤 + 화면 증거 추가 (`ac2e847`)
+
+### 테스트
+
+- **ai** — 복사 스텁에 인자 타입을 붙여 tsc void/string 불일치를 없앤다 (`19a7591`)
+
+## 0.138.0 — 2026-10-05
+
+### 기능
+
+- **harnesses** — share the canonical catalog for unified production planning (#2174) (`c2d1fac`)
+- 월드맵 팔레트에 연결 지형 붓과 빈 지도 저작 추가 (`49572a2`)
+
+### 수정
+
+- 월드맵 경사로 폭·빈 칸 채우기·아이콘 설명을 타입에 맞춘다 (`90a8f26`)
+- unify audited charset references with full tool evidence (#2175) (`2171170`)
+- 월드맵 고개 폭을 맞추고 팔레트 저작 정본 증거 기록 (`ac6c3bf`)
+
 ## 0.137.0 — 2026-10-05
 
 ### 기능

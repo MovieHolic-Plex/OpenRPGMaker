@@ -36,6 +36,7 @@ import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_demo
 import keyword_seeds
+import provider_retry
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
 import art_repair  # noqa: E402
@@ -107,10 +108,21 @@ def object_particle(word):
 def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=None):
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
     jid = store.add_job(cid, kind, tag, log_path)
-    p = subprocess.Popen(cmd, cwd=cwd, env=ENV, stdin=open(stdin_path, 'rb') if stdin_path else subprocess.DEVNULL,
-                         stdout=open(log_path, 'w'), stderr=subprocess.STDOUT, start_new_session=True)
+    saved = dict(meta, kind=kind, tag=tag, concept=cid, invocation={'cmd':cmd,'cwd':str(cwd),'log':str(log_path),'timeout':timeout,'stdin':str(stdin_path) if stdin_path else None})
+    write_json(os.path.join(DATA, 'job-invocations', str(jid)+'.json'), saved)
+    try:
+        with open(log_path, 'w') as output:
+            source = open(stdin_path, 'rb') if stdin_path else None
+            try:
+                p = subprocess.Popen(cmd, cwd=cwd, env=ENV, stdin=source or subprocess.DEVNULL,
+                                     stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+            finally:
+                if source: source.close()
+    except Exception:
+        store.update_job(jid, status='launch-failed', ended=store.now())
+        raise
     store.update_job(jid, pid=p.pid)
-    PROCS[jid] = (p, time.time() + timeout, dict(meta, kind=kind, tag=tag, concept=cid))
+    PROCS[jid] = (p, time.time() + timeout, saved)
     store.log(cid, f'시작 — {kind} {tag}'.strip())
     return jid
 
@@ -135,8 +147,8 @@ def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=N
     return start_proc(cid, kind, tag, cmd, work, log_path, CODEX_TIMEOUT, {'result': result_path}, stdin_path=prompt_path)
 
 
-def running(kinds=None):
-    return [m for (_, _, m) in PROCS.values() if kinds is None or m['kind'] in kinds]
+def running(kinds=None, include_waiting=True):
+    return [m for m in [*(m for _,_,m in PROCS.values()), *(provider_retry.pending_meta() if include_waiting else [])] if kinds is None or m['kind'] in kinds]
 
 
 def kill(jid):
@@ -163,6 +175,8 @@ def reap():
                          result=result if result is not None else {'exit': code})
         try:
             if not meta.get('superseded'):
+                if provider_retry.capture(sys.modules[__name__], jid, meta, code): continue
+                provider_retry.finished(meta)
                 HANDLERS[meta['kind']](meta, code, result)
         except Exception as error:
             store.log(meta['concept'], f'처리 오류 — {meta["kind"]}: {traceback.format_exc()[-600:]}')
@@ -639,6 +653,8 @@ def start_art(c):
             os.replace(previous, cdir(cid, 'art-result.previous.json'))
         else:
             os.remove(previous)
+    import reference_source
+    reference_source.ensure(DATA, cid)
     art_feedback.ensure_layout_feedback(DATA, cid)
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     prior_layout = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
@@ -665,6 +681,10 @@ def on_art(meta, code, result):
             # Models are chosen by the user/supervisor, never by a preparation worker.
             request.pop('modelOverride', None)
             request.pop('repairLimits', None)
+            if request.get('resumeMode') != 'collect-existing': request.pop('resumeMode', None)
+            if request.get('resumeMode') == 'collect-existing' and art_execution.native_errors(wt, request):
+                raise ValueError('기존 후보 재사용은 완료된 native 검사 근거가 필요합니다.')
+            art_layout.freeze_generated_previews(wt, request)
             feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
             if (store.concept(cid).get('art_revision') or 0) > 0:
                 if request.get('feedbackSha256') != gates.digest(cdir(cid, 'art-feedback.json')):
@@ -674,7 +694,7 @@ def on_art(meta, code, result):
             if override:
                 request['modelOverride'] = override
             art_acceptance.bind(wt, cdir(cid), request)
-            art_execution.prepare(wt, request)
+            if request.get('resumeMode') != 'collect-existing': art_execution.prepare(wt, request)
             request_path = cdir(cid, 'art-execution.json')
             write_json(request_path, request)
             layout = art_layout.build_input(wt, request)
@@ -972,11 +992,17 @@ def on_art_layout_review(meta, code, result):
         write_json(cdir(cid, 'art-execution.json'), request)
         art_layout.require_approval(wt, request)
         art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], read_json(cdir(cid, 'art-feedback.json'), {}))
-        art_execution.prepare(wt, request)
+        if request.get('resumeMode')=='collect-existing':
+            if art_execution.native_errors(wt,request): raise ValueError('완료되지 않은 native 결과는 수집 재개 불가')
+            on_art_native({'concept':cid},0,{'exitCode':0})
+            return
+        technical = request.get('resumeMode')=='technical'
+        if not technical: art_execution.prepare(wt, request)
         native_result = cdir(cid, 'art-execution-result.json')
         if os.path.exists(native_result): os.remove(native_result)
+        if technical: write_json(Path(native_result).with_suffix('.approved.json'), art_layout.require_approval(wt, request))
         start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
-                   wt, cdir(cid, 'art-execution.json'), native_result], ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
+                   wt, cdir(cid, 'art-execution.json'), native_result] + (['--resume-technical'] if technical else []), ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
                    {'result': native_result})
         store.update_concept(cid, stage='art', status='running', reasons=[], note='도면 검수 통과 — 후보 제작·독립 검수')
     except (OSError, ValueError, TypeError, KeyError) as error:
@@ -1229,10 +1255,11 @@ def tick():
     reap()
     if store.setting('paused') == '1':
         return
+    provider_retry.tick(sys.modules[__name__])
     max_codex = int(store.setting('max_codex'))
     keyword_seeds.tick(sys.modules[__name__])
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'], include_waiting=False)) + need <= max_codex
 
     release_waiting()
     active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','art-demo','build','review','probe','bake','unbake')")
@@ -1250,7 +1277,8 @@ def tick():
         start_discover()
 
     for c in store.concepts("stage='art' AND status='queued'"):
-        if len(running(['art', 'art-native'])) >= int(store.setting('max_art')) or not codex_free():
+        if provider_retry.pending(c['id']): continue
+        if len(running(['art', 'art-native'], include_waiting=False)) >= int(store.setting('max_art')) or not codex_free():
             break
         start_art(c)
 
@@ -1259,6 +1287,7 @@ def tick():
     candidates = sorted((c for c in active if c['stage'] not in ('bake', 'unbake')),
                         key=lambda c: (c['status'] != 'running', -(c['priority'] or 0)))
     for c in publishing + candidates[:int(store.setting('max_active'))]:
+        if provider_retry.pending(c['id']): continue
         if c['status'] != 'running' and any(m['concept'] == c['id'] for m in running()):
             continue
         if c['status'] == 'running' and c['stage'] != 'probe':
@@ -1419,6 +1448,7 @@ def first_sentence(text, limit=90):
 
 
 def plain_status(c):
+    if c.get('status') == 'retry-wait': return c.get('note') or '공급자 오류 · 자동 재시도 대기'
     stage, n = c['stage'], c['attempt'] or 1
     if stage == 'result-review':
         return '완성된 결과 확인 · Allow / Deny'
@@ -1448,6 +1478,7 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
+        if choices.get('installationProgress'): return '공용 등록·맵 저장 완료 · 플레이 확인 남음'
         if choices.get('demo') and choices['complete']: return '공간 데모 Allow 저장 완료'
         return '공용 등록 연결 필요 · 실행 예약 없음' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':

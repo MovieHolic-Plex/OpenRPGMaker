@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 
-def prepare(root, request):
+def prepare(root, request, resume=False):
     root = Path(root).resolve()
     if not isinstance(request, dict):
         raise ValueError('그림 실행 요청 형식 오류')
@@ -29,12 +29,21 @@ def prepare(root, request):
     work_base = Path(os.environ.get('SUPER_HARNESS_DATA', Path.home()/'.local/share/oprn/super-harness')) / 'work' / 'native'
     work = work_base / (root.name + '-' + hashlib.sha256(str(request.get('data', '')).encode()).hexdigest()[:12])
     work.mkdir(parents=True, exist_ok=True)
-    env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work))
+    env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work),
+               VEH_CODEX_BIN=os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex'))
     harness = request.get('harness')
     if harness == 'interior-props':
         env.update(PROP_HARNESS_DATA=local('data'), HIP_DATA=local('picks'), HIP_PICK=local('picks'))
         # Use the same installed CLI selected by the supervisor, not a shell shim.
         env['PROP_HARNESS_CODEX_BIN'] = os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex')
+        # Prepared content can live below art-output. Resolve its approved seed,
+        # never inherit the unrelated global prop picker's content directory.
+        import art_layout
+        layout = json.loads(art_layout.verified(root, request['layout']).read_text())
+        roots = {art_layout.verified(root, ref).parents[3] for ref in layout['sources']
+                 if ref['path'].endswith('/tiledata/hand-interior/new/items.json')}
+        if len(roots) > 1: raise ValueError('여러 소품 콘텐츠 루트가 섞인 주문서')
+        if roots: env['PROP_HARNESS_CONTENT_ROOT'] = str(next(iter(roots)))
         command = ['src/harnesses/interior-props/harness.py', 'pool']
     elif harness == 'modern-chipset':
         round_id = request.get('round')
@@ -55,7 +64,7 @@ def prepare(root, request):
             state = json.loads((Path(local('runs')) / request['round'] / 'state.json').read_text())
             if not state.get('cands') or len(state['cands']) > count:
                 raise ValueError(f'수정 후보는 최대 {count}개여야 합니다. 기본 풀 재실행 금지.')
-            if any(c.get('status') != 'queued' for c in state['cands'].values()):
+            if not resume and any(c.get('status') != 'queued' for c in state['cands'].values()):
                 raise ValueError('수정 실행은 새로 준비한 queued 후보만 받습니다.')
             env['VEH_HARNESS_ATTEMPTS'] = str(attempts)
         elif harness == 'interior-props':
@@ -98,6 +107,8 @@ def native_errors(root, request):
             if not isinstance(review, dict):
                 errors.append(f"후보 {row.get('id')}: 검수 결과 객체 없음"); continue
             verdict = str(review.get('verdict', '')).upper()
+            if request['harness']=='interior-props' and 'pxgrid 오류:' in (row.get('error') or ''):
+                errors.append(f"후보 {row.get('id')}: 원본 표기법 오류 — {row['error']}"); continue
             review_required = request['harness'] == 'modern-chipset' or str(row.get('phase', '')).startswith('review') or row.get('ok')
             if row.get('status') != 'done' or verdict == 'ERROR' or (review_required and verdict not in ('PASS', 'FAIL', 'HARD')):
                 errors.append(f"후보 {row.get('id')}: {row.get('status')} / {row.get('phase', '')} — " +
@@ -153,8 +164,25 @@ def main():
     signal.signal(signal.SIGTERM, stop); signal.signal(signal.SIGINT, stop)
     request = json.loads(request_file.read_text())
     import art_layout
-    approved = art_layout.require_approval(root, request)
-    command, env = prepare(root, request)
+    snapshot = result_file.with_suffix('.approved.json')
+    review_resume = '--resume-review' in sys.argv[4:]
+    resume = '--resume-technical' in sys.argv[4:] or review_resume
+    if resume:
+        approved=json.loads(snapshot.read_text())
+        art_layout.require_completed(root, request, approved)
+        if review_resume and '--resume-technical' not in sys.argv[4:]:
+            if request['harness'] != 'interior-props': raise ValueError('소품 검수 재개만 허용')
+            with sqlite3.connect(root/request['data']/'harness.sqlite') as db:
+                rows = db.execute("SELECT status,phase FROM runs WHERE status!='done'").fetchall()
+            if not rows or any(status!='queued' or phase not in ('review','review2') for status,phase in rows):
+                raise ValueError('재검사를 통과한 검수 대기열만 재개할 수 있습니다.')
+        else:
+            import native_retry
+            native_retry.reset(root, request)
+    else:
+        approved = art_layout.require_approval(root, request)
+        snapshot.write_text(json.dumps(approved,ensure_ascii=False))
+    command, env = prepare(root, request, resume=resume)
     # Prepared briefs necessarily predate independent review. Pass the current
     # validated approval separately instead of mutating hash-bound instructions.
     if request['harness'] == 'modern-chipset':
@@ -165,6 +193,9 @@ def main():
             'acceptance': approved.get('acceptance'),
         }, ensure_ascii=False)
     code = subprocess.call(command, cwd=root, env=env)
+    if code == 0:
+        import art_receipts
+        art_receipts.refresh(root,request)
     errors = native_errors(root, request)
     code = code or (1 if errors else 0)
     result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code, 'nativeErrors': errors}, ensure_ascii=False))

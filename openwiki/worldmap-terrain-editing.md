@@ -26,7 +26,7 @@ variantMap, 실제 배열과 정상/오류 PNG를 싣는다. 새/기존 프로�
 
 편집기 페인트·지우기·채우기는 상위 연결도 다시 맞추고 변경 이웃 칸을 통지한다.
 native 증거 실행기는 `scripts/qa/worldmap-palette-authoring-native.mjs`이다. 전체 테스트/게이트와 별개다.
-고개 붓은 월드맵 길에 맞춘 폭 1칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
+고개 붓은 폭 2칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
 실제 빈 지도 저작·통행·공용 사전·정본 재로드 근거는 [검증 기록](../verify-shots/worldmap-authoring/README.md)을 따른다.
 
 ## 적대적 시각 검수로 수정한 연결부 (2026-10-05)

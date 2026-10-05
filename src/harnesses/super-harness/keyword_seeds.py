@@ -7,6 +7,8 @@ import time
 import unicodedata
 
 import store
+import provider_retry
+import finish_priority
 
 BATCH = 6
 BACKLOG = 12
@@ -77,8 +79,11 @@ def snapshot():
                      done=sum(c['stage'] == 'done' for c in children),
                      review=sum(c['stage'] in ('art-review', 'result-review') for c in children),
                      blocked=sum(c['stage'] == 'blocked' for c in children))
+            retries=provider_retry.rows("kind='seed-discover' AND tag=? AND status IN ('pending','claiming')",(s['id'],))
+            s['providerRetryAt']=min((r['due'] for r in retries),default=None)
             s['label'] = ('새 공간 추가 중지 · 시작한 공간은 계속 제작' if not s['active'] else
                           '관련 공간을 기획하는 중' if running else
+                          '모델 공급자 오류 · 자동 재시도 대기' if retries else
                           '공간 제안 재시도 대기' if s['retry_after'] > time.time() else
                           '제작·확인 중인 공간 12개 · 처리되면 계속 추가' if pending >= BACKLOG else
                           '다음 공간 제안 대기 · 작업 자리가 나면 자동 시작')
@@ -97,6 +102,7 @@ def failed(sid, message):
 
 def tick(sh, slots=3):
     """One cross-process admission lock; never runs an implicit/random seed."""
+    if finish_priority.waiting(): return
     init()
     store.set_setting('keyword_scheduler_tick', time.time())
     folder = Path(sh.DATA) / 'keyword-seeds'
@@ -114,6 +120,7 @@ def tick(sh, slots=3):
             return  # shared assembly/publication remains exclusive
         candidates = sorted(snapshot()['items'], key=lambda s: (s['wave'], s['updated']))
         for s in candidates:
+            if any(m.get('kind') == 'seed-discover' and m.get('tag') == s['id'] for m in sh.provider_retry.pending_meta()): continue
             if not s['active'] or s['running'] or s['pending'] >= BACKLOG or s['retry_after'] > time.time():
                 continue
             wave = s['wave'] + 1

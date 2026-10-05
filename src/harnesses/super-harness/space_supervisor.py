@@ -15,6 +15,7 @@ import sh
 import store
 import art_feedback
 import review_recovery
+import finish_priority
 
 # These phases write only concept artifacts or its own art worktree. Shared
 # assembly/probe/publication keep exclusive access until independently isolated.
@@ -25,6 +26,8 @@ PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover'}
 
 def admission(concept, jobs, slots, max_jobs):
     """Persisted running records reserve slots, including a pending reap."""
+    priority = finish_priority.reason(concept)
+    if priority: return priority
     if any(j['concept'] == concept['id'] for j in jobs):
         return 'same-concept'
     if concept['stage'] not in PARALLEL_STAGES:
@@ -126,35 +129,41 @@ def main(ids):
                 # named requests while global discovery remains paused.
                 waits = {}
                 if not draining and store.setting('paused') == '1':
-                    if keywords: sh.keyword_seeds.tick(sh, slots)
-                    sh.release_waiting(ids)
-                    for cid in ids:
-                        if store.concept(cid)['stage'] == 'discovered':
-                            store.update_concept(cid, stage='plan', status='queued')
-                    start = cursor
-                    exclusive = next((c['id'] for c in (store.concept(cid) for cid in ids)
-                        if c['stage'] in handlers and c['stage'] not in PARALLEL_STAGES
-                        and c['status'] != 'running'), None)
-                    for offset in range(len(ids)):
-                        index = (start + offset) % len(ids)
-                        cid = ids[index]
-                        if store.jobs("concept=? AND status='running'", (cid,)): continue
-                        recover(cid)
-                        c = store.concept(cid)
-                        if c['stage'] in ('art-review', 'art-context-review') and sh.art_demo.required(sh.DATA, cid):
-                            sh.advance_art_review(cid)
+                    with finish_priority.admissions():
+                        sh.provider_retry.tick(sh, ids + ([None] if keywords else []), slots)
+                        if keywords: sh.keyword_seeds.tick(sh, slots)
+                        sh.release_waiting(ids)
+                        for cid in ids:
+                            if store.concept(cid)['stage'] == 'discovered':
+                                store.update_concept(cid, stage='plan', status='queued')
+                        ids = finish_priority.order(ids)
+                        start = 0 if finish_priority.waiting() else cursor
+                        exclusive = next((c['id'] for c in (store.concept(cid) for cid in ids)
+                            if c['stage'] in handlers and c['stage'] not in PARALLEL_STAGES
+                            and c['status'] != 'running'), None)
+                        for offset in range(len(ids)):
+                            index = (start + offset) % len(ids)
+                            cid = ids[index]
+                            if store.jobs("concept=? AND status='running'", (cid,)): continue
+                            if sh.provider_retry.pending(cid):
+                                waits[cid] = 'provider-backoff'
+                                continue
+                            recover(cid)
                             c = store.concept(cid)
-                        if c['stage'] not in handlers or (c['status'] == 'running' and c['stage'] != 'probe'): continue
-                        if exclusive and cid != exclusive:
-                            waits[cid] = 'shared-stage'
-                            continue
-                        reason = admission(c, store.jobs("status='running'"), slots,
-                                           int(store.setting('max_codex')))
-                        if reason:
-                            waits[cid] = reason
-                            continue
-                        handlers[c['stage']](c)
-                        cursor = (index + 1) % len(ids)
+                            if c['stage'] in ('art-review', 'art-context-review') and sh.art_demo.required(sh.DATA, cid):
+                                sh.advance_art_review(cid)
+                                c = store.concept(cid)
+                            if c['stage'] not in handlers or (c['status'] == 'running' and c['stage'] != 'probe'): continue
+                            if exclusive and cid != exclusive:
+                                waits[cid] = 'shared-stage'
+                                continue
+                            reason = admission(c, store.jobs("status='running'"), slots,
+                                               int(store.setting('max_codex')))
+                            if reason:
+                                waits[cid] = reason
+                                continue
+                            handlers[c['stage']](c)
+                            cursor = (index + 1) % len(ids)
                 concepts = [store.concept(cid) for cid in ids]
                 sh.write_json(folder / 'latest.json', {'at': store.now(), 'pid': os.getpid(),
                     'concepts': [{k: c.get(k) for k in ('id','title','stage','status','note','art_revision')} for c in concepts],

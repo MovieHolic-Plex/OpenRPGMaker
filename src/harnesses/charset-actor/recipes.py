@@ -10,9 +10,25 @@ from pathlib import Path
 import chr as C
 import harness as H
 import motion as M
+import animal_motion as A
 
 VERSION = 1
-TOOLS = ('chr.py', 'harness.py', 'bulk.py', 'pixel_ops.py', 'recipes.py', 'delivery.py', 'audit.py', 'motion.py')
+TOOLS = ('chr.py', 'harness.py', 'bulk.py', 'pixel_ops.py', 'recipes.py', 'delivery.py', 'audit.py', 'motion.py', 'animal_motion.py')
+MONSTER_THEMES = (
+    '이끼·잎·작은 가지가 몸 일부가 된 숲의 짐승',
+    '불씨·그을린 털·작은 뿔을 가진 화염 짐승',
+    '서리 결정·차가운 털·작은 얼음 등판을 가진 설원 짐승',
+    '독 무늬·가시·독샘이 읽히는 독성 짐승',
+    '그림자 털·창백한 얼굴 표식·붉은 눈의 밤 짐승',
+    '돌/광석 등판·무거운 발톱을 가진 바위 짐승',
+    '물갈퀴·물결 무늬·젖은 비늘을 가진 물가 짐승',
+    '작은 번개 갈기·날카로운 털·전기 표식의 뇌전 짐승',
+    '버섯/포자·균사 무늬를 가진 습지 짐승',
+    '작은 갑피·강한 발톱·등판을 가진 갑각 짐승',
+    '뼈 장갑·해골 얼굴 표식의 언데드 짐승',
+    '밝은 깃/털·작은 빛 표식의 정령 짐승',
+    '짧은 뿔·붉은 갑피·어두운 갈기를 가진 마수',
+)
 VARIATIONS = (
     '깃·소매·허리띠의 형태와 작은 무늬를 새로 정한다.',
     '앞머리·묶음·옆머리의 작은 형태와 옷깃을 새로 정한다.',
@@ -100,7 +116,7 @@ def create(source_run, name='남긴 그림 변주'):
                 mode = meta.get('authoringMode', 'grid')
                 if mode not in ('grid', 'pixel-patches-v1'):
                     raise ValueError('지원하지 않는 기준 저작 방식')
-                template = 'pixel-worker.md' if mode == 'pixel-patches-v1' else 'free-worker.md'
+                template = 'animal-worker.md' if meta.get('animalPolicy') is not None else ('pixel-worker.md' if mode == 'pixel-patches-v1' else 'free-worker.md')
                 shutil.copyfile(H.HERE / template, folder / 'worker.md')
                 H.write_json_atomic(folder / 'source-meta.json', meta)
                 prompt = w.resolve().parent.parent / 'prompt.md'
@@ -113,10 +129,12 @@ def create(source_run, name='남긴 그림 변주'):
                 seeds.append(dict(index=index, sourceId=record['id'], acceptance=record, base=base,
                                   sourceBase=meta['base'], sourceBrief=row.get('brief', ''),
                                   authoringMode=mode, folder=str(folder.relative_to(root)),
-                                  label=H._desc(w).get('label', row.get('name', '')), inputSha256=sha(folder / 'input.png')))
+                                  label=H._desc(w).get('label', row.get('name', '')), inputSha256=sha(folder / 'input.png'),
+                                  animalProfile=meta.get('animalProfile')))
             recipe = dict(version=VERSION, id=rid, name=str(name)[:120], at=H.now(), sourceRun=source_run,
                           model={k: H.ENGINES['gpt'][k] for k in ('model', 'effort')},
-                          animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=M.VERSION, initialImages=0, seeds=seeds, files=files,
+                          animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=None if manifest.get('animalPolicy') else M.VERSION,
+                          animalPolicy=manifest.get('animalPolicy'), initialImages=0, seeds=seeds, files=files,
                           tools={file: sha(H.HERE / file) for file in TOOLS})
             H.write_json_atomic(root / 'recipe.json', recipe)
             H.write_json_atomic(root / 'sealed.json', dict(version=VERSION, sha256=sha(root / 'recipe.json')))
@@ -127,24 +145,78 @@ def create(source_run, name='남긴 그림 변주'):
             raise
 
 
-def bind(root, rid, count, prompt=''):
+def create_creatures(name='동물 기반 필드 몬스터'):
+    """번들 동물 8종을 제작 원본으로 봉인한다. 사람의 남김으로 기록하지 않는다."""
+    rid = datetime.now().strftime('%Y%m%d-%H%M%S') + '-animals-' + uuid.uuid4().hex[:8]
+    root = H.DATA / 'recipes' / rid
+    root.mkdir(parents=True)
+    try:
+        seeds, files = [], {}
+        for index in range(8):
+            base = f'Animal:{index}'
+            pal, frames = H.base_of(base)
+            if not C.gate(pal, frames, (pal, frames), strength='free', check_changed=False)['ok']:
+                raise ValueError(f'동물 원본의 투명/구조 결손: {base}')
+            folder = root / 'seeds' / f'{index:03d}'
+            folder.mkdir(parents=True)
+            (folder / 'out.chr.txt').write_text(C.dump(pal, {}, frames, header='번들 동물 원본 — 사람 선택 아님'))
+            C.sheet_rgba(pal, frames).save(folder / 'source.png')
+            shutil.copyfile(H.base_sheet(base)[0], folder / 'input.png')
+            shutil.copyfile(H.HERE / 'animal-worker.md', folder / 'worker.md')
+            H.write_json_atomic(folder / 'source-meta.json', dict(base=base, sourceMode='bundled-animal-reference', generatedByAI=False))
+            value = A.profile(index)
+            H.write_json_atomic(folder / 'animal-profile.json', value)
+            for file in folder.iterdir():
+                files[str(file.relative_to(root))] = sha(file)
+            seeds.append(dict(index=index, sourceId=f'bundled:{base}', base=base, sourceBase=base, sourceBrief='',
+                              authoringMode='grid', folder=str(folder.relative_to(root)), label=A.NAMES[index],
+                              inputSha256=sha(folder / 'input.png'), animalProfile=value))
+        for filename in ('AUTHORS.md', 'COPYING'):
+            shutil.copyfile(H.RTP / filename, root / filename)
+            files[filename] = sha(root / filename)
+        recipe = dict(version=VERSION, id=rid, name=str(name)[:120], at=H.now(), sourceRun=None,
+                      sourceMode='bundled-animal-reference', model={k:H.ENGINES['gpt'][k] for k in ('model','effort')},
+                      animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=None, animalPolicy=A.VERSION, initialImages=0,
+                      seeds=seeds, files=files, tools={file:sha(H.HERE/file) for file in TOOLS})
+        H.write_json_atomic(root / 'recipe.json', recipe)
+        H.write_json_atomic(root / 'sealed.json', dict(version=VERSION, sha256=sha(root / 'recipe.json')))
+        load(root, check_tools=True)
+        return dict(id=rid, sha256=sha(root / 'recipe.json'), seeds=len(seeds))
+    except Exception:
+        shutil.rmtree(root)
+        raise
+
+
+def bind(root, rid, count, prompt='', start_index=0):
+    if type(start_index) is not int or not 0 <= start_index <= 500:
+        raise ValueError('시작 번호는 0~500입니다')
     source = H.DATA / 'recipes' / safe_name(rid)
     recipe = load(source, check_tools=True)
     shutil.copytree(source, root / 'recipe')
     digest = sha(root / 'recipe' / 'recipe.json')
     characters = []
     for i in range(count):
-        seed = recipe['seeds'][i % len(recipe['seeds'])]
-        wave = i // len(recipe['seeds'])
+        number = i + start_index
+        seed = recipe['seeds'][number % len(recipe['seeds'])]
+        wave = number // len(recipe['seeds'])
         brief = ('이 원본과 같은 계열의 다른 인물. 원본의 도트 밀도·몸 비율·네 방향 걷기의 연결을 기준으로 삼는다. '
                  + VARIATIONS[wave % len(VARIATIONS)] + ' 색만 일괄 바꾸지 말고 각 방향·각 걸음의 세부를 직접 찍는다. '
                  + (str(prompt)[:4000] if prompt else '콘셉트와 세부 복식은 자유롭게 정한다.'))
-        characters.append(dict(key=f'kept-{root.name[-8:]}-{i+1:03d}', name=f'변주 캐릭터 {i+1:03d}',
+        if recipe.get('animalPolicy') is not None:
+            A.validate(seed['animalProfile'])
+            brief = (f'{seed["label"]} 계열의 독창적인 필드 몬스터 {number+1:03d}. 원본의 몸 비율·도트 밀도·네 방향 연결을 유지한다. '
+                     + MONSTER_THEMES[number % len(MONSTER_THEMES)]
+                     + '. 단순 색 치환 대신 귀·주둥이·갈기·등판·꼬리 중 읽히는 형태를 직접 변주한다. '
+                     '각 방향·각 걸음의 몸통과 발을 직접 저작하고 과한 장식은 줄인다. '
+                     + str(prompt)[:4000])
+        characters.append(dict(key=f'kept-{root.name[-8:]}-{number+1:03d}', name=f'변주 캐릭터 {number+1:03d}',
                                base=seed['base'], seed=seed['index'], brief=brief, strength='free', reviewMode='human',
                                authoringMode=seed['authoringMode'], animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=recipe.get('motionPolicy'),
-                               source='upload', genre='자유', role='', gender='', age=''))
+                               animalPolicy=recipe.get('animalPolicy'), animalProfile=seed.get('animalProfile'),
+                               source='rtp' if recipe.get('sourceMode') == 'bundled-animal-reference' else 'upload', genre='자유', role='', gender='', age=''))
     return dict(run=root.name, reviewMode='human', animationMode=H.FRAME_AUTHOR_MODE, characters=characters,
-                genres=['자유'], sourceOriginal=None, motionPolicy=recipe.get('motionPolicy'), recipe=dict(id=rid, sha256=digest))
+                genres=['자유'], sourceOriginal=None, motionPolicy=recipe.get('motionPolicy'), animalPolicy=recipe.get('animalPolicy'),
+                recipe=dict(id=rid, sha256=digest))
 
 
 def verify_run(root, manifest=None, check_tools=False):
@@ -155,14 +227,21 @@ def verify_run(root, manifest=None, check_tools=False):
         raise ValueError('제작 기준 ID/초기 이미지 계약이 변경되었습니다')
     if manifest.get('motionPolicy') != recipe.get('motionPolicy'):
         raise ValueError('제작 기준 걷기 검사 정책이 변경되었습니다')
+    if manifest.get('animalPolicy') != recipe.get('animalPolicy'):
+        raise ValueError('제작 기준 동물 검사 정책이 변경되었습니다')
+    if recipe.get('animalPolicy') is not None and (recipe['animalPolicy'] != A.VERSION or recipe.get('motionPolicy') is not None):
+        raise ValueError('지원하지 않는 동물 검사 정책')
     for row in manifest['characters']:
         if type(row.get('seed')) is not int or not 0 <= row['seed'] < len(recipe['seeds']):
             raise ValueError('잘못된 원본 번호')
         seed = recipe['seeds'][row['seed']]
         if (seed['index'] != row['seed'] or row['base'] != seed['base'] or row['authoringMode'] != seed['authoringMode']
                 or row['reviewMode'] != 'human' or row['strength'] != 'free'
-                or row.get('motionPolicy') != recipe.get('motionPolicy')):
+                or row.get('motionPolicy') != recipe.get('motionPolicy')
+                or row.get('animalPolicy') != recipe.get('animalPolicy') or row.get('animalProfile') != seed.get('animalProfile')):
             raise ValueError('후보의 원본/제작 방식이 기준과 다릅니다')
+        if recipe.get('animalPolicy') is not None:
+            A.validate(seed['animalProfile'])
         if sha(H.base_sheet(seed['base'])[0]) != seed['inputSha256']:
             raise ValueError('기준 입력 PNG가 변경되었습니다')
     return recipe
