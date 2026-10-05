@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **146쪽 / 5052KB / 약 1,471,235 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **146쪽 / 5054KB / 약 1,472,031 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 65KB | 4KB | 653 | ~20,405 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
-| `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1555 | ~60,403 |
+| `openwiki/runtime-project-schema.md` | 216KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1556 | ~60,515 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 220KB | 48KB | 2092 | ~61,141 |
 | `openwiki/tileset-reference-documents.md` | 55KB | 4KB | 564 | ~16,695 |
@@ -138,6 +138,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
 | `openwiki/village-layout-research.md` | 1 | `scripts/qa/capture-restored-river-village.mjs` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
+| `openwiki/worldmap-terrain-editing.md` | 1 | `worldmapBrushStamp.ts` |
 
 ## 페이지별 절 좌표
 
@@ -1851,7 +1852,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L754` 8차 맵 진입 (2026-09-28)
 - `L787` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 215KB · 1555줄 · ~60,403 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 216KB · 1556줄 · ~60,515 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 - `L11` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
@@ -1908,34 +1909,34 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L930` Showcase media save-copy durability (issue #693, 2026-09-08)
 - `L970` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
 - `L1004` Project schema & persistence
-- `L1243` Variable arithmetic & loop runtime (2026-08-07)
-- `L1247` Canonical event-draft projection (2026-07-30)
-- `L1254` P2 general buildings and home decorations (2026-08-25)
-- `L1261` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1279` Boot normalizers must not create dangling references (2026-08-30)
-- `L1305` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1339` 성장 트리 선택 확장 (2026-09-05)
-- `L1345` 마을 설계서 (2026-09-05)
-- `L1351` 공포 게임 제작 기능 (2026-09-05)
-  - `L1355` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1359` NPC 표시 이름 (2026-09-05)
-- `L1372` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1376` 개념 장소 형상 (2026-09-05)
-- `L1380` Optional village decoration attachments (2026-09-13)
-- `L1391` Optional map climate (Feature16, 2026-09-21)
-- `L1408` Optional authored combat rules (feature16, 2026-09-21)
-- `L1411` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1424` 구름량 optional 필드 (2026-09-21)
-  - `L1436` Map atmosphere layers (2026-09-21)
-- `L1457` 필드 HUD 설정 (2026-09-21)
-  - `L1467` HUD 장르·서체 확장 (2026-09-21)
-- `L1479` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1483` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
-- `L1509` 재편집 지형과 게임 높이 규칙 (2026-10-03)
-- `L1518` Optional internal authoring contract
-  - `L1522` Desktop fullscreen and mouse controls (2026-10-04)
-  - `L1537` Cinematic image direction (2026-10-04)
-- `L1546` 글자·장면 오프닝 연출 (2026-10-04)
+- `L1244` Variable arithmetic & loop runtime (2026-08-07)
+- `L1248` Canonical event-draft projection (2026-07-30)
+- `L1255` P2 general buildings and home decorations (2026-08-25)
+- `L1262` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1280` Boot normalizers must not create dangling references (2026-08-30)
+- `L1306` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1340` 성장 트리 선택 확장 (2026-09-05)
+- `L1346` 마을 설계서 (2026-09-05)
+- `L1352` 공포 게임 제작 기능 (2026-09-05)
+  - `L1356` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1360` NPC 표시 이름 (2026-09-05)
+- `L1373` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1377` 개념 장소 형상 (2026-09-05)
+- `L1381` Optional village decoration attachments (2026-09-13)
+- `L1392` Optional map climate (Feature16, 2026-09-21)
+- `L1409` Optional authored combat rules (feature16, 2026-09-21)
+- `L1412` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1425` 구름량 optional 필드 (2026-09-21)
+  - `L1437` Map atmosphere layers (2026-09-21)
+- `L1458` 필드 HUD 설정 (2026-09-21)
+  - `L1468` HUD 장르·서체 확장 (2026-09-21)
+- `L1480` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1484` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L1510` 재편집 지형과 게임 높이 규칙 (2026-10-03)
+- `L1519` Optional internal authoring contract
+  - `L1523` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1538` Cinematic image direction (2026-10-04)
+- `L1547` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-sessions.md` — 123KB · 627줄 · ~33,263 토큰 · 통째읽기 잘림
 
@@ -2686,17 +2687,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L123` 시각 수정판 (2026-10-05)
 - `L138` 실제 조수 경로의 칩셋 계열 검사 (2026-10-05)
 
-### `openwiki/worldmap-terrain-editing.md` — 25KB · 238줄 · ~7,743 토큰
+### `openwiki/worldmap-terrain-editing.md` — 28KB · 263줄 · ~8,427 토큰
 
 - `L3` 빈 지도부터 팔레트로 저작 (2026-10-05)
-- `L45` 흐름
-  - `L47` 세계관별 준비 상태와 우주 조수 (2026-10-04)
-  - `L65` 호스트 공용 DB와 조수 (2026-10-04)
-- `L116` 재사용 팔레트 전환 (2026-10-05)
-- `L130` 계약
-- `L156` 새 구조 만들기 — `base: "generate"` (2026-10-03)
-- `L202` 후속 조수 실행·SQLite 재로드 (2026-10-04)
-- `L210` 지형 경계 v9 (2026-10-03)
-- `L216` 글자 지도
-- `L222` 조수 역할 적대 시험 (2026-10-03)
-- `L229` 함정
+- `L32` 적대적 시각 검수로 수정한 연결부 (2026-10-05)
+- `L70` 흐름
+  - `L72` 세계관별 준비 상태와 우주 조수 (2026-10-04)
+  - `L90` 호스트 공용 DB와 조수 (2026-10-04)
+- `L141` 재사용 팔레트 전환 (2026-10-05)
+- `L155` 계약
+- `L181` 새 구조 만들기 — `base: "generate"` (2026-10-03)
+- `L227` 후속 조수 실행·SQLite 재로드 (2026-10-04)
+- `L235` 지형 경계 v9 (2026-10-03)
+- `L241` 글자 지도
+- `L247` 조수 역할 적대 시험 (2026-10-03)
+- `L254` 함정

@@ -176,7 +176,10 @@ export function paintTilesBulk(
   const lowerGroups = shapeAutotile ? autotileGroupsForTileset(tileset).filter(group=>autotileGroupLayer(group)==='lower'
     && edits.some(edit=>edit.layer==='lower'&&autotileEditTriggersGroup(group,tileAt(currentMap,'lower',edit.x,edit.y),edit.tile))) : [];
   // 바닥 위에 겹치는 투명 오토타일(울타리·주차선)은 상위 붓질에서 모양을 맞춘다.
-  const upperGroups = options.preservePattern ? [] : upperAutotileGroupsTriggered(currentMap, tileset, edits);
+  // Whole icon stamps keep their exact pixels, but replacing a forest still
+  // changes the silhouettes of forest cells outside the stamped footprint.
+  const upperGroups = upperAutotileGroupsTriggered(currentMap, tileset, edits)
+    .filter(group => !options.preservePattern || group.id.startsWith('worldmap-brush-'));
   // 정확 배치는 나무 짝 보정도 지난다 — 안 그러면 y=0 밑동은 지워지고, 밑동 위 칸에는
   // 수관이 강제로 심겨 "고른 칸만 바꾼다"는 계약이 그 자리에서 깨진다(OPRN-OUT-017).
   const repairTrees = !options.preservePattern && !exactPlacement
@@ -195,7 +198,9 @@ export function paintTilesBulk(
     }
     if (upperGroups.length > 0) {
       const upperPoints = edits.filter((edit) => edit.layer === "upper").map((edit) => ({ x: edit.x, y: edit.y }));
-      for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, upperPoints);
+      const stamped = options.preservePattern ? new Set(upperPoints.map(p => `${p.x},${p.y}`)) : undefined;
+      for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, upperPoints,
+        stamped ? (x, y) => !stamped.has(`${x},${y}`) : undefined);
     }
     if (repairTrees) {
       repairTreePairsOnMap(m, tileset, {

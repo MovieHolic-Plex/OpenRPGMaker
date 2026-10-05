@@ -13,6 +13,7 @@ import {
 } from "@/editor/harnessSuggestion/structureKitModel";
 import { describePlacementSurface, evaluatePlacementConditions, mapSurfaceProbe } from "@/project/placementSurface";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
+import { shapeWorldmapOutsideStamp } from "@/project/worldmapBrushStamp";
 import type {
   GameMap,
   Project,
@@ -188,9 +189,13 @@ export function applyStampStructureKit(draft: Project, args: Record<string, unkn
 
   let painted = 0;
   const placementIds: string[] = [];
+  const cells = structureKitUnitCells(kit);
   for (const rect of unitRects) {
     const before = captureStructureTiles(map, rect);
     painted += stampKitCells(map, kit, { x: rect.x, y: rect.y }, 1);
+    const points = (layer: 'lower' | 'upper') => cells.filter(cell => cell.layer === layer)
+      .map(cell => ({ x: rect.x + cell.dx, y: rect.y + cell.dy }));
+    shapeWorldmapOutsideStamp(map, draft.tilesets[map.tilesetId], points('lower'), points('upper'));
     placementIds.push(appendStructurePlacement(map, { kitId: kit.id, rect, before }).id);
   }
   const parts = absoluteKitParts(kit, origin);

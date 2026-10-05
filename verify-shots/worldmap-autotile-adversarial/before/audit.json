@@ -1,0 +1,101 @@
+{
+  "revision": 4,
+  "examined": 3693,
+  "mismatches": [
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 18,
+      "y": 20,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1332,
+      "expected": 1336,
+      "mask": 5
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 18,
+      "y": 22,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1335,
+      "expected": 1336,
+      "mask": 5
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 8,
+      "y": 17,
+      "group": "worldmap-brush-forest-any",
+      "actual": 3158,
+      "expected": 3155,
+      "mask": 143
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 9,
+      "y": 17,
+      "group": "worldmap-brush-forest-any",
+      "actual": 3149,
+      "expected": 3128,
+      "mask": 218
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 10,
+      "y": 17,
+      "group": "worldmap-brush-forest-any",
+      "actual": 3148,
+      "expected": 3136,
+      "mask": 27
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "x": 8,
+      "y": 18,
+      "group": "worldmap-brush-forest-any",
+      "actual": 3134,
+      "expected": 3119,
+      "mask": 145
+    },
+    {
+      "mapId": "qa_water",
+      "x": 16,
+      "y": 6,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1339,
+      "expected": 1341,
+      "mask": 10
+    },
+    {
+      "mapId": "qa_water",
+      "x": 18,
+      "y": 6,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1333,
+      "expected": 1341,
+      "mask": 10
+    },
+    {
+      "mapId": "qa_water",
+      "x": 5,
+      "y": 9,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1332,
+      "expected": 1336,
+      "mask": 5
+    },
+    {
+      "mapId": "qa_water",
+      "x": 5,
+      "y": 11,
+      "group": "worldmap-brush-river-grass",
+      "actual": 1335,
+      "expected": 1336,
+      "mask": 5
+    }
+  ],
+  "portMismatches": 6,
+  "bridgeConnections": 6,
+  "iconTilesPreserved": true,
+  "existingIdempotent": true,
+  "freshIdempotent": true
+}

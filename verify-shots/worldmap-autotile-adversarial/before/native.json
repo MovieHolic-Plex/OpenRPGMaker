@@ -1,0 +1,89 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-autotile-visual-20261005/before-project",
+  "errors": [],
+  "captures": [
+    {
+      "mapId": "qa_coast",
+      "file": "coast.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_water",
+      "file": "water.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_forest",
+      "file": "forest.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_roads",
+      "file": "roads.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_coast",
+      "file": "coast-native-notch.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "file": "original-map.png",
+      "origin": {
+        "x": 750,
+        "y": 286
+      },
+      "width": 48,
+      "height": 36
+    }
+  ],
+  "nativeEdits": [
+    {
+      "mapId": "qa_coast",
+      "operation": "sea pen / undo / redo",
+      "changed": true,
+      "undoExact": true,
+      "redoExact": true
+    },
+    {
+      "mapId": "qa_forest",
+      "operation": "upper erase / undo",
+      "groundExact": true,
+      "changed": true,
+      "undoExact": true
+    }
+  ],
+  "saved": {
+    "projectId": "5a9994a1-685a-4495-8d48-0fb3919bfdf7",
+    "revision": 3,
+    "sha256": "c87e6113f25a27a87e07d63c6b009837a5bb1d20fe8e67b5e78c47dee460c82f"
+  },
+  "reloaded": true,
+  "passed": true
+}

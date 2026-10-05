@@ -1,0 +1,288 @@
+# 런타임 QA — worldmap-autotile-visual
+
+**이 파일을 먼저 읽어라.** PNG 는 아래 표에서 "즉시 확인" 으로 표시된 것만 열어라.
+전량 열람은 컨텍스트 낭비다.
+
+- 시각 검토: 별도 판정 필요 — 실행 비트 통과는 공간 구성·물체 식별·게임 경험의 합격을 뜻하지 않습니다.
+- 게이트: 실패 (비트 7개 중 3개 실패)
+- 열어야 할 샷: 3개 / 전체 샷 6개
+- 런타임 에러 248건
+- 프로젝트: qa-runs/worldmap-autotile-visual-20261005/shipping-runtime.json
+- 시드: 1 / 뷰포트: 1024×768
+
+| 비트 | 의도 | 상태 | 샷 | 볼 이유 |
+|---|---|---|---|---|
+| title | 정본을 내보낸 플레이어의 타이틀 | 통과 | — | — |
+| coast | 해안·오목 만·1칸 지협 | 통과 | 02-coast.png | 시각 확인 대기 |
+| bridge-bank | 가로 다리 왼쪽 강둑 | 통과 | 03-bridge-bank.png | 시각 확인 대기 |
+| bridge-deck | 실제 입력으로 다리 위에 진입 | 실패 | 04-bridge-deck.png | 게이트 실패 — 즉시 확인 |
+| bridge-water-blocked | 다리에서 위쪽 물 칸으로 빠지지 않는다 | 실패 | 05-bridge-water-blocked.png | 게이트 실패 — 즉시 확인 |
+| bridge-exit | 다리 반대편으로 건넌다 | 실패 | 06-bridge-exit.png | 게이트 실패 — 즉시 확인 |
+| forest | 숲·산의 구멍과 서로 다른 바닥 | 통과 | 07-forest.png | 시각 확인 대기 |
+
+## 실패 상세
+
+### bridge-deck
+- op waitForPosition 실패: page.waitForFunction: Timeout 30000ms exceeded.
+- x: 기대 5, 실제 4
+
+### bridge-water-blocked
+- x: 기대 5, 실제 4
+- y: 기대 10, 실제 8
+
+### bridge-exit
+- op waitForPosition 실패: page.waitForFunction: Timeout 30000ms exceeded.
+- x: 기대 6, 실제 4
+- y: 기대 10, 실제 7
+
+## 런타임 에러
+
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_2c73a6185b4c5854d9f5951e__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_2c73a6185b4c5854d9f5951e.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_2c73a6185b4c5854d9f…hared_charset_actor_2c73a6185b4c5854d9f5951e.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_0c4128febd522e8eddf40857__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_0c4128febd522e8eddf40857.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_0c4128febd522e8eddf…hared_charset_actor_0c4128febd522e8eddf40857.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_c957dc0d23caf1c746941683__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_c957dc0d23caf1c746941683.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_c957dc0d23caf1c7469…hared_charset_actor_c957dc0d23caf1c746941683.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_02632d7333594f71d818410f__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_02632d7333594f71d818410f.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_02632d7333594f71d81…hared_charset_actor_02632d7333594f71d818410f.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_0dd17190451bc0bbad6d4f43__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_0dd17190451bc0bbad6d4f43.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_0dd17190451bc0bbad6…hared_charset_actor_0dd17190451bc0bbad6d4f43.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_b2d197b31eb433842565422c__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_b2d197b31eb433842565422c.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_b2d197b31eb43384256…hared_charset_actor_b2d197b31eb433842565422c.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_f9e0013f39f9ad3d5ef02de6__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_f9e0013f39f9ad3d5ef02de6.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_f9e0013f39f9ad3d5ef…hared_charset_actor_f9e0013f39f9ad3d5ef02de6.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_411ce1bbcf10a437c93553a7__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_411ce1bbcf10a437c93553a7.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_411ce1bbcf10a437c93…hared_charset_actor_411ce1bbcf10a437c93553a7.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_d632345c4572998d1da26f6f__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_d632345c4572998d1da26f6f.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_d632345c4572998d1da…hared_charset_actor_d632345c4572998d1da26f6f.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_1572eb35401a302910edb9a1__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_1572eb35401a302910edb9a1.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_1572eb35401a302910e…hared_charset_actor_1572eb35401a302910edb9a1.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_5c3f2f751147163b6f1893a4__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_5c3f2f751147163b6f1893a4.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_5c3f2f751147163b6f1…hared_charset_actor_5c3f2f751147163b6f1893a4.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_e87fd01fcad8bad5de951a99__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_e87fd01fcad8bad5de951a99.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_e87fd01fcad8bad5de9…hared_charset_actor_e87fd01fcad8bad5de951a99.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_f011d99f58a0f72907a52b80__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_f011d99f58a0f72907a52b80.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_f011d99f58a0f72907a…hared_charset_actor_f011d99f58a0f72907a52b80.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_abeb18dbb8cd376456f22239__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_abeb18dbb8cd376456f22239.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_abeb18dbb8cd376456f…hared_charset_actor_abeb18dbb8cd376456f22239.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_0e6e611b752feb5ea9f3fe96__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_0e6e611b752feb5ea9f3fe96.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_0e6e611b752feb5ea9f…hared_charset_actor_0e6e611b752feb5ea9f3fe96.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_c1efc0a7dc127cd870df416b__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_c1efc0a7dc127cd870df416b.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_c1efc0a7dc127cd870d…hared_charset_actor_c1efc0a7dc127cd870df416b.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_22115041551bc9f213a95d5e__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_22115041551bc9f213a95d5e.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_22115041551bc9f213a…hared_charset_actor_22115041551bc9f213a95d5e.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_5325958566a48e7bb7cd72d1__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_5325958566a48e7bb7cd72d1.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_5325958566a48e7bb7c…hared_charset_actor_5325958566a48e7bb7cd72d1.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_cd16c274f98a1bc06d1356e4__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_cd16c274f98a1bc06d1356e4.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_cd16c274f98a1bc06d1…hared_charset_actor_cd16c274f98a1bc06d1356e4.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_5624ea240544ac2f51638b6e__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_5624ea240544ac2f51638b6e.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_5624ea240544ac2f516…hared_charset_actor_5624ea240544ac2f51638b6e.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_5e8f0cd454ef21215d4cac63__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_5e8f0cd454ef21215d4cac63.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_5e8f0cd454ef21215d4…hared_charset_actor_5e8f0cd454ef21215d4cac63.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_b36bbae678b9ee9bef715702__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_b36bbae678b9ee9bef715702.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_b36bbae678b9ee9bef7…hared_charset_actor_b36bbae678b9ee9bef715702.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_bb0ab2c8b33e28b671f7cc96__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_bb0ab2c8b33e28b671f7cc96.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_bb0ab2c8b33e28b671f…hared_charset_actor_bb0ab2c8b33e28b671f7cc96.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_3b08541741b00d9bcefd57ff__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_3b08541741b00d9bcefd57ff.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_3b08541741b00d9bcef…hared_charset_actor_3b08541741b00d9bcefd57ff.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_4c0b1b28de28be1054442ec6__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_4c0b1b28de28be1054442ec6.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_4c0b1b28de28be10544…hared_charset_actor_4c0b1b28de28be1054442ec6.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_93179924207ba6ac8a6f0463__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_93179924207ba6ac8a6f0463.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_93179924207ba6ac8a6…hared_charset_actor_93179924207ba6ac8a6f0463.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_78f18c284ed7989320a03daa__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_78f18c284ed7989320a03daa.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_78f18c284ed7989320a…hared_charset_actor_78f18c284ed7989320a03daa.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_e24b1904d7206f6b67742650__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_e24b1904d7206f6b67742650.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_e24b1904d7206f6b677…hared_charset_actor_e24b1904d7206f6b67742650.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_ee544faa3c4e7b52b098445a__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_ee544faa3c4e7b52b098445a.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_ee544faa3c4e7b52b09…hared_charset_actor_ee544faa3c4e7b52b098445a.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_17ab019339467e191ee50e09__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_17ab019339467e191ee50e09.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_17ab019339467e191ee…hared_charset_actor_17ab019339467e191ee50e09.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_aa7aaa2d60ffab3e9a1b32bf__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_aa7aaa2d60ffab3e9a1b32bf.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_aa7aaa2d60ffab3e9a1…hared_charset_actor_aa7aaa2d60ffab3e9a1b32bf.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_fa326ab8803e05fc3f977b62__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_fa326ab8803e05fc3f977b62.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_fa326ab8803e05fc3f9…hared_charset_actor_fa326ab8803e05fc3f977b62.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_e5d1eff501e2d85ea1f85c09__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_e5d1eff501e2d85ea1f85c09.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_e5d1eff501e2d85ea1f…hared_charset_actor_e5d1eff501e2d85ea1f85c09.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_a4d919d5284623e98c838068__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_a4d919d5284623e98c838068.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_a4d919d5284623e98c8…hared_charset_actor_a4d919d5284623e98c838068.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_9e7d0c2812327b6204cd9f19__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_9e7d0c2812327b6204cd9f19.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_9e7d0c2812327b6204c…hared_charset_actor_9e7d0c2812327b6204cd9f19.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_95ea826ba2295e79e542430d__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_95ea826ba2295e79e542430d.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_95ea826ba2295e79e54…hared_charset_actor_95ea826ba2295e79e542430d.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_770ec05303967db67d6a467e__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_770ec05303967db67d6a467e.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_770ec05303967db67d6…hared_charset_actor_770ec05303967db67d6a467e.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_381d3a80a0234ade2eea7034__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_381d3a80a0234ade2eea7034.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_381d3a80a0234ade2ee…hared_charset_actor_381d3a80a0234ade2eea7034.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_f3c69c410efda9f1507667af__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_f3c69c410efda9f1507667af.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_f3c69c410efda9f1507…hared_charset_actor_f3c69c410efda9f1507667af.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_f80c1690f53b215a6f57083c__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_f80c1690f53b215a6f57083c.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_f80c1690f53b215a6f5…hared_charset_actor_f80c1690f53b215a6f57083c.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_6fd470043363bf3ac41a20a7__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_6fd470043363bf3ac41a20a7.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_6fd470043363bf3ac41…hared_charset_actor_6fd470043363bf3ac41a20a7.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_e308195ddc056c1d20bc28f6__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_e308195ddc056c1d20bc28f6.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_e308195ddc056c1d20b…hared_charset_actor_e308195ddc056c1d20bc28f6.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_0f0ad0287c16dcf426e35e04__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_0f0ad0287c16dcf426e35e04.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_0f0ad0287c16dcf426e…hared_charset_actor_0f0ad0287c16dcf426e35e04.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_a4c18b71095e2d66817b07ba__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_a4c18b71095e2d66817b07ba.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_a4c18b71095e2d66817…hared_charset_actor_a4c18b71095e2d66817b07ba.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_0ab0b1e12952f33797c9ddc7__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_0ab0b1e12952f33797c9ddc7.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_0ab0b1e12952f33797c…hared_charset_actor_0ab0b1e12952f33797c9ddc7.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_c8c8e0acc9bfba977fe6266b__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_c8c8e0acc9bfba977fe6266b.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_c8c8e0acc9bfba977fe…hared_charset_actor_c8c8e0acc9bfba977fe6266b.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_bc1e08b1e81d03d690a506cc__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_bc1e08b1e81d03d690a506cc.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_bc1e08b1e81d03d690a…hared_charset_actor_bc1e08b1e81d03d690a506cc.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_9c21cd8ba052bfd1266c0e81__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_9c21cd8ba052bfd1266c0e81.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_9c21cd8ba052bfd1266…hared_charset_actor_9c21cd8ba052bfd1266c0e81.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_dbe853f2d5e9b089df46c2da__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_dbe853f2d5e9b089df46c2da.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_dbe853f2d5e9b089df4…hared_charset_actor_dbe853f2d5e9b089df46c2da.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_87dee29135875f78ac54074b__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_87dee29135875f78ac54074b.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_87dee29135875f78ac5…hared_charset_actor_87dee29135875f78ac54074b.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_401339656b215fa7fc6e9a60__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_401339656b215fa7fc6e9a60.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_401339656b215fa7fc6…hared_charset_actor_401339656b215fa7fc6e9a60.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_56a2cdca9cb3ca991d34cd74__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_56a2cdca9cb3ca991d34cd74.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_56a2cdca9cb3ca991d3…hared_charset_actor_56a2cdca9cb3ca991d34cd74.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_626e013c6e4eb9f092f65318__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_626e013c6e4eb9f092f65318.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_626e013c6e4eb9f092f…hared_charset_actor_626e013c6e4eb9f092f65318.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_397395f7a42fd9e55bf3b57f__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_397395f7a42fd9e55bf3b57f.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_397395f7a42fd9e55bf…hared_charset_actor_397395f7a42fd9e55bf3b57f.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_93f9ee14f8acb228e25ef9f9__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_93f9ee14f8acb228e25ef9f9.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_93f9ee14f8acb228e25…hared_charset_actor_93f9ee14f8acb228e25ef9f9.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_2f48cef433e6a3d0c9da92e2__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_2f48cef433e6a3d0c9da92e2.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_2f48cef433e6a3d0c9d…hared_charset_actor_2f48cef433e6a3d0c9da92e2.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_6f0dedbc49ab83dc84934330__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_6f0dedbc49ab83dc84934330.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_6f0dedbc49ab83dc849…hared_charset_actor_6f0dedbc49ab83dc84934330.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_4756c3689dcaa1a196dc5751__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_4756c3689dcaa1a196dc5751.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_4756c3689dcaa1a196d…hared_charset_actor_4756c3689dcaa1a196dc5751.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_aed976ab2df94f4fff9fbe59__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_aed976ab2df94f4fff9fbe59.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_aed976ab2df94f4fff9…hared_charset_actor_aed976ab2df94f4fff9fbe59.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_cd6c16904f0fdf83082efcd1__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_cd6c16904f0fdf83082efcd1.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_cd6c16904f0fdf83082…hared_charset_actor_cd6c16904f0fdf83082efcd1.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_283da73a0f13600d3c339061__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_283da73a0f13600d3c339061.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_283da73a0f13600d3c3…hared_charset_actor_283da73a0f13600d3c339061.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [play-boot] [play-boot] stage=assets fail 에셋 로드 실패: shared_charset_actor_03b6fa6cb856a0141829fc6f__raw (http://127.0.0.1:44383/assets/uploaded/shared_charset_actor_03b6fa6cb856a0141829fc6f.png) {kind: play-boot, stage: assets, ok: false, detail: 에셋 로드 실패: shared_charset_actor_03b6fa6cb856a014182…hared_charset_actor_03b6fa6cb856a0141829fc6f.png), userAgent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36…Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36}`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_2c73a6185b4c5854d9f5951e (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_0c4128febd522e8eddf40857 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_02632d7333594f71d818410f (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_c957dc0d23caf1c746941683 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_0dd17190451bc0bbad6d4f43 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_b2d197b31eb433842565422c (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_f9e0013f39f9ad3d5ef02de6 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_411ce1bbcf10a437c93553a7 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_d632345c4572998d1da26f6f (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_1572eb35401a302910edb9a1 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_5c3f2f751147163b6f1893a4 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_e87fd01fcad8bad5de951a99 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_f011d99f58a0f72907a52b80 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_abeb18dbb8cd376456f22239 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_0e6e611b752feb5ea9f3fe96 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_c1efc0a7dc127cd870df416b (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_22115041551bc9f213a95d5e (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_5325958566a48e7bb7cd72d1 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_cd16c274f98a1bc06d1356e4 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_5624ea240544ac2f51638b6e (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_5e8f0cd454ef21215d4cac63 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_b36bbae678b9ee9bef715702 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_bb0ab2c8b33e28b671f7cc96 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_3b08541741b00d9bcefd57ff (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_4c0b1b28de28be1054442ec6 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_93179924207ba6ac8a6f0463 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_78f18c284ed7989320a03daa (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_e24b1904d7206f6b67742650 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_ee544faa3c4e7b52b098445a (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_17ab019339467e191ee50e09 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_aa7aaa2d60ffab3e9a1b32bf (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_fa326ab8803e05fc3f977b62 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_e5d1eff501e2d85ea1f85c09 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_a4d919d5284623e98c838068 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_9e7d0c2812327b6204cd9f19 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_95ea826ba2295e79e542430d (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_770ec05303967db67d6a467e (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_381d3a80a0234ade2eea7034 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_f3c69c410efda9f1507667af (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_f80c1690f53b215a6f57083c (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_6fd470043363bf3ac41a20a7 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_e308195ddc056c1d20bc28f6 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_0f0ad0287c16dcf426e35e04 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_a4c18b71095e2d66817b07ba (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_0ab0b1e12952f33797c9ddc7 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_c8c8e0acc9bfba977fe6266b (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_bc1e08b1e81d03d690a506cc (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_9c21cd8ba052bfd1266c0e81 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_dbe853f2d5e9b089df46c2da (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_87dee29135875f78ac54074b (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_401339656b215fa7fc6e9a60 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_56a2cdca9cb3ca991d34cd74 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_626e013c6e4eb9f092f65318 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_397395f7a42fd9e55bf3b57f (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_93f9ee14f8acb228e25ef9f9 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_2f48cef433e6a3d0c9da92e2 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_6f0dedbc49ab83dc84934330 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_4756c3689dcaa1a196dc5751 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_aed976ab2df94f4fff9fbe59 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_cd6c16904f0fdf83082efcd1 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_283da73a0f13600d3c339061 (16x16)`
+- `console: [assets] Unsupported charset dimensions: shared_charset_actor_03b6fa6cb856a0141829fc6f (16x16)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+- `console: Failed to load resource: the server responded with a status of 404 (Not Found)`
+

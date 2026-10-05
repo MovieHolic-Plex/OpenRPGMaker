@@ -1,0 +1,113 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-autotile-visual-20261005/after-project",
+  "errors": [],
+  "captures": [
+    {
+      "mapId": "qa_coast",
+      "file": "coast.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_water",
+      "file": "water.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_forest",
+      "file": "forest.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_roads",
+      "file": "roads.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_coast",
+      "file": "coast-native-notch.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_forest",
+      "file": "forest-native-stamp.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "file": "original-map.png",
+      "origin": {
+        "x": 750,
+        "y": 286
+      },
+      "width": 48,
+      "height": 36
+    }
+  ],
+  "nativeEdits": [
+    {
+      "mapId": "qa_water",
+      "operation": "bridge remove / undo",
+      "changed": true,
+      "undoExact": true
+    },
+    {
+      "mapId": "qa_coast",
+      "operation": "sea pen / undo / redo",
+      "changed": true,
+      "undoExact": true,
+      "redoExact": true
+    },
+    {
+      "mapId": "qa_forest",
+      "operation": "upper erase / undo",
+      "groundExact": true,
+      "changed": true,
+      "undoExact": true
+    },
+    {
+      "mapId": "qa_forest",
+      "operation": "whole town stamp into connected forest / undo / redo",
+      "groundExact": true,
+      "changed": true,
+      "undoExact": true,
+      "redoExact": true
+    }
+  ],
+  "saved": {
+    "projectId": "e1fb8b8b-f276-4158-a378-de9dc15da5b1",
+    "revision": 5,
+    "sha256": "11494d816e2b1d10654f6e9aeb9c9b995051fba0936057a8e7b9b8a848f02d74"
+  },
+  "reloaded": false,
+  "passed": false
+}
