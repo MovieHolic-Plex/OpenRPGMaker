@@ -5,6 +5,7 @@ GPT 6.1 sol high가 정지 4장·걷기 8장, 24×32 캐릭터의 12프레임 �
 
 ```bash
 npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png
+npm run harness -- charset-actor produce --creatures --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor recipe --source-run RUN
 npm run harness -- charset-actor produce --seed-run RUN --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor serve --port 18314
@@ -23,6 +24,10 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 원본 정지 발끝에 고정한 사람형 영역의 최소 검사이며 자연스러운 걷기를 증명하지는 않는다. 두 걸음의 상체가 같은 bob 위상인 경우는 허용한다.
 `views/motion.json/png/gif`에 영역·방향·변화 좌표·느린 GIF를 남기고 현재 그림/원본/검사 구현 해시와 납품에 묶는다. 화면의 원본 비교에서도 본다.
 이전 실행은 당시 계약/픽셀/선택을 보존한다. 현재 정책으로 만들려면 같은 실제 남김에서 새 기준을 만든다.
+「동물 기반 몬스터」/`produce --creatures`는 번들 Animal 8종을 참고 원본으로 봉인한다. 사람의 남김으로 기록하지 않는다.
+`animalPolicy: 1`은 고정한 동물 몸통 영역과 보이는 발의 교대를 검사한다. 사족보행 옆모습은 앞발/뒷발을 각각 보고,
+정면/뒷면은 겹친 네 발을 추정하지 않는다. 닭은 조류용 영역이다. 사람형 정책과 증거를 보존한다.
+100종·동시 2종·검토 대기 12종이 기본이며 숲/화염/서리/독/그림자/갑피 등 실제 형태를 직접 변주한다.
 기술 오류만 최대 2회 같은 모델이 직접 고친다. 각 프롬프트·실패·수정 전 파일은 `attempts/`에 남기며 미감 선별은 사람에게 맡긴다.
 검토 대기와 진행 중 예약의 합이 한도에 이르면 `waiting-review`, 선택이 저장되면 이어 만든다. 정지/재개는 동시 작업 수와 공개된 픽셀을 보존한다.
 `produce --recipe ID`로 보존한 기준을 재사용한다. 도구가 바뀌면 다른 조건으로 자동 재개하지 않고 새 기준을 요구한다.

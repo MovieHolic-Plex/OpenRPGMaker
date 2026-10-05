@@ -158,8 +158,8 @@ def norm_base(x):
             raise SystemExit(f'올린 그림 {iid} 이 없다({INPUTS})')
         return f'input:{iid}:{int(n)}'
     sheet, n = str(x).split(':')
-    if sheet not in BASE_SHEETS:
-        raise SystemExit(f'뼈대 칩셋 {sheet!r} 은 {BASE_SHEETS} 중 하나여야 한다')
+    if sheet not in BASE_SHEETS + ('Animal',):
+        raise SystemExit(f'지원하지 않는 뼈대 칩셋: {sheet!r}')
     return f'{sheet}:{int(n)}'
 
 
@@ -325,7 +325,14 @@ def cmd_check(a):
 
 def cmd_motion_check(a):
     import motion
-    proof = motion.audit_file(a.file, Path(a.file).parent / 'views', base_of(a.base))
+    import animal_motion as A
+    w = Path(a.file).parent
+    meta = json.loads((w / 'meta.json').read_text()) if (w / 'meta.json').exists() else {}
+    if meta.get('animalPolicy') is not None or norm_base(a.base).startswith('Animal:'):
+        value = A.bound_profile(w) if meta.get('animalPolicy') is not None else A.profile(int(norm_base(a.base).split(':')[1]))
+        proof = A.audit_file(a.file, w / 'views', base_of(a.base), value)
+    else:
+        proof = motion.audit_file(a.file, w / 'views', base_of(a.base))
     print(json.dumps(proof, ensure_ascii=False, indent=1))
     sys.exit(0 if proof['check']['ok'] else 1)
 
@@ -334,6 +341,12 @@ def check_motion(w, gate):
     import motion
     meta = json.loads((w / 'meta.json').read_text())
     manifest = json.loads((run_dir(meta['run']) / 'manifest.json').read_text())
+    if manifest.get('animalPolicy') is not None or meta.get('animalPolicy') is not None:
+        import animal_motion as A
+        proof = A.audit_file(w / 'out.chr.txt', w / 'views', base_of(meta['base']), A.bound_profile(w), gate)
+        if not proof['check']['ok']:
+            raise ValueError('동물 걷기 결함: ' + '; '.join(proof['check']['fails']))
+        return proof
     policy = manifest.get('motionPolicy')
     if policy is None and meta.get('motionPolicy') is None:
         return None  # 옛 실행의 공개 픽셀과 선택은 당시 계약을 유지한다.
@@ -582,6 +595,9 @@ def human_ready(w, gate):
             import delivery
             if not delivery.fresh(w, gate):
                 return False
+        import animal_motion as A
+        if not A.fresh(w, gate):
+            return False
         manifest_file = run_dir(meta.get('run', w.parent.name)) / 'manifest.json'
         manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
         if manifest.get('motionPolicy') is not None or meta.get('motionPolicy') is not None:
@@ -1205,7 +1221,7 @@ def _items():
                             gate=gate, review=review, quality=q, review_mode='human' if human_review(w) else 'legacy',
                             render_fresh=views_fresh(w, gate) if has else False,
                             alpha_previews_fresh=alpha_views_fresh(w, gate) if has else False,
-                            motion_previews_fresh=(has and m.get('motionPolicy') is not None and human_ready(w, gate)),
+                            motion_previews_fresh=(has and (m.get('motionPolicy') is not None or m.get('animalPolicy') is not None) and human_ready(w, gate)),
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
 

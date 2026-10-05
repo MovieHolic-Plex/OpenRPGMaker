@@ -72,13 +72,13 @@ def create(options):
 def _create(options):
     import motion
     count = int(options.get('count', 100))
-    par = int(options.get('par', 4))
+    par = int(options.get('par', 2 if options.get('creatures') else 4))
     batch_size = int(options.get('batchSize', 2))
     if not 1 <= count <= 500 or not 1 <= par <= 6 or not 1 <= batch_size <= 8:
         raise ValueError('개수 1~500, 동시 작업 1~6, 묶음 크기 1~8')
     if any(r['phase'] in ('running', 'pausing', 'waiting-review') for r in runs()):
         raise ValueError('진행 중인 자유 저작이 있습니다. 현재 작업을 마치거나 일시 정지하세요.')
-    if options.get('recipe') or options.get('seedRun'):
+    if options.get('creatures') or options.get('recipe') or options.get('seedRun'):
         return _create_variations(options, count, par)
     root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + '-free-' + uuid.uuid4().hex[:8])
     root.mkdir(parents=True)
@@ -119,9 +119,14 @@ def _create_variations(options, count, par):
     if options.get('image') or options.get('reference'):
         raise ValueError('남긴 원본 변주에는 추가 참고 이미지를 섞지 않습니다')
     rid = options.get('recipe')
+    if options.get('creatures'):
+        if rid or options.get('seedRun'):
+            raise ValueError('동물 원본 제작과 남긴 그림 변주를 함께 지정할 수 없습니다')
+        rid = recipes.create_creatures()['id']
     if not rid:
         rid = recipes.create(options['seedRun'])['id']
-    root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + '-kept-' + uuid.uuid4().hex[:8])
+    kind = '-monsters-' if options.get('creatures') else '-kept-'
+    root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + kind + uuid.uuid4().hex[:8])
     root.mkdir(parents=True)
     try:
         manifest = recipes.bind(root, rid, count, options.get('prompt', ''))
@@ -258,13 +263,15 @@ if __name__ == '__main__':
     parser.add_argument('--count', type=int, default=100)
     parser.add_argument('--prompt', default='')
     parser.add_argument('--reference', type=Path)
-    parser.add_argument('--par', type=int, default=4)
+    parser.add_argument('--par', type=int)
     parser.add_argument('--batch-size', type=int, default=2)
     parser.add_argument('--seed-run', help='이 실행에서 현재 남긴 그림만 변주 원본으로 고정한다')
     parser.add_argument('--recipe', help='보존한 제작 기준 ID로 같은 조건의 새 실행을 만든다')
+    parser.add_argument('--creatures', action='store_true', help='동물 8종을 원본으로 필드 몬스터를 직접 저작한다')
     parser.add_argument('--max-review-pending', type=int, default=12)
     parser.add_argument('--repair-rounds', type=int, default=2)
     args = parser.parse_args()
     print(json.dumps(create(dict(count=args.count, prompt=args.prompt, reference=args.reference,
-                                 par=args.par, batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe,
+                                 par=args.par if args.par is not None else (2 if args.creatures else 4),
+                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures,
                                  maxReviewPending=args.max_review_pending, repairRounds=args.repair_rounds)), ensure_ascii=False))

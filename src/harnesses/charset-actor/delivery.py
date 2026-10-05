@@ -10,6 +10,7 @@ import chr as C
 import harness as H
 import recipes as R
 import motion as M
+import animal_motion as A
 
 VERSION = 1
 ARTIFACTS = ('sheet.png', 'sheet_rgba.png', 'alpha_sheet.png', 'alpha.png',
@@ -38,7 +39,10 @@ def fresh(w, gate):
                 and digest(w / 'base.chr.txt') == proof['baseGridSha256']
                 and digest(w / 'desc.json') == proof['descriptionSha256']
                 and digest(w / 'model-frames.json') == proof['frameAuthorSha256']
-                and M.fresh(w, gate)
+                and M.fresh(w, gate) and A.fresh(w, gate)
+                and (meta.get('animalPolicy') is None or
+                     (proof.get('animalPolicy') == meta['animalPolicy']
+                      and digest(w / 'views/motion.json') == proof['animalMotionSha256']))
                 and (meta.get('motionPolicy') is None or
                      (proof.get('motionPolicy') == meta['motionPolicy']
                       and digest(w / 'views/motion.json') == proof['motionSha256']))
@@ -103,7 +107,10 @@ def publish(w, gate):
                      frameAuthorSha256=R.sha(w / 'model-frames.json'), roundtrip=roundtrip,
                      artifacts={name: R.sha(w / 'views' / name) for name in ARTIFACTS})
         if motion is not None:
-            proof.update(motionPolicy=M.VERSION, motionSha256=R.sha(w / 'views/motion.json'))
+            if meta.get('animalPolicy') is not None:
+                proof.update(animalPolicy=A.VERSION, animalMotionSha256=R.sha(w / 'views/motion.json'))
+            else:
+                proof.update(motionPolicy=M.VERSION, motionSha256=R.sha(w / 'views/motion.json'))
         H.write_json_atomic(w / 'delivery.json', proof)
         H.write_json_atomic(w / 'published.json', H.binding(gate))
     return proof

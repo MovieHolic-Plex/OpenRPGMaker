@@ -45,6 +45,7 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ### 남긴 그림으로 같은 계열을 계속 만들기 (2026-10-04)
 
 ```bash
+npm run harness -- charset-actor produce --creatures --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor recipe --source-run RUN
 npm run harness -- charset-actor produce --seed-run RUN --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor produce --recipe RECIPE_ID --count 100 --par 2
@@ -344,3 +345,29 @@ python3 $H describe --accepted                       # 받은 것에 설명 채�
 ## 아직 없는 것
 - 받은 캐릭터를 번들 CharSet(288×256, 8명)으로 묶어 `src/assets/bundled.ts` 에 넣는 단계.
 - 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록.
+
+## 동물 기반 필드 몬스터
+
+화면의 「새 캐릭터 만들기 → 동물 기반 몬스터」 또는 `produce --creatures`를 쓴다.
+Animal.png의 개·고양이·닭·양·소·말·호랑이·사자 8종을 원본으로 삼아
+숲·화염·서리·독·그림자·바위·물·전기·균류·갑각·언데드·정령·마수 계열을 직접 찍는다.
+100종 계획, 동시 작업 2종, 검토 대기 12종이 기본이다. 사용자의 GIF 선택이 대기 슬롯을 열면 이어 만든다.
+
+`recipes.create_creatures`는 원본 atlas/12프레임/저작 지시/ROI/라이선스/모델·도구 해시를 봉인한다.
+번들 참고 그림은 `sourceMode: bundled-animal-reference`이며 사람이 남긴 그림으로 기록하지 않는다.
+모델은 GPT 6.1 sol high, 초기 이미지 첨부는 0장, `grid`로 12장 모두 직접 저작한다.
+`animalPolicy: 1`과 각 원본의 `animalProfile`을 봉인·manifest·행·meta·납품에 묶는다.
+사람형 `motionPolicy`는 null이며 `motion.py`의 기존 사람형 계약은 보존한다.
+
+`animal_motion.py`는 미리 표시한 몸통 중앙의 정지↔각 걸음 변화와 보이는 발의 0↔2 교대를 읽는다.
+사족보행 옆 방향은 앞발/뒷발을 따로 요구하며 앞/뒤 방향의 겹친 발은 보이는 발만 검사한다.
+닭은 조류용 몸통/두 발 영역을 쓴다. 몸통은 실제 RGBA/공간 경계 각각 4px·두 줄·두 열,
+발은 각각 2px 이상이며 색 치환·전체 정지 이동은 걸음으로 인정하지 않는다.
+영역은 결과에서 재탐색하지 않는다. 이 작은 원본 체형을 유지하는 결함 검사이며 자연스러운 보행의 증명이 아니다.
+`views/motion.json/png/gif`에 좌표·방향별 차이·느린 GIF를 보존하고 구현/원본/현재 그림 해시를 납품에 묶는다.
+정책·영역·진단 증거를 제거하거나 바꾸면 선택/내보내기/공용 등록에 사용할 수 없다.
+
+기존 투명/12장 직접 저작/세 배경 GIF 재읽기/중복/설명 검사도 함께 적용한다.
+기술 오류는 최대 2회 같은 모델이 직접 수정한다. 미감과 서식지 설정의 적합성은 사용자가 결정한다.
+남긴 몬스터도 `--seed-run RUN`으로 다시 봉인해 같은 동물 영역/저작 지시로 변주할 수 있다.
+옛 봉인 기준의 도구 해시를 새 해시로 덮어쓰지 않는다.

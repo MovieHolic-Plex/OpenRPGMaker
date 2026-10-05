@@ -371,6 +371,8 @@ def verify():
     verify_production.verify(check, isolated_store)
     import verify_motion
     verify_motion.verify(check)
+    import verify_animal
+    verify_animal.verify(check, isolated_store)
     return evidence
 
 
