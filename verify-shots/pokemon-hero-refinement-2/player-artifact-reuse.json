@@ -1,0 +1,13 @@
+{
+  "samePreviouslyCompiledPlayerJsCss": true,
+  "verifiedFiles": {
+    "dependency-collector.js": "e8e6e732419d69a148e053746e7b94afed0c9e98c64ad6bab318b3de39f19c1f",
+    "player.js": "d610e65471797a9efbe45ee335939d92798df7f837ce813258df9a985391ba80",
+    "assets/battleScenery-BPcYaQGC.js": "4e76cd2f49d78386881acae9fc3b87a253178fddb36d74ca935d8ccb19995766",
+    "assets/phaser.min-CwlHMuXa.js": "e92ddef111ba42e92d316979c732311757093688ea1810591cb7aa2858eba7a7",
+    "assets/PlayScene-DDxLyc4H.js": "ed040cd149f6c6257a6e443b464345c5e744c0a82be2d4f13f1e8287c7692ee6",
+    "assets/playSceneBattle-hV3IfQ-2.js": "9f3d38cfef13b569ecc9385e9b332524f849601ba8b6a5a84923c1cde8bbd2ba",
+    "assets/player-Dv-H9esX.css": "e454abb901d3adc4779696876b0c6799f73af70f7e376f04f311ccad02b8a2f9"
+  },
+  "reason": "Only hero art, Python authoring, and documentation changed. No engine JS/CSS edits. The export embeds the freshly saved and reloaded revision 32 project and verified hero asset."
+}

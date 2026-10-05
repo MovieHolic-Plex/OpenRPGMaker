@@ -20,22 +20,8 @@
     "down: whole-frame exact color/pose change 0.632; semantic playback required",
     "left: whole-frame exact color/pose change 0.668; semantic playback required"
   ],
-  "pass": true,
-  "judgments": [
-    {
-      "reviewer": "hero_hostile_review",
-      "score": 87,
-      "criticalFailures": []
-    },
-    {
-      "reviewer": "root",
-      "score": 88,
-      "criticalFailures": []
-    }
-  ],
-  "packageSha256": "45734ac8c91993dbbf705d7fc504d2eb893ebd279f275aee2ab126fc11563412",
-  "independentReviewSha256": "4a0d94edcceca409b8f5f40e08952dbb71e7859d8951e3898f9ae3f12aa8018e",
-  "rootReviewSha256": "1d4dcd0d6fb5ebf48cb8ac92c9eba6bfa01a8ff3ba2f122566dc5e17a53d1452",
+  "sheet": "/home/main/z-project/pokemon-hero-refinement-2/v14/hero/charset.png",
+  "gif": "/home/main/z-project/pokemon-hero-refinement-2/v14/hero/walk.gif",
   "evidence": [
     {
       "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/native-contact.png",
@@ -46,5 +32,5 @@
       "sha256": "0b11370e73b35f90f56bee8d7f947d522c63f9da19f5ac2d25ce93da1faf54af"
     }
   ],
-  "limitations": "Hashes bind recorded judgments to actual GIF/PNG bytes; they cannot prove aesthetic truth or authenticate that a reviewer viewed the images."
+  "scope": "Native12poses and all decoded GIF frames. Display enlargement only; no art resampling."
 }

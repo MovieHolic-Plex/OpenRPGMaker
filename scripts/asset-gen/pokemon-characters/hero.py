@@ -5,7 +5,7 @@ PALETTE={
  'o':'202837', 'h':'383647', 'H':'565269',
  'r':'aa3e45', 'R':'ed6558', 'a':'ff9b70',
  'w':'fff0d0', 'v':'b3c6cc', 's':'f7c29b', 't':'dfa07e',
- 'p':'4b78a0', 'q':'2b476a', 'b':'b47942', 'g':'e6b659', 'd':'46334b'
+ 'p':'4b78a0', 'q':'2b476a', 'b':'9c6743', 'g':'d5b16b', 'd':'46334b'
 }
 # Every row is authored on the final native grid. Centering adds transparency only.
 def centered(rows,width=16):
@@ -18,61 +18,63 @@ def centered(rows,width=16):
 
 HEAD={
 'down':centered([
- 'oooooo', 'oorRRRRroo', 'orRRaRRRRRro', 'oRRaaRRRRRro',
- 'oRRRRRRRRRro', 'orRRRRRRRRrro', 'orrRRwwRRrrho',
- 'ohhrwwwwrhho',
- 'ostssssssstso',
+ 'oooooo', 'oorRRRrroo', 'orRaRRRRRrro', 'oRaaRRRRRrro',
+ 'oRRRRRRRRrro', 'orrrRRRRrrro', 'ohrrRRRRrrhho',
+ 'ohhrrwwwrrhho',
+ 'ostsssssssstso',
  'otsossssosto',
- 'ottsosssostto',
+ 'ottsossssostto',
  'ottsstssstto',
- 'oottttttoo']),
+ 'ootsssstoo']),
 'up':centered([
- 'oooooo', 'oorRRRRroo', 'orRRaRRRRRro', 'oRRaaRRRRRro',
- 'oRRRRRRRRRro', 'orRRRRRRRRrro', 'ohrrrrrrrrhho',
- 'ohHHHHhhhHho',
- 'ohHHHhhhhHho',
- 'ohHHhhhhHho',
- 'ohHhhhhhhho',
- 'ohhhsshhho',
- 'ohssthho']),
+ 'oooooo', 'oorRRRrroo', 'orRaRRRRRrro', 'oRaaRRRRRrro',
+ 'oRRRRRRRRrro', 'orrrRRRRrrro', 'ohrrrrrrrrhho',
+ 'ohrrrwwrrrhho',
+ 'ohHHHhhhhhho',
+ 'ohHHhhhhhho',
+ 'ohhhhhhho',
+ 'ohhtssthho',
+ 'ohtsstho']),
 'right':[
- '.....oooooo.....', '...oorRRRRroo...', '..orRRaRRRRRro..',
- '..oRRaaRRRRRro..', '..oRRRRRRRRRro..', '..orRRRRRRRRro..',
- '..ohrrRRwwRrrro.', '..ohhhrrwwwrro..',
+ '.....oooooo.....', '...oorRRRrroo...', '..orRaRRRRRrro..',
+ '..oRaaRRRRRrro..', '..oRRRRRRRRrro..', '..orrrRRRRrrro..',
+ '..ohrrRRRRRrrro.', '..ohhhrrwwwrro..',
  '..ohHHhtssssso..', '...ohHhtsssoso..',
- '...ohhhtssssto..', '....ohhtsssto...', '.....ohstto.....']}
+ '....ohttsssoso..', '.....ohtsssto...', '......otsto.....']}
 assert all(len(row)==16 for rows in HEAD.values() for row in rows)
+# Keep the two dark eye columns vertical, independent of cheek-row width.
+assert all(HEAD['down'][y][x]=='o' for y in [9,10] for x in [5,10])
 HEAD['left']=[row[::-1] for row in HEAD['right']]
 BODY={
 'down':centered([
- 'owqsssqwo',
- 'owgppwwppgwo',
- 'osvqppwppqvso',
- 'ottqppppqtto',
+ 'oqvsssvqo',
+ 'owqppwwppqwo',
+ 'osvqpwwpqvso',
+ 'ottqppwppqtto',
  'oqhhhqqhhqo']),
 'up':centered([
- 'owqsssqwo',
- 'owpqggggqpwo',
- 'osqgbRRbgqso',
- 'ottgbrrbgtto',
+ 'ovqsssqvo',
+ 'owqggbbgqwo',
+ 'osqgRRbbqvso',
+ 'ottgrrbbqtto',
  'oqhbbbbhhqo']),
 'right':[
- '.....owsswo.....',
- '....ogbgopwpo...',
+ '.....oqssvqo....',
+ '....oggbopwpo...',
  '...obgRboqvqo...',
- '....obrRossto...',
+ '....obrrqssto...',
  '.....ohhqqho....']}
 assert all(len(row)==16 for rows in BODY.values() for row in rows)
 BODY['left']=[row[::-1] for row in BODY['right']]
 # Three native rows join dressed hips directly to small toe/heel shoes.
 LEGS={
 'down':{
- 1:centered(['oqss..ssqo','odrd..drdo','ood....doo']),
- 0:centered(['oqss...sqo','odrd..ddoo','oodd....']),2:[]},
+ 1:centered(['oqss..ssqo','orrd..drro','owd....dwo']),
+ 0:centered(['oqss...sqo','orrd..ddro','owdd....']),2:[]},
 'right':{
- 1:centered(['oqstqo','oddodro','ood.ooo']),
- 0:centered(['ott..so','odr..do','.....doo']),
- 2:centered(['os..tto','od..dro','ood.....'])}}
+ 1:centered(['oqstqo','odroRro','owd.owo']),
+ 0:centered(['ott..so','orr..do','.....dwo']),
+ 2:centered(['os..tto','od..rro','owd.....'])}}
 LEGS['down'][2]=[row[::-1] for row in LEGS['down'][0]]
 LEGS['up']=LEGS['down']
 LEGS['left']={phase:[row[::-1] for row in rows] for phase,rows in LEGS['right'].items()}

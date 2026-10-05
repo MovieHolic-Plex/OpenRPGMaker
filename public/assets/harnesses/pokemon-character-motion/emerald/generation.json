@@ -1,25 +1,25 @@
 {
   "version": 2,
   "heroQuality": {
-    "sheetSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
-    "gifSha256": "b88f1ce94a24e1e3fff18e3865746294796c6a62c5d324a23b2eec2004009caa",
+    "sheetSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+    "gifSha256": "2824de459ecbcb19723d067be118a9b36fd9e9f0e63dcac5c04e1d9f32340242",
     "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
     "implementationSha256": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91",
     "judgments": [
       {
         "reviewer": "hero_hostile_review",
-        "score": 85,
+        "score": 87,
         "criticalFailures": []
       },
       {
         "reviewer": "root",
-        "score": 85,
+        "score": 88,
         "criticalFailures": []
       }
     ],
-    "packageSha256": "c802b69b5d1a0f5a2c72c658c096da20d5e963ad29045dd212fbe1750faac798",
-    "independentReviewSha256": "cf2b79d1362d4e636978ddfdaf83a3d9a83f19583dc1863d59ea3bb1af595d63",
-    "rootReviewSha256": "9daed41b7d0f718e6ea04d92cd336801a5c69e503c5db594d7e2d920dace8479"
+    "packageSha256": "45734ac8c91993dbbf705d7fc504d2eb893ebd279f275aee2ab126fc11563412",
+    "independentReviewSha256": "4a0d94edcceca409b8f5f40e08952dbb71e7859d8951e3898f9ae3f12aa8018e",
+    "rootReviewSha256": "1d4dcd0d6fb5ebf48cb8ac92c9eba6bfa01a8ff3ba2f122566dc5e17a53d1452"
   },
   "native": {
     "frameWidth": 16,
@@ -35,12 +35,12 @@
   "imageGeneration": "none / native Python pixels",
   "authoring": {
     "method": "python-native-pixel-authoring",
-    "manifestSha256": "788520538c4934d32d74b76aa09ccb79b03484a31d623dbf2905a49adf9a92a4",
+    "manifestSha256": "d02efca32bfa4d520fad9e2c4c791f528ca2ab91c3e976fa440d8824a0601001",
     "sources": {
       "build.py": "469445ba609df8ffa16997cd735f678431640103091f17467293bb9fc5c62870",
       "cast.py": "91d7a26047f6bd8c645c54c472611897861eb0aeb6885287d6c7f0d2f1107302",
       "field.py": "d6e42fc875b764da99fec18b6d61677e83d0e3892398acb3466f8c53cabc71f7",
-      "hero.py": "dd5bd4bd648d5e48827e61779df4b1dcd55da193d17c762086a70483952cd957",
+      "hero.py": "130858ebf85c53a37c13e53ca6eb2a2fc1b58c241e918a8f3720ca02529db3eb",
       "pixels.py": "91bffbc9b36678369fc5a70f1a89016df41c0ff34bfc89f98bd3d5f662762a77",
       "portraits.py": "c4adc53238eaf1162bb5e5adcc50c0c981d98d9ad0b83f5f14e06c7f9c3425a3",
       "prepare-review.py": "10ab515d6294c2a645b6b1a6d81718ceb66af936f8d85cb65653335634cd93ea"
@@ -49,11 +49,11 @@
   "roles": [
     {
       "role": "hero",
-      "source": "/home/main/z-project/pokemon-hero-reference-revision/review-v12/candidates/hero-1791158480000-83ba4ccc",
-      "sourceSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+      "source": "/home/main/z-project/pokemon-hero-refinement-2/review/candidates/hero-1791160299682-d9ad055a",
+      "sourceSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
       "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-      "finalSha256": "99d6ce3ef1fd296f2bb66d7898ed492b161c70de895ab744073ab043e34e8310",
-      "gateSha256": "21020a697a23addfeff57d680763749166b63e82e6b99c3f020acf3f10f3fd18"
+      "finalSha256": "ca99e8da2e2c9e43c2d8955f0f6f0600d889f127140e10afe35b464adab5c5bc",
+      "gateSha256": "2f11904aa1899bda46abeed935c9c4e5f60a96282b8bc40373f59edb3149f454"
     },
     {
       "role": "rival",
