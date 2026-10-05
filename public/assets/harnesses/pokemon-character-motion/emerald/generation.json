@@ -1,25 +1,192 @@
 {
   "version": 2,
   "heroQuality": {
-    "sheetSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-    "gifSha256": "9257ec516800810e25abbecf9e2f45c37e591869561d777d7bb38310caa863b4",
-    "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
-    "implementationSha256": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91",
-    "judgments": [
+    "mode": "reference-fidelity",
+    "pass": true,
+    "minimumRequiredPerPose": 0.95,
+    "minimumExactRatio": 1,
+    "minimumSilhouetteIoU": 1,
+    "sourceSha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+    "sourceUrl": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+    "sheetSha256": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+    "gifSha256": "291269fc769278825318f4af7fb1271b9aac2333c31f2dab4b4cacd6612a6e20",
+    "implementationSha256": "c5cbd01c93af649d06ed1cdd35c9483e769c33062e9b30aa8cde64f0ac2aca07",
+    "independentlyAuthored": false,
+    "measurement": "Exact normalized RGBA at fixed native coordinates / union of reference and candidate foreground. Transparent in both is excluded. No resizing or alignment. Every pose must independently pass.",
+    "poses": [
       {
-        "reviewer": "hero_shape_review",
-        "score": 85,
-        "criticalFailures": []
+        "direction": "up",
+        "phase": "stepA",
+        "foregroundUnion": 195,
+        "exactForegroundPixels": 195,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
       },
       {
-        "reviewer": "root",
-        "score": 85,
-        "criticalFailures": []
+        "direction": "up",
+        "phase": "idle",
+        "foregroundUnion": 216,
+        "exactForegroundPixels": 216,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "up",
+        "phase": "stepB",
+        "foregroundUnion": 195,
+        "exactForegroundPixels": 195,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "right",
+        "phase": "stepA",
+        "foregroundUnion": 198,
+        "exactForegroundPixels": 198,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "right",
+        "phase": "idle",
+        "foregroundUnion": 189,
+        "exactForegroundPixels": 189,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "right",
+        "phase": "stepB",
+        "foregroundUnion": 197,
+        "exactForegroundPixels": 197,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "down",
+        "phase": "stepA",
+        "foregroundUnion": 198,
+        "exactForegroundPixels": 198,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "down",
+        "phase": "idle",
+        "foregroundUnion": 214,
+        "exactForegroundPixels": 214,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "down",
+        "phase": "stepB",
+        "foregroundUnion": 198,
+        "exactForegroundPixels": 198,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "left",
+        "phase": "stepA",
+        "foregroundUnion": 198,
+        "exactForegroundPixels": 198,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "left",
+        "phase": "idle",
+        "foregroundUnion": 189,
+        "exactForegroundPixels": 189,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
+      },
+      {
+        "direction": "left",
+        "phase": "stepB",
+        "foregroundUnion": 197,
+        "exactForegroundPixels": 197,
+        "mismatchedForegroundPixels": 0,
+        "exactRatio": 1,
+        "silhouetteIoU": 1,
+        "pass": true
       }
     ],
-    "packageSha256": "fb061bcf671936c4b00f1635044f251102cb7296ebcc6cb0b3b0158d60470c90",
-    "independentReviewSha256": "50343b6d402dacdff17be49a9489c949841a06965e6bc716032fee2b9065f4b3",
-    "rootReviewSha256": "b71229f3fea37bfce8a4d54d4f031cbd7f214ea819af25eb5837a8717ce83914"
+    "gifFrames": [
+      {
+        "frame": 0,
+        "phase": 0,
+        "durationMs": 130,
+        "exactSheetPixels": true
+      },
+      {
+        "frame": 1,
+        "phase": 1,
+        "durationMs": 130,
+        "exactSheetPixels": true
+      },
+      {
+        "frame": 2,
+        "phase": 2,
+        "durationMs": 130,
+        "exactSheetPixels": true
+      },
+      {
+        "frame": 3,
+        "phase": 1,
+        "durationMs": 130,
+        "exactSheetPixels": true
+      }
+    ],
+    "adversarialControls": [
+      {
+        "case": "blank",
+        "rejected": true
+      },
+      {
+        "case": "shift-one-pixel",
+        "rejected": true
+      },
+      {
+        "case": "recolor",
+        "rejected": true
+      },
+      {
+        "case": "wrong-direction",
+        "rejected": true
+      },
+      {
+        "case": "single-missing-pose",
+        "rejected": true
+      },
+      {
+        "case": "extra-ink",
+        "rejected": true
+      }
+    ]
   },
   "native": {
     "frameWidth": 16,
@@ -32,28 +199,36 @@
     "paddingX": 4,
     "resizing": false
   },
-  "imageGeneration": "none / native Python pixels",
+  "imageGeneration": "none / original-game hero adoption; other roles native Python pixels",
   "authoring": {
-    "method": "python-native-pixel-authoring",
-    "manifestSha256": "ac3fb3bc95a3086f8348bad637c1364ea8309384c6c4875f27f94f42d4689f2c",
+    "method": "python-native-pixel-authoring-with-reference-adoption",
+    "manifestSha256": "1539638afb34ef85c8c9af7f407a541352a8812103d146a4322e763c5076875f",
     "sources": {
-      "build.py": "469445ba609df8ffa16997cd735f678431640103091f17467293bb9fc5c62870",
+      "build.py": "c4b9d5484b6ce94f28a7fdd10fe8010b8f78a73337b95e11b4d1a00c47b553b8",
       "cast.py": "91d7a26047f6bd8c645c54c472611897861eb0aeb6885287d6c7f0d2f1107302",
       "field.py": "d6e42fc875b764da99fec18b6d61677e83d0e3892398acb3466f8c53cabc71f7",
-      "hero.py": "a8abe2ee5112738dc097a08555c1fc18efde2f99dabdee2dd727d13cb1606afe",
+      "hero.py": "56a7fb19f1ea4a0b2201b454edcfb1ff44d17b97636bc75fed6955b34b2aa4d5",
       "pixels.py": "91bffbc9b36678369fc5a70f1a89016df41c0ff34bfc89f98bd3d5f662762a77",
       "portraits.py": "c4adc53238eaf1162bb5e5adcc50c0c981d98d9ad0b83f5f14e06c7f9c3425a3",
-      "prepare-review.py": "10ab515d6294c2a645b6b1a6d81718ceb66af936f8d85cb65653335634cd93ea"
+      "prepare-review.py": "df4f36f34015eecb8672d92f5731e208068131e35f256beaf6542d6367954845",
+      "references/brendan-walking.png": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1"
+    },
+    "referenceAdoption": {
+      "role": "hero",
+      "name": "Pokémon Emerald Brendan",
+      "source": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+      "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+      "independentlyAuthored": false
     }
   },
   "roles": [
     {
       "role": "hero",
-      "source": "/home/main/z-project/pokemon-hero-shape-revision/review/candidates/hero-1791165921659-5faca17e",
-      "sourceSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-      "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-      "finalSha256": "72668d7b24c0aa0ef88c240f7ee5519ef51dc002464f7626b6e258551c922ec1",
-      "gateSha256": "2fb7803f2e06c4c8aea44509587dcd5067088b6831eca394806283c0a8c5f3b3"
+      "source": "/home/main/z-project/pokemon-hero-reference-fidelity/review/candidates/hero-1791169328949-89993af5",
+      "sourceSha256": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+      "promptSha256": "eb82c75e5628748d4ce4db4c52f33f092cd2470f80a3eec643102618ac73cf7d",
+      "finalSha256": "d53ccbd5d7cf935e3fe472bc034bf5b3d9ca398fd29ac08fed29fa9705fcdede",
+      "gateSha256": "f5057c2e7c12fd3578a30dd9aea22ebdce63387cc9479c6a4b2f2c7e067f3b4e"
     },
     {
       "role": "rival",

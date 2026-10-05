@@ -1,5 +1,5 @@
 {
-  "gifSha256": "9257ec516800810e25abbecf9e2f45c37e591869561d777d7bb38310caa863b4",
+  "gifSha256": "291269fc769278825318f4af7fb1271b9aac2333c31f2dab4b4cacd6612a6e20",
   "scope": "Actual animated HTMLImageElement screenshot pixels at1x/4x equal decoded native GIF frames; three distinct poses observed at each scale. No canvas or CSS pose animation.",
   "checks": [
     {
@@ -7,18 +7,18 @@
       "samples": 14,
       "observedGifFrames": [
         1,
-        2,
+        1,
+        1,
+        1,
         0,
         2,
         0,
         2,
-        1,
-        1,
+        0,
+        2,
         0,
         1,
         1,
-        1,
-        2,
         1
       ],
       "distinctNativePoses": 3,
@@ -30,18 +30,18 @@
       "observedGifFrames": [
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        2,
         0,
         2,
+        0,
         1,
-        1
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
       ],
       "distinctNativePoses": 3,
       "nativePixelsMatch": true

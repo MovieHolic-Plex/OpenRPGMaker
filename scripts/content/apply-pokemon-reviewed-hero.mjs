@@ -46,6 +46,7 @@ new.save(sys.argv[3]);print(json.dumps({'outsideHeroPixelsCompared':288*256-72*1
 if(result.status!==0)throw Error(result.stderr+result.stdout);
 const replacement=await fs.readFile(path.join(out,'new-cast-1.png'));
 delete asset.ref;asset.dataUrl='data:image/png;base64,'+replacement.toString('base64');
+if(quality.mode==='reference-fidelity')asset.meta={...asset.meta,heroReferenceAdoption:{name:'Pokémon Emerald Brendan',sourceUrl:quality.sourceUrl,sourceSha256:quality.sourceSha256,independentlyAuthored:false,minimumExactRatio:quality.minimumExactRatio}};
 const proof=structuredClone(project);proof.assets.uploaded[id]=before.assets.uploaded[id];if(!isDeepStrictEqual(proof,before))throw Error('Changes outside the cast1 asset');
 const cache=JSON.parse(await fs.readFile(cachePath));cache.assets.uploaded[id]=asset;
 await fs.writeFile(path.join(out,'prepared-canonical.json'),JSON.stringify(project));

@@ -1,11 +1,11 @@
 {
   "provenance": {
     "version": "pokemon-motion-2",
-    "createdAt": "2026-10-05T02:05:21.670Z",
+    "createdAt": "2026-10-05T03:02:08.966Z",
     "role": "hero",
-    "sourceSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-    "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "finalSha256": "72668d7b24c0aa0ef88c240f7ee5519ef51dc002464f7626b6e258551c922ec1",
+    "sourceSha256": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+    "promptSha256": "eb82c75e5628748d4ce4db4c52f33f092cd2470f80a3eec643102618ac73cf7d",
+    "finalSha256": "d53ccbd5d7cf935e3fe472bc034bf5b3d9ca398fd29ac08fed29fa9705fcdede",
     "contract": {
       "frameWidth": 16,
       "frameHeight": 32,
@@ -61,12 +61,12 @@
     "clip": null
   },
   "hashes": {
-    "source.png": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-    "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-    "charset.png": "72668d7b24c0aa0ef88c240f7ee5519ef51dc002464f7626b6e258551c922ec1"
+    "source.png": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+    "prompt.txt": "eb82c75e5628748d4ce4db4c52f33f092cd2470f80a3eec643102618ac73cf7d",
+    "charset.png": "d53ccbd5d7cf935e3fe472bc034bf5b3d9ca398fd29ac08fed29fa9705fcdede"
   },
   "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
-  "provenanceSha256": "86d22288d6f5253e93bec8af73ffbe294ee84c1ca6f3538530b4544924e0c1ee",
+  "provenanceSha256": "f0b9db83a858a379dcbf58b9515ac11264235e3fa1237811ad19fc74cd3feae8",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -84,26 +84,22 @@
     "stepChangeMin": 4,
     "margin": 0
   },
-  "createdAt": "2026-10-05T02:07:10.250Z",
+  "createdAt": "2026-10-05T03:03:41.806Z",
   "verdict": "pass",
   "who": "supervisor",
-  "why": "Native 12 poses and decoded four-frame GIF reviewed against actual Emerald chipsets; support and swing exchange, shaped pack, attached hips and hands verified. Actual browser GIF exact at 1x and 4x. User acceptance is separate.",
+  "why": "Explicit user-requested original Brendan adoption. Personally inspected all twelve mapped native poses and four-frame reference comparison, with exact foreground source gate and actual browser GIF playback. Transparent source index0 and right-facing flip only; no independent-art claim.",
   "evidence": [
     {
       "file": "review-evidence-0.png",
-      "sha256": "9a3384deda05d85c1924c22a06893f6b9df0a91bced6a95346d4b2aaea31e2c4"
+      "sha256": "49fe37506c1124577bd4deff3cf490192e7ef655a5357ed542da087462613fd6"
     },
     {
-      "file": "review-evidence-1.png",
-      "sha256": "56c08b7a460a7d1c60d76e7db0886cb01698b922382422ecde786fee853db123"
+      "file": "review-evidence-1.json",
+      "sha256": "4f67a379990078da6329a51fc400b2332286150968a32a2aac0c4355b8c29a30"
     },
     {
       "file": "review-evidence-2.json",
-      "sha256": "b71229f3fea37bfce8a4d54d4f031cbd7f214ea819af25eb5837a8717ce83914"
-    },
-    {
-      "file": "review-evidence-3.json",
-      "sha256": "e9291c96bca4c884f47691978ae6b9ebf148d1fb646867b28dc58daa719c1158"
+      "sha256": "90f4b59059a3230b2135ce5e33fe83972072d7d83658d3bb2be2e4583003a8fe"
     }
   ],
   "semanticChecklist": [
@@ -113,5 +109,5 @@
     "loop seam natural",
     "clip is actual drawn poses if advertised drawn"
   ],
-  "previewSha256": "c65496230346e49ef90225abbfcbba26508f9339de3cd69a0c41606ffc7526bf"
+  "previewSha256": "0484176fc8261ca883e30c2587b8ed60685fe63b66cbd3e4cbf457121f15a532"
 }

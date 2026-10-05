@@ -1,10 +1,10 @@
 {
   "version": "pokemon-motion-2",
-  "createdAt": "2026-10-05T02:05:21.670Z",
+  "createdAt": "2026-10-05T03:02:08.966Z",
   "role": "hero",
-  "sourceSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-  "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
-  "finalSha256": "72668d7b24c0aa0ef88c240f7ee5519ef51dc002464f7626b6e258551c922ec1",
+  "sourceSha256": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+  "promptSha256": "eb82c75e5628748d4ce4db4c52f33f092cd2470f80a3eec643102618ac73cf7d",
+  "finalSha256": "d53ccbd5d7cf935e3fe472bc034bf5b3d9ca398fd29ac08fed29fa9705fcdede",
   "contract": {
     "frameWidth": 16,
     "frameHeight": 32,

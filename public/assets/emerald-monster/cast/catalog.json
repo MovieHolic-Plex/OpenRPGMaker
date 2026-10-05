@@ -3,13 +3,21 @@
     "id": "oprn_emerald_field_cast_1",
     "kind": "charset",
     "file": "cast-1.png",
-    "sha256": "0e6dd1638b41519f40fdccdde48e3b5a93b17f977d0ae8321d14d269060686db",
+    "sha256": "ea8bb33750e3bcb9147724e30d58868a6f983b46ca19978aa0ed60933f3cc8b7",
     "meta": {
       "width": 288,
       "height": 256,
       "frameWidth": 24,
       "frameHeight": 32,
-      "frames": 96
+      "frames": 96,
+      "heroReferenceAdoption": {
+        "role": "hero",
+        "name": "Pokémon Emerald Brendan",
+        "source": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+        "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+        "independentlyAuthored": false,
+        "minimumExactRatio": 1
+      }
     },
     "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
     "pipeline": "scripts/content/register-pokemon-character-motion.mjs"

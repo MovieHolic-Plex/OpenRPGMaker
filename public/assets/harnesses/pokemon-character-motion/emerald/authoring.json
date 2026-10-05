@@ -1,7 +1,14 @@
 {
-  "version": 1,
+  "version": 2,
   "author": "Codex / root",
-  "method": "python-native-pixel-authoring",
+  "method": "python-native-pixel-authoring-with-reference-adoption",
+  "referenceAdoption": {
+    "role": "hero",
+    "name": "Pokémon Emerald Brendan",
+    "source": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+    "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+    "independentlyAuthored": false
+  },
   "resizing": false,
   "quantization": false,
   "nativeFieldFrame": [
@@ -13,47 +20,48 @@
     64
   ],
   "sources": {
-    "build.py": "469445ba609df8ffa16997cd735f678431640103091f17467293bb9fc5c62870",
+    "build.py": "c4b9d5484b6ce94f28a7fdd10fe8010b8f78a73337b95e11b4d1a00c47b553b8",
     "cast.py": "91d7a26047f6bd8c645c54c472611897861eb0aeb6885287d6c7f0d2f1107302",
     "field.py": "d6e42fc875b764da99fec18b6d61677e83d0e3892398acb3466f8c53cabc71f7",
-    "hero.py": "a8abe2ee5112738dc097a08555c1fc18efde2f99dabdee2dd727d13cb1606afe",
+    "hero.py": "56a7fb19f1ea4a0b2201b454edcfb1ff44d17b97636bc75fed6955b34b2aa4d5",
     "pixels.py": "91bffbc9b36678369fc5a70f1a89016df41c0ff34bfc89f98bd3d5f662762a77",
     "portraits.py": "c4adc53238eaf1162bb5e5adcc50c0c981d98d9ad0b83f5f14e06c7f9c3425a3",
-    "prepare-review.py": "10ab515d6294c2a645b6b1a6d81718ceb66af936f8d85cb65653335634cd93ea"
+    "prepare-review.py": "df4f36f34015eecb8672d92f5731e208068131e35f256beaf6542d6367954845",
+    "references/brendan-walking.png": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1"
   },
   "roles": [
     {
       "role": "hero",
       "label": "주인공",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/hero/charset.png",
-      "charsetSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/hero/portrait.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/hero/charset.png",
+      "charsetSha256": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/hero/portrait.png",
       "portraitSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
       "palette": {
-        "o": "303340",
-        "h": "483934",
-        "H": "71544b",
-        "r": "9f4248",
-        "R": "df6256",
-        "a": "f49470",
-        "w": "eee4c8",
-        "v": "a7b6b1",
-        "s": "f0c29b",
-        "t": "cf9879",
-        "p": "628fa4",
-        "q": "365366",
-        "b": "a87948",
-        "g": "d7b46b",
-        "d": "253343"
+        "1": "ffd5b4",
+        "2": "ffc594",
+        "3": "de9473",
+        "4": "7b4141",
+        "5": "394a7b",
+        "6": "293962",
+        "7": "182952",
+        "8": "102039",
+        "9": "dee6ee",
+        "10": "73cd73",
+        "11": "4a9452",
+        "12": "ff625a",
+        "13": "c54141",
+        "14": "ffffff",
+        "15": "000000"
       },
-      "opaqueColors": 15
+      "opaqueColors": 14
     },
     {
       "role": "rival",
       "label": "라이벌",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/rival/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/rival/charset.png",
       "charsetSha256": "06f2c537e8ec8bade4bbdea545c4c7b7fae403b33a5d5c1c450885f8c14ead8a",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/rival/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/rival/portrait.png",
       "portraitSha256": "9d40db789ac4e2229387a1bd953b46a4cfedeb9e1a7a684f21c607126b5f2182",
       "palette": {
         "o": "243039",
@@ -76,9 +84,9 @@
     {
       "role": "professor",
       "label": "박사",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/professor/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/professor/charset.png",
       "charsetSha256": "3053505c06baf834b06acdc4b73303d6cbf9e971a739cf1683b5c51a92ac99fc",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/professor/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/professor/portrait.png",
       "portraitSha256": "0c1988c64edb9e1e4a486fd2e39c888aa824b04800a9fab13737c3a779965515",
       "palette": {
         "o": "243039",
@@ -101,9 +109,9 @@
     {
       "role": "nurse",
       "label": "간호사",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/nurse/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/nurse/charset.png",
       "charsetSha256": "5f9e2de5f2dfd59480bfda7ef14678f1511edd2bca5db4d30cdd800e4949f362",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/nurse/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/nurse/portrait.png",
       "portraitSha256": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea",
       "palette": {
         "o": "243039",
@@ -126,9 +134,9 @@
     {
       "role": "merchant",
       "label": "상인",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/merchant/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/merchant/charset.png",
       "charsetSha256": "dce8eff7da9419ca39ae79f28b5170760220410648eee06531c5fdda09d20d8d",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/merchant/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/merchant/portrait.png",
       "portraitSha256": "1ab272ed5854acd475324cffafc8c5b50b8ed7c6f3b1be551cd7f6446707a5f4",
       "palette": {
         "o": "243039",
@@ -151,9 +159,9 @@
     {
       "role": "mother",
       "label": "엄마",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/mother/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/mother/charset.png",
       "charsetSha256": "9374f661e7fcbb7d5e840e8f235b729df5f192de80cd8e80d622aa428c2e9b3e",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/mother/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/mother/portrait.png",
       "portraitSha256": "0ac7a00ef8c193bf7bf43bdb9dd01c4144711546f76f6908e039aa369263e8e6",
       "palette": {
         "o": "243039",
@@ -176,9 +184,9 @@
     {
       "role": "resident",
       "label": "주민",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/resident/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/resident/charset.png",
       "charsetSha256": "0244f50f8602dfe89be6c2e6fdce293ba05e4a7ee1fb5c1b9746a1f9037593a0",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/resident/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/resident/portrait.png",
       "portraitSha256": "a5cabb15589eb8734314dbad291d8dfdea4cd09ec7e93c44c73c74f93594ace1",
       "palette": {
         "o": "243039",
@@ -201,9 +209,9 @@
     {
       "role": "gym_leader",
       "label": "체육관 관장",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/gym_leader/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/gym_leader/charset.png",
       "charsetSha256": "a07275c89794003d4e6eb58513a448e82a0ee1e11b2394976594a01080f5bd5d",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/gym_leader/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/gym_leader/portrait.png",
       "portraitSha256": "3debc9e641f6b84819183ce619064761a2545f00eec01c6b7fc066cbc6b4f9f3",
       "palette": {
         "o": "243039",
@@ -226,9 +234,9 @@
     {
       "role": "company_agent",
       "label": "회사 요원",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/company_agent/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/company_agent/charset.png",
       "charsetSha256": "4b4be5dcfa4488f3c24f4f853adba5cbcf616f49d42d189e482a156e9d35267c",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/company_agent/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/company_agent/portrait.png",
       "portraitSha256": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
       "palette": {
         "o": "243039",
@@ -251,9 +259,9 @@
     {
       "role": "captain",
       "label": "선장",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/captain/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/captain/charset.png",
       "charsetSha256": "87b5b3b712dba2c6695b6221a2016d497f45c780cbb150354a73258a90028f85",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/captain/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/captain/portrait.png",
       "portraitSha256": "895e9b6400b8e0898d10be1fe80a020854e2982d4e50704c8f6bfe3cca9707e6",
       "palette": {
         "o": "243039",
@@ -276,9 +284,9 @@
     {
       "role": "worker",
       "label": "작업자",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/worker/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/worker/charset.png",
       "charsetSha256": "1ee64e7bb0c6ca1413657992fad4f146dc2a071faae8fecad50207e448bbc52e",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/worker/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/worker/portrait.png",
       "portraitSha256": "054d4785fb788fd5689cca24a34f3d46c54c4670370ab46ba974075eaa576c91",
       "palette": {
         "o": "243039",
@@ -301,9 +309,9 @@
     {
       "role": "explorer",
       "label": "탐험가",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/explorer/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/explorer/charset.png",
       "charsetSha256": "277240dc2e7b10854b9c672fc299337583d11acebb3e183309674e6d2f27f652",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/explorer/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/explorer/portrait.png",
       "portraitSha256": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0",
       "palette": {
         "o": "243039",
@@ -326,9 +334,9 @@
     {
       "role": "student",
       "label": "학생",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/student/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/student/charset.png",
       "charsetSha256": "86750fde0b80ea7ec371579b8958c47fb11a5ae44128bffac9e9a9ff18b0f473",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/student/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/student/portrait.png",
       "portraitSha256": "348934931a8992b899a9413698d9a37980c02e4c363273512f481eba13a93fcc",
       "palette": {
         "o": "243039",
@@ -351,9 +359,9 @@
     {
       "role": "ranger",
       "label": "레인저",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/ranger/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/ranger/charset.png",
       "charsetSha256": "7c2429911ffff07e0490d1b869eb51247ae1b405272b05959cbf0c062bacae4e",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/ranger/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/ranger/portrait.png",
       "portraitSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4",
       "palette": {
         "o": "243039",
@@ -376,9 +384,9 @@
     {
       "role": "moon_leader",
       "label": "달빛단 두목",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/moon_leader/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/moon_leader/charset.png",
       "charsetSha256": "08ddd7cf355a906237ed369ce7e27b62439962a5fb06127107954e9468b43762",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/moon_leader/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/moon_leader/portrait.png",
       "portraitSha256": "d3ab33569a54ebb19493b8ff054b64f96cb30a019135af62bc633a6ed4c404d2",
       "palette": {
         "o": "243039",
@@ -401,9 +409,9 @@
     {
       "role": "hiker",
       "label": "등산가",
-      "charset": "/home/main/z-project/pokemon-hero-shape-revision/source/hiker/charset.png",
+      "charset": "/home/main/z-project/pokemon-hero-reference-fidelity/source/hiker/charset.png",
       "charsetSha256": "797c9781b6d5b7324bcefc84919d2239ba2fbe4f17ea9908f4cf3137ec058790",
-      "portrait": "/home/main/z-project/pokemon-hero-shape-revision/source/hiker/portrait.png",
+      "portrait": "/home/main/z-project/pokemon-hero-reference-fidelity/source/hiker/portrait.png",
       "portraitSha256": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0",
       "palette": {
         "o": "243039",
@@ -428,7 +436,7 @@
     "hero"
   ],
   "professorClip": {
-    "file": "/home/main/z-project/pokemon-hero-shape-revision/source/professor-clip.png",
+    "file": "/home/main/z-project/pokemon-hero-reference-fidelity/source/professor-clip.png",
     "sha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
     "frameSize": [
       64,
@@ -437,7 +445,7 @@
     "frameCount": 6
   },
   "heroBack": {
-    "file": "/home/main/z-project/pokemon-hero-shape-revision/source/hero_back.png",
+    "file": "/home/main/z-project/pokemon-hero-reference-fidelity/source/hero_back.png",
     "sha256": "eb87e06b569b551bf879cbb5568916124e988c5274d9c57395256a903ffbbfa8"
   }
 }
