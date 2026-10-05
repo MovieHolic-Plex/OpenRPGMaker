@@ -54,10 +54,12 @@
 
 - 모든 물리 칸의 frame/crop을 독립 RM2K3 산술로 검사: 좌표 오류 0, 이름이 붙은 빈칸 0.
 - 등록된 이름 319개가 자기 칸을 실제 검색 결과에 포함: 누락 0.
-- 최종 main 통합 커밋 1a9615c6c62217c28d1f22b1c4d5faec22814562에서 관련 5파일 단위 테스트 **45개 통과**. 실제 PNG 점유/이름표 대조 회귀 2개가 포함된다. final-integration-tests.txt에 원본 결과를 보존했다.
+- 검증한 main 통합 커밋 1a9615c6c62217c28d1f22b1c4d5faec22814562에서 관련 5파일 단위 테스트 **45개 통과**. 실제 PNG 점유/이름표 대조 회귀 2개가 포함된다. final-integration-tests.txt에 원본 결과를 보존했다.
 - main 18371e2e8e 통합 뒤 packaged 앱 빌드와 Electron/실제 Pi 워커 빌드 통과. 실제 시험/최종 통합본의 칩 관련 소스 SHA는 모두 일치한다.
-- 최종 통합본 typecheck:app **exit 0** (`NODE_OPTIONS=--max-old-space-size=8192`). 기본 4GB 한도 실행은 heap OOM/exit 134로 중단되어 final-typecheck-default-heap.txt에 보존했고, 8GB 실행은 final-typecheck-8gb.txt에 보존했다. 최초 기준선의 미사용 measuredWidth 1건은 원격 main에서 제거되어 해결됐다. 이번 수정에 섞지 않았다.
+- 위 검증본 typecheck:app **exit 0** (`NODE_OPTIONS=--max-old-space-size=8192`). 기본 4GB 한도 실행은 heap OOM/exit 134로 중단되어 final-typecheck-default-heap.txt에 보존했고, 8GB 실행은 final-typecheck-8gb.txt에 보존했다. 최초 기준선의 미사용 measuredWidth 1건은 원격 main에서 제거되어 해결됐다. 이번 수정에 섞지 않았다.
 - 실제 입력창 `/pi` 왕·골렘 시험은 아래 assistant evidence 절에서 별도 보고한다. 일반 자연어 의도 분류 경로 성공률로 집계하지 않는다.
+
+병합 직전 main의 첫 요청 UI/공간 씨앗 변경을 추가 통합했다. 생성 위키 색인 충돌은 양쪽 문서에서 다시 생성하여 해결했다. 칩 관련 소스 SHA는 검증본과 그대로이며, 추가된 main UI 변경을 새 모델 시행이나 새 타입 검사로 검증했다고 집계하지 않는다.
 
 ## 그림과 판정 읽기
 
