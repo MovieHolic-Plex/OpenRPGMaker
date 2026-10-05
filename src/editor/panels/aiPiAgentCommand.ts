@@ -786,7 +786,7 @@ ${contractReleased.message}`);
       // `npm run ai:log --failed` 가 이 실패를 영영 못 본다.
       ...(failed ? { error: failureReason } : {}),
     });
-    surface.setStatus(failed ? "작업 실패" : "대기");
+    surface.setStatus(droppedEverything ? "적용 실패" : streamErrors.length ? "응답을 마치지 못했어요." : failed ? "작업 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
     if (answer && !droppedEverything) surface.appendBubble("assistant", answer);
     if (streamErrors.length) {
