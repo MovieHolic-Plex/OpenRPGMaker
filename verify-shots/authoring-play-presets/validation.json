@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-05T00:36:28.171313+00:00",
+  "codeCommit": "c1d10b5606426a80e42c9c69f79b5058911a6d58",
+  "typecheckApp": {
+    "command": "NODE_OPTIONS=--max-old-space-size=10240 npm run typecheck:app",
+    "exitCode": 0
+  },
+  "vitest": {
+    "command": "npm test -- test/authoringPlayPresets.test.ts test/aiToolExposureHybrid.test.ts test/discoveryReadContracts.test.ts test/piAgentSystemPromptFourLayer.test.ts test/piAgentSystemPromptHousePolicy.test.ts --maxWorkers=2",
+    "filesPassed": 5,
+    "testsPassed": 22,
+    "exitCode": 0
+  },
+  "browser": {
+    "command": "PRESET_CAPTURE_BROWSER=firefox node scripts/capture/capture-authoring-play-presets.mjs",
+    "exitCode": 0,
+    "proof": "proof.json"
+  },
+  "knownBaselineFailures": [
+    "opening-family expectation missing show_title_opening",
+    "CSS gates"
+  ],
+  "liveModelExecution": false,
+  "allPresetGameplayVerified": false,
+  "canonicalContentChanged": false
+}

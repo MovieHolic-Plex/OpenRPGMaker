@@ -1,8 +1,5 @@
 {
-  "source": "proof.json",
-  "total": 96,
-  "categoryCount": 12,
-  "initialReadTools": [
+  "initialTools": [
     "list_authoring_presets",
     "read_authoring_preset"
   ],
@@ -11,11 +8,20 @@
     "list_authoring_presets",
     "read_authoring_preset"
   ],
-  "modes": [
-    "read",
-    "read"
-  ],
-  "canonicalContentChanged": false,
-  "modelSelectionExecuted": false,
-  "errors": []
+  "unknownTools": [],
+  "wronglyClassifiedWrites": [],
+  "lifeStateCollections": [
+    {
+      "key": "fishSpecies",
+      "accountedFor": true
+    },
+    {
+      "key": "crops",
+      "accountedFor": true
+    },
+    {
+      "key": "lifeSkills",
+      "accountedFor": true
+    }
+  ]
 }

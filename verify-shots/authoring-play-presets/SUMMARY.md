@@ -43,3 +43,10 @@ module-loading-errors.json에 보존했다. 해당 모듈 응답을 확인하고
 - 도구 노출·발견·카탈로그 예산 관련 4개 파일에서 총 18개 통과, 1개 실패. 실패는 기존 `show_title_opening`을 빠뜨린 오프닝 도구 기대 목록이다.
 - CSS 게이트는 변경 전·후 모두 exit 1. `css-baseline-comparison.json`의 유일한 출력 차이는 추가한 CSS 선언 6개의 집계이며, 실패 항목과 변경된 기존 승자 수는 같다. 기준선은 갱신하지 않았다.
 - 앱 타입 검사는 기본 4GB 힙에서 메모리 한도로 중단됐다. CI와 같은 10GB로 실행한 결과 기존 이벤트 그림 미리보기 파일에 오류 2개가 나왔다. 최신 main의 수정과 통합 후 재확인한다.
+
+## 최신 main 통합 후 확인
+
+- `authoringPlayPresets`, `aiToolExposureHybrid`, `discoveryReadContracts`, Pi 네 층·집 지침 검사: **5개 파일·22개 테스트 모두 통과**.
+- Firefox 브라우저를 다시 열어 96종과 편집기 화면을 재확인했다. `proof.json`: **passed:true**, 오류 0건.
+- 변경 전 커밋의 별도 소스 사본에서 카탈로그 예산 검사를 실행해 같은 오프닝 기대 목록 실패(2개 통과·1개 실패)를 재현했다. `test-baseline-comparison.json` 참조.
+- 최종 `NODE_OPTIONS=--max-old-space-size=10240 npm run typecheck:app`: **exit 0**, 앱 타입 오류 0건. 최신 main의 기존 수정이 포함된 결과다.
