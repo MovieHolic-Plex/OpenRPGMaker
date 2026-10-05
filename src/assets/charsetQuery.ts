@@ -73,6 +73,8 @@ const SYNONYMS: readonly {
   { terms: ["priest", "cleric", "사제", "성직자"], tags: ["사제", "성직자"] },
   { terms: ["monk", "승려"], tags: ["승려"] },
   { terms: ["wizard", "mage", "마법사"], tags: ["마법사"] },
+  { terms: ["king", "국왕"], tags: ["왕", "국왕"] },
+  { terms: ["golem", "골렘"], tags: ["골렘"] },
   { terms: ["warrior", "fighter", "전사"], tags: ["전사"] },
   { terms: ["villager", "resident", "주민"], category: "people", tags: ["주민"] },
   { terms: ["actor", "hero", "영웅", "주인공"], category: "actor" },
@@ -107,6 +109,8 @@ function textureShortKey(textureKey: string): string {
 
 function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   if (entry.spriteType === 'uploaded') return entry.tags.includes('몬스터') ? 'monster' : entry.tags.includes('동물') ? 'animal' : 'people';
+  if (entry.textureKey.startsWith('tex_scarloxy_charset_people')) return 'people';
+  if (entry.textureKey.startsWith('tex_farming_charset_')) return 'animal';
   const shortKey = textureShortKey(entry.textureKey);
   const base = shortKey.replace(/\d+$/, "");
   if (base === "vehicles") return "vehicle";
@@ -118,7 +122,9 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
 function directTextureAlias(normalized: string): string | null {
   for (const entry of CHARSET_SEMANTICS) {
     const shortKey = textureShortKey(entry.textureKey).toLowerCase();
-    if (normalized === shortKey || normalized === entry.textureKey.toLowerCase()) return entry.textureKey;
+    if (normalized === entry.textureKey.toLowerCase()) return entry.textureKey;
+    // "animal" is the whole category, not just the RTP Animal.png sheet.
+    if (!LEGACY_CATEGORY_ALIASES.has(normalized) && normalized === shortKey) return entry.textureKey;
   }
   return null;
 }
