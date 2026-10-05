@@ -16,32 +16,34 @@ async function post(body) {
 }
 
 export function renderChoices(host, initial, onUpdate, enlarge) {
-  let state=initial, busy=false, message='';
+  let state={...initial,demo:initial.demo || initial.groups.some(g=>g.id==='space-demo')}, busy=false, message='';
   const savedOpen = new Set();
   function render() {
     host.dataset.busy=String(busy);
     const deciding=state.stage==='art-review' && !state.installation;
-    const working=['art','art-layout-review','art-context-review'].includes(state.stage);
-    const pending=state.groups.filter(g=>!g.candidates.some(c=>c.decision==='allow') && g.candidates.some(c=>c.eligible && !c.decision));
+    const working=['art','art-layout-review','art-context-review','art-demo'].includes(state.stage);
+    const pending=state.groups.filter(g=>!g.candidates.some(c=>c.decision==='allow') && g.candidates.some(c=>(c.eligible || state.demo) && !c.decision));
     const completed=state.groups.filter(g=>!pending.includes(g));
     let status = '마음에 드는 예시에 Allow, 아닌 예시에 Deny를 눌러 주세요. 여러 개 Allow해도 됩니다.';
     if(state.installation) status='등록된 결과입니다.';
-    else if(state.complete && !pending.length) status='선호하는 예시를 저장했습니다. 다음 단계 연결은 운영에서 처리할 일입니다. 추가로 선택하거나 입력하실 필요가 없습니다.';
+    else if(state.complete && !pending.length) status='데모 평가를 저장했습니다. 추가로 선택하거나 입력하실 필요가 없습니다.';
     else if(state.stage==='blocked') status='제작 문제를 운영에서 확인해야 합니다. 지금 하실 일은 없고, 기존 그림과 결정은 보존됩니다.';
-    else if(working) status=state.status==='running'?'새 예시를 준비하고 있습니다. 지금 누를 버튼은 없습니다.':state.paused?'새 예시 제작을 요청했습니다. 전체 작업이 일시 정지되어 실행을 기다립니다.':'새 예시 제작을 기다립니다.';
-    host.innerHTML=`<h1>${esc(state.title)}</h1><p class="choice-lead">1. 예시 보기 → 2. 결과 확인</p><p class="decision-intro">${esc(status)}</p>
-      <p class="example-caption">${state.id==='underground-prison'?'아래 그림은 계단·문을 방에 놓아 본 예시입니다. 전체 감옥의 완성 결과는 다음에 확인합니다.':'공간에 놓인 모습을 보고 선택해 주세요.'} Deny는 이 예시만 거절합니다.</p>
+    else if(working) status=state.demo?'공간 전체 데모입니다. 검수와 필요한 수정을 진행하며, 끝나면 아래에서 평가할 수 있습니다.':state.status==='running'?'실제 타일로 공간 전체 데모를 준비하고 있습니다.':'공간 전체 데모 제작을 요청했습니다. 아래에서 현재 작업과 대기 이유를 확인할 수 있습니다.';
+    host.innerHTML=`<h1>${esc(state.title)}</h1><p class="choice-lead">실제 타일로 만든 공간 데모</p><p class="decision-intro">${esc(status)}</p>
+      <p class="example-caption">${state.demo?'아래는 실제 후보 타일로 조립한 공간 전체입니다. 검수 중에도 데모를 볼 수 있습니다.':'타일로 공간 전체 데모를 만드는 중입니다.'} Deny는 이 예시만 거절합니다.</p>
       <p class="choice-message" role="status" aria-live="polite">${esc(message)}</p><div class="decision-gallery"></div>`;
     function groupElement(group) {
       const section=document.createElement('section');section.className='choice-group';
-      const candidates=group.candidates.filter(c=>!c.stale && c.images.length && (c.eligible || c.selected || c.decision));
+      const candidates=group.candidates.filter(c=>!c.stale && c.images.length && (state.demo || c.eligible || c.selected || c.decision));
       section.innerHTML=`<h2>${esc(titleOf(group))}</h2><div class="choice-compare"></div>`;
       if(!candidates.length) { section.innerHTML+='<p>검수를 통과한 새 예시를 준비 중입니다.</p>';return section; }
       candidates.forEach((c,number)=>{
         const card=document.createElement('article');card.className='choice-option'+(c.decision==='allow'?' selected':'')+(c.decision==='deny'?' denied':'');
-        card.innerHTML=`<h3>예시 ${number+1}<span class="choice-badge">${c.decision==='allow'?'Allow · 좋아요':c.decision==='deny'?'Deny · 다른 예시':''}</span></h3>${pictures(c.images,titleOf(group))}
-          <div class="binary-actions"><button data-decision="allow" aria-pressed="${c.decision==='allow'}" ${busy||!deciding||!c.eligible?'disabled':''}>Allow <small>좋아요</small></button><button data-decision="deny" aria-pressed="${c.decision==='deny'}" ${busy||!deciding||!c.eligible?'disabled':''}>Deny <small>다른 예시</small></button></div>`;
+        card.innerHTML=`<h3>예시 ${number+1}<span class="choice-badge">${c.decision==='allow'?'Allow · 좋아요':c.decision==='deny'?'Deny · 다른 예시':''}</span></h3>${pictures(c.images,titleOf(group))}<p>${esc(c.eligible?'데모 검수 완료 · 평가해 주세요.':(state.demo?'공간 데모 검수·수정 중':c.summary+' · 검수·수정 진행 중'))}</p>
+          <div class="binary-actions"><button data-decision="allow" aria-pressed="${c.decision==='allow'}" ${busy||!deciding||!c.eligible?'disabled':''}>Allow <small>좋아요</small></button><button data-decision="deny" aria-pressed="${c.decision==='deny'}" ${busy||!deciding||!c.eligible?'disabled':''}>Deny <small>다른 예시</small></button><button data-modify ${busy||!deciding||!c.eligible?'disabled':''}>수정 요청</button></div><form class="demo-modify" hidden><label>고칠 곳<textarea maxlength="2000" required placeholder="예: 빈 공간을 줄이고 출입구를 옮겨 줘"></textarea></label><button type="submit">수정 요청 보내기</button></form>`;
         bindPictures(card,c.images,enlarge);
+        card.querySelector('[data-modify]').onclick=()=>{card.querySelector('form').hidden=false;card.querySelector('textarea').focus();};
+        card.querySelector('form').onsubmit=e=>{e.preventDefault();save(group,c,'deny',card.querySelector('textarea').value);};
         card.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>save(group,c,b.dataset.decision));
         section.querySelector('.choice-compare').append(card);
       });return section;
@@ -56,13 +58,16 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
     }
     if(!state.groups.length) gallery.textContent='볼 수 있는 예시를 준비 중입니다.';
   }
-  async function save(group,candidate,decision) {
-    if(busy || candidate.decision===decision)return;
+  async function save(group,candidate,decision,text='') {
+    if(busy || (candidate.decision===decision && !text))return;
     busy=true;message='저장 중…';render();
     try {
+      if(text) await post({action:'evaluate-art',cid:state.id,group:group.id,candidate:candidate.id,
+        fingerprint:candidate.fingerprint,imagePath:candidate.images[0].path,imageHash:candidate.images[0].v,
+        rating:'revise',tags:[],text});
       const result=await post({action:'decide-example',cid:state.id,group:group.id,candidate:candidate.id,
-        fingerprint:candidate.fingerprint,images:candidate.images.map(im=>({path:im.path,v:im.v})),decision});
-      state=result.choices;message=decision==='allow'?'Allow를 저장했습니다.':'Deny를 저장했습니다. 이 예시는 사용하지 않습니다.';
+        fingerprint:candidate.fingerprint,images:candidate.images.map(im=>({path:im.path,v:im.v})),decision,text});
+      state={...result.choices,demo:result.choices.groups.some(g=>g.id==='space-demo')};message=decision==='allow'?'Allow를 저장했습니다.':'Deny를 저장했습니다. 이 예시는 사용하지 않습니다.';
       onUpdate();
     } catch(e) { message=e.message; }
     finally { busy=false;render(); }

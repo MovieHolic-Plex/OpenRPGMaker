@@ -190,7 +190,7 @@ def view(data, cid):
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
     # The manifest owns immutable image/receipt hashes. Preparation responses
     # can replace art-result.previous.json several times before a new drawing.
-    previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review')
+    previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review', 'art-demo')
                         and bool(document.get('artResultSha256')))
     context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
     context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
@@ -237,7 +237,7 @@ def view(data, cid):
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
             item['ready'] = current and valid and candidate['passed'] and context_ok
-            item.update(fingerprint=token, eligible=current and not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
+            item.update(fingerprint=token, eligible=document.get('demoVersion') == 1 and current and not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
             item['evaluations'] = [v for k, v in evaluations.items() if k[:3] == (group['id'], candidate['id'], token)]
             item['selected'] = current and not calibration and valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
             item['decision'] = decisions.get((group['id'], candidate['id'], token), 'allow' if item['selected'] else None)
@@ -267,7 +267,7 @@ def view(data, cid):
             'repairPolicy': feedback.get('policy', {}),
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
-            'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
+            'demo': document.get('demoVersion') == 1, 'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
             'installation': installation}
 
 

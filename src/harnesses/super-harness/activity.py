@@ -18,6 +18,7 @@ STAGE = {
     "plan-review": (1, "기획·도면 독립 검수"), "survey": (2, "사용 가능한 칩 조사"),
     "material-review": (2, "필수 재료 독립 검수"), "art": (3, "부족한 칩 제작"),
     "art-native": (3, "그림 제작·원본 검수"), "art-layout-review": (3, "제작 전 배치도 검수"),
+    "art-demo": (4, "실제 타일 공간 데모 조립"),
     "art-context-review": (3, "조립 그림 독립 검수"), "art-review": (3, "후보 선택·등록 확인"),
     "build": (4, "공간 조립·예제 렌더"), "review": (5, "완성 그림 적대적 검수"),
     "probe": (6, "조수 배치 시험"), "judge": (6, "조수 시험 판정"),
