@@ -1,0 +1,20 @@
+{
+  "projectId": "6d645bb6-a5ce-4984-9043-49f9493e3b16",
+  "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-king/project",
+  "beforeRevision": 2,
+  "afterRevision": 3,
+  "afterSha256": "77a749825066938854f28634221465629d464dfb7b6d97209d42f806fd3424cc",
+  "reloadedSha256": "77a749825066938854f28634221465629d464dfb7b6d97209d42f806fd3424cc",
+  "sameTarget": true,
+  "sameStoredDocument": true,
+  "reloadEqual": true,
+  "flush": {
+    "kind": "saved",
+    "dirty": false
+  },
+  "indexedDb": {
+    "exists": true,
+    "conversations": 0,
+    "userEntries": 0
+  }
+}
