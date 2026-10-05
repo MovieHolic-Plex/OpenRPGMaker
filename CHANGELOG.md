@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.136.0 — 2026-10-05
+
+### 기능
+
+- require whole-space tile demos before user decisions (#2167) (`9810566`)
+
+### 수정
+
+- preserve prop worker content paths and recover misplaced candidates (`14be169`)
+- **worldmap** — separate reusable materials from continent maps (`9dbade9`)
+- recover space review failures and report real native outcomes (#2163) (`30b39dc`)
+
+### 문서
+
+- **worldmap** — record canonical material palette browser reload (`298e908`)
+
 ## 0.135.0 — 2026-10-05
 
 ### 기능

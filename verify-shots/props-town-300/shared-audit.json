@@ -1,0 +1,7995 @@
+{
+  "allSelectedKitIdsPresent": true,
+  "expectedSelected": 808,
+  "database": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "library": "oprn-hand-interior-harness",
+  "tileset": "shared_hand_interior_harness",
+  "revision": "1ada5b3858f53b409eea4d3539d2be2e1cae0525b7d7b10608f0d70be8d723bf",
+  "payloadHashVerified": true,
+  "updated": "2026-10-05T05:11:37.146Z",
+  "projectDefaults": true,
+  "kits": 945,
+  "selected": 808,
+  "recentSelections": [
+    {
+      "id": "cobbler bench",
+      "choice": "h710-A",
+      "selectedAt": "2026-10-05T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        23
+      ]
+    },
+    {
+      "id": "med bay bed",
+      "choice": "h726-A",
+      "selectedAt": "2026-10-05T13:58:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        46
+      ]
+    },
+    {
+      "id": "armchair ~2x2",
+      "choice": "h695-B",
+      "selectedAt": "2026-10-05T13:40:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "royal chest ~open",
+      "choice": "h693-A",
+      "selectedAt": "2026-10-05T13:40:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "chair W",
+      "choice": "h692-B",
+      "selectedAt": "2026-10-05T13:39:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        15
+      ]
+    },
+    {
+      "id": "chair N",
+      "choice": "h692-B",
+      "selectedAt": "2026-10-05T13:39:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        15
+      ]
+    },
+    {
+      "id": "chair E",
+      "choice": "h692-B",
+      "selectedAt": "2026-10-05T13:39:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        15
+      ]
+    },
+    {
+      "id": "futon bedding",
+      "choice": "h688-A",
+      "selectedAt": "2026-10-05T13:38:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "temple bell frame",
+      "choice": "h687-B",
+      "selectedAt": "2026-10-05T13:38:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        29,
+        48
+      ]
+    },
+    {
+      "id": "bath bucket",
+      "choice": "h686-A",
+      "selectedAt": "2026-10-05T13:38:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        44
+      ]
+    },
+    {
+      "id": "pet cage",
+      "choice": "h685-B",
+      "selectedAt": "2026-10-05T13:38:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        41
+      ]
+    },
+    {
+      "id": "holding cell bars",
+      "choice": "h681-B",
+      "selectedAt": "2026-10-05T13:38:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "great war drum",
+      "choice": "h675-B",
+      "selectedAt": "2026-10-05T13:35:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        45
+      ]
+    },
+    {
+      "id": "giant seated statue",
+      "choice": "h673-A",
+      "selectedAt": "2026-10-05T13:35:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "pagoda shrine",
+      "choice": "h672-A",
+      "selectedAt": "2026-10-05T13:35:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        64
+      ]
+    },
+    {
+      "id": "grand fountain",
+      "choice": "h671-B",
+      "selectedAt": "2026-10-05T13:35:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "id": "king sarcophagus",
+      "choice": "h670-B",
+      "selectedAt": "2026-10-05T13:35:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        56
+      ]
+    },
+    {
+      "id": "tree of life indoor",
+      "choice": "h669-A",
+      "selectedAt": "2026-10-05T13:35:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        64
+      ]
+    },
+    {
+      "id": "great hearth",
+      "choice": "h668-A.sel",
+      "selectedAt": "2026-10-05T13:35:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        64
+      ]
+    },
+    {
+      "id": "dwarf steam drill",
+      "choice": "h667-B",
+      "selectedAt": "2026-10-05T13:35:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "dice bowl table",
+      "choice": "h666-A",
+      "selectedAt": "2026-10-05T13:35:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "light armor stand murim",
+      "choice": "h665-A",
+      "selectedAt": "2026-10-05T13:35:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "wine gourd hang",
+      "choice": "h664-B",
+      "selectedAt": "2026-10-05T13:34:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "bamboo slip shelf",
+      "choice": "h663-A",
+      "selectedAt": "2026-10-05T13:34:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "lotus basin",
+      "choice": "h662-A",
+      "selectedAt": "2026-10-05T13:34:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "incense coil hang",
+      "choice": "h661-A",
+      "selectedAt": "2026-10-05T13:34:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        16
+      ]
+    },
+    {
+      "id": "guqin table",
+      "choice": "h660-A",
+      "selectedAt": "2026-10-05T13:34:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        10
+      ]
+    },
+    {
+      "id": "sedan chair",
+      "choice": "h659-A",
+      "selectedAt": "2026-10-05T13:13:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        47
+      ]
+    },
+    {
+      "id": "teahouse counter",
+      "choice": "h658-B",
+      "selectedAt": "2026-10-05T13:12:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        27
+      ]
+    },
+    {
+      "id": "stone stele",
+      "choice": "h657-B",
+      "selectedAt": "2026-10-05T13:12:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "dwarf brewing kettle",
+      "choice": "h655-A",
+      "selectedAt": "2026-10-05T13:12:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "giant mushroom lamp",
+      "choice": "h653-B",
+      "selectedAt": "2026-10-05T13:12:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "barrier crystal",
+      "choice": "h652-A",
+      "selectedAt": "2026-10-05T13:12:34+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        43
+      ]
+    },
+    {
+      "id": "guild trophy wall",
+      "choice": "h651-A",
+      "selectedAt": "2026-10-05T13:12:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        16
+      ]
+    },
+    {
+      "id": "holy sword pedestal",
+      "choice": "h650-B",
+      "selectedAt": "2026-10-05T13:12:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "goblin junk pile",
+      "choice": "h647-A",
+      "selectedAt": "2026-10-05T13:12:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "orc bone totem",
+      "choice": "h646-A",
+      "selectedAt": "2026-10-05T13:12:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "floating crystal shards",
+      "choice": "h643-A",
+      "selectedAt": "2026-10-05T13:12:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "enchanting table",
+      "choice": "h642-B",
+      "selectedAt": "2026-10-05T13:11:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        31
+      ]
+    },
+    {
+      "id": "type case shelf",
+      "choice": "h639-A",
+      "selectedAt": "2026-10-05T13:11:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "dye vats",
+      "choice": "h638-A",
+      "selectedAt": "2026-10-05T13:11:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        20
+      ]
+    },
+    {
+      "id": "pottery kiln",
+      "choice": "h636-A",
+      "selectedAt": "2026-10-05T13:11:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "pottery wheel",
+      "choice": "h635-A",
+      "selectedAt": "2026-10-05T13:11:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        27
+      ]
+    },
+    {
+      "id": "quintain",
+      "choice": "h634-B",
+      "selectedAt": "2026-10-05T13:11:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "archery target",
+      "choice": "h633-A",
+      "selectedAt": "2026-10-05T13:11:31+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "practice sword rack",
+      "choice": "h632-A",
+      "selectedAt": "2026-10-05T13:11:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "great wooden bath",
+      "choice": "h631-A",
+      "selectedAt": "2026-10-05T13:11:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "herb planter box",
+      "choice": "h628-A",
+      "selectedAt": "2026-10-05T13:11:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        27
+      ]
+    },
+    {
+      "id": "stone sink trough",
+      "choice": "h627-B",
+      "selectedAt": "2026-10-05T13:11:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "candle vat",
+      "choice": "h626-A",
+      "selectedAt": "2026-10-05T13:11:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "vault door",
+      "choice": "h625-A",
+      "selectedAt": "2026-10-05T13:11:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        48
+      ]
+    },
+    {
+      "id": "portal arch",
+      "choice": "h624-B",
+      "selectedAt": "2026-10-05T13:11:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "big millstone",
+      "choice": "h623-B",
+      "selectedAt": "2026-10-05T13:10:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "id": "catapult",
+      "choice": "h622-A",
+      "selectedAt": "2026-10-05T13:10:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        42,
+        48
+      ]
+    },
+    {
+      "id": "dormant golem",
+      "choice": "h621-B.sel",
+      "selectedAt": "2026-10-05T13:10:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        58
+      ]
+    },
+    {
+      "id": "jade throne dais",
+      "choice": "h620-B",
+      "selectedAt": "2026-10-05T13:10:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "great ancestral altar",
+      "choice": "h619-A",
+      "selectedAt": "2026-10-05T13:10:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        64
+      ]
+    },
+    {
+      "id": "monster cage big",
+      "choice": "h618-B",
+      "selectedAt": "2026-10-05T13:10:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        60
+      ]
+    },
+    {
+      "id": "alchemy apparatus",
+      "choice": "h617-B",
+      "selectedAt": "2026-10-05T13:10:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        63
+      ]
+    },
+    {
+      "id": "feast table",
+      "choice": "h616-A",
+      "selectedAt": "2026-10-05T13:10:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        96,
+        48
+      ]
+    },
+    {
+      "id": "big wine press",
+      "choice": "h615-B",
+      "selectedAt": "2026-10-05T13:10:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        48
+      ]
+    },
+    {
+      "id": "siege ballista",
+      "choice": "h614-B.sel",
+      "selectedAt": "2026-10-05T12:42:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        47
+      ]
+    },
+    {
+      "id": "great tripod cauldron",
+      "choice": "h613-A",
+      "selectedAt": "2026-10-05T12:41:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "id": "temple great bell",
+      "choice": "h612-A",
+      "selectedAt": "2026-10-05T12:40:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "sparring stage",
+      "choice": "h611-A",
+      "selectedAt": "2026-10-05T12:40:34+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        64
+      ]
+    },
+    {
+      "id": "great dragon statue",
+      "choice": "h610-B",
+      "selectedAt": "2026-10-05T12:40:31+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        64
+      ]
+    },
+    {
+      "id": "slime tank",
+      "choice": "h609-A",
+      "selectedAt": "2026-10-05T12:40:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "crystal ball table",
+      "choice": "h608-A",
+      "selectedAt": "2026-10-05T12:40:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        23
+      ]
+    },
+    {
+      "id": "adventurer gear rack",
+      "choice": "h607-A",
+      "selectedAt": "2026-10-05T12:40:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "potion barrel rack",
+      "choice": "h605-A",
+      "selectedAt": "2026-10-05T12:40:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "summoning brazier",
+      "choice": "h604-B",
+      "selectedAt": "2026-10-05T12:40:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        24
+      ]
+    },
+    {
+      "id": "elemental braziers",
+      "choice": "h601-B",
+      "selectedAt": "2026-10-05T12:40:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        24
+      ]
+    },
+    {
+      "id": "stump table",
+      "choice": "h600-A",
+      "selectedAt": "2026-10-05T12:39:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "enchanted armor",
+      "choice": "h599-B",
+      "selectedAt": "2026-10-05T12:39:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "phoenix perch",
+      "choice": "h598-B",
+      "selectedAt": "2026-10-05T12:39:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        48
+      ]
+    },
+    {
+      "id": "tapestry frame",
+      "choice": "h597-B",
+      "selectedAt": "2026-10-05T12:39:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        48
+      ]
+    },
+    {
+      "id": "scribe stool desk",
+      "choice": "h596-B",
+      "selectedAt": "2026-10-05T12:39:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "pillory",
+      "choice": "h595-B",
+      "selectedAt": "2026-10-05T12:39:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "alms box",
+      "choice": "h594-A",
+      "selectedAt": "2026-10-05T12:39:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "herald shield wall",
+      "choice": "h593-B",
+      "selectedAt": "2026-10-05T12:39:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        29,
+        16
+      ]
+    },
+    {
+      "id": "chess table",
+      "choice": "h592-B",
+      "selectedAt": "2026-10-05T12:39:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "roasting spit hearth",
+      "choice": "h591-A",
+      "selectedAt": "2026-10-05T12:39:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        29
+      ]
+    },
+    {
+      "id": "falconry perch",
+      "choice": "h590-B",
+      "selectedAt": "2026-10-05T12:39:31+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "lance rack",
+      "choice": "h589-A",
+      "selectedAt": "2026-10-05T12:39:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "arming table",
+      "choice": "h588-A",
+      "selectedAt": "2026-10-05T12:39:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        25
+      ]
+    },
+    {
+      "id": "halberd stand",
+      "choice": "h587-A",
+      "selectedAt": "2026-10-05T12:39:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "wash stand pitcher",
+      "choice": "h586-A",
+      "selectedAt": "2026-10-05T12:39:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "hand quern",
+      "choice": "h585-A",
+      "selectedAt": "2026-10-05T12:39:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "monk cot",
+      "choice": "h584-A",
+      "selectedAt": "2026-10-05T12:39:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "trestle table",
+      "choice": "h583-A",
+      "selectedAt": "2026-10-05T12:39:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        24
+      ]
+    },
+    {
+      "id": "lord high chair",
+      "choice": "h582-A",
+      "selectedAt": "2026-10-05T12:39:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "bamboo pot",
+      "choice": "h581-A",
+      "selectedAt": "2026-10-05T12:39:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "ancestral tablet shelf",
+      "choice": "h580-A",
+      "selectedAt": "2026-10-05T12:39:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "founder portrait",
+      "choice": "h579-B",
+      "selectedAt": "2026-10-05T12:39:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "drum stool porcelain",
+      "choice": "h578-B",
+      "selectedAt": "2026-10-05T12:39:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        10
+      ]
+    },
+    {
+      "id": "stone guardian lion",
+      "choice": "h577-B",
+      "selectedAt": "2026-10-05T12:38:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "escort cargo chest",
+      "choice": "h576-A",
+      "selectedAt": "2026-10-05T12:38:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        30
+      ]
+    },
+    {
+      "id": "escort banner stand",
+      "choice": "h575-B",
+      "selectedAt": "2026-10-05T12:38:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        42
+      ]
+    },
+    {
+      "id": "martial manual shelf",
+      "choice": "h574-A",
+      "selectedAt": "2026-10-05T12:38:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "red silk lantern",
+      "choice": "h573-B",
+      "selectedAt": "2026-10-05T12:38:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        16
+      ]
+    },
+    {
+      "id": "red lacquer pillar",
+      "choice": "h572-B",
+      "selectedAt": "2026-10-05T12:38:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "kang bed",
+      "choice": "h571-B",
+      "selectedAt": "2026-10-05T12:38:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "herbal decoction pot",
+      "choice": "h570-B",
+      "selectedAt": "2026-10-05T12:38:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "acupuncture chart",
+      "choice": "h569-B",
+      "selectedAt": "2026-10-05T12:38:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "go board table",
+      "choice": "h568-A",
+      "selectedAt": "2026-10-05T12:38:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        10
+      ]
+    },
+    {
+      "id": "calligraphy table",
+      "choice": "h567-B",
+      "selectedAt": "2026-10-05T12:38:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        30
+      ]
+    },
+    {
+      "id": "sect plaque",
+      "choice": "h566-B",
+      "selectedAt": "2026-10-05T12:38:34+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        15
+      ]
+    },
+    {
+      "id": "bronze ding small",
+      "choice": "h565-A",
+      "selectedAt": "2026-10-05T12:38:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        29
+      ]
+    },
+    {
+      "id": "wooden dummy",
+      "choice": "h564-B",
+      "selectedAt": "2026-10-05T12:38:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        48
+      ]
+    },
+    {
+      "id": "eighteen weapons rack",
+      "choice": "h563-B",
+      "selectedAt": "2026-10-05T12:38:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        48
+      ]
+    },
+    {
+      "id": "wine jar stack",
+      "choice": "h562-B",
+      "selectedAt": "2026-10-05T12:38:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "long bench murim",
+      "choice": "h561-B",
+      "selectedAt": "2026-10-05T12:38:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "eight immortals table",
+      "choice": "h560-A",
+      "selectedAt": "2026-10-05T12:38:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        35
+      ]
+    },
+    {
+      "id": "rocking chair",
+      "choice": "h559-A",
+      "selectedAt": "2026-10-05T12:37:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "boarded closet",
+      "choice": "h558-A",
+      "selectedAt": "2026-10-05T12:37:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "candle circle",
+      "choice": "h557-B",
+      "selectedAt": "2026-10-05T12:37:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "talisman box",
+      "choice": "h556-A",
+      "selectedAt": "2026-10-05T12:37:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "static tv",
+      "choice": "h555-B",
+      "selectedAt": "2026-10-05T12:37:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        23
+      ]
+    },
+    {
+      "id": "dusty doll pile",
+      "choice": "h554-B",
+      "selectedAt": "2026-10-05T12:37:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        12
+      ]
+    },
+    {
+      "id": "printer stand",
+      "choice": "h552-A.sel",
+      "selectedAt": "2026-10-05T12:37:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "boss desk",
+      "choice": "h551-B.sel",
+      "selectedAt": "2026-10-05T12:37:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        32
+      ]
+    },
+    {
+      "id": "office partition",
+      "choice": "h550-A",
+      "selectedAt": "2026-10-05T12:36:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "instant noodle shelf",
+      "choice": "h548-A",
+      "selectedAt": "2026-10-05T12:36:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "oden pot counter",
+      "choice": "h547-A",
+      "selectedAt": "2026-10-05T12:36:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        19
+      ]
+    },
+    {
+      "id": "medicine cart",
+      "choice": "h546-B",
+      "selectedAt": "2026-10-05T12:36:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        24
+      ]
+    },
+    {
+      "id": "surgery lamp",
+      "choice": "h545-A",
+      "selectedAt": "2026-10-05T12:36:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "massage chair",
+      "choice": "h543-B",
+      "selectedAt": "2026-10-05T12:36:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "telescope modern",
+      "choice": "h542-A",
+      "selectedAt": "2026-10-05T12:36:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "sewing machine table",
+      "choice": "h541-B",
+      "selectedAt": "2026-10-05T12:36:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "model train table",
+      "choice": "h540-B",
+      "selectedAt": "2026-10-05T12:36:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        35
+      ]
+    },
+    {
+      "id": "aquarium cabinet small",
+      "choice": "h539-A",
+      "selectedAt": "2026-10-05T12:36:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "gaming chair",
+      "choice": "h538-B",
+      "selectedAt": "2026-10-05T12:36:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        31
+      ]
+    },
+    {
+      "id": "guitar stand",
+      "choice": "h537-A",
+      "selectedAt": "2026-10-05T12:36:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        32
+      ]
+    },
+    {
+      "id": "toy shop shelf",
+      "choice": "h533-B",
+      "selectedAt": "2026-10-05T12:25:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "town notice kiosk",
+      "choice": "h532-A.sel",
+      "selectedAt": "2026-10-05T12:10:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        26
+      ]
+    },
+    {
+      "id": "clock shop wall",
+      "choice": "h531-A",
+      "selectedAt": "2026-10-05T12:09:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "pawn counter",
+      "choice": "h530-B",
+      "selectedAt": "2026-10-05T11:41:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "pawn shop shelf",
+      "choice": "h529-A",
+      "selectedAt": "2026-10-05T11:40:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "book display table",
+      "choice": "h528-A",
+      "selectedAt": "2026-10-05T11:40:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        26
+      ]
+    },
+    {
+      "id": "bank teller window",
+      "choice": "h527-A",
+      "selectedAt": "2026-10-05T11:40:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "parcel pile",
+      "choice": "h526-B",
+      "selectedAt": "2026-10-05T11:39:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "mail sorting shelf",
+      "choice": "h525-B",
+      "selectedAt": "2026-10-05T11:39:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "rune anvil",
+      "choice": "h524-A.sel",
+      "selectedAt": "2026-10-05T11:39:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": "dwarf ale keg",
+      "choice": "h523-B",
+      "selectedAt": "2026-10-05T11:39:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "mushroom stool",
+      "choice": "h520-B",
+      "selectedAt": "2026-10-05T11:39:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        10
+      ]
+    },
+    {
+      "id": "vine chair",
+      "choice": "h521-B",
+      "selectedAt": "2026-10-05T11:39:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        30
+      ]
+    },
+    {
+      "id": "glowing flower pot",
+      "choice": "h522-B",
+      "selectedAt": "2026-10-05T11:39:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "mushroom table",
+      "choice": "h519-B",
+      "selectedAt": "2026-10-05T11:39:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        22
+      ]
+    },
+    {
+      "id": "sorting stool hat",
+      "choice": "h518-A",
+      "selectedAt": "2026-10-05T11:39:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "wand box wall",
+      "choice": "h517-B",
+      "selectedAt": "2026-10-05T11:39:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "crystal ball shelf",
+      "choice": "h516-B",
+      "selectedAt": "2026-10-05T11:39:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "potion class desk",
+      "choice": "h515-A.sel",
+      "selectedAt": "2026-10-05T11:39:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        27
+      ]
+    },
+    {
+      "id": "house banner stand",
+      "choice": "h514-A.sel",
+      "selectedAt": "2026-10-05T11:39:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        39
+      ]
+    },
+    {
+      "id": "floating candles",
+      "choice": "h513-B",
+      "selectedAt": "2026-10-05T11:38:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "small stage platform",
+      "choice": "h641-B",
+      "selectedAt": "2026-10-05T11:38:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "capstan",
+      "choice": "h512-B",
+      "selectedAt": "2026-10-04T19:35:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        20
+      ]
+    },
+    {
+      "id": "ship lantern",
+      "choice": "h511-B",
+      "selectedAt": "2026-10-04T19:34:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        16
+      ]
+    },
+    {
+      "id": "treasure map table",
+      "choice": "h510-A",
+      "selectedAt": "2026-10-04T19:34:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        10
+      ]
+    },
+    {
+      "id": "wanted pirate flag",
+      "choice": "h509-B.sel",
+      "selectedAt": "2026-10-04T19:34:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "captain chair",
+      "choice": "h508-B",
+      "selectedAt": "2026-10-04T19:34:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "wood stove snow",
+      "choice": "h506-B",
+      "selectedAt": "2026-10-04T19:34:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        48
+      ]
+    },
+    {
+      "id": "ice fishing bucket",
+      "choice": "h505-A.sel",
+      "selectedAt": "2026-10-04T19:34:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        13
+      ]
+    },
+    {
+      "id": "fur coat rack",
+      "choice": "h504-B",
+      "selectedAt": "2026-10-04T19:34:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "sand hourglass table",
+      "choice": "h501-A",
+      "selectedAt": "2026-10-04T18:49:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "hanging carpet rack",
+      "choice": "h500-A",
+      "selectedAt": "2026-10-04T18:49:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        48
+      ]
+    },
+    {
+      "id": "big clay urn",
+      "choice": "h499-B",
+      "selectedAt": "2026-10-04T18:49:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        26
+      ]
+    },
+    {
+      "id": "magic lamp stand",
+      "choice": "h498-A.sel",
+      "selectedAt": "2026-10-04T18:48:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "brass tray table",
+      "choice": "h497-A",
+      "selectedAt": "2026-10-04T18:48:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "floor cushions",
+      "choice": "h496-B",
+      "selectedAt": "2026-10-04T18:48:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        10
+      ]
+    },
+    {
+      "id": "backpack pile",
+      "choice": "h495-B",
+      "selectedAt": "2026-10-04T18:48:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        12
+      ]
+    },
+    {
+      "id": "campfire pit",
+      "choice": "h494-A.sel",
+      "selectedAt": "2026-10-04T18:48:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "cooler box",
+      "choice": "h493-A.sel",
+      "selectedAt": "2026-10-04T18:48:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "folding camp chair",
+      "choice": "h492-A",
+      "selectedAt": "2026-10-04T18:48:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "camp lantern",
+      "choice": "h491-A",
+      "selectedAt": "2026-10-04T18:48:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        9,
+        12
+      ]
+    },
+    {
+      "id": "sleeping bag",
+      "choice": "h490-B",
+      "selectedAt": "2026-10-04T18:47:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "horse stall gate",
+      "choice": "h489-A",
+      "selectedAt": "2026-10-04T18:46:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "parrot perch",
+      "choice": "h488-B",
+      "selectedAt": "2026-10-04T18:46:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "terrarium",
+      "choice": "h487-B.sel",
+      "selectedAt": "2026-10-04T18:45:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "pet food bowls",
+      "choice": "h486-A",
+      "selectedAt": "2026-10-04T18:45:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        8
+      ]
+    },
+    {
+      "id": "rabbit hutch",
+      "choice": "h485-A",
+      "selectedAt": "2026-10-04T18:45:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        21
+      ]
+    },
+    {
+      "id": "cat tower",
+      "choice": "h484-B",
+      "selectedAt": "2026-10-04T18:43:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        39
+      ]
+    },
+    {
+      "id": "wreath",
+      "choice": "h482-A",
+      "selectedAt": "2026-10-04T18:42:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        16
+      ]
+    },
+    {
+      "id": "snowman indoor",
+      "choice": "h481-B",
+      "selectedAt": "2026-10-04T18:42:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        19
+      ]
+    },
+    {
+      "id": "new year decoration",
+      "choice": "h480-A",
+      "selectedAt": "2026-10-04T18:42:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        29
+      ]
+    },
+    {
+      "id": "festival lantern string",
+      "choice": "h479-B.sel",
+      "selectedAt": "2026-10-04T18:42:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "pumpkin lantern",
+      "choice": "h477-B.sel",
+      "selectedAt": "2026-10-04T18:41:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "christmas tree",
+      "choice": "h476-B.sel",
+      "selectedAt": "2026-10-04T18:40:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        41
+      ]
+    },
+    {
+      "id": "stage spotlight",
+      "choice": "h475-A",
+      "selectedAt": "2026-10-04T18:39:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "gramophone",
+      "choice": "h474-A",
+      "selectedAt": "2026-10-04T14:25:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        29
+      ]
+    },
+    {
+      "id": "cello stand",
+      "choice": "h473-A",
+      "selectedAt": "2026-10-04T14:25:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "mic stand",
+      "choice": "h472-B",
+      "selectedAt": "2026-10-04T14:25:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        25
+      ]
+    },
+    {
+      "id": "amp speaker",
+      "choice": "h471-B",
+      "selectedAt": "2026-10-04T14:25:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        18
+      ]
+    },
+    {
+      "id": "drum kit",
+      "choice": "h470-B",
+      "selectedAt": "2026-10-04T14:25:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        30
+      ]
+    },
+    {
+      "id": "canvas stack",
+      "choice": "h469-A.sel",
+      "selectedAt": "2026-10-04T14:25:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "sculpture stand",
+      "choice": "h468-A",
+      "selectedAt": "2026-10-04T14:25:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "paint table",
+      "choice": "h467-A",
+      "selectedAt": "2026-10-04T14:25:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": "easel canvas",
+      "choice": "h466-A",
+      "selectedAt": "2026-10-04T14:25:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        44
+      ]
+    },
+    {
+      "id": "big scale",
+      "choice": "h465-A",
+      "selectedAt": "2026-10-04T14:25:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "punch clock",
+      "choice": "h464-A",
+      "selectedAt": "2026-10-04T14:25:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "steam automaton",
+      "choice": "h463-A.sel",
+      "selectedAt": "2026-10-04T07:17:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        41
+      ]
+    },
+    {
+      "id": "wall fan industrial",
+      "choice": "h462-A.sel",
+      "selectedAt": "2026-10-04T07:17:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "pallet boxes",
+      "choice": "h461-A.sel",
+      "selectedAt": "2026-10-04T07:17:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        31
+      ]
+    },
+    {
+      "id": "oil drum",
+      "choice": "h460-A.sel",
+      "selectedAt": "2026-10-04T07:16:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        24
+      ]
+    },
+    {
+      "id": "tool cart",
+      "choice": "h459-B",
+      "selectedAt": "2026-10-04T07:16:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        20
+      ]
+    },
+    {
+      "id": "lathe machine",
+      "choice": "h458-B.sel",
+      "selectedAt": "2026-10-04T07:16:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "valve wheel",
+      "choice": "h457-A.sel",
+      "selectedAt": "2026-10-04T07:16:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "pressure tank",
+      "choice": "h456-B",
+      "selectedAt": "2026-10-04T07:16:31+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        48
+      ]
+    },
+    {
+      "id": "teleporter pad sf",
+      "choice": "h453-B",
+      "selectedAt": "2026-10-04T07:16:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        11
+      ]
+    },
+    {
+      "id": "laser rifle rack",
+      "choice": "h452-B",
+      "selectedAt": "2026-10-04T07:16:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "energy core",
+      "choice": "h451-B",
+      "selectedAt": "2026-10-04T07:16:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "space window",
+      "choice": "h450-A.sel",
+      "selectedAt": "2026-10-04T07:15:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "hydroponic rack",
+      "choice": "h449-A.sel",
+      "selectedAt": "2026-10-04T07:15:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "cargo container",
+      "choice": "h448-A.sel",
+      "selectedAt": "2026-10-04T07:15:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        22
+      ]
+    },
+    {
+      "id": "regen tank",
+      "choice": "h447-A.sel",
+      "selectedAt": "2026-10-04T07:15:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "spacesuit locker",
+      "choice": "h446-A.sel",
+      "selectedAt": "2026-10-04T07:15:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "robot charger",
+      "choice": "h445-B",
+      "selectedAt": "2026-10-04T07:15:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "captain seat sf",
+      "choice": "h444-B",
+      "selectedAt": "2026-10-04T07:10:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        29
+      ]
+    },
+    {
+      "id": "ship console",
+      "choice": "h443-B.sel",
+      "selectedAt": "2026-10-04T07:10:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        24
+      ]
+    },
+    {
+      "id": "holo table",
+      "choice": "h442-A.sel",
+      "selectedAt": "2026-10-04T07:10:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "cryo pod",
+      "choice": "h441-B",
+      "selectedAt": "2026-10-04T07:10:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "chinese moon screen",
+      "choice": "h440-A",
+      "selectedAt": "2026-10-04T07:09:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "buddhist altar cabinet",
+      "choice": "h439-A",
+      "selectedAt": "2026-10-04T07:09:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "tea brazier set",
+      "choice": "h438-B",
+      "selectedAt": "2026-10-04T07:09:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        10
+      ]
+    },
+    {
+      "id": "bamboo blind",
+      "choice": "h437-A.sel",
+      "selectedAt": "2026-10-04T07:09:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "mahjong table",
+      "choice": "h436-B",
+      "selectedAt": "2026-10-04T07:09:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "samurai armor display",
+      "choice": "h433-B",
+      "selectedAt": "2026-10-04T07:08:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "kamidana shelf",
+      "choice": "h432-B",
+      "selectedAt": "2026-10-04T07:08:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "ancestral offering table",
+      "choice": "h431-B",
+      "selectedAt": "2026-10-03T23:20:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        30
+      ]
+    },
+    {
+      "id": "jangdok jars",
+      "choice": "h430-B",
+      "selectedAt": "2026-10-03T23:20:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "paper lantern stand",
+      "choice": "h429-B",
+      "selectedAt": "2026-10-03T23:20:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "hanging scroll",
+      "choice": "h428-B",
+      "selectedAt": "2026-10-03T23:20:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "low writing desk",
+      "choice": "h427-A.sel",
+      "selectedAt": "2026-10-03T23:20:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        10
+      ]
+    },
+    {
+      "id": "bandaji chest",
+      "choice": "h426-A",
+      "selectedAt": "2026-10-03T23:20:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        17
+      ]
+    },
+    {
+      "id": "mother of pearl chest",
+      "choice": "h425-B",
+      "selectedAt": "2026-10-03T23:20:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "noren curtain",
+      "choice": "h435-A",
+      "selectedAt": "2026-10-03T23:19:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "low dining tray",
+      "choice": "h423-A",
+      "selectedAt": "2026-10-03T22:56:34+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        9
+      ]
+    },
+    {
+      "id": "zabuton",
+      "choice": "h422-A",
+      "selectedAt": "2026-10-03T22:56:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "tatami mat",
+      "choice": "h421-B",
+      "selectedAt": "2026-10-03T22:56:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "student desk set",
+      "choice": "h417-C",
+      "selectedAt": "2026-10-03T22:45:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        25
+      ]
+    },
+    {
+      "id": "nurse curtain",
+      "choice": "h416-A",
+      "selectedAt": "2026-10-03T22:45:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "trophy case modern",
+      "choice": "h415-B",
+      "selectedAt": "2026-10-03T22:44:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "school piano",
+      "choice": "h414-C",
+      "selectedAt": "2026-10-03T22:43:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "desk lamp shelf",
+      "choice": "h413-C",
+      "selectedAt": "2026-10-03T22:43:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "mailbox modern",
+      "choice": "h412-A",
+      "selectedAt": "2026-10-03T22:03:31+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "police desk",
+      "choice": "h410-A.sel",
+      "selectedAt": "2026-10-03T22:02:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        31
+      ]
+    },
+    {
+      "id": "barber pole",
+      "choice": "h409-A",
+      "selectedAt": "2026-10-03T22:02:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "barber chair",
+      "choice": "h408-C",
+      "selectedAt": "2026-10-03T22:02:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "fish tank modern",
+      "choice": "h406-A.sel",
+      "selectedAt": "2026-10-03T22:01:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "newspaper rack",
+      "choice": "h405-A",
+      "selectedAt": "2026-10-03T22:01:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "flower bucket stand",
+      "choice": "h404-B.sel",
+      "selectedAt": "2026-10-03T22:01:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "price scanner counter",
+      "choice": "h403-E.sel",
+      "selectedAt": "2026-10-03T22:01:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        23
+      ]
+    },
+    {
+      "id": "aroma diffuser",
+      "choice": "h401-C.sel",
+      "selectedAt": "2026-10-03T22:01:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "doll house",
+      "choice": "h400-D.sel",
+      "selectedAt": "2026-10-03T22:01:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        28
+      ]
+    },
+    {
+      "id": "baby crib modern",
+      "choice": "h399-A.sel",
+      "selectedAt": "2026-10-03T22:00:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "doctor desk",
+      "choice": "h398-A",
+      "selectedAt": "2026-10-03T22:00:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        26
+      ]
+    },
+    {
+      "id": "xray lightbox",
+      "choice": "h396-A",
+      "selectedAt": "2026-10-03T21:59:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "gym mat",
+      "choice": "h395-A",
+      "selectedAt": "2026-10-03T21:59:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "basketball hoop",
+      "choice": "h394-A",
+      "selectedAt": "2026-10-03T21:57:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "skeleton model",
+      "choice": "h393-C",
+      "selectedAt": "2026-10-03T21:57:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        46
+      ]
+    },
+    {
+      "id": "hotel front desk",
+      "choice": "h392-E.sel",
+      "selectedAt": "2026-10-03T21:49:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        29
+      ]
+    },
+    {
+      "id": "projector screen",
+      "choice": "h391-E.sel",
+      "selectedAt": "2026-10-03T21:48:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "paper shredder",
+      "choice": "h390-C.sel",
+      "selectedAt": "2026-10-03T21:47:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        18
+      ]
+    },
+    {
+      "id": "waiting bench",
+      "choice": "h388-E.sel",
+      "selectedAt": "2026-10-03T21:47:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        32
+      ]
+    },
+    {
+      "id": "ticket machine",
+      "choice": "h387-E",
+      "selectedAt": "2026-10-03T21:43:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "ticket gate",
+      "choice": "h386-E",
+      "selectedAt": "2026-10-03T21:43:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        21
+      ]
+    },
+    {
+      "id": "stereo system",
+      "choice": "h385-E",
+      "selectedAt": "2026-10-03T21:43:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "wall calendar",
+      "choice": "h384-A",
+      "selectedAt": "2026-10-03T18:49:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "photo frame shelf",
+      "choice": "h383-E.sel",
+      "selectedAt": "2026-10-03T18:49:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "bean bag",
+      "choice": "h382-B",
+      "selectedAt": "2026-10-03T18:49:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        10
+      ]
+    },
+    {
+      "id": "monstera pot",
+      "choice": "h381-B",
+      "selectedAt": "2026-10-03T18:48:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "rice cooker shelf",
+      "choice": "h380-B.sel",
+      "selectedAt": "2026-10-03T18:48:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "vacuum cleaner",
+      "choice": "h379-A",
+      "selectedAt": "2026-10-03T18:21:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        30
+      ]
+    },
+    {
+      "id": "ironing board",
+      "choice": "h378-E",
+      "selectedAt": "2026-10-03T18:20:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "laundry basket",
+      "choice": "h377-A",
+      "selectedAt": "2026-10-03T18:20:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        10
+      ]
+    },
+    {
+      "id": "oil heater",
+      "choice": "h376-D.sel",
+      "selectedAt": "2026-10-03T18:11:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        27
+      ]
+    },
+    {
+      "id": "electric fan",
+      "choice": "h375-A.sel",
+      "selectedAt": "2026-10-03T14:15:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "game console",
+      "choice": "h374-C",
+      "selectedAt": "2026-10-03T14:15:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "kotatsu",
+      "choice": "h373-A.sel",
+      "selectedAt": "2026-10-03T14:15:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "karaoke set",
+      "choice": "h372-A.sel",
+      "selectedAt": "2026-10-03T14:15:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        27
+      ]
+    },
+    {
+      "id": "pinball machine",
+      "choice": "h371-E.sel",
+      "selectedAt": "2026-10-03T14:14:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "jukebox",
+      "choice": "h370-B",
+      "selectedAt": "2026-10-03T14:10:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "gacha machine",
+      "choice": "h369-B",
+      "selectedAt": "2026-10-03T14:10:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "photo booth",
+      "choice": "h368-D.sel",
+      "selectedAt": "2026-10-03T14:10:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "payphone",
+      "choice": "h367-D",
+      "selectedAt": "2026-10-03T14:10:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        22
+      ]
+    },
+    {
+      "id": "umbrella stand",
+      "choice": "h366-A.sel",
+      "selectedAt": "2026-10-03T14:09:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "recycle bins",
+      "choice": "h365-E",
+      "selectedAt": "2026-10-03T14:09:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        30
+      ]
+    },
+    {
+      "id": "trash bin",
+      "choice": "h364-B",
+      "selectedAt": "2026-10-03T14:09:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "microwave",
+      "choice": "h363-E",
+      "selectedAt": "2026-10-03T14:09:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "drink dispenser",
+      "choice": "h362-D",
+      "selectedAt": "2026-10-03T14:08:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "diner booth",
+      "choice": "h361-B",
+      "selectedAt": "2026-10-03T14:08:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "cafe counter",
+      "choice": "h360-A.sel",
+      "selectedAt": "2026-10-03T14:06:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "cafe table",
+      "choice": "h359-C.sel",
+      "selectedAt": "2026-10-03T14:05:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "espresso machine",
+      "choice": "h358-B",
+      "selectedAt": "2026-10-03T14:05:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "changing shelf",
+      "choice": "h357-A.sel",
+      "selectedAt": "2026-10-03T14:04:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "sauna stove",
+      "choice": "h356-A.sel",
+      "selectedAt": "2026-10-03T14:03:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "crystal pillar",
+      "choice": "h354-A.sel",
+      "selectedAt": "2026-10-03T14:03:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "unlit brazier stand",
+      "choice": "h353-E.sel",
+      "selectedAt": "2026-10-03T14:01:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        20
+      ]
+    },
+    {
+      "id": "floor button",
+      "choice": "h352-A",
+      "selectedAt": "2026-10-03T14:01:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "silver chest",
+      "choice": "h351-A.sel",
+      "selectedAt": "2026-10-03T14:00:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "floor lever",
+      "choice": "h350-A",
+      "selectedAt": "2026-10-03T14:00:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        20
+      ]
+    },
+    {
+      "id": "ice block",
+      "choice": "h349-A.sel",
+      "selectedAt": "2026-10-03T14:00:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        22
+      ]
+    },
+    {
+      "id": "color block red",
+      "choice": "h348-A.sel",
+      "selectedAt": "2026-10-03T13:59:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        23
+      ]
+    },
+    {
+      "id": "shoe display",
+      "choice": "h347-A.sel",
+      "selectedAt": "2026-10-03T13:59:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "hat stand",
+      "choice": "h346-A.sel",
+      "selectedAt": "2026-10-03T13:59:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "glass dome display",
+      "choice": "h345-A.sel",
+      "selectedAt": "2026-10-03T13:59:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "gift boxes",
+      "choice": "h344-A",
+      "selectedAt": "2026-10-03T13:54:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "dark obelisk",
+      "choice": "h343-E",
+      "selectedAt": "2026-10-03T13:53:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "skull candelabra",
+      "choice": "h342-E",
+      "selectedAt": "2026-10-03T13:53:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "cursed fountain",
+      "choice": "h341-A",
+      "selectedAt": "2026-10-03T13:47:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        29
+      ]
+    },
+    {
+      "id": "rubble pile",
+      "choice": "h340-A",
+      "selectedAt": "2026-10-03T13:47:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        10
+      ]
+    },
+    {
+      "id": "broken pillar",
+      "choice": "h339-E",
+      "selectedAt": "2026-10-03T13:47:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        20
+      ]
+    },
+    {
+      "id": "chained tome",
+      "choice": "h338-B",
+      "selectedAt": "2026-10-03T11:43:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        22
+      ]
+    },
+    {
+      "id": "wooden stocks",
+      "choice": "h337-A",
+      "selectedAt": "2026-10-03T11:40:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "oar rack",
+      "choice": "h336-A",
+      "selectedAt": "2026-10-03T11:40:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        15
+      ]
+    },
+    {
+      "id": "binnacle",
+      "choice": "h335-A",
+      "selectedAt": "2026-10-03T11:40:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cannonball pile",
+      "choice": "h334-B",
+      "selectedAt": "2026-10-03T11:39:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        10
+      ]
+    },
+    {
+      "id": "beehive",
+      "choice": "h333-A",
+      "selectedAt": "2026-10-03T11:39:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "cider press",
+      "choice": "h332-A",
+      "selectedAt": "2026-10-03T11:39:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "wheelbarrow",
+      "choice": "h331-A",
+      "selectedAt": "2026-10-03T11:38:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        28
+      ]
+    },
+    {
+      "id": "scarecrow",
+      "choice": "h330-A",
+      "selectedAt": "2026-10-03T11:38:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "nest box",
+      "choice": "h329-A.sel",
+      "selectedAt": "2026-10-03T11:38:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "pickle jars",
+      "choice": "h328-E",
+      "selectedAt": "2026-10-03T11:38:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "clay cook hearth",
+      "choice": "h327-A",
+      "selectedAt": "2026-10-03T11:37:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        29
+      ]
+    },
+    {
+      "id": "garlic hang",
+      "choice": "h326-A",
+      "selectedAt": "2026-10-03T11:37:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "kneading trough",
+      "choice": "h325-A",
+      "selectedAt": "2026-10-03T11:34:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        22
+      ]
+    },
+    {
+      "id": "spice rack",
+      "choice": "h324-B.sel",
+      "selectedAt": "2026-10-03T11:33:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "quill desk",
+      "choice": "h323-D",
+      "selectedAt": "2026-10-03T11:33:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "book cart",
+      "choice": "h322-C.sel",
+      "selectedAt": "2026-10-03T11:29:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        26
+      ]
+    },
+    {
+      "id": "relic case",
+      "choice": "h321-D.sel",
+      "selectedAt": "2026-10-03T11:29:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "goddess statue",
+      "choice": "h319-C.sel",
+      "selectedAt": "2026-10-03T11:28:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "offering box",
+      "choice": "h318-A",
+      "selectedAt": "2026-10-03T11:28:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        18
+      ]
+    },
+    {
+      "id": "incense burner",
+      "choice": "h317-A",
+      "selectedAt": "2026-10-03T11:26:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        24
+      ]
+    },
+    {
+      "id": "prayer cushion",
+      "choice": "h316-B",
+      "selectedAt": "2026-10-03T11:26:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "mana fountain",
+      "choice": "h315-A",
+      "selectedAt": "2026-10-03T11:26:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "specimen jar big",
+      "choice": "h314-B",
+      "selectedAt": "2026-10-03T11:25:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        32
+      ]
+    },
+    {
+      "id": "broom rack",
+      "choice": "h313-A",
+      "selectedAt": "2026-10-03T11:20:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "crystal lamp",
+      "choice": "h312-D.sel",
+      "selectedAt": "2026-10-03T11:20:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "footstool royal",
+      "choice": "h311-A",
+      "selectedAt": "2026-10-03T11:20:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        8
+      ]
+    },
+    {
+      "id": "velvet rope post",
+      "choice": "h310-A.sel",
+      "selectedAt": "2026-10-03T11:20:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "tea trolley",
+      "choice": "h309-A.sel",
+      "selectedAt": "2026-10-03T11:19:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        30
+      ]
+    },
+    {
+      "id": "trophy cup stand",
+      "choice": "h308-A.sel",
+      "selectedAt": "2026-10-03T11:19:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "crucible",
+      "choice": "h307-A",
+      "selectedAt": "2026-10-03T11:19:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "tongs rack",
+      "choice": "h306-E",
+      "selectedAt": "2026-10-03T11:18:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "horseshoe rack",
+      "choice": "h305-A",
+      "selectedAt": "2026-10-03T11:18:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "bellows",
+      "choice": "h304-A",
+      "selectedAt": "2026-10-03T11:17:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "id": "luggage pile",
+      "choice": "h303-B.sel",
+      "selectedAt": "2026-10-03T11:15:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        17
+      ]
+    },
+    {
+      "id": "guest ledger stand",
+      "choice": "h302-B",
+      "selectedAt": "2026-10-03T11:14:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        28
+      ]
+    },
+    {
+      "id": "mug rack",
+      "choice": "h301-B.sel",
+      "selectedAt": "2026-10-03T11:13:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        12
+      ]
+    },
+    {
+      "id": "dice table",
+      "choice": "h300-C.sel",
+      "selectedAt": "2026-10-03T11:13:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        12
+      ]
+    },
+    {
+      "id": "beer tap barrel",
+      "choice": "h299-A",
+      "selectedAt": "2026-10-03T11:13:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        31
+      ]
+    },
+    {
+      "id": "hospital reception",
+      "choice": "h298-A",
+      "selectedAt": "2026-10-03T11:13:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        30
+      ]
+    },
+    {
+      "id": "wheelchair",
+      "choice": "h297-B",
+      "selectedAt": "2026-10-03T11:12:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        29
+      ]
+    },
+    {
+      "id": "medicine cabinet modern",
+      "choice": "h296-E",
+      "selectedAt": "2026-10-03T11:12:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "iv stand",
+      "choice": "h295-B",
+      "selectedAt": "2026-10-03T11:03:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "lab table",
+      "choice": "h293-A",
+      "selectedAt": "2026-10-03T11:01:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        27
+      ]
+    },
+    {
+      "id": "vaulting box",
+      "choice": "h292-B",
+      "selectedAt": "2026-10-03T11:01:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        23
+      ]
+    },
+    {
+      "id": "school locker",
+      "choice": "h291-E",
+      "selectedAt": "2026-10-03T11:00:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "green chalkboard",
+      "choice": "h290-E.sel",
+      "selectedAt": "2026-10-03T11:00:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        16
+      ]
+    },
+    {
+      "id": "teacher lectern",
+      "choice": "h289-B",
+      "selectedAt": "2026-10-03T10:37:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        21
+      ]
+    },
+    {
+      "id": "atm machine",
+      "choice": "h287-B.sel",
+      "selectedAt": "2026-10-03T10:36:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "claw machine",
+      "choice": "h286-A.sel",
+      "selectedAt": "2026-10-03T10:36:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        48
+      ]
+    },
+    {
+      "id": "arcade cabinet",
+      "choice": "h285-A",
+      "selectedAt": "2026-10-03T10:33:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "ice cream freezer",
+      "choice": "h284-A.sel",
+      "selectedAt": "2026-10-03T10:33:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "magazine rack",
+      "choice": "h283-A.sel",
+      "selectedAt": "2026-10-03T10:33:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "vending machine",
+      "choice": "h282-B.sel",
+      "selectedAt": "2026-10-03T10:32:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "register counter",
+      "choice": "h281-C.sel",
+      "selectedAt": "2026-10-03T10:32:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        25
+      ]
+    },
+    {
+      "id": "drink fridge",
+      "choice": "h280-B",
+      "selectedAt": "2026-10-03T10:31:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "store shelf",
+      "choice": "h279-B.sel",
+      "selectedAt": "2026-10-03T10:02:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        48
+      ]
+    },
+    {
+      "id": "cork board",
+      "choice": "h278-A",
+      "selectedAt": "2026-10-03T10:02:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "office plant",
+      "choice": "h277-A.sel",
+      "selectedAt": "2026-10-03T10:02:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "meeting table",
+      "choice": "h276-B.sel",
+      "selectedAt": "2026-10-03T10:01:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        43
+      ]
+    },
+    {
+      "id": "whiteboard",
+      "choice": "h275-A",
+      "selectedAt": "2026-10-03T09:59:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "server rack",
+      "choice": "h274-B",
+      "selectedAt": "2026-10-03T09:59:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "water cooler",
+      "choice": "h273-A.sel",
+      "selectedAt": "2026-10-03T09:59:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        48
+      ]
+    },
+    {
+      "id": "copy machine",
+      "choice": "h272-B",
+      "selectedAt": "2026-10-03T09:59:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "filing cabinet",
+      "choice": "h271-B",
+      "selectedAt": "2026-10-03T09:59:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "office chair",
+      "choice": "h270-B",
+      "selectedAt": "2026-10-03T09:59:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        19
+      ]
+    },
+    {
+      "id": "office pc desk",
+      "choice": "h269-B",
+      "selectedAt": "2026-10-03T09:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "living rug",
+      "choice": "h268-D",
+      "selectedAt": "2026-10-03T09:58:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "air conditioner",
+      "choice": "h267-A.sel",
+      "selectedAt": "2026-10-03T09:58:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "wall clock modern",
+      "choice": "h266-B",
+      "selectedAt": "2026-10-03T09:57:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "modern dining table",
+      "choice": "h265-E",
+      "selectedAt": "2026-10-03T09:57:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "shoe cabinet",
+      "choice": "h264-A",
+      "selectedAt": "2026-10-03T09:56:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        29
+      ]
+    },
+    {
+      "id": "modern washbasin",
+      "choice": "h263-A",
+      "selectedAt": "2026-10-03T09:56:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        22
+      ]
+    },
+    {
+      "id": "modern toilet",
+      "choice": "h262-A",
+      "selectedAt": "2026-10-03T09:33:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "modern bathtub",
+      "choice": "h261-E.sel",
+      "selectedAt": "2026-10-03T09:32:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        24
+      ]
+    },
+    {
+      "id": "floor lamp",
+      "choice": "h260-A",
+      "selectedAt": "2026-10-03T09:31:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "modern bookshelf",
+      "choice": "h259-E.sel",
+      "selectedAt": "2026-10-03T09:31:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "modern desk",
+      "choice": "h258-C",
+      "selectedAt": "2026-10-03T09:30:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        29
+      ]
+    },
+    {
+      "id": "modern bed",
+      "choice": "h257-E",
+      "selectedAt": "2026-10-03T09:05:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "washing machine",
+      "choice": "h256-A.sel",
+      "selectedAt": "2026-10-03T09:02:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        21
+      ]
+    },
+    {
+      "id": "gas stove",
+      "choice": "h255-A.sel",
+      "selectedAt": "2026-10-03T09:00:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        22
+      ]
+    },
+    {
+      "id": "modern sink",
+      "choice": "h254-B.sel",
+      "selectedAt": "2026-10-03T09:00:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        27
+      ]
+    },
+    {
+      "id": "fridge",
+      "choice": "h253-A.sel",
+      "selectedAt": "2026-10-03T08:59:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "modern low table",
+      "choice": "h252-C",
+      "selectedAt": "2026-10-03T08:59:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        12
+      ]
+    },
+    {
+      "id": "crt tv stand",
+      "choice": "h251-A",
+      "selectedAt": "2026-10-03T08:35:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "modern armchair",
+      "choice": "h250-A",
+      "selectedAt": "2026-10-03T08:30:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        25
+      ]
+    },
+    {
+      "id": "weaving loom",
+      "choice": "h248-A",
+      "selectedAt": "2026-10-03T08:30:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        45,
+        42
+      ]
+    },
+    {
+      "id": "modern sofa",
+      "choice": "h249-A",
+      "selectedAt": "2026-10-03T08:30:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        32
+      ]
+    },
+    {
+      "id": "great telescope",
+      "choice": "h247-B.sel",
+      "selectedAt": "2026-10-03T08:14:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        47,
+        62
+      ]
+    },
+    {
+      "id": "treasure hoard",
+      "choice": "h246-B",
+      "selectedAt": "2026-10-03T07:53:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        57,
+        48
+      ]
+    },
+    {
+      "id": "giant cauldron",
+      "choice": "h245-D",
+      "selectedAt": "2026-10-03T07:53:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        47,
+        47
+      ]
+    },
+    {
+      "id": "cargo wagon",
+      "choice": "h244-E",
+      "selectedAt": "2026-10-03T07:53:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        42
+      ]
+    },
+    {
+      "id": "printing press",
+      "choice": "h243-A",
+      "selectedAt": "2026-10-03T07:53:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        48
+      ]
+    },
+    {
+      "id": "royal bed",
+      "choice": "h241-E",
+      "selectedAt": "2026-10-02T22:39:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        80
+      ]
+    },
+    {
+      "id": "billiard table",
+      "choice": "h240-A",
+      "selectedAt": "2026-10-02T22:39:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        40
+      ]
+    },
+    {
+      "id": "giant crystal",
+      "choice": "h242-C",
+      "selectedAt": "2026-10-02T22:38:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        61
+      ]
+    },
+    {
+      "id": "dragon nest",
+      "choice": "h238-C",
+      "selectedAt": "2026-10-02T22:37:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        41
+      ]
+    },
+    {
+      "id": "grand piano",
+      "choice": "h236-A",
+      "selectedAt": "2026-10-02T22:37:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        44
+      ]
+    },
+    {
+      "id": "boxcar",
+      "choice": "h234-E",
+      "selectedAt": "2026-10-02T22:36:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        60
+      ]
+    },
+    {
+      "id": "coal tender",
+      "choice": "h233-B",
+      "selectedAt": "2026-10-02T22:36:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        44
+      ]
+    },
+    {
+      "id": "steam boiler",
+      "choice": "h232-E",
+      "selectedAt": "2026-10-02T22:36:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        47,
+        60
+      ]
+    },
+    {
+      "id": "knight colossus",
+      "choice": "h230-D",
+      "selectedAt": "2026-10-02T22:35:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        66
+      ]
+    },
+    {
+      "id": "grand aquarium",
+      "choice": "h229-A",
+      "selectedAt": "2026-10-02T22:35:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        40
+      ]
+    },
+    {
+      "id": "clock gears",
+      "choice": "h228-A",
+      "selectedAt": "2026-10-02T22:35:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        62,
+        64
+      ]
+    },
+    {
+      "id": "dragon skeleton",
+      "choice": "h227-A",
+      "selectedAt": "2026-10-02T22:35:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        78,
+        72
+      ]
+    },
+    {
+      "id": "horse carriage",
+      "choice": "h226-A",
+      "selectedAt": "2026-10-02T19:19:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        61,
+        60
+      ]
+    },
+    {
+      "id": "coal wagon",
+      "choice": "h225-D",
+      "selectedAt": "2026-10-02T19:19:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        60,
+        44
+      ]
+    },
+    {
+      "id": "passenger coach",
+      "choice": "h224-D",
+      "selectedAt": "2026-10-02T19:19:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        96,
+        60
+      ]
+    },
+    {
+      "id": "steam locomotive",
+      "choice": "h223-D",
+      "selectedAt": "2026-10-02T19:19:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        96,
+        64
+      ]
+    },
+    {
+      "id": "bunk bed",
+      "choice": "h210-D",
+      "selectedAt": "2026-10-02T16:10:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        48
+      ]
+    },
+    {
+      "id": "axe mace wall",
+      "choice": "h208-B",
+      "selectedAt": "2026-10-02T09:53:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        16
+      ]
+    },
+    {
+      "id": "washbasin",
+      "choice": "h206-E",
+      "selectedAt": "2026-10-02T09:53:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        24
+      ]
+    },
+    {
+      "id": "grave bouquet",
+      "choice": "h205-E",
+      "selectedAt": "2026-10-02T09:53:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        24
+      ]
+    },
+    {
+      "id": "photo frames",
+      "choice": "h204-E",
+      "selectedAt": "2026-10-02T09:53:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        28
+      ]
+    },
+    {
+      "id": "hourglass",
+      "choice": "h203-C",
+      "selectedAt": "2026-10-02T09:53:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "mailbox",
+      "choice": "h202-C",
+      "selectedAt": "2026-10-02T09:51:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "diary stand",
+      "choice": "h201-B",
+      "selectedAt": "2026-10-02T09:51:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "music box",
+      "choice": "h200-E",
+      "selectedAt": "2026-10-02T09:51:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "cobweb",
+      "choice": "h199-B",
+      "selectedAt": "2026-10-02T09:51:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "boarded window",
+      "choice": "h198-D",
+      "selectedAt": "2026-10-02T09:51:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "candle stubs",
+      "choice": "h197-A",
+      "selectedAt": "2026-10-02T09:50:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "covered furniture",
+      "choice": "h196-C",
+      "selectedAt": "2026-10-02T09:50:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        24
+      ]
+    },
+    {
+      "id": "torn portrait",
+      "choice": "h195-A",
+      "selectedAt": "2026-10-02T09:48:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "old doll",
+      "choice": "h194-E",
+      "selectedAt": "2026-10-02T09:48:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "seedling shelf",
+      "choice": "h193-B",
+      "selectedAt": "2026-10-02T09:47:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        28
+      ]
+    },
+    {
+      "id": "milk cans",
+      "choice": "h192-E",
+      "selectedAt": "2026-10-02T09:47:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "farm tool rack",
+      "choice": "h191-E",
+      "selectedAt": "2026-10-02T09:47:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        29,
+        16
+      ]
+    },
+    {
+      "id": "cheese press",
+      "choice": "h190-B",
+      "selectedAt": "2026-10-02T09:47:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "butter churn",
+      "choice": "h189-C",
+      "selectedAt": "2026-10-02T09:45:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "seed sacks",
+      "choice": "h188-D",
+      "selectedAt": "2026-10-02T09:45:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "shipping bin",
+      "choice": "h187-E",
+      "selectedAt": "2026-10-02T09:45:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        24
+      ]
+    },
+    {
+      "id": "child bed",
+      "choice": "h186-A",
+      "selectedAt": "2026-10-02T09:45:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "laundry line",
+      "choice": "h185-A",
+      "selectedAt": "2026-10-02T09:45:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        16
+      ]
+    },
+    {
+      "id": "washing tub",
+      "choice": "h184-A",
+      "selectedAt": "2026-10-02T09:45:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "indoor well",
+      "choice": "h183-E",
+      "selectedAt": "2026-10-02T09:20:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "rocking horse",
+      "choice": "h182-C",
+      "selectedAt": "2026-10-02T09:20:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        20
+      ]
+    },
+    {
+      "id": "toy box",
+      "choice": "h181-A",
+      "selectedAt": "2026-10-02T08:42:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "airship helm",
+      "choice": "h177-A",
+      "selectedAt": "2026-10-02T08:42:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        32
+      ]
+    },
+    {
+      "id": "wooden toilet",
+      "choice": "h180-A",
+      "selectedAt": "2026-10-02T08:38:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "sea chest",
+      "choice": "h179-E",
+      "selectedAt": "2026-10-02T08:37:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "ship bell",
+      "choice": "h178-A",
+      "selectedAt": "2026-10-02T08:36:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        16
+      ]
+    },
+    {
+      "id": "cargo netted",
+      "choice": "h176-B",
+      "selectedAt": "2026-10-02T08:36:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        26
+      ]
+    },
+    {
+      "id": "ship cannon",
+      "choice": "h175-A",
+      "selectedAt": "2026-10-02T08:36:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "chart table",
+      "choice": "h174-E",
+      "selectedAt": "2026-10-02T08:36:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        25
+      ]
+    },
+    {
+      "id": "egg incubator",
+      "choice": "h173-C",
+      "selectedAt": "2026-10-02T08:36:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "lab bench",
+      "choice": "h172-E",
+      "selectedAt": "2026-10-02T08:35:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        25
+      ]
+    },
+    {
+      "id": "gym statue",
+      "choice": "h171-E",
+      "selectedAt": "2026-10-02T08:35:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "storage terminal",
+      "choice": "h170-A",
+      "selectedAt": "2026-10-02T08:35:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "orb pedestal",
+      "choice": "h169-E",
+      "selectedAt": "2026-10-02T08:35:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "healing machine",
+      "choice": "h168-C",
+      "selectedAt": "2026-10-02T08:35:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        27
+      ]
+    },
+    {
+      "id": "catalog drawers",
+      "choice": "h167-B",
+      "selectedAt": "2026-10-02T08:35:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "scroll pile",
+      "choice": "h166-D",
+      "selectedAt": "2026-10-02T08:35:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "chained bookcase",
+      "choice": "h165-A",
+      "selectedAt": "2026-10-02T08:35:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "book pile",
+      "choice": "h164-C",
+      "selectedAt": "2026-10-02T08:34:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "dark orb pedestal",
+      "choice": "h163-C",
+      "selectedAt": "2026-10-02T08:33:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "hanging cage",
+      "choice": "h162-D",
+      "selectedAt": "2026-10-02T08:33:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        48
+      ]
+    },
+    {
+      "id": "dark altar",
+      "choice": "h161-B",
+      "selectedAt": "2026-10-02T08:33:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        26
+      ]
+    },
+    {
+      "id": "cursed mirror",
+      "choice": "h160-A",
+      "selectedAt": "2026-10-02T08:33:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "demon statue",
+      "choice": "h159-E",
+      "selectedAt": "2026-10-02T08:32:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "lava brazier",
+      "choice": "h158-E",
+      "selectedAt": "2026-10-02T08:32:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "bone pillar",
+      "choice": "h157-A",
+      "selectedAt": "2026-10-02T08:32:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "demon throne",
+      "choice": "h156-E",
+      "selectedAt": "2026-10-02T08:32:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        48
+      ]
+    },
+    {
+      "id": "wand stand",
+      "choice": "h155-E",
+      "selectedAt": "2026-10-02T08:32:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "magic mirror",
+      "choice": "h154-A",
+      "selectedAt": "2026-10-02T08:32:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "specimen shelf",
+      "choice": "h150-D",
+      "selectedAt": "2026-10-02T08:31:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "summoning circle",
+      "choice": "h153-D",
+      "selectedAt": "2026-10-02T07:47:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "id": "floating book",
+      "choice": "h152-C",
+      "selectedAt": "2026-10-02T07:47:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "mana crystal",
+      "choice": "h151-E",
+      "selectedAt": "2026-10-02T07:47:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "alchemy table",
+      "choice": "h149-E",
+      "selectedAt": "2026-10-02T07:47:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        28
+      ]
+    },
+    {
+      "id": "map rolls",
+      "choice": "h148-C",
+      "selectedAt": "2026-10-02T07:47:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "guild lockers",
+      "choice": "h147-B",
+      "selectedAt": "2026-10-02T07:42:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        30
+      ]
+    },
+    {
+      "id": "loot sacks",
+      "choice": "h146-D",
+      "selectedAt": "2026-10-02T07:41:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "monster trophy",
+      "choice": "h145-A",
+      "selectedAt": "2026-10-02T07:41:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        22,
+        16
+      ]
+    },
+    {
+      "id": "guild counter",
+      "choice": "h144-A",
+      "selectedAt": "2026-10-02T07:41:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        26
+      ]
+    },
+    {
+      "id": "gilded wardrobe",
+      "choice": "h141-B",
+      "selectedAt": "2026-10-02T07:38:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "indoor fountain",
+      "choice": "h140-A",
+      "selectedAt": "2026-10-02T07:38:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "wanted poster",
+      "choice": "h143-E",
+      "selectedAt": "2026-10-02T07:28:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "quest board",
+      "choice": "h142-B",
+      "selectedAt": "2026-10-02T07:28:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "marble bust",
+      "choice": "h139-E",
+      "selectedAt": "2026-10-02T07:28:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "heraldic shield",
+      "choice": "h136-E",
+      "selectedAt": "2026-10-02T07:28:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        16
+      ]
+    },
+    {
+      "id": "crossed swords",
+      "choice": "h138-E",
+      "selectedAt": "2026-10-02T07:23:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        24,
+        16
+      ]
+    },
+    {
+      "id": "item shop shelf",
+      "choice": "h133-A",
+      "selectedAt": "2026-10-02T07:23:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        30
+      ]
+    },
+    {
+      "id": "war map table",
+      "choice": "h137-A",
+      "selectedAt": "2026-10-02T07:22:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        26
+      ]
+    },
+    {
+      "id": "crown pedestal",
+      "choice": "h135-A",
+      "selectedAt": "2026-10-02T07:17:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "knight armor",
+      "choice": "h134-E",
+      "selectedAt": "2026-10-02T07:17:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        36
+      ]
+    },
+    {
+      "id": "mimic",
+      "choice": "h132-C",
+      "selectedAt": "2026-10-02T07:10:41+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        14
+      ]
+    },
+    {
+      "id": "hot spring",
+      "choice": "h129-E",
+      "selectedAt": "2026-10-02T07:10:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        32
+      ]
+    },
+    {
+      "id": "accessory case",
+      "choice": "h54-B",
+      "selectedAt": "2026-10-02T06:45:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        26
+      ]
+    },
+    {
+      "id": "weapon crate",
+      "choice": "h52-D",
+      "selectedAt": "2026-10-02T06:43:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "staff rack",
+      "choice": "h51-D",
+      "selectedAt": "2026-10-02T06:43:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "arrow barrel",
+      "choice": "h50-D",
+      "selectedAt": "2026-10-02T06:43:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "helmet shelf",
+      "choice": "h49-E",
+      "selectedAt": "2026-10-02T06:43:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        31
+      ]
+    },
+    {
+      "id": "luggage trunk",
+      "choice": "h46-B",
+      "selectedAt": "2026-10-02T06:43:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "leather armor stand",
+      "choice": "h48-B",
+      "selectedAt": "2026-10-02T06:43:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        30
+      ]
+    },
+    {
+      "id": "inn sign",
+      "choice": "h47-E",
+      "selectedAt": "2026-10-02T06:42:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        16
+      ]
+    },
+    {
+      "id": "menu board",
+      "choice": "h45-D",
+      "selectedAt": "2026-10-02T06:42:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "room key board",
+      "choice": "h43-B",
+      "selectedAt": "2026-10-02T06:42:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "inn reception",
+      "choice": "h42-E",
+      "selectedAt": "2026-10-02T06:21:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "arrow floor",
+      "choice": "h40-D",
+      "selectedAt": "2026-10-02T06:20:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "pitfall",
+      "choice": "h39-C",
+      "selectedAt": "2026-10-02T06:20:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "hint tablet",
+      "choice": "h38-B",
+      "selectedAt": "2026-10-02T06:20:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "cracked wall",
+      "choice": "h37-C",
+      "selectedAt": "2026-10-02T06:19:54+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        16
+      ]
+    },
+    {
+      "id": "teleport pad",
+      "choice": "h33-E",
+      "selectedAt": "2026-10-02T06:19:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        20
+      ]
+    },
+    {
+      "id": "locked door",
+      "choice": "h35-B",
+      "selectedAt": "2026-10-01T22:05:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "crystal switch",
+      "choice": "h34-E",
+      "selectedAt": "2026-10-01T22:04:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "coffin open",
+      "choice": "h32-C",
+      "selectedAt": "2026-10-01T22:04:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        31
+      ]
+    },
+    {
+      "id": "spike trap down",
+      "choice": "h31-C",
+      "selectedAt": "2026-10-01T22:04:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "iron gate open",
+      "choice": "h30-A",
+      "selectedAt": "2026-10-01T22:04:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "pressure plate down",
+      "choice": "h29-B",
+      "selectedAt": "2026-10-01T22:04:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "wall lever on",
+      "choice": "h28-B",
+      "selectedAt": "2026-10-01T22:04:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "treasure chest big open",
+      "choice": "h27-C",
+      "selectedAt": "2026-10-01T22:03:25+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        29
+      ]
+    },
+    {
+      "id": "treasure chest open",
+      "choice": "h26-D",
+      "selectedAt": "2026-10-01T22:03:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        14
+      ]
+    },
+    {
+      "id": "treasure chest big",
+      "choice": "h24-D",
+      "selectedAt": "2026-10-01T21:25:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        21
+      ]
+    },
+    {
+      "id": "seal stone",
+      "choice": "h23-D",
+      "selectedAt": "2026-10-01T21:25:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        28
+      ]
+    },
+    {
+      "id": "key pedestal",
+      "choice": "h22-E",
+      "selectedAt": "2026-10-01T21:25:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        21
+      ]
+    },
+    {
+      "id": "spike trap",
+      "choice": "h21-B",
+      "selectedAt": "2026-10-01T21:25:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "iron gate",
+      "choice": "h20-A",
+      "selectedAt": "2026-10-01T21:22:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "push boulder",
+      "choice": "h19-B",
+      "selectedAt": "2026-10-01T21:22:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "pressure plate",
+      "choice": "h18-B",
+      "selectedAt": "2026-10-01T21:22:30+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "wall lever",
+      "choice": "h17-A",
+      "selectedAt": "2026-10-01T21:22:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "healing spring",
+      "choice": "h16-D",
+      "selectedAt": "2026-10-01T21:22:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        30
+      ]
+    },
+    {
+      "id": "save crystal",
+      "choice": "h15-B",
+      "selectedAt": "2026-10-01T21:22:09+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        47
+      ]
+    },
+    {
+      "id": "treasure chest",
+      "choice": "h13-D",
+      "selectedAt": "2026-10-01T21:22:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "table:plate+cup",
+      "choice": "h12-E",
+      "selectedAt": "2026-10-01T21:21:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "id": "grindstone",
+      "choice": "h10-D",
+      "selectedAt": "2026-10-01T21:21:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "water jar",
+      "choice": "h8-A",
+      "selectedAt": "2026-10-01T19:53:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "pot",
+      "choice": "h7-E",
+      "selectedAt": "2026-10-01T19:53:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "work 2x1",
+      "choice": "h6-B",
+      "selectedAt": "2026-10-01T19:52:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        15
+      ]
+    },
+    {
+      "id": "tea 2x1",
+      "choice": "h5-A",
+      "selectedAt": "2026-10-01T19:52:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        15
+      ]
+    },
+    {
+      "id": "desk 2x1",
+      "choice": "h4-D",
+      "selectedAt": "2026-10-01T19:49:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        15
+      ]
+    },
+    {
+      "id": "crate:apple",
+      "choice": "h3-C",
+      "selectedAt": "2026-10-01T19:49:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "loom",
+      "choice": "w43-A",
+      "selectedAt": "2026-10-01T17:53:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        23
+      ]
+    },
+    {
+      "id": "saddle rack",
+      "choice": "w26-D",
+      "selectedAt": "2026-10-01T17:53:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        23
+      ]
+    },
+    {
+      "id": "school desk",
+      "choice": "w71-A",
+      "selectedAt": "2026-10-01T17:53:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "cake display case",
+      "choice": "w104-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        24
+      ]
+    },
+    {
+      "id": "chopping block",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "cradle",
+      "choice": "w105-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "firewood bundle",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "mine cart",
+      "choice": "w103-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "hammock",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "patient bed",
+      "choice": "w104-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        38
+      ]
+    },
+    {
+      "id": "spear rack",
+      "choice": "w104-A",
+      "selectedAt": "2026-10-01T17:42:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        47
+      ]
+    },
+    {
+      "id": "barrel",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        15
+      ]
+    },
+    {
+      "id": "hay bale",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        14
+      ]
+    },
+    {
+      "id": "powder kegs",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "coffin",
+      "choice": "w103-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        31
+      ]
+    },
+    {
+      "id": "safe",
+      "choice": "w103-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        25
+      ]
+    },
+    {
+      "id": "sarcophagus",
+      "choice": "w103-A",
+      "selectedAt": "2026-10-01T17:42:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "altar E",
+      "choice": "w102-A",
+      "selectedAt": "2026-10-01T17:42:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        38
+      ]
+    },
+    {
+      "id": "choir stall",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        40
+      ]
+    },
+    {
+      "id": "lectern",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        24
+      ]
+    },
+    {
+      "id": "pew E2",
+      "choice": "w102-A",
+      "selectedAt": "2026-10-01T17:42:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        40
+      ]
+    },
+    {
+      "id": "pew E3",
+      "choice": "w102-A",
+      "selectedAt": "2026-10-01T17:42:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        56
+      ]
+    },
+    {
+      "id": "pulpit",
+      "choice": "w102-A",
+      "selectedAt": "2026-10-01T17:42:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        61,
+        43
+      ]
+    },
+    {
+      "id": "armchair",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "pew",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        22
+      ]
+    },
+    {
+      "id": "sofa",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "stone throne",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "theater seat",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:18+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "column stone",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        38
+      ]
+    },
+    {
+      "id": "column wood",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        38
+      ]
+    },
+    {
+      "id": "column dwarf",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        40
+      ]
+    },
+    {
+      "id": "column marble",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        38
+      ]
+    },
+    {
+      "id": "column steel",
+      "choice": "w110-A",
+      "selectedAt": "2026-10-01T17:42:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        38
+      ]
+    },
+    {
+      "id": "doormat",
+      "choice": "w25-F",
+      "selectedAt": "2026-10-01T15:10:52+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        9
+      ]
+    },
+    {
+      "id": "shelf:mushroom",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "shelf:potion+potionb+potiong",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:scroll",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "shelf:skull+crystal",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:toy",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:vial+flask",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:yarn+yarnb+yarny",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "shield wall",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "ship wheel",
+      "choice": "w72-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "skull pile",
+      "choice": "w73-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "sleeping cat",
+      "choice": "w74-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        12
+      ]
+    },
+    {
+      "id": "statue",
+      "choice": "w74-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        41
+      ]
+    },
+    {
+      "id": "straw pile",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        11
+      ]
+    },
+    {
+      "id": "sword rack",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        31
+      ]
+    },
+    {
+      "id": "table:book+scroll",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:cake+pie",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:fish+fishr",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:gem+coins",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:loaf+bun",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:mug+bottle",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:potion+flask",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "table:steak+ham",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "tall vase teal",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        9,
+        20
+      ]
+    },
+    {
+      "id": "tall vase yellow",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        9,
+        20
+      ]
+    },
+    {
+      "id": "trapdoor",
+      "choice": "w73-A",
+      "selectedAt": "2026-10-01T15:07:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "hang:fish",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        8
+      ]
+    },
+    {
+      "id": "hang:fishr",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        8
+      ]
+    },
+    {
+      "id": "hang:flower",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        10
+      ]
+    },
+    {
+      "id": "hang:herb",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        10
+      ]
+    },
+    {
+      "id": "hang:mushroom",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        9
+      ]
+    },
+    {
+      "id": "hang:sausage",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        8
+      ]
+    },
+    {
+      "id": "key ring hook",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "library ladder",
+      "choice": "w74-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        47
+      ]
+    },
+    {
+      "id": "portrait large",
+      "choice": "w71-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "potted cactus",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        15
+      ]
+    },
+    {
+      "id": "potted sapling",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        15
+      ]
+    },
+    {
+      "id": "prison cot",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        48
+      ]
+    },
+    {
+      "id": "rope coil",
+      "choice": "w72-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        13
+      ]
+    },
+    {
+      "id": "sack",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "shelf:bolt+boltg+boltr",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "shelf:book+bookb+bookg",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:bottle+bottler+bottley",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:candle",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:flower",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:gem+gemr",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "shelf:herb",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "shelf:ingot+ingotg",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "shelf:jar+jarb+jarg",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "basket:loaf",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "basket:onion",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:pie",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:potato",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:potion+potionb+potiong",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:pumpkin",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:shell",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:tomato",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:vial+flask",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        11
+      ]
+    },
+    {
+      "id": "basket:wool",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "basket:yarn+yarnb+yarny",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "birdcage",
+      "choice": "w73-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        32
+      ]
+    },
+    {
+      "id": "blackboard",
+      "choice": "w71-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "bow rack",
+      "choice": "w70-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "coin pile",
+      "choice": "w72-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        13
+      ]
+    },
+    {
+      "id": "dining 1x1",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "dining 2x2",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        31
+      ]
+    },
+    {
+      "id": "dining 3x1",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        15
+      ]
+    },
+    {
+      "id": "dining 3x2",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        31
+      ]
+    },
+    {
+      "id": "dining 4x1",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        64,
+        15
+      ]
+    },
+    {
+      "id": "dining 4x2",
+      "choice": "w62-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        64,
+        31
+      ]
+    },
+    {
+      "id": "display apple",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        12
+      ]
+    },
+    {
+      "id": "display bread",
+      "choice": "w61-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        12
+      ]
+    },
+    {
+      "id": "dresser",
+      "choice": "w71-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        26
+      ]
+    },
+    {
+      "id": "folding screen",
+      "choice": "w72-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        28
+      ]
+    },
+    {
+      "id": "globe",
+      "choice": "w71-A",
+      "selectedAt": "2026-10-01T15:07:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        31
+      ]
+    },
+    {
+      "id": "anchor",
+      "choice": "w72-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "banner blue",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "banner red",
+      "choice": "w63-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "basket:apple",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:baguette",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:bun",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:cabbage",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "basket:cake",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:carrot",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:egg",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:eggplant",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:fish",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:fish+ice",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "basket:flower",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        12
+      ]
+    },
+    {
+      "id": "basket:grape",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:jar+jarb+jarg",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "basket:lemon",
+      "choice": "w60-A",
+      "selectedAt": "2026-10-01T15:07:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "bread shelf baguette",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        31
+      ]
+    },
+    {
+      "id": "cabinet:candle",
+      "choice": "w47-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "firewood rack 2w",
+      "choice": "w49-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        27
+      ]
+    },
+    {
+      "id": "table:bolt+yarn",
+      "choice": "w46-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        16
+      ]
+    },
+    {
+      "id": "bookshelf 3w",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        38
+      ]
+    },
+    {
+      "id": "bread shelf pie",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:bolt+boltg+boltr",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:book+bookb+bookg",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:bun",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:cheese",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:gem+gemr",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:jar+jarb+jarg",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:loaf",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:pie",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:potion+potionb+potiong",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:toy",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "cabinet:vial+flask",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "apothecary drawers",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "armor stand",
+      "choice": "w52-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        31
+      ]
+    },
+    {
+      "id": "bookshelf 1w",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        38
+      ]
+    },
+    {
+      "id": "bookshelf 2w",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        38
+      ]
+    },
+    {
+      "id": "bread shelf",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        31
+      ]
+    },
+    {
+      "id": "cabinet:bottle+bottler+bottley",
+      "choice": "w40-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "clock",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        28
+      ]
+    },
+    {
+      "id": "column live",
+      "choice": "w51-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        40
+      ]
+    },
+    {
+      "id": "confessional",
+      "choice": "w45-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        46,
+        40
+      ]
+    },
+    {
+      "id": "crate",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "fabric bolt rack",
+      "choice": "w41-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "firewood rack",
+      "choice": "w49-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        27
+      ]
+    },
+    {
+      "id": "herb drying rack",
+      "choice": "w43-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        28
+      ]
+    },
+    {
+      "id": "keg rack",
+      "choice": "w48-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        24
+      ]
+    },
+    {
+      "id": "meat hooks",
+      "choice": "w48-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "piano",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        24
+      ]
+    },
+    {
+      "id": "pipe organ",
+      "choice": "w50-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        37
+      ]
+    },
+    {
+      "id": "proofing rack",
+      "choice": "w43-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "royal chest",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "scroll rack",
+      "choice": "w48-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "spellbook stand",
+      "choice": "w55-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        26,
+        21
+      ]
+    },
+    {
+      "id": "straw bed",
+      "choice": "w44-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        26
+      ]
+    },
+    {
+      "id": "throne",
+      "choice": "w52-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        32
+      ]
+    },
+    {
+      "id": "timber prop",
+      "choice": "w53-B",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        39
+      ]
+    },
+    {
+      "id": "vanity mirror",
+      "choice": "w47-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "choice": "w42-A",
+      "selectedAt": "2026-10-01T13:58:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        32
+      ]
+    },
+    {
+      "id": "conductor podium",
+      "choice": "w31-F",
+      "selectedAt": "2026-09-30T06:57:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        31
+      ]
+    },
+    {
+      "id": "round door",
+      "choice": "w33-B",
+      "selectedAt": "2026-09-30T06:57:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        28
+      ]
+    },
+    {
+      "id": "fishing net",
+      "choice": "w33-B",
+      "selectedAt": "2026-09-30T06:57:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        45,
+        31
+      ]
+    },
+    {
+      "id": "scenery flat",
+      "choice": "w9-C",
+      "selectedAt": "2026-09-30T06:55:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        32
+      ]
+    },
+    {
+      "id": "magitek armor",
+      "choice": "w31-F",
+      "selectedAt": "2026-09-30T06:37:16+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        45
+      ]
+    },
+    {
+      "id": "stairs down",
+      "choice": "w29-F",
+      "selectedAt": "2026-09-30T06:35:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "altar",
+      "choice": "w10-B",
+      "selectedAt": "2026-09-30T06:26:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        22
+      ]
+    },
+    {
+      "id": "shelf:coins",
+      "choice": "w10-C",
+      "selectedAt": "2026-09-30T06:26:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "holy water font",
+      "choice": "w7-A",
+      "selectedAt": "2026-09-30T06:25:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "alembic",
+      "choice": "w7-C",
+      "selectedAt": "2026-09-30T06:25:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        16
+      ]
+    },
+    {
+      "id": "balance scale",
+      "choice": "w6-C",
+      "selectedAt": "2026-09-30T06:22:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "purple rug",
+      "choice": "w6-C",
+      "selectedAt": "2026-09-30T06:22:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "hymn board",
+      "choice": "w6-A",
+      "selectedAt": "2026-09-30T06:22:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "treasure pile",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T06:21:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        16
+      ]
+    },
+    {
+      "id": "towel rail",
+      "choice": "w3-C",
+      "selectedAt": "2026-09-30T06:20:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        8
+      ]
+    },
+    {
+      "id": "plant",
+      "choice": "w1-C",
+      "selectedAt": "2026-09-30T06:19:32+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        14
+      ]
+    },
+    {
+      "id": "mortar and pestle",
+      "choice": "w1-B",
+      "selectedAt": "2026-09-30T06:19:29+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        11
+      ]
+    },
+    {
+      "id": "dart board",
+      "choice": "w23-F",
+      "selectedAt": "2026-09-30T06:18:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        25,
+        29
+      ]
+    },
+    {
+      "id": "deer trophy",
+      "choice": "w23-D",
+      "selectedAt": "2026-09-30T06:17:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        25,
+        31
+      ]
+    },
+    {
+      "id": "wall map",
+      "choice": "w23-D",
+      "selectedAt": "2026-09-30T06:17:15+09:00",
+      "pixelsMatch": true,
+      "size": [
+        27,
+        28
+      ]
+    },
+    {
+      "id": "bathtub",
+      "choice": "w22-F",
+      "selectedAt": "2026-09-30T06:17:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        14
+      ]
+    },
+    {
+      "id": "round arch",
+      "choice": "w28-D",
+      "selectedAt": "2026-09-30T06:16:10+09:00",
+      "pixelsMatch": true,
+      "size": [
+        26,
+        30
+      ]
+    },
+    {
+      "id": "ore vein",
+      "choice": "w27-H",
+      "selectedAt": "2026-09-30T06:15:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        10
+      ]
+    },
+    {
+      "id": "star chart",
+      "choice": "w24-D",
+      "selectedAt": "2026-09-30T06:15:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        31
+      ]
+    },
+    {
+      "id": "ore pile",
+      "choice": "w27-D",
+      "selectedAt": "2026-09-30T06:15:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        31,
+        20
+      ]
+    },
+    {
+      "id": "basket:mushroom",
+      "choice": "w9-B",
+      "selectedAt": "2026-09-30T06:06:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "banner green",
+      "choice": "w8-C",
+      "selectedAt": "2026-09-30T06:05:53+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "display potion",
+      "choice": "w7-B",
+      "selectedAt": "2026-09-30T06:05:28+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        15
+      ]
+    },
+    {
+      "id": "sack:flour",
+      "choice": "w6-B",
+      "selectedAt": "2026-09-30T06:00:19+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "green rug",
+      "choice": "w5-A",
+      "selectedAt": "2026-09-30T05:59:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        30
+      ]
+    },
+    {
+      "id": "hang:onion",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T05:59:47+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        11
+      ]
+    },
+    {
+      "id": "shelf pots",
+      "choice": "w4-B",
+      "selectedAt": "2026-09-30T05:59:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        13
+      ]
+    },
+    {
+      "id": "peel rack",
+      "choice": "w4-C",
+      "selectedAt": "2026-09-30T05:56:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "crystal ball",
+      "choice": "w3-B",
+      "selectedAt": "2026-09-30T05:56:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        15
+      ]
+    },
+    {
+      "id": "potted flowering",
+      "choice": "w3-B",
+      "selectedAt": "2026-09-30T05:55:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "cupboard",
+      "choice": "w2-A",
+      "selectedAt": "2026-09-30T05:55:39+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "tall vase blue",
+      "choice": "w2-B",
+      "selectedAt": "2026-09-30T05:55:34+09:00",
+      "pixelsMatch": true,
+      "size": [
+        9,
+        20
+      ]
+    },
+    {
+      "id": "tailor mirror",
+      "choice": "w1-B",
+      "selectedAt": "2026-09-30T05:54:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        32
+      ]
+    },
+    {
+      "id": "spinning wheel",
+      "choice": "w1-B",
+      "selectedAt": "2026-09-30T05:54:17+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "pitchfork",
+      "choice": "w1-C",
+      "selectedAt": "2026-09-30T05:53:49+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        15
+      ]
+    },
+    {
+      "id": "curtain wing",
+      "choice": "w10-B",
+      "selectedAt": "2026-09-30T05:41:50+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        40
+      ]
+    },
+    {
+      "id": "round rug",
+      "choice": "w10-B",
+      "selectedAt": "2026-09-30T05:41:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        28
+      ]
+    },
+    {
+      "id": "broom and bucket",
+      "choice": "w9-C",
+      "selectedAt": "2026-09-30T05:40:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        13
+      ]
+    },
+    {
+      "id": "notice board",
+      "choice": "w9-C",
+      "selectedAt": "2026-09-30T05:39:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "dish rack",
+      "choice": "w9-B",
+      "selectedAt": "2026-09-30T05:39:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "magic circle",
+      "choice": "w8-C",
+      "selectedAt": "2026-09-30T05:39:24+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        28
+      ]
+    },
+    {
+      "id": "music stand",
+      "choice": "w8-B",
+      "selectedAt": "2026-09-30T05:39:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        22
+      ]
+    },
+    {
+      "id": "anvil",
+      "choice": "w7-B",
+      "selectedAt": "2026-09-30T05:38:08+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        12
+      ]
+    },
+    {
+      "id": "mannequin",
+      "choice": "w7-C",
+      "selectedAt": "2026-09-30T05:37:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        32
+      ]
+    },
+    {
+      "id": "double bed red",
+      "choice": "w6-B",
+      "selectedAt": "2026-09-30T05:37:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        38
+      ]
+    },
+    {
+      "id": "stairwell down",
+      "choice": "w6-C",
+      "selectedAt": "2026-09-30T05:28:46+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        32
+      ]
+    },
+    {
+      "id": "aisle runner",
+      "choice": "w5-B",
+      "selectedAt": "2026-09-30T05:28:04+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "quench barrel",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T05:27:26+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "water trough",
+      "choice": "w4-A",
+      "selectedAt": "2026-09-30T05:26:06+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        11
+      ]
+    },
+    {
+      "id": "feed trough",
+      "choice": "w4-B",
+      "selectedAt": "2026-09-30T05:26:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "id": "canopy bed",
+      "choice": "w4-C",
+      "selectedAt": "2026-09-30T05:25:44+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "shelf:cheese",
+      "choice": "w4-C",
+      "selectedAt": "2026-09-30T05:25:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "elven harp",
+      "choice": "w4-C",
+      "selectedAt": "2026-09-30T05:24:58+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        29
+      ]
+    },
+    {
+      "id": "weapon barrel",
+      "choice": "w4-A",
+      "selectedAt": "2026-09-30T05:24:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        16
+      ]
+    },
+    {
+      "id": "hang:ham",
+      "choice": "w4-A",
+      "selectedAt": "2026-09-30T05:22:56+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        9
+      ]
+    },
+    {
+      "id": "royal banner",
+      "choice": "w4-C",
+      "selectedAt": "2026-09-30T05:22:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        28
+      ]
+    },
+    {
+      "id": "stairs up stone",
+      "choice": "w3-C",
+      "selectedAt": "2026-09-30T05:22:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        48
+      ]
+    },
+    {
+      "id": "slop bucket",
+      "choice": "w3-C",
+      "selectedAt": "2026-09-30T05:20:59+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        10
+      ]
+    },
+    {
+      "id": "rug red",
+      "choice": "w3-C",
+      "selectedAt": "2026-09-30T05:20:35+09:00",
+      "pixelsMatch": true,
+      "size": [
+        44,
+        28
+      ]
+    },
+    {
+      "id": "shield",
+      "choice": "w3-B",
+      "selectedAt": "2026-09-30T05:20:23+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        14
+      ]
+    },
+    {
+      "id": "wall clock",
+      "choice": "w2-B",
+      "selectedAt": "2026-09-30T05:19:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        13
+      ]
+    },
+    {
+      "id": "tall vase red",
+      "choice": "w2-B",
+      "selectedAt": "2026-09-30T05:19:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        10,
+        19
+      ]
+    },
+    {
+      "id": "tall stained window",
+      "choice": "w2-A",
+      "selectedAt": "2026-09-30T05:16:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        28,
+        21
+      ]
+    },
+    {
+      "id": "round window",
+      "choice": "w1-C",
+      "selectedAt": "2026-09-30T05:16:07+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "reredos",
+      "choice": "w1-C",
+      "selectedAt": "2026-09-30T05:15:55+09:00",
+      "pixelsMatch": true,
+      "size": [
+        48,
+        30
+      ]
+    },
+    {
+      "id": "tapestry",
+      "choice": "w1-B",
+      "selectedAt": "2026-09-30T05:14:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        29
+      ]
+    },
+    {
+      "id": "coal bin",
+      "choice": "w10-B",
+      "selectedAt": "2026-09-30T05:05:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "kitchen sink",
+      "choice": "w10-A",
+      "selectedAt": "2026-09-30T05:05:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "hanging pans",
+      "choice": "w10-C",
+      "selectedAt": "2026-09-30T05:05:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        13
+      ]
+    },
+    {
+      "id": "sack:grain",
+      "choice": "w10-C",
+      "selectedAt": "2026-09-30T05:05:00+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        12
+      ]
+    },
+    {
+      "id": "coat rack",
+      "choice": "w8-C",
+      "selectedAt": "2026-09-30T05:04:11+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        30
+      ]
+    },
+    {
+      "id": "nightstand",
+      "choice": "w8-C",
+      "selectedAt": "2026-09-30T05:04:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": "fur rug",
+      "choice": "w7-B",
+      "selectedAt": "2026-09-30T05:03:33+09:00",
+      "pixelsMatch": true,
+      "size": [
+        29,
+        25
+      ]
+    },
+    {
+      "id": "bottles",
+      "choice": "w7-B",
+      "selectedAt": "2026-09-30T05:03:27+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        13
+      ]
+    },
+    {
+      "id": "potted fern",
+      "choice": "w7-B",
+      "selectedAt": "2026-09-30T05:03:21+09:00",
+      "pixelsMatch": true,
+      "size": [
+        14,
+        15
+      ]
+    },
+    {
+      "id": "curtained window",
+      "choice": "w6-B",
+      "selectedAt": "2026-09-30T05:03:05+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        15
+      ]
+    },
+    {
+      "id": "tool wall",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T05:02:02+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        13
+      ]
+    },
+    {
+      "id": "bar stool",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T05:01:38+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "picture",
+      "choice": "w5-C",
+      "selectedAt": "2026-09-30T04:58:57+09:00",
+      "pixelsMatch": true,
+      "size": [
+        11,
+        15
+      ]
+    },
+    {
+      "id": "chest",
+      "choice": "w3-C",
+      "selectedAt": "2026-09-30T04:58:14+09:00",
+      "pixelsMatch": true,
+      "size": [
+        13,
+        13
+      ]
+    },
+    {
+      "id": "window",
+      "choice": "w1-C",
+      "selectedAt": "2026-09-30T04:57:03+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        14
+      ]
+    },
+    {
+      "id": "bed green",
+      "choice": "pilot-A",
+      "selectedAt": "2026-09-30T04:56:42+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        38
+      ]
+    },
+    {
+      "id": "dining 2x1",
+      "choice": "pilot-B",
+      "selectedAt": "2026-09-30T04:56:20+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        15
+      ]
+    }
+  ]
+}
