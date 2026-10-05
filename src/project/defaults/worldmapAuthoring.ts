@@ -94,7 +94,7 @@ export function createWorldmapAuthoringTileset(): TilesetDef {
             t.passability[target] = { up: walk, down: walk, left: walk, right: walk };
             t.priority[target] = 'upper';
             t.terrain[target] = 0;
-            t.tileMeta![target] = { label: icon.name, defaultLayer: 'upper', passage: !bottom ? 'star' : entrance ? 'passable' : 'solid', tags: ['worldmap-icon'], source: 'bundled-default' };
+            t.tileMeta![target] = { label: icon.name, description: icon.name, defaultLayer: 'upper', passage: !bottom ? 'star' : entrance ? 'passable' : 'solid', tags: ['worldmap-icon'], source: 'bundled-default' };
             return target;
         }));
         (t.structureKits ??= []).push({ id: 'wmi-' + icon.id, name: icon.name, kind: 'section', tileSize: 16, width: icon.width, height: icon.height,

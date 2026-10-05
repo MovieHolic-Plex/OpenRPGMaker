@@ -15,7 +15,7 @@ import { normalizeMapClimate } from "@/project/mapClimate";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
-import { blankFillTileFor, plainGrassTileFor } from "@/project/defaults/defaultMaps";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
