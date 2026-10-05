@@ -58,7 +58,8 @@ def runs(items=None):
             phase = 'interrupted'
         result.append(dict(run=root.name, planned=len(manifest['characters']), ready=len(ready), kept=kept,
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
-                           recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
+                           recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), continuedIn=state.get('continuedIn'),
+                           maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
                            blocked=sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
                                        for p in root.glob('*__*') if (p / 'out.chr.txt').exists())))
     return result
@@ -150,10 +151,16 @@ def _control(run, resume):
         raise ValueError('자유 저작 실행만 제어할 수 있습니다')
     driver = json.loads((root / 'driver.json').read_text()) if (root / 'driver.json').exists() else {}
     if resume:
+        state = json.loads((root / 'production-state.json').read_text()) if (root / 'production-state.json').exists() else {}
+        if state.get('phase') == 'continued':
+            raise ValueError('생산은 다음 작업에서 이어집니다: ' + str(state.get('continuedIn', '')))
         if H._alive(driver.get('pid')):
             raise ValueError('현재 묶음이 끝날 때까지 기다려 주세요')
         if any(r['run'] != run and r['phase'] in ('running', 'pausing', 'waiting-review') for r in runs()):
             raise ValueError('다른 자유 저작이 진행 중입니다')
+        if json.loads((root / 'manifest.json').read_text()).get('recipe'):
+            import recipes
+            recipes.verify_run(root, check_tools=True)
         (root / 'pause-request.json').unlink(missing_ok=True)
         layout = json.loads((root / 'production.json').read_text())
         return launch(root, par=layout.get('par', 4), batch_size=layout['batchSize'])
