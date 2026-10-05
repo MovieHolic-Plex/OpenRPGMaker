@@ -599,6 +599,11 @@
       "sha256": "79f23a911ef726f865f0ddf37c0cf0aec97a16697645dca9523c466fb1b92b4e",
       "promptSha256": "ecd93d55fe66586f038e20ef0a62833846d5c60cb3e071fcfc973aacf62411d5"
     },
+    "adventure--mission--companions--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--companions--mystic-730f87437a0f.png",
+      "sha256": "730f87437a0f3ea3b497e4fd0be61586cd0c8e1f22501c13ed9192853d00f538",
+      "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628"
+    },
     "adventure--mission--companions--warm": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--companions--warm-9f195bd4e1b2.png",
       "sha256": "9f195bd4e1b2412efdf206b8672f1049f570d77c5c750b9f6ffb0c6882005f54",
@@ -649,10 +654,30 @@
       "sha256": "7537b8e6d66556f45eb2a8c7049a5c50a21eff6643d9eb8061165d4bc239eb80",
       "promptSha256": "bb565c653c201f6aa66ab829f544bb6b8ea1110fdc8a4fd8ac4918ebe5a99db0"
     },
+    "mystery--missing--testimony--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--testimony--danger-7590da0b5065.png",
+      "sha256": "7590da0b50658ab3405709adecccaeeeee014eee43cf83ae3ee847c52c150c1f",
+      "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9"
+    },
     "mystery--missing--evidence": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--missing--evidence-7acca6816133.png",
       "sha256": "7acca6816133fc36ff9c9b7d8e2c462ab9eb41a45b19557d388167c43c318267",
       "promptSha256": "59ef849f0a668c7f26b29a508ae29b22659ecb878cc42341e653440f87ca493e"
+    },
+    "mystery--missing--evidence--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--evidence--wonder-ac0ee9902738.png",
+      "sha256": "ac0ee9902738bb479f1824e8bf389cbb195498a562e2f86b021b1d7c1f8972c5",
+      "promptSha256": "edeb549a382c490af5504db2c010a69cb2fdfc9524af421bb014d73ca908b738"
+    },
+    "mystery--missing--evidence--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--evidence--tension-a2f689701430.png",
+      "sha256": "a2f689701430fa0a0ed58c568c05f45330df6b8fc4f034d02683b120ec98da42",
+      "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878"
+    },
+    "mystery--missing--evidence--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--evidence--danger-466defef1ad5.png",
+      "sha256": "466defef1ad54fd1da5fb1946e8fbec8438652343c3b7d0f4da0462040b220bc",
+      "promptSha256": "658c207d647386ba81374a5fd6ee68d616f25443a528dc737cabb0c76e73ef68"
     },
     "mystery--record": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--record-958c6fd759c5.png",
@@ -664,15 +689,60 @@
       "sha256": "bc0b3be3f3d0c64a7cd3ae3b427fb764f696c16e3195ef0350608760c084c51b",
       "promptSha256": "f26f9294413225beb66ef94244d6905ad468df40859d67212afceca14778c701"
     },
+    "mystery--record--inspect--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--inspect--wonder-c1fabb6f13d0.png",
+      "sha256": "c1fabb6f13d0ca7dc2f613f84994d5ad2a25f161713fdc60ac4afd9a0ba02c12",
+      "promptSha256": "f63f575eb0ee3774e2c22d149a78eb1226405c5b9c817bf81103277e40840a5c"
+    },
+    "mystery--record--inspect--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--inspect--tension-4488a3ee2fd1.png",
+      "sha256": "4488a3ee2fd1b4d5512cda0156474f1fe0ff700569edc526bc671417719cb6bd",
+      "promptSha256": "372302199352f1402e6e1afb43c5562f7ae83fa3707a7c9d05df5451800d89ed"
+    },
+    "mystery--record--inspect--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--inspect--danger-94c0e27debfb.png",
+      "sha256": "94c0e27debfb4227931abbb3280fb2332a9fb8ab78247ee049dcc7fff3974b05",
+      "promptSha256": "5e5a11dc764f4e6e150345aa5452c82fadae8a9ee72ebbc0e4fc4e9c23170e4a"
+    },
     "mystery--record--testimony": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--record--testimony-bd568c4130b6.png",
       "sha256": "bd568c4130b6190115902ca9101301b8b5d9fb3c859027ecff9a9a2690b2650e",
       "promptSha256": "ccdcbfb60b65224053730c148d89f5fb33a06e323d61d63a31327e0c43c688a3"
     },
+    "mystery--record--testimony--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--testimony--wonder-81237ec45462.png",
+      "sha256": "81237ec45462b95d1bd8b620046bfd1cd4fbd22e2dcd4048c00a9e658c433b05",
+      "promptSha256": "73d872dce4cac77f35229214bb88bdc619b0005619436235d0ff7bf0965aa574"
+    },
+    "mystery--record--testimony--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--testimony--tension-e314a114367f.png",
+      "sha256": "e314a114367f9ab1071390bc22c35372b4078453a1f52ff78639812a3fd6544a",
+      "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce"
+    },
+    "mystery--record--testimony--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--testimony--danger-e4071a4249fb.png",
+      "sha256": "e4071a4249fbc50995c5cc105f70ef0ab20879c2df9a8301d1e9cc3ed53cee8a",
+      "promptSha256": "68e74c687731c51c8127caf1fb51a165cc0b3d26adf3e08352f67b62baefc924"
+    },
     "mystery--record--evidence": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--record--evidence-f88b510d206c.png",
       "sha256": "f88b510d206c457f6597b7ea0b092d1a6ca2f59a08a2dd1ca41d9bde1e54f0c4",
       "promptSha256": "60b99018459d294a5fb4286bf224a9513f5ec33438e6fa5077cb1d8de04b43e8"
+    },
+    "mystery--record--evidence--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--evidence--wonder-eb82ed43dfeb.png",
+      "sha256": "eb82ed43dfeb98529e016251666787da7027079b8b76e5698e18a755256a7d9c",
+      "promptSha256": "ede83cc833874db3a347802dabd5f50ca562fa9cf6ef9cf4c7b6b40cf626c9d4"
+    },
+    "mystery--record--evidence--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--evidence--tension-25d40311dc78.png",
+      "sha256": "25d40311dc7894ed63ca60a667db0f3f67086a345194cbb804c9a4bbe6d76b11",
+      "promptSha256": "86a382f5c1ee3708c7ac9a22ad85886a42103e4aecde832339fa390199084be9"
+    },
+    "mystery--record--evidence--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--record--evidence--danger-24b8eb7dc686.png",
+      "sha256": "24b8eb7dc68650bfdc61bbf0d03a90d1261d1d9b1908d5c0b23dbbc255430d67",
+      "promptSha256": "e2dafec140fbae38245af3b0a302aca13418479cb17752d43a5a3078c9b8f1ce"
     },
     "mystery--place": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--place-fe2c148e4de1.png",
@@ -684,15 +754,50 @@
       "sha256": "eab3084efa6db6d5d7fa33397825cd43ca601e4f2c56c5dfc43d979c0699a8a4",
       "promptSha256": "e265073c4664fe67d6903496a1d4dd7fdda00d3c6976cd4263df29600c2e4eb1"
     },
+    "mystery--place--inspect--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--inspect--wonder-805bedd90757.png",
+      "sha256": "805bedd907576687cfd242ef71c4170d65a8b4fac8ed059cb0ac64b8688da952",
+      "promptSha256": "a6a1f6fa23a8980f04c525f3eab9a9f90eef74b24b77dd443856a1fff16d1926"
+    },
+    "mystery--place--inspect--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--inspect--tension-97d04b52896e.png",
+      "sha256": "97d04b52896e44834e00fe5d5a350aad1eff103ff68e67b6b38887465dd8b5b8",
+      "promptSha256": "9b1443f9c586a6c83092050bda009e48e68736266f05874d3381e51fef56dfbf"
+    },
+    "mystery--place--inspect--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--inspect--danger-b2cc6922e133.png",
+      "sha256": "b2cc6922e1338f42727e11cfb72424cc2b6a71a18e2f40e9a0750cc675184c30",
+      "promptSha256": "3a328dc87d0bb8552b7e2f38372782b7b1bdfff673132c0cc8e7dce0ca0c9320"
+    },
     "mystery--place--testimony": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--place--testimony-6573c830ea6e.png",
       "sha256": "6573c830ea6edf2ccf1b526cf58edc4fdae7e3be692ac97e35db6a2269ad4ad1",
       "promptSha256": "695f3969cf208d18707140dee38034bfdc840edcfed24d0c10278db6821054ad"
     },
+    "mystery--place--testimony--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--testimony--wonder-38d69c6f59c5.png",
+      "sha256": "38d69c6f59c50e1c7fcd5ef1fa388b378cb11e68cff432686dd93daedbaf57dc",
+      "promptSha256": "dd1e930a1f8d3bad8fe475159b2e22988d7ac6d2e56de18eb07ce53b2e456fc4"
+    },
+    "mystery--place--testimony--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--testimony--tension-9903c4de1e44.png",
+      "sha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
+      "promptSha256": "2dc08c547ec1db54306934695fbfe217ce29249299870e32a33bae6715562135"
+    },
     "mystery--place--evidence": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence-7d4384744aa3.png",
       "sha256": "7d4384744aa39b606976ff81340cc248a54def1ed4446edd4612bfa155ce7562",
       "promptSha256": "3eafcd6275d3de29ed1d50da0f74d80b7181b33d53d6a82b9219be0234f589ab"
+    },
+    "mystery--place--evidence--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence--wonder-16f444122b40.png",
+      "sha256": "16f444122b40e6e527032e060f99b18ea8f7adee89f461c49ce5b8109a17548b",
+      "promptSha256": "9780d1535a4e5f967ae9128acd13ab478d7fc71c0dce4dbaeae5597b7c5426c2"
+    },
+    "mystery--place--evidence--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence--tension-297dd7bc3fab.png",
+      "sha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
+      "promptSha256": "5cacc93b0e88b05bbe9b8cc8b83814dd3ebb069be661b28a9ae1bd9ed9d2c026"
     }
   }
 }

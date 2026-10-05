@@ -1,0 +1,35 @@
+{
+  "scope": "Actual production dialog in isolated start-screen container; latest reviewed reverse-view mystery background; not full app boot or AI authoring",
+  "syntheticCatalog": false,
+  "published": 159,
+  "generatedRequests": 0,
+  "flows": [
+    {
+      "genre": "mystery",
+      "steps": [
+        {
+          "key": "mystery",
+          "ms": 283.1999999284744,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery-fad4f6727c0f.png"
+        },
+        {
+          "key": "mystery--place",
+          "ms": 10,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery--place-fe2c148e4de1.png"
+        },
+        {
+          "key": "mystery--place--inspect",
+          "ms": 9.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery--place--inspect-eab3084efa6d.png"
+        },
+        {
+          "key": "mystery--place--inspect--danger",
+          "ms": 13.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery--place--inspect--danger-b2cc6922e133.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

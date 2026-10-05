@@ -6020,6 +6020,68 @@
           "colors": 544099,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions--mystic-2-aa90019a9b59.png",
+        "sha256": "aa90019a9b59696532097e601aeaeac5b3a17444471da0c75242921750bc32d2",
+        "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+        "generationPromptSha256": "7df1c55c05b168aef4c4e9378a323342010d185dc4d44f31edc1b8b3969ac24e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "aa90019a9b59696532097e601aeaeac5b3a17444471da0c75242921750bc32d2",
+          "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove the hanging compass-emblem flag completely. NO flags, banners, tapestries, fleur-de-lis, heraldic symbols or insignia anywhere. Empty ruined waystation with THREE distinct red green blue vacant resting places and own packs, three plain cups, entrusted tied parcel with smooth featureless wax blob, monumental ancient ruin passage through left arch. Entirely new near-corner view; use bare stone wall and plain shelves instead of cloth decorations."
+          ],
+          "notes": "Three separated empty red green blue resting places, cups and entrusted parcel now express companions and mission within ruin. Large compass-emblem hanging blue flag is unselected insignia and must be removed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 424320,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions--mystic-3-730f87437a0f.png",
+        "sha256": "730f87437a0f3ea3b497e4fd0be61586cd0c8e1f22501c13ed9192853d00f538",
+        "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+        "generationPromptSha256": "7209914e8af67467f45d690e0facfac737d396d0bc3dd50d49df44c1d60d99cf",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "730f87437a0f3ea3b497e4fd0be61586cd0c8e1f22501c13ed9192853d00f538",
+          "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original inspection: three separate red/green/blue empty traveler resting places, individual packs and three mugs surround a plain sealed entrusted parcel; monumental ruin arches and waterfalls give mystery. Coarse pixel contours, no identity, writing, banners or insignia; a fresh near-corner courtyard shot."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 444010,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--companions--warm": [
@@ -6210,6 +6272,1228 @@
           "width": 1672,
           "height": 941,
           "colors": 221255,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--testimony--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--danger-1-bcf20dcf54c6.png",
+        "sha256": "bcf20dcf54c69f256b6c43d7ca5da7a7e21960d2a08cb694bbabfc5d7e8d7ed9",
+        "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+        "generationPromptSha256": "3d49ef9f9d87940d1fc716231c3afc97bad2f6aa17f5250dfdf6da13166eeb07",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bcf20dcf54c69f256b6c43d7ca5da7a7e21960d2a08cb694bbabfc5d7e8d7ed9",
+          "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Make actual environmental danger unmistakable: broken exterior stairs with a missing section over a drop, cracked collapsing threshold and warped open door, visible falling masonry. Keep familiar empty room with abandoned keys and interrupted personal routine, several clearly distinct vacant witness seats and mismatching ordinary objects. No attacker, people, body, script or heraldry. Fresh low oblique shared table with unsafe LEFT doorway dominant."
+          ],
+          "notes": "Contrasting vacant seats and abandoned keys/phone express missing person and testimony. Quiet intact doorway and ordinary outdoor stairs fail visibly threatened/unsafe danger mood."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 223700,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--danger-2-85a02195c470.png",
+        "sha256": "85a02195c470c5f54b2e11b7a4a378e181e889757b5f526f2d67e73eb4ea2f18",
+        "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+        "generationPromptSha256": "22332475d15ff9c9e8eaed14c6e754503f237b36d22dc20398dedb3447b99c24",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "85a02195c470c5f54b2e11b7a4a378e181e889757b5f526f2d67e73eb4ea2f18",
+          "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the familiar empty interrupted-routine room, several contrasting vacant witness chairs with mismatching mundane belongings, and the clearly broken dangerous threshold/stairs over a deep void. Remove EVERY open paper, sheet and open notebook: previous table paper contains faux-writing. Use CLOSED plain unlabeled notebooks and a bare tabletop instead. Preserve coarse square pixel clusters and fresh left-focused composition with quiet drawn right; no people, portraits, flags, banners, insignia or writing-like marks anywhere."
+          ],
+          "notes": "Direct native original: fractured staircase and unsafe void clearly express danger and distinct vacant witness places express testimony, but paper below the closed book has rows of writing-like marks."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 331759,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--danger-3-04d8d5c9cba4.png",
+        "sha256": "04d8d5c9cba42f58282ea3d8de6fcb47b8e75ed500bbc2bbccf3e3da2de63390",
+        "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+        "generationPromptSha256": "00cb6926c15b6a2b9bc3b1a60c16be9a2cc7908f1f06465ebb646757eb7bd557",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "04d8d5c9cba42f58282ea3d8de6fcb47b8e75ed500bbc2bbccf3e3da2de63390",
+          "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the interrupted familiar empty room with several contrasting vacant witness chairs, personal cloth/packs and abandoned cup plus CLOSED plain books; preserve visibly collapsed threshold/stairs over a deep void for danger. Remove EVERY clock, watch, dial, numeral, open paper and writing-like mark: the previous grandfather clock introduced clock-face numeral glyphs. Use a completely bare wall. Fresh elevated near-corner shot of the empty witnesses and dangerous left threshold, coarse square pixel clusters, quiet drawn right; no people, portraits, banners or identity."
+          ],
+          "notes": "Direct native original: contrasting empty witness places, interrupted cup/closed books and visibly fractured void-side stairs satisfy facts; wall grandfather clock contains numeral-like clock-face glyphs."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 238538,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--danger-4-7590da0b5065.png",
+        "sha256": "7590da0b50658ab3405709adecccaeeeee014eee43cf83ae3ee847c52c150c1f",
+        "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+        "generationPromptSha256": "d24dd94232dde557ce14adc190195f9b47e9de127e5fee96e723d8f300a3724a",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "7590da0b50658ab3405709adecccaeeeee014eee43cf83ae3ee847c52c150c1f",
+          "promptSha256": "12b4a6cf556d143782887a89d768901a43e5bb979933bb41168da000ed8d3fb9",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: several clearly different vacant witness chairs with cloth/pack/mug and abandoned plain closed books, interrupted familiar room routine; the severely collapsed foreground stair and falling masonry over a deep void visibly express danger. Fresh elevated corner composition, clocks and numeral glyphs removed, bare wall, deliberate pixel clusters."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 224583,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--evidence--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--wonder-1-ac0ee9902738.png",
+        "sha256": "ac0ee9902738bb479f1824e8bf389cbb195498a562e2f86b021b1d7c1f8972c5",
+        "promptSha256": "edeb549a382c490af5504db2c010a69cb2fdfc9524af421bb014d73ca908b738",
+        "generationPromptSha256": "b861902bd76e2abfc91f1ab61d4d91acce0af7440a52d9e1f66924b2dd8e157a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ac0ee9902738bb479f1824e8bf389cbb195498a562e2f86b021b1d7c1f8972c5",
+          "promptSha256": "edeb549a382c490af5504db2c010a69cb2fdfc9524af421bb014d73ca908b738",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned camera and two landscape-only prints spatially correspond to architecture outside balcony; physical evidence relationships in beautiful quiet empty room, no portrait/script."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 374771,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--evidence--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--tension-1-30ee5469f2a1.png",
+        "sha256": "30ee5469f2a10aaeefe0c3286cc57f470585a86fc2eedc35fcea510fdb131891",
+        "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+        "generationPromptSha256": "1c5114437f35eb10412605f4b9bd4a1411802f2967dbdc33dbbe7d4b155dfaa9",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "30ee5469f2a10aaeefe0c3286cc57f470585a86fc2eedc35fcea510fdb131891",
+          "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Show physical hypothesis-testing relationships, not an arbitrary watch/keys pile: two matching broken halves of one plain personal clasp aligned beside its empty matching recess, a plain key beside a clearly corresponding unmarked lock. Familiar abandoned room with unfinished personal routine, tightly enclosed threshold and stepped shadow bands. Fresh near-overhead evidence workbench, no diagram, arrows, writing or people."
+          ],
+          "notes": "Empty personal room with key/watch/scarf pile retains missing person and confined tension, but no visibly corresponding lock/recess/paired evidence relationship; reads as generic inspection."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 185295,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--tension-2-8edb3d834846.png",
+        "sha256": "8edb3d834846d4fb22fed687ce65b751f097950391fc529acd29e17eaa34e241",
+        "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+        "generationPromptSha256": "9402e5664ac716eabe73113dfbce2b36d1028b16db998a61d2eafc65a4157602",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8edb3d834846d4fb22fed687ce65b751f097950391fc529acd29e17eaa34e241",
+          "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": false,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw a familiar abandoned empty room with interrupted cup/closed plain book routine; keep two visibly complementary halves of an ordinary broken clasp beside an actual matching key and lock, a tight closed threshold and hard stepped shadow bands for tension. REMOVE the framed humanoid portrait entirely and EVERY loose/open paper with faux-writing. Use bare walls and CLOSED plain unlabeled books only. Do not draw a person, silhouette, photograph, portrait, clock, pseudo-writing, banners or insignia. Create a fresh low diagonal left-focused physical evidence shot rather than repeating the previous desk."
+          ],
+          "notes": "Direct native original: paired clasp halves and key/lock comparison are clear, but a framed humanoid portrait on the rear desk invents an identity and the right papers contain faux-writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 150124,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--tension-3-a2f689701430.png",
+        "sha256": "a2f689701430fa0a0ed58c568c05f45330df6b8fc4f034d02683b120ec98da42",
+        "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+        "generationPromptSha256": "e63533c86710834213e067dc17e635e2c716ffa22a782342ced4fc57d09688ed",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "a2f689701430fa0a0ed58c568c05f45330df6b8fc4f034d02683b120ec98da42",
+          "promptSha256": "66ed5a75d1aa18bc46bcde5cc4687fb082ca2327aaa080d6dad7428bdbb90878",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: paired plain clasp pieces compared together near a key and actual closed-door lock, interrupted mug/book/cloth routine in familiar vacant room. Tight threshold and distinct hard-edged shadows express tension. Portrait and written sheets removed; coarse deliberate pixel clusters and fresh low desk view."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179985,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--evidence--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--danger-1-6f2e546d0904.png",
+        "sha256": "6f2e546d090420060f97c6e999b3314b2372fa2e1c1d1328b4d88cd75a6025e2",
+        "promptSha256": "658c207d647386ba81374a5fd6ee68d616f25443a528dc737cabb0c76e73ef68",
+        "generationPromptSha256": "0829a1ecedf45b4f9445d5143adc0fc3fffd596db1e1960fbbc76e362a33479b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6f2e546d090420060f97c6e999b3314b2372fa2e1c1d1328b4d88cd75a6025e2",
+          "promptSha256": "658c207d647386ba81374a5fd6ee68d616f25443a528dc737cabb0c76e73ef68",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Compose a fresh oblique near evidence surface where TWO broken halves of a plain personal clasp visibly fit each other and a plain key matches a corresponding unmarked lock. Keep abandoned familiar room and abruptly unfinished belongings. LEFT background threshold visibly fractured above a dangerous drop with broken stairs. No arbitrary scattered owner possessions, diagram, writing, human or corpse."
+          ],
+          "notes": "Fractured unsafe threshold and abandoned room retain danger and disappearance, but watch/keys/photo scatter has no clear fitting/contradicting physical evidence relationship."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 244061,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence--danger-2-466defef1ad5.png",
+        "sha256": "466defef1ad54fd1da5fb1946e8fbec8438652343c3b7d0f4da0462040b220bc",
+        "promptSha256": "658c207d647386ba81374a5fd6ee68d616f25443a528dc737cabb0c76e73ef68",
+        "generationPromptSha256": "ae20f11dc19494d1b7bc4c3627dc1d20eccef01820e79c8d8f1baf9f3c0a6bcc",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "466defef1ad54fd1da5fb1946e8fbec8438652343c3b7d0f4da0462040b220bc",
+          "promptSha256": "658c207d647386ba81374a5fd6ee68d616f25443a528dc737cabb0c76e73ef68",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: broken clasp halves fit physically, nearby key corresponds to lock on abandoned chest, neglected personal book and scarf show interrupted familiar routine. Severed stairs and open falling masonry over a void make danger unmistakable. Landscape picture contains no identity or writing; pixel clusters and fresh threshold composition pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 191047,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--inspect--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--inspect--wonder-1-c1fabb6f13d0.png",
+        "sha256": "c1fabb6f13d0ca7dc2f613f84994d5ad2a25f161713fdc60ac4afd9a0ba02c12",
+        "promptSha256": "f63f575eb0ee3774e2c22d149a78eb1226405c5b9c817bf81103277e40840a5c",
+        "generationPromptSha256": "b72005bd4d96d0a9fcfa98542ae8d312feec8505bdd7e4df2b910530d8734aad",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c1fabb6f13d0ca7dc2f613f84994d5ad2a25f161713fdc60ac4afd9a0ba02c12",
+          "promptSha256": "f63f575eb0ee3774e2c22d149a78eb1226405c5b9c817bf81103277e40840a5c",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain closed archive boxes, empty vase silhouette recess and object impression on near tray express physical record/reality discrepancy. Beautiful balcony framing, crisp pixels, no people or script."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 385212,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--inspect--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--inspect--tension-1-4488a3ee2fd1.png",
+        "sha256": "4488a3ee2fd1b4d5512cda0156474f1fe0ff700569edc526bc671417719cb6bd",
+        "promptSha256": "372302199352f1402e6e1afb43c5562f7ae83fa3707a7c9d05df5451800d89ed",
+        "generationPromptSha256": "f9106e21e1ee0f61f661f35057e0ff4106c91bca24416821d1f0224116d82345",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4488a3ee2fd1b4d5512cda0156474f1fe0ff700569edc526bc671417719cb6bd",
+          "promptSha256": "372302199352f1402e6e1afb43c5562f7ae83fa3707a7c9d05df5451800d89ed",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Confined plain archive boxes and empty shelf slot with near circular absent-object impression and closed moon-decorated medallion express discrepancy and close inspection. Blank paper unstamped, no readable writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 214578,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--inspect--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--inspect--danger-1-b5e831e812f7.png",
+        "sha256": "b5e831e812f706f4dce84112135284812d05afdcf826e0c05aa7a0969b05cd6c",
+        "promptSha256": "5e5a11dc764f4e6e150345aa5452c82fadae8a9ee72ebbc0e4fc4e9c23170e4a",
+        "generationPromptSha256": "7e4c870137ab913612b570669420269dbb3e2505e5acfc703939e79d1e350839",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b5e831e812f706f4dce84112135284812d05afdcf826e0c05aa7a0969b05cd6c",
+          "promptSha256": "5e5a11dc764f4e6e150345aa5452c82fadae8a9ee72ebbc0e4fc4e9c23170e4a",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove all heraldic banners completely; use bare stone walls. No hanging cloth decorations, flags, tapestries, crest, emblem or fleur-de-lis. Fresh near archive shelf foreground with closed plain boxes, one mismatched object impression and missing shelf recess for close inspection, broken catwalk above a deep drop for clear environmental danger. No clocks, labels, writing, people or open books."
+          ],
+          "notes": "Near archive boxes and physical table ring with collapsed unsafe catwalk retain discrepancy and danger. Two fleur/heraldic hanging banners violate unselected insignia constraint."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 172781,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--inspect--danger-2-94c0e27debfb.png",
+        "sha256": "94c0e27debfb4227931abbb3280fb2332a9fb8ab78247ee049dcc7fff3974b05",
+        "promptSha256": "5e5a11dc764f4e6e150345aa5452c82fadae8a9ee72ebbc0e4fc4e9c23170e4a",
+        "generationPromptSha256": "91fb53d899c9bdd2a57e10d7d358d57ad2a6478e786d1deb55e12707073ca865",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "94c0e27debfb4227931abbb3280fb2332a9fb8ab78247ee049dcc7fff3974b05",
+          "promptSha256": "5e5a11dc764f4e6e150345aa5452c82fadae8a9ee72ebbc0e4fc4e9c23170e4a",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: closed plain archive boxes, conspicuously empty recess and fallen cylindrical artifact with matching circular absence mark foreground the discrepancy for inspection. Shattered suspended walkway and unstable ledge clearly express danger. Native stair-step architecture and coarse pixel shading, bare walls, no text/person/flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 122783,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--testimony--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--wonder-1-81237ec45462.png",
+        "sha256": "81237ec45462b95d1bd8b620046bfd1cd4fbd22e2dcd4048c00a9e658c433b05",
+        "promptSha256": "73d872dce4cac77f35229214bb88bdc619b0005619436235d0ff7bf0965aa574",
+        "generationPromptSha256": "2055165d9714c6641c08e9c31d0b71f2d15656fa78fba39ca52690b20375b59a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "81237ec45462b95d1bd8b620046bfd1cd4fbd22e2dcd4048c00a9e658c433b05",
+          "promptSha256": "73d872dce4cac77f35229214bb88bdc619b0005619436235d0ff7bf0965aa574",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Four different vacant chairs around closed box and jug, plain archive boxes with empty recesses express comparing accounts and discrepancy. Inviting continuous arched room, no writing/humans."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 362760,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--testimony--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--tension-1-c36f87c6cbc9.png",
+        "sha256": "c36f87c6cbc91bac98beae8b4cc9ed4435bc1f1bc85d499cfd4efcda332a6f54",
+        "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+        "generationPromptSha256": "a9bb6ddb41dc80c508043d1d3ce3ec54ef3f5a9728475bcc99077a4c7a4b63ec",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c36f87c6cbc91bac98beae8b4cc9ed4435bc1f1bc85d499cfd4efcda332a6f54",
+          "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-017",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Remove fleur-de-lis banner and every heraldic/hanging cloth ornament entirely. Bare wall with closed plain archive shelves, conspicuously missing box recess, several contrasting EMPTY witness seats with differing plain cups and mundane paired/mismatched objects, narrow closed thresholds and stepped discrete shadows. Fresh elevated corner composition. No flags, tapestry, emblems, clocks, script, UI or people."
+          ],
+          "notes": "Three vacant contrasting witness chairs and cups, closed archive boxes and missing slot retain testimony, discrepancy and constrained silence. Large fleur-de-lis banner is forbidden heraldry."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 219020,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--tension-2-7f91617a9c63.png",
+        "sha256": "7f91617a9c63c62395df890cd36d5a978ce5ada78f85cb7e0c54a819755f8be0",
+        "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+        "generationPromptSha256": "98b547b4edd169f258f18c731ddcd29a5bb8dce17d641f0ee2a729e0b8d38c11",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "7f91617a9c63c62395df890cd36d5a978ce5ada78f85cb7e0c54a819755f8be0",
+          "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the quiet confined archive room with closed plain archive boxes, one clearly empty shelf recess and a corresponding missing-object impression; several distinct EMPTY witness seats carry matching/mismatching ordinary mugs or closed plain books. Tight threshold and discrete hard shadow bands express tension. Remove EVERY open book, paper, letter, envelope and quill: previous foreground books and sheets have pseudo-writing. Keep foreground tabletop bare except plain physical objects and CLOSED entirely unlabeled boxes/books; blank architectural walls, no people, portraits, banners or heraldry. Change the camera to an intimate side-on vacant witness nook."
+          ],
+          "notes": "Direct native original: different empty witness seats with contrasting mugs/books and missing archive shelf recess; confined door and stepped window shadows fit tension. Open sheets and an open book on the foreground desk contain many writing-like marks."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 191190,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--tension-3-36375ae8a9c2.png",
+        "sha256": "36375ae8a9c297f0e26c1c57cf3fafc25cdbee0d496b892b8d5abf270c2d28fd",
+        "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+        "generationPromptSha256": "1bba070799217df4cfe402b2752857a5b9d48f71a47d535ca19d6a5e2289b231",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "36375ae8a9c297f0e26c1c57cf3fafc25cdbee0d496b892b8d5abf270c2d28fd",
+          "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw a confined quiet archive with an empty rectangular shelf recess and corresponding absence impression; several DISTINCT empty witness seats with mismatching plain mugs and CLOSED plain books. Replace all cardboard archive folders and front label plates with completely UNMARKED plain closed wooden storage chests: previous box fronts had rows of faux-writing beneath handles. No stripes/rows resembling labels, letter-like engravings, open papers/books, clocks, portraits, people or flags. Bare walls and hard discrete stepped shadow bands, fresh side-on witness arrangement at left and fully drawn quiet right."
+          ],
+          "notes": "Direct native original: distinct empty witness seats with differing mugs and closed books, clear archive absence recess and confined shadows; several archive box fronts have stacked dark label-like rows beneath their handles."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 146872,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--tension-4-e314a114367f.png",
+        "sha256": "e314a114367f9ab1071390bc22c35372b4078453a1f52ff78639812a3fd6544a",
+        "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+        "generationPromptSha256": "bb88554e877cb8bb19d693104a9b6b29b761a00e70de516efc7dc27ed5e920dc",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "e314a114367f9ab1071390bc22c35372b4078453a1f52ff78639812a3fd6544a",
+          "promptSha256": "6814a20285dcf4bcd89ffb272d29f616bbba3a592d60bd91a7a0ba9990a188ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: completely unmarked wooden archive chests, obvious empty rectangular recess with darker absence patch, four distinct empty witness places with different colored mugs and closed plain books; confined interior and hard window-shadow bands express tension. Fresh side-on row arrangement, no pseudo-writing labels or identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 158081,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--testimony--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony--danger-1-e4071a4249fb.png",
+        "sha256": "e4071a4249fbc50995c5cc105f70ef0ab20879c2df9a8301d1e9cc3ed53cee8a",
+        "promptSha256": "68e74c687731c51c8127caf1fb51a165cc0b3d26adf3e08352f67b62baefc924",
+        "generationPromptSha256": "ab0558ac3a362e05ddfe3fd1a457a0abbb5019dfb2c977b6a911d86ea0ce7de3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e4071a4249fbc50995c5cc105f70ef0ab20879c2df9a8301d1e9cc3ed53cee8a",
+          "promptSha256": "68e74c687731c51c8127caf1fb51a165cc0b3d26adf3e08352f67b62baefc924",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: unlabeled archive boxes, vacant missing shelf recess, contrasting empty high chair and stool with differing mug/keys, severely broken suspended path over a deep void. Visible danger dominates new shot without inventing a body/attacker; native stepped pixel contours, no writing or insignia."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 242664,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--evidence--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence--wonder-1-eb82ed43dfeb.png",
+        "sha256": "eb82ed43dfeb98529e016251666787da7027079b8b76e5698e18a755256a7d9c",
+        "promptSha256": "ede83cc833874db3a347802dabd5f50ca562fa9cf6ef9cf4c7b6b40cf626c9d4",
+        "generationPromptSha256": "ef2446852b4ae4324ae5f288c2e4bdf3df465b955cbee630f74dd9e2687d2cdf",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "eb82ed43dfeb98529e016251666787da7027079b8b76e5698e18a755256a7d9c",
+          "promptSha256": "ede83cc833874db3a347802dabd5f50ca562fa9cf6ef9cf4c7b6b40cf626c9d4",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: complementary broken stone cylinder and fragment, empty recess and plain archive boxes establish a tangible discrepancy and physical comparison. Beautiful opening onto unfamiliar architecture is inviting, coarse pixel-cluster rendering, no writing, human identity or flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 328878,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--evidence--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence--tension-1-c1e41337771e.png",
+        "sha256": "c1e41337771e2892baf1ed7568eae4e1a8e3d626bd336d31a1cd81891ab07ef1",
+        "promptSha256": "86a382f5c1ee3708c7ac9a22ad85886a42103e4aecde832339fa390199084be9",
+        "generationPromptSha256": "5e97769ad7abee41b55f434918fc58a869fee9e8a9916efdf370a8a6ff96a7ba",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c1e41337771e2892baf1ed7568eae4e1a8e3d626bd336d31a1cd81891ab07ef1",
+          "promptSha256": "86a382f5c1ee3708c7ac9a22ad85886a42103e4aecde832339fa390199084be9",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the confined quiet archive discrepancy scene with closed plain boxes and clearly empty recess. Evidence comparison MUST be physical and obvious: show a broken plain ceramic cylinder with TWO complementary jagged halves arranged nearly touching so their edges visibly fit, beside the corresponding empty cylinder-shaped dust impression in the archive recess. A generic key and ring lying alone do not communicate comparison. No explanatory board, arrows, letters, numerals, open sheets/books, people, portraits or flags. Tight threshold and hard discrete shadow bands for tension; use a fresh near-overhead oblique left evidence workbench shot, right quiet and fully drawn."
+          ],
+          "notes": "Direct native original: empty archive slots, confined moonlit interior and hard shadows fit premise and mood, but isolated gold ring and generic key have no visible matching physical clue or corresponding lock; evidence comparison is missing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 132952,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence--tension-2-25d40311dc78.png",
+        "sha256": "25d40311dc7894ed63ca60a667db0f3f67086a345194cbb804c9a4bbe6d76b11",
+        "promptSha256": "86a382f5c1ee3708c7ac9a22ad85886a42103e4aecde832339fa390199084be9",
+        "generationPromptSha256": "7f4d598362471615b4c6378b830635771601f47c131a6fe160a89618842ba09f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "25d40311dc7894ed63ca60a667db0f3f67086a345194cbb804c9a4bbe6d76b11",
+          "promptSha256": "86a382f5c1ee3708c7ac9a22ad85886a42103e4aecde832339fa390199084be9",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: two complementary jagged ceramic cylinder halves directly compared beside their corresponding empty fitted recess, closed unlabeled storage boxes and missing shelf space; tightly confined blue moonlit room with hard shadow bands. Strong near-overhead foreground comparison differs from previous generic ring/key scene; no text or identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 167412,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--evidence--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence--danger-1-a284bca65691.png",
+        "sha256": "a284bca656915cd632e63940f5e4cc7af5044e1e010328e3cbb112f02f730b86",
+        "promptSha256": "e2dafec140fbae38245af3b0a302aca13418479cb17752d43a5a3078c9b8f1ce",
+        "generationPromptSha256": "5cbc6c3ea7ba4fbd20f6f32ef98a904cf9dd5c56d587d9e48f64f7c31dcbf4ed",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a284bca656915cd632e63940f5e4cc7af5044e1e010328e3cbb112f02f730b86",
+          "promptSha256": "e2dafec140fbae38245af3b0a302aca13418479cb17752d43a5a3078c9b8f1ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-018",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the archive record/reality discrepancy with unlabeled closed boxes, one empty shelf recess and a visibly unsafe fractured empty route over a deep void. Foreground evidence comparison MUST visibly connect two physical clues: two jagged halves of a plain cylindrical artifact nearly touching with unmistakably complementary edges, next to its corresponding empty cylindrical dust impression and open unmarked storage cradle. Remove isolated generic key/cube clutter. No writing, diagrams, symbols, figures, photographs, banners or cloth emblems. Fresh low side view of evidence at left beside the dangerous broken threshold, quiet fully drawn right; coarse deliberate square pixel clusters."
+          ],
+          "notes": "Direct native original: bare archives and shattered cliff walkway clearly show discrepancy setting and danger, but isolated key and small cube have no visible correspondence or contradiction; selected evidence comparison is absent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 152166,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence--danger-2-24b8eb7dc686.png",
+        "sha256": "24b8eb7dc68650bfdc61bbf0d03a90d1261d1d9b1908d5c0b23dbbc255430d67",
+        "promptSha256": "e2dafec140fbae38245af3b0a302aca13418479cb17752d43a5a3078c9b8f1ce",
+        "generationPromptSha256": "fa821b00fa0286dce5c8e3709119103e349be661edfac023471fc41f71e90771",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "24b8eb7dc68650bfdc61bbf0d03a90d1261d1d9b1908d5c0b23dbbc255430d67",
+          "promptSha256": "e2dafec140fbae38245af3b0a302aca13418479cb17752d43a5a3078c9b8f1ce",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: two jagged stone cylinder halves visibly fit each other beside matching circular dust absence and empty storage cradle. Plain archives, missing recess and extremely precarious fractured empty path over a deep void. Fresh low side-on foreground evidence shot; native pixel craft, no labels/person/flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 211286,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--inspect--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--wonder-1-6fd7fc53529e.png",
+        "sha256": "6fd7fc53529ee657ee6da7701ff9cd06a55acab9c6e0e04967562e3260e9adb7",
+        "promptSha256": "a6a1f6fa23a8980f04c525f3eab9a9f90eef74b24b77dd443856a1fff16d1926",
+        "generationPromptSha256": "0c377952b516e070a94ad725bf67e592215cde20527d1b1c40c7e0c6c2c3f34c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6fd7fc53529ee657ee6da7701ff9cd06a55acab9c6e0e04967562e3260e9adb7",
+          "promptSha256": "a6a1f6fa23a8980f04c525f3eab9a9f90eef74b24b77dd443856a1fff16d1926",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME the selected hidden-space investigation: CAMERA IS INSIDE THE SECRET STAIRWELL LOOKING UP AND OUT through the rear of the slid bookcase into an empty study. Foreground left is a stone stair ledge with the prominent ordinary brass clue key and surrounding physical scrape marks, NOT a wooden desk. Beyond the passage, one actual opening reveals a beautiful unfamiliar sunlit underground courtyard for WONDER. Preserve sliding bookcase and descending stairs in one continuous architectural place. The previous left desk/key + middle bookcase + right desk/window camera repeats the parent and is forbidden. No text, open paper/book, clock, banner, people, portraits, heraldry or split panels. Coarse square pixel clusters; fully drawn quieter right."
+          ],
+          "notes": "Direct native original meets pixel style, hidden bookcase stairs, prominent clue and beautiful unfamiliar light, but comparison with actual published parent mystery--place--inspect shows essentially the same camera: key/candle on left foreground desk, central open bookcase stairs, desk/window on right."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 207989,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--wonder-2-805bedd90757.png",
+        "sha256": "805bedd907576687cfd242ef71c4170d65a8b4fac8ed059cb0ac64b8688da952",
+        "promptSha256": "a6a1f6fa23a8980f04c525f3eab9a9f90eef74b24b77dd443856a1fff16d1926",
+        "generationPromptSha256": "852c3d47a5c29430c90e4edbbe815ebc31ef0db29eebd3a6b93f761c25a7f5bf",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "805bedd907576687cfd242ef71c4170d65a8b4fac8ed059cb0ac64b8688da952",
+          "promptSha256": "a6a1f6fa23a8980f04c525f3eab9a9f90eef74b24b77dd443856a1fff16d1926",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: prominent brass key and scrape marks on stone steps INSIDE hidden stairwell, slid bookcase opens onto beautifully lit unfamiliar courtyard; continuous descending stair architecture. Actual parent was study desk/key left with bookcase-middle and right desk/window; this interior stair ledge and courtyard viewpoint substantially changes framing. Native pixel craft, no text/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 311968,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--inspect--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--tension-1-4305e4c69ec6.png",
+        "sha256": "4305e4c69ec6e866657a6172990b676ce332b1000c06165f9a3db3b28b5cadae",
+        "promptSha256": "9b1443f9c586a6c83092050bda009e48e68736266f05874d3381e51fef56dfbf",
+        "generationPromptSha256": "d6e47a5df6924004c60cfd689203ef072f0f9e15041dc034db3342f4252fda81",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4305e4c69ec6e866657a6172990b676ce332b1000c06165f9a3db3b28b5cadae",
+          "promptSha256": "9b1443f9c586a6c83092050bda009e48e68736266f05874d3381e51fef56dfbf",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME: view from INSIDE the concealed narrow stone staircase looking toward the far partly opened slid bookcase and empty room beyond, not from the study desk. A prominent plain brass key and physical scrape trace lie on the near LEFT stone step, framed by close dark stone walls and tight threshold with hard discrete moon-shadow bands for TENSION. No open beautiful vista. Bookcase's rear and continuous stairs make the hidden space clear. Never repeat foreground wooden desk/candle/key plus middle bookcase and right window/desk. No people, photographs, text, open books/papers, clocks, flags or insignia; coarse stepped pixel contours, quiet fully drawn right."
+          ],
+          "notes": "Direct native original has hidden bookcase doorway, foreground key and confined shadows, but actual parent comparison retains the same desk-left/bookcase-middle/desk-window-right composition; the new shot is insufficiently distinct."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 138542,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--tension-2-97d04b52896e.png",
+        "sha256": "97d04b52896e44834e00fe5d5a350aad1eff103ff68e67b6b38887465dd8b5b8",
+        "promptSha256": "9b1443f9c586a6c83092050bda009e48e68736266f05874d3381e51fef56dfbf",
+        "generationPromptSha256": "068d6e9475fa447297a6be223dcc309f5dc1240f008224c1672c1658c22aaced",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "97d04b52896e44834e00fe5d5a350aad1eff103ff68e67b6b38887465dd8b5b8",
+          "promptSha256": "9b1443f9c586a6c83092050bda009e48e68736266f05874d3381e51fef56dfbf",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: viewpoint inside narrow concealed stairwell toward empty study through partly slid bookcase, foreground left key and physical scrape trace, close stone walls and tight dim threshold. Fresh reverse viewpoint differs clearly from parent study desk composition. Hard clustered moon shadows, no text/person/insignia."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 95075,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--inspect--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--danger-1-8ba6495b4bb9.png",
+        "sha256": "8ba6495b4bb9d8d866a8984f86c2709d3eda8c58581038397240f3b81762d149",
+        "promptSha256": "3a328dc87d0bb8552b7e2f38372782b7b1bdfff673132c0cc8e7dce0ca0c9320",
+        "generationPromptSha256": "45261ef1da1bce9c2a56567a4568d79cee8f5d0a2d4381b997b5ff55735b047d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8ba6495b4bb9d8d866a8984f86c2709d3eda8c58581038397240f3b81762d149",
+          "promptSha256": "3a328dc87d0bb8552b7e2f38372782b7b1bdfff673132c0cc8e7dce0ca0c9320",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely change shot to a view from INSIDE THE HIDDEN STAIRWELL facing back toward the rear of a slid bookcase and empty room beyond. Foreground LEFT stone steps are SEVERED: several steps missing, loose falling masonry and a large obvious deep void break the only route. Place the prominent brass clue key and scrape trace on a near surviving stone ledge. DANGER must be unmistakably unsafe, not superficial cracks on an otherwise usable old doorway. No generic study desk/key/bookcase/window camera repeated from parent; no attacker, corpse, people, photograph, text, open sheets/books, clocks, flags, emblems or split screen. Coarse square pixel clusters, quiet drawn right."
+          ],
+          "notes": "Direct native original: clue key and sliding bookcase stair entrance remain clear, but room/stairs remain ordinarily traversable with only surface masonry cracks; danger is too weak. The repeated desk/bookcase/window camera is also too close to actual parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 195043,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect--danger-2-b2cc6922e133.png",
+        "sha256": "b2cc6922e1338f42727e11cfb72424cc2b6a71a18e2f40e9a0750cc675184c30",
+        "promptSha256": "3a328dc87d0bb8552b7e2f38372782b7b1bdfff673132c0cc8e7dce0ca0c9320",
+        "generationPromptSha256": "6026f54bc72755f39d6f6b22ac83edf30b93e9228114acbf01c575d0c9edcd4d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b2cc6922e1338f42727e11cfb72424cc2b6a71a18e2f40e9a0750cc675184c30",
+          "promptSha256": "3a328dc87d0bb8552b7e2f38372782b7b1bdfff673132c0cc8e7dce0ca0c9320",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: inside stairwell key/scrape clue on a surviving stone step, sliding bookcase rear beyond the gap; multiple severed stairs, falling blocks and a huge clear void make route unmistakably unsafe. Completely reframed from actual parent; native coarse pixel contours, no text/person/flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 121072,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--testimony--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony--wonder-1-38d69c6f59c5.png",
+        "sha256": "38d69c6f59c50e1c7fcd5ef1fa388b378cb11e68cff432686dd93daedbaf57dc",
+        "promptSha256": "dd1e930a1f8d3bad8fe475159b2e22988d7ac6d2e56de18eb07ce53b2e456fc4",
+        "generationPromptSha256": "776b5c05a290b669e805b5cafd8a8d1915c514873ebe2dc019d01e48de3bc8dc",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "38d69c6f59c50e1c7fcd5ef1fa388b378cb11e68cff432686dd93daedbaf57dc",
+          "promptSha256": "dd1e930a1f8d3bad8fe475159b2e22988d7ac6d2e56de18eb07ce53b2e456fc4",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: concealed bookcase doorway and stairs, key, several contrasting EMPTY chairs with closed-book/cup/blank cloth evidence; beautiful unfamiliar castle light through tall openings. Parent was close opposed armchairs around a central chest table; this is a wider recessed witness seating area and secret doorway, genuinely different composition. No writing/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 343481,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--testimony--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony--tension-1-9903c4de1e44.png",
+        "sha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
+        "promptSha256": "2dc08c547ec1db54306934695fbfe217ce29249299870e32a33bae6715562135",
+        "generationPromptSha256": "30dc769c6d925fea61e06ed19039b9987c3159a8193207f35fd0c8dd0fee9ed0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
+          "promptSha256": "2dc08c547ec1db54306934695fbfe217ce29249299870e32a33bae6715562135",
+          "reviewer": "Codex direct original visual inspection: v2-production-019",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: hidden bookcase stairs, brass key, several contrasting EMPTY seats around mismatching cup/jug/closed books, enclosed fireplace nook and discrete moon shadows. Different wide witness group and near foreground key from parent opposed-chair close table. Ordinary landscape globe with no identity/text, coarse native pixel rendering."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 212908,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--testimony--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony--danger-1-fd2de15e2c2c.png",
+        "sha256": "fd2de15e2c2cab1ed6c834d3a28f28190ab6cd94b8d5a1a165ba246833be78e8",
+        "promptSha256": "44316174e71953e0150a468b3f29c1a2f4642706e9de66c5c0d4454a58b30954",
+        "generationPromptSha256": "118c527e067f8641b4efc6d4a5e077172fb1e6404d501893ac6db7116fc96e0d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "fd2de15e2c2cab1ed6c834d3a28f28190ab6cd94b8d5a1a165ba246833be78e8",
+          "promptSha256": "44316174e71953e0150a468b3f29c1a2f4642706e9de66c5c0d4454a58b30954",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw the hidden-space testimony scene as THREE contrasting EMPTY witness chairs with mismatching ordinary cup/closed book/keepsake arrangements near the partly SLID bookcase and concealed descending stairs. The near LEFT floor and several stairs must be SEVERED over a LARGE deep void, with falling masonry and one clearly unstable surviving stone ledge. Danger must dominate the shot, not just dim lighting or minor old cracks; remove cozy fireplace. Fresh wide oblique viewpoint from the broken threshold toward vacant witness places, quiet drawn right; no people, attackers, corpses, clock/dials, text, open papers/books, banners or insignia."
+          ],
+          "notes": "Direct native original: distinct empty witness chairs and hidden bookcase stair entrance fit facts, but the intact cozy fireplace room and traversable stairs do not show immediate environmental danger."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 191881,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--evidence--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence--wonder-1-16f444122b40.png",
+        "sha256": "16f444122b40e6e527032e060f99b18ea8f7adee89f461c49ce5b8109a17548b",
+        "promptSha256": "9780d1535a4e5f967ae9128acd13ab478d7fc71c0dce4dbaeae5597b7c5426c2",
+        "generationPromptSha256": "d37a94f57574a06991ef476258dd4804fd6731582f38a37e668ef17d615b8480",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "16f444122b40e6e527032e060f99b18ea8f7adee89f461c49ce5b8109a17548b",
+          "promptSha256": "9780d1535a4e5f967ae9128acd13ab478d7fc71c0dce4dbaeae5597b7c5426c2",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: jagged broken ordinary vessel with visibly matching fragments beside brass key, slid bookcase reveals secret staircase; beautiful unfamiliar warm-lit architecture through tall openings expresses wonder. Actual parent had a loose key/lock plate on floor; close vessel comparison on a raised workbench changes foreground motif and focal framing. Native pixel clusters, no writing/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 264803,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--evidence--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence--tension-1-297dd7bc3fab.png",
+        "sha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
+        "promptSha256": "5cacc93b0e88b05bbe9b8cc8b83814dd3ebb069be661b28a9ae1bd9ed9d2c026",
+        "generationPromptSha256": "8518b41816537bc947a9e9456996b06ef1836d38000a522943dadb34014b68ed",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
+          "promptSha256": "5cacc93b0e88b05bbe9b8cc8b83814dd3ebb069be661b28a9ae1bd9ed9d2c026",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: matching jagged ceramic fragments and key, hidden sliding bookcase doorway with narrow descending stairs, confined still room with discrete hard shadows. Compared with published parent floor key/lock plate, elevated workbench matching-vessel framing is distinct. No writing/identity or heraldry; coherent stepped pixel rendering."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 186226,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--evidence--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence--danger-1-ef736df02bab.png",
+        "sha256": "ef736df02bab73e76175eb7ed99a914861eab9bd42f7b16df0510e4c327e19e8",
+        "promptSha256": "f54f07d60387cbec07009f7b2ad255895e6b8fd39915f65bd63259484b5c7183",
+        "generationPromptSha256": "e70dd92c6c6a90cff1897fe27987c529fe1d0de3d4a561554f45547075c4e2b0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ef736df02bab73e76175eb7ed99a914861eab9bd42f7b16df0510e4c327e19e8",
+          "promptSha256": "f54f07d60387cbec07009f7b2ad255895e6b8fd39915f65bd63259484b5c7183",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw from INSIDE the concealed descending passage toward the partly slid bookcase. On a near surviving LEFT stone ledge, TWO jagged complementary ceramic vessel fragments visibly fit beside the brass clue key; preserve obvious physical evidence correspondence. Immediately behind the ledge the stairs/floor are COLLAPSED with several missing steps and falling masonry above a LARGE deep void. A dark intact old library is not danger. No repeated study desk/key/bookcase/window composition, no people, corpse, attacker, text, open paper/book, clocks, banner or insignia. Coarse square pixel clusters, quieter fully drawn right."
+          ],
+          "notes": "Direct native original: physically complementary broken vessel fragments, key and hidden bookcase stairs show evidence and premise, but the ordinary intact floor and safely traversable corridor/stairs show no immediate danger."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 157203,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--single-1-8df29e4b2f2a.png",
+        "sha256": "8df29e4b2f2a9a5f36c9a6a6824ad2609d9533d7f5eab0b4f542eb9d382f1b1f",
+        "promptSha256": "62f3d5f0c477ce471d0db722fd43d42a63e4e839e457eda4847ade5cd643fd23",
+        "generationPromptSha256": "037a27db313de55bee9c69411505db8310e8cfedf63b47a70c2e10868389735e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8df29e4b2f2a9a5f36c9a6a6824ad2609d9533d7f5eab0b4f542eb9d382f1b1f",
+          "promptSha256": "62f3d5f0c477ce471d0db722fd43d42a63e4e839e457eda4847ade5cd643fd23",
+          "reviewer": "Codex direct original visual inspection: v2-production-020",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME for ONE DEEPLY FOLLOWED RELATIONSHIP: CAMERA IS INSIDE a small modern university brick-and-stone vestibule looking outward onto an intimate secluded garden balcony. Exactly ONE pair of EMPTY facing seats and shared tabletop keepsake sit to the LEFT, with TWO CLOSED plain books implying old friends reunion and dialogue. A SINGLE continuous winding enclosed private passage links the paired place to the campus garden beyond; welcome and thoughtful white flower preparations imply warmth. No long open campus avenue, no distant clocktower, and no foreground table-left/large right chair + sunset avenue framing: that repeats the actual preceding preview. Use a different near-corner interior-to-balcony camera, clear coarse square pixel clusters and hard stair-step shading, quiet drawn right. No people, portraits, text, open sheets/books, clocks, banners or invented romantic identities."
+          ],
+          "notes": "Direct native original: modern brick university, exactly one empty paired-seat/table setting, closed plain books and shared flower vessel, warm welcome and linked path satisfy selected facts. But actual published parent romance--campus--talk--warm already has near-left paired chairs/table, long garden avenue and distant right clocktower at sunset. This repeats that camera, merely changing table/flowers."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 516407,
           "findings": []
         }
       }

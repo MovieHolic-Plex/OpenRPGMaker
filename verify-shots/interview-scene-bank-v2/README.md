@@ -11,3 +11,5 @@
 2026-10-05 추가 증거: `targeted-startup-tests.log`는 기획 직렬화·장르 기본값·입력창 표시·저장 전 자동 실행 차단·전환/실패/중복 시작의 관련 테스트 15개 통과 기록이다. `published-integrity-proof.json`은 `python3 scripts/qa/interview-scene-bank-integrity.py`로 현재 배포 목록 전체의 원본 바이트·PNG 디코드·16:9/불투명·중복 없음·정확한 생성 요청 및 일곱 검수 해시를 확인한 결과다. 그 시점의 배포 수와 미완성 수를 함께 기록하며, 검사 통과를 남은 그림의 제작 완료나 전체 인터뷰 클릭 검증으로 확대하지 않는다.
 
 `romance-native-bank.png`, `monster-native-bank.png`는 위 실제 카탈로그 관찰에서 찍은 production dialog 스크린샷이다. 인터뷰 컴포넌트를 별도 컨테이너에 올린 관찰이며, 앱 시작 전체 셸의 전체화면 동작이나 게임 생성·AI 조수 전달을 검증한 증거는 아니다.
+
+159개 배포 체크포인트의 `latest-reviewed-click-proof.json`과 `latest-reviewed-native-bank.png`는 실제 production dialog에서 미스터리 → 비밀 공간 → 조사 → 위험을 네 번 클릭한 결과다. 새로 검수한 통로 안쪽 구도의 정확한 원본 URL로 전환됐고 신규 이미지 생성 요청과 브라우저 오류는 없었다. 첫 장르 클릭의 DOM 실행은 283.2ms, 이후 선택은 9.1–13.7ms였으며 다운로드/화면 합성 지연을 포함하는 수치는 아니다. `latest-reviewed-bank-browser.mjs`로 재현한다. 이 증거도 별도 컨테이너 관찰이며 전체 시작 셸·AI 저작 검증을 의미하지 않는다.

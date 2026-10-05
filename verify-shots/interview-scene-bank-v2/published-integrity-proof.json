@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 138,
-  "remaining": 1319,
+  "published": 159,
+  "remaining": 1298,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -842,6 +842,13 @@
       "height": 941
     },
     {
+      "key": "adventure--mission--companions--mystic",
+      "sha256": "730f87437a0f3ea3b497e4fd0be61586cd0c8e1f22501c13ed9192853d00f538",
+      "generationPromptSha256": "7209914e8af67467f45d690e0facfac737d396d0bc3dd50d49df44c1d60d99cf",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "adventure--mission--companions--warm",
       "sha256": "9f195bd4e1b2412efdf206b8672f1049f570d77c5c750b9f6ffb0c6882005f54",
       "generationPromptSha256": "277fb7b43f0a51940025fd292f0f577f86ade8996c24db38701a8d78326fb821",
@@ -912,9 +919,37 @@
       "height": 941
     },
     {
+      "key": "mystery--missing--testimony--danger",
+      "sha256": "7590da0b50658ab3405709adecccaeeeee014eee43cf83ae3ee847c52c150c1f",
+      "generationPromptSha256": "d24dd94232dde557ce14adc190195f9b47e9de127e5fee96e723d8f300a3724a",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "mystery--missing--evidence",
       "sha256": "7acca6816133fc36ff9c9b7d8e2c462ab9eb41a45b19557d388167c43c318267",
       "generationPromptSha256": "06b4c17c84b9e15edf0d8485df26e46337fd1e7f89702a65ca1e12a74a083ba2",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--missing--evidence--wonder",
+      "sha256": "ac0ee9902738bb479f1824e8bf389cbb195498a562e2f86b021b1d7c1f8972c5",
+      "generationPromptSha256": "b861902bd76e2abfc91f1ab61d4d91acce0af7440a52d9e1f66924b2dd8e157a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--missing--evidence--tension",
+      "sha256": "a2f689701430fa0a0ed58c568c05f45330df6b8fc4f034d02683b120ec98da42",
+      "generationPromptSha256": "e63533c86710834213e067dc17e635e2c716ffa22a782342ced4fc57d09688ed",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--missing--evidence--danger",
+      "sha256": "466defef1ad54fd1da5fb1946e8fbec8438652343c3b7d0f4da0462040b220bc",
+      "generationPromptSha256": "ae20f11dc19494d1b7bc4c3627dc1d20eccef01820e79c8d8f1baf9f3c0a6bcc",
       "width": 1672,
       "height": 941
     },
@@ -933,6 +968,27 @@
       "height": 941
     },
     {
+      "key": "mystery--record--inspect--wonder",
+      "sha256": "c1fabb6f13d0ca7dc2f613f84994d5ad2a25f161713fdc60ac4afd9a0ba02c12",
+      "generationPromptSha256": "b72005bd4d96d0a9fcfa98542ae8d312feec8505bdd7e4df2b910530d8734aad",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--inspect--tension",
+      "sha256": "4488a3ee2fd1b4d5512cda0156474f1fe0ff700569edc526bc671417719cb6bd",
+      "generationPromptSha256": "f9106e21e1ee0f61f661f35057e0ff4106c91bca24416821d1f0224116d82345",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--inspect--danger",
+      "sha256": "94c0e27debfb4227931abbb3280fb2332a9fb8ab78247ee049dcc7fff3974b05",
+      "generationPromptSha256": "91fb53d899c9bdd2a57e10d7d358d57ad2a6478e786d1deb55e12707073ca865",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "mystery--record--testimony",
       "sha256": "bd568c4130b6190115902ca9101301b8b5d9fb3c859027ecff9a9a2690b2650e",
       "generationPromptSha256": "7c501ec2c92f133cb1de0e75f91c55e985d0c27da6ebb32c626b16d714c3570a",
@@ -940,9 +996,51 @@
       "height": 941
     },
     {
+      "key": "mystery--record--testimony--wonder",
+      "sha256": "81237ec45462b95d1bd8b620046bfd1cd4fbd22e2dcd4048c00a9e658c433b05",
+      "generationPromptSha256": "2055165d9714c6641c08e9c31d0b71f2d15656fa78fba39ca52690b20375b59a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--testimony--tension",
+      "sha256": "e314a114367f9ab1071390bc22c35372b4078453a1f52ff78639812a3fd6544a",
+      "generationPromptSha256": "bb88554e877cb8bb19d693104a9b6b29b761a00e70de516efc7dc27ed5e920dc",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--testimony--danger",
+      "sha256": "e4071a4249fbc50995c5cc105f70ef0ab20879c2df9a8301d1e9cc3ed53cee8a",
+      "generationPromptSha256": "ab0558ac3a362e05ddfe3fd1a457a0abbb5019dfb2c977b6a911d86ea0ce7de3",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "mystery--record--evidence",
       "sha256": "f88b510d206c457f6597b7ea0b092d1a6ca2f59a08a2dd1ca41d9bde1e54f0c4",
       "generationPromptSha256": "784bb88e20bae8591034b283d66f73ab3bd8ba84a952051c473b26f9376b543d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--evidence--wonder",
+      "sha256": "eb82ed43dfeb98529e016251666787da7027079b8b76e5698e18a755256a7d9c",
+      "generationPromptSha256": "ef2446852b4ae4324ae5f288c2e4bdf3df465b955cbee630f74dd9e2687d2cdf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--evidence--tension",
+      "sha256": "25d40311dc7894ed63ca60a667db0f3f67086a345194cbb804c9a4bbe6d76b11",
+      "generationPromptSha256": "7f4d598362471615b4c6378b830635771601f47c131a6fe160a89618842ba09f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--record--evidence--danger",
+      "sha256": "24b8eb7dc68650bfdc61bbf0d03a90d1261d1d9b1908d5c0b23dbbc255430d67",
+      "generationPromptSha256": "fa821b00fa0286dce5c8e3709119103e349be661edfac023471fc41f71e90771",
       "width": 1672,
       "height": 941
     },
@@ -961,6 +1059,27 @@
       "height": 941
     },
     {
+      "key": "mystery--place--inspect--wonder",
+      "sha256": "805bedd907576687cfd242ef71c4170d65a8b4fac8ed059cb0ac64b8688da952",
+      "generationPromptSha256": "852c3d47a5c29430c90e4edbbe815ebc31ef0db29eebd3a6b93f761c25a7f5bf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--place--inspect--tension",
+      "sha256": "97d04b52896e44834e00fe5d5a350aad1eff103ff68e67b6b38887465dd8b5b8",
+      "generationPromptSha256": "068d6e9475fa447297a6be223dcc309f5dc1240f008224c1672c1658c22aaced",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--place--inspect--danger",
+      "sha256": "b2cc6922e1338f42727e11cfb72424cc2b6a71a18e2f40e9a0750cc675184c30",
+      "generationPromptSha256": "6026f54bc72755f39d6f6b22ac83edf30b93e9228114acbf01c575d0c9edcd4d",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "mystery--place--testimony",
       "sha256": "6573c830ea6edf2ccf1b526cf58edc4fdae7e3be692ac97e35db6a2269ad4ad1",
       "generationPromptSha256": "c6a318dc529e1ffeee747f5e6b1e5430a834f1b280ade944284f8fb89f1c8539",
@@ -968,9 +1087,37 @@
       "height": 941
     },
     {
+      "key": "mystery--place--testimony--wonder",
+      "sha256": "38d69c6f59c50e1c7fcd5ef1fa388b378cb11e68cff432686dd93daedbaf57dc",
+      "generationPromptSha256": "776b5c05a290b669e805b5cafd8a8d1915c514873ebe2dc019d01e48de3bc8dc",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--place--testimony--tension",
+      "sha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
+      "generationPromptSha256": "30dc769c6d925fea61e06ed19039b9987c3159a8193207f35fd0c8dd0fee9ed0",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "mystery--place--evidence",
       "sha256": "7d4384744aa39b606976ff81340cc248a54def1ed4446edd4612bfa155ce7562",
       "generationPromptSha256": "befcecae816e042344d980103fc4fdf3cce008d00eee1f2738329b763fd4da89",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--place--evidence--wonder",
+      "sha256": "16f444122b40e6e527032e060f99b18ea8f7adee89f461c49ce5b8109a17548b",
+      "generationPromptSha256": "d37a94f57574a06991ef476258dd4804fd6731582f38a37e668ef17d615b8480",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "mystery--place--evidence--tension",
+      "sha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
+      "generationPromptSha256": "8518b41816537bc947a9e9456996b06ef1836d38000a522943dadb34014b68ed",
       "width": 1672,
       "height": 941
     }
