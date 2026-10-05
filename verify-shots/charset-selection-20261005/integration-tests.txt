@@ -1,0 +1,57 @@
+> oprn@0.133.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/charsetSelectionEvidence.test.ts test/charsetQuery.test.ts test/aiNativePageContract.test.ts test/piAgentToolAdapter.test.ts --pool=threads --maxWorkers=2
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/charsetSelectionEvidence.test.ts (15 tests) 30476ms
+   ✓ charset selection evidence > credits Gemini multimodal function responses with a legend inside the JSON envelope  2345ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful responses turn  2170ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful gemini turn  2379ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful anthropic turn  2449ms
+   ✓ charset selection evidence > rejects wrong-image reading evidence  2617ms
+   ✓ charset selection evidence > rejects aborted reading evidence  2458ms
+   ✓ charset selection evidence > rejects text-only reading evidence  2626ms
+   ✓ charset selection evidence > rejects truncated reading evidence  2161ms
+   ✓ charset selection evidence > rejects king substitution and slot/frame confusion after viewing a golem  2266ms
+   ✓ charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics  2636ms
+   ✓ charset selection evidence > keeps existing graphics on text/position edits, including reordered events  3855ms
+   ✓ charset selection evidence > rolls a failed write back atomically and shares evidence with discovered tools  2479ms
+ ✓ test/piAgentToolAdapter.test.ts (11 tests) 18943ms
+   ✓ piAgent toolAdapter > 살아 있는 레지스트리 툴을 전부 Pi 툴 모양으로 감싼다  1485ms
+   ✓ piAgent toolAdapter > 성공은 JSON 본문으로, 실패는 issues 를 실은 예외로 옮긴다  2321ms
+   ✓ piAgent toolAdapter > 긴 읽기 data 는 잘라서 힌트를 붙인다  1199ms
+   ✓ piAgent toolAdapter > 에스컬레이션 해석기 > 실행 경계 안의 이름만 셰이프로 만든다  1441ms
+   ✓ piAgent toolAdapter > 맵 묶음 범위 가드 > 묶음 밖 맵을 바꾸는 쓰기는 되돌리고 실패로 돌려준다  2826ms
+   ✓ piAgent toolAdapter > 맵 묶음 범위 가드 > 묶음 안 맵과 묶음 아래 새 실내 맵은 통과한다  3527ms
+   ✓ piAgent toolAdapter > 맵 묶음 범위 가드 > 평문(scopeStrict=false)이라도 병합 실행이면 가드가 켜지고, 거부 문구는 DB·시스템은 된다고 말한다  3414ms
+   ✓ piAgent toolAdapter > 맵 묶음 범위 가드 > 묶음 밖에 새로 만든 맵은 막지 않고 경고를 붙인다  2704ms
+ ✓ test/charsetQuery.test.ts (8 tests) 26ms
+ ✓ test/aiNativePageContract.test.ts (23 tests) 83600ms
+   ✓ native upsert page contract > rejects the recorded successful-but-inert exit atomically for a existing event  3576ms
+   ✓ native upsert page contract > rejects the recorded successful-but-inert exit atomically for a new event  3688ms
+   ✓ native upsert page contract > rejects uncompiled page input {"lines":["LOST"]} without applying valid siblings  3938ms
+   ✓ native upsert page contract > rejects uncompiled page input {"showText":["LOST"]} without applying valid siblings  3941ms
+   ✓ native upsert page contract > rejects uncompiled page input {"messages":["LOST"]} without applying valid siblings  3939ms
+   ✓ native upsert page contract > rejects uncompiled page input {"text":"LOST"} without applying valid siblings  3775ms
+   ✓ native upsert page contract > rejects uncompiled page input {"face":{"resourceId":"LOST"}} without applying valid siblings  3637ms
+   ✓ native upsert page contract > rejects uncompiled page input {"choices":[]} without applying valid siblings  4346ms
+   ✓ native upsert page contract > rejects uncompiled page input {"graphic":{"query":"villager"}} without applying valid siblings  3906ms
+   ✓ native upsert page contract > rejects uncompiled page input {"graphic":{"textureKey":"LOST","characterIndex":1}} without applying valid siblings  3810ms
+   ✓ native upsert page contract > does not normalize omitted pages during a coordinate-only patch  3358ms
+   ✓ native upsert page contract > moves top-level commands and trigger into the only page instead of storing them inert  4871ms
+   ✓ native upsert page contract > keeps page commands when a rename patch carries an empty top-level commands list  3114ms
+   ✓ native upsert page contract > rejects top-level commands atomically when the event has several pages  4421ms
+   ✓ native upsert page contract > persists the repaired exit, presents choices, removes exactly one of 1 keys and runs the recorded epilogue  5175ms
+   ✓ native upsert page contract > persists the repaired exit, presents choices, removes exactly one of 2 keys and runs the recorded epilogue  4569ms
+   ✓ native upsert page contract > returns an executable canonical repair example, including a no-effect cancel option  3933ms
+   ✓ native upsert page contract > rejects invalid nested command 'removeItem' atomically  3283ms
+   ✓ native upsert page contract > rejects invalid nested command 'switch' atomically  3508ms
+   ✓ native upsert page contract > rejects invalid nested command 'setSwitch' atomically  3650ms
+   ✓ native upsert page contract > keeps SimplePage choice compilation in place_npc  2620ms
+   ✓ native upsert page contract > keeps SimplePage choice compilation in make_villager  2512ms
+
+ Test Files  4 passed (4)
+      Tests  57 passed (57)
+   Start at  12:33:22
+   Duration  112.71s (transform 26.19s, setup 0ms, collect 63.15s, tests 133.04s, environment 1ms, prepare 652ms)

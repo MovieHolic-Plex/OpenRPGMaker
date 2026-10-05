@@ -23,7 +23,7 @@
 - 앱 타입 게이트: errors 0 / exit 0 / 기준선 대비 회귀 없음.
 - 최종 packaged 빌드: exit 0. Electron 빌드도 exit 0.
 - 검증기 자체 반례 교정: r5 self-check 61/61, self-check.json 영수증 보존.
-- surface 게이트는 기본 병렬 실행이 종료된 뒤 CPU 2개로 범위를 묶어 실행했으며 기존 셸 표면 기대값 실패와 8GB 힙 OOM/결과 누락, .ee-icon margin-top CSS 기준선 실패로 exit 1이었다. 해당 CSS 실패와 셸 22케이스 중 같은 2개 실패는 수정 전 HEAD 소스 사본에서도 똑같이 재현됐다. 기준선 사본은 src/scripts/test를 git archive로 추출하고 변경하지 않은 assets/public 및 의존성만 연결했다. 심볼릭 링크 그림에 대한 Vite 파일 접근 경계만 테스트 사본에서 허용했다. 전체 표면 게이트의 통과를 주장하지 않는다.
+- 통합 전 surface 게이트는 기본 병렬 실행이 종료된 뒤 CPU 2개로 범위를 묶어 실행했으며 기존 셸 표면 기대값 실패와 8GB 힙 OOM/결과 누락, .ee-icon margin-top CSS 기준선 실패로 exit 1이었다. 해당 CSS 실패와 셸 22케이스 중 같은 2개 실패는 수정 전 HEAD 소스 사본에서도 똑같이 재현됐다. 기준선 사본은 src/scripts/test를 git archive로 추출하고 변경하지 않은 assets/public 및 의존성만 연결했다. 심볼릭 링크 그림에 대한 Vite 파일 접근 경계만 테스트 사본에서 허용했다. 전체 표면 게이트의 통과를 주장하지 않는다.
 - 추가 Bun 툴 발견 검사 8케이스 통과. 기존 map-image mock 검사는 시간 초과했으며 render 재전송 기대값도 현재 ACK 계약과 어긋났다. piRenderBroker.ts의 SHA-256은 수정 전 HEAD와 동일(29f0cf4a5716afa6d28421c232da2cc7d48c5ec7dab4e50d4e5de992403f2e21). 전체 스위트의 통과로 보고하지 않는다.
 
 ## 범위
@@ -31,3 +31,9 @@
 이미지 수신 증거는 모델이 모든 후보의 의미를 항상 정확히 이해한다는 보증이 아니다. 실제 시험은 선택된 과제/모델에 대한 관찰이며 core 12개 전체 수행률이나 다른 모델의 성공률로 확대하지 않는다.
 
 시험 시점 codeCommit은 기준선 HEAD다. 미커밋 수정의 실제 소스 SHA-256은 verified-source.json(최종 기능 코드)과 verified-source-r5.json(판본 고정·명시 Pi 하네스 포함)에 따로 보존했다.
+
+수정 전 CSS·셸 및 실제 surface 실행 로그는 baseline-css.txt, baseline-shell.txt, surface-gate.txt에 보존했다(끝 공백만 정리).
+
+## main 통합 확인
+
+기능 커밋 b4fc270c5c 뒤 origin/main을 d61aa6b625로 통합했다. main의 월드맵 참고 이미지/응답 예산과 하네스 captureOptions·ai-input 준비 조건, 기존 NPC 이동 기본 변경을 보존했다. 통합 뒤 관련 4파일 57케이스 exit 0, 앱 타입 게이트 errors 0 / exit 0 / 기준선 대비 회귀 없음이다. integration-tests.txt, integration-typecheck.txt와 verified-source-integrated.json에 같은 코드의 근거를 남겼다. PR CI는 별도로 확인한다.

@@ -122,4 +122,3 @@ AssertionError: [셸] 하한선 위반
       Tests  2 failed | 20 passed (22)
    Start at  11:42:06
    Duration  132.56s (transform 73.34s, setup 0ms, collect 105.23s, tests 121ms, environment 19.67s, prepare 2.39s)
-

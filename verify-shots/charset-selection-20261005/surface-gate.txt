@@ -3,9 +3,9 @@
 > node scripts/verify-gates.mjs --only surface
 
 surface        exit=1  축=10
-   
+
     RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
-   
+
     ❯ test/eventEditorShellSurface.baseline.test.ts (22 tests | 2 failed) 67ms
       ✓ 이벤트에디터 셸 표면 스냅샷 > 두 페이지 모두 예외 없이 렌더된다 3ms
       × 이벤트에디터 셸 표면 스냅샷 > 2페이지 선택이 1페이지와 다른 결과를 낸다 (페이지 선택 배선이 살아 있다) 17ms
@@ -109,14 +109,14 @@ surface        exit=1  축=10
      fieldMonsterTemplate: 라벨 소실 1종: 적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼슬라임 정찰대적 #명
      recordPickerSwitch: testid 소실 1종: event-record-picker-name | testid 신규 5종: event-record-picker-rename-open, event-record-picker-row-32, event-record-picker-row-33, event-record-picker-row-34, event-record-picker-row-35 | 클래스 소실 3종: event-record-picker-rename, event-record-picker-rename-label, event-record-picker-rename-row | 클래스 신규 2종: event-record-picker-rename-open, small | 컨트롤 소실 1개: event-record-picker-name | 컨트롤 신규 5개: event-record-picker-rename-open, event-record-picker-row-32, event-record-picker-row-33, event-record-picker-row-34, event-record-picker-row-35 | 라벨 소실 1종: 이름 | 태그 button 35→40, div 14→13, input 2→1, span 191→214 | testidCount 38→42 | controlCount 37→41 | classCount 34→33
      commandEditDialog: testid 신규 41종: ecp-runtime-stage, event-command-text-container, event-command-text-container-segment-balloon, event-command-text-container-segment-bark, event-command-text-container-segment-box, event-command-text-container-segment-corner, event-command-text-container-segment-inherit, event-command-text-context … 외 33종 | 클래스 소실 1종: ecp-message-text | 클래스 신규 23종: body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-message-content, ecp-runtime-frame … 외 15종 | 컨트롤 신규 38개: event-command-text-advanced>button#0, event-command-text-container, event-command-text-container-segment-balloon, event-command-text-container-segment-bark, event-command-text-container-segment-box, event-command-text-container-segment-corner, event-command-text-container-segment-inherit, event-command-text-context … 외 30종 | selectOptions 변경: event-command-text-container select 신규(옵션 5개), event-command-text-context select 신규(옵션 9개), event-command-text-position select 신규(옵션 5개), event-command-text-style select 신규(옵션 17개) | 태그 button 25→59, div 38→53, label 2→3, option 5→41, select 1→5, small 1→2, span 48→75 | testidCount 43→84 | controlCount 29→67 | classCount 63→85: expected [ Array(1) ] to deeply equal []
-   
+
    <--- Last few GCs --->
-   
-   [331547:0x1e75c000]   425963 ms: Scavenge (interleaved) 8175.1 (8192.9) -> 8174.7 (8213.4) MB, pooled: 0 MB, 38.85 / 0.00 ms  (average mu = 0.305, current mu = 0.286) allocation failure; 
+
+   [331547:0x1e75c000]   425963 ms: Scavenge (interleaved) 8175.1 (8192.9) -> 8174.7 (8213.4) MB, pooled: 0 MB, 38.85 / 0.00 ms  (average mu = 0.305, current mu = 0.286) allocation failure;
    [331547:0x1e75c000]   432640 ms: Mark-Compact (reduce) 8191.6 (8216.3) -> 8080.3 (8096.4) MB, pooled: 0 MB, 4063.91 / 0.00 ms  (+ 1236.1 ms in 199 steps since start of marking, biggest step 14.7 ms, walltime since start of marking 5483 ms) (average mu = 0
    FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
    ----- Native stack trace -----
-   
+
     1: 0x72be1c node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node (vitest 1)]
     2: 0xb9dc10  [node (vitest 1)]
     3: 0xb9dcff  [node (vitest 1)]
@@ -126,7 +126,7 @@ surface        exit=1  축=10
     7: 0xe4702a  [node (vitest 1)]
     8: 0xe4b3d0  [node (vitest 1)]
     9: 0x18de281  [node (vitest 1)]
-   
+
    ⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
    Error: Channel closed
     ❯ target.send node:internal/child_process:753:16
@@ -134,15 +134,15 @@ surface        exit=1  축=10
     ❯ MessagePort.<anonymous> ../../../../z-project/rpg-zzu/node_modules/tinypool/dist/index.js:149:62
     ❯ [nodejs.internal.kHybridDispatch] node:internal/event_target:845:20
     ❯ MessagePort.<anonymous> node:internal/per_context/messageport:23:28
-   
+
    ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
    Serialized Error: { code: 'ERR_IPC_CHANNEL_CLOSED' }
-   
-   
-   
+
+
+
    FAIL: 렌더로 증명된 클래스 1종이 CSS 속성을 잃었다
      .ee-icon — 속성 1종 소실 [margin-top]
-   
+
    중복 제거로 의도한 감소라면: 같은 속성이 다른 시트에 남아 있는지 확인하라(남아 있으면 이 게이트는 통과한다).
    정말로 속성을 없애는 변경이면 스크린샷 대조 후 기준선 갱신을 리뷰에 포함하세요.
 
