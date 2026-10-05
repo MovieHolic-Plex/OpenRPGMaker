@@ -210,7 +210,10 @@ class ReviewState:
                 manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
                 if d['decision'] == 'accept' and manifest.get('noveltyPolicy'):
                     report_file = w / 'novelty.json'
-                    report = json.loads(report_file.read_text()) if report_file.exists() else {}
+                    try:
+                        report = json.loads(report_file.read_text())
+                    except (OSError, ValueError):
+                        report = {}
                     if (not report.get('eligible') or report.get('sourceSha256') != gate['sourceSha256']
                             or report.get('referencesSha256') != manifest['noveltyPolicy']['referencesSha256']
                             or report.get('bodyAdmissionVersion') != 1):

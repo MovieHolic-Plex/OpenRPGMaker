@@ -14,6 +14,15 @@ import recipes as R
 import studio as S
 
 
+def live_record(path):
+    """Artist-owned records can be in the middle of a direct write."""
+    try:
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
 def members(order):
     result = []
     for file in (H.DATA / 'runs').glob('*/manifest.json'):
@@ -84,9 +93,9 @@ def supervise(order, evidence):
         for root, manifest in members(order):
             retired = {t['key'] for t in transferred(root)}
             state_file = root / 'production-state.json'
-            state = json.loads(state_file.read_text()) if state_file.exists() else {}
+            state = live_record(state_file)
             driver_file = root / 'driver.json'
-            driver = json.loads(driver_file.read_text()) if driver_file.exists() else {}
+            driver = live_record(driver_file)
             alive = H._alive(driver.get('pid'))
             if state.get('phase') == 'queued' and not alive and not (root / 'pause-request.json').exists():
                 queued.append((root, manifest))
@@ -95,10 +104,10 @@ def supervise(order, evidence):
                     continue
                 work = root / (row['key'] + '__gpt-r1')
                 report_file = work / 'novelty.json'
-                report = json.loads(report_file.read_text()) if report_file.exists() else {}
+                report = live_record(report_file)
                 grid_file = work / 'out.chr.txt'
                 meta_file = work / 'meta.json'
-                meta = json.loads(meta_file.read_text()) if meta_file.exists() else {}
+                meta = live_record(meta_file)
                 if report and grid_file.exists() and report.get('sourceSha256') == R.sha(grid_file):
                     admitted_report = (report.get('bodyAdmissionVersion') == 1
                                        and report.get('referencesSha256') == manifest['noveltyPolicy']['referencesSha256'])
