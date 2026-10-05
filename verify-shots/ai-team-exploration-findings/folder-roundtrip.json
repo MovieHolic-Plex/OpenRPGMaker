@@ -1,0 +1,32 @@
+{
+  "provenance": "Controlled call to the canonical map tree validator; corroborates live SQLite tree loss and ownership collisions. No model execution.",
+  "input": {
+    "mapId": "folder_team_places",
+    "kind": "folder",
+    "name": "팀 작업 장소",
+    "children": [
+      {
+        "mapId": "team_lighthouse",
+        "children": []
+      },
+      {
+        "mapId": "team_dock",
+        "children": []
+      }
+    ]
+  },
+  "output": {
+    "mapId": "team_lighthouse",
+    "children": [
+      {
+        "mapId": "team_lighthouse",
+        "children": []
+      },
+      {
+        "mapId": "team_dock",
+        "children": []
+      }
+    ]
+  },
+  "folderPreserved": false
+}
