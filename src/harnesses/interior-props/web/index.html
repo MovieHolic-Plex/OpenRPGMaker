@@ -201,6 +201,7 @@ body[data-view="pick"] .bar textarea,body[data-view="pick"] .bar #fromSelLabel{d
 .dlg{max-height:90dvh;overflow:auto}.dlg .made{line-height:1.65}.dlg input[type=text]{min-width:100px}
 @media(max-width:1050px){.rail{width:190px}.bar{left:190px}main{padding:10px 12px 105px}.bar{padding:8px 12px}.review-tip{display:none}.grid,.grid.ctxmode{gap:8px}.card .pic{min-height:190px}.tools-extra{gap:6px}.tools .seg button{padding:3px 6px}}
 @media(max-width:700px){.rail{width:145px}.bar{left:145px}.navhead{padding:7px}nav .it{padding:7px 4px}nav .th{display:none}header{padding:6px;gap:2px}header .tab{font-size:11px}.head h2{font-size:20px}.itemnav .derive-btn{display:none}.itemnav .btn{padding:4px 6px}.itemtop{gap:6px;align-items:flex-start}.head .meta{max-width:160px}.grid,.grid.ctxmode{grid-template-columns:repeat(2,minmax(0,1fr))}.grid .card{padding:6px;min-height:180px}.card.cur{grid-column:1/-1;min-height:90px}.card.cur .ctxw,.card.cur .pic{max-height:110px;min-height:70px}.card.cur .ctxw img{max-height:110px}.card .pic{min-height:130px}.card .ctxw{min-height:100px}.grid.setgrid{grid-template-columns:1fr}.card .dir{font-size:12px}.card .x{padding:0 4px}.card .key{padding:0 4px}.outline-switch button{font-size:10px;padding:4px 2px}.bar{gap:5px}.bar #barL{width:100%}.bar #barR{gap:5px}.bar .btn{padding:6px;font-size:11px}.bar .go{min-width:0}.tools{gap:6px}.tools-extra{gap:6px}.candidate-hint{font-size:10px}.cmp .col .pic.ctxp{min-width:0;min-height:0}}
+.resize-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0;font-size:12px;color:var(--dim)}.resize-actions .btn{padding:6px 10px;font-size:12px}.resize-actions .btn:disabled{opacity:.45;cursor:default}.resize-actions .size-label{margin-right:auto}.resize-actions small{display:block;color:var(--dim);font-size:10px}.resize-fields{display:flex;align-items:center;gap:12px}.resize-fields label{display:flex;align-items:center;gap:6px}.dlg .resize-fields input{width:64px}.resize-preview{color:var(--sel);font-size:13px}.resize-note{color:var(--dim);font-size:12px;margin:0}.resize-error{color:var(--bad);font-size:12px;min-height:18px}@media(max-width:700px){.resize-actions{gap:5px}.resize-actions .btn{padding:5px 7px}.resize-actions .size-label{width:100%}}
 </style>
 </head>
 <body data-view="pick">
@@ -270,7 +271,7 @@ const rnd = () => { const it = item(); return it && (it.rounds.find(r => r.id ==
 // 보이는 것만 받는다(loading=lazy). 새 기물은 완료된 첫 후보를 썸네일로 보여 주며, 후보도 없을 때만 「새」로 표시한다.
 const thumbSrc = o => `/api/harness/thumb/${o.slug}.png?v=${encodeURIComponent(o.current || 'v5')}`;
 const thumbImg = o => {
-  const fresh=o.isNew&&(o.current||'v5')==='v5', candidate=fresh?o.rounds?.at(-1)?.runs.find(r=>r.status==='done'):null;
+  const fresh=o.isNew&&(o.current||'v5')==='v5', candidate=fresh&&Array.isArray(o.rounds)?o.rounds.at(-1)?.runs.find(r=>r.status==='done'):null;
   if(fresh&&!candidate)return '<b class="nb">새</b>';
   return `<img loading="lazy" decoding="async" src="${candidate?`/c/${o.slug}/${candidate.cand}.png?v=${candidate.v||0}`:thumbSrc(o)}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{className:'nb',textContent:'새'}))">`;
 };
@@ -455,10 +456,11 @@ function renderPick() {
   const rbusy = r.runs.some(x => ['queued', 'running'].includes(x.status));
   h += `<div class="card redocard ${rbusy ? 'busy' : ''}" data-redo="1"><div class="top"><span class="key">${r.runs.length + 1}</span><span class="dir">다시 뽑기</span></div>
     <div class="redobig">${rbusy ? '그리는 중…' : '↻<br>다시 뽑기'}<small>메모·버린 후보가 다음 판으로 간다</small></div></div>`;
-  h += `</div>`+tools+details+(canDerive(it)?'<div class="derive-hint" id="deriveHint">자동 파생 제안을 읽는 중…</div>':'');
+  h += `</div><div class="resize-actions" id="resizeActions"></div>`+tools+details+(canDerive(it)?'<div class="derive-hint" id="deriveHint">자동 파생 제안을 읽는 중…</div>':'');
   h += '<div id="comparison">'+comparisonHtml(it,cur)+'</div>';
   h += `<details class="keys"><summary>단축키 보기 · 1/2 선택 → Enter 확정 · ↑↓ 이동</summary><kbd>1</kbd> <kbd>2</kbd> 후보 고르기(한 번 더 누르면 「꼭 필요한 곳만」) · 후보 다음 숫자 = 다시 뽑기 · <kbd>0</kbd> 지금 그대로 · <kbd>Enter</kbd> = 확정하고 다음 · <kbd>X</kbd> 고른 카드 버리기 · <kbd>Z</kbd> 방금 확정·다시 뽑기 되돌리기 · <kbd>R</kbd> 메모 쓰기(메모에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 확정, <kbd>Esc</kbd> 나가기) · <kbd>D</kbd> 파생 만들기(방향·상태·움직임·크기) · <kbd>V</kbd> 둘 다/단품/방 안 · <kbd>F</kbd> 맞춤 · <kbd>B</kbd> 배경 · <kbd>+</kbd><kbd>-</kbd> 확대 · <kbd>↑</kbd><kbd>↓</kbd> 이전/다음 기물 · <kbd>Space</kbd> 겹쳐 보기</details>`;
   m.innerHTML = h;
+  renderResizeActions(it);
   $('#prevItem').onclick=()=>moveItem(-1);$('#nextItem').onclick=()=>moveItem(1);
   m.querySelectorAll('[data-outline]').forEach(b=>b.onclick=e=>{e.stopPropagation();const c=b.dataset.outline,light=b.dataset.light==='1';S.outline[c]=light?'light':'full';if(S.sel===c||S.sel===c+'.sel')S.sel=c+(light?'.sel':'');renderPick();});
   m.querySelectorAll('.grid .pic img').forEach(img => { sized(img, S.zoom); img.src = img.dataset.src; });
@@ -665,6 +667,69 @@ function redraw(slot) {
   // 확정과 같이: 이 기물을 고를 차례에서 빼고 바로 다음 기물로. 새 판이 다 그려지면 다시 「고를 차례」에 들어온다.
   const body = {ids:[it.id], note:S.memo.trim(), base, n:DRAW_N, round:it.rounds.at(-1).id, rejects:S.rej};
   commit('redraw', it, body, `${it.name}: 다시 뽑기 — 후보 ${DRAW_N}장${S.memo.trim() ? '' : ' (메모 없음)'}`);
+}
+
+// Size controls use the existing derive metadata and draw-note resize contract.
+// Cache only for this item/round/canvas; never infer ground footprint from image height.
+const resizeMeta = new Map();
+const resizeKey = it => JSON.stringify([it.id,it.canvas,it.rounds.at(-1).id]);
+function resizeDimensions(it,g) {
+  const [w,depth]=g.footprint;
+  return {w,h:depth||Math.floor(it.canvas[1]/16),rise:depth?Math.max(0,it.canvas[1]-16*depth):0,ground:!!depth};
+}
+function resizeTarget(d,larger) {
+  if(larger&&(d.w>8||d.h>8))return [d.w,d.h];
+  const scale=larger?1.5:2/3, round=larger?Math.ceil:Math.floor;
+  return [d.w,d.h].map(n=>Math.max(1,Math.min(8,round(n*scale))));
+}
+function resizePixels(d,w,h) {return `${w*16}×${h*16+d.rise}px`;}
+function resizeBusy(it) {return it.rounds.at(-1).runs.some(x=>['queued','running'].includes(x.status));}
+async function renderResizeActions(it,retry=false) {
+  const el=$('#resizeActions');if(!el)return;
+  if(it.set){el.innerHTML='<span>묶음의 크기는 원본 기물에서 변경하세요.</span>';return;}
+  const key=resizeKey(it);
+  if(retry)resizeMeta.delete(key);
+  if(!resizeMeta.has(key))resizeMeta.set(key,api('/api/harness/derive/'+encodeURIComponent(it.id)));
+  el.innerHTML='<span>크기 변경 정보를 읽는 중…</span>';
+  try {
+    const g=await resizeMeta.get(key);
+    if(!el.isConnected||S.cur!==it.id||resizeKey(item())!==key)return;
+    if(!g.size.ok){el.textContent='이 기물은 크기를 변경할 수 없어요.';return;}
+    const d=resizeDimensions(it,g),big=resizeTarget(d,true),small=resizeTarget(d,false),busy=resizeBusy(item());
+    const same=t=>t[0]===d.w&&t[1]===d.h;
+    el.innerHTML=`<span class="size-label">크기 바꿔 다시 뽑기 <small>현재 ${d.w}×${d.h}칸 · ${it.canvas.join('×')}px</small></span><button class="btn" id="resizeLarger" ${busy||same(big)?'disabled':''} title="${same(big)?'최대 크기입니다':resizePixels(d,...big)}">＋ 크게 · ${big.join('×')}칸</button><button class="btn" id="resizeSmaller" ${busy||same(small)?'disabled':''} title="${same(small)?'최소 크기입니다':resizePixels(d,...small)}">− 작게 · ${small.join('×')}칸</button><button class="btn" id="resizeCustom" ${busy?'disabled':''}>크기 직접 지정…</button>`;
+    $('#resizeLarger').onclick=()=>redrawSize(it,key,g,...big);
+    $('#resizeSmaller').onclick=()=>redrawSize(it,key,g,...small);
+    $('#resizeCustom').onclick=()=>openResize(it,key,g);
+  }catch(e){
+    if(!el.isConnected)return;
+    el.innerHTML='<span>크기 정보를 읽지 못했어요.</span><button class="btn">다시 확인</button>';
+    el.querySelector('button').onclick=()=>renderResizeActions(it,true);
+  }
+}
+function openResize(it,key,g) {
+  const d=resizeDimensions(it,g);closeDerive();
+  const bg=document.createElement('div');bg.className='dlgbg';
+  bg.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="resizeTitle"><h3 id="resizeTitle">크기 바꿔 다시 뽑기 · ${esc(it.name)}</h3><p class="resize-note">현재 ${d.w}×${d.h}칸 · ${it.canvas.join('×')}px. ${d.ground?'바닥에서 차지할 가로·세로 칸 수':'그림의 가로·세로 칸 수'}를 정하세요.</p><div class="resize-fields"><label>가로 <input id="resizeW" type="number" min="1" max="8" step="1" value="${d.w}">칸</label><label>세로 <input id="resizeH" type="number" min="1" max="8" step="1" value="${d.h}">칸</label></div><div class="resize-preview" id="resizePreview"></div><p class="resize-note">새 크기로 후보 ${DRAW_N}장을 다시 그립니다. 완성된 후보를 고르면 공용에 반영됩니다.</p><div class="resize-error" id="resizeError" role="status"></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn" id="resizeCancel">취소</button><button class="btn go" id="resizeGo">이 크기로 다시 뽑기</button></div></div>`;
+  document.body.append(bg);
+  const refresh=()=>{const w=+$('#resizeW').value,h=+$('#resizeH').value,valid=validResize(w,h),same=w===d.w&&h===d.h;$('#resizeGo').disabled=!valid||same;$('#resizePreview').textContent=valid?`${d.w}×${d.h}칸 → ${w}×${h}칸 · 그림 ${resizePixels(d,w,h)}`:'';$('#resizeError').textContent=!valid?'가로·세로는 1~8 사이의 정수로 입력하세요.':same?'현재와 다른 크기를 지정하세요.':'';};
+  $('#resizeW').oninput=refresh;$('#resizeH').oninput=refresh;$('#resizeCancel').onclick=closeDerive;
+  $('#resizeGo').onclick=()=>{const w=+$('#resizeW').value,h=+$('#resizeH').value;if(redrawSize(it,key,g,w,h))closeDerive();};
+  bg.onclick=e=>{if(e.target===bg)closeDerive();};refresh();$('#resizeW').focus();
+}
+function validResize(w,h) {return [w,h].every(n=>Number.isInteger(n)&&n>=1&&n<=8);}
+function redrawSize(it,key,g,w,h) {
+  const now=item();
+  if(!now||S.waitNext||now.id!==it.id||resizeKey(now)!==key){toast('기물이 바뀌었어요. 현재 기물에서 크기를 다시 지정하세요.',1);return false;}
+  if(now.set||!g.size.ok||!validResize(w,h)){toast('이 크기로 다시 뽑을 수 없어요.',1);return false;}
+  if(resizeBusy(now)){toast('아직 그리는 중이라 다시 뽑을 수 없어요.');return false;}
+  const d=resizeDimensions(now,g);if(w===d.w&&h===d.h)return false;
+  // Put the exact size first: the legacy parser reads the first WxH in the note.
+  // Resizing cannot reuse a same-canvas candidate as base; api.draw clears it too.
+  const note=`${w}x${h}칸으로 크기를 바꿔 다시 그려 주세요. 원래 디자인과 재질을 살려 새 크기에 맞게 도트를 다시 그려 주세요.\n${S.memo.trim()}`;
+  const body={ids:[now.id],note,base:'',n:DRAW_N,round:now.rounds.at(-1).id,rejects:S.rej};
+  commit('redraw',now,body,`${now.name}: ${d.w}×${d.h} → ${w}×${h}칸으로 다시 뽑기`);
+  return true;
 }
 
 // ---- 파생 (2026-10-04 사용자 「의자 방향 4개, 움직이는 모션, 사이즈 키우기」) ----
