@@ -310,6 +310,7 @@ import {
 } from "./session/toolPayload";
 import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from "./session/recordReference";
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
+import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
@@ -5501,6 +5502,9 @@ export class AssistantSession {
           }
           if (name === 'read_spatial_reference' && toolResult.ok) {
             roundImages.push(...await operation.wait(spatialReferenceImages(this.ctx.project, args, toolResult.data)));
+          }
+          if (name === 'read_worldmap_structure_reference' && toolResult.ok) {
+            roundImages.push(...await operation.wait(worldAtlasReferenceImages(toolResult.data)));
           }
           if (name === "get_concept_facility" && toolResult.ok) {
             roundImages.push(...await operation.wait(interiorPresetImages(toolResult.data)));

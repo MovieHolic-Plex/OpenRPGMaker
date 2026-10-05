@@ -1,8 +1,21 @@
 import { NEW_PROJECT_CHOICES, type NewProjectChoiceId } from "@/editor/newProjectChoices";
+import type { PlayResolution } from "@/project/types";
 
 /** Shared by the lightweight launcher and the editor. Missing mode preserves old AI handoffs. */
 export type ProjectStartMode = "example" | "ai" | "blank";
 export type ProjectStartScreenSize = "classic" | "wide";
+
+/** 새 프로젝트가 처음 고르는 화면 크기. 옛 프로젝트(필드 없음)는 그대로 320×240 으로 읽힌다. */
+export const DEFAULT_START_SCREEN_SIZE: ProjectStartScreenSize = "wide";
+
+/**
+ * 시작 화면 크기 → 저장할 논리 뷰포트. classic 은 기본값(320×240)이라 필드를 비워 둔다.
+ * wide 480×270 은 1080p 에서 정확히 4배로 꽉 차(720p 2배, 4K 8배) 도트 굵기가 고르고, 가로 30칸을 보여 준다.
+ */
+export const START_SCREEN_RESOLUTIONS: Readonly<Record<ProjectStartScreenSize, Readonly<PlayResolution> | undefined>> = {
+  classic: undefined,
+  wide: { width: 480, height: 270 },
+};
 
 export const START_EXAMPLES = NEW_PROJECT_CHOICES.filter(choice => choice.featured);
 export const START_EXAMPLE_DETAILS: Partial<Record<NewProjectChoiceId, { title: string; description: string; includes: readonly string[] }>> = {

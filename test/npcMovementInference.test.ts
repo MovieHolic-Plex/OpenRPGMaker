@@ -61,14 +61,18 @@ describe("place_npc archetype movement inference", () => {
     expect(context.project.maps[mapId]?.events.find((e) => e.id === "npc_roamer")?.pages?.[0]?.movement.type).toBe("random");
   });
 
-  it("falls back to fixed for ambiguous names when movement is omitted", () => {
+  it("defaults to random for unmarked names when movement is omitted", () => {
     const { context, mapId } = ctx();
-    const result = runTool(context, "place_npc", {
-      mapId, x: 14, y: 10, id: "npc_ambiguous", name: "나그네",
-      pages: [{ text: "길을 묻는다." }],
-    });
-    expect(result.ok, result.summary).toBe(true);
-    expect(context.project.maps[mapId]?.events.find((e) => e.id === "npc_ambiguous")?.pages?.[0]?.movement.type).toBe("fixed");
+    for (const [index, name] of ["나그네", "농부", "촌장 보좌"].entries()) {
+      const id = `npc_unmarked_${index}`;
+      const result = runTool(context, "place_npc", {
+        mapId, x: 14 + index, y: 10, id, name,
+        pages: [{ text: "길을 묻는다." }],
+      });
+      expect(result.ok, result.summary).toBe(true);
+      expect(context.project.maps[mapId]?.events.find((e) => e.id === id)?.pages?.[0]?.movement.type).toBe("random");
+      expect(((result.diff?.warnings ?? []) as readonly string[]).join("\n")).toContain("random(배회");
+    }
   });
 });
 

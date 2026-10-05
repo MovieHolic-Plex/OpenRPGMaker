@@ -8,6 +8,10 @@ import { firefox } from 'playwright';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
+// Capture the actual rendered pixels even when an unrelated web font request
+// never settles. The reviewer still checks text and chip visibility in the PNG.
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = '1';
+
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export function stored(projectDir) {
   const db = new DatabaseSync(resolve(projectDir, 'project.sqlite'), { readOnly: true });
@@ -38,7 +42,8 @@ const freePort = () => new Promise((done, fail) => {
 export async function startHost(projectDir, dir) {
   const port = await freePort();
   const child = spawn(process.execPath, ['scripts/oprn-serve.mjs','--project-dir',projectDir,'--host','127.0.0.1','--port',String(port)], {
-    cwd: process.cwd(), env: { ...process.env, OPRN_HOST_OWNER_AI: '1' }, stdio: ['ignore','pipe','pipe'], detached: true,
+    cwd: process.cwd(), env: { ...process.env, OPRN_HOST_OWNER_AI: '1',
+      ...(existsSync(resolve(dir,'shared-content.sqlite')) ? { OPRN_SHARED_CONTENT_SQLITE: resolve(dir,'shared-content.sqlite') } : {}) }, stdio: ['ignore','pipe','pipe'], detached: true,
   });
   let log=''; const append = data => { log += data.toString(); };
   child.stdout.on('data', append); child.stderr.on('data', append);
@@ -65,9 +70,11 @@ export async function startHost(projectDir, dir) {
     writeFileSync(resolve(dir,'host.json'),JSON.stringify({url,exitCode:child.exitCode,closed:true},null,2));
   } };
 }
-export async function newEditor(browser, url, projectDir, config) {
-  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce' });
+export async function newEditor(browser, url, projectDir, config, captureOptions={}) {
+  const {onPage,bootTimeoutMs=360000,...contextOptions}=captureOptions;
+  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...contextOptions });
   const page=await context.newPage();
+  await onPage?.(page,context);
   // Bundled asset installation and SQLite flush can hold the UI main thread.
   // Keep UI action deadlines consistent with the existing load/save deadlines.
   page.setDefaultTimeout(120000);
@@ -93,6 +100,7 @@ export async function newEditor(browser, url, projectDir, config) {
             // Never persist reasoning, auth headers or system prompt payloads.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
+              data:['charset.image.delivered','charset.image.received'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});
@@ -110,12 +118,17 @@ export async function newEditor(browser, url, projectDir, config) {
     await page.locator('#access-code').fill(readFileSync(resolve(projectDir,'.oprn-host-access'),'utf8').trim());
     await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);
   }
-  await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:180000});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="project-export-json"]'),null,{timeout:120000});
+  await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
   // Companion readiness precedes canvas construction in a fresh context.
   // Wait for the editor's own rendered tile residency before taking evidence.
   await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
   const welcome=page.getByTestId('editor-welcome-skip');if(await welcome.isVisible().catch(()=>false))await welcome.click();
+  // A fresh editor now starts with the conversation folded. Open it through
+  // the visible restore control before using the actual input/settings UI.
+  const restore = page.getByTestId('ai-collapsed-restore');
+  if (await restore.isVisible().catch(()=>false)) await restore.click();
+  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
   return { page,context,loads };
 }
 async function saveThroughUi(page) {
@@ -133,6 +146,12 @@ export async function execute(entry, dir, timeoutMs, config) {
     let editor=await newEditor(browser,host.url,projectDir,config);let page=editor.page;context=editor.context;
     page.on('pageerror',error=>errors.push(error.message));
     page.on('request',request=>{
+      if(entry.check==='graphic'&&request.method()==='POST'&&/\/v1\/agent\/render(?:\?|$)/.test(request.url())) {
+        try {const body=JSON.parse(request.postData());if(typeof body.png==='string') {
+          const file=`candidate-preview-${evidence.filter(file=>file.startsWith('candidate-preview-')).length+1}.png`;
+          writeFileSync(resolve(dir,file),Buffer.from(body.png,'base64'));evidence.push(file);
+        }}catch{} // A missing preview remains a failed requirement, never a passing observation.
+      }
       if(request.method()!=='POST'||!/\/v1\/(agent\/run|chat\/completions)/.test(request.url()))return;
       try{const raw=request.postDataBuffer(),b=JSON.parse(raw?.[0]===31?gunzipSync(raw):raw);
         requests.push({endpoint:new URL(request.url()).pathname,model:b.model,provider:request.headers()['x-oprn-provider'],runId:b.runId,at:Date.now()});

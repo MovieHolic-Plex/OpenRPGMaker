@@ -86,6 +86,15 @@ export type WorldmapBuildResult =
     theme: string;
     /** preview 면 도식 그림, 아니면 완성 지도(1536×1152, 칸 16px). */
     imageDataUrl: string;
+    /** Coordinate-independent terrain sheet; approved icons are separate upper tiles. */
+    tilemap?: {
+      version: 1;
+      imageDataUrl: string;
+      tilesPerRow: number;
+      tiles: Array<{ key: string; label: string; walkable: boolean }>;
+      lowerTiles: number[];
+      groups: Array<{ name: string; tiles: number[]; representative: number }>;
+    };
     world: WorldmapWorld;
     ascii: string;
     /** 테마가 지형을 어떻게 칠하는지(지역 팔레트면 같은 바닥도 자리마다 다른 색). */

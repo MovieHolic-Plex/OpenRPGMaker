@@ -15,7 +15,7 @@ import { normalizeMapClimate } from "@/project/mapClimate";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
-import { plainGrassTileFor } from "@/project/defaults/defaultMaps";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -267,7 +267,7 @@ const createMap: ToolDefinition = {
       // 타일셋 크기를 따라가므로, 생성 경로만 규칙에서 빠져 있었다).
       tileSize: tileset.tileSize,
       // 버들항은 합본 마을 번호가 아니라 자기 잔디(737)로 채운다 — 예전엔 빈칸(-1)으로 남아 새 맵이 검었다.
-      lowerTiles: new Array<number>(size).fill(plainGrassTileFor(tilesetId) ?? (isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY)),
+      lowerTiles: new Array<number>(size).fill(blankFillTileFor(tilesetId, isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY)),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };

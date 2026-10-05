@@ -1,0 +1,1220 @@
+{
+  "runId": "d81b01d0-7044-40f6-a563-883db13301f2",
+  "source": "Actual native assistant run; model authored scores and sound patches, built-in PCM synthesis. Completed result recovered through editor store after premature browser reload.",
+  "model": "gemini-3.8-flash",
+  "calls": [
+    {
+      "tool": "generate_original_bgm",
+      "args": {
+        "score": {
+          "tracks": [
+            {
+              "notes": [
+                {
+                  "duration": 1.5,
+                  "pitch": 64,
+                  "beat": 0,
+                  "velocity": 0.7
+                },
+                {
+                  "duration": 1,
+                  "beat": 1.5,
+                  "pitch": 67,
+                  "velocity": 0.65
+                },
+                {
+                  "beat": 2.5,
+                  "velocity": 0.7,
+                  "pitch": 71,
+                  "duration": 1.5
+                },
+                {
+                  "velocity": 0.7,
+                  "beat": 4,
+                  "duration": 1.5,
+                  "pitch": 60
+                },
+                {
+                  "beat": 5.5,
+                  "velocity": 0.65,
+                  "pitch": 64,
+                  "duration": 1
+                },
+                {
+                  "beat": 6.5,
+                  "velocity": 0.7,
+                  "duration": 1.5,
+                  "pitch": 67
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 67,
+                  "duration": 1.5,
+                  "beat": 8
+                },
+                {
+                  "beat": 9.5,
+                  "pitch": 71,
+                  "velocity": 0.65,
+                  "duration": 1
+                },
+                {
+                  "beat": 10.5,
+                  "velocity": 0.7,
+                  "duration": 1.5,
+                  "pitch": 74
+                },
+                {
+                  "pitch": 62,
+                  "beat": 12,
+                  "velocity": 0.7,
+                  "duration": 1.5
+                },
+                {
+                  "duration": 1,
+                  "velocity": 0.65,
+                  "beat": 13.5,
+                  "pitch": 66
+                },
+                {
+                  "pitch": 69,
+                  "duration": 1.5,
+                  "velocity": 0.7,
+                  "beat": 14.5
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 64,
+                  "velocity": 0.72,
+                  "beat": 16
+                },
+                {
+                  "velocity": 0.68,
+                  "pitch": 67,
+                  "duration": 1,
+                  "beat": 17.5
+                },
+                {
+                  "pitch": 71,
+                  "beat": 18.5,
+                  "velocity": 0.7,
+                  "duration": 1.5
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 60,
+                  "beat": 20,
+                  "velocity": 0.72
+                },
+                {
+                  "beat": 21.5,
+                  "velocity": 0.68,
+                  "pitch": 64,
+                  "duration": 1
+                },
+                {
+                  "duration": 1.5,
+                  "beat": 22.5,
+                  "velocity": 0.7,
+                  "pitch": 67
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 65,
+                  "velocity": 0.68,
+                  "beat": 24
+                },
+                {
+                  "duration": 1,
+                  "pitch": 69,
+                  "velocity": 0.65,
+                  "beat": 25.5
+                },
+                {
+                  "beat": 26.5,
+                  "duration": 1.5,
+                  "pitch": 72,
+                  "velocity": 0.68
+                },
+                {
+                  "pitch": 71,
+                  "duration": 2,
+                  "velocity": 0.65,
+                  "beat": 28
+                },
+                {
+                  "pitch": 59,
+                  "velocity": 0.6,
+                  "duration": 2,
+                  "beat": 30
+                }
+              ],
+              "gain": 0.65,
+              "pan": -0.15,
+              "instrument": "piano"
+            },
+            {
+              "instrument": "bell",
+              "pan": 0.25,
+              "gain": 0.45,
+              "notes": [
+                {
+                  "beat": 2,
+                  "velocity": 0.6,
+                  "duration": 1,
+                  "pitch": 71
+                },
+                {
+                  "duration": 1,
+                  "beat": 3,
+                  "velocity": 0.62,
+                  "pitch": 74
+                },
+                {
+                  "velocity": 0.65,
+                  "duration": 2,
+                  "pitch": 76,
+                  "beat": 4
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 1,
+                  "pitch": 71,
+                  "beat": 10
+                },
+                {
+                  "beat": 11,
+                  "velocity": 0.62,
+                  "duration": 1,
+                  "pitch": 74
+                },
+                {
+                  "pitch": 79,
+                  "duration": 2,
+                  "beat": 12,
+                  "velocity": 0.65
+                },
+                {
+                  "pitch": 71,
+                  "duration": 1,
+                  "beat": 18,
+                  "velocity": 0.6
+                },
+                {
+                  "pitch": 74,
+                  "duration": 1,
+                  "beat": 19,
+                  "velocity": 0.62
+                },
+                {
+                  "duration": 2,
+                  "beat": 20,
+                  "velocity": 0.65,
+                  "pitch": 76
+                },
+                {
+                  "velocity": 0.62,
+                  "beat": 26,
+                  "duration": 1,
+                  "pitch": 72
+                },
+                {
+                  "beat": 27,
+                  "velocity": 0.6,
+                  "duration": 1,
+                  "pitch": 74
+                },
+                {
+                  "pitch": 71,
+                  "duration": 3,
+                  "beat": 28,
+                  "velocity": 0.65
+                }
+              ]
+            },
+            {
+              "pan": 0,
+              "instrument": "bass",
+              "gain": 0.55,
+              "notes": [
+                {
+                  "velocity": 0.75,
+                  "beat": 0,
+                  "pitch": 40,
+                  "duration": 3.5
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 36,
+                  "beat": 4,
+                  "duration": 3.5
+                },
+                {
+                  "beat": 8,
+                  "velocity": 0.75,
+                  "duration": 3.5,
+                  "pitch": 43
+                },
+                {
+                  "beat": 12,
+                  "pitch": 38,
+                  "velocity": 0.75,
+                  "duration": 3.5
+                },
+                {
+                  "beat": 16,
+                  "velocity": 0.75,
+                  "duration": 3.5,
+                  "pitch": 40
+                },
+                {
+                  "duration": 3.5,
+                  "beat": 20,
+                  "velocity": 0.75,
+                  "pitch": 36
+                },
+                {
+                  "pitch": 41,
+                  "beat": 24,
+                  "duration": 3.5,
+                  "velocity": 0.75
+                },
+                {
+                  "beat": 28,
+                  "velocity": 0.75,
+                  "duration": 3.5,
+                  "pitch": 47
+                }
+              ]
+            }
+          ],
+          "tempo": 76,
+          "loop": true,
+          "bars": 8
+        },
+        "brief": "멈춘 시계와 오래된 책이 있는 서린의 서재에 어울리는 소박하고 따뜻한 8마디 루프 BGM. 잔잔한 피아노 메인 선율과 맑은 벨의 기억 모티브(B4-D5-E5-G5 등 3~4음), 따뜻하고 묵직한 베이스 화성(E-C-G-D 진행). 76 BPM, 4/4박자, loop:true.",
+        "name": "서재의 태엽 소리"
+      },
+      "result": {
+        "resourceId": "original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55",
+        "durationSeconds": 25.263157894736842,
+        "tempo": 76,
+        "instruments": [
+          "piano",
+          "bell",
+          "bass"
+        ],
+        "bytes": 2228256,
+        "peak": 0.5501583516597748,
+        "rms": 0.15545758520465217,
+        "source": "model-authored score / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "tool": "generate_original_bgm",
+      "args": {
+        "brief": "기억의 길에서 흐르는 신비롭고 아련한 변주곡. 서재의 기억 3음 모티브(B4-D5-E5)를 발전시켜 플루트가 신비로운 주선율을 불고, 현악기(strings)가 아련한 패드를 깔며, 플럭(pluck)이 시계 태엽처럼 일정한 8분음표 아르페지오를 연주하고, 잔잔한 드럼(drum)이 걸음을 재촉하는 리듬을 얹는다. 88 BPM, 8마디, 4/4박자, loop:true.",
+        "score": {
+          "tracks": [
+            {
+              "pan": 0.1,
+              "instrument": "flute",
+              "gain": 0.6,
+              "notes": [
+                {
+                  "pitch": 71,
+                  "velocity": 0.7,
+                  "beat": 1,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 2.5,
+                  "velocity": 0.75,
+                  "duration": 1.5,
+                  "pitch": 74
+                },
+                {
+                  "velocity": 0.8,
+                  "duration": 3,
+                  "pitch": 76,
+                  "beat": 4
+                },
+                {
+                  "pitch": 71,
+                  "duration": 1.5,
+                  "beat": 9,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 10.5,
+                  "velocity": 0.75,
+                  "duration": 1.5,
+                  "pitch": 74
+                },
+                {
+                  "duration": 3,
+                  "pitch": 79,
+                  "beat": 12,
+                  "velocity": 0.82
+                },
+                {
+                  "velocity": 0.75,
+                  "beat": 17,
+                  "duration": 1.5,
+                  "pitch": 76
+                },
+                {
+                  "duration": 1.5,
+                  "beat": 18.5,
+                  "velocity": 0.7,
+                  "pitch": 74
+                },
+                {
+                  "pitch": 71,
+                  "beat": 20,
+                  "velocity": 0.75,
+                  "duration": 2
+                },
+                {
+                  "beat": 22,
+                  "duration": 2,
+                  "pitch": 67,
+                  "velocity": 0.7
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 69,
+                  "velocity": 0.72,
+                  "beat": 25
+                },
+                {
+                  "duration": 1.5,
+                  "velocity": 0.7,
+                  "beat": 26.5,
+                  "pitch": 71
+                },
+                {
+                  "pitch": 64,
+                  "beat": 28,
+                  "duration": 3.5,
+                  "velocity": 0.75
+                }
+              ]
+            },
+            {
+              "instrument": "strings",
+              "notes": [
+                {
+                  "velocity": 0.65,
+                  "pitch": 52,
+                  "duration": 4,
+                  "beat": 0
+                },
+                {
+                  "pitch": 64,
+                  "velocity": 0.6,
+                  "beat": 0,
+                  "duration": 4
+                },
+                {
+                  "pitch": 48,
+                  "beat": 4,
+                  "velocity": 0.65,
+                  "duration": 4
+                },
+                {
+                  "beat": 4,
+                  "duration": 4,
+                  "pitch": 60,
+                  "velocity": 0.6
+                },
+                {
+                  "duration": 4,
+                  "beat": 8,
+                  "velocity": 0.65,
+                  "pitch": 55
+                },
+                {
+                  "beat": 8,
+                  "velocity": 0.6,
+                  "pitch": 67,
+                  "duration": 4
+                },
+                {
+                  "velocity": 0.65,
+                  "pitch": 50,
+                  "duration": 4,
+                  "beat": 12
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 12,
+                  "duration": 4,
+                  "pitch": 62
+                },
+                {
+                  "duration": 4,
+                  "pitch": 52,
+                  "velocity": 0.65,
+                  "beat": 16
+                },
+                {
+                  "pitch": 64,
+                  "beat": 16,
+                  "duration": 4,
+                  "velocity": 0.6
+                },
+                {
+                  "duration": 4,
+                  "beat": 20,
+                  "pitch": 48,
+                  "velocity": 0.65
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 20,
+                  "pitch": 60,
+                  "duration": 4
+                },
+                {
+                  "duration": 4,
+                  "beat": 24,
+                  "velocity": 0.65,
+                  "pitch": 53
+                },
+                {
+                  "beat": 24,
+                  "duration": 4,
+                  "velocity": 0.6,
+                  "pitch": 65
+                },
+                {
+                  "duration": 4,
+                  "pitch": 47,
+                  "beat": 28,
+                  "velocity": 0.65
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 28,
+                  "duration": 4,
+                  "pitch": 59
+                }
+              ],
+              "pan": -0.25,
+              "gain": 0.45
+            },
+            {
+              "pan": 0.3,
+              "instrument": "pluck",
+              "gain": 0.45,
+              "notes": [
+                {
+                  "velocity": 0.6,
+                  "pitch": 64,
+                  "beat": 0,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 0.5,
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "pitch": 67
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 71,
+                  "beat": 1,
+                  "velocity": 0.6
+                },
+                {
+                  "velocity": 0.55,
+                  "beat": 1.5,
+                  "duration": 0.5,
+                  "pitch": 76
+                },
+                {
+                  "beat": 2,
+                  "pitch": 64,
+                  "velocity": 0.6,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 2.5,
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "pitch": 67
+                },
+                {
+                  "velocity": 0.6,
+                  "pitch": 71,
+                  "duration": 0.5,
+                  "beat": 3
+                },
+                {
+                  "pitch": 74,
+                  "velocity": 0.55,
+                  "beat": 3.5,
+                  "duration": 0.5
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 0.5,
+                  "beat": 4,
+                  "pitch": 60
+                },
+                {
+                  "velocity": 0.55,
+                  "beat": 4.5,
+                  "pitch": 64,
+                  "duration": 0.5
+                },
+                {
+                  "pitch": 67,
+                  "velocity": 0.6,
+                  "beat": 5,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 72,
+                  "velocity": 0.55,
+                  "beat": 5.5
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 6,
+                  "pitch": 60,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 6.5,
+                  "velocity": 0.55,
+                  "pitch": 64
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 67,
+                  "velocity": 0.6,
+                  "beat": 7
+                },
+                {
+                  "pitch": 71,
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "beat": 7.5
+                },
+                {
+                  "pitch": 67,
+                  "velocity": 0.6,
+                  "beat": 8,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.55,
+                  "pitch": 71,
+                  "beat": 8.5
+                },
+                {
+                  "beat": 9,
+                  "pitch": 74,
+                  "velocity": 0.6,
+                  "duration": 0.5
+                },
+                {
+                  "velocity": 0.55,
+                  "beat": 9.5,
+                  "duration": 0.5,
+                  "pitch": 79
+                },
+                {
+                  "pitch": 67,
+                  "velocity": 0.6,
+                  "beat": 10,
+                  "duration": 0.5
+                },
+                {
+                  "pitch": 71,
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "beat": 10.5
+                },
+                {
+                  "pitch": 74,
+                  "velocity": 0.6,
+                  "duration": 0.5,
+                  "beat": 11
+                },
+                {
+                  "beat": 11.5,
+                  "duration": 0.5,
+                  "pitch": 76,
+                  "velocity": 0.55
+                },
+                {
+                  "pitch": 62,
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "beat": 12
+                },
+                {
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "beat": 12.5,
+                  "pitch": 66
+                },
+                {
+                  "beat": 13,
+                  "velocity": 0.6,
+                  "pitch": 69,
+                  "duration": 0.5
+                },
+                {
+                  "pitch": 74,
+                  "velocity": 0.55,
+                  "beat": 13.5,
+                  "duration": 0.5
+                },
+                {
+                  "pitch": 62,
+                  "beat": 14,
+                  "velocity": 0.6,
+                  "duration": 0.5
+                },
+                {
+                  "pitch": 66,
+                  "duration": 0.5,
+                  "beat": 14.5,
+                  "velocity": 0.55
+                },
+                {
+                  "beat": 15,
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "pitch": 69
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.55,
+                  "beat": 15.5,
+                  "pitch": 71
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 16,
+                  "pitch": 64,
+                  "velocity": 0.6
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 67,
+                  "beat": 16.5,
+                  "velocity": 0.55
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 17,
+                  "pitch": 71,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 17.5,
+                  "pitch": 76,
+                  "velocity": 0.55
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 0.5,
+                  "beat": 18,
+                  "pitch": 64
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.55,
+                  "beat": 18.5,
+                  "pitch": 67
+                },
+                {
+                  "pitch": 71,
+                  "velocity": 0.6,
+                  "beat": 19,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 19.5,
+                  "duration": 0.5,
+                  "velocity": 0.55,
+                  "pitch": 74
+                },
+                {
+                  "beat": 20,
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "pitch": 60
+                },
+                {
+                  "velocity": 0.55,
+                  "pitch": 64,
+                  "duration": 0.5,
+                  "beat": 20.5
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 21,
+                  "pitch": 67,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 21.5,
+                  "velocity": 0.55,
+                  "pitch": 72
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 0.5,
+                  "beat": 22,
+                  "pitch": 60
+                },
+                {
+                  "beat": 22.5,
+                  "duration": 0.5,
+                  "pitch": 64,
+                  "velocity": 0.55
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "beat": 23,
+                  "pitch": 67
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 71,
+                  "velocity": 0.55,
+                  "beat": 23.5
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 65,
+                  "beat": 24,
+                  "velocity": 0.6
+                },
+                {
+                  "velocity": 0.55,
+                  "beat": 24.5,
+                  "pitch": 69,
+                  "duration": 0.5
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 25,
+                  "duration": 0.5,
+                  "pitch": 72
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.55,
+                  "beat": 25.5,
+                  "pitch": 76
+                },
+                {
+                  "pitch": 65,
+                  "velocity": 0.6,
+                  "beat": 26,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 26.5,
+                  "duration": 0.5,
+                  "pitch": 69,
+                  "velocity": 0.55
+                },
+                {
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "beat": 27,
+                  "pitch": 72
+                },
+                {
+                  "velocity": 0.55,
+                  "beat": 27.5,
+                  "duration": 0.5,
+                  "pitch": 74
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 28,
+                  "pitch": 59,
+                  "velocity": 0.6
+                },
+                {
+                  "beat": 28.5,
+                  "duration": 0.5,
+                  "pitch": 64,
+                  "velocity": 0.55
+                },
+                {
+                  "velocity": 0.6,
+                  "pitch": 67,
+                  "beat": 29,
+                  "duration": 0.5
+                },
+                {
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "beat": 29.5,
+                  "pitch": 71
+                },
+                {
+                  "velocity": 0.65,
+                  "beat": 30,
+                  "pitch": 64,
+                  "duration": 1
+                },
+                {
+                  "duration": 1,
+                  "beat": 31,
+                  "velocity": 0.6,
+                  "pitch": 52
+                }
+              ]
+            },
+            {
+              "instrument": "drum",
+              "notes": [
+                {
+                  "duration": 0.5,
+                  "pitch": 36,
+                  "velocity": 0.6,
+                  "beat": 0
+                },
+                {
+                  "beat": 2,
+                  "velocity": 0.55,
+                  "duration": 0.5,
+                  "pitch": 38
+                },
+                {
+                  "pitch": 36,
+                  "duration": 0.5,
+                  "beat": 4,
+                  "velocity": 0.6
+                },
+                {
+                  "pitch": 38,
+                  "duration": 0.5,
+                  "beat": 6,
+                  "velocity": 0.55
+                },
+                {
+                  "velocity": 0.6,
+                  "beat": 8,
+                  "duration": 0.5,
+                  "pitch": 36
+                },
+                {
+                  "pitch": 38,
+                  "velocity": 0.55,
+                  "beat": 10,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 12,
+                  "pitch": 36,
+                  "velocity": 0.6,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 14,
+                  "duration": 0.5,
+                  "pitch": 38,
+                  "velocity": 0.55
+                },
+                {
+                  "duration": 0.5,
+                  "pitch": 36,
+                  "beat": 16,
+                  "velocity": 0.6
+                },
+                {
+                  "pitch": 38,
+                  "beat": 18,
+                  "duration": 0.5,
+                  "velocity": 0.55
+                },
+                {
+                  "beat": 20,
+                  "velocity": 0.6,
+                  "pitch": 36,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 22,
+                  "duration": 0.5,
+                  "pitch": 38,
+                  "velocity": 0.55
+                },
+                {
+                  "pitch": 36,
+                  "velocity": 0.6,
+                  "beat": 24,
+                  "duration": 0.5
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 26,
+                  "velocity": 0.55,
+                  "pitch": 38
+                },
+                {
+                  "pitch": 36,
+                  "duration": 0.5,
+                  "velocity": 0.6,
+                  "beat": 28
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 30,
+                  "pitch": 38,
+                  "velocity": 0.55
+                }
+              ],
+              "gain": 0.35,
+              "pan": 0
+            }
+          ],
+          "tempo": 88,
+          "loop": true,
+          "bars": 8
+        },
+        "name": "기억의 회랑"
+      },
+      "result": {
+        "resourceId": "original_bgm_c5548347-7466-4a5d-98c3-dc81fd0e55dc",
+        "durationSeconds": 21.818181818181817,
+        "tempo": 88,
+        "instruments": [
+          "flute",
+          "strings",
+          "pluck",
+          "drum"
+        ],
+        "bytes": 1924408,
+        "peak": 0.5884321331977844,
+        "rms": 0.14387705994227215,
+        "source": "model-authored score / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "tool": "generate_original_se",
+      "args": {
+        "brief": "타이틀 메뉴 커서 이동에 쓰이는 0.07초의 조용하고 짧은 틱 클릭 효과음. 서재와 시계 분위기에 맞는 절제된 톤.",
+        "name": "타이틀_커서_클릭",
+        "patch": {
+          "layers": [
+            {
+              "release": 0.015,
+              "gain": 0.18,
+              "frequency": 1800,
+              "at": 0,
+              "wave": "sine",
+              "duration": 0.05,
+              "attack": 0.002,
+              "pan": 0,
+              "endFrequency": 1400
+            },
+            {
+              "frequency": 2400,
+              "attack": 0.001,
+              "duration": 0.03,
+              "gain": 0.08,
+              "endFrequency": 800,
+              "release": 0.01,
+              "at": 0,
+              "pan": 0,
+              "wave": "noise"
+            }
+          ],
+          "duration": 0.07
+        }
+      },
+      "result": {
+        "resourceId": "original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e",
+        "bytes": 6220,
+        "durationSeconds": 0.07,
+        "peak": 0.05289537087082863,
+        "rms": 0.020905255493188,
+        "source": "model-authored patch / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "tool": "generate_original_se",
+      "args": {
+        "patch": {
+          "duration": 0.18,
+          "layers": [
+            {
+              "release": 0.02,
+              "pan": -0.1,
+              "wave": "bell",
+              "frequency": 523,
+              "endFrequency": 523,
+              "duration": 0.08,
+              "attack": 0.005,
+              "gain": 0.18,
+              "at": 0
+            },
+            {
+              "attack": 0.005,
+              "pan": 0.1,
+              "endFrequency": 784,
+              "release": 0.03,
+              "wave": "bell",
+              "at": 0.06,
+              "frequency": 784,
+              "duration": 0.11,
+              "gain": 0.2
+            },
+            {
+              "duration": 0.1,
+              "pan": 0,
+              "endFrequency": 1568,
+              "at": 0.06,
+              "wave": "sine",
+              "frequency": 1568,
+              "release": 0.02,
+              "gain": 0.08,
+              "attack": 0.008
+            }
+          ]
+        },
+        "brief": "타이틀 메뉴 결정에 쓰이는 0.18초의 맑은 2음 상승 효과음(C5 -> G5). 기억의 종소리처럼 청명하고 단정한 톤.",
+        "name": "타이틀_결정_상승음"
+      },
+      "result": {
+        "resourceId": "original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b",
+        "bytes": 15920,
+        "durationSeconds": 0.18,
+        "peak": 0.05419139936566353,
+        "rms": 0.012732359360224897,
+        "source": "model-authored patch / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "tool": "generate_original_se",
+      "args": {
+        "name": "타이틀_취소_하강음",
+        "patch": {
+          "layers": [
+            {
+              "frequency": 659,
+              "attack": 0.005,
+              "pan": 0,
+              "gain": 0.16,
+              "at": 0,
+              "wave": "triangle",
+              "duration": 0.12,
+              "release": 0.03,
+              "endFrequency": 493
+            },
+            {
+              "attack": 0.01,
+              "endFrequency": 246,
+              "duration": 0.1,
+              "release": 0.02,
+              "at": 0.02,
+              "frequency": 330,
+              "pan": 0,
+              "gain": 0.08,
+              "wave": "sine"
+            }
+          ],
+          "duration": 0.14
+        },
+        "brief": "타이틀 메뉴 취소에 쓰이는 0.14초의 차분한 하강 단음(E5 -> B4). 서재 분위기에 어울리는 부드러운 톤."
+      },
+      "result": {
+        "resourceId": "original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4",
+        "bytes": 12396,
+        "durationSeconds": 0.14,
+        "peak": 0.05049113929271698,
+        "rms": 0.018638909779066123,
+        "source": "model-authored patch / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "tool": "generate_original_se",
+      "args": {
+        "name": "오프닝_시계_빛공명",
+        "patch": {
+          "duration": 0.75,
+          "layers": [
+            {
+              "pan": 0,
+              "at": 0,
+              "release": 0.35,
+              "duration": 0.65,
+              "attack": 0.01,
+              "gain": 0.25,
+              "endFrequency": 1318,
+              "frequency": 1318,
+              "wave": "bell"
+            },
+            {
+              "pan": 0.15,
+              "release": 0.25,
+              "at": 0.05,
+              "wave": "bell",
+              "attack": 0.02,
+              "endFrequency": 1975,
+              "duration": 0.55,
+              "gain": 0.16,
+              "frequency": 1975
+            },
+            {
+              "release": 0.15,
+              "at": 0,
+              "attack": 0.08,
+              "gain": 0.1,
+              "frequency": 1200,
+              "endFrequency": 400,
+              "pan": -0.1,
+              "wave": "noise",
+              "duration": 0.45
+            },
+            {
+              "duration": 0.5,
+              "endFrequency": 2637,
+              "pan": -0.15,
+              "release": 0.2,
+              "at": 0.08,
+              "frequency": 2637,
+              "attack": 0.03,
+              "gain": 0.12,
+              "wave": "sine"
+            }
+          ]
+        },
+        "brief": "오프닝 회중시계 틈새에서 기억의 빛이 번져 나오는 장면에 어울리는 0.75초의 영롱한 벨 공명과 부드러운 노이즈 텍스처 효과음."
+      },
+      "result": {
+        "resourceId": "original_se_891e9a12-2109-40a7-b3a1-60f107db1402",
+        "bytes": 66196,
+        "durationSeconds": 0.75,
+        "peak": 0.09012904763221741,
+        "rms": 0.020140368494126086,
+        "source": "model-authored patch / built-in synthesis",
+        "playbackVerified": false
+      }
+    }
+  ]
+}

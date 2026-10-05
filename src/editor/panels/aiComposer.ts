@@ -80,6 +80,7 @@ export interface ComposerElements {
   readonly teamToggle: HTMLElement | null;
   /** 바로 깔기. 켜지면 전송이 계획 턴 없이 모델 한 번으로 단계를 나눠 바로 깐다(모델 없으면 낱말 규칙). */
   readonly stampToggle: HTMLButtonElement;
+  syncStampMode(on: boolean): void;
   readonly setPiTeam: (team: boolean) => void;
   readonly syncApplyMode: () => void;
   readonly syncEffort: (autonomy: AutonomyLevel) => void;
@@ -347,6 +348,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     attrs: { "aria-label": "AI 적용 모드" }, dataset: { testid: "ai-composer-apply-mode" },
     children: PI_APPLY_MODES.map(mode => el("option", { attrs: { value: mode.id, title: mode.description }, text: mode.label })),
   }) as HTMLSelectElement;
+  let quickPlacement = false;
   let paintSettingsSummary = (): void => {};
   const syncApplyMode = () => {
     const mode = normalizePiApplyMode(loadAiConfig().piApply);
@@ -374,7 +376,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   paintSettingsSummary = (): void => {
     const mode = normalizePiApplyMode(applyModeSelect.value);
     const labels = { default: "기본", yolo: "YOLO", auto: "자동", review: "검토 후 적용", step: "단계별 적용" };
-    settingsToggle.textContent = `작업 설정 · ${labels[mode]}`;
+    settingsToggle.textContent = quickPlacement ? "작업 설정 · 바로 깔기" : mode === "default" ? "작업 설정" : `작업 설정 · ${labels[mode]}`;
   };
   paintSettingsSummary();
   const settingRow = (title: string, hint: string, control: HTMLElement): HTMLElement => el("label", {
@@ -436,9 +438,13 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     dataset: { testid: "ai-stamp-place" },
     on: { click: () => {
       const next = stampToggle.getAttribute("aria-pressed") !== "true";
-      stampToggle.setAttribute("aria-pressed", String(next));
+      syncStampMode(next);
     } },
   }) as HTMLButtonElement;
+
+  const syncStampMode = (on: boolean): void => { quickPlacement = on; stampToggle.setAttribute("aria-pressed", String(on)); paintSettingsSummary(); };
+
+  settingsPopover.append(settingRow("빠른 배치", "계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.", stampToggle));
 
   const actions = el("div", {
     class: "ai-composer-actions",
@@ -447,7 +453,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       el("div", {
         class: "ai-composer-actions-lead",
         children: [
-          stampToggle,
           settingsToggle,
           options.undoAppliedButton,
           options.contextChips,
@@ -614,6 +619,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     autonomySelect,
     teamToggle,
     stampToggle,
+    syncStampMode,
     setPiTeam,
     syncEffort,
     syncApplyMode,

@@ -189,15 +189,15 @@ describe("AI reasoning 설정 로드", () => {
     expect(config.reasoningEffort).toBe("low");
   });
 
-  it("잘못된 reasoningEffort는 기본(low)으로 되돌린다", () => {
+  it("잘못된 reasoningEffort는 기본(high)으로 되돌린다", () => {
     installLocalStorage({ reasoningEffort: "max" });
     const config = loadAiConfig();
-    expect(config.reasoningEffort).toBe("low");
+    expect(config.reasoningEffort).toBe("high");
   });
 
-  it("기본 reasoningEffort는 low이다(벽시계·비용 보수 기본값)", () => {
+  it("기본 reasoningEffort는 high이다(감독 지시 2026-10-05)", () => {
     const config = defaultAiConfig();
-    expect(config.reasoningEffort).toBe("low");
+    expect(config.reasoningEffort).toBe("high");
   });
 });
 

@@ -1,0 +1,76 @@
+{
+  "actualElectron": true,
+  "steps": [
+    {
+      "label": "editor-startup",
+      "isFullScreen": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "true",
+        "fsEl": null,
+        "innerH": 1024
+      }
+    },
+    {
+      "label": "after-click-1",
+      "isFullScreen": false,
+      "bounds": {
+        "x": 5,
+        "y": 112,
+        "width": 1280,
+        "height": 800
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "false",
+        "fsEl": null,
+        "innerH": 800
+      }
+    },
+    {
+      "label": "after-click-2",
+      "isFullScreen": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "true",
+        "fsEl": null,
+        "innerH": 1024
+      }
+    }
+  ],
+  "summary": {
+    "startedNativeFullscreen": true,
+    "click1ShrankWindow": true,
+    "click2Restored": true
+  }
+}

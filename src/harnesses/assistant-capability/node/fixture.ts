@@ -1,9 +1,33 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { backup, DatabaseSync } from 'node:sqlite';
+import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
 import { createEmberQuestProject } from '../../../project/defaults/emberQuestGame';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { COMBINED_TOWN_TILESET_ID } from '../../../project/defaults/constants';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
+
+export async function prepareWorldmapProof(root: string, selected?: string): Promise<void> {
+  if (existsSync(root)) throw Error(`기존 실행 덮어쓰기 거부: ${root}`);
+  const ids = selected ? selected.split(',') : ['default', 'pokemon'];
+  if (ids.some(id => !['default', 'pokemon'].includes(id))) throw Error('지원하는 녹화: default,pokemon');
+  for (const id of ids) {
+    const dir = resolve(root, id), projectDir = resolve(dir, 'project');
+    const project = createEmberQuestProject();
+    project.meta.title = `월드맵 조수 실제 녹화 · ${id}`;
+    if (id === 'pokemon') project.system.genre = 'monster-collect';
+    if (project.system.opening) project.system.opening.enabled = false;
+    mkdirSync(dir, { recursive: true });
+    const store = await initLocalProjectStore({ projectDir });
+    try {
+      await store.saveProject(project);
+      const snapshot = store.loadSnapshot()!;
+      writeFileSync(resolve(dir, 'fixture.json'), JSON.stringify({caseId:id, projectId:store.projectId,
+        projectDir, revision:snapshot.revision, sha256:snapshot.sha256}, null, 2));
+    } finally { store.close(); }
+    console.log(`prepared worldmap ${id}`);
+  }
+}
 
 export async function prepare(root: string, selected?: string): Promise<void> {
   const seed = JSON.parse(readFileSync(resolve('harness-data/assistant-capability/seed.json'), 'utf8'));
@@ -49,6 +73,14 @@ export async function prepare(root: string, selected?: string): Promise<void> {
     project.session.gold = 100;
     // Existing unrelated maps and database records are retained as sentinels.
     mkdirSync(dir, { recursive: true });
+    // Pin the real library edition for this case: publishing a new shared
+    // character during reload must not alter the strict persistence comparison.
+    const sharedSource = sharedContentFile();
+    if (existsSync(sharedSource)) {
+      const source = new DatabaseSync(sharedSource, { readOnly: true });
+      try { await backup(source, resolve(dir, 'shared-content.sqlite')); }
+      finally { source.close(); }
+    }
     const store = await initLocalProjectStore({ projectDir });
     try {
       await store.saveProject(project);

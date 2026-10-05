@@ -9,6 +9,7 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
   seed: 'harness-data/assistant-capability/seed.json',
   doc: 'openwiki/harnesses/assistant-capability.md',
   stages: [
+    { id: 'film-worldmaps', title: '월드맵 실제 녹화', summary: '기본 대륙과 포켓몬풍 지역을 실제 입력창에서 만들고 MP4·도구 기록·SQLite 새 context 재로드를 남긴다. core 점수와 별도 증거다.' },
     { id: 'list', title: '과제 목록', summary: '요구·보존·플레이·시각 기준이 미리 정해진 사례를 나열한다.' },
     { id: 'prepare', title: '격리 정본 준비', summary: '실행마다 별도 SQLite 프로젝트와 초기 상태를 만든다. 기존 폴더 덮어쓰기 금지.' },
     { id: 'run', title: '실제 수행', summary: '직렬로 실제 입력창에 제출하고 적용·저장·새 브라우저 재로드·전용 플레이어를 확인한다.' },

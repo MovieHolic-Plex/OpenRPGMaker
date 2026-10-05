@@ -7,6 +7,7 @@ import {
 } from "@/project/audioDescriptions";
 import { ProjectFormatError } from "@/project/io/errors";
 import type { AudioDescriptionOverrides, Project } from "@/project/types";
+import { resolveMapBgm } from '@/project/mapMusic';
 import { ToolError, type JsonSchema, type ToolDefinition } from "./types";
 
 export function parseAudioResourceRef(kind: unknown, resourceId: unknown): AudioResourceRef {
@@ -136,6 +137,12 @@ const recommendBgm: ToolDefinition = {
       : catalog
         .filter((resource) => BGM_SCENE_NEEDLES[scene as BgmScene].some((needle) => resource.name.includes(needle)))
         .map((resource) => ({ resourceId: resource.id, score: 1 }));
+    const usedOnMaps = new Map<string, string[]>();
+    for (const map of Object.values(project.maps)) {
+      const effective = resolveMapBgm(project, map.id);
+      if (effective.kind === 'play') usedOnMaps.set(effective.resourceId, [...(usedOnMaps.get(effective.resourceId) ?? []), map.id]);
+    }
+    ordered.sort((a, b) => b.score - a.score || (usedOnMaps.get(a.resourceId)?.length ?? 0) - (usedOnMaps.get(b.resourceId)?.length ?? 0));
     const total = ordered.length;
     const seen = new Set<string>();
     const candidates = [];
@@ -153,12 +160,13 @@ const recommendBgm: ToolDefinition = {
         descriptionTruncated: false,
         descriptionSource: resource.descriptionSource,
         score,
+        usedOnMaps: usedOnMaps.get(resourceId) ?? [],
       });
     }
     // 검색 0건이면 장면 폴백이 아니라 빈 목록 — 엉뚱한 1등을 "추천"으로 착각하게 하지 않는다.
     return {
       summary: `BGM 후보 ${candidates.length}건${hasQuery ? `("${(args.query as string).trim()}")` : `(${scene})`}`,
-      data: { candidates, total },
+      data: { candidates, total, originalCompositionTool: "generate_original_bgm", guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요." },
     };
   },
 };

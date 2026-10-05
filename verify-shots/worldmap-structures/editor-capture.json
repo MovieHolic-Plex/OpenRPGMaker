@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:9809/?freshProject=1&map=atlas_cfce634c-d9fd-45d8-ae74-db91635a4f51_map0",
+  "options": [
+    "지역 · 마을과 도로",
+    "축척 월드 · 대륙 걷기",
+    "필드 · 지형과 능력",
+    "스테이지 · 클리어와 비밀길",
+    "방 · 발견과 재탐색",
+    "런 · 일방향 분기"
+  ],
+  "errors": [],
+  "created": true,
+  "canonicalEvidence": "Separate six SQLite projects; this editor check is UI-only"
+}

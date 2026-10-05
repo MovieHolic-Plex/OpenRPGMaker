@@ -49,6 +49,8 @@ if (!existsSync(options.bridgePath)) throw new Error(`브라우저 브리지가 
 const browserBridgeSource = readFileSync(options.bridgePath, "utf8");
 
 process.env.OPRN_OH_MY_PI_WORKER_SCRIPT ??= resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");
+// The TypeScript server is bundled in /tmp; its import.meta.url cannot locate repository content.
+process.env.OPRN_WORLDMAP_KIT ??= resolve(REPO_ROOT, "tiledata/worldmap-kit");
 
 await withTsModule(RUNTIME_ENTRY, "oprn-serve-runtime.mjs", async (runtime) => {
   const server = await runtime.startLocalProjectServer({

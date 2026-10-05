@@ -1,0 +1,41 @@
+{
+  "path": "actual Pi tool adapter; no model response",
+  "cases": [
+    {
+      "structure": "region-routes",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "d80a15f8cf462c1d45fc40e1e0416e98eccafd516411f0547fb46333983db065"
+    },
+    {
+      "structure": "scaled-world",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "946d042896c88ba5b9d68c68f316526acfbf2913a496de9f130847f62568b6ac"
+    },
+    {
+      "structure": "field-overview",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "22ee8d444f24fe8d32a4de4de7fabee82df1bef3421b9fc8977e743c8fe0b547"
+    },
+    {
+      "structure": "stage-nodes",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "9b6c4a3fd296db8678ea77fa9865598c5b67a429eb606e2220a2ddccba86376d"
+    },
+    {
+      "structure": "room-network",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "d7e7aa12a85675d0759098dcfe7ce3f8a485bbc6aa27d701975c81996ec482ef"
+    },
+    {
+      "structure": "run-path",
+      "imageParts": 1,
+      "fullReferenceReturned": true,
+      "pngSha256": "86176474ede4f664f15b80bb28a37f7f1a626aac24a18bcaf2052c7715b470f6"
+    }
+  ]
+}

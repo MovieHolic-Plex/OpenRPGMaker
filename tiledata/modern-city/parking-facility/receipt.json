@@ -1,0 +1,293 @@
+{
+  "harness": "modern-chipset",
+  "round": "v1005-091516-679835",
+  "kind": "parking-small",
+  "group": "parking-kit",
+  "scope": "parking-facility-v1",
+  "contractSha256": "3e4e87aa9a291435dcd5cb1c1fc17ad5928e87dcc676d3d31e86e40c9701c757",
+  "contractPath": "harness-data/parking-facility-spec-r7-boundary-v2/parking-contract.json",
+  "feedbackSha256": "4cc58eac73890e93be2c5696214814b89d874695ac71f9dd984f3068e9f9bc03",
+  "nativeAttempts": 1,
+  "candidates": [
+    {
+      "candidate": "A",
+      "imageSha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+      "machine": {
+        "harness": "modern-chipset",
+        "kind": "parking-small",
+        "scope": "parking-facility-v1",
+        "group": "parking-kit",
+        "ok": true,
+        "hard": [],
+        "soft": {
+          "vehicles": 6,
+          "bays": 12,
+          "scale": 1
+        },
+        "sourceSha256": "e5182136d66ff81875f491f7dc33e1ed8a103097e47e3513261108a88d80517d",
+        "imageSha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+        "contractSha256": "3e4e87aa9a291435dcd5cb1c1fc17ad5928e87dcc676d3d31e86e40c9701c757",
+        "contextSources": [
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+            "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+            "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+            "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+            "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+            "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+            "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+            "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+            "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+            "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+          },
+          {
+            "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+            "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+          },
+          {
+            "path": "harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/art-calibration.json",
+            "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+          }
+        ],
+        "requiredReviewItems": [
+          "vehicle-scale",
+          "three-quarter",
+          "structure",
+          "lighting",
+          "entrance-circulation",
+          "vehicle-variety",
+          "space-use"
+        ],
+        "contextImages": [
+          {
+            "path": "qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/A.png",
+            "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+            "label": "12 bays / 6 vehicles facility assembly, pending independent verdict"
+          }
+        ],
+        "limitations": [
+          "Mechanical counts and hashes do not establish visual quality, circulation or facility completion. No driving or walking simulation was run."
+        ]
+      },
+      "independent": {
+        "verdict": "PASS",
+        "facilityVerdict": "PASS",
+        "png_sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+        "assemblySha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+        "items": [
+          {
+            "id": "vehicle-scale",
+            "verdict": "PASS",
+            "reasons": [
+              "assembly.png 원본 448×288 및 street-x3.png 1344×864를 직접 판독했다. x120/320의 두 열에서 각 6면, 각 열 1·3·5번째 점유로 총12면·6대를 확인했다. street-x3는 assembly의 정확한 최근접 3배 화소다.",
+              "원본1배 차량 불투명 화소가 배치 위치에서 전부 일치한다: car-1/3/5/6 각1583/1583, car-2/4 각2080/2080. 지붕 높은 재고차의 높이 차이를 확대 축척으로 오인하지 않았다.",
+              "원본 car-1 alpha bbox (5,20,75,48)는 파일 보존 범위이며 지상70×16과 동일시하지 않았다. 원본 접지 기준 y64/128/192로 타이어가 바닥과 이어지고, 화면 지붕의 북보행띠 겹침을 바닥 점유로 해석하지 않았다."
+            ]
+          },
+          {
+            "id": "three-quarter",
+            "verdict": "PASS",
+            "reasons": [
+              "승인 calibration 12548d59…png와 원본차·구조 참조 실물을 비교했다. 차량 지붕/보닛 윗면, 북벽 밝은 캡과 아래24px 전면, 기둥 윗면과 아래 전면, 조명 하우징의 위/아래 면이 승인 U/V/H 방향으로 읽힌다. 서벽에 임의 대각 옆면을 추가하지 않았다.",
+              "12개 낮은 턱은 top8×14의 승인 국소관계와 남단 전면2px를 유지한다. 오른향은 x198/398, 왼향은 x146/346으로 옮겨졌다. 실제6대 각각 앞타이어와 맞물리고 차량 뒤에 일부 가려진다. car-1과 car-5의 오른쪽, car-2의 오른쪽, car-3/4/6의 왼쪽 접점을 3배로 확인했다. 빈면 턱은 동일 낮은 단면이 노출되며 직립 기둥이나 떠 있는 막대로 보이지 않는다.",
+              "기둥/트랙은 차량 원본 화소를 덮지 않고 지정 경계/차로 위에 붙는다. 순수 옆면으로 승인 윗면을 대체하거나 접지와 떨어진 소품이 없다."
+            ]
+          },
+          {
+            "id": "structure",
+            "verdict": "PASS",
+            "reasons": [
+              "북벽 x16..448의 캡y4..8·전면y8..32가 문틀 양옆으로 연속된다. 서경계x16..24와 동경계x440..448이 바닥을 둘러싸며 남벽만 y280..288 낮은 컷어웨이다.",
+              "최신 반려 대상 westReturn을 원본/3배와 국소 확대에서 직접 확인했다. x16..24의 캡y248..256, 전면y256..280, y279 접지띠가 있고 y280 남벽 캡과 빈틈 없이 이어진다. 관측 화소 (16,248)=(175,177,184), (16,256)/(16,272)=(132,135,148), (16,279)/(23,279)=(81,98,104). 반환벽은 x24 이상을 침범하지 않는다. 서측 개구는 접지 기준y240..272 경사로에 한정되며 추가 측면 개구가 없다.",
+              "중앙기둥4개가 x216..224 접지y80..88/144..152/208..216/272..280에서 상단까지24px로 읽힌다. 양 차로와 북/동/남 연결 보행의 지상 점유를 막거나 차량을 가리지 않는다. 반복 구조와 경계가 실제 시설 깊이를 만든다."
+            ]
+          },
+          {
+            "id": "lighting",
+            "verdict": "PASS",
+            "reasons": [
+              "북벽2등 외에 y56/120/184의 서측·중앙 조명트랙6개와 남쪽y248 트랙1개, 밝은 등 하우징을 확인했다.",
+              "서측트랙은 서벽 경계에서 브래킷으로 이어지고 중앙/남트랙은 x216..224 기둥상단에서 x224..320으로 연결된다. 남기둥 접지y272에 대한 상단y248의 부착관계가 보인다. 큰 천장으로 차량/보행 몸통을 가리거나 바닥 얼룩으로 등설비를 대신하지 않는다.",
+              "밝은 위쪽 캡/하우징, 어두운 아래 전면과 접지띠는 원본차의 좌상 광원과 일치한다. 중앙·남쪽 조명 부재라는 source-review의 필수 지적이 해소됐다."
+            ]
+          },
+          {
+            "id": "entrance-circulation",
+            "verdict": "PASS",
+            "reasons": [
+              "서경사로[0,240,120,32]의 외곽 개구와 낮은 경계가 남연결[24,240,416,40]에 실제 이어진다. 재고 차단봉과 native 하우징/기초는 경사로 안에 접지되고, 남연결을 통해 x24..120 및224..320 양 차로로 이어지는 바닥과 방향 화살표가 보인다.",
+              "북벽 문[24,8,24,24]은 벽면 문틀에 붙고 하단y32가 북보행띠y32..48에 이어진다. 북띠는 두 열 북측 접근과 동보행x416..440로 이어지며 동보행은 남연결까지 열린다. 기둥은 이 경로 바깥이고 트랙의 화면 투영을 바닥 장애물로 오인하지 않았다.",
+              "이는 실제 그림의 정적 연결·접지·가림 판독이다. 운전 회전, 차량 문 여유, 엔진 보행 및 문 애니메이션 통과를 주장하지 않는다."
+            ]
+          },
+          {
+            "id": "vehicle-variety",
+            "verdict": "PASS",
+            "reasons": [
+              "낮은 지붕4대와 높은 지붕2대, 회청색2대·빨강2대·녹색2대, 오른향3대·왼향3대를 실제 실루엣/지붕/색/앞뒤 윤곽에서 확인했다.",
+              "원본차 및 modernCityTileset의 mc-veh-car2-a, mc-veh-sedan-b-red, mc-veh-sedan-b-red-l, mc-veh-car2-a-green-l의 실제 원본 시트 화소와 일치한다. 차량과 차단봉은 재고 재사용이며 새 구조/조명/경사로/문/하우징은 native-missing 부분으로 구분했다. 차량 종류 부족을 새 native 차량 제작으로 대체하지 않았다."
+            ]
+          },
+          {
+            "id": "space-use",
+            "verdict": "PASS",
+            "reasons": [
+              "두 주차열·두 종방향 차로·북/동 보행띠·남 연결로·서측 진입부로 바닥의 목적과 연결이 그림에서 읽힌다. 남쪽 바닥은 출입 및 두 차로 연결에 쓰이며 별도의 큰 무용도 빈 바닥이 없다.",
+              "구조기둥 반복, 양방향 차로 화살표, 문/경사로/차단기 및 부착 조명이 이전 회색 바닥과 동일차 반복 표본을 시설 구성으로 바꾼다. 설명 라벨이나 임시 상자를 완료 근거로 사용하지 않았다.",
+              "source-review.json의4개 INCOMPLETE 지적을 현 그림에 대조했다: 누락 시설은 구조/출입부로, 동일차·무용도 바닥은2차체3색/공간 조직으로, 중앙·남쪽 조명 부족은7개 부착트랙으로, 불명확 진입/동선은 경사로·문·방향 화살표와 정적 연결로 해소됐다."
+            ]
+          }
+        ],
+        "codes": [],
+        "reasons": [
+          "고정 acceptance-contract.json의7개 필수 항목을 모두 실제 원본1배/3배 이미지로 확인했다. 부품 PASS 또는 도면 PASS를 시설 판독의 대용으로 사용하지 않았다.",
+          "최신 westReturn 필수 수정과 이전 source-review 시설 INCOMPLETE 4개 지적은 현 조립 그림에서 해소됐다. 이 판정은 현재 해시의 독립 시각 검수이며 후속 감독의 조립 검수·선택·설치·정본 저장을 대신하지 않는다."
+        ],
+        "fix": [],
+        "warnings": [
+          "차량 운전·문 애니메이션 구현 및 실세계 건축법규 수치",
+          "미세한 색 취향, 무작위 바닥 노이즈와 장식량"
+        ],
+        "evidence": [
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/brief/review/A-a1/assembly.png",
+            "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/brief/review/A-a1/street-x3.png",
+            "sha256": "d666ebe2965c3287a58187ab0f56d772c752eebacf5bbb42d15cb4787825768a"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/parking-contract.json",
+            "sha256": "3e4e87aa9a291435dcd5cb1c1fc17ad5928e87dcc676d3d31e86e40c9701c757"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/parts-order.json",
+            "sha256": "c1f40f56912111b059da6a379fa3d500f3ff8b40a6c6586855c1d10c19405737"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/parking-brief.md",
+            "sha256": "bef37090ac2ef9296b8a9b8f401847b7eb31259e77b4f4b4a9f319a4e2e29534"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/acceptance-contract.json",
+            "sha256": "db0a24c5da4c5a33537c22a31c77064c802099fa7cd731057e965e25915059f7"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/source-scene.png",
+            "sha256": "172b4c7c168a55b34cb2dae1d477c3feb806ae35fe649ab7aaa4e109df1f80fb"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/source-review.json",
+            "sha256": "89c44321f948790f6fab92abe28ad9905a05e58fec73c96f7a2b2bb85fe64364"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/art-calibration.json",
+            "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+            "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-calibration-r5/sources/public-car2-a.png",
+            "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/harness-data/parking-calibration-r5/references/mc-assemble/images/mc-img-bld-kit-low3-c.png",
+            "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/src/assets/modernCityTileset.json",
+            "sha256": "b705ba3a9e797f86eb8cd600f2f5bf632b0787fcb6e8f965e3b5103bfc3681ca"
+          },
+          {
+            "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/public/assets/modern-city/modern-city-chipset.png",
+            "sha256": "d5a127263f1137417757f8bfbca3beb795fd6b6e492e270c94f2ea6991039184"
+          }
+        ]
+      },
+      "contextImages": [
+        {
+          "path": "qa-runs/parking-facility-spec-r7-boundary-v2/v1005-091516-679835/A.png",
+          "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8",
+          "label": "12 bays / 6 vehicles facility assembly, pending independent verdict"
+        }
+      ],
+      "contextSources": [
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+          "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+          "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+          "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+          "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+          "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+          "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+          "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+          "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+          "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+        },
+        {
+          "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+          "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+        },
+        {
+          "path": "harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/art-calibration.json",
+          "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+        }
+      ],
+      "selected": false
+    }
+  ],
+  "selection": "pending-human",
+  "installed": false,
+  "accepted": false
+}

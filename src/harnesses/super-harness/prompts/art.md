@@ -105,3 +105,25 @@ layout에 아래 필드를 추가한다:
 - phase=scene에 art-calibration.json이 있으면 camera의 references/groundPlane/heightAxis/lighting를 승인값 그대로 유지하고, 승인 sources를 도면 sources에 포함한다. 물체 위치는 조립 위치에 맞게 바꾼다.
 - scene 재조립은 간결한 주차장 범위로 하고 멈춤턱·벽/등 부착·마감의 이전 실패를 전부 교정한다. 그림의 큰 단색 비율을 줄이려고 임의 노이즈/소품을 넣지 않는다.
 독립 검수는 이전 실패 그림과 1배/3배 결과를 비교한다. 표본이 합격해도 사람 선택은 공간 재조립 검수 후다.
+
+
+## 다른 하네스와의 제작 연결
+
+에디터와 같은 정본 목록 `{{ROOT}}/src/harnesses/catalog.json`을 읽는다.
+산출물 종류와 시대·장르에 맞는 항목을 찾은 다음 그 항목의 doc/seed/진입 경로를 확인한다.
+하네스 id를 기억이나 임의 목록으로 지어내지 않는다. 목록이 없으면 그 사실을 기록하고
+정본 registry.ts와 해당 manifest를 확인한다. CLI/editorUi 존재는 감독 실행 어댑터 지원을 뜻하지 않는다.
+monster-collect-species는 monster-collect 게임 전용이며 일반 생물/적 캐릭터 제작에 배정하지 않는다.
+캐릭터·월드맵·타일·장면은 서로 다른 산출물이다. 다른 종류의 검사 합격으로 대신하지 않는다.
+다른 하네스가 이미 공용으로 등록한 현재 승인 결과가 있으면 새 제작 전에 재사용 가능성을 조사한다.
+기존 선택 원본·공용 판본·참고문서와 실제 그림을 확인한다. 사용자의 결정이나 native 판정을 대신 쓰지 않는다.
+부족한 연결은 어느 단계(실행/결과 수집/사용자 결정/공용 등록/프로젝트 설치)인지 기록한다.
+통합 설계: `{{ROOT}}/docs/superpowers/specs/2026-10-05-unified-harness-production.md`.
+
+## 입력과 생성 출력 구분
+reference-source.json의 sources 배열이 있으면 각 references의 directory/INDEX.json에서 현재 용도를 고른다.
+생성 과정에서 덮어쓰는 art-output 아래 장면 PNG/assembly-evidence.json을 제작 전 기준으로 쓸 때는
+layout.sources의 해당 ref에 role="generated-preview"를 지정한다. 감독이 독립 검수 전에 불변 사본을 만든다.
+원본 아틀라스·시드·명세·코드를 generated-preview로 분류하지 않는다. 생성 결과 자체는 수집 후 실제 그림으로 다시 검수한다.
+문맥 예산: 대형 JSON·소스·격자를 통째로 출력하지 않는다. rg로 위치를 찾고 최대 120줄씩 읽고,
+해당 용도 MD 전 페이지는 나누어 확인하며 진행 메모로 중복 열람을 줄인다. PNG/base64 텍스트 출력 금지.

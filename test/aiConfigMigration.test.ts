@@ -130,3 +130,49 @@ describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => 
     expect(config.model).toBe("gpt-5.6-sol");
   });
 });
+
+describe("loadAiConfig — 옛 공장 기본 모델을 새 기본으로 소급한다", () => {
+  it("저장된 옛 공장 기본(3.7-flash)은 새 기본(3.8-flash)으로 승격한다", () => {
+    // 2026-09-26 기본 모델 이동 때 상수·카탈로그만 바뀌고 **저장값에는 적용되지 않아**,
+    // 그 전에 앱을 켠 사용자는 3.7 에 그대로 남았다(사용자 보고 2026-10-05).
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      providerId: "google-antigravity",
+      model: "gemini-3.7-flash",
+      liteModel: "gemini-3.7-flash",
+    }));
+
+    const config = loadAiConfig();
+
+    expect(config.model).toBe("gemini-3.8-flash");
+    expect(config.liteModel).toBe("gemini-3.8-flash");
+  });
+
+  it("역할·Ultrabrain 슬롯에 남은 옛 공장 기본도 함께 승격한다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      providerId: "google-antigravity",
+      roleModels: {
+        writer: { provider: "google-antigravity", model: "gemini-3.7-flash", thinkingLevel: "medium" },
+        vision: { provider: "google-antigravity", model: "gemini-3.7-flash-tiered", thinkingLevel: "medium" },
+      },
+      ultrabrainModel: "gemini-3.7-flash",
+    }));
+
+    const config = loadAiConfig();
+
+    expect(config.roleModels?.writer?.model).toBe("gemini-3.8-flash");
+    expect(config.roleModels?.vision?.model).toBe("gemini-3.8-flash");
+    expect(config.ultrabrainModel).toBe("gemini-3.8-flash");
+  });
+
+  it("사용자가 직접 고른 모델은 그대로 보존한다", () => {
+    for (const kept of ["gemini-9-experimental", "glm-5.3", "gemini-2.5-pro"]) {
+      store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity", model: kept }));
+      expect(loadAiConfig().model, kept).toBe(kept);
+    }
+  });
+
+  it("Codex 제공자의 gemini 모델은 건드리지 않는다(제공자가 다르다)", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "openai-codex", model: "gemini-3.7-flash" }));
+    expect(loadAiConfig().model).toBe("gemini-3.7-flash");
+  });
+});

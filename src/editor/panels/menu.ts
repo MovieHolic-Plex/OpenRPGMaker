@@ -555,13 +555,33 @@ function renderFullscreenButton(): HTMLElement {
       },
     },
   });
-  const onChange = (): void => button.setAttribute("aria-pressed", document.fullscreenElement ? "true" : "false");
+  const paint = (fullscreen: boolean): void => button.setAttribute("aria-pressed", String(fullscreen));
+  const onChange = (): void => paint(Boolean(document.fullscreenElement));
   document.addEventListener("fullscreenchange", onChange);
-  disposeFullscreenButton = () => document.removeEventListener("fullscreenchange", onChange);
+  // 데스크톱 창의 네이티브 전체화면은 fullscreenchange 를 일으키지 않는다 — 상태를 따로 구독한다.
+  const nativeSubscribe = typeof window === "undefined" ? undefined : window.oprn?.onWindowFullscreen;
+  const disposeNative = nativeSubscribe ? nativeSubscribe(paint) : null;
+  const nativeQuery = typeof window === "undefined" ? undefined : window.oprn?.windowFullscreen;
+  if (nativeQuery) void nativeQuery().then(paint).catch(() => {});
+  disposeFullscreenButton = () => {
+    document.removeEventListener("fullscreenchange", onChange);
+    disposeNative?.();
+  };
   return button;
 }
 
 async function toggleFullscreen(): Promise<void> {
+  // 이 창은 네이티브 전체화면(fullscreen: true)으로 뜬다. 그 창에서 브라우저 Fullscreen API 는
+  // DOM 만 바꾸고 창 크기는 그대로여서 「축소」가 안 됐다 — 데스크톱 브릿지가 있으면
+  // 시작 화면 「화면 전환」 과 같은 창 컨트롤로 토글한다. 브라우저·팀 페이지에는 브릿지가 없다.
+  const nativeControl = typeof window === "undefined" ? undefined : window.oprn?.windowControl;
+  if (nativeControl) {
+    try {
+      if (await nativeControl("toggle-fullscreen")) return;
+    } catch {
+      // 브릿지 호출이 실패하면 아래 브라우저 경로로 내려간다.
+    }
+  }
   try {
     if (document.fullscreenElement) {
       if (typeof document.exitFullscreen !== "function") {
@@ -911,11 +931,8 @@ async function createProjectFromDialog(): Promise<void> {
   let seed: Project;
   try { seed = await createProjectStartSeed(choiceId, title, selection.startMode, selection.screenSize); }
   catch (error) { toast(`시작 프로젝트를 준비하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error"); return; }
-  // 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
+  // 게임 화면 크기(논리 뷰포트)는 createProjectStartSeed 가 넣는다. 타이틀 그림·파티클·음악은
   // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).
-  if (selection.screenSize === "wide") {
-    seed.system.playResolution = { width: 640, height: 360 };
-  }
   if (selection.gameDesignBrief) seed.gameDesignBrief = { ...selection.gameDesignBrief, generationPending: true };
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;

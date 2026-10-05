@@ -1,3 +1,4 @@
+import {ATLAS_CARTOGRAPHY_TEXTURE, createAtlasCartographyTileset, ensureAtlasCartographyReferences} from "./atlasCartography";
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
@@ -8,6 +9,7 @@ import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBar
 import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferences } from "./atlasBiomes";
 import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
 import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldmapSelectedTileset } from "./worldmapSelected";
+import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthoringTileset, ensureWorldmapAuthoringBrushes } from './worldmapAuthoring';
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
@@ -150,6 +152,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     // 목록에서 빼며, 맵이 있으면 칸 번호가 깨지지 않게 시트를 남긴다.
     if (id === SHARED_VILLAGE_OBJECT_ID && !villageObjectTilesetUsedByMaps(project)) {
       if (project.tilesets[id]) {
+      if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
         delete project.tilesets[id];
         changed = true;
       }
@@ -227,6 +230,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
   }
   changed = ensureTilesetHarnesses(project) || changed;
   for (const tileset of Object.values(project.tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
+  changed = ensureWorldmapAuthoringBrushes(project) || changed;
   return changed;
 }
 
@@ -358,6 +362,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  if (asset.textureKey === WORLDMAP_AUTHORING_TEXTURE) return createWorldmapAuthoringTileset();
   const tileset = bundledEasyRpgTilesetBase(asset);
   ensureRpgPlaceReferences(tileset);
   ensureRpgInteriorReferences(tileset);
@@ -388,6 +393,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) return createAtlasBiomeInteriorTileset();
   if (asset.textureKey === ATLAS_BIOME_DUNGEON_TEXTURE) return createAtlasBiomeDungeonTileset();
+  if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) return createAtlasCartographyTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();
@@ -423,6 +429,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
  * 중복 생성된다. 그 계약은 `test/bundledTilesetIdParity.test.ts` 가 생성자 결과와 대조한다.
  */
 function bundledTilesetIdForAsset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): string {
+  if (asset.textureKey === WORLDMAP_AUTHORING_TEXTURE) return WORLDMAP_AUTHORING_ID;
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILESET_ID;
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return SHARED_VILLAGE_OBJECT_ID;
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return FOREST_HARMONY_ID;

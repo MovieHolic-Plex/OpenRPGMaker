@@ -1,0 +1,214 @@
+{
+  "caseId": "npc-king",
+  "projectId": "5c43a671-14e9-4a58-8734-d6685a4972b2",
+  "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-king/project",
+  "codeCommit": "ed89479aedb3a8c2a58af8de06028d5eff8c5f5d",
+  "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+  "harnessDigest": "53bca005de087a4c4c2a67193444d93dc562c0b7b88afbc8724cbb428e4030b9",
+  "models": [
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "8b3cb812-a133-4a19-9fcd-f5592c522744",
+      "at": 1791170193045
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "8b3cb812-a133-4a19-9fcd-f5592c522744",
+      "at": 1791170200402
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "a26be87f-9022-4671-9608-aac39e95d6d9",
+      "at": 1791170232308
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791170291747
+    }
+  ],
+  "inputMode": "pi-command",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-character-cell",
+          "ok": true,
+          "detail": "요청한 실제 칩 tex_easyrpg_charset_people3 frame 25"
+        },
+        {
+          "id": "actual-candidate-image-received",
+          "ok": true,
+          "detail": "실제 제공자 입력의 검색 결과와 후보 PNG를 포함한 모델 응답 완료 영수증"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": true,
+          "detail": "허용 필드 이외의 프로젝트 전체 보존"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "requiredVisualEvidence": [
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/05-repeat.png"
+      ],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"5c43a671-14e9-4a58-8734-d6685a4972b2\",\"projectDir\":\"/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-king/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"20189e2e2e7c31c98344956c3780b19bc79fa4348a3d96371cf1be80a71d32b2\",\"reloadedSha256\":\"20189e2e2e7c31c98344956c3780b19bc79fa4348a3d96371cf1be80a71d32b2\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-image-review",
+      "notes": "실제 원본 후보의 금관·회색 수염·빨간 망토인 왕과 플레이의 왕이 일치한다. 시작·첫 대화·재대화에서 왕을 확인했고 미루의 원래 대사와 다른 두 NPC도 보존됐다. 저장 후 새 context 재로드 화면과 같은 전체 문서 SHA 영수증을 확인했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "candidate-preview-1.png",
+        "candidate-preview-2.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/05-repeat.png"
+      ]
+    }
+  },
+  "status": "pass",
+  "persistence": {
+    "projectId": "5c43a671-14e9-4a58-8734-d6685a4972b2",
+    "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-king/project",
+    "beforeRevision": 3,
+    "afterRevision": 4,
+    "afterSha256": "20189e2e2e7c31c98344956c3780b19bc79fa4348a3d96371cf1be80a71d32b2",
+    "reloadedSha256": "20189e2e2e7c31c98344956c3780b19bc79fa4348a3d96371cf1be80a71d32b2",
+    "sameTarget": true,
+    "sameStoredDocument": true,
+    "reloadEqual": true,
+    "flush": {
+      "kind": "saved",
+      "dirty": false
+    },
+    "indexedDb": {
+      "exists": true,
+      "conversations": 0,
+      "userEntries": 0
+    }
+  },
+  "visualReview": {
+    "schemaVersion": 1,
+    "status": "pass",
+    "reviewer": "codex-image-review",
+    "notes": "실제 원본 후보의 금관·회색 수염·빨간 망토인 왕과 플레이의 왕이 일치한다. 시작·첫 대화·재대화에서 왕을 확인했고 미루의 원래 대사와 다른 두 NPC도 보존됐다. 저장 후 새 context 재로드 화면과 같은 전체 문서 SHA 영수증을 확인했다.",
+    "images": [
+      {
+        "file": "after.png",
+        "sha256": "ea6ec11a88e967a177a3ad477a202fa704eef33d5b3feab8fa722872e3979c92"
+      },
+      {
+        "file": "reloaded.png",
+        "sha256": "782482fe1b7bc18822b8f464168f28eb599de6aa0f7a5de2b3e626ace1a5ba37"
+      },
+      {
+        "file": "candidate-preview-1.png",
+        "sha256": "85a7aff976581838e38ceae6e3c496be3f88cf22dc0b68c30320326089abd0af"
+      },
+      {
+        "file": "candidate-preview-2.png",
+        "sha256": "85a7aff976581838e38ceae6e3c496be3f88cf22dc0b68c30320326089abd0af"
+      },
+      {
+        "file": "runtime/02-start.png",
+        "sha256": "18e72493200c77f5dba7137db0c0e2aa13393931d3c42a506075b45795c3d809"
+      },
+      {
+        "file": "runtime/03-first-line.png",
+        "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+      },
+      {
+        "file": "runtime/05-repeat.png",
+        "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+      }
+    ],
+    "resultDigest": "509101dbdcd53411e59c2c479666228af53e6a7fe81e1eeac72ae24b6666d871",
+    "reviewedAt": "2026-10-05T03:23:39.356Z"
+  }
+}

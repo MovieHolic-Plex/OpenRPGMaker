@@ -616,3 +616,7 @@ No source image or image-generation model is used. The humanoid batch generator
 loads this same authoring source. Repository code/asset policy applies.
 The later teal redesign uses 22 colors, independently posed heads and necks,
 and a separately drawn fallen body across the same nine-cell battle contract.
+
+## 새 지도 지형32px (2026-10-05)
+
+`atlas-cartography/chipset.png`: 새 코드 도트 지형, 원본 `scripts/content/build-atlas-cartography.py`. 거점 그림은 기존 사람 승인 월드맵 아이콘의 원본 화소를 최근접2배로 재사용했다. 원본 해시/승인 기록은 `tiledata/atlas-cartography/sheet.json`, 원래 출처는 `atlas-cartography/ATTRIBUTION.md`와 `worldmap-icons/ATTRIBUTION.md`를 따른다.

@@ -386,6 +386,8 @@ def _main(a):
         world['icon_selection'] = selection
     report = dict(theme=theme['id'] if theme else None, iconset=iconset.id, journey=journey['id'], terrain_seconds=t['seconds'], role_purity=t['purity'], palettes={})
     files = {}
+    tilemaps = {}
+    terrain_walk = walk_rows(world)
     for pal in palettes:
         tint = a.tint_icons if a.tint_icons is not None else pal.get('icon_tint', 0.25)
         road_px = t['role'][np.searchsorted(t['ukeys'], KP.key_of(t['C']))] == KP.GID['road'] if theme else None
@@ -403,6 +405,8 @@ def _main(a):
         final = selected.paste(img, selection) if selected else W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
         fn = ('%s-%s.png' % (theme['id'], pal['id'])) if theme else ('%s-%s.png' % (iconset.id, pal['id']))
         Image.fromarray(final).save(out / fn, optimize=True)
+        from kit_tilemap import pack
+        tilemaps[pal['id']] = pack(img, world, terrain_walk, out, Path(fn).stem)
         files[pal['id']] = fn
         m = separation_metrics(img, t['C'], t['ukeys'], t['role'])
         im = icon_metrics(img, final, ic, sky_site)
@@ -411,6 +415,7 @@ def _main(a):
             pal['id'], fn, tint, m['key_min_pair'][0], m['key_min_pair'][1], m['key_min_steps'][0], m['key_min_steps'][1]))
         print('            아이콘 구별(둘레와 다른 화소 비율): 최저 %s %.2f · 중앙 %.2f' % (im['min'][0], im['min'][1], im['median']))
     world.update(iconset=iconset.id, icons_used=sorted(set(assign.values())), palettes=[p['id'] for p in palettes], images=files)
+    world['tilemaps'] = tilemaps
     if selection:
         world['icons_used'] = sorted({site['iconId'] for site in selection['rendered']})
         report['icon_selection'] = selection

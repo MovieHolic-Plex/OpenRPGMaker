@@ -124,7 +124,7 @@ const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies 
 const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
 const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
-const PLAY_RESOLUTION_PRESETS = ["320x240", "426x240", "640x360", "640x480", "custom"] as const;
+const PLAY_RESOLUTION_PRESETS = ["320x240", "480x270", "426x240", "640x360", "640x480", "custom"] as const;
 type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
@@ -766,8 +766,9 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
   const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
   const labels: Record<PlayResolutionPreset, string> = {
     "320x240": "320 × 240 · 클래식 4:3",
-    "426x240": "426 × 240 · 와이드 16:9",
-    "640x360": "640 × 360 · 와이드",
+    "480x270": "480 × 270 · 와이드 16:9 (새 프로젝트 기본)",
+    "426x240": "426 × 240 · 와이드 (정수 배율 안 맞음)",
+    "640x360": "640 × 360 · 와이드 넓게",
     "640x480": "640 × 480 · 확장 4:3",
     custom: "직접 입력",
   };

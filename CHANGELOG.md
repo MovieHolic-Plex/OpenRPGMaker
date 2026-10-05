@@ -5,6 +5,169 @@
 
 <!-- releases -->
 
+## 0.139.0 — 2026-10-05
+
+### 기능
+
+- **ai** — 조수 「턴 사이 기록」 — 각 턴 밖 프론트 액션만 읽는 표면과 버튼 (`07a68a1`)
+
+### 수정
+
+- **modern-chipset** — isolate Claude worker context as well as Codex (`2c8dfdd`)
+- **super-harness** — persist provider retries and recover approved art inputs (`c1a7f7a`)
+- **ai** — 턴 사이 기록을 툴바 행 밖으로 — 좁은 도크에서 한 글자 폭으로 눌리던 것 (`02903c2`)
+
+### 문서
+
+- **ai** — 턴 사이 기록 위키를 배치·검증 실측에 맞춤 + 화면 증거 추가 (`ac2e847`)
+
+### 테스트
+
+- **ai** — 복사 스텁에 인자 타입을 붙여 tsc void/string 불일치를 없앤다 (`19a7591`)
+
+## 0.138.0 — 2026-10-05
+
+### 기능
+
+- **harnesses** — share the canonical catalog for unified production planning (#2174) (`c2d1fac`)
+- 월드맵 팔레트에 연결 지형 붓과 빈 지도 저작 추가 (`49572a2`)
+
+### 수정
+
+- 월드맵 경사로 폭·빈 칸 채우기·아이콘 설명을 타입에 맞춘다 (`90a8f26`)
+- unify audited charset references with full tool evidence (#2175) (`2171170`)
+- 월드맵 고개 폭을 맞추고 팔레트 저작 정본 증거 기록 (`ac6c3bf`)
+
+## 0.137.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — grow keyword seeds into continuous space demos (#2173) (`db5a6f7`)
+- **ai** — simplify the first request with progressive disclosure (`4bf51c9`)
+- add 300 town props and prioritize selected shared assets (#2170) (`5973e61`)
+
+### 수정
+
+- 캐릭터 칩 이름·태그 전수 조사 및 검색 누락 교정 (#2168) (`6367f81`)
+- isolate native drawing worker session context (#2169) (`dbe4304`)
+
+### 문서
+
+- **qa** — record first-request UI and export evidence (`b39b1d1`)
+
+## 0.136.0 — 2026-10-05
+
+### 기능
+
+- require whole-space tile demos before user decisions (#2167) (`9810566`)
+
+### 수정
+
+- preserve prop worker content paths and recover misplaced candidates (`14be169`)
+- **worldmap** — separate reusable materials from continent maps (`9dbade9`)
+- recover space review failures and report real native outcomes (#2163) (`30b39dc`)
+
+### 문서
+
+- **worldmap** — record canonical material palette browser reload (`298e908`)
+
+## 0.135.0 — 2026-10-05
+
+### 기능
+
+- show live space milestones and actual image outputs (`f433025`)
+- **editor** — unify AI workspace and simplify scoped log exports (`132c363`)
+
+### 수정
+
+- **editor** — 쓰이지 않는 measuredWidth를 지운다 (`13fe21f`)
+- parallelize isolated space work and bound layout review scope (`299d9ec`)
+- 실제 칩 이미지와 선택 ID로 조수 캐릭터 선택 검증 (#2157) (`b242ee4`)
+
+### 문서
+
+- capture AI workspace and log export UI evidence (`8957a4a`)
+
+### 기타
+
+- record workspace interactions and report dev reload limitation (`cccffa2`)
+
+## 0.134.0 — 2026-10-05
+
+### 기능
+
+- add larger smaller and custom-size prop redraw actions (`beaaa10`)
+
+### 수정
+
+- put prop images first and confirm with double-click (`f669c35`)
+- **ai** — 저장된 설정의 옛 공장 기본 모델(gemini-3.7-flash)을 3.8 로 소급 승격 (`3e88796`)
+- **super-harness** — distinguish queue waits from missing execution links (`a710cab`)
+- simplify prop selection and clarify shared database publication (`f1d2b90`)
+
+## 0.133.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — simplify example and result decisions to allow or deny (`817a1a2`)
+- **worldmap** — record live editor assistant and canonical reload (`44b5af5`)
+- **worldmap** — implement six playable navigation structures (`5762ad8`)
+
+### 수정
+
+- **super-harness** — size all spaces from content and shared circulation (`223fac9`)
+- **super-harness** — recover orchestration faults without user intervention (`b1e305f`)
+- **worldmap** — allow dedicated tilesets for newly authored atlas maps (`9f9723d`)
+- 데스크톱 앱 상단바 전체화면 버튼이 창을 축소하지 못하던 문제 (`2c080c0`)
+- **worldmap** — wait for the native assistant composer when recording (`608ce6e`)
+- **worldmap** — retain browser startup diagnostics for live recording (`847079f`)
+- **super-harness** — recover malformed review responses without losing verdicts (`5f8c3ef`)
+- **assistant** — AI 조수가 깐 NPC 의 기본 이동을 정지에서 배회로 (`21509da`)
+- **ai** — allow collapsing the conversation dock (`11c7a95`)
+- **worldmap** — keep existing continent map as default (`48e0245`)
+- **worldmap** — replace placeholder maps with distinct shared cartography (`a21c6bc`)
+
+### 문서
+
+- **ai** — record conversation collapse UI evidence (`682d622`)
+- refresh wiki index after main integration (`7717497`)
+
+### 테스트
+
+- **qa** — NPC 이동 기본값 재현·충돌판정·런타임 배회 증거 스크립트 (`005ffb5`)
+
+## 0.132.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — collect feedback on rendered space examples (`a55dc29`)
+- let assistants author map OST and preload gameplay during openings (`7477188`)
+
+### 수정
+
+- **super-harness** — guide chip choices with side-by-side parts (`2843cb1`)
+- capture deferred Phaser keyboard events only once (`f5db3e0`)
+- verify saved audio playback at the actual opening handoff (`2b85edd`)
+
+### 문서
+
+- verify integrated runtime and final SQLite audio revision (`56b160b`)
+- record canonical OST playback and background opening evidence (`fda51ae`)
+
+## 0.131.0 — 2026-10-05
+
+### 기능
+
+- **start** — default new projects to 480x270 (16:9) play resolution (`6167df5`)
+- **ai** — let users collapse and restore the right team sidebar (`2adbe66`)
+- **assistant** — AI 조수용 플레이 프리셋 96종 추가 (#2132) (`21754df`)
+
+### 수정
+
+- **super-harness** — show live worker progress and queue reasons (`fe653fe`)
+- separate preparation role from facility review output (#2133) (`d516777`)
+- **assistant** — forbid empty/duplicate enum members across all tool schemas (`9aa3b07`)
+
 ## 0.130.0 — 2026-10-05
 
 ### 기능

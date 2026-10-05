@@ -342,3 +342,12 @@ and captures 1440x900/1024x768. No media play/fetch mocking or remote content mu
 작성하고 `src/assets/originalMusic.ts`로 stereo WAV를 합성하여 현재 프로젝트 music 리소스에 등록한다.
 범위·정본 저장·재생 근거·음악 모델과의 구분은 [타이틀 오프닝 효과](title-opening-effects.md)의
 「스토리보드·독립 그림 모션·원곡 BGM」 절을 따른다. 카탈로그를 들었다고 거짓 청취 증거를 쓰지 않는다.
+
+## 맵 OST·키 입력 효과음의 직접 저작 (2026-10-05)
+
+- `generate_original_bgm`은 맵/타이틀/오프닝/전투 공통이다. 원곡 요청은 검색 없이 직접 작곡한다. 악기는 piano/bell/strings/bass/flute/pluck/drum. 기존 생성물을 새 오디오 모델이 만들었다고 설명하지 않는다: 조수 악보+내장 합성 WAV다.
+- 맵은 `score.loop:true`로 작성한다. 끝 음의 release와 유한 순환 room tap을 첫 주기로 접고 전체 fade를 생략한다. 기본 false는 기존 오프닝 시작/끝 fade를 보존한다. 4/4·90초·512음표 한계는 같다.
+- `generate_original_se`는 20ms~5초, 1~8층 wave/sweep/envelope/pan 패치로 stereo WAV를 만든다. UI는 조용한 30~100ms 커서와 짧은 서로 다른 확정/취소를 권한다. `set_title_screen.sounds`와 image `direction.soundResourceId`/컷신 se에 실제 연결한다. 생성 성공은 청취 증거가 아니다.
+- `get_soundtrack`은 맵 상속을 실제 `project/mapMusic.ts` 해석기로 계산해 유효 음악과 사용처를 돌려준다. `recommend_bgm`도 `usedOnMaps`를 보이고 동점에서 미사용 곡을 먼저 준다. 맵 생성 자동 선택은 임시값이며 조수 안내/모험 선노출 도구가 장소별 음악 변주·효과음 저작을 요청한다.
+- 같은 곡 반복 원인: 이 작업의 실제 정본 서재는 BGM 미지정으로 system 기본 `cc0-bgm-rtp-fld-003`을 상속했고 기억의 길도 그 id를 명시했다. 기존 작곡 안내는 오프닝 전용이었다. 카탈로그 설치가 작은 환경에서는 자동 선택 후보도 제한된다. 무관한 맵에 같은 기본 곡을 반복하는 것은 완료 기준이 아니다.
+- 원곡/효과음은 기존 uploaded music/sound+audioDescriptions 경로로 저장·내보낸다. 별도 음악 서버/계정은 필요 없다. 품질 범위는 합성 악기 연주이며 보컬/실제 오케스트라 녹음은 지원하지 않는다. 계약 `test/originalSoundtrack.test.ts`; 이번 작업의 로컬 Vitest/게이트는 실행 제한에 따라 돌리지 않는다.

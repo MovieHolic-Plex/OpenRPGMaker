@@ -89,6 +89,8 @@ import {
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 import { createCinematicAssets } from './cinematicAssets';
 import { warmPlayGameRuntime } from './createPlayGame';
+import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
+import { resolveMapBgm } from './mapBgm';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import {
   recordPlayBootDiagnostic,
@@ -170,6 +172,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let openingController: AbortController | null = null;
   let openingMusicPlayback: ReturnType<typeof playCinematicSequence> | undefined;
   const cinematicAssets = createCinematicAssets();
+  const audioWarmup = createRuntimeAudioWarmup();
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
@@ -278,32 +281,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const opening = store.getCurrent().system.opening;
     const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId
       || options.shouldPlayOpening?.() === false;
-    if (!bypass && opening?.enabled && opening.scenes.length > 0) {
-      stopTitleBgm();
-      clearChildren(layout);
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
-      playStage = surface.stage;
-      cleanupPlaySurface = surface.cleanup;
-      layout.append(surface.viewport);
-      surface.sync();
-      const controller = new AbortController();
-      openingController = controller;
-      let lastFrame: string | undefined;
-      let handoffFadeMs = 500;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
-      void playback.done.then(result => {
-        if (result === "aborted" || !shellActive || openingController !== controller) return;
-        openingController = null;
-        bootRun(request, lastFrame, handoffFadeMs, playback);
-      });
-      return;
-    }
-    bootRun(request);
+    bootRun(request, !bypass && opening?.enabled && opening.scenes.length ? opening : undefined);
   };
 
-  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string, cinematicFadeMs = 500, musicPlayback?: ReturnType<typeof playCinematicSequence>): void => {
+  const bootRun = (request: PlayBootRequest, opening?: NonNullable<ReturnType<typeof store.getCurrent>['system']['opening']>): void => {
     stopGame();
-    openingMusicPlayback = musicPlayback;
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
     lastBootRequest = request;
@@ -330,7 +312,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
-    const loading = mountPlayLoadingOverlay(layout, "engine", cinematicBackdrop, cinematicFadeMs);
+    const loading = mountPlayLoadingOverlay(layout, "engine");
+    // Normal opening boots have no visible loading card. Recovery can reveal this same overlay.
+    if (opening) { loading.root.hidden = true; loading.root.style.display = 'none'; }
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
@@ -354,7 +338,43 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (history) session.clearHistory = history;
     else delete session.clearHistory;
     if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
-    void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
+    if (!opening) {
+      void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
+      return;
+    }
+    stopTitleBgm();
+    const controller = new AbortController();
+    openingController = controller;
+    let lastFrame = '#000', handoffFadeMs = 500;
+    const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
+      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main,
+      musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
+      onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
+    openingMusicPlayback = playback;
+    // Start the real engine, decode textures and assemble the map during the cinematic.
+    // PlayScene gates time, events, input and map audio until the presentation handoff.
+    const prepared = bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true);
+    void playback.done.then(async result => {
+      if (result === 'aborted' || run !== startRun || !shellActive) return;
+      openingController = null;
+      // Retain the last composition if a short opening/early skip beats map readiness.
+      const cover = el('div', { class: 'cinematic-sequence', dataset: { testid: 'opening-map-handoff' } });
+      if (lastFrame.startsWith('#')) cover.style.background = lastFrame;
+      else cover.append(el('img', { class: 'cinematic-image', attrs: { src: lastFrame, alt: '' } }));
+      surface.stage.append(cover);
+      await prepared;
+      if (run !== startRun || !shellActive) { cover.remove(); return; }
+      const scene = activeScene();
+      if (!scene || loading.root.dataset.stage === 'error') { cover.remove(); return; }
+      playback.releaseMusic(result === 'skipped' ? 0 : 600);
+      // No gameplay advances behind the departing cover, even the start-map autorun.
+      const fadeMs = result === 'skipped' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : handoffFadeMs;
+      if (fadeMs > 0) await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' }).finished.catch(() => undefined);
+      cover.remove();
+      if (run !== startRun || !shellActive) return;
+      scene.activateInitialPresentation();
+      surface.stage.focus({ preventScroll: true });
+    });
   };
 
   // 예비검사가 시작 맵/좌표를 재배선했으면 그 결과가 곧 이번 런의 스폰이다.
@@ -375,10 +395,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     repairs: readonly string[],
   ): void => {
     if (run !== startRun) return;
+    openingController?.abort();
+    openingController = null;
     openingMusicPlayback?.releaseMusic(600);
     const described = describeBootFailure(context);
     // 부팅이 ready 를 지나 오버레이를 이미 걷어낸 뒤 터졌을 수도 있다 → 그때는 새로 올린다.
     const overlay = loading.root.isConnected ? loading : mountPlayLoadingOverlay(layout, "error");
+    overlay.root.hidden = false;
+    overlay.root.style.removeProperty('display');
     overlay.showRecovery({
       title: described.title,
       reason: described.reason,
@@ -405,7 +429,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     loading: PlayLoadingOverlay,
     run: number,
     startedAt: number,
-    repairs: readonly string[]
+    repairs: readonly string[],
+    presentationPending = false
   ): Promise<void> => {
     let resolveReady: (() => void) | null = null;
     const diagnosticOwner = diagnosticToken();
@@ -413,7 +438,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       resolveReady = resolve;
     });
     const signalReady = (): void => {
-      if (resolveReady) openingMusicPlayback?.releaseMusic(600);
+      if (resolveReady && !presentationPending) openingMusicPlayback?.releaseMusic(600);
       resolveReady?.();
       resolveReady = null;
     };
@@ -442,6 +467,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       loading.setProgress(0.08);
       bootDiag("engine", true, { detail: "startPlayGame" });
       const nextGame = await startPlayGame(phaserContainer, session, {
+        initialPresentationPending: presentationPending,
         qaInstrumentation: options.qaInstrumentation,
         keyboardOnly: true,
         initialEventTestId: eventTestId,
@@ -765,6 +791,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 텍스트 입력 컨트롤(런타임 디버그 패널의 숫자 입력 등)에 치는 글자는 게임 키가 아니다. 여기서
     // 걸러야 손 슬롯 숫자키가 preventDefault 로 글자를 삼키지 않고, Escape 가 메뉴를 열지 않는다.
     if (event.isComposing || isTextEntryTarget(event.target)) return;
+    if (openingController || game?.registry.get('initialPresentationPending') === true || layout.querySelector('[data-testid="opening-map-handoff"]')) return;
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
@@ -876,6 +903,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (!shellActive || !firstEnter) return;
       cinematicAssets.warm(project, project.system.opening);
+      const field = resolveMapBgm(project, project.startMapId);
+      audioWarmup.warm(project, [titleProject.system.titleScreen?.musicResourceId,
+        ...Object.values(titleProject.system.titleScreen?.sounds ?? {}),
+        field.kind === 'play' ? field.resourceId : undefined]);
       void warmBundledPlayAssets(project);
       void warmPlayGameRuntime().catch(() => undefined); // Actual boot retains normal recovery/retry.
     }));
@@ -883,8 +914,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const openTitleCredits = (): void => {
-    emitTitleJuice("title-select");
+    emitTitleJuice("title-confirm");
     openLicenseDialog(() => {
+      emitTitleJuice('menu-back');
       const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
       if (titleEl) focusSelectedTitleOption(titleEl);
     });
@@ -987,12 +1019,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const emitTitleJuice = (event: RuntimeJuiceEvent): void => {
     const sounds = store.getCurrent().system.titleScreen?.sounds;
-    // cursor/confirm overrides only; title-enter stays default; cancel SE is never played here.
+    // Credits returning to the title uses the authored cancel cue.
     const soundResourceId =
       event === "title-select"
         ? sounds?.cursorSeResourceId
         : event === "title-confirm"
           ? sounds?.confirmSeResourceId
+          : event === 'menu-back'
+            ? sounds?.cancelSeResourceId
           : undefined;
     emitRuntimeJuice({
       event,
@@ -1069,6 +1103,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   teardownShell = () => {
     shellActive = false;
     cinematicAssets.dispose();
+    audioWarmup.dispose();
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     stopGame();

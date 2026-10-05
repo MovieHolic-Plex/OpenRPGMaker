@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "reviewer": "codex-root",
+  "notes": "후보 원본 PNG와 실제 플레이에서 금관·회색 수염·빨간 망토의 왕을 확인했다. 시작·첫 대화·재대화에서 동일 왕이 표시되고 골렘으로 바뀌지 않는다. 미루의 원래 대사와 다른 두 NPC가 보존되며 글자와 칩은 잘림 없이 읽힌다. 편집기 적용과 새 context 재로드 그림도 직접 확인했다.",
+  "images": [
+    {
+      "file": "before.png",
+      "sha256": "4540532fbbc666105ede21082de2c63796c17600be45304dbfb37c20e4651d74"
+    },
+    {
+      "file": "candidate-preview-1.png",
+      "sha256": "4f820b97c03d2dd7753de76d988ab96fc4acd3560970edbc5c54edf6e5e26111"
+    },
+    {
+      "file": "candidate-preview-2.png",
+      "sha256": "4f820b97c03d2dd7753de76d988ab96fc4acd3560970edbc5c54edf6e5e26111"
+    },
+    {
+      "file": "candidate-preview-3.png",
+      "sha256": "b9e60e5aaa07da2a91d76c928e4938be7493aae3a6fbb9d78d0cc5e34652929c"
+    },
+    {
+      "file": "after.png",
+      "sha256": "81d5eb4489a362fd12f6f08ce816802ee0b993763ef69bbe319030f463537152"
+    },
+    {
+      "file": "reloaded.png",
+      "sha256": "c1f99c62519dc0db8ebeb856b2129d34ce5265673124474b9c1bd9c98871c6a2"
+    },
+    {
+      "file": "runtime/02-start.png",
+      "sha256": "18e72493200c77f5dba7137db0c0e2aa13393931d3c42a506075b45795c3d809"
+    },
+    {
+      "file": "runtime/03-first-line.png",
+      "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+    },
+    {
+      "file": "runtime/05-repeat.png",
+      "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+    }
+  ],
+  "resultDigest": "fe3bd0d6eaa22f3a321b3b9c8e9d893a7d41e8acbe9e10ad2b624e8ccc69b592",
+  "reviewedAt": "2026-10-05T05:38:41.348Z"
+}

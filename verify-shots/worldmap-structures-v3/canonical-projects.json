@@ -1,0 +1,77 @@
+{
+  "source": "SQLite projects, closed and reopened",
+  "cases": [
+    {
+      "structure": "region-routes",
+      "atlasId": "examples_region_routes",
+      "projectId": "534aa187-356c-4263-832e-244377f2508a",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/region-routes",
+      "revision": 3,
+      "startMapId": "examples_region_routes_map0",
+      "startPos": {
+        "x": 20,
+        "y": 15
+      }
+    },
+    {
+      "structure": "scaled-world",
+      "atlasId": "examples_scaled_world",
+      "projectId": "cc091ead-61a3-409e-ab74-c65b600a115b",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/scaled-world",
+      "revision": 3,
+      "startMapId": "examples_scaled_world_overworld",
+      "startPos": {
+        "x": 18,
+        "y": 54
+      }
+    },
+    {
+      "structure": "field-overview",
+      "atlasId": "examples_field_overview",
+      "projectId": "e274c63c-f00f-417c-95c3-0e99314b8379",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/field-overview",
+      "revision": 3,
+      "startMapId": "examples_field_overview_map6",
+      "startPos": {
+        "x": 20,
+        "y": 15
+      }
+    },
+    {
+      "structure": "stage-nodes",
+      "atlasId": "examples_stage_nodes",
+      "projectId": "331c6a6c-4459-4edf-a250-5bcb9af7982b",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/stage-nodes",
+      "revision": 3,
+      "startMapId": "examples_stage_nodes_map0",
+      "startPos": {
+        "x": 2,
+        "y": 21
+      }
+    },
+    {
+      "structure": "room-network",
+      "atlasId": "examples_room_network",
+      "projectId": "64f38f6a-2237-425b-86e4-15fd499989ed",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/room-network",
+      "revision": 4,
+      "startMapId": "examples_room_network_map0",
+      "startPos": {
+        "x": 2,
+        "y": 25
+      }
+    },
+    {
+      "structure": "run-path",
+      "atlasId": "examples_run_path",
+      "projectId": "8af71241-f680-4298-b051-f96544016fce",
+      "folder": "/home/main/.local/share/oprn/worldmap-structures-v3-20261005/run-path",
+      "revision": 3,
+      "startMapId": "examples_run_path_map0",
+      "startPos": {
+        "x": 2,
+        "y": 21
+      }
+    }
+  ]
+}

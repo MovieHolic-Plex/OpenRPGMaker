@@ -12,6 +12,7 @@ export type StructureKitShelfInput = {
   readonly tileset: TilesetDef;
   readonly activeKitId: string | null;
   readonly rerender: () => void;
+  readonly title?: string;
 };
 
 /** 아이콘 조립 폭 상한(타일) — 킷 단위를 이 폭 안에서 최대한 반복해 보여준다. */
@@ -26,7 +27,7 @@ export function makeStructureKitShelf(input: StructureKitShelfInput): HTMLElemen
     class: "structure-kit-shelf panel-subsection",
     dataset: { testid: "structure-kit-shelf" },
   });
-  shelf.append(el("div", { class: "structure-kit-shelf-title", text: "내 구조물" }));
+  shelf.append(el("div", { class: "structure-kit-shelf-title", text: input.title ?? "내 구조물" }));
   const grid = el("div", { class: "structure-kit-shelf-grid" });
   for (const kit of learnedKits) grid.append(makeKitButton(kit, input));
   shelf.append(grid);
@@ -37,7 +38,7 @@ function makeKitButton(kit: SectionStructureKitDef, input: StructureKitShelfInpu
   const active = input.activeKitId === kit.id;
   const size = structureKitSize(kit);
   const unitWidth = Math.max(1, size.width);
-  const columns = unitWidth * Math.max(1, Math.floor(ICON_MAX_COLUMNS / unitWidth));
+  const columns = kit.ai?.repeatability === 'fixed' ? unitWidth : unitWidth * Math.max(1, Math.floor(ICON_MAX_COLUMNS / unitWidth));
   const icon = renderTileCellsToCanvas({
     tileset: input.tileset,
     widthTiles: columns,

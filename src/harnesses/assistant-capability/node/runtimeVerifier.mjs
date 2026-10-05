@@ -20,7 +20,7 @@ const beat = (id,ops,expect={},typed=true) => ({id,ops:[...ops,
     [{kind:'waitForVisible',testid:'dialogue-box',descendant:'.dialogue-page-cursor',timeoutMs:10000}]:[]),
 ],expect,shot:true});
 export function markVisualTargets(entry,out,report) {
-  const ids={line:['first-message','repeat-message'],move:['first-message','repeat-message'],
+  const ids={graphic:['start','first-line','repeat'],line:['first-message','repeat-message'],move:['first-message','repeat-message'],
     delete:['walk-through-deleted-npc'],inn:['price-dialogue','offer','decline','accept'],
     choice:['question','choices','east-branch','inn-branch','cancel'],reward:['first-message','repeat-message','after-reentry']};
   const targets=report.beats.filter(b=>b.shot&&(ids[entry.runtime]??[]).includes(b.id)).map(b=>b.shot);
@@ -31,7 +31,7 @@ export function scenarioFor(entry, projectFile, initial) {
   const position={mapId:MAP,...initial.startPos};
   const beats=[beat('title',[],{testidPresent:['title-screen']}),
     beat('start',[{kind:'key',key:'Enter'},{kind:'waitForRuntime'}],{...position,gold:100,testidAbsent:['dialogue-box','title-screen']})];
-  if(['line','move'].includes(entry.runtime)) {
+  if(['line','move','graphic'].includes(entry.runtime)) {
     const line=entry.runtime==='line'?'동문에서 만나자.':'숲의 약초꾼 세라 누나가 반짝이는 풀';
     beats.push(beat('first-line',dialogue(),{...position,visibleText:{'dialogue-box':line}}),
       beat('close',close(),{...position,testidAbsent:['dialogue-box']}),

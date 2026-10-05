@@ -1,0 +1,24 @@
+{
+  "currentSavedReferenceOwner": "worldmap_selected",
+  "categories": [
+    {
+      "id": "wmi-authoring",
+      "documents": 60
+    },
+    {
+      "id": "wmi-authoring-more",
+      "documents": 20
+    }
+  ],
+  "savedReferencesEqualBundle": true,
+  "brushes": 79,
+  "connectedGroups": 77,
+  "tileCount": 3543,
+  "sha256": "2ae6c6fa532dc3128f5156fc97f78dd8123948ccb339ebb06cc5d1d780ea06df",
+  "matchesManifestHash": true,
+  "hasTransparentForest": true,
+  "seaBlocked": true,
+  "savedCoordinateDictionariesVerified": 79,
+  "savedSourceCellsVerified": 3528,
+  "savedNeighborMasksVerified": 18992
+}

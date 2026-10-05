@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "5031be54e0",
+  "sourceDigest": "f9798e54f18dc25d38693a25c00527b56a7c4d95da6092bba3cf1cab1ed55473",
+  "artifactVersion": "d3d3c8837004df7c",
+  "runtimeFilesCompared": 6,
+  "runtimeFilesIdenticalToPlayedZip": true,
+  "different": [],
+  "appViteBuild": "completed",
+  "playerViteBuild": "completed",
+  "localVitestGatesTypecheck": "not run (session instruction)"
+}
