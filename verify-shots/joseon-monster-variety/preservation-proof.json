@@ -1,0 +1,21 @@
+{
+  "unchangedMonsterPNGs": [
+    "field-rat",
+    "cave-bat",
+    "straw-dokkaebi",
+    "lantern-wisp",
+    "maiden-ghost",
+    "drowned-ghost",
+    "grave-ghoul",
+    "fox-spirit",
+    "stone-dokkaebi",
+    "bamboo-specter",
+    "masked-bandit",
+    "bronze-dokkaebi",
+    "bride-wraith",
+    "mountain-tiger"
+  ],
+  "unchangedMonsterCount": 14,
+  "terrainAndEventsUnchanged": true,
+  "actorTexturesUnchanged": true
+}

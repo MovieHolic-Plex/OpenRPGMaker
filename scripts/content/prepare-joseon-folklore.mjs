@@ -13,6 +13,8 @@ for(const role of roles) {
   for(const key of collections) data[key].push(...(source[key]??[]));
   actions.push(...(source.enemyActions??[]));
 }
+const expansion=JSON.parse(fs.readFileSync(path.join(root,'monsters/expansion.json'),'utf8'));
+for(const key of collections) data[key].push(...(expansion[key]??[]));
 const enemyChoreographies=JSON.parse(fs.readFileSync(path.join(root,'skills/enemy-choreographies.json'),'utf8'));
 data.skillChoreographies.push(...enemyChoreographies.skillChoreographies);
 for(const [skillId,choreographyId] of Object.entries(enemyChoreographies.skillBindings)) {

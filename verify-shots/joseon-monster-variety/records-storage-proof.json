@@ -1,0 +1,60 @@
+{
+  "projectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
+  "projectDir": "/home/main/z-project/rpg-zzu/.oprn-projects/joseon-starter-preset-20261004",
+  "beforeRevision": 9,
+  "revision": 10,
+  "sha256": "6a7319ed4ef4c24c5124eb386218514a13ab91b9cbdb47d95fb02a38f16c445b",
+  "reopened": true,
+  "added": {
+    "enemies": [
+      "enemy_jf_venom_toad",
+      "enemy_jf_mortar_rabbit",
+      "enemy_jf_jangseung_spirit",
+      "enemy_jf_earthen_jar_fiend"
+    ],
+    "troops": [
+      "troop_jf_venom_toad",
+      "troop_jf_mortar_rabbit",
+      "troop_jf_jangseung_spirit",
+      "troop_jf_earthen_jar_fiend"
+    ],
+    "skills": [
+      "skill_jf_enemy_poison_spit",
+      "skill_jf_enemy_pestle_strike",
+      "skill_jf_enemy_guardian_quake",
+      "skill_jf_enemy_lid_guard"
+    ],
+    "skillChoreographies": [
+      "chor_jf_poison_spit",
+      "chor_jf_pestle_strike",
+      "chor_jf_guardian_quake",
+      "chor_jf_lid_guard"
+    ]
+  },
+  "slots": [
+    [
+      "joseon_field",
+      "jb_hunt_8",
+      "troop_jf_mortar_rabbit"
+    ],
+    [
+      "joseon_field",
+      "jb_hunt_9",
+      "troop_jf_venom_toad"
+    ],
+    [
+      "joseon_cave",
+      "jb_cave_2",
+      "troop_jf_earthen_jar_fiend"
+    ],
+    [
+      "joseon_cave",
+      "jb_cave_7",
+      "troop_jf_jangseung_spirit"
+    ]
+  ],
+  "terrainAndEventsUnchanged": true,
+  "existingDatabaseRecordsUnchanged": true,
+  "sessionUnchanged": true,
+  "referenceIssues": []
+}

@@ -1,12 +1,32 @@
 {
   "author": "GPT 6.1 sol high monsters worker",
-  "method": "Original native pixel art: literal ASCII grids for revised3, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork",
-  "sourceSha256": "b1776915116fa7de078c1c18ac349892fae23587cd4eb5e18673ff957c776c01",
+  "method": "Original native pixel art: literal ASCII grids for revised3 and expansion4, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork",
+  "sourceSha256": "5e7011a4abf0abb581e717a1f915294fa3bbfb3a745814b144cf50b82aaed739",
   "sourceFiles": {
-    "source/draw.py": "b1776915116fa7de078c1c18ac349892fae23587cd4eb5e18673ff957c776c01",
+    "source/draw.py": "5e7011a4abf0abb581e717a1f915294fa3bbfb3a745814b144cf50b82aaed739",
     "source/figures.py": "6695b65bf8d9c6726313a0a4d5f62c889a9f93e3078a4df23e8843c55514d52f",
     "source/organic.py": "f9c6adad6d0da089af8ea93cc5d6e2abc8a305dc7d2a306ba536fd236060be4d",
     "source/pixels.py": "b14284111c8e465392ce1d13c6f57a14eae6c90a7c07508fd778f4b7df53ac1c",
+    "source/refined-grids/earthen-jar-fiend/attack.pxgrid": "8ff138b9f1804fafb64e95b90ac463e35b360d9f471dfe35a0e8635852837c70",
+    "source/refined-grids/earthen-jar-fiend/dead.pxgrid": "adc26068dcf471a99ef87c4f228641fe7fbc194aa0360fb9d02db653884d1604",
+    "source/refined-grids/earthen-jar-fiend/hit.pxgrid": "a1e25ea7f3a19047ab9e4a6dfac3527372731e9fd197a1bb9f8f1cebea8119e3",
+    "source/refined-grids/earthen-jar-fiend/idle_a.pxgrid": "224356108700562e61c137bef36f53a1abf5280ed516e86399a4762d0d41fc24",
+    "source/refined-grids/earthen-jar-fiend/idle_b.pxgrid": "aba36e8847469d08b21ee0c07ba2d7c1e7e9a6fe966af262b7f5da8fbef0fe28",
+    "source/refined-grids/earthen-jar-fiend/idle_c.pxgrid": "4c3f4b748cd001fd59b77274a4f02f2b7cdc4a992954708f52e75e4d88484c58",
+    "source/refined-grids/earthen-jar-fiend/move.pxgrid": "23db62f2fac7609957909a87822ca2ff2a187d11ad471c18b5d8bc2583c74ec5",
+    "source/refined-grids/earthen-jar-fiend/recover.pxgrid": "e3f4f2d866e73c2e66b234e8edb91b8ae9747277d8b68ac47866fa2d9033f636",
+    "source/refined-grids/earthen-jar-fiend/windup.pxgrid": "788bf2ab4a62fe02b62918ad34d6fd1ce39fb80405836feb279c345a1615ed93",
+    "source/refined-grids/earthen-jar-fiend.palette.json": "d8c1c599befcda1318f658ed732afd82b0a00b4d9be4327f6da0019f19a2316c",
+    "source/refined-grids/jangseung-spirit/attack.pxgrid": "8c5b067315506dbb53fad7d9f5e6f4e2ec1d12c000f0387d5f81c769b58887cc",
+    "source/refined-grids/jangseung-spirit/dead.pxgrid": "a64d89dfe7632abf5bef8b9ab12729bce30636720d481a9ce13c2985a9c064cb",
+    "source/refined-grids/jangseung-spirit/hit.pxgrid": "ae3232f67ec25248ac3a7f1bc26f64725d5244f297082414fcb31592b6399625",
+    "source/refined-grids/jangseung-spirit/idle_a.pxgrid": "8d3c4880fd2393a06651047620e4af1cdac0651e6c60a5ea5ed5e93ef521ee1b",
+    "source/refined-grids/jangseung-spirit/idle_b.pxgrid": "045772461a7dd5db9ca0d9aad6926d4259fa668bb100c667d4edd6951735a2ab",
+    "source/refined-grids/jangseung-spirit/idle_c.pxgrid": "0f9e8b6deb9fd759b96bac7823aea6ba1d686a8e0841a215fd08d4a73d579c79",
+    "source/refined-grids/jangseung-spirit/move.pxgrid": "0622bb4c5b328788943d1aafa606ece838905937cea90d256ecee8bdd4b5fc87",
+    "source/refined-grids/jangseung-spirit/recover.pxgrid": "908266d169ad019450e2418f64ddb0902b0decfc1a4ac9e2281e7775ddcd4a96",
+    "source/refined-grids/jangseung-spirit/windup.pxgrid": "066586e4f31e2e7d5fa450df17e0ba7ffdcd974842e8038f141411ad4953de21",
+    "source/refined-grids/jangseung-spirit.palette.json": "a7167c748d3b5c201f372670acc4979c08aac13de8f1b41a970f02f1c297b850",
     "source/refined-grids/maiden-ghost/attack.pxgrid": "d92a4bc8d1aabe01bc75f9fd416b29e6e90c73f0d96bf06f92e33abca5606cff",
     "source/refined-grids/maiden-ghost/dead.pxgrid": "a9c3bbf7cdb8fabec6b15381bdfe6bccced3a4c071dbc3a1ab4db4099c43b00a",
     "source/refined-grids/maiden-ghost/hit.pxgrid": "9a00436705767848884022667eeeb2979ae7ecd0b1a9b0c1b82581b3e579abd0",
@@ -17,6 +37,16 @@
     "source/refined-grids/maiden-ghost/recover.pxgrid": "4ca691d72efd64f54c2fac27e463cac236ae18fc9d6aeeaa95e59a4286f821c6",
     "source/refined-grids/maiden-ghost/windup.pxgrid": "507ae553190d1618fdac2dada928cb9f463af9fe1b9b0e1e25a5d1e5a432c4b9",
     "source/refined-grids/maiden-ghost.palette.json": "ebed2c6db2db0c701a56eaa7023ad519dcf62f5f50b3c226db5db5dfbc0cd814",
+    "source/refined-grids/mortar-rabbit/attack.pxgrid": "ba406f1b87acbe4649a6a2e294e20261a00db6798ff75107070382511c1395cc",
+    "source/refined-grids/mortar-rabbit/dead.pxgrid": "6defa03f1309697409eea087859c669d3c8f64c03537f3696c8023f6c2c700b1",
+    "source/refined-grids/mortar-rabbit/hit.pxgrid": "e9527fbefa296902ef5988614476c6555d6a3d2e54e8c7cc07139d9bebdacea6",
+    "source/refined-grids/mortar-rabbit/idle_a.pxgrid": "fbdf6c1f5d85890daad561af7da19a93c915a5156f511c35106c7cbf51431699",
+    "source/refined-grids/mortar-rabbit/idle_b.pxgrid": "91f6c2f9150c16d626eb673bcf92c31c06488b7082cc77720495b8f310cc1dc8",
+    "source/refined-grids/mortar-rabbit/idle_c.pxgrid": "8ba8ff811d02a224431ddef3b5def340f2d75aa278d9326e36144541ac9b6482",
+    "source/refined-grids/mortar-rabbit/move.pxgrid": "1f3ecc82b284804f28b596dccbbf6e7a13153e0b12187540038daac8ae0f50c6",
+    "source/refined-grids/mortar-rabbit/recover.pxgrid": "cfd7aa213097a74c0981e621702e5bf332dde2332cc0f95dbd912fbc8379c5af",
+    "source/refined-grids/mortar-rabbit/windup.pxgrid": "2c5df0c40fac6c06705b46357279b582b68ee8c56439ddaa3c4612b1253f9225",
+    "source/refined-grids/mortar-rabbit.palette.json": "1bd6dbace21efb5041caf2db1c827d02d0bd2548cf666f042d26772d9f722f93",
     "source/refined-grids/straw-dokkaebi/attack.pxgrid": "59a2d8949929ee0e5c6b51cf062cb9e48daad14e9315e2d055bef1367dd7c21b",
     "source/refined-grids/straw-dokkaebi/dead.pxgrid": "c51d98493a735466a694e8128145323cd4797df21b8604d734a7fa12c07d03c8",
     "source/refined-grids/straw-dokkaebi/hit.pxgrid": "6880fe9baaab569849256e812f6d6c25c367a8c73dff6af2c0807d530f26492d",
@@ -27,17 +57,27 @@
     "source/refined-grids/straw-dokkaebi/recover.pxgrid": "720a091c007924832849efa14e1607e8d1d9fe3b2595eab3ba699e62509bbe00",
     "source/refined-grids/straw-dokkaebi/windup.pxgrid": "e7b06284509cc28fa6e5b38e5e098f5c4259d7192ee15bb8acdae64b8360eedd",
     "source/refined-grids/straw-dokkaebi.palette.json": "d451b292f219efe3c66180e92a6b3f8b96d41f0748d5a5e64274b6318f5f056d",
-    "source/refined-grids/wild-boar/attack.pxgrid": "33b0a27bf32fb814f6c5c169bc4b082181c3ee2fa6cc30d5b7cb945665320139",
-    "source/refined-grids/wild-boar/dead.pxgrid": "bf43330693075bd875986bb0f328256bc50f2c089c168be544e081a485a1fab0",
-    "source/refined-grids/wild-boar/hit.pxgrid": "ecf3c8b84f6e033f4544354bc0fe7a820800f7e585d4215561689bef2a0b73d9",
-    "source/refined-grids/wild-boar/idle_a.pxgrid": "83e1731f07181c182b7224d624aaf279b36700aa267a84a5488986e4794ea049",
-    "source/refined-grids/wild-boar/idle_b.pxgrid": "e49066fb3411d14d6d14415625b3d740ba450bfe29369aca8c1721f52bcc33d0",
-    "source/refined-grids/wild-boar/idle_c.pxgrid": "25bf604e60f3433a73fc5a34ffdad3d875ca0a32e5adb0bb7b8a62d0ea436d06",
-    "source/refined-grids/wild-boar/move.pxgrid": "227ee4a75d9603156665e653259207d4869de32f857d9c69d340fe728f08f23f",
-    "source/refined-grids/wild-boar/recover.pxgrid": "9ff8f2e9d52e6a8800daa164807a051066ab56f6231b06c7f9c06ccadae9b07b",
-    "source/refined-grids/wild-boar/windup.pxgrid": "b36286b1a4cd1f69f4d582a36fd5f7b142ec17e3baabe5a0c8f19ffaece485b3",
-    "source/refined-grids/wild-boar.palette.json": "af22898a859c3cbbd6bbb64f78ea7543204dc132f2afffb48341a7df87f191b4",
-    "source/refined.py": "73beb2dd0e73e55ccd40745d10d176c21a9a33da4f4ff089c4526a08bf6a0489",
+    "source/refined-grids/venom-toad/attack.pxgrid": "f64eb37f156d991b6a17f73e4618870d2515d35c57c62fa42c870e143b206c0b",
+    "source/refined-grids/venom-toad/dead.pxgrid": "6f871660da5ec0c92bd519b798337708e1790880f4c00c94bb3a972c0654b7da",
+    "source/refined-grids/venom-toad/hit.pxgrid": "3cb32961889d8244d5b533f00e5656c21b3c6c40e25bfb5f279e0b99df0775c7",
+    "source/refined-grids/venom-toad/idle_a.pxgrid": "00f5bf4dc1037533b325d47bdce1b723ced6b446e6735d42882182511a13f310",
+    "source/refined-grids/venom-toad/idle_b.pxgrid": "63eeab0c13e15d44963e4eac41e14a6b784670d15d39b8b5ab5ed9a7838d7402",
+    "source/refined-grids/venom-toad/idle_c.pxgrid": "48c233dae11f4e52f4248a60d75002a2a0747fa7496a3ce4e8cfc168ca958988",
+    "source/refined-grids/venom-toad/move.pxgrid": "8105915f911a08dca0a39432cac1577b94a2107f298b3ad5b0c461b549b7cbad",
+    "source/refined-grids/venom-toad/recover.pxgrid": "81b687419db727494912836bad6fa84e45c1bd31667985488aef267c1388ae78",
+    "source/refined-grids/venom-toad/windup.pxgrid": "e481f469099b821a47875cbc7bed6ba9a33d2eea204efff69072520e85b277eb",
+    "source/refined-grids/venom-toad.palette.json": "e53e7c9ae1b3757e92d515d08660bff926077e7ccb711f909a7b98190e5a3a75",
+    "source/refined-grids/wild-boar/attack.pxgrid": "e9a4dead19e6d7efeaed27e6646b69bae572a5147901af1f34646fe81637485e",
+    "source/refined-grids/wild-boar/dead.pxgrid": "bad2ac153a8db2fa9084555e7d51b10f0b1403ec99b7a3615859c934a0558aee",
+    "source/refined-grids/wild-boar/hit.pxgrid": "6a1fcd00fd2513ce78b9b088100b1b760803c8223c641f3b887b3bd48e8af3ff",
+    "source/refined-grids/wild-boar/idle_a.pxgrid": "685d0278fc5c31617eefed47eb3fcf9e29a0edfcabef5d8cdf43061b98f9b817",
+    "source/refined-grids/wild-boar/idle_b.pxgrid": "807d2c417e9f9594aa676ccfe24750f2ecba9fafd24dc7f9ba1cd8d626206ce3",
+    "source/refined-grids/wild-boar/idle_c.pxgrid": "ecbaefccec1cc2b0c900687ab2868abf08e5673e3027c18e162ad80412c09464",
+    "source/refined-grids/wild-boar/move.pxgrid": "b70fcbbc84c9915ae2bcd317b370b194f015eb38af137e45b6340181a7b7a083",
+    "source/refined-grids/wild-boar/recover.pxgrid": "2bf4be71af00c86eccb5c4b4d6430eecccf44961c4a5e95b38567c095ca08fe5",
+    "source/refined-grids/wild-boar/windup.pxgrid": "7a48c78d1aa9bd90ba74be7de703ee6326ddcc975fc8a65e090529d0bb503479",
+    "source/refined-grids/wild-boar.palette.json": "b0cb27c1c2f343205ffab333cadeb2ff08966c23de87d9475793304dc8dc155e",
+    "source/refined.py": "91eccdf429536386f035082b4ccaa0b319a8a90eb96f6905847392ff9e2a4c6b",
     "source/spirits.py": "73f76ad1aba5b6bdc0520cf567da67b1b4701dbc6c500d0b80b9305167c34153"
   },
   "poseOrder": [
@@ -163,12 +203,12 @@
       "slug": "wild-boar",
       "source": "source/refined.py",
       "sheet": "assets/wild-boar.png",
-      "sha256": "9ac54f5368aee1bdf9d96f50878efc4d0bf1615e0970c77f5c0ab56d730e2a4b",
+      "sha256": "4ea64b6a9e5ce58b047dc61e886238b57ad58fbbfa5e1c158b8c7f61c5869e5a",
       "size": [
         192,
         192
       ],
-      "colors": 14,
+      "colors": 13,
       "alphaValues": [
         0,
         255
@@ -177,92 +217,92 @@
         {
           "pose": "idle_a",
           "bbox": [
-            8,
-            22,
-            50,
-            54
+            6,
+            26,
+            58,
+            61
           ],
-          "sha256": "1d163ee54dbdd05d722355b27e68b4870df8d35caff444e1e0c631114562e870"
+          "sha256": "d221704841fc5ebf17f917b8f5246e62d5abee619a349aa18f9b6e14051783ca"
         },
         {
           "pose": "idle_b",
           "bbox": [
-            8,
-            21,
-            50,
-            54
+            6,
+            26,
+            58,
+            61
           ],
-          "sha256": "2b697b2dd9ebdb643406962df2737567069817b609acec6a2141eed68c88bd50"
+          "sha256": "8403e036cf0cf65f8e41d7ca0f177256b2aa7e7b9bb6713d84aca126dec84f58"
         },
         {
           "pose": "idle_c",
           "bbox": [
-            8,
-            22,
-            50,
-            54
+            6,
+            26,
+            58,
+            61
           ],
-          "sha256": "4c14a69174f92d1252055b4468645c3e6062d50aa341d737335d822f82ea23ab"
+          "sha256": "64e89c5f9af1243240d47fdb2bf2ea0a952c63eaabeab4ca9d07de45baf99131"
         },
         {
           "pose": "windup",
           "bbox": [
-            9,
+            6,
             26,
-            50,
-            56
+            57,
+            61
           ],
-          "sha256": "331e1d136c760ff67469d35e02ac0f18c3c4dd76a66151e7780b8d72c3edff58"
+          "sha256": "c992faa8af2adc03b5c4cc0deb7d6b58aa6a6fb9d47eac922fa24604f7cfb1b2"
         },
         {
           "pose": "move",
           "bbox": [
-            8,
-            22,
-            51,
-            56
+            6,
+            26,
+            57,
+            60
           ],
-          "sha256": "2765c6735ab92e3400aa31a965862bcafd5a7c61d417742a76cb10adbaf2dd95"
+          "sha256": "41d835a4882b691f2478f080d96fc0a8b38ac6f49a808774ad60e06895778f6f"
         },
         {
           "pose": "attack",
           "bbox": [
-            9,
-            25,
-            53,
-            57
+            6,
+            26,
+            58,
+            61
           ],
-          "sha256": "1c446772b804a2595745cda54339a3f23ba7a2d105a85965743e4139b6feb170"
+          "sha256": "cd954263e65606d055e1960e4dcc98a9397f011fb7de1fa9751085af8a54bbde"
         },
         {
           "pose": "recover",
           "bbox": [
-            8,
-            24,
-            50,
-            55
+            6,
+            26,
+            54,
+            61
           ],
-          "sha256": "d5ba6ec3a55e82456565dc31f18e18eefe6dbcfdcb35337ef0fc1765177be931"
+          "sha256": "fd27fadc71d8d86f32b1a6a43048b8e2b7687c146847302e63786f95e4422255"
         },
         {
           "pose": "hit",
           "bbox": [
-            9,
-            24,
-            48,
-            57
+            6,
+            28,
+            55,
+            61
           ],
-          "sha256": "97bade88d63ae7e9d779ed66ad31a684b966bfc48d09958739a39422a1091956"
+          "sha256": "753335fd766c2b13739c3ab481b008fd247ffd0cccc4dea76bf90c958acb3822"
         },
         {
           "pose": "dead",
           "bbox": [
-            10,
+            6,
             43,
-            53,
-            58
+            49,
+            60
           ],
-          "sha256": "a4688f30013827c75c9bdd4e730da35b09ec0304c7aa4ae5c168c8730e9e3746"
+          "sha256": "07d0c11accc2f7897b5c93451ab0423cc7e16ec8c11500ccd2f93aec3d4eabd5"
         }
       ]
     },
@@ -1654,6 +1694,434 @@
             93
           ],
           "sha256": "978cf1c6e45dbdcb976c6c3745b849d129faebf9fc1694ba91c3b380abc74331"
+        }
+      ]
+    },
+    {
+      "slug": "venom-toad",
+      "source": "source/refined.py",
+      "sheet": "assets/venom-toad.png",
+      "sha256": "18038a28f66f50f4254e6233a956b626de2821bfcea0229e7c6ed3f2c27f7a98",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 14,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            16,
+            35,
+            51,
+            61
+          ],
+          "sha256": "328bffbc499b74de21288bda39e76a3759ae44065651008185ee59af306cd777"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            16,
+            35,
+            51,
+            61
+          ],
+          "sha256": "b8ea797f5e1003f7c2bea0b48d8e4925cc9199faafa2fe7ca0f1a66510d353f0"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            16,
+            35,
+            52,
+            61
+          ],
+          "sha256": "d708734aa369544b6cc12f58b9980a2bab83cc482e678529f6f29db4a3d4fd6c"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            16,
+            35,
+            55,
+            61
+          ],
+          "sha256": "f9820149b20546d5b8a023c325ae2589697f804c816272e383405cd33f25ff8c"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            19,
+            30,
+            56,
+            55
+          ],
+          "sha256": "c93b9eecac0fa1c604e311b4fd0566201d955240a4acaa0e0a087e5738cd4bf1"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            16,
+            35,
+            54,
+            61
+          ],
+          "sha256": "b197bb7f40be7c50dee2fb3dbbc0356c5ae50574a99dd4cc000a37078451087c"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            16,
+            35,
+            52,
+            61
+          ],
+          "sha256": "889b7b8b7211cdf0456d43ea7c5db4ed0f231761bf85c8c0c40d12314fab5255"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            15,
+            40,
+            55,
+            61
+          ],
+          "sha256": "d2acf98126e3dc22d1eb9cb4c694b2bf46debded8970459542079f502dc854e6"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            11,
+            48,
+            55,
+            61
+          ],
+          "sha256": "224f631eef4cb67dfb5f466f973af2d5b42ece988d0ab9c36a86e3a8303e0b68"
+        }
+      ]
+    },
+    {
+      "slug": "mortar-rabbit",
+      "source": "source/refined.py",
+      "sheet": "assets/mortar-rabbit.png",
+      "sha256": "4a60c5d567e423742f3508b890bcffaf9d6613b62b2dfb636d7dd7a7e71c1a50",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 14,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            21,
+            16,
+            48,
+            61
+          ],
+          "sha256": "39ef4b233fd23f3e34affd75dd8e1323529770ca2e3ae8eeef904c3322e776dd"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            21,
+            16,
+            48,
+            61
+          ],
+          "sha256": "657308d7a8ec92893982bab14120451560a3e9cba850d05aa03f628cb7dfcc1c"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            21,
+            16,
+            48,
+            61
+          ],
+          "sha256": "83511d6161bf2c27338c395abf8896a60821b1b90cbc54cfea32af34f161b635"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            21,
+            16,
+            48,
+            61
+          ],
+          "sha256": "e9d3a2ef0fdab41104739e9083d28838f155199a82f4ca68a6dea8d99c486d90"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            21,
+            17,
+            49,
+            61
+          ],
+          "sha256": "d6e5ea7baef0067c3a615938087d2ba8c9e75e8a4bede23e96de3c99e052f220"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            20,
+            21,
+            55,
+            61
+          ],
+          "sha256": "309942c1dcaab1afd68f502f02882c35bd07ddff8fd68b72ed50afed5aa0d922"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            21,
+            16,
+            53,
+            61
+          ],
+          "sha256": "68653fe4840fd61a1736f0e96e09d32ab8902a825c06299f78ed0ab85ae9a44c"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            20,
+            22,
+            48,
+            61
+          ],
+          "sha256": "8c6713b417d69bb48b00e9cb6a10d1057e71c01b788beae4b342cb12b4ead145"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            16,
+            39,
+            57,
+            61
+          ],
+          "sha256": "098b36dd0e020d3245792a5167e65c62355c550cd674aeb9eead477fbe49b783"
+        }
+      ]
+    },
+    {
+      "slug": "jangseung-spirit",
+      "source": "source/refined.py",
+      "sheet": "assets/jangseung-spirit.png",
+      "sha256": "1f410ec8177f8682783854abb7939820c0a8ed3c6df794252ffe80eb705b3f78",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 14,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            21,
+            15,
+            45,
+            61
+          ],
+          "sha256": "9107b0125795052bd7f8d12a114a351319bc70c5573a257467463c500caa009c"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            21,
+            15,
+            46,
+            61
+          ],
+          "sha256": "525386d91554dccd9a9e264f490b497028ab934c636d34b7b98194cbe6113d4f"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            21,
+            15,
+            45,
+            61
+          ],
+          "sha256": "42cedf40add47ef7480c1616fd3fe031c450924b3c43999336f4c5a73df18e70"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            19,
+            14,
+            42,
+            61
+          ],
+          "sha256": "1e66c5dbe310af4d196fdf75687e15f13a4dce1e458dba6486a4a39fe69fa341"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            19,
+            15,
+            44,
+            61
+          ],
+          "sha256": "c8ebcde4c6c30fafea585e22ab49e47957ba5e20a6a95a3411b5b88c6b095732"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            19,
+            16,
+            51,
+            61
+          ],
+          "sha256": "aaabccb682e06baed5fb4110366d19fbf2b68ff1603348b5ff8c3cff1b3b2c18"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            21,
+            16,
+            45,
+            61
+          ],
+          "sha256": "3bbed7618fa492760adb996601b7f1fcf7c3686d3ef6302a0c12435879a3f3b6"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            19,
+            16,
+            44,
+            61
+          ],
+          "sha256": "d5d009eec06c3f6405c007c9d1ee6845b10cd139522b2c1c990123d80b7d7f3a"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            19,
+            39,
+            46,
+            61
+          ],
+          "sha256": "f41a109c9ce37bada809e3688c9c8dc667e853936a74a34d10977e8f76f37c57"
+        }
+      ]
+    },
+    {
+      "slug": "earthen-jar-fiend",
+      "source": "source/refined.py",
+      "sheet": "assets/earthen-jar-fiend.png",
+      "sha256": "1a0c3fb9da7c5eec9157b5f792ad95cc1caec939a53adf95bd59ab364ad288b5",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 12,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "sha256": "95fb0dcb9d819863be674aa66cfa4ecd4107acc1dd3d54d997169fdee8063f98"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "sha256": "12d2fbd6edd034868a75ef63f0d4310bf3635d89f9af6c4135c93b98679faa4c"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "sha256": "2a6bfb5fa2eff125deddad313a4da1ebdbdb88398f837116132ce49c44cedc1b"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            17,
+            35,
+            51,
+            61
+          ],
+          "sha256": "823749e0e9a9b9ae104c61bb7147fc63db3de5badfb88f1d09abfc376ce02c5c"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            17,
+            28,
+            51,
+            61
+          ],
+          "sha256": "8fe5e7aa66439d325684ff1651717f0a921f01e9c48f0bc7f9780720a1e17223"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            17,
+            27,
+            58,
+            61
+          ],
+          "sha256": "ff2fa3e9cca6c3d942d2a5c7c327bf61a74c378df6286ba597e5ba4c08f5ed9e"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            17,
+            31,
+            49,
+            61
+          ],
+          "sha256": "51dcf242b96a1bb416726b06b13d6d5f6671b0ebca3b3d8c1afffed8db801f54"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            15,
+            30,
+            46,
+            61
+          ],
+          "sha256": "4aa3cebf3fa8d44130806f9dbab6fd3f0027df0ae71e6022b00b3b1e83b2849e"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            17,
+            44,
+            49,
+            61
+          ],
+          "sha256": "48b0a1558fd8b442e62f3c862a133a75ccee9f647351b4fe37331f7bff76fda7"
         }
       ]
     }

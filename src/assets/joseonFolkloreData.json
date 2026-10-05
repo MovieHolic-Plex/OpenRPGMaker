@@ -4594,6 +4594,109 @@
       },
       "elementId": "element_jf_physical",
       "stateEffects": []
+    },
+    {
+      "id": "skill_jf_enemy_poison_spit",
+      "name": "독침뱉기",
+      "description": "기력 3. 상대 하나 정신 피해14, 독45%. 제자리에서 볼을 부풀려 독을 뱉는다.",
+      "scope": "enemy",
+      "power": 14,
+      "type": "normal",
+      "mpCost": {
+        "flat": 3,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "chor_jf_poison_spit",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_spirit",
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 45,
+          "operation": "add"
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_enemy_pestle_strike",
+      "name": "공이찍기",
+      "description": "기력 3. 상대 하나 물리 피해20. 뛰어들어 방아 공이를 내려친 뒤 돌아온다.",
+      "scope": "enemy",
+      "power": 20,
+      "type": "normal",
+      "mpCost": {
+        "flat": 3,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "chor_jf_pestle_strike",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical"
+    },
+    {
+      "id": "skill_jf_enemy_guardian_quake",
+      "name": "장승울림",
+      "description": "기력 4. 상대 전체 물리 피해18. 뿌리 발로 땅을 내려찍어 균열을 보낸다.",
+      "scope": "allEnemies",
+      "power": 18,
+      "type": "normal",
+      "mpCost": {
+        "flat": 4,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "chor_jf_guardian_quake",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical"
+    },
+    {
+      "id": "skill_jf_enemy_lid_guard",
+      "name": "뚜껑닫기",
+      "description": "기력 4. 자기 쇠숨100%: 물리 방어 계산1.6배, 세 번째 자기 차례에 해제. 뚜껑을 닫고 버틴다.",
+      "scope": "self",
+      "power": 0,
+      "type": "normal",
+      "mpCost": {
+        "flat": 4,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "chor_jf_lid_guard",
+      "effect": {
+        "kind": "support"
+      },
+      "stateEffects": [
+        {
+          "stateId": "state_jf_iron_breath",
+          "chance": 100,
+          "operation": "add"
+        }
+      ]
     }
   ],
   "items": [
@@ -8239,6 +8342,274 @@
         "state_death": "C"
       },
       "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_venom_toad",
+      "name": "독두꺼비",
+      "level": 2,
+      "monsterResourceId": "jf-enemy-venom-toad",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "stats": {
+        "maxHp": 85,
+        "maxMp": 9,
+        "attack": 12,
+        "defense": 8,
+        "mind": 12,
+        "agility": 11
+      },
+      "rewards": {
+        "exp": 18,
+        "gold": 8,
+        "dropItemId": "item_jf_mat_ghost_ash",
+        "dropRatePercent": 30
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_spit",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_poison_spit"
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_mortar_rabbit",
+      "name": "방아토끼",
+      "level": 3,
+      "monsterResourceId": "jf-enemy-mortar-rabbit",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "stats": {
+        "maxHp": 98,
+        "maxMp": 9,
+        "attack": 15,
+        "defense": 7,
+        "mind": 8,
+        "agility": 18
+      },
+      "rewards": {
+        "exp": 24,
+        "gold": 10,
+        "dropItemId": "item_jf_mat_straw_knot",
+        "dropRatePercent": 35
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_pestle_strike",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_pestle_strike"
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_jangseung_spirit",
+      "name": "장승귀",
+      "level": 5,
+      "monsterResourceId": "jf-enemy-jangseung-spirit",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "stats": {
+        "maxHp": 180,
+        "maxMp": 12,
+        "attack": 22,
+        "defense": 20,
+        "mind": 16,
+        "agility": 8
+      },
+      "rewards": {
+        "exp": 48,
+        "gold": 19,
+        "dropItemId": "item_jf_mat_stone_core",
+        "dropRatePercent": 40
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_guardian_quake",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_guardian_quake"
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_earthen_jar_fiend",
+      "name": "옹기귀",
+      "level": 4,
+      "monsterResourceId": "jf-enemy-earthen-jar-fiend",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "stats": {
+        "maxHp": 130,
+        "maxMp": 12,
+        "attack": 17,
+        "defense": 16,
+        "mind": 12,
+        "agility": 9
+      },
+      "rewards": {
+        "exp": 32,
+        "gold": 13,
+        "dropItemId": "item_jf_mat_broken_jade",
+        "dropRatePercent": 35
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_lid_guard",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_lid_guard"
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
     }
   ],
   "troops": [
@@ -8526,6 +8897,82 @@
       "uncapturable": true,
       "previewBackgroundResourceId": "battle-scenery-forest",
       "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_venom_toad",
+      "name": "독두꺼비 · 단독",
+      "enemyIds": [
+        "enemy_jf_venom_toad"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_venom_toad",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_mortar_rabbit",
+      "name": "방아토끼 · 단독",
+      "enemyIds": [
+        "enemy_jf_mortar_rabbit"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_mortar_rabbit",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_jangseung_spirit",
+      "name": "장승귀 · 단독",
+      "enemyIds": [
+        "enemy_jf_jangseung_spirit"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_jangseung_spirit",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_earthen_jar_fiend",
+      "name": "옹기귀 · 단독",
+      "enemyIds": [
+        "enemy_jf_earthen_jar_fiend"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_earthen_jar_fiend",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
     }
   ],
   "states": [
@@ -8804,6 +9251,83 @@
     }
   ],
   "skillChoreographies": [
+    {
+      "id": "chor_jf_poison_spit",
+      "name": "독침뱉기 · 독물 포물선",
+      "description": "제자리 사격과 실제 표적의 독물 타격.",
+      "sourceId": "skill_mon_acid_spit",
+      "motion": "shoot",
+      "weight": "light",
+      "tint": "poison",
+      "layers": [
+        {
+          "sheet": "mon_acid_blob",
+          "anchor": "projectile"
+        },
+        {
+          "sheet": "mon_acid_splash",
+          "anchor": "target"
+        }
+      ]
+    },
+    {
+      "id": "chor_jf_pestle_strike",
+      "name": "공이찍기 · 도약 강타",
+      "description": "준비 → 도약 접근 → 공이 강타 → 복귀.",
+      "sourceId": "skill_mon_body_slam",
+      "motion": "lunge",
+      "weight": "normal",
+      "screen": {
+        "shake": 1
+      },
+      "movement": {
+        "pattern": "jump",
+        "anticipationMs": 280,
+        "travelMs": 350,
+        "recoveryMs": 420,
+        "jumpHeight": 36
+      },
+      "layers": [
+        {
+          "sheet": "mon_slam_hit",
+          "anchor": "target",
+          "scale": 0.7
+        }
+      ]
+    },
+    {
+      "id": "chor_jf_guardian_quake",
+      "name": "장승울림 · 뿌리 강타",
+      "description": "뿌리 발의 강타가 실제 파티 전체에 전달된다.",
+      "sourceId": "skill_mon_quake_stomp",
+      "motion": "stomp",
+      "weight": "heavy",
+      "screen": {
+        "shake": 3
+      },
+      "layers": [
+        {
+          "sheet": "mon_quake_crack",
+          "anchor": "allTargets",
+          "scale": 0.8
+        }
+      ]
+    },
+    {
+      "id": "chor_jf_lid_guard",
+      "name": "뚜껑닫기 · 옹기 방어",
+      "description": "제자리 자기 방어. 피해 효과나 돌진은 없다.",
+      "sourceId": "skill_mon_shell_guard",
+      "motion": "buff",
+      "weight": "light",
+      "layers": [
+        {
+          "sheet": "mon_shell_barrier",
+          "anchor": "user",
+          "scale": 0.8
+        }
+      ]
+    },
     {
       "id": "chor_jf_tusk_charge",
       "name": "엄니돌진 · 흙먼지 돌격",

@@ -57,7 +57,11 @@
     "masked-bandit": "enemy_jf_masked_bandit",
     "bronze-dokkaebi": "enemy_jf_bronze_dokkaebi",
     "bride-wraith": "enemy_jf_bride_wraith",
-    "mountain-tiger": "enemy_jf_mountain_tiger"
+    "mountain-tiger": "enemy_jf_mountain_tiger",
+    "venom-toad": "enemy_jf_venom_toad",
+    "mortar-rabbit": "enemy_jf_mortar_rabbit",
+    "jangseung-spirit": "enemy_jf_jangseung_spirit",
+    "earthen-jar-fiend": "enemy_jf_earthen_jar_fiend"
   },
   "enemySkills": {
     "tusk-charge": "skill_jf_enemy_tusk_charge",
@@ -71,7 +75,11 @@
     "grave-grasp": "skill_jf_enemy_grave_grasp",
     "fox-charm": "skill_jf_enemy_fox_charm",
     "stone-crush": "skill_jf_enemy_stone_crush",
-    "bamboo-whip": "skill_jf_enemy_bamboo_whip"
+    "bamboo-whip": "skill_jf_enemy_bamboo_whip",
+    "poison-spit": "skill_jf_enemy_poison_spit",
+    "pestle-strike": "skill_jf_enemy_pestle_strike",
+    "guardian-quake": "skill_jf_enemy_guardian_quake",
+    "lid-guard": "skill_jf_enemy_lid_guard"
   },
   "items": {
     "mugwort-pill": "item_jf_mugwort_pill",

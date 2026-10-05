@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import { withTsModule } from '../ontology-ts-loader.mjs';
 const data=JSON.parse(fs.readFileSync('src/assets/joseonFolkloreData.json','utf8'));
 const art=JSON.parse(fs.readFileSync('src/assets/joseonFolkloreAssets.json','utf8'));
-for(const [key,n] of Object.entries({classes:5,items:32,equipment:36,enemies:15}))assert.equal(data[key].length,n,key+' count');
-assert(data.skills.length>=36,'24 job +12 enemy skills');assert.equal(art.sheets.length,15);
+for(const [key,n] of Object.entries({classes:5,items:32,equipment:36,enemies:19,skills:44,skillChoreographies:7}))assert.equal(data[key].length,n,key+' count');
+assert.equal(art.sheets.length,19);
 const ai=JSON.parse(fs.readFileSync('content-packs/joseon-folklore/behavior/data.json','utf8')).enemyActions;
-assert.equal(ai.length,15,'All authored enemies have behavior');
+const expanded=JSON.parse(fs.readFileSync('content-packs/joseon-folklore/monsters/expansion.json','utf8')).enemies;
+assert.equal(ai.length+expanded.filter(enemy=>enemy.actions.length===2).length,19,'All authored enemies have behavior');
 for(const icon of art.icons){const bytes=fs.readFileSync('public/'+icon.path);assert.equal(bytes.readUInt32BE(16),32,icon.path);assert.equal(bytes.readUInt32BE(20),32,icon.path);}
 await withTsModule('scripts/content/lib-joseon-folklore.ts','jf-inspect.mjs',async api=>{
  const root=process.argv[2];assert(root,'Pass a project folder for reference inspection');

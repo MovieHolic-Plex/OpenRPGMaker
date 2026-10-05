@@ -22,7 +22,7 @@ await withTsModule('scripts/content/lib-joseon-folklore.ts', 'jf-starter-source.
   const baseDatabase = structuredClone(p.database);
   for (const [key, rows] of Object.entries(pack)) {
     const ids = new Set(rows.map(r => r.id));
-    baseDatabase[key] = baseDatabase[key].filter(r => !ids.has(r.id));
+    baseDatabase[key] = (baseDatabase[key] ?? []).filter(r => !ids.has(r.id));
   }
   // Only the shared basic attack, states/elements/animations and four authored encounter
   // aliases accompany the pack. Unused generic equipment and old job trees are excluded.

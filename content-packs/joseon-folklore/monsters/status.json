@@ -1,16 +1,16 @@
 {
-  "phase": "full-with-refined3",
+  "phase": "full-with-wave2",
   "ready": true,
-  "scope": "Public pack files ready for user review; three revised enemies integrated; no full user art approval",
+  "scope": "Public pack and saved example extended; five new/redrawn candidates await user art review",
   "counts": {
-    "enemies": 15,
-    "troops": 15,
-    "sheets": 15,
-    "poses": 135,
-    "portraits": 15,
-    "general": 12,
+    "enemies": 19,
+    "troops": 19,
+    "sheets": 19,
+    "poses": 171,
+    "portraits": 19,
+    "general": 16,
     "bosses": 3,
-    "uniqueIdleSilhouettes": 15
+    "uniqueIdleSilhouettes": 19
   },
   "refinedCounts": {
     "enemies": 3,
@@ -22,27 +22,29 @@
     "directorViewedRefinedPoseSheets": 3,
     "userSelectedCandidateDirection": true,
     "forestSelection": "keep-current",
-    "fullUserApproved": false
+    "fullUserApproved": false,
+    "directorViewedWave2PoseSheets": 5,
+    "wave2UserApproved": false
   },
   "checks": {
-    "assetSmoke": "PNG/source/135-frame contract passed on 2026-10-05",
-    "runtimeGraphics": "all three revised enemies showed windup/move/attack/recover/hit/dead in the exported player; keyboard inputs",
-    "probesNotRepeated": "stats/actions unchanged; historical normalize/balance results stay in the initial handoff"
+    "assetSmoke": "PNG/source/171-frame contract passed on 2026-10-05",
+    "runtimeGraphics": "Five redrawn/new enemies: actual shipping renderer skill captures; native toad field contact and victory",
+    "probesNotRepeated": "Historical 15-enemy balance/normalize reports remain historical; native save/reload and fresh/existing pack inspection cover expansion4"
   },
   "integration": {
     "publicAssetsRegistered": true,
     "resourceIdsUnchanged": true,
     "canonicalProjectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
-    "canonicalRevision": 6,
-    "canonicalDocumentUnchanged": true,
+    "canonicalRevision": 11,
+    "canonicalDocumentUnchanged": false,
     "reopened": true,
-    "evidence": "verify-shots/joseon-enemy-refinement/"
+    "evidence": "verify-shots/joseon-monster-variety/"
   },
   "limitations": [
-    "Only wild-boar, straw-dokkaebi and maiden-ghost were refined; remaining12 artwork is unchanged.",
-    "Specific fur/straw/sleeve limitations remain in ../art-direction/monsters/refinement/REVIEW.md.",
-    "Three-enemy comparison formation is a QA fixture; the shipped authored encounter remains two enemies.",
-    "Runtime inspection covers graphics/keyboard battle playback, not every input method or whole-game balance."
+    "Wave2 original candidates await user visual review.",
+    "The other14 monster PNGs are unchanged.",
+    "Only native toad single and original boar/dokkaebi encounter were driven to victory; new4 skills were observed in a QA review formation.",
+    "No long-session balance approval."
   ],
   "fileHashes": {
     "FULL-REPORT.md": "d6b308ea5b947352c91101a3d0b531261013e21f16b53b454570e0fb34d272d1",

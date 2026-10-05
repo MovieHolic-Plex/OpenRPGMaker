@@ -1,3 +1,14 @@
+# 현재 배포: 멧돼지 재저작 + 신규4종 (2026-10-05)
+
+공용 팩은 일반16/보스3, 총19종·171자세·초상19장이다. 새 독두꺼비·방아토끼·장승귀·옹기귀는
+`expansion.json`으로 원래15종 자료에 합친다. 재생성은 `source/expansion.py`다.
+멧돼지와 신규4종의 64×64 문자 격자는 `source/refined-grids/`에 있으며 `draw.py`가 직접 읽는다.
+저작자 원본·수정 내역·남은 시각 결함은 `../art-direction/wave2/{beasts,spirits}/REVIEW.md`에 있다.
+기존14종의 PNG는 바이트까지 보존했다. 통합/저장/실제 전투 근거는
+`verify-shots/joseon-monster-variety/`를 본다. 파일 검사를 사용자 그림 승인으로 확대하지 않는다.
+
+## 원래15종 저작 이력
+
 # 조선 설화 monsters — full 15종
 
 일반12 + 보스3. 전종 원본 3×3 9포즈·idle_a 초상, 적15개·고유 단독 트룹15개. 원본 픽셀 코드 저작이며 새 적을 Actor1 칩으로 만들지 않았다.
@@ -62,6 +73,7 @@
 ```bash
 python content-packs/joseon-folklore/monsters/source/draw.py
 python content-packs/joseon-folklore/monsters/source/data.py
+python content-packs/joseon-folklore/monsters/source/expansion.py
 python content-packs/joseon-folklore/monsters/source/asset-smoke.py
 node content-packs/joseon-folklore/monsters/source/run-smoke.mjs
 python content-packs/joseon-folklore/monsters/source/preview.py

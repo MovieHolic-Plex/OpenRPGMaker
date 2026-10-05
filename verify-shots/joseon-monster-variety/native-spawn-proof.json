@@ -1,0 +1,33 @@
+{
+  "projectUrl": "/project.json",
+  "spawnId": "jb_hunt_9",
+  "troopId": "troop_jf_venom_toad",
+  "approach": {
+    "x": 70,
+    "y": 50,
+    "dir": "up"
+  },
+  "formationChanged": false,
+  "statsChanged": false,
+  "errors": [],
+  "missing": [],
+  "resultText": "승리\n경험치\n+18\n골드\n+8\n확인\nZ/Enter/Space로 계속",
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "village",
+      "failures": []
+    },
+    {
+      "id": "toad-contact",
+      "failures": []
+    },
+    {
+      "id": "toad-victory",
+      "failures": []
+    }
+  ]
+}

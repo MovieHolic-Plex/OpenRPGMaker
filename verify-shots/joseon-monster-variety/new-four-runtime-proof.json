@@ -1,0 +1,8219 @@
+{
+  "errors": [],
+  "missing": [],
+  "commands": 12,
+  "initial": {
+    "startAt": 13888.199999928474,
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 960,
+      "height": 720
+    }
+  },
+  "records": [
+    {
+      "at": 1,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두는 무엇을 할까?"
+    },
+    {
+      "at": 164,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다."
+    },
+    {
+      "at": 451,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 964,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람은 무엇을 할까?"
+    },
+    {
+      "at": 1076,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다."
+    },
+    {
+      "at": 1368,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 1922,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린은 무엇을 할까?"
+    },
+    {
+      "at": 2103,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린이 방어 태세를 취했다."
+    },
+    {
+      "at": 2382,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 2935,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결은 무엇을 할까?"
+    },
+    {
+      "at": 3158,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결이 방어 태세를 취했다."
+    },
+    {
+      "at": 3451,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 4001,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두는 무엇을 할까?"
+    },
+    {
+      "at": 4087,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다."
+    },
+    {
+      "at": 4336,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 4900,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5042,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5281,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 50,
+          "y": 192,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5321,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 119,
+          "y": 169,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5401,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 198,
+          "y": 151,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5444,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 312,
+          "y": 140,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5481,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 362,
+          "y": 140,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5521,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 436,
+          "y": 148,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5574,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 513,
+          "y": 164,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5601,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 563,
+          "y": 179,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 5786,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 603,
+          "y": 193,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 5857,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 611,
+          "y": 186,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 188,
+          "y": 119,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 188,
+          "y": 247,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 320,
+          "y": 183,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 5882,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 576,
+          "y": 187,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 178,
+          "y": 125,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 178,
+          "y": 253,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 310,
+          "y": 189,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 5923,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 538,
+          "y": 173,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 190,
+          "y": 120,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 190,
+          "y": 247,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 322,
+          "y": 184,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 5972,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 509,
+          "y": 177,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6050,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 377,
+          "y": 166,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6081,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 343,
+          "y": 165,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6122,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 314,
+          "y": 165,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6164,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 236,
+          "y": 168,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6203,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 204,
+          "y": 170,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6246,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 135,
+          "y": 177,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6321,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 56,
+          "y": 189,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6362,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6401,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6527,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 6571,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람은 무엇을 할까?"
+    },
+    {
+      "at": 6646,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다."
+    },
+    {
+      "at": 6926,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 7481,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두는 무엇을 할까?"
+    },
+    {
+      "at": 7604,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다."
+    },
+    {
+      "at": 7850,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 8403,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린은 무엇을 할까?"
+    },
+    {
+      "at": 8441,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린이 방어 태세를 취했다."
+    },
+    {
+      "at": 8743,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 9341,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결은 무엇을 할까?"
+    },
+    {
+      "at": 9444,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결이 방어 태세를 취했다."
+    },
+    {
+      "at": 9730,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">무결이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 10282,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 10321,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "windup",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 10682,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_blob"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 10922,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_blob",
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 10961,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 11001,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "recover",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!"
+    },
+    {
+      "at": 11084,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "recover",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11201,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 56,
+          "y": 183,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 188,
+          "y": 119,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "recover",
+          "charging": null,
+          "x": 188,
+          "y": 247,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 320,
+          "y": 183,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11281,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 47,
+          "y": 185,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 179,
+          "y": 121,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "idle",
+          "charging": null,
+          "x": 179,
+          "y": 249,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 311,
+          "y": 185,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11363,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_acid_splash"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11441,
+      "skill": "chor_jf_poison_spit",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": "chor_jf_poison_spit",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11721,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">독두꺼비가 독침뱉기를 사용했다!서린이 6 피해를 입었다!"
+    },
+    {
+      "at": 11769,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두는 무엇을 할까?"
+    },
+    {
+      "at": 11847,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다."
+    },
+    {
+      "at": 12130,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 12684,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람은 무엇을 할까?"
+    },
+    {
+      "at": 12764,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다."
+    },
+    {
+      "at": 13052,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">하람이 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 13609,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 13722,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14004,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 81,
+          "y": 181,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14081,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 191,
+          "y": 152,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14161,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 305,
+          "y": 140,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14202,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 376,
+          "y": 141,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14257,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 480,
+          "y": 156,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14287,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 541,
+          "y": 172,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14322,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 588,
+          "y": 188,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!"
+    },
+    {
+      "at": 14458,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 605,
+          "y": 195,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 182,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 314,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14521,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 603,
+          "y": 193,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14601,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 585,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14641,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 551,
+          "y": 175,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 188,
+          "y": 119,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 188,
+          "y": 247,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 320,
+          "y": 183,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_slam_hit"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14695,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 477,
+          "y": 173,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14801,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 364,
+          "y": 165,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14841,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 303,
+          "y": 165,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14882,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 245,
+          "y": 167,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 14961,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 180,
+          "y": 172,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15001,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 113,
+          "y": 180,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15042,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "recover",
+          "charging": null,
+          "x": 73,
+          "y": 186,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15081,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "windup",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15121,
+      "skill": "chor_jf_pestle_strike",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": "chor_jf_pestle_strike",
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15249,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">방아토끼가 공이찍기를 사용했다!서린이 9 피해를 입었다!"
+    },
+    {
+      "at": 15305,
+      "skill": "chor_jf_lid_guard",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": "chor_jf_lid_guard",
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀가 뚜껑닫기를 사용했다!"
+    },
+    {
+      "at": 15365,
+      "skill": "chor_jf_lid_guard",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": "chor_jf_lid_guard",
+          "pose": "windup",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀가 뚜껑닫기를 사용했다!"
+    },
+    {
+      "at": 15522,
+      "skill": "chor_jf_lid_guard",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": "chor_jf_lid_guard",
+          "pose": "windup",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_shell_barrier"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀가 뚜껑닫기를 사용했다!"
+    },
+    {
+      "at": 15881,
+      "skill": "chor_jf_lid_guard",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": "chor_jf_lid_guard",
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_shell_barrier"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀가 뚜껑닫기를 사용했다!"
+    },
+    {
+      "at": 16001,
+      "skill": "chor_jf_lid_guard",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": "chor_jf_lid_guard",
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀가 뚜껑닫기를 사용했다!"
+    },
+    {
+      "at": 16316,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">옹기귀는 쇠숨에 걸렸다!"
+    },
+    {
+      "at": 17128,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!"
+    },
+    {
+      "at": 17161,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "windup",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!"
+    },
+    {
+      "at": 17441,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!"
+    },
+    {
+      "at": 17481,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 57,
+          "y": 193,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 189,
+          "y": 130,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 189,
+          "y": 257,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 321,
+          "y": 193,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!"
+    },
+    {
+      "at": 17660,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 53,
+          "y": 192,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 185,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 185,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 317,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 17723,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 38,
+          "y": 197,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 171,
+          "y": 133,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 171,
+          "y": 262,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 304,
+          "y": 197,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 17761,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 58,
+          "y": 184,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 190,
+          "y": 120,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 190,
+          "y": 248,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 323,
+          "y": 184,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 17841,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 51,
+          "y": 187,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 183,
+          "y": 123,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 183,
+          "y": 250,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 315,
+          "y": 187,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 17883,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 51,
+          "y": 193,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 183,
+          "y": 129,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 183,
+          "y": 257,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 315,
+          "y": 193,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 17927,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 53,
+          "y": 192,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 185,
+          "y": 128,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 185,
+          "y": 256,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 317,
+          "y": 192,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!하람이 10 피해를 입었다!"
+    },
+    {
+      "at": 18790,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!연두가 9 피해를 입었다!"
+    },
+    {
+      "at": 18946,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19003,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 32,
+          "y": 195,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 165,
+          "y": 130,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 165,
+          "y": 259,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 299,
+          "y": 195,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19044,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 45,
+          "y": 189,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 177,
+          "y": 125,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 177,
+          "y": 253,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 309,
+          "y": 189,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19122,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 47,
+          "y": 185,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 179,
+          "y": 121,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 179,
+          "y": 249,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 311,
+          "y": 185,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19175,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 37,
+          "y": 197,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "attack",
+          "charging": null,
+          "x": 169,
+          "y": 134,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 169,
+          "y": 261,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 301,
+          "y": 197,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19208,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "recover",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!서린이 10 피해를 입었다!"
+    },
+    {
+      "at": 19308,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack",
+        "mon_quake_crack"
+      ],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!무결이 9 피해를 입었다!"
+    },
+    {
+      "at": 19662,
+      "skill": "chor_jf_guardian_quake",
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": "chor_jf_guardian_quake",
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">장승귀가 장승울림을 사용했다!무결이 9 피해를 입었다!"
+    },
+    {
+      "at": 21676,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두는 무엇을 할까?"
+    },
+    {
+      "at": 21842,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다."
+    },
+    {
+      "at": 22128,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">연두가 방어 태세를 취했다.받는 피해를 줄일 준비를 마쳤다."
+    },
+    {
+      "at": 22697,
+      "skill": null,
+      "enemies": [
+        {
+          "id": "enemy_jf_mortar_rabbit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 48,
+          "y": 190,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_jangseung_spirit",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 127,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_venom_toad",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 180,
+          "y": 254,
+          "reach": null
+        },
+        {
+          "id": "enemy_jf_earthen_jar_fiend",
+          "skill": null,
+          "pose": "idle",
+          "charging": null,
+          "x": 312,
+          "y": 190,
+          "reach": null
+        }
+      ],
+      "fx": [],
+      "actors": [
+        {
+          "id": "actor_hero",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_scout",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_mage",
+          "hp": null,
+          "aura": null
+        },
+        {
+          "id": "actor_cleric",
+          "hp": null,
+          "aura": null
+        }
+      ],
+      "text": ">서린은 무엇을 할까?"
+    }
+  ],
+  "projectUrl": "QA-only 4-enemy formation; unchanged game stats",
+  "resultText": null,
+  "result": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "village",
+      "failures": []
+    },
+    {
+      "id": "new-monsters",
+      "failures": []
+    }
+  ],
+  "observedSkills": [
+    "chor_jf_guardian_quake",
+    "chor_jf_lid_guard",
+    "chor_jf_pestle_strike",
+    "chor_jf_poison_spit"
+  ],
+  "video": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/variety-clean/video/page@d077bf93786090cb979929d8aa85a87a.webm"
+}

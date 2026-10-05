@@ -103,5 +103,33 @@
     "cell": 96,
     "motion": "dash",
     "idleFrameMs": 250
+  },
+  {
+    "resourceId": "jf-enemy-venom-toad",
+    "path": "assets/joseon-folklore/monsters/venom-toad.png",
+    "cell": 64,
+    "motion": "shoot",
+    "idleFrameMs": 240
+  },
+  {
+    "resourceId": "jf-enemy-mortar-rabbit",
+    "path": "assets/joseon-folklore/monsters/mortar-rabbit.png",
+    "cell": 64,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "jf-enemy-jangseung-spirit",
+    "path": "assets/joseon-folklore/monsters/jangseung-spirit.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 300
+  },
+  {
+    "resourceId": "jf-enemy-earthen-jar-fiend",
+    "path": "assets/joseon-folklore/monsters/earthen-jar-fiend.png",
+    "cell": 64,
+    "motion": "hop",
+    "idleFrameMs": 280
   }
 ]

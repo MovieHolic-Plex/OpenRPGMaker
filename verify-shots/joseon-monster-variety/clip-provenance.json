@@ -1,0 +1,43 @@
+[
+  {
+    "slug": "wild-boar",
+    "skill": "chor_jf_tusk_charge",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/boar/video/page@967b3d5bf8a2ee583f654122682a4df2.webm",
+    "cutStartSeconds": 34.1,
+    "durationSeconds": 4.3,
+    "bytes": 114457,
+    "calibration": "Verified full-video frames at 34.5s windup and 35.0s contact; captures charge and return"
+  },
+  {
+    "slug": "venom-toad",
+    "skill": "chor_jf_poison_spit",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/variety-clean/video/page@d077bf93786090cb979929d8aa85a87a.webm",
+    "cutStartSeconds": 24.905,
+    "durationSeconds": 3.5,
+    "bytes": 89582
+  },
+  {
+    "slug": "mortar-rabbit",
+    "skill": "chor_jf_pestle_strike",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/variety-clean/video/page@d077bf93786090cb979929d8aa85a87a.webm",
+    "cutStartSeconds": 19.523,
+    "durationSeconds": 4.0,
+    "bytes": 115089
+  },
+  {
+    "slug": "jangseung-spirit",
+    "skill": "chor_jf_guardian_quake",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/variety-clean/video/page@d077bf93786090cb979929d8aa85a87a.webm",
+    "cutStartSeconds": 31.751,
+    "durationSeconds": 4.4,
+    "bytes": 127754
+  },
+  {
+    "slug": "earthen-jar-fiend",
+    "skill": "chor_jf_lid_guard",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-diversity-20261005/variety-clean/video/page@d077bf93786090cb979929d8aa85a87a.webm",
+    "cutStartSeconds": 29.928,
+    "durationSeconds": 2.6,
+    "bytes": 46201
+  }
+]

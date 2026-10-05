@@ -15,6 +15,7 @@ from organic import rat,bat,fox,tiger
 from spirits import wisp,drowned,ghoul,bamboo
 from figures import stone,bandit,bride
 from refined import boar as refined_boar, straw as refined_straw, ghost as refined_ghost
+from refined import toad, rabbit, guardian, jar
 
 ROOT = Path(__file__).resolve().parents[1]
 POSES = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead']
@@ -425,7 +426,9 @@ SPECIES = [('field-rat',64,'dash',150,rat),('wild-boar',64,'dash',190,refined_bo
            ('fox-spirit',64,'dash',200,fox),('stone-dokkaebi',64,'stomp',340,stone),
            ('bamboo-specter',64,'shoot',220,bamboo),('masked-bandit',64,'dash',180,bandit),
            ('bronze-dokkaebi',96,'stomp',330,bronze),('bride-wraith',96,'float',280,bride),
-           ('mountain-tiger',96,'dash',250,tiger)]
+           ('mountain-tiger',96,'dash',250,tiger),
+           ('venom-toad',64,'shoot',240,toad),('mortar-rabbit',64,'hop',180,rabbit),
+           ('jangseung-spirit',64,'stomp',300,guardian),('earthen-jar-fiend',64,'hop',280,jar)]
 
 
 def main():
@@ -460,7 +463,7 @@ def main():
         sheets.append(dict(resourceId=f'jf-enemy-{slug}',path=f'assets/joseon-folklore/monsters/{slug}.png',cell=cell,motion=motion,idleFrameMs=ms))
     (ROOT/'sheets.json').write_text(json.dumps(sheets,ensure_ascii=False,indent=2)+'\n')
     (ROOT/'review/art-manifest.json').write_text(json.dumps(dict(author='GPT 6.1 sol high monsters worker',
-        method='Original native pixel art: literal ASCII grids for revised3, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork',
+        method='Original native pixel art: literal ASCII grids for revised3 and expansion4, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork',
         sourceSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         sourceFiles={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
                      for p in sorted((ROOT/'source').rglob('*'))
@@ -468,7 +471,7 @@ def main():
                                         or 'refined-grids' in p.parts and p.suffix in ['.pxgrid','.json'])},
         poseOrder=POSES,sheets=art),ensure_ascii=False,indent=2)+'\n')
     # Full roster overview; native pixels, padded cells, no sprite resampling.
-    contact=Image.new('RGB',(960,666),'#26313f');cd=ImageDraw.Draw(contact)
+    contact=Image.new('RGB',(960,222*((len(SPECIES)+4)//5)),'#26313f');cd=ImageDraw.Draw(contact)
     for i,(slug,cell,_,_,draw) in enumerate(SPECIES):
         x=(i%5)*192;y=(i//5)*222
         f=draw('idle_a').resize((cell*2,cell*2),Image.Resampling.NEAREST)

@@ -7,17 +7,21 @@ import { normalizeEnemyRecord, normalizeTroopRecord } from '@/project/databaseEn
 const base = new URL('../', import.meta.url);
 const raw = readFileSync(new URL('data.json', base), 'utf8');
 const input = JSON.parse(raw);
+const expansionRaw = readFileSync(new URL('expansion.json', base), 'utf8');
+const expansion = JSON.parse(expansionRaw);
+input.enemies.push(...expansion.enemies);
+input.troops.push(...expansion.troops);
 const ids = JSON.parse(readFileSync(new URL('../../ids.json', import.meta.url), 'utf8'));
 const sheets = JSON.parse(readFileSync(new URL('sheets.json', base), 'utf8'));
 const normalized = {
   enemies: input.enemies.map(normalizeEnemyRecord),
   troops: input.troops.map(normalizeTroopRecord),
 };
-assert.equal(normalized.enemies.length, 15);
-assert.equal(normalized.troops.length, 15);
+assert.equal(normalized.enemies.length, 19);
+assert.equal(normalized.troops.length, 19);
 assert.deepEqual(normalized.enemies.map(e => e.id), input.enemies.map(e => e.id));
-assert.equal(new Set(normalized.enemies.map(e => e.id)).size, 15);
-assert.equal(new Set(normalized.troops.map(e => e.id)).size, 15);
+assert.equal(new Set(normalized.enemies.map(e => e.id)).size, 19);
+assert.equal(new Set(normalized.troops.map(e => e.id)).size, 19);
 assert.deepEqual(new Set(normalized.enemies.map(e => e.id)), new Set(Object.values(ids.enemies)));
 const materialIds = new Set(Object.values(ids.materials));
 for (const enemy of normalized.enemies) {
@@ -27,7 +31,7 @@ for (const enemy of normalized.enemies) {
   assert.deepEqual(enemy.rewards, before.rewards);
   // Optional switchId: undefined is emitted in memory and omitted on JSON save.
   assert.deepEqual(JSON.parse(JSON.stringify(enemy.actions)), before.actions);
-  assert.deepEqual(enemy.skillIds, ['skill_attack']);
+  assert.deepEqual(enemy.skillIds, before.skillIds);
   assert.ok(materialIds.has(enemy.rewards.dropItemId));
   assert.ok(sheets.some(s => s.resourceId === enemy.monsterResourceId));
   assert.equal(enemy.graphicHue, 0);
@@ -51,8 +55,8 @@ assert.deepEqual({
 const report = {
   passed: true,
   scope: 'actual normalizeEnemyRecord/normalizeTroopRecord + local JSON roundtrip only',
-  counts: { enemies: 15, troops: 15, fallbackActions: 15, reservedMaterialDrops: 15 },
-  inputSha256: createHash('sha256').update(raw).digest('hex'),
+  counts: { enemies: 19, troops: 19, fallbackActions: 19, reservedMaterialDrops: 19 },
+  inputSha256: createHash('sha256').update(raw + expansionRaw).digest('hex'),
   normalizedSha256: createHash('sha256').update(JSON.stringify(normalized)).digest('hex'),
   normalizerSource: 'src/project/databaseEnemyTroopRecordModel.ts',
   normalizerSourceSha256: createHash('sha256').update(readFileSync(new URL('../../../../src/project/databaseEnemyTroopRecordModel.ts', import.meta.url))).digest('hex'),

@@ -1,0 +1,365 @@
+{
+  "status": "original-candidates-awaiting-director-review",
+  "phase": "nine-poses-baked",
+  "frame_order": [
+    "idle_a",
+    "idle_b",
+    "idle_c",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "hit",
+    "dead"
+  ],
+  "cell": [
+    64,
+    64
+  ],
+  "sprites": {
+    "jangseung-spirit": {
+      "frames": {
+        "idle_a": {
+          "source": "source/jangseung-spirit/idle_a.pxgrid",
+          "source_sha256": "8d3c4880fd2393a06651047620e4af1cdac0651e6c60a5ea5ed5e93ef521ee1b",
+          "bbox": [
+            21,
+            15,
+            45,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "9107b0125795052bd7f8d12a114a351319bc70c5573a257467463c500caa009c"
+        },
+        "idle_b": {
+          "source": "source/jangseung-spirit/idle_b.pxgrid",
+          "source_sha256": "045772461a7dd5db9ca0d9aad6926d4259fa668bb100c667d4edd6951735a2ab",
+          "bbox": [
+            21,
+            15,
+            46,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "525386d91554dccd9a9e264f490b497028ab934c636d34b7b98194cbe6113d4f"
+        },
+        "idle_c": {
+          "source": "source/jangseung-spirit/idle_c.pxgrid",
+          "source_sha256": "0f9e8b6deb9fd759b96bac7823aea6ba1d686a8e0841a215fd08d4a73d579c79",
+          "bbox": [
+            21,
+            15,
+            45,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "42cedf40add47ef7480c1616fd3fe031c450924b3c43999336f4c5a73df18e70"
+        },
+        "windup": {
+          "source": "source/jangseung-spirit/windup.pxgrid",
+          "source_sha256": "066586e4f31e2e7d5fa450df17e0ba7ffdcd974842e8038f141411ad4953de21",
+          "bbox": [
+            19,
+            14,
+            42,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "1e66c5dbe310af4d196fdf75687e15f13a4dce1e458dba6486a4a39fe69fa341"
+        },
+        "move": {
+          "source": "source/jangseung-spirit/move.pxgrid",
+          "source_sha256": "0622bb4c5b328788943d1aafa606ece838905937cea90d256ecee8bdd4b5fc87",
+          "bbox": [
+            19,
+            15,
+            44,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "c8ebcde4c6c30fafea585e22ab49e47957ba5e20a6a95a3411b5b88c6b095732"
+        },
+        "attack": {
+          "source": "source/jangseung-spirit/attack.pxgrid",
+          "source_sha256": "8c5b067315506dbb53fad7d9f5e6f4e2ec1d12c000f0387d5f81c769b58887cc",
+          "bbox": [
+            19,
+            16,
+            51,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "aaabccb682e06baed5fb4110366d19fbf2b68ff1603348b5ff8c3cff1b3b2c18"
+        },
+        "recover": {
+          "source": "source/jangseung-spirit/recover.pxgrid",
+          "source_sha256": "908266d169ad019450e2418f64ddb0902b0decfc1a4ac9e2281e7775ddcd4a96",
+          "bbox": [
+            21,
+            16,
+            45,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "3bbed7618fa492760adb996601b7f1fcf7c3686d3ef6302a0c12435879a3f3b6"
+        },
+        "hit": {
+          "source": "source/jangseung-spirit/hit.pxgrid",
+          "source_sha256": "ae3232f67ec25248ac3a7f1bc26f64725d5244f297082414fcb31592b6399625",
+          "bbox": [
+            19,
+            16,
+            44,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 13,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "d5d009eec06c3f6405c007c9d1ee6845b10cd139522b2c1c990123d80b7d7f3a"
+        },
+        "dead": {
+          "source": "source/jangseung-spirit/dead.pxgrid",
+          "source_sha256": "a64d89dfe7632abf5bef8b9ab12729bce30636720d481a9ce13c2985a9c064cb",
+          "bbox": [
+            19,
+            39,
+            46,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 14,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "f41a109c9ce37bada809e3688c9c8dc667e853936a74a34d10977e8f76f37c57"
+        }
+      },
+      "motion": "stomp",
+      "sheet": "sprites/jangseung-spirit.png",
+      "sheet_sha256": "1f410ec8177f8682783854abb7939820c0a8ed3c6df794252ffe80eb705b3f78",
+      "size": [
+        192,
+        192
+      ],
+      "mode": "RGBA",
+      "opaque_colors": 14,
+      "unique_frames": 9,
+      "idle_baselines": [
+        60,
+        60,
+        60
+      ]
+    },
+    "earthen-jar-fiend": {
+      "frames": {
+        "idle_a": {
+          "source": "source/earthen-jar-fiend/idle_a.pxgrid",
+          "source_sha256": "224356108700562e61c137bef36f53a1abf5280ed516e86399a4762d0d41fc24",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "95fb0dcb9d819863be674aa66cfa4ecd4107acc1dd3d54d997169fdee8063f98"
+        },
+        "idle_b": {
+          "source": "source/earthen-jar-fiend/idle_b.pxgrid",
+          "source_sha256": "aba36e8847469d08b21ee0c07ba2d7c1e7e9a6fe966af262b7f5da8fbef0fe28",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "12d2fbd6edd034868a75ef63f0d4310bf3635d89f9af6c4135c93b98679faa4c"
+        },
+        "idle_c": {
+          "source": "source/earthen-jar-fiend/idle_c.pxgrid",
+          "source_sha256": "4c3f4b748cd001fd59b77274a4f02f2b7cdc4a992954708f52e75e4d88484c58",
+          "bbox": [
+            17,
+            30,
+            50,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "2a6bfb5fa2eff125deddad313a4da1ebdbdb88398f837116132ce49c44cedc1b"
+        },
+        "windup": {
+          "source": "source/earthen-jar-fiend/windup.pxgrid",
+          "source_sha256": "788bf2ab4a62fe02b62918ad34d6fd1ce39fb80405836feb279c345a1615ed93",
+          "bbox": [
+            17,
+            35,
+            51,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "823749e0e9a9b9ae104c61bb7147fc63db3de5badfb88f1d09abfc376ce02c5c"
+        },
+        "move": {
+          "source": "source/earthen-jar-fiend/move.pxgrid",
+          "source_sha256": "23db62f2fac7609957909a87822ca2ff2a187d11ad471c18b5d8bc2583c74ec5",
+          "bbox": [
+            17,
+            28,
+            51,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "8fe5e7aa66439d325684ff1651717f0a921f01e9c48f0bc7f9780720a1e17223"
+        },
+        "attack": {
+          "source": "source/earthen-jar-fiend/attack.pxgrid",
+          "source_sha256": "8ff138b9f1804fafb64e95b90ac463e35b360d9f471dfe35a0e8635852837c70",
+          "bbox": [
+            17,
+            27,
+            58,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "ff2fa3e9cca6c3d942d2a5c7c327bf61a74c378df6286ba597e5ba4c08f5ed9e"
+        },
+        "recover": {
+          "source": "source/earthen-jar-fiend/recover.pxgrid",
+          "source_sha256": "e3f4f2d866e73c2e66b234e8edb91b8ae9747277d8b68ac47866fa2d9033f636",
+          "bbox": [
+            17,
+            31,
+            49,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "51dcf242b96a1bb416726b06b13d6d5f6671b0ebca3b3d8c1afffed8db801f54"
+        },
+        "hit": {
+          "source": "source/earthen-jar-fiend/hit.pxgrid",
+          "source_sha256": "a1e25ea7f3a19047ab9e4a6dfac3527372731e9fd197a1bb9f8f1cebea8119e3",
+          "bbox": [
+            15,
+            30,
+            46,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 12,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "4aa3cebf3fa8d44130806f9dbab6fd3f0027df0ae71e6022b00b3b1e83b2849e"
+        },
+        "dead": {
+          "source": "source/earthen-jar-fiend/dead.pxgrid",
+          "source_sha256": "adc26068dcf471a99ef87c4f228641fe7fbc194aa0360fb9d02db653884d1604",
+          "bbox": [
+            17,
+            44,
+            49,
+            61
+          ],
+          "bottom_y": 60,
+          "opaque_colors": 11,
+          "alpha_values": [
+            0,
+            255
+          ],
+          "pixel_sha256": "48b0a1558fd8b442e62f3c862a133a75ccee9f647351b4fe37331f7bff76fda7"
+        }
+      },
+      "motion": "hop",
+      "sheet": "sprites/earthen-jar-fiend.png",
+      "sheet_sha256": "1a0c3fb9da7c5eec9157b5f792ad95cc1caec939a53adf95bd59ab364ad288b5",
+      "size": [
+        192,
+        192
+      ],
+      "mode": "RGBA",
+      "opaque_colors": 12,
+      "unique_frames": 9,
+      "idle_baselines": [
+        60,
+        60,
+        60
+      ]
+    }
+  }
+}

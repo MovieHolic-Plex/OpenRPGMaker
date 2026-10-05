@@ -1,0 +1,46 @@
+{
+  "projectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
+  "projectDir": "/home/main/z-project/rpg-zzu/.oprn-projects/joseon-starter-preset-20261004",
+  "beforeRevision": 10,
+  "revision": 11,
+  "sha256": "c9e7b7b1de4e65bbbe002021dcc904d432d34189b076ba2755bc4d61e874f80a",
+  "reopened": true,
+  "added": {
+    "enemies": [],
+    "troops": [],
+    "skills": [],
+    "skillChoreographies": []
+  },
+  "addedProfiles": [
+    "jf-enemy-venom-toad",
+    "jf-enemy-mortar-rabbit",
+    "jf-enemy-jangseung-spirit",
+    "jf-enemy-earthen-jar-fiend"
+  ],
+  "slots": [
+    [
+      "joseon_field",
+      "jb_hunt_8",
+      "troop_jf_mortar_rabbit"
+    ],
+    [
+      "joseon_field",
+      "jb_hunt_9",
+      "troop_jf_venom_toad"
+    ],
+    [
+      "joseon_cave",
+      "jb_cave_2",
+      "troop_jf_earthen_jar_fiend"
+    ],
+    [
+      "joseon_cave",
+      "jb_cave_7",
+      "troop_jf_jangseung_spirit"
+    ]
+  ],
+  "terrainAndEventsUnchanged": true,
+  "existingDatabaseRecordsUnchanged": true,
+  "sessionUnchanged": true,
+  "referenceIssues": []
+}

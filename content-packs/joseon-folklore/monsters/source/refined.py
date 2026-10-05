@@ -1,4 +1,4 @@
-"""Load the three revised Joseon enemies from literal native64 pixel grids."""
+"""Load revised Joseon enemies from literal native64 pixel grids."""
 from pathlib import Path
 import json
 from PIL import Image
@@ -32,3 +32,19 @@ def straw(pose):
 
 def ghost(pose):
     return frame('maiden-ghost', pose)
+
+
+def toad(pose):
+    return frame('venom-toad', pose)
+
+
+def rabbit(pose):
+    return frame('mortar-rabbit', pose)
+
+
+def guardian(pose):
+    return frame('jangseung-spirit', pose)
+
+
+def jar(pose):
+    return frame('earthen-jar-fiend', pose)

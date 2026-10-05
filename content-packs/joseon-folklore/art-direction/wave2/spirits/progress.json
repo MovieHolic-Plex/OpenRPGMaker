@@ -1,0 +1,60 @@
+{
+  "phase": "complete",
+  "complete": true,
+  "status": "original-candidates-awaiting-director-review",
+  "files": [
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/idle-lineup.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/jangseung-spirit-poses.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/earthen-jar-fiend-poses.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/sprites/jangseung-spirit.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/sprites/earthen-jar-fiend.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/portraits/jangseung-spirit.png",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/portraits/earthen-jar-fiend.png"
+  ],
+  "view_image_inspections": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/idle-lineup.png",
+      "sha256": "b21a4811edb55ee7629dfa6f17feacb4950b5f2764b72c07bdfc4f4c77c2c617"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/jangseung-spirit-poses.png",
+      "sha256": "a321f1b23deff6e98cfbd3af600f333ae62f5b0691e5631c4d2de938c2219fc2"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/earthen-jar-fiend-poses.png",
+      "sha256": "20dbf294ae2db5cff61fdc1c69681992033b567ac79c6fc436e8258c5f224bc8"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/sprites/jangseung-spirit.png",
+      "sha256": "1f410ec8177f8682783854abb7939820c0a8ed3c6df794252ffe80eb705b3f78"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/sprites/earthen-jar-fiend.png",
+      "sha256": "1a0c3fb9da7c5eec9157b5f792ad95cc1caec939a53adf95bd59ab364ad288b5"
+    }
+  ],
+  "reviewed_sheet_hashes": {
+    "jangseung-spirit": "1f410ec8177f8682783854abb7939820c0a8ed3c6df794252ffe80eb705b3f78",
+    "earthen-jar-fiend": "1a0c3fb9da7c5eec9157b5f792ad95cc1caec939a53adf95bd59ab364ad288b5"
+  },
+  "idle_checkpoint": {
+    "phase": "idle-ready",
+    "written_before_remaining_poses": true,
+    "first_idle_review": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/review/first-pose-draft/idle-lineup.png"
+  },
+  "frame_order": [
+    "idle_a",
+    "idle_b",
+    "idle_c",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "hit",
+    "dead"
+  ],
+  "result": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/result.json",
+  "review_document": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-diverse-spirits/content-packs/joseon-folklore/art-direction/wave2/spirits/REVIEW.md",
+  "inspection_summary": "All 18 poses viewed in 1x/3x contact sheets and both transparent native PNGs. Jar jaw correction viewed again; remaining defects recorded in REVIEW.md.",
+  "integration_owner": "root"
+}

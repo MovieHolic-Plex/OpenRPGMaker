@@ -573,6 +573,38 @@
       "motion": "dash",
       "idleFrameMs": 250,
       "portraitPath": "assets/joseon-folklore/monsters/mountain-tiger-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-venom-toad",
+      "path": "assets/joseon-folklore/monsters/venom-toad.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 240,
+      "portraitPath": "assets/joseon-folklore/monsters/venom-toad-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-mortar-rabbit",
+      "path": "assets/joseon-folklore/monsters/mortar-rabbit.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "portraitPath": "assets/joseon-folklore/monsters/mortar-rabbit-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-jangseung-spirit",
+      "path": "assets/joseon-folklore/monsters/jangseung-spirit.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 300,
+      "portraitPath": "assets/joseon-folklore/monsters/jangseung-spirit-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-earthen-jar-fiend",
+      "path": "assets/joseon-folklore/monsters/earthen-jar-fiend.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 280,
+      "portraitPath": "assets/joseon-folklore/monsters/earthen-jar-fiend-portrait.png"
     }
   ]
 }

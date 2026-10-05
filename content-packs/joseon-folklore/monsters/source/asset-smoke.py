@@ -12,14 +12,17 @@ SOURCE=ROOT/'source/draw.py'
 art=json.loads((ROOT/'review/art-manifest.json').read_text())
 sheets=json.loads((ROOT/'sheets.json').read_text())
 data=json.loads((ROOT/'data.json').read_text())
+expansion=json.loads((ROOT/'expansion.json').read_text())
+for key in ['enemies','troops']:data[key].extend(expansion[key])
 ids=json.loads((ROOT.parent/'ids.json').read_text())
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(ROOT/'source'))
 module=runpy.run_path(str(SOURCE))
 assert art['sourceSha256']==hashlib.sha256(SOURCE.read_bytes()).hexdigest()
 for path,digest in art['sourceFiles'].items():assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==digest
-assert len(sheets)==len(art['sheets'])==len(data['enemies'])==15
-assert len({e['id'] for e in data['enemies']})==len({t['id'] for t in data['troops']})==15
+expected=len(ids['enemies'])
+assert expected==19 and len(sheets)==len(art['sheets'])==len(data['enemies'])==expected
+assert len({e['id'] for e in data['enemies']})==len({t['id'] for t in data['troops']})==expected
 report=[]
 silhouettes=set()
 for metadata,generated in zip(sheets,art['sheets']):
@@ -57,9 +60,9 @@ for metadata,generated in zip(sheets,art['sheets']):
     assert enemy['rewards']['dropItemId'] in ids['materials'].values()
     report.append(dict(slug=slug,size=[cell*3,cell*3],uniquePoses=len(unique),colors=generated['colors'],
                        sha256=generated['sha256'],groundBaseline=cell-4,bounds=boxes))
-assert len(silhouettes)==15
+assert len(silhouettes)==expected
 result=dict(passed=True,scope='PNG decode/source reproduction/pose geometry/portrait pixels/reserved IDs',
-            counts=dict(sheets=15,poses=135,portraits=15,uniqueIdleSilhouettes=15),sheets=report,
+            counts=dict(sheets=expected,poses=expected*9,portraits=expected,uniqueIdleSilhouettes=expected),sheets=report,
             limitation='Mechanical asset check does not judge art quality or integrated battle rendering.')
 (ROOT/'review/asset-smoke.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
-print(json.dumps(dict(passed=True,sheets=15,poses=135,portraits=15,uniqueIdleSilhouettes=15,sourceReproduced=True),ensure_ascii=False))
+print(json.dumps(dict(passed=True,sheets=expected,poses=expected*9,portraits=expected,uniqueIdleSilhouettes=expected,sourceReproduced=True),ensure_ascii=False))

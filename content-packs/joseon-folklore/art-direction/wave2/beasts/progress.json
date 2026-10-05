@@ -1,0 +1,15 @@
+{
+  "phase": "complete",
+  "files": [
+    "portraits/wild-boar.png",
+    "sprites/wild-boar.png",
+    "review/wild-boar-poses.png",
+    "portraits/venom-toad.png",
+    "sprites/venom-toad.png",
+    "review/venom-toad-poses.png",
+    "portraits/mortar-rabbit.png",
+    "sprites/mortar-rabbit.png",
+    "review/mortar-rabbit-poses.png",
+    "review/idle-lineup.png"
+  ]
+}
