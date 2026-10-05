@@ -1,0 +1,26 @@
+[
+  {
+    "endpoint": "/v1/agent/run",
+    "model": "gemini-3.8-flash",
+    "runId": "44661b17-83c6-4817-89f1-538b055cb8b7",
+    "at": 1791190245948
+  },
+  {
+    "endpoint": "/v1/agent/run",
+    "model": "gemini-3.8-flash",
+    "runId": "44661b17-83c6-4817-89f1-538b055cb8b7",
+    "at": 1791190249401
+  },
+  {
+    "endpoint": "/v1/agent/run",
+    "model": "gemini-3.8-flash",
+    "runId": "2cad2041-c0ef-4760-8b44-325660eb54ed",
+    "at": 1791190276185
+  },
+  {
+    "endpoint": "/v1/chat/completions",
+    "model": "gemini-3.8-flash",
+    "provider": "google-antigravity",
+    "at": 1791190311039
+  }
+]

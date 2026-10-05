@@ -78,6 +78,10 @@ export function searchResources(kind: ResourceSearchKind, query: string, options
     }));
   }
   const candidates = candidatesForKind(kind, options);
+  // A concrete resource ID is an identity lookup, independent of semantic tags.
+  const exact = candidates.filter(candidate => candidate.id.toLowerCase() === trimmed.toLowerCase()
+    || candidate.resourceId?.toLowerCase() === trimmed.toLowerCase());
+  if (exact.length) return exact.map(candidate => ({ ...candidate, score: 1000 }));
   // "*" / "all" / "전체"는 브라우징용 전체 목록 — LLM이 후보를 몰라 훑어볼 때 쓴다.
   if (trimmed === "*" || trimmed.toLowerCase() === "all" || trimmed === "전체") {
     return candidates.map((candidate) => ({ ...candidate, score: 1 }));

@@ -1,0 +1,93 @@
+
+> oprn@0.137.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/eventCommandAssist.test.ts -t isPassable 만 통과하는 한 방향 함정 --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu-full-char-baseline
+
+ ❯ test/eventCommandAssist.test.ts (56 tests | 1 failed | 55 skipped) 1884ms
+   ↓ buildEventAssistPrompt > kind 목록·factory 기본값 예시·리소스 id 목록·출력 규약을 포함한다
+   ↓ buildEventAssistPrompt > AI 저작 표면에서 제외된 명령은 kind 목록과 예시에 노출하지 않는다
+   ↓ buildEventAssistPrompt > resourceId 명령을 쓰게 하되 id 목록을 종류별로 실어 준다
+   ↓ buildEventAssistPrompt > 칩셋 id 를 오디오·얼굴 칸에 쓸 수 있는 것으로 제시하지 않는다 — 한 덩어리 목록은 없다
+   ↓ buildEventAssistPrompt > 고를 리소스가 없는 kind 는 프로젝트를 보고 목록에서 뺀다 — 동영상
+   ↓ buildEventAssistPrompt > 맵 목록에 transfer 좌표를 찍을 정확한 크기 문구를 싣는다
+   ↓ buildEventAssistPrompt > 기존 페이지 커맨드를 요약에 포함한다
+   ↓ buildEventAssistPrompt > 기본 scope는 page — 고친 뒤 최종 목록 전체를 요구한다
+   ↓ buildEventAssistPrompt > 페이지가 예산을 넘으면 append로 내려가 «기존을 손대지 말라»고 지시한다
+   ↓ buildEventAssistPrompt > 선택 위치를 내부 경로 배열로 싣지 않고 사람 말로 싣는다
+   ↓ parseAndValidate > ```json 펜스가 있는 유효 배열을 커맨드로 파싱한다
+   ↓ parseAndValidate > AI 저작 표면에서 제외된 명령은 파싱에서도 거부한다
+   ↓ parseAndValidate > 존재하지 않는 itemId는 참조 에러로 거부한다
+   ↓ parseAndValidate > 맵 밖으로 나가는 transfer 좌표를 거부한다 — 자가수정 루프가 고칠 기회를 준다
+   ↓ parseAndValidate > 밟을 수 없는 칸으로 보내는 transfer 를 거부하고 대안 좌표를 알려준다
+   × parseAndValidate > isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다 1881ms
+     → expected false to be true // Object.is equality
+   ↓ parseAndValidate > 맵 안 transfer 좌표는 통과한다
+   ↓ parseAndValidate > 종류가 맞는 얼굴·소리·그림 resourceId 는 통과한다
+   ↓ parseAndValidate > 칩셋 id 를 playAudio 에 쓰면 반려하고 쓸 수 있는 id 를 알려준다
+   ↓ parseAndValidate > 얼굴 칸에 음악 id 를 쓰는 어깃남도 잡고, 번 칸은 「얼굴 지우기」로 통과시킨다
+   ↓ parseAndValidate > 동영상이 없는 프로젝트에서 playMovie 는 어느 id 로도 통과하지 못한다
+   ↓ parseAndValidate > 흉상·전신 프리셋 id 는 얼굴 절에 보이고 검증을 통과한다 — 폼이 권하는 id 다
+   ↓ parseAndValidate > 「그림 선택」 픽커가 제시하는 이미지는 하나도 반려하지 않는다
+   ↓ parseAndValidate > 업로드 종류가 monster 여도 그림으로 쓸 수 있고, 오디오 업로드는 그림 칸에서 반려된다
+   ↓ parseAndValidate > 알 수 없는 kind는 shape 에러로 거부한다
+   ↓ parseAndValidate > JSON 배열이 없으면 에러를 돌려준다
+   ↓ runEventCommandAssist 자가수정 루프 > 보조 모델(liteModel)로 chatCompletion 요청을 만든다
+   ↓ runEventCommandAssist 자가수정 루프 > 정상 JSON이면 1회 시도로 커맨드를 돌려준다
+   ↓ runEventCommandAssist 자가수정 루프 > 1회 불량 JSON이면 에러를 되돌려 재시도해 성공한다
+   ↓ runEventCommandAssist 자가수정 루프 > 3회 모두 실패하면 마지막 에러로 던진다
+   ↓ AI Assist 패널 UI (fakeDom) > 같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다
+   ↓ AI Assist 패널 UI (fakeDom) > 프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다
+   ↓ AI Assist 패널 UI (fakeDom) > 초안은 도크 카드가 아니라 목록 자리(stagedHost)에 유령 행으로 그려진다
+   ↓ AI Assist 패널 UI (fakeDom) > 적용은 목록 전체 교체 한 번이다 — 되돌리기 스냅샷이 한 칸만 쌓인다
+   ↓ AI Assist 패널 UI (fakeDom) > 기존 명령이 있는 페이지에서 «고쳐 달라»고 하면 덧붙이지 않고 바뀜으로 표시한다
+   ↓ AI Assist 패널 UI (fakeDom) > 행마다 «이건 빼기»로 골라 적용할 수 있다
+   ↓ AI Assist 패널 UI (fakeDom) > 생성 중 명령 목록이 바뀌면 초안을 만들거나 적용하지 않는다
+   ↓ AI Assist 패널 UI (fakeDom) > 생성 중 재렌더된 뒤에도 살아 있는 도크의 생성 버튼이 다시 활성된다
+   ↓ AI Assist 패널 UI (fakeDom) > surviving staged rows use the applied result sequence for numbers and the badge
+   ↓ AI Assist 패널 UI (fakeDom) > excluding an add row rerenders the remaining staged numbers contiguously
+   ↓ AI Assist 패널 UI (fakeDom) > 취소를 누르면 초안만 지우고 목록을 건드리지 않는다
+   ↓ AI Assist 패널 UI (fakeDom) > 연결이 안 됐으면 연결 방식을 완료하라고 안내한다
+   ↓ AI Assist 패널 UI (fakeDom) > ChatGPT 모드(apiKey 없음)에서는 생성을 막지 않고 초안을 보여준다
+   ↓ AI Assist 패널 UI (fakeDom) > 존재하지 않는 itemId만 계속 돌아오면 에러를 표시한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 캐논이 있으면 프롬프트에 캐논 블록과 금지 목록이 실린다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 캐논이 없으면 캐논 블록 없이 기존처럼 동작한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > text 커맨드 body에 금지어가 있으면 거부한다 — 중첩 fork 안도 본다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 금지어가 없으면 통과한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 선택지 질문·문구에 금지어가 있어도 거부한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 숫자 입력 안내 문구의 금지어도 거부한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 깊은 중첩(loop>선택지>text) 안의 금지어도 잡는다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 플레이어에게 안 보이는 필드(label 이름)는 검사하지 않는다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 화자 이름에 금지어가 있으면 본문이 깨끗해도 거부한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 여관 인사말·질문에 금지어가 있으면 거부한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 게임오버 메시지·엔딩 제목/본문의 금지어도 거부한다
+   ↓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 화자·여관·게임오버·엔딩이 깨끗한 문구면 통과한다
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventCommandAssist.test.ts > parseAndValidate > isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/eventCommandAssist.test.ts:341:44
+    339|     map.lowerTiles[5 * map.width + 4] = 240;
+    340| 
+    341|     expect(isPassable(project, map, 3, 3)).toBe(true);
+       |                                            ^
+    342|     expect(isPassableLanding(project, map, 3, 3)).toBe(false);
+    343|     const result = parseAndValidate(project, JSON.stringify([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 55 skipped (56)
+   Start at  17:29:16
+   Duration  69.72s (transform 48.98s, setup 0ms, collect 67.01s, tests 1.88s, environment 0ms, prepare 114ms)
+

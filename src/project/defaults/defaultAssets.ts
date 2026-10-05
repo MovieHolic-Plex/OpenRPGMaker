@@ -38,6 +38,7 @@ import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId, LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, SLATES_32_TEXTURE_KEY } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import previousFaceNames from "@/assets/previousFaceReferenceNames.json";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { refreshMvPackGuide } from "@/project/rpgmakerMv/refreshGuide";
@@ -566,7 +567,7 @@ export function defaultResourceProfiles(): ResourceProfile[] {
   return profiles;
 }
 
-export function ensureBundledResourceProfiles(project: { resourceProfiles: ResourceProfile[] }): boolean {
+export function ensureBundledResourceProfiles(project: { resourceProfiles: ResourceProfile[]; assets?: { uploaded?: Record<string, unknown> } }): boolean {
   // 이미 저장된 프로젝트에 남아 있는 4x4 얼굴 시트 프로필도 걷어낸다 — 그대로 두면
   // 리소스 관리자에 192x192 시트가 계속 보인다(실측: 얼굴 그래픽 목록이 낱장 112장 대신 시트 5장이었다).
   // 생성 시리즈 낱장 프로필(generated-actor-hero-XX-face-NN)도 같은 규칙으로 걷어낸다 —
@@ -575,11 +576,19 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   const nextResourceProfiles = project.resourceProfiles.filter(
     (profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY
       && !(profile.kind === "faceset" && profile.assetId !== undefined
+        && !project.assets?.uploaded?.[profile.assetId]
         && (staleFaceSheetIds.has(profile.assetId) || GENERATED_FACESET_FACE_IDS.has(profile.assetId)))
   );
   let changed = nextResourceProfiles.length !== project.resourceProfiles.length;
   const itemIconAssets = new Map(CC0_ICON_ASSETS.map((asset) => [asset.id, asset]));
+  const faces = new Map(AUTHORABLE_FACESET_FACE_ASSETS.map(face => [face.id, face]));
   for (const profile of nextResourceProfiles) {
+    const previousName = profile.assetId ? (previousFaceNames as Readonly<Record<string, string>>)[profile.assetId] : undefined;
+    const face = profile.assetId ? faces.get(profile.assetId) : undefined;
+    if (profile.kind === "faceset" && face && previousName === profile.name && !project.assets?.uploaded?.[face.id]) {
+      profile.name = face.name;
+      changed = true;
+    }
     const asset = profile.assetId ? itemIconAssets.get(profile.assetId) : undefined;
     if (!asset || profile.kind !== "picture") continue;
     if (profile.imageWidth === asset.imageWidth && profile.imageHeight === asset.imageHeight) continue;

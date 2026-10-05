@@ -1,0 +1,12 @@
+{
+  "physicalSlots": 1448,
+  "occupiedSlots": 324,
+  "labeledSlots": 321,
+  "occupiedUnlabeled": [
+    "tex_easyrpg_charset_template#0",
+    "tex_easyrpg_charset_template#1",
+    "tex_easyrpg_charset_template#2"
+  ],
+  "labeledEmpty": [],
+  "coordinateFailures": []
+}

@@ -1,0 +1,64 @@
+
+> oprn@0.139.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fullCharacterReferenceAudit.test.ts test/charsetReferenceRoutes.test.ts test/sharedPortraitAssets.test.ts test/sharedCharacterGraphicsStore.test.ts test/monsterResourceCatalog.test.ts test/placeNpcGraphicQuery.test.ts test/npcSharedFaceMapping.test.ts test/charsetSelectionEvidence.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/charsetSelectionEvidence.test.ts (15 tests) 44933ms
+   ✓ charset selection evidence > credits Gemini multimodal function responses with a legend inside the JSON envelope  4098ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful responses turn  3291ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful gemini turn  3440ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful anthropic turn  3261ms
+   ✓ charset selection evidence > rejects wrong-image reading evidence  3303ms
+   ✓ charset selection evidence > rejects aborted reading evidence  3678ms
+   ✓ charset selection evidence > rejects text-only reading evidence  3842ms
+   ✓ charset selection evidence > rejects truncated reading evidence  5271ms
+   ✓ charset selection evidence > rejects king substitution and slot/frame confusion after viewing a golem  4368ms
+   ✓ charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics  2895ms
+   ✓ charset selection evidence > keeps existing graphics on text/position edits, including reordered events  4920ms
+   ✓ charset selection evidence > rolls a failed write back atomically and shares evidence with discovered tools  2478ms
+ ✓ test/fullCharacterReferenceAudit.test.ts (17 tests) 31050ms
+   ✓ Complete character reference census regressions > removes 19 blank cells from picker, prompt and search despite stored profiles  7591ms
+   ✓ Complete character reference census regressions > does not mistake an uploaded replacement for the public blank/face pixels  3079ms
+   ✓ Complete character reference census regressions > updates seeded old face names in existing projects and retains custom names  2881ms
+   ✓ Complete character reference census regressions > uses the accepted host mapping for search, NPC candidates, auto-face and reconciliation  2741ms
+   ✓ Complete character reference census regressions > offers source-linked original face portraits and searches non-base expressions  2581ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: king-slime-01  1868ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: golem-clay  1611ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: skeleton-bone  1997ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: puppet-string  1487ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: wyvern-cliff  1565ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: armor-living  2091ms
+   ✓ Complete character reference census regressions > resolves exact monster IDs without semantic tags  1229ms
+ ✓ test/placeNpcGraphicQuery.test.ts (6 tests) 12471ms
+   ✓ place_npc graphic.query > 감사 로그의 place_npc 호출이 이제 성공한다  2138ms
+   ✓ place_npc graphic.query > 자유 질의 old woman으로 노년 여성 그래픽을 배치한다  1932ms
+   ✓ place_npc graphic.query > 그래픽 해석 실패는 주민 그림으로 대체하지 않고 graphic-not-found 로 거절한다  1455ms
+   ✓ place_npc graphic.query > default villager graphics diversify across sequential placements  3946ms
+   ✓ place_npc graphic.query > places matching changeFace for diversified charset slots  2987ms
+ ✓ test/sharedPortraitAssets.test.ts (5 tests) 296ms
+ ✓ test/npcSharedFaceMapping.test.ts (14 tests) 20936ms
+   ✓ place_npc shared face mapping > writes the authored mapping into real event commands and survives JSON reload  2272ms
+   ✓ place_npc shared face mapping > does not reintroduce a heuristic portrait for no-face  1745ms
+   ✓ place_npc shared face mapping > does not reintroduce a heuristic portrait for pending  1622ms
+   ✓ place_npc shared face mapping > keeps explicit face overrides  1698ms
+   ✓ place_npc shared face mapping > resolves each page graphic, not just the top-level sprite  1649ms
+   ✓ place_npc shared face mapping > uses a newly fetched server mapping without opening the database tab  1585ms
+   ✓ make_villager shared face mapping > writes the authored mapping into real event commands and survives JSON reload  1696ms
+   ✓ make_villager shared face mapping > does not reintroduce a heuristic portrait for no-face  1752ms
+   ✓ make_villager shared face mapping > does not reintroduce a heuristic portrait for pending  1683ms
+   ✓ make_villager shared face mapping > keeps explicit face overrides  1651ms
+   ✓ make_villager shared face mapping > resolves each page graphic, not just the top-level sprite  1699ms
+   ✓ make_villager shared face mapping > uses a newly fetched server mapping without opening the database tab  1768ms
+ ✓ test/charsetReferenceRoutes.test.ts (4 tests) 4367ms
+   ✓ Character reference paths use the audited walking chip > describes paired walking chips with the current canonical name  2348ms
+   ✓ Character reference paths use the audited walking chip > preserves a project author name in the paired walking description  1993ms
+ ✓ test/sharedCharacterGraphicsStore.test.ts (4 tests) 431ms
+ ✓ test/monsterResourceCatalog.test.ts (6 tests) 60ms
+
+ Test Files  8 passed (8)
+      Tests  71 passed (71)
+   Start at  17:40:56
+   Duration  210.53s (transform 31.27s, setup 0ms, collect 87.73s, tests 114.54s, environment 3ms, prepare 2.18s)
+

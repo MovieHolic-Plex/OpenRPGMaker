@@ -1,0 +1,5410 @@
+[
+  {
+    "group": "monster",
+    "key": "generated-enemy-golem-01",
+    "before": {
+      "name": "회색 바위 골렘",
+      "tags": [
+        "골렘",
+        "golem",
+        "회색",
+        "gray",
+        "바위",
+        "stone",
+        "인간형",
+        "humanoid"
+      ],
+      "description": "이끼가 덮인 청록빛 바위 거인이 넓은 등과 층층이 쌓인 주먹, 가슴 보석을 갖는다."
+    },
+    "after": {
+      "name": "이끼 바위 골렘",
+      "tags": [
+        "골렘",
+        "golem",
+        "바위",
+        "stone",
+        "인간형",
+        "humanoid",
+        "이끼",
+        "moss",
+        "청록색",
+        "teal"
+      ],
+      "description": "이끼가 덮인 청록빛 바위 거인이 넓은 등과 층층이 쌓인 주먹, 가슴 보석을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-hound-hell",
+    "before": {
+      "name": "불꽃 지옥 사냥개",
+      "tags": [
+        "사냥개",
+        "hound",
+        "개",
+        "dog",
+        "검은색",
+        "black",
+        "불꽃",
+        "flame",
+        "네발",
+        "quadruped"
+      ],
+      "description": "검붉은 비늘 털과 뿔, 금빛 균열과 큰 턱을 가진 불타는 지옥 사냥개다."
+    },
+    "after": {
+      "name": "불꽃 지옥 사냥개",
+      "tags": [
+        "사냥개",
+        "hound",
+        "개",
+        "dog",
+        "불꽃",
+        "flame",
+        "네발",
+        "quadruped",
+        "검붉은색",
+        "dark red"
+      ],
+      "description": "검붉은 비늘 털과 뿔, 금빛 균열과 큰 턱을 가진 불타는 지옥 사냥개다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-armor-living",
+    "before": {
+      "name": "살아 있는 갑옷",
+      "tags": [
+        "갑옷",
+        "armor",
+        "기사",
+        "knight",
+        "보라색",
+        "purple",
+        "칼",
+        "sword"
+      ],
+      "description": "두꺼운 청회색 판금의 빈 갑옷이 뾰족한 투구, 넓은 어깨와 장식된 검을 갖는다."
+    },
+    "after": {
+      "name": "청회색 살아 있는 갑옷",
+      "tags": [
+        "갑옷",
+        "armor",
+        "기사",
+        "knight",
+        "칼",
+        "sword",
+        "청회색",
+        "blue grey"
+      ],
+      "description": "두꺼운 청회색 판금의 빈 갑옷이 뾰족한 투구, 넓은 어깨와 장식된 검을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-eye-floating",
+    "before": {
+      "name": "떠 있는 외눈",
+      "tags": [
+        "눈",
+        "eye",
+        "외눈",
+        "cyclops",
+        "보라색",
+        "purple",
+        "촉수",
+        "tentacle",
+        "비행",
+        "floating"
+      ],
+      "description": "두꺼운 분홍 눈꺼풀과 큰 녹색 홍채의 눈이 혈관 덩어리와 굵은 구부린 촉수를 갖는다."
+    },
+    "after": {
+      "name": "분홍 촉수 외눈",
+      "tags": [
+        "눈",
+        "eye",
+        "외눈",
+        "cyclops",
+        "촉수",
+        "tentacle",
+        "비행",
+        "floating",
+        "분홍색",
+        "pink"
+      ],
+      "description": "두꺼운 분홍 눈꺼풀과 큰 녹색 홍채의 눈이 혈관 덩어리와 굵은 구부린 촉수를 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bandit-mask",
+    "before": {
+      "name": "복면 산적",
+      "tags": [
+        "산적",
+        "bandit",
+        "복면",
+        "mask",
+        "푸른색",
+        "blue",
+        "칼",
+        "knife",
+        "인간형",
+        "humanoid"
+      ],
+      "description": "검은 모자와 얼굴 가면을 쓴 도적은 청회색 가죽옷과 붉은 망토, 가죽 장화와 강철 검을 지닌다."
+    },
+    "after": {
+      "name": "복면 산적",
+      "tags": [
+        "산적",
+        "bandit",
+        "복면",
+        "mask",
+        "푸른색",
+        "blue",
+        "인간형",
+        "humanoid",
+        "검",
+        "sword"
+      ],
+      "description": "검은 모자와 얼굴 가면을 쓴 도적은 청회색 가죽옷과 붉은 망토, 가죽 장화와 강철 검을 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-troll-cave",
+    "before": {
+      "name": "동굴 트롤",
+      "tags": [
+        "트롤",
+        "troll",
+        "회색",
+        "gray",
+        "곤봉",
+        "club",
+        "인간형",
+        "humanoid"
+      ],
+      "description": "이끼빛 두꺼운 피부와 큰 코, 삐죽한 엄니, 거친 가죽 치마와 돌 몽둥이를 든 트롤이다."
+    },
+    "after": {
+      "name": "이끼빛 동굴 트롤",
+      "tags": [
+        "트롤",
+        "troll",
+        "곤봉",
+        "club",
+        "인간형",
+        "humanoid",
+        "이끼색",
+        "녹색",
+        "green"
+      ],
+      "description": "이끼빛 두꺼운 피부와 큰 코, 삐죽한 엄니, 거친 가죽 치마와 돌 몽둥이를 든 트롤이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-scorpion-01",
+    "before": {
+      "name": "황갈색 전갈",
+      "tags": [
+        "전갈",
+        "scorpion",
+        "절지동물",
+        "arthropod",
+        "거미류",
+        "arachnid"
+      ],
+      "description": "남청색 각진 등갑판과 높이 말린 굵은 독침 꼬리, 밝은 집게 끝이 있는 전갈이다."
+    },
+    "after": {
+      "name": "남청색 전갈",
+      "tags": [
+        "전갈",
+        "scorpion",
+        "절지동물",
+        "arthropod",
+        "거미류",
+        "arachnid",
+        "남청색",
+        "dark blue"
+      ],
+      "description": "남청색 각진 등갑판과 높이 말린 굵은 독침 꼬리, 밝은 집게 끝이 있는 전갈이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-horse-01",
+    "before": {
+      "name": "무장한 갈색 말",
+      "tags": [
+        "말",
+        "horse",
+        "동물",
+        "animal",
+        "갑옷",
+        "armor"
+      ],
+      "description": "적갈색 몸에 긴 검은 갈기와 비스듬한 말 얼굴, 힘찬 발굽 다리를 가진 말이다."
+    },
+    "after": {
+      "name": "갈색 말",
+      "tags": [
+        "말",
+        "horse",
+        "동물",
+        "animal",
+        "갈색",
+        "brown"
+      ],
+      "description": "적갈색 몸에 긴 검은 갈기와 비스듬한 말 얼굴, 힘찬 발굽 다리를 가진 말이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-cat-01",
+    "before": {
+      "name": "무장한 줄무늬 고양이",
+      "tags": [
+        "고양이",
+        "cat",
+        "동물",
+        "animal",
+        "줄무늬",
+        "tabby"
+      ],
+      "description": "황갈색 털과 짧고 둥근 얼굴, 큰 눈과 길게 휘어진 꼬리를 가진 고양이다."
+    },
+    "after": {
+      "name": "황갈색 줄무늬 고양이",
+      "tags": [
+        "고양이",
+        "cat",
+        "동물",
+        "animal",
+        "줄무늬",
+        "tabby",
+        "황갈색",
+        "ochre"
+      ],
+      "description": "황갈색 털과 짧고 둥근 얼굴, 큰 눈과 길게 휘어진 꼬리를 가진 고양이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bat-cave",
+    "before": {
+      "name": "갈색 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "동물",
+        "animal",
+        "갈색",
+        "brown",
+        "동굴",
+        "cave"
+      ],
+      "description": "푸른 회색 털과 분홍빛 날개막, 긴 귀, 갈고리 발과 송곳니를 가진 동굴 박쥐다."
+    },
+    "after": {
+      "name": "청회색 동굴 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "동물",
+        "animal",
+        "동굴",
+        "cave",
+        "청회색",
+        "blue grey",
+        "분홍 날개"
+      ],
+      "description": "푸른 회색 털과 분홍빛 날개막, 긴 귀, 갈고리 발과 송곳니를 가진 동굴 박쥐다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-moth-dust",
+    "before": {
+      "name": "갈색 털 나방",
+      "tags": [
+        "나방",
+        "moth",
+        "곤충",
+        "insect",
+        "갈색",
+        "brown"
+      ],
+      "description": "아이보리색 넓은 네 날개에 보라색 눈무늬와 겹비늘, 긴 더듬이가 있는 나방이다."
+    },
+    "after": {
+      "name": "아이보리 눈무늬 나방",
+      "tags": [
+        "나방",
+        "moth",
+        "곤충",
+        "insect",
+        "아이보리",
+        "ivory",
+        "눈무늬"
+      ],
+      "description": "아이보리색 넓은 네 날개에 보라색 눈무늬와 겹비늘, 긴 더듬이가 있는 나방이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-tiger-saber",
+    "before": {
+      "name": "갑옷 입은 검치호랑이",
+      "tags": [
+        "호랑이",
+        "tiger",
+        "야수",
+        "beast",
+        "검치호",
+        "saber-toothed cat"
+      ],
+      "description": "황금빛 줄무늬 털과 육중한 앞어깨, 두 개의 큰 곡선 송곳니를 가진 검치호랑이다."
+    },
+    "after": {
+      "name": "거대 검치호랑이",
+      "tags": [
+        "호랑이",
+        "tiger",
+        "야수",
+        "beast",
+        "검치호",
+        "saber-toothed cat",
+        "송곳니",
+        "fang"
+      ],
+      "description": "황금빛 줄무늬 털과 육중한 앞어깨, 두 개의 큰 곡선 송곳니를 가진 검치호랑이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-rat-giant",
+    "before": {
+      "name": "붉은 눈의 갈색 쥐",
+      "tags": [
+        "쥐",
+        "rat",
+        "동물",
+        "animal",
+        "설치류",
+        "rodent"
+      ],
+      "description": "갈색 두꺼운 몸과 큰 분홍 귀, 날카로운 앞니와 긴 맨살 꼬리를 가진 거대한 쥐다."
+    },
+    "after": {
+      "name": "거대 갈색 쥐",
+      "tags": [
+        "쥐",
+        "rat",
+        "동물",
+        "animal",
+        "설치류",
+        "rodent",
+        "갈색",
+        "brown"
+      ],
+      "description": "갈색 두꺼운 몸과 큰 분홍 귀, 날카로운 앞니와 긴 맨살 꼬리를 가진 거대한 쥐다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-deer-forest",
+    "before": {
+      "name": "룬 무늬 뿔사슴",
+      "tags": [
+        "사슴",
+        "deer",
+        "동물",
+        "animal",
+        "뿔",
+        "antlers",
+        "룬",
+        "rune"
+      ],
+      "description": "갈색 날씬한 몸과 밝은 등반점, 여러 갈래의 뿔과 긴 다리를 가진 숲사슴이다."
+    },
+    "after": {
+      "name": "숲사슴",
+      "tags": [
+        "사슴",
+        "deer",
+        "동물",
+        "animal",
+        "뿔",
+        "antlers",
+        "등반점",
+        "spots"
+      ],
+      "description": "갈색 날씬한 몸과 밝은 등반점, 여러 갈래의 뿔과 긴 다리를 가진 숲사슴이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-squid-deep",
+    "before": {
+      "name": "보라색 부리 오징어",
+      "tags": [
+        "두족류",
+        "오징어",
+        "보라색",
+        "cephalopod",
+        "squid",
+        "purple"
+      ],
+      "description": "짙은 보라색 두꺼운 외투막과 큰 황금 눈, 굵은 흡반 팔을 펼친 심해오징어다."
+    },
+    "after": {
+      "name": "보라색 부리 오징어",
+      "tags": [
+        "두족류",
+        "오징어",
+        "보라색",
+        "cephalopod",
+        "squid",
+        "purple"
+      ],
+      "description": "짙은 보라색 두꺼운 외투막과 큰 청록빛 눈, 굵은 흡반 팔을 펼친 심해오징어다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-skeleton-01",
+    "before": {
+      "name": "녹슨 검을 든 해골",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "검",
+        "sword"
+      ],
+      "description": "비스듬한 상아색 두개골의 해골이 노출된 골반과 늑골, 붉은 허리 천과 굵은 뼈 몽둥이를 갖는다."
+    },
+    "after": {
+      "name": "뼈 몽둥이를 든 해골",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "몽둥이",
+        "club"
+      ],
+      "description": "비스듬한 상아색 두개골의 해골이 노출된 골반과 늑골, 붉은 허리 천과 굵은 뼈 몽둥이를 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-carbuncle-01",
+    "before": {
+      "name": "붉은 보석 여우",
+      "tags": [
+        "여우",
+        "fox",
+        "동물",
+        "animal",
+        "보석",
+        "gem"
+      ],
+      "description": "청록빛 털의 카벙클이 큰 말린 꼬리와 긴 귀, 두꺼운 발과 금빛 이마 보석을 갖는다."
+    },
+    "after": {
+      "name": "금빛 이마 보석 카벙클",
+      "tags": [
+        "여우",
+        "fox",
+        "동물",
+        "animal",
+        "보석",
+        "gem",
+        "금빛 보석",
+        "gold gem",
+        "청록색",
+        "teal"
+      ],
+      "description": "청록빛 털의 카벙클이 큰 말린 꼬리와 긴 귀, 두꺼운 발과 금빛 이마 보석을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-spirit-01",
+    "before": {
+      "name": "흰색 유령",
+      "tags": [
+        "유령",
+        "언데드",
+        "영혼",
+        "ghost",
+        "undead",
+        "spirit"
+      ],
+      "description": "연보라 가면 정령의 긴 두 귀와 낡은 목장식, 겹친 분홍빛 꼬리 띠가 보인다."
+    },
+    "after": {
+      "name": "연보라 가면 정령",
+      "tags": [
+        "유령",
+        "언데드",
+        "영혼",
+        "ghost",
+        "undead",
+        "spirit",
+        "연보라색",
+        "light purple",
+        "가면",
+        "mask"
+      ],
+      "description": "연보라 가면 정령의 긴 두 귀와 낡은 목장식, 겹친 분홍빛 꼬리 띠가 보인다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-specter-01",
+    "before": {
+      "name": "회색 악령",
+      "tags": [
+        "유령",
+        "악령",
+        "언데드",
+        "ghost",
+        "spirit",
+        "undead"
+      ],
+      "description": "큰 해골 후드와 깊이 접힌 보라 망토의 스펙터가 굵은 손과 찢긴 옷자락을 갖는다."
+    },
+    "after": {
+      "name": "보라 후드 해골 유령",
+      "tags": [
+        "유령",
+        "악령",
+        "언데드",
+        "ghost",
+        "spirit",
+        "undead",
+        "보라색",
+        "purple",
+        "후드",
+        "hood",
+        "해골",
+        "skeleton"
+      ],
+      "description": "큰 해골 후드와 깊이 접힌 보라 망토의 스펙터가 굵은 손과 찢긴 옷자락을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-sylph-01",
+    "before": {
+      "name": "하늘색 구름 정령",
+      "tags": [
+        "정령",
+        "spirit",
+        "구름",
+        "cloud",
+        "바람",
+        "wind"
+      ],
+      "description": "잎 모양의 넓은 청록 날개와 긴 녹색 머리카락, 겹친 잎 갑옷을 가진 바람 요정이다."
+    },
+    "after": {
+      "name": "청록 잎날개 요정",
+      "tags": [
+        "정령",
+        "spirit",
+        "바람",
+        "wind",
+        "잎날개",
+        "leaf wings",
+        "요정",
+        "fairy"
+      ],
+      "description": "잎 모양의 넓은 청록 날개와 긴 녹색 머리카락, 겹친 잎 갑옷을 가진 바람 요정이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-king-slime-01",
+    "before": {
+      "name": "왕관 쓴 초록 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "몬스터",
+        "monster",
+        "초록색",
+        "green",
+        "왕관",
+        "crown"
+      ],
+      "description": "거대한 파랑 젤리 왕이 세 갈래 금빛 왕관과 붉은 보석, 넓은 턱을 갖는다."
+    },
+    "after": {
+      "name": "금관 쓴 파란 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "몬스터",
+        "monster",
+        "왕관",
+        "crown",
+        "파란색",
+        "blue",
+        "금관"
+      ],
+      "description": "거대한 파랑 젤리 왕이 세 갈래 금빛 왕관과 붉은 보석, 넓은 턱을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-slime-king",
+    "before": {
+      "name": "왕관 쓴 초록 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "몬스터",
+        "monster",
+        "초록색",
+        "green",
+        "왕관",
+        "crown"
+      ],
+      "description": "큰 보라색 슬라임이 둥근 붉은 왕실 모자와 금빛 띠, 긴 수염 같은 젤리 주름을 갖는다."
+    },
+    "after": {
+      "name": "붉은 왕실 모자 보라 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "몬스터",
+        "monster",
+        "보라색",
+        "purple",
+        "왕실 모자",
+        "royal hat"
+      ],
+      "description": "큰 보라색 슬라임이 둥근 붉은 왕실 모자와 금빛 띠, 긴 수염 같은 젤리 주름을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ooze-black",
+    "before": {
+      "name": "검은 얼룩 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "점액",
+        "blob",
+        "얼룩무늬"
+      ],
+      "description": "먹보라색 우즈가 낮은 비대칭 웅덩이로 흐르고 두꺼운 촉수 눈살과 날카로운 입을 갖는다."
+    },
+    "after": {
+      "name": "먹보라 우즈",
+      "tags": [
+        "슬라임",
+        "slime",
+        "점액",
+        "blob",
+        "얼룩무늬",
+        "먹보라색",
+        "dark purple"
+      ],
+      "description": "먹보라색 우즈가 낮은 비대칭 웅덩이로 흐르고 두꺼운 촉수 눈살과 날카로운 입을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ooze-acid",
+    "before": {
+      "name": "청록색 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "젤리",
+        "jelly",
+        "몬스터",
+        "monster",
+        "청록색"
+      ],
+      "description": "노란 산성 우즈의 솟은 기포 목과 길게 굽은 오른쪽 촉수, 밝은 점액 주름이 보인다."
+    },
+    "after": {
+      "name": "노란 산성 슬라임",
+      "tags": [
+        "슬라임",
+        "slime",
+        "젤리",
+        "jelly",
+        "몬스터",
+        "monster",
+        "노란색",
+        "yellow",
+        "산성",
+        "acid"
+      ],
+      "description": "노란 산성 우즈의 솟은 기포 목과 길게 굽은 오른쪽 촉수, 밝은 점액 주름이 보인다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-skeleton-bone",
+    "before": {
+      "name": "녹슨 검을 든 해골",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "검",
+        "sword"
+      ],
+      "description": "갈라진 뿔 두개골에서 굵은 척추와 양옆 늑골이 이어져 바닥을 휘감는 뼈 뱀이다."
+    },
+    "after": {
+      "name": "뿔 두개골 뼈 뱀",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "뼈 뱀",
+        "bone snake",
+        "뿔",
+        "horn"
+      ],
+      "description": "갈라진 뿔 두개골에서 굵은 척추와 양옆 늑골이 이어져 바닥을 휘감는 뼈 뱀이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-wraith-dark",
+    "before": {
+      "name": "회색 유령",
+      "tags": [
+        "유령",
+        "ghost",
+        "영체",
+        "spirit",
+        "괴물",
+        "monster"
+      ],
+      "description": "먹보라색 후드 속 노란 눈의 레이스가 넓은 망토와 긴 휘어진 낫을 든다."
+    },
+    "after": {
+      "name": "먹보라 후드 낫 유령",
+      "tags": [
+        "유령",
+        "ghost",
+        "영체",
+        "spirit",
+        "괴물",
+        "monster",
+        "먹보라색",
+        "dark purple",
+        "낫",
+        "scythe"
+      ],
+      "description": "먹보라색 후드 속 노란 눈의 레이스가 넓은 망토와 긴 휘어진 낫을 든다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-spirit-wind",
+    "before": {
+      "name": "백색 유령",
+      "tags": [
+        "유령",
+        "ghost",
+        "악령",
+        "wraith",
+        "망령",
+        "specter"
+      ],
+      "description": "회청색 구름 얼굴 아래 굵은 바람 띠가 두 겹으로 말리고 깃 같은 공기 날개가 뻗는다."
+    },
+    "after": {
+      "name": "회청색 바람 정령",
+      "tags": [
+        "유령",
+        "ghost",
+        "악령",
+        "wraith",
+        "망령",
+        "specter",
+        "바람",
+        "wind",
+        "회청색",
+        "blue grey"
+      ],
+      "description": "회청색 구름 얼굴 아래 굵은 바람 띠가 두 겹으로 말리고 깃 같은 공기 날개가 뻗는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-spirit-light",
+    "before": {
+      "name": "하얀 유령",
+      "tags": [
+        "유령",
+        "망령",
+        "ghost",
+        "wraith",
+        "undead",
+        "white"
+      ],
+      "description": "금빛 광륜과 큰 상아색 깃날개, 깊은 황금색 주름의 빛 정령이 밝은 손을 뻗는다."
+    },
+    "after": {
+      "name": "금빛 광륜 정령",
+      "tags": [
+        "유령",
+        "망령",
+        "ghost",
+        "wraith",
+        "undead",
+        "금빛",
+        "gold",
+        "광륜",
+        "halo",
+        "날개",
+        "wings"
+      ],
+      "description": "금빛 광륜과 큰 상아색 깃날개, 깊은 황금색 주름의 빛 정령이 밝은 손을 뻗는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-spirit-dark",
+    "before": {
+      "name": "회색 유령",
+      "tags": [
+        "유령",
+        "악령",
+        "언데드",
+        "ghost",
+        "spirit",
+        "undead"
+      ],
+      "description": "커다란 초승달 볏과 여섯 굵은 그림자 팔의 어둠 정령이 보라색 가슴 틈과 노란 눈을 갖는다."
+    },
+    "after": {
+      "name": "먹보라 여섯 팔 정령",
+      "tags": [
+        "유령",
+        "악령",
+        "언데드",
+        "ghost",
+        "spirit",
+        "undead",
+        "먹보라색",
+        "dark purple",
+        "여섯 팔",
+        "six arms"
+      ],
+      "description": "커다란 초승달 볏과 여섯 굵은 그림자 팔의 어둠 정령이 보라색 가슴 틈과 노란 눈을 갖는다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-golem-clay",
+    "before": {
+      "name": "이끼 바위 골렘",
+      "tags": [
+        "골렘",
+        "golem",
+        "바위",
+        "rock",
+        "이끼",
+        "moss",
+        "거인",
+        "giant"
+      ],
+      "description": "붉은 점토 항아리의 두꺼운 굴곡과 깨진 테두리, 도기 손잡이 팔과 원형 문양이 보인다."
+    },
+    "after": {
+      "name": "붉은 점토 항아리 골렘",
+      "tags": [
+        "골렘",
+        "golem",
+        "거인",
+        "giant",
+        "점토",
+        "clay",
+        "항아리",
+        "pot",
+        "붉은색",
+        "red"
+      ],
+      "description": "붉은 점토 항아리의 두꺼운 굴곡과 깨진 테두리, 도기 손잡이 팔과 원형 문양이 보인다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-golem-crystal",
+    "before": {
+      "name": "푸른 바위 골렘",
+      "tags": [
+        "골렘",
+        "바위",
+        "돌",
+        "golem",
+        "rock",
+        "stone"
+      ],
+      "description": "보라색 결정 골렘의 넓은 흉곽과 큰 비대칭 어깨, 긴 손가락에 자수정 면이 겹친다."
+    },
+    "after": {
+      "name": "보라 자수정 골렘",
+      "tags": [
+        "골렘",
+        "돌",
+        "golem",
+        "자수정",
+        "amethyst",
+        "결정",
+        "crystal",
+        "보라색",
+        "purple"
+      ],
+      "description": "보라색 결정 골렘의 넓은 흉곽과 큰 비대칭 어깨, 긴 손가락에 자수정 면이 겹친다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-scarecrow-field",
+    "before": {
+      "name": "낫을 든 허수아비",
+      "tags": [
+        "허수아비",
+        "낫",
+        "scarecrow",
+        "scythe"
+      ],
+      "description": "낡은 넓은 짚모자와 삼베 얼굴, 빽빽한 짚 어깨와 찢긴 붉은 외투의 허수아비가 굵은 손을 벌린다."
+    },
+    "after": {
+      "name": "붉은 외투 허수아비",
+      "tags": [
+        "허수아비",
+        "scarecrow",
+        "짚모자",
+        "straw hat",
+        "붉은 외투"
+      ],
+      "description": "낡은 넓은 짚모자와 삼베 얼굴, 빽빽한 짚 어깨와 찢긴 붉은 외투의 허수아비가 굵은 손을 벌린다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-puppet-string",
+    "before": {
+      "name": "단검을 든 목각 꼭두각시",
+      "tags": [
+        "꼭두각시",
+        "marionette",
+        "인형",
+        "puppet",
+        "광대",
+        "jester",
+        "단검",
+        "dagger"
+      ],
+      "description": "금이 간 큰 도자기 얼굴과 붉은 옷, 두꺼운 나무 관절의 인형이 네 줄과 십자 조종판에 매달린다."
+    },
+    "after": {
+      "name": "줄에 매달린 도자기 얼굴 인형",
+      "tags": [
+        "꼭두각시",
+        "marionette",
+        "인형",
+        "puppet",
+        "줄",
+        "string",
+        "도자기",
+        "porcelain"
+      ],
+      "description": "금이 간 큰 도자기 얼굴과 붉은 옷, 두꺼운 나무 관절의 인형이 네 줄과 십자 조종판에 매달린다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-spirit-earth",
+    "before": {
+      "name": "이끼 낀 바위 골렘",
+      "tags": [
+        "골렘",
+        "golem",
+        "바위",
+        "rock",
+        "이끼",
+        "moss"
+      ],
+      "description": "이끼와 휘어진 뿌리로 연결된 서로 다른 크기의 암석과 돌 얼굴이 따로 떠 있다."
+    },
+    "after": {
+      "name": "떠 있는 이끼 암석 정령",
+      "tags": [
+        "골렘",
+        "golem",
+        "바위",
+        "rock",
+        "이끼",
+        "moss",
+        "떠 있는",
+        "floating",
+        "정령",
+        "spirit"
+      ],
+      "description": "이끼와 휘어진 뿌리로 연결된 서로 다른 크기의 암석과 돌 얼굴이 따로 떠 있다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-orc-01",
+    "before": {
+      "name": "도끼를 든 녹색 오크",
+      "tags": [
+        "오크",
+        "orc",
+        "인간형",
+        "humanoid",
+        "도끼",
+        "axe"
+      ],
+      "description": "갈색 피부와 두 엄니, 붉은 얼굴 흉터를 가진 오크는 털가죽 어깨 망토와 가죽 띠, 붉은 치마와 무거운 곤봉을 지닌다."
+    },
+    "after": {
+      "name": "곤봉 든 갈색 오크",
+      "tags": [
+        "오크",
+        "orc",
+        "인간형",
+        "humanoid",
+        "곤봉",
+        "club",
+        "갈색",
+        "brown"
+      ],
+      "description": "갈색 피부와 두 엄니, 붉은 얼굴 흉터를 가진 오크는 털가죽 어깨 망토와 가죽 띠, 붉은 치마와 무거운 곤봉을 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-harpy-01",
+    "before": {
+      "name": "갈색 깃털 하피",
+      "tags": [
+        "하피",
+        "harpy",
+        "반인반조",
+        "demihuman",
+        "괴물",
+        "monster",
+        "새",
+        "bird"
+      ],
+      "description": "갈색 머리와 밝은 가슴 깃, 청회색 겹깃 날개를 가진 하피는 굽은 두 다리와 금빛 갈퀴 발을 지닌다."
+    },
+    "after": {
+      "name": "청회색 날개 하피",
+      "tags": [
+        "하피",
+        "harpy",
+        "반인반조",
+        "demihuman",
+        "괴물",
+        "monster",
+        "새",
+        "bird",
+        "청회색 날개",
+        "blue grey wings"
+      ],
+      "description": "갈색 머리와 밝은 가슴 깃, 청회색 겹깃 날개를 가진 하피는 굽은 두 다리와 금빛 갈퀴 발을 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-kobold-digger",
+    "before": {
+      "name": "곡괭이 파충류 인간",
+      "tags": [
+        "파충류인간",
+        "괴물",
+        "곡괭이",
+        "reptilian",
+        "monster",
+        "pickaxe"
+      ],
+      "description": "갈색 피부와 긴 개 주둥이, 큰 귀를 가진 코볼트는 등불 달린 광부 모자와 가죽 배낭, 조끼와 장화, 곡괭이를 지닌다."
+    },
+    "after": {
+      "name": "곡괭이 든 개형 코볼트",
+      "tags": [
+        "괴물",
+        "곡괭이",
+        "monster",
+        "pickaxe",
+        "코볼트",
+        "kobold",
+        "개 주둥이",
+        "canine"
+      ],
+      "description": "갈색 피부와 긴 개 주둥이, 큰 귀를 가진 코볼트는 등불 달린 광부 모자와 가죽 배낭, 조끼와 장화, 곡괭이를 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-knight-fallen",
+    "before": {
+      "name": "검은 갑옷 기사",
+      "tags": [
+        "기사",
+        "knight",
+        "갑옷",
+        "armor",
+        "인간형",
+        "humanoid"
+      ],
+      "description": "겹친 청회색 강철 갑옷과 붉은 투구 깃을 가진 기사는 어두운 시야 틈과 코 가리개, 붉은 망토와 강철 검을 지닌다."
+    },
+    "after": {
+      "name": "청회색 강철 갑옷 기사",
+      "tags": [
+        "기사",
+        "knight",
+        "갑옷",
+        "armor",
+        "인간형",
+        "humanoid",
+        "청회색",
+        "blue grey"
+      ],
+      "description": "겹친 청회색 강철 갑옷과 붉은 투구 깃을 가진 기사는 어두운 시야 틈과 코 가리개, 붉은 망토와 강철 검을 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-wyvern-cliff",
+    "before": {
+      "name": "황록색 드래곤",
+      "tags": [
+        "드래곤",
+        "dragon",
+        "파충류",
+        "reptile",
+        "황록색",
+        "비행",
+        "연기",
+        "용"
+      ],
+      "description": "자주빛 비늘과 뾰족한 부리형 주둥이, 팔 대신 큰 날개와 가시 꼬리를 가진 와이번이다."
+    },
+    "after": {
+      "name": "보라 와이번",
+      "tags": [
+        "드래곤",
+        "dragon",
+        "파충류",
+        "reptile",
+        "비행",
+        "연기",
+        "용",
+        "와이번",
+        "wyvern",
+        "보라색",
+        "purple"
+      ],
+      "description": "자주빛 비늘과 뾰족한 부리형 주둥이, 팔 대신 큰 날개와 가시 꼬리를 가진 와이번이다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-roc-giant",
+    "before": {
+      "name": "갈색 독수리",
+      "tags": [
+        "새",
+        "bird",
+        "독수리",
+        "eagle",
+        "맹금류",
+        "raptor"
+      ],
+      "description": "청회색 거대 새는 낮은 이마와 굽은 독수리 부리, 볼의 부채깃과 겹친 날개 깃, 두꺼운 갈퀴 다리를 가진다."
+    },
+    "after": {
+      "name": "청회색 거대 독수리",
+      "tags": [
+        "새",
+        "bird",
+        "독수리",
+        "eagle",
+        "맹금류",
+        "raptor",
+        "청회색",
+        "blue grey",
+        "거대",
+        "giant"
+      ],
+      "description": "청회색 거대 새는 낮은 이마와 굽은 독수리 부리, 볼의 부채깃과 겹친 날개 깃, 두꺼운 갈퀴 다리를 가진다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-dragon-whelp",
+    "before": {
+      "name": "황갈색 비늘 드래곤",
+      "tags": [
+        "드래곤",
+        "dragon",
+        "파충류",
+        "reptile",
+        "괴물",
+        "monster",
+        "용"
+      ],
+      "description": "청록색 새끼용은 둥근 몸과 큰 눈, 긴 코와 작은 뿔, 금갈색 배판과 붉은 가죽 날개, 굽은 꼬리와 넓은 발을 가진다."
+    },
+    "after": {
+      "name": "청록 새끼용",
+      "tags": [
+        "드래곤",
+        "dragon",
+        "파충류",
+        "reptile",
+        "괴물",
+        "monster",
+        "용",
+        "청록색",
+        "teal",
+        "새끼용",
+        "whelp"
+      ],
+      "description": "청록색 새끼용은 둥근 몸과 큰 눈, 긴 코와 작은 뿔, 금갈색 배판과 붉은 가죽 날개, 굽은 꼬리와 넓은 발을 가진다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-angel-fallen",
+    "before": {
+      "name": "검은 날개의 흑기사",
+      "tags": [
+        "인간형",
+        "humanoid",
+        "날개",
+        "wing",
+        "기사",
+        "knight",
+        "검",
+        "sword"
+      ],
+      "description": "은빛 머리와 금빛 머리 고리, 청회색 겹깃 날개를 가진 타락천사는 코와 입이 드러나며 강철 흉갑과 붉은 망토, 검을 지닌다."
+    },
+    "after": {
+      "name": "청회색 날개 타락천사",
+      "tags": [
+        "인간형",
+        "humanoid",
+        "날개",
+        "wing",
+        "기사",
+        "knight",
+        "검",
+        "sword",
+        "청회색 날개",
+        "blue grey wings",
+        "천사",
+        "angel"
+      ],
+      "description": "은빛 머리와 금빛 머리 고리, 청회색 겹깃 날개를 가진 타락천사는 코와 입이 드러나며 강철 흉갑과 붉은 망토, 검을 지닌다."
+    },
+    "reason": "Original pixels on monsters contact sheets; old names/tags describe a different colour, weapon, body or material."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 0,
+      "label": "갈색 머리 머리띠 용사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 0,
+      "label": "청년 용사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-00",
+      "quality": "approximate",
+      "note": "얼굴에는 머리띠가 있고 걷기에는 머리띠가 식별되지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 1,
+      "label": "푸른 머리 붉은 옷 모험가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 1,
+      "label": "빨간 로브 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 2,
+      "label": "붉은 갑옷 투구 기사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 2,
+      "label": "붉은 갑옷 기사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 3,
+      "label": "금발 붉은 갑옷 기사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 3,
+      "label": "붉은 갑옷 여전사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-03",
+      "quality": "approximate",
+      "note": "걷기는 갈색 머리, 얼굴은 금발이다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 4,
+      "label": "푸른 머리 망토 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 검은색에 가까운 푸른 머리와 짙은 피부의 캐릭터. 얼굴은 더 밝은 푸른 머리·머리띠 표현이라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 4,
+      "label": "젊은 남성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "어두운 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 검은색에 가까운 푸른 머리와 짙은 피부의 캐릭터. 얼굴은 더 밝은 푸른 머리·머리띠 표현이라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 5,
+      "label": "보라 머리 고깔모자 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-05",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #05의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 5,
+      "label": "젊은 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "분홍빛 보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-05",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #05의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 6,
+      "label": "검은 머리 흰 머리띠 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 6,
+      "label": "파란 로브 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-06",
+      "quality": "approximate",
+      "note": "얼굴에는 머리띠가 있고 걷기에는 검은 단발이 보인다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor1#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 7,
+      "label": "푸른 모자 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor1",
+      "characterIndex": 7,
+      "label": "파란 옷 젊은 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-07",
+      "quality": "approximate",
+      "note": "걷기는 검은 머리, 얼굴은 푸른 머리다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 0,
+      "label": "검은 머리 무도가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-08",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 검은 머리 무도가 계열의 얼굴을 사용. 걷는 그림의 회색 하이라이트와 얼굴의 검은 장발 표현이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 0,
+      "label": "검은 머리 도적",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-08",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 검은 머리 무도가 계열의 얼굴을 사용. 걷는 그림의 회색 하이라이트와 얼굴의 검은 장발 표현이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 1,
+      "label": "주황 머리 여성 모험가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "주황 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 1,
+      "label": "하늘색 재킷 젊은 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "주황 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 2,
+      "label": "안경을 쓴 녹색 망토 모험가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 2,
+      "label": "녹색 망토 레인저",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-10",
+      "quality": "approximate",
+      "note": "얼굴에는 안경이 있고 걷기에는 노란 머리띠가 보인다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 3,
+      "label": "녹색 머리 고글 궁수",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "초록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 3,
+      "label": "녹색 후드 궁수",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-11",
+      "quality": "approximate",
+      "note": "얼굴에는 고글과 초록 머리, 걷기에는 초록 후드가 보인다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 4,
+      "label": "붉은 머리띠 전사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-12",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 붉은 머리띠와 갈색 머리 전사에 두건·수염 얼굴을 연결. 수염과 머리 모양이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 4,
+      "label": "갈색 머리 중년 전사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-12",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 붉은 머리띠와 갈색 머리 전사에 두건·수염 얼굴을 연결. 수염과 머리 모양이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 5,
+      "label": "보라 두건 여성 도적",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-13",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #13의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 5,
+      "label": "젊은 여성 도적",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "분홍빛 보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-13",
+      "quality": "approximate",
+      "note": "걷기의 보라 머리와 얼굴의 분홍 머리·모자는 차이가 있다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 6,
+      "label": "녹색 머리 두건 엘프",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "초록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 6,
+      "label": "젊은 여성 엘프",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "초록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor2#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 7,
+      "label": "금발 녹색 모자 엘프",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor2",
+      "characterIndex": 7,
+      "label": "젊은 남성 엘프",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor1-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor1 #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 0,
+      "label": "붉은 갑옷 사무라이",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 0,
+      "label": "사무라이",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 1,
+      "label": "검은 머리 수염 검객",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 1,
+      "label": "동양풍 떠돌이 검객",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 2,
+      "label": "회색 두건 복면 닌자",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 2,
+      "label": "닌자",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 3,
+      "label": "검은 머리 여성 닌자",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 3,
+      "label": "여자 닌자",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 4,
+      "label": "금발 녹색 후드 여성",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-04",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #04의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 4,
+      "label": "빨간 모자 녹색 코트 여인",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-04",
+      "quality": "approximate",
+      "note": "걷기는 빨간 모자에 초록 리본, 얼굴은 모자 없는 금발이다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 5,
+      "label": "청록 머리 무도가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "청록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-10",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 5,
+      "label": "무도가",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "청록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-10",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 6,
+      "label": "갈색 머리 남성 음유시인",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 6,
+      "label": "남성 음유시인",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor3#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 7,
+      "label": "갈색 머리 여성 음유시인",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor3",
+      "characterIndex": 7,
+      "label": "여성 음유시인",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 0,
+      "label": "푸른 머리 청년",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-08",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #08의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 0,
+      "label": "파란 머리 청년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-08",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #08의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 1,
+      "label": "금발 청년",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 1,
+      "label": "금발 머리 청년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 2,
+      "label": "붉은 머리띠 금발 전사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 2,
+      "label": "금발 청년2",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 3,
+      "label": "긴 푸른 머리 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 3,
+      "label": "파란 머리 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-11",
+      "quality": "approximate",
+      "note": "걷기는 짧은 푸른 머리, 얼굴은 긴 푸른 머리다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 4,
+      "label": "자주 머리 여성 모험가",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "자주 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-12",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #12의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 4,
+      "label": "분홍 머리 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "분홍 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-12",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #12의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 5,
+      "label": "금발 갑옷 전사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-13",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #13의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 5,
+      "label": "금발 남성 갑옷 전사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "금발"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "걷기의 남성 전사 설정과 기존 얼굴의 여성 설정·녹색 스카프가 다르다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 6,
+      "label": "보라 머리 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 6,
+      "label": "보라 머리 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_actor4#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 7,
+      "label": "푸른 머리 붉은 모자 마법사",
+      "attributes": {
+        "kind": "사람",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_actor4",
+      "characterIndex": 7,
+      "label": "고깔모자 여성 마법사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "청록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-actor2-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/actor2 #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_animal#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_animal",
+      "characterIndex": 1,
+      "label": "검은 고양이",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-11",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People2 동물·몬스터 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/. 칸 라벨은 '검은 고양이'지만 실제 걷기 그림은 갈색 고양이(짙은 귀)라 그림에 맞췄다."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_animal",
+      "characterIndex": 1,
+      "label": "갈색 고양이",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-11",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People2 동물·몬스터 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/. 칸 라벨은 '검은 고양이'지만 실제 걷기 그림은 갈색 고양이(짙은 귀)라 그림에 맞췄다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 0,
+      "label": "초록 슬라임",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 0,
+      "label": "슬라임",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 2,
+      "label": "돼지 전사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 2,
+      "label": "오크",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 3,
+      "label": "흰 유령",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 3,
+      "label": "유령",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 5,
+      "label": "초록 피부 좀비",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-05",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #05의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 5,
+      "label": "좀비",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-05",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #05의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 6,
+      "label": "보라 후드 해골 마법사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 6,
+      "label": "스켈레톤 메이지",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster1#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 7,
+      "label": "소 머리 미노타우로스",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster1",
+      "characterIndex": 7,
+      "label": "미노타우르스",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 0,
+      "label": "초록 머리 하피",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-08",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #08의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 0,
+      "label": "하피",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-08",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #08의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 2,
+      "label": "백발 뱀파이어",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 2,
+      "label": "뱀파이어",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 3,
+      "label": "붉은 투구 마족 장군",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 3,
+      "label": "마족 장군",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 4,
+      "label": "바위 골렘",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-12",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #12의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 4,
+      "label": "스톤 골렘",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-12",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #12의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 5,
+      "label": "녹색 드레이크",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-13",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #13의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 5,
+      "label": "드레이크",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-13",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #13의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 6,
+      "label": "붉은 가면 악마",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 6,
+      "label": "악마",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster2#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 7,
+      "label": "보라 마족",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster2",
+      "characterIndex": 7,
+      "label": "마왕",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/monster #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 1,
+      "label": "황동 갑옷 기계 병사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-13",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 1,
+      "label": "해골 용",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "걷기는 말린 뼈 용이고 기존 얼굴은 황동 기계 병사다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 2,
+      "label": "검은 후드 인물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-14",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 2,
+      "label": "검은 두건 괴물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-14",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 3,
+      "label": "보라 후드 인물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-15",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 3,
+      "label": "보라 갑옷 괴물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-15",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 4,
+      "label": "보물상자 미믹",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-monster-00",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People2 동물·몬스터 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 4,
+      "label": "갈색 원뿔 변신 괴물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "걷기는 원뿔에서 변신하는 괴물이고 기존 얼굴은 나무 상자다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 6,
+      "label": "붉은 불꽃",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-monster-02",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People2 동물·몬스터 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 6,
+      "label": "붉은 변신 마법사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "마법진→불꽃→마법사 변신 칩에 정적인 불꽃 얼굴을 자동 연결할 수 없다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_monster3#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 7,
+      "label": "보라 갑옷 마족",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-15",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 보라색 얼굴의 갑옷 마족에 보라 마족 얼굴. 갑옷·뿔 형태 세부가 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_monster3",
+      "characterIndex": 7,
+      "label": "보라 투구 마족",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-monster-15",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 보라색 얼굴의 갑옷 마족에 보라 마족 얼굴. 갑옷·뿔 형태 세부가 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_object1#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_object1",
+      "characterIndex": 7,
+      "label": "나무 통",
+      "attributes": {
+        "kind": "사물"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_object1",
+      "characterIndex": 7,
+      "label": "나무 보물상자",
+      "attributes": {
+        "kind": "사물"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_object2#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_object2",
+      "characterIndex": 2,
+      "label": "금고",
+      "attributes": {
+        "kind": "사물"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_object2",
+      "characterIndex": 2,
+      "label": "원형 바닥 판",
+      "attributes": {
+        "kind": "사물"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 0,
+      "label": "남자아이",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 0,
+      "label": "남자아이",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "어린이",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 1,
+      "label": "여자아이",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 1,
+      "label": "여자아이",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "어린이",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 2,
+      "label": "청년 남성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 2,
+      "label": "청년 남성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 3,
+      "label": "젊은 여성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 3,
+      "label": "젊은 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 4,
+      "label": "중년 남성 주민(흑인)",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 갈색 피부의 수염 남성. 얼굴의 피부가 더 밝고 수염 모양이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 4,
+      "label": "중년 남성 주민(흑인)",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 갈색 피부의 수염 남성. 얼굴의 피부가 더 밝고 수염 모양이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 5,
+      "label": "중년 여성 주민(흑인)",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-05",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 갈색 피부의 중년 여성. 얼굴은 피부가 더 밝고 젊게 그려져 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 5,
+      "label": "중년 여성 주민(흑인)",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "중년",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-05",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 갈색 피부의 중년 여성. 얼굴은 피부가 더 밝고 젊게 그려져 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 6,
+      "label": "대머리 남성 주민",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 6,
+      "label": "대머리 남성 주민",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "대머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people1#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 7,
+      "label": "노파",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people1",
+      "characterIndex": 7,
+      "label": "노파",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "노년",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-07",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #07의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 0,
+      "label": "중절모 신사",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-06",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 중절모 신사에 콧수염 성인 남성 얼굴. 얼굴에 모자가 없어 근사 연결; 어린이 얼굴은 제외."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 0,
+      "label": "중절모 신사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-06",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 중절모 신사에 콧수염 성인 남성 얼굴. 얼굴에 모자가 없어 근사 연결; 어린이 얼굴은 제외."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 1,
+      "label": "수녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 1,
+      "label": "수녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "노년",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-09",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #09의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 2,
+      "label": "승려",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 2,
+      "label": "승려",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "대머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-10",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #10의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 3,
+      "label": "이국적인 여성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 3,
+      "label": "이국적인 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-11",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #11의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 4,
+      "label": "닌자 소녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-00",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 4,
+      "label": "닌자 소녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "어린이",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-00",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 5,
+      "label": "토끼 귀 여성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-13",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 금발 곱슬머리 여성 얼굴. 걷는 그림의 토끼 귀 장식은 얼굴에 없어 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 5,
+      "label": "토끼 귀 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-13",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 금발 곱슬머리 여성 얼굴. 걷는 그림의 토끼 귀 장식은 얼굴에 없어 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 6,
+      "label": "화려한 여왕",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-14",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #14의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 6,
+      "label": "화려한 여왕",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "붉은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-14",
+      "quality": "approximate",
+      "note": "걷기는 왕관과 날개가 있지만 원본 얼굴에는 보이지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people2#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 7,
+      "label": "요정 소녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-15",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #15의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people2",
+      "characterIndex": 7,
+      "label": "요정 소녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "어린이",
+        "hair": "초록 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-15",
+      "quality": "approximate",
+      "note": "걷기는 날개가 있지만 원본 얼굴에는 보이지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 0,
+      "label": "왕",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 0,
+      "label": "왕",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-00",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #00의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 1,
+      "label": "여왕",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-01",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #01의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 1,
+      "label": "여왕",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "푸른 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-01",
+      "quality": "approximate",
+      "note": "걷기는 왕관이 있지만 원본 얼굴에는 보이지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 2,
+      "label": "왕자",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 2,
+      "label": "왕자",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "주황 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-02",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #02의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 3,
+      "label": "공주",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-03",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #03의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 3,
+      "label": "공주",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-03",
+      "quality": "approximate",
+      "note": "걷기는 왕관이 있지만 원본 얼굴에는 보이지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 4,
+      "label": "집사",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-04",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #04의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 4,
+      "label": "집사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-04",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #04의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 5,
+      "label": "여자 메이드",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-05",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #05의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 5,
+      "label": "여자 메이드",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-05",
+      "quality": "approximate",
+      "note": "걷기는 메이드 머리쓰개, 얼굴은 리본이다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people3#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 6,
+      "label": "귀족 남성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people2 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people3",
+      "characterIndex": 6,
+      "label": "귀족 남성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "어두운 보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-06",
+      "quality": "approximate",
+      "note": "걷기는 보라 머리, 얼굴은 검은 머리다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 0,
+      "label": "빵모자 아이",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-00",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 모자를 쓴 갈색 머리 아이에 갈색 머리 소년 얼굴. 모자 표현이 없어 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 0,
+      "label": "빵모자 아이",
+      "attributes": {
+        "kind": "사람",
+        "age": "어린이",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-00",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 모자를 쓴 갈색 머리 아이에 갈색 머리 소년 얼굴. 모자 표현이 없어 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 1,
+      "label": "삐쭉머리 남자아이",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-01",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 1,
+      "label": "삐쭉머리 남자아이",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "어린이",
+        "hair": "갈색 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-01",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 2,
+      "label": "이국적인 모자 청년",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-02",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 2,
+      "label": "이국적인 모자 청년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "보라 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-02",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 3,
+      "label": "머리 장식 이국 여성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-03",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 3,
+      "label": "머리 장식 이국 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-03",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 4,
+      "label": "대머리 이국 주민",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-04",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 4,
+      "label": "대머리 이국 주민",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "대머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-04",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 5,
+      "label": "노란 전통옷 남성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-05",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 5,
+      "label": "노란 전통옷 남성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-05",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 6,
+      "label": "터번 노인",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 터번을 쓴 흰 수염 노인에 흰 수염 노인 얼굴. 얼굴에 터번이 없어 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 6,
+      "label": "터번 노인",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "노년",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 터번을 쓴 흰 수염 노인에 흰 수염 노인 얼굴. 얼굴에 터번이 없어 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people4#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 7,
+      "label": "터번 노파",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-07",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 보라 두건 노파에 백발 노파 얼굴. 두건 색이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people4",
+      "characterIndex": 7,
+      "label": "터번 노파",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "노년"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-07",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 보라 두건 노파에 백발 노파 얼굴. 두건 색이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#0",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 0,
+      "label": "청년 병사",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-06",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 0,
+      "label": "청년 병사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "붉은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-06",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#1",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 1,
+      "label": "어린 소녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-01",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 주황색 양갈래 머리 여자아이에 금발 소녀 얼굴. 머리색과 묶음 모양이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 1,
+      "label": "어린 소녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "어린이",
+        "hair": "주황 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-01",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 주황색 양갈래 머리 여자아이에 금발 소녀 얼굴. 머리색과 묶음 모양이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#2",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 2,
+      "label": "청년 전사",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-07",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 2,
+      "label": "청년 전사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-07",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#3",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 3,
+      "label": "전통 의상 여성",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-08",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 3,
+      "label": "전통 의상 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "검은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-08",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#4",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 4,
+      "label": "난쟁이 병사",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-09",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 4,
+      "label": "난쟁이 병사",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "hair": "금발"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-09",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#5",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 5,
+      "label": "하녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-14",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 붉은 머리 하녀에 붉은 머리 여성 얼굴. 하녀 머리 장식이 없어 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 5,
+      "label": "하녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "hair": "붉은 머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-14",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 붉은 머리 하녀에 붉은 머리 여성 얼굴. 하녀 머리 장식이 없어 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#6",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 6,
+      "label": "여관 주인",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "exact",
+      "note": "2026-09-18 원본 실물 대조. 걷는 그림과 FaceSet/people1 #06의 머리·얼굴·장식을 대조한 기본 대응."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 6,
+      "label": "여관 주인",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년",
+        "hair": "대머리"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people1-06",
+      "quality": "approximate",
+      "note": "걷기는 대머리, 얼굴은 관자 흰 머리가 남아 있다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지 않는다."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_easyrpg_charset_people5#7",
+    "before": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 7,
+      "label": "노학자",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 회색 머리 노학자에 백발 장로 얼굴. 안경과 수염 세부 표현이 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_easyrpg_charset_people5",
+      "characterIndex": 7,
+      "label": "노학자",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "노년",
+        "hair": "백발"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-04",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 회색 머리 노학자에 백발 장로 얼굴. 안경과 수염 세부 표현이 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#0",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 0,
+      "label": "초록 모자 트레이너 소년",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-00",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 0,
+      "label": "초록 모자 트레이너 소년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-00",
+      "quality": "approximate",
+      "note": "걷기와 생성 얼굴의 모자 또는 머리색이 다르다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#1",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 1,
+      "label": "금발 소년",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-01",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 1,
+      "label": "금발 소년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-01",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#2",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 2,
+      "label": "초록 벙거지 소년",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-02",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 2,
+      "label": "초록 벙거지 소년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-02",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#3",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 3,
+      "label": "보라 머리 소녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-03",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 3,
+      "label": "보라 머리 소녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-03",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#4",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 4,
+      "label": "갈래머리 소녀",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-04",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 4,
+      "label": "갈래머리 소녀",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "어린이"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-04",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#5",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 5,
+      "label": "남색 머리 소년",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-05",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 5,
+      "label": "보라 머리 소년",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-05",
+      "quality": "approximate",
+      "note": "걷기와 생성 얼굴의 모자 또는 머리색이 다르다. 2026-10-05 원본 픽셀 대조."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#6",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 6,
+      "label": "밀짚모자 농부",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-06",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 6,
+      "label": "밀짚모자 농부",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-06",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people1#7",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 7,
+      "label": "물 도장 보스",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-07",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people1",
+      "characterIndex": 7,
+      "label": "물 도장 보스",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-07",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people2#0",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people2",
+      "characterIndex": 0,
+      "label": "불 도장 보스",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-08",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people2",
+      "characterIndex": 0,
+      "label": "불 도장 보스",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-08",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_scarloxy_charset_people2#1",
+    "before": {
+      "textureKey": "tex_scarloxy_charset_people2",
+      "characterIndex": 1,
+      "label": "풀 도장 보스",
+      "attributes": {
+        "kind": "사람"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-09",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "after": {
+      "textureKey": "tex_scarloxy_charset_people2",
+      "characterIndex": 1,
+      "label": "풀 도장 보스",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-scarloxy-09",
+      "quality": "exact",
+      "note": "2026-09-28 생성: 원본 얼굴 시트에 이 인물이 없어 걷기 그림(정면)을 참고해 EasyRPG People1 작화로 새로 그렸다. 원본 public/assets/generated/faceset/source/."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_farming_charset_chicken#0",
+    "before": {
+      "textureKey": "tex_farming_charset_chicken",
+      "characterIndex": 0,
+      "label": "chicken.png #0",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-10",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 픽셀 닭에 수탉 얼굴. 작화와 볏 크기가 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_farming_charset_chicken",
+      "characterIndex": 0,
+      "label": "농장 닭",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-10",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 픽셀 닭에 수탉 얼굴. 작화와 볏 크기가 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "pair",
+    "key": "tex_farming_charset_cow#0",
+    "before": {
+      "textureKey": "tex_farming_charset_cow",
+      "characterIndex": 0,
+      "label": "cow.png #0",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-12",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 픽셀 젖소에 검정·흰색 소 얼굴. 무늬와 작화가 달라 근사 연결."
+    },
+    "after": {
+      "textureKey": "tex_farming_charset_cow",
+      "characterIndex": 0,
+      "label": "농장 젖소",
+      "attributes": {
+        "kind": "동물"
+      },
+      "status": "mapped",
+      "faceResourceId": "easyrpg-faceset-people2-12",
+      "quality": "approximate",
+      "note": "2026-09-18 원본 실물 대조. 픽셀 젖소에 검정·흰색 소 얼굴. 무늬와 작화가 달라 근사 연결."
+    },
+    "reason": "Walking labels and literal traits follow the original walking pixels, independently of face traits; quality reflects visible differences."
+  },
+  {
+    "group": "face",
+    "key": "easyrpg-faceset-actor1-13",
+    "before": {
+      "resourceId": "easyrpg-faceset-actor1-13",
+      "label": "분홍 모자 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "note": "2026-09-18 얼굴 원본 독립 검토: FaceSet/actor1 #13. 걷기 그림 속성을 복사하지 않음."
+    },
+    "after": {
+      "resourceId": "easyrpg-faceset-actor1-13",
+      "label": "분홍 머리 보라 모자 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "note": "2026-09-18 얼굴 원본 독립 검토: FaceSet/actor1 #13. 걷기 그림 속성을 복사하지 않음. 2026-10-05 원본 얼굴 픽셀의 모자·머리색 대조."
+    },
+    "reason": "Face pixels, not the paired walking sprite."
+  },
+  {
+    "group": "face",
+    "key": "easyrpg-faceset-actor2-15",
+    "before": {
+      "resourceId": "easyrpg-faceset-actor2-15",
+      "label": "푸른 모자 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "note": "2026-09-18 얼굴 원본 독립 검토: FaceSet/actor2 #15. 걷기 그림 속성을 복사하지 않음."
+    },
+    "after": {
+      "resourceId": "easyrpg-faceset-actor2-15",
+      "label": "붉은 모자 푸른 머리 여성",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성"
+      },
+      "note": "2026-09-18 얼굴 원본 독립 검토: FaceSet/actor2 #15. 걷기 그림 속성을 복사하지 않음. 2026-10-05 원본 얼굴 픽셀의 모자·머리색 대조."
+    },
+    "reason": "Face pixels, not the paired walking sprite."
+  },
+  {
+    "group": "face",
+    "key": "generated-faceset-missing-scarloxy-00",
+    "before": {
+      "resourceId": "generated-faceset-missing-scarloxy-00",
+      "label": "초록 모자 트레이너 소년",
+      "attributes": {
+        "kind": "사람",
+        "age": "어린이",
+        "gender": "남성",
+        "hair": "갈색 머리"
+      },
+      "note": "2026-09-28 AI 생성 짝 얼굴(EasyRPG People1 작화). 짝 걷기 그림: tex_scarloxy_charset_people1#0."
+    },
+    "after": {
+      "resourceId": "generated-faceset-missing-scarloxy-00",
+      "label": "빨간 테두리 흰 모자 소년",
+      "attributes": {
+        "kind": "사람",
+        "age": "어린이",
+        "gender": "남성",
+        "hair": "갈색 머리"
+      },
+      "note": "2026-09-28 AI 생성 짝 얼굴(EasyRPG People1 작화). 짝 걷기 그림: tex_scarloxy_charset_people1#0. 2026-10-05 원본 얼굴 픽셀의 모자·머리색 대조."
+    },
+    "reason": "Face pixels, not the paired walking sprite."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bat-01",
+    "before": {
+      "name": "보라색 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "보라색",
+        "purple",
+        "날개",
+        "wing",
+        "비행",
+        "flying"
+      ],
+      "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
+    },
+    "after": {
+      "name": "회갈색 털 분홍 날개 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "날개",
+        "wing",
+        "비행",
+        "flying",
+        "회갈색",
+        "grey brown",
+        "분홍 날개",
+        "pink wings"
+      ],
+      "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bat-vampire",
+    "before": {
+      "name": "붉은 흡혈 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "흡혈",
+        "vampire",
+        "붉은색",
+        "red",
+        "날개",
+        "wing"
+      ],
+      "description": "짙은 보라색 털과 붉은 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
+    },
+    "after": {
+      "name": "분홍 날개 보라 흡혈 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "흡혈",
+        "vampire",
+        "날개",
+        "wing",
+        "보라색",
+        "purple",
+        "분홍 날개",
+        "pink wings"
+      ],
+      "description": "짙은 보라색 털과 분홍빛 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-parasite-01",
+    "before": {
+      "name": "붉은 촉수 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "붉은색"
+      ],
+      "description": "분홍색 두꺼운 마디 몸과 갈고리 다리, 이빨이 둘러진 넓은 흡착 입을 가진 기생충이다."
+    },
+    "after": {
+      "name": "분홍 마디 기생충",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "분홍색",
+        "pink",
+        "마디",
+        "segmented",
+        "갈고리 다리"
+      ],
+      "description": "분홍색 두꺼운 마디 몸과 갈고리 다리, 이빨이 둘러진 넓은 흡착 입을 가진 기생충이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-wolf-dire",
+    "before": {
+      "name": "보랏빛 눈 늑대",
+      "tags": [
+        "늑대",
+        "wolf",
+        "짐승",
+        "beast",
+        "검은색",
+        "black"
+      ],
+      "description": "짙은 청회색의 육중한 어깨와 긴 검은 갈기, 낮은 머리와 넓은 발을 가진 다이어울프다."
+    },
+    "after": {
+      "name": "검은 갈기 청회색 다이어울프",
+      "tags": [
+        "늑대",
+        "wolf",
+        "짐승",
+        "beast",
+        "검은 갈기",
+        "black mane",
+        "청회색",
+        "blue grey"
+      ],
+      "description": "짙은 청회색의 육중한 어깨와 긴 검은 갈기, 낮은 머리와 넓은 발을 가진 다이어울프다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-salamander-01",
+    "before": {
+      "name": "적흑무늬 도마뱀",
+      "tags": [
+        "도마뱀",
+        "파충류",
+        "몬스터",
+        "lizard",
+        "reptile",
+        "monster"
+      ],
+      "description": "청회색 비늘의 샐러맨더는 긴 주둥이와 드러난 코, 목의 지느러미 부채와 작은 등 가시, 굽은 꼬리와 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "청회색 목지느러미 도마뱀",
+      "tags": [
+        "도마뱀",
+        "파충류",
+        "몬스터",
+        "lizard",
+        "reptile",
+        "monster",
+        "청회색",
+        "blue grey",
+        "목지느러미"
+      ],
+      "description": "청회색 비늘의 샐러맨더는 긴 주둥이와 드러난 코, 목의 지느러미 부채와 작은 등 가시, 굽은 꼬리와 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-salamander-flame",
+    "before": {
+      "name": "주황 검정 무늬 도마뱀",
+      "tags": [
+        "도마뱀",
+        "lizard",
+        "파충류",
+        "reptile",
+        "비늘",
+        "가시"
+      ],
+      "description": "주홍색 비늘의 샐러맨더는 등 위의 세 갈래 금빛 화염과 붉은 목 지느러미, 긴 주둥이와 굽은 꼬리, 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "금빛 불꽃등 붉은 도마뱀",
+      "tags": [
+        "도마뱀",
+        "lizard",
+        "파충류",
+        "reptile",
+        "비늘",
+        "가시",
+        "붉은색",
+        "red",
+        "금빛 불꽃",
+        "gold flame"
+      ],
+      "description": "주홍색 비늘의 샐러맨더는 등 위의 세 갈래 금빛 화염과 붉은 목 지느러미, 긴 주둥이와 굽은 꼬리, 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-snake-viper",
+    "before": {
+      "name": "초록 코브라",
+      "tags": [
+        "뱀",
+        "snake",
+        "코브라",
+        "cobra",
+        "녹색",
+        "green",
+        "독사",
+        "viper"
+      ],
+      "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
+    },
+    "after": {
+      "name": "청녹색 독사",
+      "tags": [
+        "뱀",
+        "snake",
+        "녹색",
+        "green",
+        "독사",
+        "viper",
+        "청녹색",
+        "teal"
+      ],
+      "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-shark-land",
+    "before": {
+      "name": "사족보행 상어",
+      "tags": [
+        "상어",
+        "괴물",
+        "사족보행",
+        "shark",
+        "monster",
+        "quadruped"
+      ],
+      "description": "청회색 육중한 몸과 높은 등지느러미, 큰 이빨 턱과 여섯 굵은 보행 다리의 육상 상어다."
+    },
+    "after": {
+      "name": "여섯 다리 육상 상어",
+      "tags": [
+        "상어",
+        "괴물",
+        "shark",
+        "monster",
+        "여섯 다리",
+        "six legs",
+        "육상",
+        "land"
+      ],
+      "description": "청회색 육중한 몸과 높은 등지느러미, 큰 이빨 턱과 여섯 굵은 보행 다리의 육상 상어다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-centipede-fire",
+    "before": {
+      "name": "자줏빛 등갑 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod"
+      ],
+      "description": "등이 아치형으로 솟은 붉은 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
+    },
+    "after": {
+      "name": "자줏빛 등갑 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod",
+        "자주색",
+        "purple",
+        "금빛 불꽃 가시"
+      ],
+      "description": "등이 아치형으로 솟은 자줏빛 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-worm-sand",
+    "before": {
+      "name": "갈색 거대 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "가시",
+        "spike"
+      ],
+      "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
+    },
+    "after": {
+      "name": "갈색 거대 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "모래벌레",
+        "sand worm",
+        "갈라진 이빨 입"
+      ],
+      "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ape-stone",
+    "before": {
+      "name": "이끼 낀 바위 고릴라",
+      "tags": [
+        "고릴라",
+        "gorilla",
+        "바위",
+        "stone",
+        "이끼",
+        "moss",
+        "주황빛 틈새"
+      ],
+      "description": "돌판이 박힌 회녹색 큰 근육과 육중한 주먹, 넓은 턱을 가진 돌유인원이다."
+    },
+    "after": {
+      "name": "돌판 몸 바위 유인원",
+      "tags": [
+        "고릴라",
+        "gorilla",
+        "바위",
+        "stone",
+        "유인원",
+        "ape",
+        "돌판",
+        "stone plates",
+        "회녹색",
+        "grey green"
+      ],
+      "description": "돌판이 박힌 회녹색 큰 근육과 육중한 주먹, 넓은 턱을 가진 돌유인원이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ghoul-grave",
+    "before": {
+      "name": "녹색 좀비",
+      "tags": [
+        "좀비",
+        "zombie",
+        "언데드",
+        "undead",
+        "괴물",
+        "monster"
+      ],
+      "description": "흙빛의 찢긴 망토 아래 낮게 웅크린 구울이 긴 코와 넓은 갈고리 손을 내민다."
+    },
+    "after": {
+      "name": "망토 입은 녹색 구울",
+      "tags": [
+        "언데드",
+        "undead",
+        "괴물",
+        "monster",
+        "구울",
+        "ghoul",
+        "망토",
+        "cloak",
+        "녹색",
+        "green"
+      ],
+      "description": "흙빛의 찢긴 망토 아래 낮게 웅크린 구울이 긴 코와 넓은 갈고리 손을 내민다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-revenant-vengeful",
+    "before": {
+      "name": "무장한 해골 검사",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "검사",
+        "swordsman",
+        "갑옷",
+        "armor"
+      ],
+      "description": "뿔 달린 검은 강철 투구와 붉은 망토, 상처 난 흉갑과 붉은 긴 칼의 복수자이다."
+    },
+    "after": {
+      "name": "검은 강철 투구 복수자",
+      "tags": [
+        "언데드",
+        "undead",
+        "검사",
+        "swordsman",
+        "갑옷",
+        "armor",
+        "복수자",
+        "revenant",
+        "검은 강철",
+        "black steel",
+        "붉은 망토"
+      ],
+      "description": "뿔 달린 검은 강철 투구와 붉은 망토, 상처 난 흉갑과 붉은 긴 칼의 복수자이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-sylph-air",
+    "before": {
+      "name": "구름 정령",
+      "tags": [
+        "정령",
+        "spirit",
+        "유령",
+        "ghost",
+        "구름",
+        "cloud",
+        "파란색",
+        "blue"
+      ],
+      "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
+    },
+    "after": {
+      "name": "흰 깃날개 바람 요정",
+      "tags": [
+        "정령",
+        "spirit",
+        "파란색",
+        "blue",
+        "요정",
+        "fairy",
+        "바람",
+        "wind",
+        "깃날개",
+        "feather wings"
+      ],
+      "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-golem-stone",
+    "before": {
+      "name": "바위 골렘",
+      "tags": [
+        "골렘",
+        "바위",
+        "이끼",
+        "golem",
+        "rock",
+        "monster",
+        "돌"
+      ],
+      "description": "회색 각진 거석과 깊은 균열, 불균형한 넓은 어깨와 돌 코를 가진 육중한 골렘이다."
+    },
+    "after": {
+      "name": "바위 골렘",
+      "tags": [
+        "골렘",
+        "바위",
+        "golem",
+        "rock",
+        "monster",
+        "돌",
+        "회색",
+        "grey",
+        "거석",
+        "boulder"
+      ],
+      "description": "회색 각진 거석과 깊은 균열, 불균형한 넓은 어깨와 돌 코를 가진 육중한 골렘이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ogre-club",
+    "before": {
+      "name": "곤봉을 든 녹색 거인",
+      "tags": [
+        "오크",
+        "orc",
+        "인간형",
+        "humanoid",
+        "괴물",
+        "monster"
+      ],
+      "description": "넓은 누런 몸과 큰 배, 긴 코와 두 엄니를 가진 오거는 가죽 어깨띠와 들쭉날쭉한 치마, 굵은 팔과 무거운 곤봉을 지닌다."
+    },
+    "after": {
+      "name": "곤봉 든 누런 오거",
+      "tags": [
+        "인간형",
+        "humanoid",
+        "괴물",
+        "monster",
+        "오거",
+        "ogre",
+        "곤봉",
+        "club",
+        "누런색",
+        "yellow"
+      ],
+      "description": "넓은 누런 몸과 큰 배, 긴 코와 두 엄니를 가진 오거는 가죽 어깨띠와 들쭉날쭉한 치마, 굵은 팔과 무거운 곤봉을 지닌다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-behemoth-horn",
+    "before": {
+      "name": "뿔 달린 흑갈색 마수",
+      "tags": [
+        "마수",
+        "beast",
+        "괴물",
+        "monster",
+        "뿔",
+        "horns"
+      ],
+      "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "보랏빛 뿔 마수",
+      "tags": [
+        "마수",
+        "beast",
+        "괴물",
+        "monster",
+        "뿔",
+        "horns",
+        "보라색",
+        "purple",
+        "네발",
+        "quadruped"
+      ],
+      "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-sword-flying",
+    "before": {
+      "name": "룬 장식 검",
+      "tags": [
+        "검",
+        "sword",
+        "무기",
+        "weapon",
+        "룬",
+        "rune"
+      ],
+      "description": "넓고 휜 강철 검날과 금빛 날개 가드, 보석과 해골 손잡이의 부유 검이 리본 같은 마력을 두른다."
+    },
+    "after": {
+      "name": "보석 해골 손잡이 부유 검",
+      "tags": [
+        "검",
+        "sword",
+        "무기",
+        "weapon",
+        "보석",
+        "gem",
+        "해골 손잡이",
+        "skull hilt",
+        "부유",
+        "floating"
+      ],
+      "description": "넓고 휜 강철 검날과 금빛 날개 가드, 보석과 해골 손잡이의 부유 검이 리본 같은 마력을 두른다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-totem-cursed",
+    "before": {
+      "name": "나무 토템",
+      "tags": [
+        "토템",
+        "totem",
+        "나무",
+        "wood",
+        "괴물",
+        "monster",
+        "이끼",
+        "moss"
+      ],
+      "description": "깊이 조각한 두꺼운 나무 가면 세 층이 노란 눈과 긴 코, 잎 볏과 뿌리 팔을 갖는다."
+    },
+    "after": {
+      "name": "나무 토템",
+      "tags": [
+        "토템",
+        "totem",
+        "나무",
+        "wood",
+        "괴물",
+        "monster",
+        "잎",
+        "leaf",
+        "가면",
+        "mask"
+      ],
+      "description": "깊이 조각한 두꺼운 나무 가면 세 층이 노란 눈과 긴 코, 잎 볏과 뿌리 팔을 갖는다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ontology-8da61312",
+    "before": {
+      "name": "빛나는 룬 다면체",
+      "tags": [
+        "결정",
+        "광물",
+        "룬",
+        "crystal",
+        "mineral",
+        "rune"
+      ],
+      "description": "청록·보라 룬 소용돌이 주위의 다섯 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
+    },
+    "after": {
+      "name": "룬 둘러싼 부유 조각돌",
+      "tags": [
+        "광물",
+        "룬",
+        "mineral",
+        "rune",
+        "돌",
+        "stone",
+        "부유",
+        "floating"
+      ],
+      "description": "청록·보라 룬 소용돌이 주위의 여러 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  }
+]

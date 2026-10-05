@@ -5,6 +5,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { PRODUCT_SLUG } from "@/brand";
 import faceExpressionSources from "../../scripts/shared-face-expression-sources.json";
 import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
+import previousFaceNames from "@/assets/previousFaceReferenceNames.json";
 import { sharedCharacterIndices } from './sharedCharacters';
 import type { Project, ResourceProfile } from "./types";
 
@@ -127,7 +128,8 @@ export function listCharacterFaces(project: Project): CharacterFace[] {
   for (const profile of project.resourceProfiles) if (profile.kind === "faceset" && profile.assetId) {
     const bundled = FACESET_FACE_ASSETS.find((face) => face.id === profile.assetId);
     const existing = faces.get(profile.assetId);
-    const label = bundled?.name === profile.name && existing ? existing.label : profile.name;
+    const previousName = (previousFaceNames as Readonly<Record<string, string>>)[profile.assetId];
+    const label = !project.assets.uploaded[profile.assetId] && (bundled?.name === profile.name || previousName === profile.name) && existing ? existing.label : profile.name;
     add(profile.assetId, label, profile.graphicAttributes ?? (label === existing?.label ? existing.attributes : undefined), profile.graphicNote);
   }
   return [...faces.values()];

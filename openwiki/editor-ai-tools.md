@@ -637,6 +637,25 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
 
+### 캐릭터 참조 전수 교정 (2026-10-05)
+
+현재 조수의 얼굴 검색·NPC 후보·명시 얼굴 대조는 `sharedCharacterFaceResolver.ts`의 승인된 호스트 대응표를 읽는다.
+플레이어 기본값·저장본 교정은 배포된 `reviewedCharsetFaces.ts` 정본을 읽는다. 고정 JSON을 읽던 조수 검색 경로는 제거했다.
+알려진 옛 공용 행 전체가 일치하는 경우만 `characterReferenceCorrections.json`으로 이전하고 저자 변경은 보존한다.
+빈 얼굴 19칸은 생성 목록·DB 피커·이벤트 제안·조수 조회에서 제외한다. 업로드 대체 그림에는 이 제외와 공용 외형을 적용하지 않는다.
+기존 기본 프로필 이름 33개는 `previousFaceReferenceNames.json`으로 교정한다.
+
+걷기 321개·얼굴 1,344장·초상 2,432장·몬스터 160개·전투 대표 자세 73개와 로컬 SQLite 47개를 조사했다.
+대응표 105행(이름 56·속성 81, 중복 포함), 얼굴 이름 3개, 몬스터 62항목을 고쳤다.
+Monster3 #1/#4/#6·Actor4 #5의 자동 얼굴을 해제했고 18쌍을 근사로 낮췄다. Animal1 #1은 갈색 고양이다.
+원본 얼굴→표정/흉상/전신은 출처 sheet/cell로 연결하며 각 그림의 장식 차이를 별도로 설명한다.
+옛 generated-face-actor1-full은 실제 흉상 그림을 쓰는 배치 ID이며 공용 전신으로 설명하지 않는다.
+
+원본 연락 시트 136쪽·변경 전후·도구 결과·범위 한계: `verify-shots/full-character-reference-audit-20261005/SUMMARY.md`.
+재현 입구: `scripts/content/audit-character-reference-catalog.mts`, `render-character-reference-audit.py`,
+`verify-character-reference-routes.mts`. 비공개 그림과 원본 프로젝트 정보는 git에 넣지 않는다.
+브라우저 IndexedDB·외부 접근 불가 호스트·전투 전체 애니메이션은 이 판의 전수 검수 범위 밖이다.
+
 ### 얼굴 짝 전수 교정 (2026-09-28)
 
 얼굴의 정본은 공용 대응표 하나다. 읽는 쪽은 `src/assets/reviewedCharsetFaces.ts`(zod 없이 JSON 직독 — 플레이어 번들도 쓴다).
