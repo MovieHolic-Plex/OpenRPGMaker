@@ -523,6 +523,16 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   goldDelta: "정수 또는 {atLeast:정수}", inventoryDelta: "{아이템id: 정수 또는 {atLeast}}", ownedMonsterDelta: "{종id: 정수 또는 {atLeast}}",
   interactionComplete: "true/false", messageShown: "true/false", gameOver: "true/false", cutsceneLocked: "true/false",
   lastTransfer: "{fromMapId,eventId,toMapId}", timePhase: "시간대 이름", weatherKind: "none|rain|storm|snow|fog",
+  // 아래는 거부 문구가 「값 형식이 맞지 않습니다」만 말하던 expect 필드 — 모델이 모양을 추측하며 같은 시험을 거듭 다시 불렀다
+  // (2026-10-05 스트레스 p-shop: shopStock 에 [{itemId,price}] → [id…] 를 차례로 넣고 둘 다 거부).
+  shopStock: "{eventId, itemIds:[아이템id…], prices?:{아이템id: 가격}, mapId?}",
+  friendshipAtLeast: "{npcKey: 숫자} 또는 {npcKey,value}",
+  followerCount: "0 이상의 정수", lightCount: "0 이상의 정수", fieldSpawnCount: "0 이상의 정수", spawnedCount: "0 이상의 정수",
+  partyIncludes: "배우 id 또는 id 배열", partyExcludes: "배우 id 또는 id 배열",
+  followerAt: "{name,x,y}", cameraAt: "{cx,cy,tolerance?}", lightingAmbient: "숫자 또는 {value,tolerance?}",
+  lightAt: "{x,y,expected?}", animationPlaying: "true/false", bgmPlaying: "BGM 리소스 id 문자열",
+  pictureVisible: "그림 id 문자열 또는 {id,resourceId?}", gameTimeAt: "{minute?,hour?,day?,season?,year?}",
+  cropStageAt: "{x,y,stage,mapId?}",
 };
 
 // 모델이 자주 쓰는 틀린 필드 이름 → 올바른 이름.
