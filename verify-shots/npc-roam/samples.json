@@ -1,0 +1,3998 @@
+{
+  "startMapId": "map_lantern_village",
+  "mapIdsSeen": [
+    "map_lantern_village"
+  ],
+  "distinctSpriteTiles": {
+    "roam_a": [
+      "14,21",
+      "13,21",
+      "12,21",
+      "11,21",
+      "11,22",
+      "11,23",
+      "11,24",
+      "12,24"
+    ],
+    "roam_b": [
+      "14,13",
+      "13,13",
+      "14,12",
+      "13,12",
+      "12,12",
+      "12,11",
+      "12,10"
+    ],
+    "roam_c": [
+      "12,15",
+      "12,16",
+      "11,16",
+      "11,15",
+      "11,14"
+    ],
+    "stay_a": [
+      "16,15"
+    ],
+    "stay_b": [
+      "11,20"
+    ]
+  },
+  "distinctEventLocations": {
+    "roam_a": [],
+    "roam_b": [],
+    "roam_c": [],
+    "stay_a": [],
+    "stay_b": []
+  },
+  "pageErrors": [],
+  "samples": [
+    {
+      "t": 23471.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 23636.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 23758.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 23909,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24047.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24184.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24313.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24458.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 230.88933333333335,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 257.11066666666665,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24602,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 225.89266666666674,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 262.10733333333326,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24709.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 222.56311111111128,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 265.4368888888887,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24818.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 218.67977777777807,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 269.3202222222219,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 24922.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25032.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 230.3361111111111,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25139.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 227.0101111111111,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25250.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 223.1293333333332,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25355.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 219.80177777777757,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25496,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216.47399999999973,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25616.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 218.77488888888897,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 197.22511111111103,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25725.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 222.104888888889,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 193.895111111111,
+          "py": 272,
+          "tx": 12,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25837.399999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 225.98900000000023,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 190.01099999999977,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 25951.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 229.87555555555585,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 186.12444444444415,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26056.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26170.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 218.22233333333332,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26288.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 221.00066666666666,
+          "py": 224,
+          "tx": 13,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26415.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 224.112,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26540.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 232,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 229.44499999999996,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 272,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26670.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 230.16633333333334,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 270.16633333333334,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26786,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 225.5,
+          "py": 352,
+          "tx": 14,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 265.5,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 26902.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 221.61133333333333,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 261.61133333333333,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27025.399999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 217.72366666666667,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 257.72366666666665,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27138.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 224,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27252.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 220.94466666666668,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27357.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 217.38966666666667,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27472.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 213.50066666666666,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27589.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 216,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 209.612,
+          "tx": 14,
+          "ty": 13
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27717,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 214.88866666666667,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27823,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 210.61133333333333,
+          "py": 352,
+          "tx": 13,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 27938.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 206.556,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28071.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 203.16733333333335,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28185.399999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 200,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 232,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28294.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 200,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 229.33333333333334,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28409.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 200,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 225.4433333333333,
+          "py": 208,
+          "tx": 14,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28531.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 200,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 221.55499999999998,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28659.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 200,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 217.66666666666666,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28766.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 198.77766666666668,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 28890,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 194.11166666666668,
+          "py": 352,
+          "tx": 12,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 253.16733333333335,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29016.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 190.77766666666668,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 249.83333333333334,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29136.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 186.50066666666666,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 245.55633333333333,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29259.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 216,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 241.16733333333335,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29376,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 212.49933333333334,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 240,
+          "tx": 11,
+          "ty": 14
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29497.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 208.94400000000002,
+          "py": 208,
+          "tx": 13,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 240,
+          "tx": 11,
+          "ty": 14
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29604.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 204.72233333333335,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 240,
+          "tx": 11,
+          "ty": 14
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29718.399999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 352,
+          "tx": 11,
+          "ty": 21
+        },
+        "roam_b": {
+          "px": 200.8336666666667,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 240,
+          "tx": 11,
+          "ty": 14
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29823.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 354.2223333333333,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 240,
+          "tx": 11,
+          "ty": 14
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 29944.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 358.111,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 242.77766666666668,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30052.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 361.99966666666666,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 246.66633333333334,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30157.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 365.3333333333333,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 250,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30286.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 368,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 208,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 253.88833333333335,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30410.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 368,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 205.22266666666667,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30521.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 368,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 201.334,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30637.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 368,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 197.44566666666665,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30752.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 368,
+          "tx": 11,
+          "ty": 22
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 193.55666666666664,
+          "tx": 12,
+          "ty": 12
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30868.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 370.22266666666667,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 30972.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 373.556,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 186.22233333333332,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31083.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 377.444,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 190.11033333333333,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31194.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 380.777,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 193.44333333333336,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31323.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 197.33200000000002,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31441.600000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 190.16666666666666,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31551.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 185.9993333333333,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31657.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 182.6663333333333,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31767.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 178.77833333333334,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31882.700000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 384.55533333333335,
+          "tx": 11,
+          "ty": 23
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 200,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 31992.799999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 388.4443333333333,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 198.889,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32101.100000023842,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 392.33366666666666,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 194.99966666666666,
+          "py": 256,
+          "tx": 12,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32207,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 395.66700000000003,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 191.6663333333333,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32319.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 399.5556666666667,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 187.77766666666668,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32425.200000047684,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 176,
+          "tx": 12,
+          "ty": 10
+        },
+        "roam_c": {
+          "px": 184.44466666666665,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32535.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 179.333,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32650.899999976158,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 183.22166666666666,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32757.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 186.55533333333332,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32873.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 184,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 190.444,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 32988.299999952316,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 186.77766666666668,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 256,
+          "tx": 11,
+          "ty": 15
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 33102.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 190.66633333333334,
+          "py": 400,
+          "tx": 11,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 259.33333333333337,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    },
+    {
+      "t": 33206.5,
+      "currentMapId": "map_lantern_village",
+      "player": {
+        "x": 14,
+        "y": 18
+      },
+      "eventLocations": {
+        "roam_a": null,
+        "roam_b": null,
+        "roam_c": null,
+        "stay_a": null,
+        "stay_b": null
+      },
+      "spriteTiles": {
+        "roam_a": {
+          "px": 193.999,
+          "py": 400,
+          "tx": 12,
+          "ty": 24
+        },
+        "roam_b": {
+          "px": 200,
+          "py": 192,
+          "tx": 12,
+          "ty": 11
+        },
+        "roam_c": {
+          "px": 184,
+          "py": 262.666,
+          "tx": 11,
+          "ty": 16
+        },
+        "stay_a": {
+          "px": 264,
+          "py": 256,
+          "tx": 16,
+          "ty": 15
+        },
+        "stay_b": {
+          "px": 184,
+          "py": 336,
+          "tx": 11,
+          "ty": 20
+        }
+      }
+    }
+  ]
+}

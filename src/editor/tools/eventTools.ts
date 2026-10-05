@@ -71,19 +71,29 @@ const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 }
 const STALK: EventPage["movement"] = { type: "approach", speed: 3, frequency: 3 };
 
 /** NPC 이름 기반 이동 아키타입. 명시 movement가 없을 때만 추론한다(명시 우선). */
-type NpcMovementArchetype = "anchored" | "roaming" | "stalking" | "ambiguous";
+type NpcMovementArchetype = "anchored" | "roaming" | "stalking" | "default";
 
+/**
+ * 이름에서 이동 아키타입을 고른다. **정지는 기본값이 아니다.**
+ *
+ * 2026-10-05 사용자 실측: AI 조수가 흔한 이름("농부"·"촌장 보좌"·"나그네")으로 NPC 를 깔면
+ * 경고도 없이 전부 제자리에 얼어붙었다(place_npc 9개 중 7개 fixed). 원인은 이 함수가 매치
+ * 실패를 "ambiguous" 로 보고 `resolveNpcMovement` 가 그것을 fixed 로 되돌린 것이다.
+ * 확실히 고정인 역할(상점·문지기·간판·동상·접수)만 anchored 로 남기고, 표지가 없는 이름은
+ * 배회로 둔다 — 제자리에 세우려면 호출자가 movement:"fixed" 를 명시해야 한다.
+ */
 function inferNpcMovementArchetype(name: string): NpcMovementArchetype {
   const spaced = name.trim().toLowerCase();
   const needle = spaced.replace(/\s+/g, "");
-  if (!needle) return "ambiguous";
+  if (!needle) return "default";
   // 스토커가 최우선: "경비 추격자"는 다가와야지 문지기가 아니다.
   if (/추격|습격|매복|스토커|stalker|ambush|chaser/u.test(needle)) return "stalking";
-  if (isShopRoleNpcName(name) || /문지기|경비|간판|안내판|안내인|gatekeeper|guard|signboard/u.test(needle)) return "anchored";
+  if (isShopRoleNpcName(name)
+    || /문지기|경비|간판|안내판|안내인|접수|점주|주인|여관|주막|동상|석상|표지판|기념비|현수막|gatekeeper|guard|signboard|signpost|statue|receptionist|innkeeper|shopkeeper/u.test(needle)) return "anchored";
   // 한 글자 토큰(개·새)은 독립 단어일 때만 친다 — "소개"가 배회하는 오탐 방지.
   if (spaced.split(/\s+/).includes("개") || spaced.split(/\s+/).includes("새")) return "roaming";
   if (/아이|꼬마|어린이|행상|떠돌이|배회|유랑|방랑|동물|강아지|고양이|닭|돼지|kid|child|peddler|wanderer|stray|dog|cat|chicken/u.test(needle)) return "roaming";
-  return "ambiguous";
+  return "default";
 }
 
 /**
@@ -111,8 +121,9 @@ function resolveNpcMovement(
     case "anchored":
       warnings.push(`이동 추론 → fixed(제자리): '${name}' 대화 거점 아키타입. 배회시키려면 movement:"random" 명시.`);
       return PASSIVE;
-    case "ambiguous":
-      return PASSIVE;
+    case "default":
+      warnings.push(`이동 추론 → random(배회): '${name}' 에 고정·추격 표지가 없어 기본 배회로 두었습니다. 제자리면 movement:"fixed", 추격이면 movement:"approach" 명시.`);
+      return WANDER;
   }
 }
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
@@ -1226,7 +1237,7 @@ const placeNpc: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 대화 거점(상점 주인·문지기·간판)→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 고정 거점(상점 주인·문지기·간판·안내판·동상)→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
       pages: {
         type: "array",
         description:
@@ -1453,7 +1464,7 @@ const makeVillager: ToolDefinition = {
       graphic: GRAPHIC_SPEC_SCHEMA,
       home: COORD_SCHEMA,
       face: FACE_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·대화 거점→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·고정 거점→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
       schedule: npcScheduleSchema,
       dailyRoutine: {
         type: "object",
