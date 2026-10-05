@@ -1,4 +1,5 @@
 import { activityEntryIndex, majorActivityKinds as majorKinds } from "./aiActivityIndex";
+import { createBetweenTurnLogSection } from "./aiBetweenTurnLog";
 import { createActivityMedia } from "./aiActivityMedia";
 import { el } from "@/util/dom";
 import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
@@ -314,7 +315,8 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
 export function createActivityToolbar(getProjectId: () => string): HTMLElement {
   const historyBody = el("div", { class: "ai-activity-history-body" });
   const history = el("details", { class: "ai-activity-history", children: [el("summary", { text: "실행 기록" }), historyBody] }) as HTMLDetailsElement;
-  const root = el("div", { class: "ai-activity-toolbar", children: [createActivityLevelControl(), history] });
+  // 「턴 사이 기록」은 턴 밖(사람이 누른 프론트 동작)만 담는다 — 턴 안 기록은 위 「실행 기록」이 맡는다.
+  const root = el("div", { class: "ai-activity-toolbar", children: [createActivityLevelControl(), createBetweenTurnLogSection(), history] });
   let generation = 0;
   root.addEventListener("ai-project-switch", () => { generation++; history.open = false; historyBody.replaceChildren(); });
   history.addEventListener("toggle", () => {

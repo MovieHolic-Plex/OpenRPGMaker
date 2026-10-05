@@ -1,5 +1,26 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 「턴 사이 기록」 (2026-10-05)
+
+사용자 요청: 「각 턴 사이의 로그만 읽고 싶다」. 조수 툴바(`ai-activity-toolbar`)의 「표시·실행 기록」 안에,
+　「실행 기록」 앞에 접이식 「턴 사이 기록」을 둔다. **턴 «안» 기록과 턴 «밖» 기록을 가른다** — 앞은 실행
+기록(activityTrace, 도구·단계)이며 작업 창 레일 「로그」(`aiWorkspaceLogs.ts`)의 추출 대상이고, 뒤는 사람이
+조수 표면에서 누른 프론트 동작(`uiEventLog`, 이 브라우저 링 최대 300건)이다.
+
+- `src/editor/panels/aiBetweenTurnLogRows.ts`(순수) — 표면·동작 이름을 한국어로 옮기고, 최신순 정렬,
+  검색(사람이 읽는 이름 + 원문 testid), `detail` 한 줄화(200자에서 자르고 자른 사실을 적는다),
+  클립보드 내보내기 문장을 만든다. 이 모듈은 `src/i18n` 스캔 밖이라 문구를 코드 리터럴로 두고
+  카탈로그(en/ja/zh)에 같은 변경에서 함께 넣었다.
+- `src/editor/panels/aiBetweenTurnLog.ts`(표면) — 열 때 목록을 그리고, 검색·복사·새로 고침·지우기·더 보기.
+  「지우기」는 `clearAiUiEvents()`를 부르므로 **이 브라우저의 기록만** 비운다. 스타일은 `26-activity-levels.css`의
+  기존 클래스(`ai-activity-history`·`ai-activity-view`·`ai-activity-filters`·`ai-activity-entry`)만 재사용해
+  CSS 게이트에 새 클래스를 늘리지 않았다.
+- 왜 별도 표면인가: uiEventLog 는 2026-08-30 부터 모든 프론트 액션을 남기고 있었지만, 꺼내 볼 화면이 없었다 —
+  보이는 곳은 턴 구간으로 잘려 턴 활동 행에 실린 사본(`takeAiUiEventsSince`)뿐이었다.
+- 계약: `test/betweenTurnLog.test.ts`(문장·행·표면) · 브라우저 `scripts/qa/ai-between-turn-log.mjs`(실제 편집기,
+  시드 링 + 실제 클릭) — 근거는 `verify-shots/ai-between-turn-log/`. 라이브 모델 호출·원격 쓰기는 하지 않는다.
+
+
 # Editor AI Panel & Tools
 
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
