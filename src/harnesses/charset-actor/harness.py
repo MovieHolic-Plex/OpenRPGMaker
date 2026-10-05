@@ -591,15 +591,18 @@ def effective_decision(w, record, gate=None):
 def human_ready(w, gate):
     try:
         meta = json.loads((w / 'meta.json').read_text())
+        manifest_file = run_dir(meta.get('run', w.parent.name)) / 'manifest.json'
+        manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
+        if manifest.get('recipe') != meta.get('recipe'):
+            return False
         if meta.get('recipe'):
             import delivery
             if not delivery.fresh(w, gate):
                 return False
-        import animal_motion as A
-        if not A.fresh(w, gate):
-            return False
-        manifest_file = run_dir(meta.get('run', w.parent.name)) / 'manifest.json'
-        manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
+        if manifest.get('animalPolicy') is not None or meta.get('animalPolicy') is not None:
+            import animal_motion as A
+            if not A.fresh(w, gate):
+                return False
         if manifest.get('motionPolicy') is not None or meta.get('motionPolicy') is not None:
             import motion
             if not motion.fresh(w, gate):
@@ -1222,6 +1225,7 @@ def _items():
                             render_fresh=views_fresh(w, gate) if has else False,
                             alpha_previews_fresh=alpha_views_fresh(w, gate) if has else False,
                             motion_previews_fresh=(has and (m.get('motionPolicy') is not None or m.get('animalPolicy') is not None) and human_ready(w, gate)),
+                            animal_family=(m.get('animalProfile') or {}).get('family'),
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
 

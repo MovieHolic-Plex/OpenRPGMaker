@@ -58,7 +58,7 @@ def runs(items=None):
             phase = 'interrupted'
         result.append(dict(run=root.name, planned=len(manifest['characters']), ready=len(ready), kept=kept,
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
-                           recipe=manifest.get('recipe'), maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
+                           recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
                            blocked=sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
                                        for p in root.glob('*__*') if (p / 'out.chr.txt').exists())))
     return result
@@ -129,7 +129,7 @@ def _create_variations(options, count, par):
     root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + kind + uuid.uuid4().hex[:8])
     root.mkdir(parents=True)
     try:
-        manifest = recipes.bind(root, rid, count, options.get('prompt', ''))
+        manifest = recipes.bind(root, rid, count, options.get('prompt', ''), int(options.get('startIndex', 0)))
         manifest['productionPolicy'] = dict(maxReviewPending=limit, repairRounds=rounds)
         H.write_json_atomic(root / 'manifest.json', manifest)
         recipes.verify_run(root, manifest, check_tools=True)
@@ -268,10 +268,11 @@ if __name__ == '__main__':
     parser.add_argument('--seed-run', help='이 실행에서 현재 남긴 그림만 변주 원본으로 고정한다')
     parser.add_argument('--recipe', help='보존한 제작 기준 ID로 같은 조건의 새 실행을 만든다')
     parser.add_argument('--creatures', action='store_true', help='동물 8종을 원본으로 필드 몬스터를 직접 저작한다')
+    parser.add_argument('--start-index', type=int, default=0, help='새 기준에서 이어 만들 때 생략할 원본/콘셉트 순번 수')
     parser.add_argument('--max-review-pending', type=int, default=12)
     parser.add_argument('--repair-rounds', type=int, default=2)
     args = parser.parse_args()
     print(json.dumps(create(dict(count=args.count, prompt=args.prompt, reference=args.reference,
                                  par=args.par if args.par is not None else (2 if args.creatures else 4),
-                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures,
+                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures, startIndex=args.start_index,
                                  maxReviewPending=args.max_review_pending, repairRounds=args.repair_rounds)), ensure_ascii=False))

@@ -187,26 +187,29 @@ def create_creatures(name='동물 기반 필드 몬스터'):
         raise
 
 
-def bind(root, rid, count, prompt=''):
+def bind(root, rid, count, prompt='', start_index=0):
+    if type(start_index) is not int or not 0 <= start_index <= 500:
+        raise ValueError('시작 번호는 0~500입니다')
     source = H.DATA / 'recipes' / safe_name(rid)
     recipe = load(source, check_tools=True)
     shutil.copytree(source, root / 'recipe')
     digest = sha(root / 'recipe' / 'recipe.json')
     characters = []
     for i in range(count):
-        seed = recipe['seeds'][i % len(recipe['seeds'])]
-        wave = i // len(recipe['seeds'])
+        number = i + start_index
+        seed = recipe['seeds'][number % len(recipe['seeds'])]
+        wave = number // len(recipe['seeds'])
         brief = ('이 원본과 같은 계열의 다른 인물. 원본의 도트 밀도·몸 비율·네 방향 걷기의 연결을 기준으로 삼는다. '
                  + VARIATIONS[wave % len(VARIATIONS)] + ' 색만 일괄 바꾸지 말고 각 방향·각 걸음의 세부를 직접 찍는다. '
                  + (str(prompt)[:4000] if prompt else '콘셉트와 세부 복식은 자유롭게 정한다.'))
         if recipe.get('animalPolicy') is not None:
             A.validate(seed['animalProfile'])
-            brief = (f'{seed["label"]} 계열의 독창적인 필드 몬스터 {i+1:03d}. 원본의 몸 비율·도트 밀도·네 방향 연결을 유지한다. '
-                     + MONSTER_THEMES[wave % len(MONSTER_THEMES)]
+            brief = (f'{seed["label"]} 계열의 독창적인 필드 몬스터 {number+1:03d}. 원본의 몸 비율·도트 밀도·네 방향 연결을 유지한다. '
+                     + MONSTER_THEMES[number % len(MONSTER_THEMES)]
                      + '. 단순 색 치환 대신 귀·주둥이·갈기·등판·꼬리 중 읽히는 형태를 직접 변주한다. '
                      '각 방향·각 걸음의 몸통과 발을 직접 저작하고 과한 장식은 줄인다. '
                      + str(prompt)[:4000])
-        characters.append(dict(key=f'kept-{root.name[-8:]}-{i+1:03d}', name=f'변주 캐릭터 {i+1:03d}',
+        characters.append(dict(key=f'kept-{root.name[-8:]}-{number+1:03d}', name=f'변주 캐릭터 {number+1:03d}',
                                base=seed['base'], seed=seed['index'], brief=brief, strength='free', reviewMode='human',
                                authoringMode=seed['authoringMode'], animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=recipe.get('motionPolicy'),
                                animalPolicy=recipe.get('animalPolicy'), animalProfile=seed.get('animalProfile'),
