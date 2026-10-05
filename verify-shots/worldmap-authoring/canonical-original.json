@@ -1,0 +1,24 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/harnesses/assistant-capability/worldmap-film-20261005-03/default/project",
+  "projectId": "65d2e492-1fbf-43ef-8895-9c82427ed6ea",
+  "beforeRevision": 12,
+  "revision": 13,
+  "sha256": "bfb3ddda234ae0a60dc8bc4ae4c5f590ab8acaa000a29bec8d5615a386fe513b",
+  "added": true,
+  "sameMaps": true,
+  "passageDifferences": 0,
+  "movementDifferences": 0,
+  "sameReopenedDocument": true,
+  "sameReopenedMaps": true,
+  "groups": 77,
+  "referenceDocuments": [
+    {
+      "id": "wmi-authoring",
+      "documents": 60
+    },
+    {
+      "id": "wmi-authoring-more",
+      "documents": 20
+    }
+  ]
+}

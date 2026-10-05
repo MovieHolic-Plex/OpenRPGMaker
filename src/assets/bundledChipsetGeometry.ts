@@ -30,6 +30,7 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  if (key === "tex_worldmap_authoring") return 12;
   if (key === "tex_atlas_cartography") return 8;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_shared_forest_village_objects") return 6;

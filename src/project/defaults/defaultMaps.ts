@@ -103,8 +103,9 @@ export function plainGrassTileFor(tilesetId: string): number | undefined {
   return tilesetId === DEFAULT_TILESET_ID ? BEODEUL_PLAIN_GRASS_TILE : undefined;
 }
 
-function blankFillTileFor(tilesetId: string): number {
-  return plainGrassTileFor(tilesetId) ?? TILE.GRASS;
+export function blankFillTileFor(tilesetId: string, fallback = TILE.GRASS): number {
+  if (tilesetId === "worldmap_authoring") return 0;
+  return plainGrassTileFor(tilesetId) ?? fallback;
 }
 
 export function createBlankMap(

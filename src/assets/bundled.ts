@@ -15,6 +15,7 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
+import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
 import atlasBiomeDungeon from "./atlasBiomeDungeonSheet.json";
@@ -204,6 +205,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
+  {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
   // 그림·정의는 scripts/content/hand-interior/build_tileset.py, 정의 모듈은 project/defaults/atlasBiomeInterior.ts.
@@ -262,6 +264,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;
+  if (key === "tex_worldmap_authoring") return worldmapAuthoringSheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInterior.count;
   if (key === "tex_atlas_biome_dungeon") return atlasBiomeDungeon.count;
