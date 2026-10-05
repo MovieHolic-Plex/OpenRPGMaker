@@ -1,0 +1,11 @@
+{
+  "fullStagedDiffCheckExitCode": 2,
+  "reason": "Exact image generation request receipt includes original trailing whitespace; preserving bytes and hash rather than rewriting historic request.",
+  "files": [
+    {
+      "path": "harness-data/interview-scene-bank/requests/9ecdd1e0f1705736848ee1a56134028a84232a624bb429ebf0e4e38cf2a8046f.txt",
+      "sha256": "9ecdd1e0f1705736848ee1a56134028a84232a624bb429ebf0e4e38cf2a8046f",
+      "hashMatchesFilename": true
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "scope": "Three published screenshot paths after the real backdrop crossfade settles; isolated production dialog, not an all-published path audit",
+  "published": 455,
+  "targets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "romance--palace--choice--secret--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 16.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 9.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--choice",
+          "ms": 7.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice-f9519f7ba16c.png"
+        },
+        {
+          "key": "romance--palace--choice--secret",
+          "ms": 7.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--secret-32543db539db.png"
+        },
+        {
+          "key": "romance--palace--choice--secret--perspectives",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--secret--perspectives-dc5632f41177.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--warm--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 7.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 7.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-e8e9888ff8ce.png"
+        },
+        {
+          "key": "romance--town--choice--warm",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm-358c7556a727.png"
+        },
+        {
+          "key": "romance--town--choice--warm--routes",
+          "ms": 6.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--routes-9bb293cafe09.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--collect--bright--route",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 12.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-d617a6f7ec71.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 15,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--collect",
+          "ms": 9.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect-5c05c4822a33.png"
+        },
+        {
+          "key": "monster--wild--collect--bright",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright-7d94d17c0c3d.png"
+        },
+        {
+          "key": "monster--wild--collect--bright--route",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route-44f8ea0248f8.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

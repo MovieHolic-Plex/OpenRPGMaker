@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 492,
-  "remaining": 965,
+  "published": 455,
+  "remaining": 1002,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -575,99 +575,129 @@
     "mystery--missing--testimony--wonder--trust--episode",
     "mystery--missing--testimony--wonder--trust--scene",
     "mystery--missing--testimony--wonder--trust--short",
+    "mystery--place--evidence--danger--case",
     "mystery--place--evidence--danger--case--episode",
     "mystery--place--evidence--danger--case--scene",
     "mystery--place--evidence--danger--case--short",
+    "mystery--place--evidence--danger--rooms",
     "mystery--place--evidence--danger--rooms--episode",
     "mystery--place--evidence--danger--rooms--scene",
     "mystery--place--evidence--danger--rooms--short",
+    "mystery--place--evidence--danger--trust",
     "mystery--place--evidence--danger--trust--episode",
     "mystery--place--evidence--danger--trust--scene",
     "mystery--place--evidence--danger--trust--short",
+    "mystery--place--evidence--tension--case",
     "mystery--place--evidence--tension--case--episode",
     "mystery--place--evidence--tension--case--scene",
     "mystery--place--evidence--tension--case--short",
+    "mystery--place--evidence--tension--rooms",
     "mystery--place--evidence--tension--rooms--episode",
     "mystery--place--evidence--tension--rooms--scene",
     "mystery--place--evidence--tension--rooms--short",
+    "mystery--place--evidence--tension--trust",
     "mystery--place--evidence--tension--trust--episode",
     "mystery--place--evidence--tension--trust--scene",
     "mystery--place--evidence--tension--trust--short",
+    "mystery--place--evidence--wonder--case",
     "mystery--place--evidence--wonder--case--episode",
     "mystery--place--evidence--wonder--case--scene",
     "mystery--place--evidence--wonder--case--short",
+    "mystery--place--evidence--wonder--rooms",
     "mystery--place--evidence--wonder--rooms--episode",
     "mystery--place--evidence--wonder--rooms--scene",
     "mystery--place--evidence--wonder--rooms--short",
+    "mystery--place--evidence--wonder--trust",
     "mystery--place--evidence--wonder--trust--episode",
     "mystery--place--evidence--wonder--trust--scene",
     "mystery--place--evidence--wonder--trust--short",
+    "mystery--place--inspect--danger--case",
     "mystery--place--inspect--danger--case--episode",
     "mystery--place--inspect--danger--case--scene",
     "mystery--place--inspect--danger--case--short",
+    "mystery--place--inspect--danger--rooms",
     "mystery--place--inspect--danger--rooms--episode",
     "mystery--place--inspect--danger--rooms--scene",
     "mystery--place--inspect--danger--rooms--short",
+    "mystery--place--inspect--danger--trust",
     "mystery--place--inspect--danger--trust--episode",
     "mystery--place--inspect--danger--trust--scene",
     "mystery--place--inspect--danger--trust--short",
+    "mystery--place--inspect--tension--case",
     "mystery--place--inspect--tension--case--episode",
     "mystery--place--inspect--tension--case--scene",
     "mystery--place--inspect--tension--case--short",
+    "mystery--place--inspect--tension--rooms",
     "mystery--place--inspect--tension--rooms--episode",
     "mystery--place--inspect--tension--rooms--scene",
     "mystery--place--inspect--tension--rooms--short",
+    "mystery--place--inspect--tension--trust",
     "mystery--place--inspect--tension--trust--episode",
     "mystery--place--inspect--tension--trust--scene",
     "mystery--place--inspect--tension--trust--short",
+    "mystery--place--inspect--wonder--case",
     "mystery--place--inspect--wonder--case--episode",
     "mystery--place--inspect--wonder--case--scene",
     "mystery--place--inspect--wonder--case--short",
+    "mystery--place--inspect--wonder--rooms",
     "mystery--place--inspect--wonder--rooms--episode",
     "mystery--place--inspect--wonder--rooms--scene",
     "mystery--place--inspect--wonder--rooms--short",
+    "mystery--place--inspect--wonder--trust",
     "mystery--place--inspect--wonder--trust--episode",
     "mystery--place--inspect--wonder--trust--scene",
     "mystery--place--inspect--wonder--trust--short",
+    "mystery--place--testimony--danger--case",
     "mystery--place--testimony--danger--case--episode",
     "mystery--place--testimony--danger--case--scene",
     "mystery--place--testimony--danger--case--short",
+    "mystery--place--testimony--danger--rooms",
     "mystery--place--testimony--danger--rooms--episode",
     "mystery--place--testimony--danger--rooms--scene",
     "mystery--place--testimony--danger--rooms--short",
+    "mystery--place--testimony--danger--trust",
     "mystery--place--testimony--danger--trust--episode",
     "mystery--place--testimony--danger--trust--scene",
     "mystery--place--testimony--danger--trust--short",
+    "mystery--place--testimony--tension--case",
     "mystery--place--testimony--tension--case--episode",
     "mystery--place--testimony--tension--case--scene",
     "mystery--place--testimony--tension--case--short",
+    "mystery--place--testimony--tension--rooms",
     "mystery--place--testimony--tension--rooms--episode",
     "mystery--place--testimony--tension--rooms--scene",
     "mystery--place--testimony--tension--rooms--short",
+    "mystery--place--testimony--tension--trust",
     "mystery--place--testimony--tension--trust--episode",
     "mystery--place--testimony--tension--trust--scene",
     "mystery--place--testimony--tension--trust--short",
+    "mystery--place--testimony--wonder--case",
     "mystery--place--testimony--wonder--case--episode",
     "mystery--place--testimony--wonder--case--scene",
     "mystery--place--testimony--wonder--case--short",
+    "mystery--place--testimony--wonder--rooms",
     "mystery--place--testimony--wonder--rooms--episode",
     "mystery--place--testimony--wonder--rooms--scene",
     "mystery--place--testimony--wonder--rooms--short",
+    "mystery--place--testimony--wonder--trust",
     "mystery--place--testimony--wonder--trust--episode",
     "mystery--place--testimony--wonder--trust--scene",
     "mystery--place--testimony--wonder--trust--short",
     "mystery--record--evidence--danger--case--episode",
     "mystery--record--evidence--danger--case--scene",
     "mystery--record--evidence--danger--case--short",
+    "mystery--record--evidence--danger--rooms",
     "mystery--record--evidence--danger--rooms--episode",
     "mystery--record--evidence--danger--rooms--scene",
     "mystery--record--evidence--danger--rooms--short",
+    "mystery--record--evidence--danger--trust",
     "mystery--record--evidence--danger--trust--episode",
     "mystery--record--evidence--danger--trust--scene",
     "mystery--record--evidence--danger--trust--short",
     "mystery--record--evidence--tension--case--episode",
     "mystery--record--evidence--tension--case--scene",
     "mystery--record--evidence--tension--case--short",
+    "mystery--record--evidence--tension--rooms",
     "mystery--record--evidence--tension--rooms--episode",
     "mystery--record--evidence--tension--rooms--scene",
     "mystery--record--evidence--tension--rooms--short",
@@ -811,6 +841,13 @@
     "romance--campus--talk--secret--single--short",
     "romance--campus--talk--warm--perspectives--episode",
     "romance--campus--talk--warm--perspectives--scene",
+    "romance--campus--talk--warm--perspectives--short",
+    "romance--campus--talk--warm--routes--episode",
+    "romance--campus--talk--warm--routes--scene",
+    "romance--campus--talk--warm--routes--short",
+    "romance--campus--talk--warm--single--episode",
+    "romance--campus--talk--warm--single--scene",
+    "romance--campus--talk--warm--single--short",
     "romance--palace--choice--bittersweet--perspectives--episode",
     "romance--palace--choice--bittersweet--perspectives--scene",
     "romance--palace--choice--bittersweet--perspectives--short",
@@ -1018,65 +1055,16 @@
       "height": 941
     },
     {
-      "key": "romance--campus--talk--warm--single--scene",
-      "sha256": "1fd8013cd74aec7ee48c1dfdcbc40eef4e89171c50e63e45488bf3750ae65aff",
-      "generationPromptSha256": "59096fc1e8e80b2aca6be4d40ac3d96e21c96409f8c9dc09cf3c677457a5447c",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--single--episode",
-      "sha256": "6746f427c44fb38283c3d2164b5a79b3b9eb2ccef352bbd0783e74249dd47ddf",
-      "generationPromptSha256": "2fc9a818f4bf89c86ed3b61bf4774b88cd55e5572654022bc30374909f87854b",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--single--short",
-      "sha256": "0ff890ef127858392d2d78fffe8403c83a521095764a8ada3a25c74e77f2574a",
-      "generationPromptSha256": "d60dd1d7cedc1066d188173e48c94c2262e7cdaebc6ba7baa0b71f89d480a801",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "romance--campus--talk--warm--routes",
-      "sha256": "0ff3a6c7213b12a5560657949a4056881552ddaaf1a6c66b6c681ce56748f2e1",
-      "generationPromptSha256": "ea78e95407641ed38b079985f6f62319da47dd1292e3f0bc53009a5d885d0450",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--routes--scene",
-      "sha256": "14c32dc081335ea5db07ebbb021caf05105c2609c4996387b033689e1df5f444",
-      "generationPromptSha256": "5ce61784040ed441f38f6f34802239054b0fa97d5e11f429ba68e6d1ec2e5b42",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--routes--episode",
-      "sha256": "36bc5d61e5e26ed9777b520d68c2e2e082ba589fad7b1a42a7c8b4a30d1abb71",
-      "generationPromptSha256": "7bd0bf0888ef3970bfc32f80cffb0f6c66f71730936ec4af49ccde8ce255f80c",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--routes--short",
-      "sha256": "30adc5f68781033c195aeae0277a9bbb67849aed2aca5824fb38181fd2c97896",
-      "generationPromptSha256": "2b7f75d4c5a750e27dacf0f9c9c3f20e6c4d5917a8cfa8f3f50260de759d1e48",
+      "sha256": "3e6e95cfce1337039b8ec784ea561b2f2fcc9be9dc74a610949f11edcfc9caae",
+      "generationPromptSha256": "9ae165d73cab949b5e30fcdd28284e80f117372a2d4aa88da2989a3ef49c7b9e",
       "width": 1672,
       "height": 941
     },
     {
       "key": "romance--campus--talk--warm--perspectives",
-      "sha256": "91068b10fc184f4876af0ed9e278b9ee10a99afe81a2102a4d2b1547c1d46c56",
-      "generationPromptSha256": "af1c9d2869536538dc91089416b12045ee32b02d76999804e71d667e50cfa3ce",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "romance--campus--talk--warm--perspectives--short",
-      "sha256": "e6778b65338308cc0b72a6a1834997644c31ea86fd0a675a57a2faf3b0b4d3f0",
-      "generationPromptSha256": "302674a7474063b0ed444e2cea974868f32e8c63eb116a6da8106912d947cdbd",
+      "sha256": "0a9f1def9c92dcc1bf3e70ae27b8be0e7e760bebc7b01cca0d1adc648a325ee0",
+      "generationPromptSha256": "8547d0c2b7df2da970ca576a6c7834d81d1447e12e231302491870f9dd0927db",
       "width": 1672,
       "height": 941
     },
@@ -4098,13 +4086,6 @@
       "height": 941
     },
     {
-      "key": "mystery--record--evidence--tension--rooms",
-      "sha256": "a106766a8ec22985fe3aad349b68883eea836c87fff2352decb68f53974d648a",
-      "generationPromptSha256": "d4c9db326af3a2ff18ef33020b754df03a262a3a9e8e8c6acc3a08f08f4c1398",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "mystery--record--evidence--tension--trust",
       "sha256": "468a905c880b86f674da827bb77fd9143ecd1c829958f4ad4448482185b85d2e",
       "generationPromptSha256": "4986760f314df8a38baa22850624099b7823c9339f76b3b97eb0d61af71b2280",
@@ -4122,20 +4103,6 @@
       "key": "mystery--record--evidence--danger--case",
       "sha256": "3f96a63734325ccd76994dd9d058b0b46ae21f7bf09a9c0be325dd311497f2f6",
       "generationPromptSha256": "09d345f2967f102a6e15b464c7570eefda3d3f1b2bf67bdf2a86551fa41dd36e",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--record--evidence--danger--rooms",
-      "sha256": "8aaf37f34488beaef6cad680b2179d990899dbf9f2dd6829cb4b60cfab6abcf8",
-      "generationPromptSha256": "7b127024006f416384daaf31708805bc8b7c66ad8bd9a0851927f0334738fe0a",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--record--evidence--danger--trust",
-      "sha256": "5b9959881447e2306d889be2ca0a609fcdbf5fd384c3a6b138393d409e790b25",
-      "generationPromptSha256": "1457b7d4b45498a1565b5defdfa6b32a610f41c2ee0d514ee9f4811922841d02",
       "width": 1672,
       "height": 941
     },
@@ -4161,27 +4128,6 @@
       "height": 941
     },
     {
-      "key": "mystery--place--inspect--wonder--case",
-      "sha256": "9836d144c09863c015ddd8f945deef5e0bf76b9d659b7cdd2957cda6fead5554",
-      "generationPromptSha256": "5c8ef32549341a60000c764174db78081dabe973cf79802cdde2c426ad4a7259",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--wonder--rooms",
-      "sha256": "ce95fc7811dbfe3043188811961cb394892c88debbdb481c4c4931f0ca60e7fd",
-      "generationPromptSha256": "c86256ee19047d647c2f4e6790af66699f4855af671c8054e3fd17f2ee236a01",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--wonder--trust",
-      "sha256": "1537bbb377e1dfe4812fd39f5db4f4416405c2804011b2488036175d14a2b26b",
-      "generationPromptSha256": "4e05b4689fda65b69cc108d63f95ec00da73b63a8b135bd9a628529f2556aee0",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "mystery--place--inspect--tension",
       "sha256": "97d04b52896e44834e00fe5d5a350aad1eff103ff68e67b6b38887465dd8b5b8",
       "generationPromptSha256": "068d6e9475fa447297a6be223dcc309f5dc1240f008224c1672c1658c22aaced",
@@ -4189,51 +4135,9 @@
       "height": 941
     },
     {
-      "key": "mystery--place--inspect--tension--case",
-      "sha256": "2a555e56f9d55a458253adda5e8c517e0284d241d3fc2854e910018fb360964d",
-      "generationPromptSha256": "d10abf2784daaab2ac3eab623415d9dad66b1e3d028d3eae76ca8e242ef7a571",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--tension--rooms",
-      "sha256": "be0f5deeed68caf0c0fe5690c228ca690a26424cb06dd33addd70ce13a2a29cd",
-      "generationPromptSha256": "40388fddbf25d54ff229fe93295839e16e0904862cbc873d95dd31ea50beef14",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--tension--trust",
-      "sha256": "38b009360ea68d7a2f37cb708ef1f1355ab339cdbdffe094ec84002af5c7b856",
-      "generationPromptSha256": "28023ae84ad25309dec44690f204da12150feb8d6b96b1f6866f2927ee990559",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "mystery--place--inspect--danger",
       "sha256": "b2cc6922e1338f42727e11cfb72424cc2b6a71a18e2f40e9a0750cc675184c30",
       "generationPromptSha256": "6026f54bc72755f39d6f6b22ac83edf30b93e9228114acbf01c575d0c9edcd4d",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--danger--case",
-      "sha256": "fdc09c3e326131824843785590bdf99d7748450f5d418a751154e66f08702f2c",
-      "generationPromptSha256": "ee7f0718908e635caebee72982b24c3224a65f2e17463edd5b344dd2a935926c",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--danger--rooms",
-      "sha256": "df30fc0e8549e26b164bb668e2416a0fde73448fa7747ce1c62a0f62758b0dc7",
-      "generationPromptSha256": "9b49cbb4a0fbad9ad2702f1fe009cd08497a3e0a92bf896c7b88e9bb08923f69",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--inspect--danger--trust",
-      "sha256": "1a2ed40879e24b98d9fa9252db78ea453f8f87e9398c0cc53b6d6f94bfff63ea",
-      "generationPromptSha256": "937eb284dd893a4b7522f91c9071a57da33f0bd0a2b36b62682f295c20d38794",
       "width": 1672,
       "height": 941
     },
@@ -4246,85 +4150,22 @@
     },
     {
       "key": "mystery--place--testimony--wonder",
-      "sha256": "426a8f29ee4cb053a168d550edce8cb255bd050c338cec87471765e19134a93e",
-      "generationPromptSha256": "c53a84b643c3a417ca8b27f1083cc2b91d68d465932fe6d8527c2744a56070ff",
-      "width": 1672,
-      "height": 940
-    },
-    {
-      "key": "mystery--place--testimony--wonder--case",
-      "sha256": "5fed7ea02414140c014b9a68d84e771d502e277d19415dbf52bc048d3d2ec7d3",
-      "generationPromptSha256": "c8dc2f86c912c501a34d4e495e0c6f1c1220c92fbbd0e93d7771137beb11fbc1",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--wonder--rooms",
-      "sha256": "29e1f5a73654c40ac1069dc72095d7d2b6cd0777fc3a14b1fe8d554c9baf19dc",
-      "generationPromptSha256": "8430bec38b1d28bd53cb6675a4b28088fc687e7f0a1ee9e9bb45be5cf3ebb4fd",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--wonder--trust",
-      "sha256": "92da52cc9bcd10773bf222097527632523efe07ca2528b3d4f11811856f608d0",
-      "generationPromptSha256": "fff4713105debc3ec16f503425f2a02920488a5b5eb656b2b1f0661c8ccff0fd",
+      "sha256": "38d69c6f59c50e1c7fcd5ef1fa388b378cb11e68cff432686dd93daedbaf57dc",
+      "generationPromptSha256": "776b5c05a290b669e805b5cafd8a8d1915c514873ebe2dc019d01e48de3bc8dc",
       "width": 1672,
       "height": 941
     },
     {
       "key": "mystery--place--testimony--tension",
-      "sha256": "97feec81ad825720bb06df35d0d81304b13d23cada22eade1e8fb870c4ed043a",
-      "generationPromptSha256": "4fa17a8ee98a7b270a8ca0b842b83fc1587118be43897ecc326a2f542fdeb10d",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--tension--case",
-      "sha256": "aa9a28f25b537e1582537e25317b86d2e2c258696531a8a638f12a07cd9f6048",
-      "generationPromptSha256": "e71b9d9c92a4e714e443ae3e70972ca7156bd5f672f9f8f3cc4f5b75c73b61ae",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--tension--rooms",
-      "sha256": "bd692a752cf0bdf31c1de663471076279ff2bc9dc398eb3f3436dc304b9c8bdd",
-      "generationPromptSha256": "9ecdd1e0f1705736848ee1a56134028a84232a624bb429ebf0e4e38cf2a8046f",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--tension--trust",
-      "sha256": "20806caac6a52363a5cf90164021ea3ae97d8d1f8d74018dc0cb687508580a6f",
-      "generationPromptSha256": "0b4b093115a9983d7d964c083ec2c809f4631f5f3ce4e8da53bb98a00156c633",
+      "sha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
+      "generationPromptSha256": "30dc769c6d925fea61e06ed19039b9987c3159a8193207f35fd0c8dd0fee9ed0",
       "width": 1672,
       "height": 941
     },
     {
       "key": "mystery--place--testimony--danger",
-      "sha256": "896932fd293362e497f1dad34a88e8a26d38759c0ee263718bef1bf901aa5731",
-      "generationPromptSha256": "10354f7dc9d4bf464acf841d8b03225a04835eb826a36a1adbff18a3bd1e73e0",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--danger--case",
-      "sha256": "0cf707ef2ede906e3a2294100a07a254a5068aef7f1eda792bbf16fc2703385c",
-      "generationPromptSha256": "78968f99c7a33bb4dfd41646e953a93bfe9f5f16e74fc782978e25c81899b03c",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--danger--rooms",
-      "sha256": "d614343db48661e84e92f4b4533926b0d841a3d0b3437003cbb7e2b477a93c66",
-      "generationPromptSha256": "1eb832070d2eefdf9cd701728412007e7a3b91470ce91f347527424c899a2b6b",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--testimony--danger--trust",
-      "sha256": "d2385eaa50722afdeb26284acf1e55a5da19932c69b21c677b02607ab7095ddc",
-      "generationPromptSha256": "5a5b887bb9943f45fd5acdfba82d1b30e3975f20590d2f15f3e054453956efb4",
+      "sha256": "a8f7bbcbc180403a3838161b37db00d01525a2ac28599356a7622f3e9e21f028",
+      "generationPromptSha256": "f752ef662419ae4f889d5881f1698dea1e6146af99a6820cb9b044fa22ff04d8",
       "width": 1672,
       "height": 941
     },
@@ -4337,57 +4178,15 @@
     },
     {
       "key": "mystery--place--evidence--wonder",
-      "sha256": "c1b0546edfd7e66997bf599f34b5d1d6d9bebafdd78001ad04524782088637bd",
-      "generationPromptSha256": "7c862861da9de580ddb7fac2caf9d8c450bb87d08b282a61d489e831cd2835e6",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--wonder--case",
-      "sha256": "291c7a8c4265c136818f0786882949f0466f6e1b48bb2adb7e905c19417ac1e5",
-      "generationPromptSha256": "cae68e3eb2893abb5586da836b07e51f262331a58d0f0b3b7a2cff06e41516a9",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--wonder--rooms",
-      "sha256": "af69b34f95bf1cb63583d7c7fc5eb24dc42f6cf88eb9fd1671bf3125c60f9df1",
-      "generationPromptSha256": "c24880f6555c15683de5200e780373b332a958204eb9d3c7e27d6d61e05262c4",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--wonder--trust",
-      "sha256": "06b1b2adaef96da17fdcd801113785244f4473c77d04f98103ef5c5ee538e62d",
-      "generationPromptSha256": "b05059c098bcbb2938017ddef28857cc4a2473b07d04ed57c298ac44aa06d789",
+      "sha256": "16f444122b40e6e527032e060f99b18ea8f7adee89f461c49ce5b8109a17548b",
+      "generationPromptSha256": "d37a94f57574a06991ef476258dd4804fd6731582f38a37e668ef17d615b8480",
       "width": 1672,
       "height": 941
     },
     {
       "key": "mystery--place--evidence--tension",
-      "sha256": "55102f843362bc235ea33874fa904b03b5fd1a19653a996c55db3041e1f4b65a",
-      "generationPromptSha256": "959ab921da09005c68c4f15367baf9f4d846c688e4b2cc460b216d7e234e2f91",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--tension--case",
-      "sha256": "f5e8d05b7b45bd363da2a986290af3d2eb76e50871ea2cc17e483d925d5ce439",
-      "generationPromptSha256": "a1d2ea323e4ac73326cddff0b21ceeb3f6eae3b1d1c716ec8677f22e15b86086",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--tension--rooms",
-      "sha256": "b3e154d32359a8872315f181be7066e4b5c4276332c45e8839335d0f63167699",
-      "generationPromptSha256": "479658833a5ec72d0d8aabba0a33f0e39f774b9b646cd9722068bec7efb3c4ab",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--tension--trust",
-      "sha256": "7095d2823cfd8dbd21a7889c408723c47e73ea0dc936087416b770c9a5df538e",
-      "generationPromptSha256": "8846ec8583c4ad5fcccab2447a41f670c10ea15cae2abf30db39d35020b5fd33",
+      "sha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
+      "generationPromptSha256": "8518b41816537bc947a9e9456996b06ef1836d38000a522943dadb34014b68ed",
       "width": 1672,
       "height": 941
     },
@@ -4395,27 +4194,6 @@
       "key": "mystery--place--evidence--danger",
       "sha256": "22572be863061c41ace622110de8b2f0c45884e8a7cc6a87153689a0bce3af58",
       "generationPromptSha256": "e6f5b1fc774fbd880cdf11a8fefd688c56b8d9298b404586b72be4139b64834c",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--danger--case",
-      "sha256": "a493b67b28917305a644ebaedf56d15f13457cd40cf195af93809abb7bdf7f99",
-      "generationPromptSha256": "67bfb28bc3157555c839cc0206d1bc1dda2b8d9bc84f156ef6645d3d1985274e",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--danger--rooms",
-      "sha256": "18f4e34dcfab8c7e4089555848433e90b2a76a0203699f2b67489ba07ed56989",
-      "generationPromptSha256": "476463f4c964382d0d360981ff4d117549e01bd774616b9001ca549af9129cf5",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "mystery--place--evidence--danger--trust",
-      "sha256": "219292cdfba3cd0a9699d63868f22e563958607fcd20385d83a04b70a2795fe8",
-      "generationPromptSha256": "985d586d537b43159872183b2b5efb08244ee4906e99ddc5463192d659029e13",
       "width": 1672,
       "height": 941
     }
