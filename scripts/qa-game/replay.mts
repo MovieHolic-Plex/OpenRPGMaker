@@ -124,7 +124,7 @@ export async function replayRecording(dir: string, options: { readonly phases?: 
     if (ok && call.name === "read_tileset_reference" && result) {
       // 녹화 때는 모델에게 실제로 보낸 페이로드가 증거가 됐다 — 재생에는 모델이 없으니 읽은 즉시 본 것으로 친다.
       gate.evidence.observe(result);
-      gate.evidence.observeImageUrls(new Set(gate.evidence.imagesForRead(ctx.project, result).map((image) => image.dataUrl)));
+      gate.evidence.observeImageUrls(new Set((await gate.evidence.imagesForRead(ctx.project, result)).map((image) => image.dataUrl)));
     }
     const differs = ok !== call.ok || warningDelta(call.warnings, warnings).length > 0;
     const entry: ReplayedCall = {

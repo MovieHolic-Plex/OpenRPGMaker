@@ -83,13 +83,19 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   await new Promise(r => setTimeout(r, 300));
   const browser = await chromium.launch({ executablePath: resolve('scripts/qa/ai-stress/chrome-netns.sh'), headless: true,
     env: { ...process.env, STRESS_HOST_PORT: hostPort, STRESS_SOCK: sock },
-    args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--enable-precise-memory-info'] });
+    args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-background-networking', '--enable-precise-memory-info',
+      // 이 박스는 다른 세션 때문에 전역 OOM 이 잦고, 크롬은 렌더러에 oom_score_adj 300 을 줘서 늘 먼저 죽는다.
+      // 한 프로세스로 띄워 페이지를 adj 0 인 브라우저 프로세스 안에 둔다(STRESS_MULTI_PROCESS=1 이면 기본 구성).
+      ...(process.env.STRESS_MULTI_PROCESS === '1' ? [] : ['--single-process', '--no-zygote'])] });
   const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
   page.on('pageerror', e => result.pageErrors.push(String(e.message).slice(0, 600)));
   page.on('console', m => { if (m.type() === 'error') result.consoleErrors.push(m.text().slice(0, 400)); });
-  page.on('crash', () => result.pageErrors.push('PAGE CRASHED'));
+  let crashed = false;
+  page.on('crash', () => { crashed = true; result.pageErrors.push('PAGE CRASHED'); });
+  // 죽은 페이지에 evaluate 하면 끝없이 기다린다 — 모든 관측에 시한을 건다.
+  const timed = (promise, ms = 20000) => Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('observe timeout')), ms))]);
   await page.addInitScript(() => {
     localStorage.setItem('oprn:locale', 'ko');
     localStorage.setItem('oprn:standard-welcome-seen', '1');
@@ -134,8 +140,8 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
     };
   });
 
-  const status = () => page.evaluate(() => ({ s: window.__oprnAiBridge?.status?.(), requests: window.__stress.requests.length,
-    events: window.__stress.events.length }));
+  const status = () => crashed ? Promise.reject(new Error('page crashed')) : timed(page.evaluate(() => ({ s: window.__oprnAiBridge?.status?.(), requests: window.__stress.requests.length,
+    events: window.__stress.events.length })));
   const modalText = () => page.evaluate(() => {
     const el = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], .modal, .confirm-dialog')]
       .find(n => n instanceof HTMLElement && n.offsetParent !== null && n.innerText.trim());
@@ -156,7 +162,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   let wireSeen = 0;
   const dumpWire = async () => {
     // 렌더러가 죽어도 그때까지의 기록은 남게 매 폴링 새 사건만 덧붙인다.
-    const fresh = await page.evaluate(n => ({ events: window.__stress.events.slice(n), requests: window.__stress.requests }), wireSeen).catch(() => null);
+    const fresh = await timed(page.evaluate(n => ({ events: window.__stress.events.slice(n), requests: window.__stress.requests }), wireSeen)).catch(() => null);
     if (!fresh) return;
     wireSeen += fresh.events.length;
     if (fresh.events.length) await writeFile(out + '/wire-live.ndjson', fresh.events.map(e => JSON.stringify(e)).join('\n') + '\n', { flag: 'a' });
@@ -200,15 +206,29 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
     const until = Date.now() + TURN_LIMIT_MS;
     while (Date.now() < until) {
       await page.waitForTimeout(5000);
-      const st = await status();
-      const modal = await modalText().catch(() => null);
+      if (crashed) throw new Error('page crashed during turn');
+      let st;
+      const pollAt = Date.now();
+      try { st = await status(); }
+      catch (error) {
+        if (crashed) throw error;
+        // 페이지 주 스레드가 20초 넘게 응답하지 않았다 — 편집기 멈춤으로 기록하고 계속 본다(10분 연속이면 포기).
+        result.freezes ??= [];
+        const last = result.freezes.at(-1);
+        if (last && pollAt - last.until < 30000) { last.until = Date.now(); last.seconds = Math.round((last.until - last.from) / 1000); }
+        else result.freezes.push({ at: Math.round((pollAt - result.sentAt) / 1000), from: pollAt, until: Date.now(), seconds: 20 });
+        await save();
+        if (result.freezes.at(-1).seconds > 600) throw new Error('editor unresponsive for 10 minutes');
+        continue;
+      }
+      const modal = await timed(modalText()).catch(() => null);
       // 밖에서 진행을 볼 수 있게 매 폴링 상태를, 1분마다 화면을 남긴다.
       const mem = await sampleMemory('turn');
       await dumpWire();
       result.progress = { at: Math.round((Date.now() - result.sentAt) / 1000), requests: st.requests, events: st.events,
         turnBusy: st.s?.turnBusy, modal: !!modal, heapMB: mem?.heapMB };
       await save();
-      if (result.progress.at % 60 < 5) await page.screenshot({ path: out + '/progress.png' }).catch(() => {});
+      if (result.progress.at % 60 < 5) await timed(page.screenshot({ path: out + '/progress.png' })).catch(() => {});
       if (modal) {
         if (!result.modals.some(m => m.text === modal)) {
           result.modals.push({ at: Math.round((Date.now() - result.sentAt) / 1000), text: modal });
@@ -225,7 +245,8 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
       if (spec.id === 'p-destructive' && modal && Date.now() - result.sentAt > 60_000) break;
     }
     result.turnSeconds = Math.round((Date.now() - result.sentAt) / 1000);
-    const final = await status();
+    // 멈춤이 길면 마지막 상태도 못 읽는다 — 그때는 바쁜 것으로 보고 중단한다.
+    const final = await status().catch(() => ({ s: { turnBusy: true } }));
     if (final.s?.turnBusy) {
       result.timedOut = true; log('timeout → abort');
       await page.evaluate(() => window.__oprnAiBridge.abort());
