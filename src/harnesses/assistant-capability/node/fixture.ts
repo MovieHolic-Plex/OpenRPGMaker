@@ -5,6 +5,26 @@ import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { COMBINED_TOWN_TILESET_ID } from '../../../project/defaults/constants';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 
+export async function prepareWorldmapProof(root: string): Promise<void> {
+  if (existsSync(root)) throw Error(`기존 실행 덮어쓰기 거부: ${root}`);
+  for (const id of ['default', 'pokemon']) {
+    const dir = resolve(root, id), projectDir = resolve(dir, 'project');
+    const project = createEmberQuestProject();
+    project.meta.title = `월드맵 조수 실제 녹화 · ${id}`;
+    if (id === 'pokemon') project.system.genre = 'monster-collect';
+    if (project.system.opening) project.system.opening.enabled = false;
+    mkdirSync(dir, { recursive: true });
+    const store = await initLocalProjectStore({ projectDir });
+    try {
+      await store.saveProject(project);
+      const snapshot = store.loadSnapshot()!;
+      writeFileSync(resolve(dir, 'fixture.json'), JSON.stringify({caseId:id, projectId:store.projectId,
+        projectDir, revision:snapshot.revision, sha256:snapshot.sha256}, null, 2));
+    } finally { store.close(); }
+    console.log(`prepared worldmap ${id}`);
+  }
+}
+
 export async function prepare(root: string, selected?: string): Promise<void> {
   const seed = JSON.parse(readFileSync(resolve('harness-data/assistant-capability/seed.json'), 'utf8'));
   const ids = selected?.split(',');

@@ -65,8 +65,8 @@ export async function startHost(projectDir, dir) {
     writeFileSync(resolve(dir,'host.json'),JSON.stringify({url,exitCode:child.exitCode,closed:true},null,2));
   } };
 }
-export async function newEditor(browser, url, projectDir, config) {
-  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce' });
+export async function newEditor(browser, url, projectDir, config, captureOptions={}) {
+  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...captureOptions });
   const page=await context.newPage();
   // Bundled asset installation and SQLite flush can hold the UI main thread.
   // Keep UI action deadlines consistent with the existing load/save deadlines.
