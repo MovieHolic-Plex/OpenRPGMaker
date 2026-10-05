@@ -9,12 +9,26 @@ function ctx() {
 }
 
 describe("npc movement selection", () => {
-  it("make_villager defaults to fixed", () => {
+  it("make_villager defaults to roaming, not fixed", () => {
+    const { context, mapId } = ctx();
+    const result = runTool(context, "make_villager", {
+      mapId,
+      name: "평범 주민",
+      home: { x: 2, y: 2 },
+      dialogue: [{ text: "안녕." }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const event = context.project.maps[mapId].events.find((e) => e.pages?.[0]?.name === "평범 주민");
+    expect(event?.pages?.[0]?.movement.type).toBe("random");
+  });
+
+  it("make_villager stays still when fixed is explicit", () => {
     const { context, mapId } = ctx();
     const result = runTool(context, "make_villager", {
       mapId,
       name: "고정 주민",
       home: { x: 2, y: 2 },
+      movement: "fixed",
       dialogue: [{ text: "안녕." }],
     });
     expect(result.ok, result.summary).toBe(true);
