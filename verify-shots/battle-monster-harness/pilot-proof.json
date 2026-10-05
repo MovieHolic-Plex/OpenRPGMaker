@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "id": "earthen-jar-fiend",
+      "nativeCell": 64,
+      "poses": 9,
+      "pixelPass": true,
+      "rgbaIdenticalToExistingSheet": true,
+      "binding": "f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71"
+    },
+    {
+      "id": "jangseung-spirit",
+      "nativeCell": 64,
+      "poses": 9,
+      "pixelPass": true,
+      "rgbaIdenticalToExistingSheet": true,
+      "binding": "0d9ca5479e7c7c8f1a3846792c68524e4bef3e10764a9d080a90e2c8cf9aeeb0"
+    },
+    {
+      "id": "mortar-rabbit",
+      "nativeCell": 64,
+      "poses": 9,
+      "pixelPass": true,
+      "rgbaIdenticalToExistingSheet": true,
+      "binding": "259baaf2b03ae6c3e5fe72c1afbb55a5eafb738c4d83de208638a41e0d36e2b4"
+    },
+    {
+      "id": "venom-toad",
+      "nativeCell": 64,
+      "poses": 9,
+      "pixelPass": true,
+      "rgbaIdenticalToExistingSheet": true,
+      "binding": "7f3c04c65b119df1420dbefea1cfdb02fa8c20f8f545a15082132ca38fa7a329"
+    },
+    {
+      "id": "wild-boar",
+      "nativeCell": 64,
+      "poses": 9,
+      "pixelPass": true,
+      "rgbaIdenticalToExistingSheet": true,
+      "binding": "2b3aa157e2904008dd4e5415169e1bad7ea8117dcded3785a97f17eadd34f61a"
+    }
+  ],
+  "originalArtModified": false
+}

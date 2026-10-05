@@ -14,6 +14,7 @@
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
+| `battle-monster` | RM2003 전투 몬스터 도트 공방 | 장르 무관 | `harness-data/battle-monster/seed.json` | `openwiki/harnesses/battle-monster.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -196,5 +197,27 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `check` — 굽기 확인: 선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다.
 - `publish-shared` — 공용 DB 등록: 선택 시트와 정본 지형 사례를 호스트 공용 SQLite에 등록하고 같은 판본을 다시 읽는다.
 - `preview` — 후보 미리보기: 후보의 크기·색표와 실제 지도 자리를 확인한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## battle-monster — RM2003 전투 몬스터 도트 공방
+
+기본 자세 선택 → GPT 6.1 sol high의 9자세 직접 도트 저작 → 픽셀 검사 → 독립 그림 검수 → 사람 선택 → 선택 팩. 조선 설화 5종을 시범 입력으로 제공한다.
+
+**이럴 때 쓴다:**
+- 일반 JRPG/RM2003 적의 native64·96 도트와 돌격·공격·피격·쓰러짐 자세를 만들거나 고칠 때
+- 몬스터 수집 앞·뒷모습은 monster-collect-species, 걷는 캐릭터 칩은 charset-actor를 쓴다
+
+**단계** (`npm run harness -- battle-monster <단계>`):
+- `pilot` — 시범 후보: 기존 조선 5종의 직접 찍은 원본을 승인되지 않은 후보로 가져온다.
+- `init` — 제작 지시: 종·크기·실루엣·팔레트·동작 계약을 새 후보 작업 폴더에 고정한다.
+- `author` — 직접 도트 저작: 격리된 후보 폴더에서 GPT 6.1 sol high를 실행한다. idle 선택 후에만 poses를 저작하며 --prepare-only로 지시만 준비할 수 있다.
+- `ingest` — 원본 가져오기: 명시한 팔레트와 ASCII 도트 원본을 새 후보로 가져온다. 기존 선택을 이관하지 않는다.
+- `check` — 픽셀 검사·굽기: 크기·색·투명·잘림·9자세 중복과 PNG 재읽기를 검사하고 native 시트·초상·검수 보드를 굽는다.
+- `critique` — 독립 그림 검수: 별도 GPT high 세션이 1×/3×·세 배경 그림을 보고 좌표별 수정 의견을 낸다. 사람 선택을 대신하지 않는다.
+- `review` — 후보 비교: 종/후보·기본 자세·9자세·동작 재생·검수·선택의 현재 해시를 보여 주는 독립 HTML을 만든다.
+- `decide` — 사람 선택 기록: 사용자의 명시적인 keep/rework/discard와 수정 지시를 현재 그림 해시에 묶어 저장한다.
+- `pack` — 선택 팩: 현재 두 단계의 선택·독립 검수·픽셀 검사를 확인해 원본·시트·등록 메타·출처를 ZIP으로 묶는다.
+- `status` — 현황: 종마다 기본 자세/9자세 제작과 검수·사람 선택이 현재 그림에 유효한지 보여 준다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

@@ -1,0 +1,8 @@
+{
+  "scope": "isolated output fixture; real user ledger untouched",
+  "sourceBindingBefore": "c851dd41db13db02a0622b41a4c9505079d581b52b9df4d5ed648279c2215fe1",
+  "sourceBindingAfter": "cce0b0a46d7a158180531fb5b5678524c1902363db8827e48e4b29687c5e1c6f",
+  "decisionAfterMutation": "stale",
+  "oldCritiqueValidAfterMutation": false,
+  "productionUserDecisions": []
+}

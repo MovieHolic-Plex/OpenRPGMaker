@@ -1,0 +1,20 @@
+{
+  "guards": [
+    {
+      "stage": "pack",
+      "exitCode": 1,
+      "reason": "idle: 현재 사람 선택/픽셀 검사 없음. 선택되지 않은 후보는 팩에 넣지 않습니다."
+    },
+    {
+      "stage": "author",
+      "exitCode": 1,
+      "reason": "기본 자세의 현재 사용자 keep 선택이 먼저 필요합니다."
+    },
+    {
+      "stage": "decide",
+      "exitCode": 1,
+      "reason": "현재 그림 해시가 화면/선택 요청과 다름. review로 다시 확인하세요."
+    }
+  ],
+  "userDecisions": []
+}

@@ -1,0 +1,112 @@
+<div id="battle-monster-review">
+  <h2>전투 몬스터 도트 검토</h2>
+  <div class="viz-controls">
+    <label class="form-label">후보 <select class="form-select" data-candidate aria-label="몬스터 후보"></select></label>
+    <label class="form-label">제작 단계 <select class="form-select" data-phase aria-label="제작 단계"><option value="idle">기본 자세</option><option value="poses">9개 자세</option></select></label>
+    <label class="form-label">배경 <select class="form-select" data-background aria-label="검토 배경"><option value="checker">체커</option><option value="light">밝게</option><option value="dark">어둡게</option></select></label>
+    <label class="form-label">표시 크기 <select class="form-select" data-scale aria-label="도트 표시 크기"><option value="1">원본 1×</option><option value="2">게임 크기 2×</option><option value="3">확대 3×</option></select></label>
+  </div>
+  <p data-summary aria-live="polite"></p>
+  <div class="bm-preview">
+    <figure><canvas data-canvas role="img" aria-label="선택한 몬스터 자세의 원본 도트 3배 확대"></canvas><figcaption data-pose></figcaption></figure>
+    <div><div class="bm-poses" data-poses aria-label="개별 자세"></div><div class="viz-row"><button class="btn" type="button" data-play>공격 순서 재생</button><button class="btn" type="button" data-idle>대기 순서 재생</button></div></div>
+  </div>
+  <p class="text-small" data-shape></p>
+  <hr>
+  <dl><dt>픽셀 검사</dt><dd data-check></dd><dt>독립 그림 검수</dt><dd><span data-critique></span><details data-critique-details hidden><summary>수정 의견 보기</summary><p data-critique-summary></p><ul data-issues></ul></details></dd><dt>사람의 선택</dt><dd data-choice></dd></dl>
+  <details><summary>현재 그림 해시</summary><code data-binding></code></details>
+</div>
+<style>
+  #battle-monster-review .bm-preview{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+  #battle-monster-review figure{margin:0;display:grid;gap:8px}
+  #battle-monster-review canvas{image-rendering:pixelated;max-width:100%;height:auto}
+  #battle-monster-review .bm-poses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+  #battle-monster-review .bm-preview>div{min-width:0;flex:1 1 260px}
+  #battle-monster-review dd{margin:4px 0 12px;overflow-wrap:anywhere}
+  #battle-monster-review code{overflow-wrap:anywhere;white-space:normal}
+</style>
+<script>
+(() => {
+  const root = document.getElementById('battle-monster-review');
+  const data = /* CANDIDATE_DATA */[];
+  const q = selector => root.querySelector(selector);
+  const names = ['idle_a','idle_b','idle_c','windup','move','attack','recover','hit','dead'];
+  const labels = ['대기 A','대기 B','대기 C','준비','이동','공격','복귀','피격','쓰러짐'];
+  const saved = window.openai?.widgetState?.modelContent ?? {};
+  let selected = Math.max(0, data.findIndex(row => row.id === saved.monster && row.candidate === saved.candidate));
+  let phase = saved.phase === 'poses' ? 'poses' : 'idle';
+  let background = ['checker','light','dark'].includes(saved.background) ? saved.background : 'checker';
+  let scale = [1,2,3].includes(saved.scale) ? saved.scale : 3;
+  let pose = 0, animation = 0, sheet = null, renderVersion = 0;
+  const canvas = q('[data-canvas]'), context = canvas.getContext('2d');
+  for (const [i,row] of data.entries()) {
+    const option = document.createElement('option'); option.value = i; option.textContent = `${row.name} · ${row.candidate}`; q('[data-candidate]').append(option);
+  }
+  function remember() {
+    const row = data[selected]; if (!row) return;
+    window.openai?.setWidgetState?.({modelContent:{monster:row.id,candidate:row.candidate,phase,background,scale},privateContent:{}})?.catch(()=>{});
+  }
+  function stop() { clearTimeout(animation); animation = 0; }
+  function draw() {
+    const row = data[selected]; if (!row) return;
+    const size = row.cell;
+    canvas.width = size*scale; canvas.height = size*scale;
+    context.imageSmoothingEnabled = false;
+    for(let y=0;y<size;y+=8) for(let x=0;x<size;x+=8) {
+      context.fillStyle = background === 'light' ? '#e3dfd6' : background === 'dark' ? '#242832' : ((x/8+y/8)%2 ? '#6e6e6e' : '#9b9b9b');
+      context.fillRect(x*scale,y*scale,8*scale,8*scale);
+    }
+    if(sheet) context.drawImage(sheet,(pose%3)*size,Math.floor(pose/3)*size,size,size,0,0,size*scale,size*scale);
+    q('[data-pose]').textContent = `${labels[pose]} · native ${size}px → ${scale}×`;
+    canvas.setAttribute('aria-label', `${row.name} ${labels[pose]} 원본 도트 ${scale}배 표시`);
+    root.querySelectorAll('[data-pose-button]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.poseButton)===pose)));
+  }
+  function render() {
+    stop(); pose=0; sheet=null; const version=++renderVersion;
+    const row=data[selected]; if(!row) {q('[data-summary]').textContent='아직 후보가 없습니다.';return;}
+    q('[data-candidate]').value=String(selected);q('[data-phase]').value=phase;q('[data-background]').value=background;q('[data-scale]').value=String(scale);
+    const state=row.phases[phase];
+    q('[data-summary]').textContent=`${row.name} · ${row.motion} · ${phase==='idle'?'기본 자세 선택':'9개 자세 선택'}`;
+    q('[data-shape]').textContent=row.silhouette;
+    q('[data-check]').textContent=state.unavailable ? '제작 대기: '+state.unavailable : state.pixelPass ? '통과 · 크기/색/투명/잘림/중복/PNG 재읽기' : state.errors.join(' / ');
+    q('[data-critique]').textContent=state.critique ? `${state.critique.recommendation==='rework'?'재작업 권고':'남김 권고'} · 수정 의견 ${state.critique.issues.length}개` : state.critiqueState==='stale' ? '그림 또는 검수 기록이 바뀜 · 다시 검수 필요' : '검수 대기';
+    q('[data-critique-details]').hidden=!state.critique;
+    q('[data-critique-summary]').textContent=state.critique?.summary ?? '';
+    q('[data-issues]').replaceChildren();
+    for(const issue of state.critique?.issues ?? []){const item=document.createElement('li');item.textContent=`${issue.pose} (${issue.x},${issue.y}): ${issue.message}`;q('[data-issues]').append(item);}
+    const choiceLabels={pending:'선택 대기',stale:'그림이 바뀜 · 다시 선택 필요',keep:'남김',rework:'수정 요청',discard:'폐기'};
+    q('[data-choice]').textContent=choiceLabels[state.decision] ?? '선택 대기';
+    q('[data-binding]').textContent=state.binding ?? '제작 대기';
+    q('[data-poses]').replaceChildren();
+    const available=state.sheet ? (phase==='idle'?[0]:names.map((_,i)=>i)) : [];
+    for(const index of available){
+      const button=document.createElement('button');button.type='button';button.className='btn';button.dataset.poseButton=index;button.textContent=labels[index];
+      button.addEventListener('click',()=>{stop();pose=index;draw();});q('[data-poses]').append(button);
+    }
+    q('[data-play]').disabled=q('[data-idle]').disabled=phase!=='poses'||!state.sheet;
+    draw();
+    if(state.sheet){const image=new Image();image.onload=()=>{if(version===renderVersion){sheet=image;draw();}};image.src=state.sheet;}
+  }
+  function play(sequence,frameMs){
+    stop();let index=0;
+    function tick(){pose=sequence[index];draw();index++;if(index<sequence.length)animation=setTimeout(tick(),frameMs ?? (pose===5?420:240));}
+    tick();
+  }
+  q('[data-candidate]').addEventListener('change',event=>{selected=Number(event.target.value);render();remember();});
+  q('[data-phase]').addEventListener('change',event=>{phase=event.target.value;render();remember();});
+  q('[data-background]').addEventListener('change',event=>{background=event.target.value;draw();remember();});
+  q('[data-scale]').addEventListener('change',event=>{scale=Number(event.target.value);draw();remember();});
+  q('[data-play]').addEventListener('click',()=>play([0,3,4,5,6,0]));
+  q('[data-idle]').addEventListener('click',()=>play([0,1,2,1,0],data[selected].idleFrameMs));
+  window.addEventListener('openai:set_globals',event=>{
+    const value=event.detail?.globals?.widgetState?.modelContent;if(!value)return;
+    const index=data.findIndex(row=>row.id===value.monster&&row.candidate===value.candidate);
+    if(index>=0)selected=index;
+    if(['idle','poses'].includes(value.phase))phase=value.phase;
+    if(['checker','light','dark'].includes(value.background))background=value.background;
+    if([1,2,3].includes(value.scale))scale=value.scale;
+    render();
+  });
+  render();
+})();
+</script>

@@ -178,4 +178,7 @@ If source behavior disagrees with the wiki, the source wins for the immediate fi
 
 ## 조선 설화 콘텐츠 팩
 
+일반 JRPG/RM2003 적 도트의 재사용 제작 입구: [battle-monster 하네스](harnesses/battle-monster.md).
+기본 자세/9자세 선택과 독립 시각 검수를 현재 원본 해시에 묶는다. 조선 5종을 시범 입력으로 제공한다.
+
 선택형 아이템·장비·몬스터·행동·직업·기술 묶음과 새 게임의 **조선 설화 기본 프리셋**: [joseon-folklore-content.md](joseon-folklore-content.md). 기존 RM2003 데이터와 런타임, 공용 하네스6맵을 쓴다.

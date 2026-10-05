@@ -1,0 +1,154 @@
+{
+  "cases": [
+    {
+      "candidate": 0,
+      "scale": "1",
+      "size": [
+        64,
+        64
+      ],
+      "pose": "대기 A · native 64px → 1×"
+    },
+    {
+      "candidate": 0,
+      "scale": "2",
+      "size": [
+        128,
+        128
+      ],
+      "pose": "대기 A · native 64px → 2×"
+    },
+    {
+      "candidate": 0,
+      "scale": "3",
+      "size": [
+        192,
+        192
+      ],
+      "pose": "대기 A · native 64px → 3×"
+    },
+    {
+      "candidate": 1,
+      "scale": "1",
+      "size": [
+        64,
+        64
+      ],
+      "pose": "대기 A · native 64px → 1×"
+    },
+    {
+      "candidate": 1,
+      "scale": "2",
+      "size": [
+        128,
+        128
+      ],
+      "pose": "대기 A · native 64px → 2×"
+    },
+    {
+      "candidate": 1,
+      "scale": "3",
+      "size": [
+        192,
+        192
+      ],
+      "pose": "대기 A · native 64px → 3×"
+    },
+    {
+      "candidate": 2,
+      "scale": "1",
+      "size": [
+        64,
+        64
+      ],
+      "pose": "대기 A · native 64px → 1×"
+    },
+    {
+      "candidate": 2,
+      "scale": "2",
+      "size": [
+        128,
+        128
+      ],
+      "pose": "대기 A · native 64px → 2×"
+    },
+    {
+      "candidate": 2,
+      "scale": "3",
+      "size": [
+        192,
+        192
+      ],
+      "pose": "대기 A · native 64px → 3×"
+    },
+    {
+      "candidate": 3,
+      "scale": "1",
+      "size": [
+        64,
+        64
+      ],
+      "pose": "대기 A · native 64px → 1×"
+    },
+    {
+      "candidate": 3,
+      "scale": "2",
+      "size": [
+        128,
+        128
+      ],
+      "pose": "대기 A · native 64px → 2×"
+    },
+    {
+      "candidate": 3,
+      "scale": "3",
+      "size": [
+        192,
+        192
+      ],
+      "pose": "대기 A · native 64px → 3×"
+    },
+    {
+      "candidate": 4,
+      "scale": "1",
+      "size": [
+        64,
+        64
+      ],
+      "pose": "대기 A · native 64px → 1×"
+    },
+    {
+      "candidate": 4,
+      "scale": "2",
+      "size": [
+        128,
+        128
+      ],
+      "pose": "대기 A · native 64px → 2×"
+    },
+    {
+      "candidate": 4,
+      "scale": "3",
+      "size": [
+        192,
+        192
+      ],
+      "pose": "대기 A · native 64px → 3×"
+    }
+  ],
+  "finalPose": "대기 A · native 64px → 3×",
+  "idleCritique": "재작업 권고 · 수정 의견 4개",
+  "posesCritique": "재작업 권고 · 수정 의견 9개",
+  "visibleIssues": 9,
+  "layouts": [
+    {
+      "width": 704,
+      "content": 704
+    },
+    {
+      "width": 288,
+      "content": 288
+    }
+  ],
+  "errors": []
+}

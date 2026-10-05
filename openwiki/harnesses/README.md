@@ -41,6 +41,8 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 
 ## 하네스 목록
 
+- [battle-monster](battle-monster.md) — 일반 JRPG/RM2003 native64·96 적 도트, 기본 자세 선택·9자세 직접 저작·독립 검수·현재 해시의 사람 선택·선택 팩
+
 - [worldmap-icons](worldmap-icons.md) — 월드맵 아이콘 검수·사람 선택·현재 해시 확인·공용 시트 굽기
 
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트

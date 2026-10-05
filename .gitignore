@@ -306,3 +306,4 @@ dist-packages/
 
 /public/assets/stills/.stills-stage-*/
 qa-runs/
+harness-data/battle-monster/*.lock

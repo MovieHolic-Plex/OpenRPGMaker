@@ -35,6 +35,9 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
   → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
+- **일반 JRPG/RM2003 적 도트와 돌격·공격·피격·쓰러짐 9자세를 만들거나 고칠 때**
+  → `battle-monster` · 시드 `harness-data/battle-monster/seed.json` · 문서 `openwiki/harnesses/battle-monster.md`
+  → `npm run harness -- battle-monster <단계>` — 기본 자세를 사람이 고른 뒤 GPT 6.1 sol high가 나머지 자세를 직접 찍는다. 독립 그림 검수·현재 해시 선택이 있는 후보만 팩으로 만들고 설치/실제 전투 검증은 별도로 한다.
 - **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
   → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
   → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`

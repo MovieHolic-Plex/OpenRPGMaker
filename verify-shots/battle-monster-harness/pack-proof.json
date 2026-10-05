@@ -1,0 +1,29 @@
+{
+  "scope": "isolated diagnostic fixture only; production user decisions still empty",
+  "pack": {
+    "zip": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/battle-monster-pack-check/fixture-pack.zip",
+    "sha256": "79dedb96755498f07d4c16656a9c554c5fbdd838ba0b36d54b95b3f2da89f26c",
+    "sheets": [
+      {
+        "resourceId": "jf-enemy-wild-boar",
+        "path": "assets/harnesses/battle-monster/wild-boar/sheet.png",
+        "portraitPath": "assets/harnesses/battle-monster/wild-boar/portrait.png",
+        "cell": 64,
+        "motion": "dash",
+        "idleFrameMs": 190
+      }
+    ],
+    "projectModified": false
+  },
+  "entries": 47,
+  "nativeSheetSize": [
+    192,
+    192
+  ],
+  "nativePortraitSize": [
+    64,
+    64
+  ],
+  "all9CellsMatchCurrentGrids": true,
+  "refusalAfterAttackPixelChange": "poses: 현재 사람 선택/픽셀 검사 없음. 선택되지 않은 후보는 팩에 넣지 않습니다."
+}
