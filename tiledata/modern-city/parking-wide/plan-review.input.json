@@ -1,0 +1,7 @@
+{
+  "planSha256": "5f8328975decce4b7e6c650c1877cdaf833e7ae0b69990812802cdc128762521",
+  "sheetSha256": "8412d48c87be5a5648767014e282ae671953434b9d9194f9c49f95a3cdc0a923",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "purpose": "Independent read-only planning review; input unchanged during execution"
+}

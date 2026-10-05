@@ -266,6 +266,9 @@ export class Input {
   // 정렬이 어긋나 엣지를 놓칠 수 있다. keydown 리스너로 직접 엣지를 잡아
   // 큐에 담고 update에서 소비하면 타이밍에 강해진다.
   private readonly runtimeKeys = new RuntimeKeyHoldTracker();
+  // Phaser queues the same DOM events for its next update. The document path
+  // already captured them, so replaying them must not add a second tap/edge.
+  private readonly capturedKeyEvents = new WeakSet<KeyboardEvent>();
   // 자동화용 주입 방향(실제 키보드와 병합).
   private injectedDir: Dir | null = null;
 
@@ -314,6 +317,8 @@ export class Input {
   }
 
   private captureRuntimeKeyDown(event: KeyboardEvent): void {
+    if (this.capturedKeyEvents.has(event)) return;
+    this.capturedKeyEvents.add(event);
     // 텍스트 입력 컨트롤에 친 글자는 게임 키가 아니다(디버그 패널·이름 입력). keyup 은 어디서 와도
     // 처리한다 — 키를 누른 채 입력창으로 들어가 뗐을 때 눌림이 남으면 나와서 혼자 걷는다.
     if (isTextEntryTarget(event.target)) return;
@@ -321,6 +326,8 @@ export class Input {
   }
 
   private captureRuntimeKeyUp(event: KeyboardEvent): void {
+    if (this.capturedKeyEvents.has(event)) return;
+    this.capturedKeyEvents.add(event);
     this.runtimeKeys.keyUp(event.key);
   }
 

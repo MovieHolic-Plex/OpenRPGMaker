@@ -18,6 +18,7 @@ import { el } from "@/util/dom";
 import { currentTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import { createTeamTranscript } from "./aiTeamTranscript";
+import { teamObservation, teamActivityAge } from "./aiTeamObservation";
 
 export interface TeamWorkPaneOptions {
   /** 상세 보기(스튜디오) — 툴 인자 줄·팀원 통계·바뀐 키 수까지 그린다. */
@@ -63,7 +64,9 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
   const members = el("ul", { class: "ai-team-work-members", dataset: { testid: "ai-team-work-members" }, attrs: { "aria-label": "팀원" } });
   const transcript = createTeamTranscript({ detail });
   const activityView = createActivityView({ archive: false });
-  const body = el("div", { class: "ai-team-work-body", children: [members, activityView.root, transcript.root] });
+  const selectedAction = el("p", { class: "ai-team-work-current", dataset: { testid: "ai-team-work-current" }, attrs: { role: "status", "aria-live": "polite" } });
+  const progress = el("div", { class: "ai-team-work-progress", children: [selectedAction, activityView.root, transcript.root] });
+  const body = el("div", { class: "ai-team-work-body", children: [members, progress] });
   const empty = el("p", {
     class: "ai-team-work-empty",
     dataset: { testid: "ai-team-work-empty" },
@@ -100,7 +103,11 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
       const where = agent.role === "orchestrator" ? "전체" : agent.mapName ?? agent.mapId ?? "";
       if (where) button.append(el("div", { class: "ai-team-work-member-where", text: where }));
       button.append(el("div", { class: "ai-team-work-member-meta", text: memberMeta(agent, detail) }));
-      if (detail && agent.task) button.append(el("div", { class: "ai-team-work-member-task", text: agent.task }));
+      const observation = teamObservation(agent, activity?.trace);
+      button.append(el("div", { class: "ai-team-work-member-action", text: observation.action }));
+      if (agent.task) button.append(el("div", { class: "ai-team-work-member-task", text: agent.task, attrs: { translate: "no" } }));
+      button.append(el("div", { class: "ai-team-work-member-result", text: `최근 처리 · ${observation.result}` }),
+        el("div", { class: "ai-team-work-member-signal", text: teamActivityAge(observation.lastAt) }));
       if (agent.fixOf) button.append(el("div", { class: "ai-team-work-member-fix", text: "검수 지적 수정 배정" }));
       return el("li", { children: [button] });
   });
@@ -108,6 +115,7 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     reconcileMembers(orderedAgents(state), agent => agent.agentId, agent => JSON.stringify([
       selected?.agentId === agent.agentId, agent.state, agent.role, agent.task, agent.roleLabel,
       agent.kindLabel, agent.mapName, agent.mapId, memberMeta(agent, detail), agent.fixOf,
+      teamObservation(agent, state.trace),
     ]));
   };
 
@@ -169,6 +177,8 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     // 한 명뿐인 실행(질문·읽기 전용)은 팀원 열 없이 과정만 — 목업 a3 의 계약.
     body.classList.toggle("is-single", activity.agents.length < 2);
     const selected = selectedAgent();
+    const observation = selected ? teamObservation(selected, activity.trace) : null;
+    selectedAction.textContent = observation ? `${selected?.roleLabel} · ${observation.scope} · ${observation.action}` : "";
     renderMembers(activity, selected);
     transcript.root.hidden = Boolean(activity.trace);
     if (selected && !transcript.root.hidden) transcript.update(selected);

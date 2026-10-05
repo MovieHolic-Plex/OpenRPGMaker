@@ -9,6 +9,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
 import { runRuntimeQa } from '../lib/runtimeQaRun.mjs';
+import { installOpeningEvidence } from '../lib/runtimeOpeningEvidence.mjs';
 import { webUploadedAssetPath } from '../../src/project/webUploadedAssetPath.ts';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
@@ -37,11 +38,14 @@ assert.deepEqual(project.database, canonical.document.database, 'The AI-authored
 assert.deepEqual(project.endings, canonical.document.endings, 'The actual authored ending must survive export');
 const presentationAssets = [];
 const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
-  ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').map(scene => scene.resourceId)].filter(Boolean))];
+  ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').flatMap(scene => [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]),
+  project.system.opening?.musicResourceId, ...Object.values(project.system.titleScreen?.sounds ?? {}),
+  ...Object.values(project.maps).map(map => map.bgm?.resourceId),
+  ...(project.system.opening?.scenes ?? []).map(scene => scene.direction?.soundResourceId)].filter(Boolean))];
 for (const id of artIds) {
   const saved = canonical.document.assets.uploaded[id];
   if (!saved) continue; // Legacy fixtures can use bundled artwork.
-  const inline = saved.dataUrl?.startsWith('data:image/') ? Buffer.from(saved.dataUrl.split(',')[1],'base64') : null;
+  const inline = saved.dataUrl?.startsWith('data:') ? Buffer.from(saved.dataUrl.split(',')[1],'base64') : null;
   assert(saved.ref || inline,'Generated artwork bytes must be present in canonical SQLite/assets');
   if (saved.ref) assert.deepEqual(project.assets.uploaded[id]?.ref,saved.ref,'The exported artwork reference must match canonical storage');
   const expectedHash = saved.ref?.sha256 ?? createHash('sha256').update(inline).digest('hex');
@@ -78,7 +82,7 @@ const arrival = gate?.pages.flatMap(p => p.commands).find(c => c.kind === 'trans
 assert(arrival, 'The actual saved gate must connect to the memory path');
 const paths = JSON.parse(execFileSync('bun', [resolve('scripts/qa/live-first-game-paths.mts'), projectPath], {encoding:'utf8'}));
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
-  '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg' };
+  '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.wav': 'audio/wav' };
 const server = createServer(async (req, res) => {
   const path = resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://local').pathname));
   if (!path.startsWith(root + sep)) { res.writeHead(403).end(); return; }
@@ -126,6 +130,7 @@ try {
       ...(index===0?{recordVideo:{dir:resolve(out,'video'),size:{width:1280,height:900}}}:{})});
     const recordingStarted = Date.now();
     const page = await context.newPage();
+    if (process.env.LIVE_GAME_OPENING_AUDIO === '1') await installOpeningEvidence(page, index === 0);
     await page.addInitScript(() => {
       window.__openingTimeline = [];
       let last = '';
@@ -221,7 +226,9 @@ try {
         ...introduction,
         {id:'field',note:'짧은 실제 도입 완료 뒤 조작 반환',ops:[
           ...(opening?.enabled && opening.scenes?.length?[
-            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}, advance]:[advance]),
+            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},
+            {kind:'waitFor',testid:'opening-map-handoff',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'},
+            {kind:'waitFor',testid:'dialogue-box',state:'present',timeoutMs:30000}, advance]:[advance]),
           {kind:'waitForAttr',testid:'runtime-state-json',attr:'data-live-flags',
             value:`${start.id}|${project.startPos.x}|${project.startPos.y}|true|false`,timeoutMs:30000}],
           expect:{mapId:start.id,x:project.startPos.x,y:project.startPos.y,playerSpriteTextureLoaded:true},shot:true},
@@ -259,10 +266,41 @@ try {
       });
       const nativeOpeningTimeline = await page.evaluate(() => window.__openingTimeline);
       assert.deepEqual(nativeOpeningTimeline.map(scene => scene.id), opening.scenes.map(scene => scene.id), 'Native recording must observe every actual opening scene in order');
+      let openingEvidence;
+      if (process.env.LIVE_GAME_OPENING_AUDIO === '1') {
+        const audio = await page.evaluate(() => window.__oprnStopOpeningRecording());
+        openingEvidence = audio.record;
+        if (audio.dataUrl) {
+          result.nativeAudioPath = resolve(out, 'native-audio.webm');
+          await writeFile(result.nativeAudioPath, Buffer.from(audio.dataUrl.split(',')[1], 'base64'));
+          result.nativeAudioStartedAt = audio.record.startedAt;
+          result.nativeVideoRecordingStartedAt = recordingStarted;
+        }
+        assert(audio.record.audio.some(s => s.prepared && !s.paused && s.currentTime > 1), 'Selected opening music must actually play');
+        if (index === 0) assert(audio.record.audio.some(s => s.rms > 0.001), 'Native opening audio must contain an audible PCM signal');
+        assert.equal(audio.record.visibleLoadingSamples, 0, 'The actual opening handoff must not show a loading card');
+        assert(audio.record.background.some(s => s.pending), 'The actual map must be prepared behind the opening');
+        if (index === 0 && completion.generatedResources?.length) {
+          for (const map of [start, route]) assert(audio.record.fieldAudio.some(s => s.mapId === map.id && s.resourceId === map.bgm.resourceId && s.currentTime > 0.1), 'Both actual map OSTs must play');
+          for (const scene of opening.scenes.filter(s => s.direction?.soundResourceId?.startsWith('original_se_'))) {
+            const sha = project.assets.uploaded[scene.direction.soundResourceId].ref.sha256;
+            assert(audio.record.media.some(s => s.sha256 === sha && s.played), 'The actual generated opening SE must play');
+          }
+        }
+        if (opening.scenes.some(s => s.kind === 'image' && s.direction?.layers?.length)) {
+          const byScene = new Map();
+          for (const sample of audio.record.layers) {
+            const values = byScene.get(sample.sceneId) ?? new Set();
+            values.add(JSON.stringify(sample.layers)); byScene.set(sample.sceneId, values);
+          }
+          assert([...byScene.values()].some(values => values.size > 4), 'Independent layers must change in actual natural playback');
+        }
+        assert.equal(audio.record.errors.length, 0, 'Native recording must preserve audio ownership');
+      }
       result.presentationEvidence.push({ branch:name, nativeOpeningTimeline:nativeOpeningTimeline.map(scene => ({...scene, atSec:(scene.at-recordingStarted)/1000})) });
       result.branches.push({ name, seconds: (Date.now() - started) / 1000,
         passed: !report.errors.length && report.beats.every(b => !b.failures.length) && !external.length,
-        errors: report.errors, beats: report.beats.map(b => ({ id: b.id, failures: b.failures })), external, requestsFailed: failures });
+        errors: report.errors, beats: report.beats.map(b => ({ id: b.id, failures: b.failures })), external, requestsFailed: failures, openingEvidence });
     } catch (e) { result.branches.push({ name, passed: false, failure: e.message, external, requestsFailed: failures }); }
     finally {
       const video=page.video(); await context.close();

@@ -3,6 +3,7 @@ from collections import Counter
 from pathlib import Path
 import hashlib
 import json
+import art_acceptance
 
 LAYOUT_CHECKS = ('proportions', 'spaceUse', 'circulation', 'identity', 'composition', 'projection')
 SCENE_CHECKS = ('identity', 'scale', 'attachments', 'circulation', 'style', 'spaceUse', 'composition', 'specification', 'projection')
@@ -87,6 +88,9 @@ def build_input(root, request):
     snapshot = {'version':VERSION, 'layout':layout, 'layoutRef':request['layout'],
                 'execution':{k:v for k,v in request.items() if k != 'layoutApproval'},
                 'areaCells':{s:{'count':n, **legend[s]} for s,n in counts.items()}, 'root':str(root)}
+    if request.get('acceptance'):
+        accepted = verified(root, request['acceptance'])
+        snapshot['acceptance'] = {'sha256': request['acceptance']['sha256'], 'contract': json.loads(accepted.read_text())}
     snapshot['fingerprint'] = hashlib.sha256(json.dumps(snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     return snapshot
 
@@ -114,6 +118,7 @@ def require_approval(root, request):
     current = build_input(root, request)
     report = json.loads(Path(request['layoutApproval']).read_text())
     validate_verdict(report, current['fingerprint'], LAYOUT_CHECKS)
+    art_acceptance.validate(report, current.get('acceptance'), LAYOUT_CHECKS)
     if report['verdict'] != 'PASS': raise ValueError('배치 도면이 반려되어 그림을 시작할 수 없습니다.')
     return current
 
@@ -125,6 +130,8 @@ def require_completed(root, request, snapshot):
         raise ValueError('수집된 그림의 도면 승인 입력이 다릅니다.')
     report = json.loads(Path(request['layoutApproval']).read_text())
     validate_verdict(report, snapshot['fingerprint'], LAYOUT_CHECKS)
+    if request.get('acceptance'): verified(root, request['acceptance'])
+    art_acceptance.validate(report, snapshot.get('acceptance'), LAYOUT_CHECKS)
     if report['verdict'] != 'PASS': raise ValueError('도면 승인 없이 그림을 수집할 수 없습니다.')
     mutable = {'harness.sqlite', 'harness.sqlite-wal', 'state.json'}
     for ref in snapshot['layout']['sources']:

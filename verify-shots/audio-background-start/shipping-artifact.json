@@ -1,0 +1,10 @@
+{
+  "artifactVersion": "16532fcb85eb4b62",
+  "sourceRevision": "f5db3e01f7",
+  "sourceDigest": "5897bc5c13cb2ea75aaec502e285f4cf4f9ae4c07d7d8a3f918452af87daf865",
+  "zipSha256": "04f48b1b4ae1a336f1ce17da774e679b030d0c7925ccbdaafacc105ac02fc561",
+  "runtimeCodeFilesCompared": 6,
+  "missing": [],
+  "mismatch": [],
+  "passed": true
+}

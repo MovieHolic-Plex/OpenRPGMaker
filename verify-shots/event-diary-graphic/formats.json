@@ -1,0 +1,151 @@
+{
+  "cases": [
+    {
+      "name": "일기 · 노트",
+      "marker": {
+        "texture": "cc0-jetrel-notebook",
+        "frame": "__BASE",
+        "fitSize": 16
+      },
+      "before": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "cc0-jetrel-notebook",
+        "unsupported": "true"
+      },
+      "after": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "cc0-jetrel-notebook",
+        "graphicKind": "sprite",
+        "pattern": "0"
+      },
+      "size": [
+        "48px",
+        "48px"
+      ],
+      "position": "0px 0px",
+      "moving": false,
+      "resource": "sprite"
+    },
+    {
+      "name": "일반 시트 · 아래 행",
+      "marker": {
+        "texture": "qa_sheet",
+        "frame": 3
+      },
+      "before": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_sheet",
+        "unsupported": "true"
+      },
+      "after": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_sheet",
+        "graphicKind": "sprite",
+        "pattern": "3"
+      },
+      "size": [
+        "48px",
+        "24px"
+      ],
+      "position": "-48px -24px",
+      "moving": false,
+      "resource": "sprite"
+    },
+    {
+      "name": "프로젝트 시트 참조",
+      "marker": {
+        "texture": "qa_alias",
+        "frame": 2
+      },
+      "before": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_alias",
+        "unsupported": "true"
+      },
+      "after": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_alias",
+        "graphicKind": "sprite",
+        "pattern": "2"
+      },
+      "size": [
+        "48px",
+        "24px"
+      ],
+      "position": "0px -24px",
+      "moving": false,
+      "resource": "sprite"
+    },
+    {
+      "name": "캐릭터 시트 참조",
+      "marker": {
+        "texture": "tex_easyrpg_charset_actor1",
+        "frame": 76
+      },
+      "before": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_charset",
+        "unsupported": "true"
+      },
+      "after": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "qa_charset",
+        "movementType": "random",
+        "slot": "5",
+        "direction": "down",
+        "pattern": "76",
+        "walkPattern": "1",
+        "transparentColorKeyPath": "assets/easyrpg/charset/Actor1.png",
+        "transparentColorKey": "pending"
+      },
+      "size": [
+        "48px",
+        "64px"
+      ],
+      "position": "-192px -384px",
+      "moving": true,
+      "resource": "charset"
+    },
+    {
+      "name": "기존 캐릭터",
+      "marker": {
+        "texture": "tex_easyrpg_charset_actor1",
+        "frame": 76
+      },
+      "before": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "tex_easyrpg_charset_actor1",
+        "slot": "5",
+        "direction": "down",
+        "pattern": "76",
+        "walkPattern": "1",
+        "transparentColorKeyPath": "assets/easyrpg/charset/Actor1.png",
+        "transparentColorKey": "pending"
+      },
+      "after": {
+        "testid": "event-page-graphic-preview",
+        "spriteId": "tex_easyrpg_charset_actor1",
+        "movementType": "random",
+        "slot": "5",
+        "direction": "down",
+        "pattern": "76",
+        "walkPattern": "1",
+        "transparentColorKeyPath": "assets/easyrpg/charset/Actor1.png",
+        "transparentColorKey": "pending"
+      },
+      "size": [
+        "48px",
+        "64px"
+      ],
+      "position": "-192px -384px",
+      "moving": true,
+      "resource": "charset"
+    }
+  ],
+  "footprint": {
+    "width": "32px",
+    "height": "32px",
+    "sprite": "32px"
+  },
+  "invalid": null
+}

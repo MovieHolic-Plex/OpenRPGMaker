@@ -1,0 +1,1499 @@
+{
+  "setup": {
+    "mapA": "map_faf53c78-806f-4e98-a7ef-89e35ae33e29",
+    "mapB": "team_observe_b",
+    "provider": "google-antigravity",
+    "model": "gemini-3.8-flash"
+  },
+  "final": {
+    "phase": "완료",
+    "agents": [
+      {
+        "id": "orchestrator-1",
+        "role": "orchestrator",
+        "state": "완료",
+        "summary": "화면 관찰용 읽기 작업을 완료하였으며 프로젝트에 대한 어떠한 수정도 진행하지 않았습니다. '시장 · 관찰 A' 맵의 구조 보고: 대상 맵의 중앙 영역은 북측과 서측에 배치된 건물 벽체 사이로 넓은 통행로와 광장이 형성되어 있으며 물 지형은 존재하지 않습니다. 광장 및 길목을 따라 포션 상인, 도구 상인, 의뢰 중개인, 게시판 등 총 7개의 상호작용 이벤트가 배치되어 있습니다. '시장 · 관찰 B' 맵의 이동 동선 보고: 시장 중앙 광장과 상점가 사이는 넓은 보행 공간으로 트여 있어 상인 및 게시판으로의 접근 동선이 원활하게 이어져 있습니다. 반면 동쪽의 긴 벽체 구조와 남쪽 구획의 ㄷ자형 건물 배치로 인해 통로가 제한되므로 외곽 이동 시 우회 동선이 발생합니다.\n완료 후 검토: [검수 보고: 최종 결과 읽기 전용 검토 완료]\n\n1. 검토 대상 및 범위\n- 맵: map_faf53c78-806f-4e98-a7ef-89e35ae33e29 (시장 · 관찰 A), team_observe_b (시장 · 관찰 B)\n- 검토 모드: 읽기 전용 검수 (수정 및 프로젝트 변경 일체 없음)\n\n2. 관찰 및 구조/동선 확인 결과\n- 맵 A (map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 구조:\n  중심 광장과 남북·동서 도로망을 축으로 상점·의뢰 구역이 구획되어 있으며, 건물 외벽과 통행로가 명확히 분리된 구조입니다.\n- 맵 B (team_observe_b) 이동 동선:\n  시작 지점 (24, 31)에서 상인(22, 19 / 26, 24), 의뢰 중개인(22, 31), 퀘스트 게시판(24, 29), 동쪽 이벤트(33, 31)까지 단절 없이 원활히 도달 가능함을 확인했습니다.\n\n3. 무결성 및 린트 검사\n- projectLint 구조 무결성: 에러 0건 (error 0).\n- 통행 도달성(reachability): 시작점 기준 주요 목표 지점 전체 도달 가능 (reachable: true).\n- 경고 사항: 맵 A와 맵 B 모두 꽃 장식 소품 간격 권장사항(2칸 이상 이격 권장) 관련 경고가 각 13건(총 26건) 감지되었습니다. 구조적 치명 결함은 아니며 미관 조정을 위한 권장사항입니다.\n\n4. 결론\n- 프로젝트 데이터 변경 없음(0건 수정). 요구된 맵 구조 및 이동 동선 검토를 안전하게 완료했습니다.",
+        "toolCalls": 5
+      },
+      {
+        "id": "builder-1",
+        "role": "builder",
+        "state": "완료",
+        "summary": "0개 키 변경 · 1툴콜 · 7초",
+        "toolCalls": 1
+      },
+      {
+        "id": "builder-2",
+        "role": "builder",
+        "state": "완료",
+        "summary": "0개 키 변경 · 1툴콜 · 6초",
+        "toolCalls": 1
+      },
+      {
+        "id": "reviewer-1",
+        "role": "reviewer",
+        "state": "완료",
+        "summary": "[검수 보고: 최종 결과 읽기 전용 검토 완료]\n\n1. 검토 대상 및 범위\n- 맵: map_faf53c78-806f-4e98-a7ef-89e35ae33e29 (시장 · 관찰 A), team_observe_b (시장 · 관찰 B)\n- 검토 모드: 읽기 전용 검수 (수정 및 프로젝트 변경 일체 없음)\n\n2. 관찰 및 구조/동선 확인 결과\n- 맵 A (map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 구조:\n  중심 광장과 남북·동서 도로망을 축으로 상점·의뢰 구역이 구획되어 있으며, 건물 외벽과 통행로가 명확히 분리된 구조입니다.\n- 맵 B (team_observe_b) 이동 동선:\n  시작 지점 (24, 31)에서 상인(22, 19 / 26, 24), 의뢰 중개인(22, 31), 퀘스트 게시판(24, 29), 동쪽 이벤트(33, 31)까지 단절 없이 원활히 도달 가능함을 확인했습니다.\n\n3. 무결성 및 린트 검사\n- projectLint 구조 무결성: 에러 0건 (error 0).\n- 통행 도달성(reachability): 시작점 기준 주요 목표 지점 전체 도달 가능 (reachable: true).\n- 경고 사항: 맵 A와 맵 B 모두 꽃 장식 소품 간격 권장사항(2칸 이상 이격 권장) 관련 경고가 각 13건(총 26건) 감지되었습니다. 구조적 치명 결함은 아니며 미관 조정을 위한 권장사항입니다.\n\n4. 결론\n- 프로젝트 데이터 변경 없음(0건 수정). 요구된 맵 구조 및 이동 동선 검토를 안전하게 완료했습니다.",
+        "toolCalls": 8
+      }
+    ],
+    "unchanged": true,
+    "receipts": [
+      {
+        "actor": "orchestrator-1",
+        "name": "assign_map_agent",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "orchestrator-1",
+        "name": "assign_map_agent",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "builder-2",
+        "name": "get_map_region",
+        "status": "ok",
+        "summary": "시장 · 관찰 B(team_observe_b) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+      },
+      {
+        "actor": "builder-1",
+        "name": "get_map_region",
+        "status": "ok",
+        "summary": "시장 · 관찰 A(map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+      },
+      {
+        "actor": "orchestrator-1",
+        "name": "wait_agents",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "orchestrator-1",
+        "name": "wait_agents",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "orchestrator-1",
+        "name": "finish",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "list_team_agents",
+        "status": "ok",
+        "summary": ""
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "get_project_summary",
+        "status": "ok",
+        "summary": "프로젝트 '새 프로젝트' — 맵 2개, 아이템 1000, 트룹 7"
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "run_lint",
+        "status": "ok",
+        "summary": "lint: error 0건 / warning 26건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "get_map_region",
+        "status": "ok",
+        "summary": "시장 · 관찰 A(map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "get_map_region",
+        "status": "ok",
+        "summary": "시장 · 관찰 B(team_observe_b) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "check_reachability",
+        "status": "ok",
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "check_reachability",
+        "status": "ok",
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "actor": "reviewer-1",
+        "name": "report_task",
+        "status": "ok",
+        "summary": ""
+      }
+    ]
+  },
+  "requests": [
+    {
+      "runId": "51a3592b-1006-475f-982d-5e8b94f23f66",
+      "mode": "team",
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "mapIds": [],
+      "startedAt": 1791125029199,
+      "status": 200
+    }
+  ],
+  "events": [
+    {
+      "receivedAt": 1791125043484,
+      "type": "team_start",
+      "kind": "team_start"
+    },
+    {
+      "receivedAt": 1791125043484,
+      "type": "agent_spawn",
+      "agentId": "orchestrator-1",
+      "kind": "agent_spawn",
+      "role": "orchestrator",
+      "mapId": null
+    },
+    {
+      "receivedAt": 1791125043484,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "start",
+      "at": 1791125043458
+    },
+    {
+      "receivedAt": 1791125043504,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "turn",
+      "at": 1791125043499
+    },
+    {
+      "receivedAt": 1791125043536,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "prompt_inspection",
+      "at": 1791125043529
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "delta",
+      "at": 1791125047096
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_spawn",
+      "agentId": "builder-1",
+      "kind": "agent_spawn",
+      "role": "builder",
+      "memberId": "builder",
+      "mapId": "map_faf53c78-806f-4e98-a7ef-89e35ae33e29",
+      "label": "구조 조수"
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_spawn",
+      "agentId": "builder-2",
+      "kind": "agent_spawn",
+      "role": "builder",
+      "memberId": "events",
+      "mapId": "team_observe_b",
+      "label": "동선 조수"
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_start",
+      "name": "assign_map_agent",
+      "id": "call_1492780",
+      "at": 1791125047264
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_start",
+      "name": "assign_map_agent",
+      "id": "call_1492783",
+      "at": 1791125047264
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_end",
+      "name": "assign_map_agent",
+      "id": "call_1492780",
+      "ok": true,
+      "at": 1791125047265,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "start",
+      "at": 1791125047365
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "start",
+      "at": 1791125047466
+    },
+    {
+      "receivedAt": 1791125047532,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_end",
+      "name": "assign_map_agent",
+      "id": "call_1492783",
+      "ok": true,
+      "at": 1791125047468,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125047595,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "turn",
+      "at": 1791125047502
+    },
+    {
+      "receivedAt": 1791125047616,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "prompt_inspection",
+      "at": 1791125047586
+    },
+    {
+      "receivedAt": 1791125047657,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "turn",
+      "at": 1791125047591
+    },
+    {
+      "receivedAt": 1791125047679,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "prompt_inspection",
+      "at": 1791125047649
+    },
+    {
+      "receivedAt": 1791125047679,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "turn",
+      "at": 1791125047653
+    },
+    {
+      "receivedAt": 1791125047680,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "prompt_inspection",
+      "at": 1791125047658
+    },
+    {
+      "receivedAt": 1791125048297,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125048294
+    },
+    {
+      "receivedAt": 1791125050574,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "tool_start",
+      "name": "get_map_region",
+      "id": "call_1158509",
+      "at": 1791125050568
+    },
+    {
+      "receivedAt": 1791125050602,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "tool_end",
+      "name": "get_map_region",
+      "id": "call_1158509",
+      "ok": true,
+      "at": 1791125050568,
+      "summary": "시장 · 관찰 B(team_observe_b) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+    },
+    {
+      "receivedAt": 1791125050660,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "turn",
+      "at": 1791125050591
+    },
+    {
+      "receivedAt": 1791125050681,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "prompt_inspection",
+      "at": 1791125050653
+    },
+    {
+      "receivedAt": 1791125050863,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "tool_start",
+      "name": "get_map_region",
+      "id": "call_999180",
+      "at": 1791125050838
+    },
+    {
+      "receivedAt": 1791125050887,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "tool_end",
+      "name": "get_map_region",
+      "id": "call_999180",
+      "ok": true,
+      "at": 1791125050838,
+      "summary": "시장 · 관찰 A(map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+    },
+    {
+      "receivedAt": 1791125050923,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "turn",
+      "at": 1791125050861
+    },
+    {
+      "receivedAt": 1791125050943,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "prompt_inspection",
+      "at": 1791125050916
+    },
+    {
+      "receivedAt": 1791125050955,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "delta",
+      "at": 1791125050949
+    },
+    {
+      "receivedAt": 1791125050955,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_start",
+      "name": "wait_agents",
+      "id": "call_889083",
+      "at": 1791125050950
+    },
+    {
+      "receivedAt": 1791125053294,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125053292
+    },
+    {
+      "receivedAt": 1791125053930,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "delta",
+      "at": 1791125053864
+    },
+    {
+      "receivedAt": 1791125053930,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "assistant",
+      "at": 1791125053864
+    },
+    {
+      "receivedAt": 1791125053967,
+      "type": "agent_event",
+      "agentId": "builder-2",
+      "kind": "done",
+      "at": 1791125053922
+    },
+    {
+      "receivedAt": 1791125054744,
+      "type": "agent_done",
+      "agentId": "builder-2",
+      "kind": "agent_done",
+      "ok": true
+    },
+    {
+      "receivedAt": 1791125054768,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_end",
+      "name": "wait_agents",
+      "id": "call_889083",
+      "ok": true,
+      "at": 1791125054741,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125054768,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "delta",
+      "at": 1791125054752
+    },
+    {
+      "receivedAt": 1791125054804,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "delta",
+      "at": 1791125054761
+    },
+    {
+      "receivedAt": 1791125054804,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "assistant",
+      "at": 1791125054761
+    },
+    {
+      "receivedAt": 1791125054837,
+      "type": "agent_event",
+      "agentId": "builder-1",
+      "kind": "done",
+      "at": 1791125054797
+    },
+    {
+      "receivedAt": 1791125055429,
+      "type": "agent_done",
+      "agentId": "builder-1",
+      "kind": "agent_done",
+      "ok": true
+    },
+    {
+      "receivedAt": 1791125055429,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "turn",
+      "at": 1791125055398
+    },
+    {
+      "receivedAt": 1791125055430,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "prompt_inspection",
+      "at": 1791125055413
+    },
+    {
+      "receivedAt": 1791125057496,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "delta",
+      "at": 1791125057491
+    },
+    {
+      "receivedAt": 1791125057496,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_start",
+      "name": "wait_agents",
+      "id": "call_1401213",
+      "at": 1791125057492
+    },
+    {
+      "receivedAt": 1791125057520,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_end",
+      "name": "wait_agents",
+      "id": "call_1401213",
+      "ok": true,
+      "at": 1791125057494,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125057520,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "turn",
+      "at": 1791125057495
+    },
+    {
+      "receivedAt": 1791125057520,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "prompt_inspection",
+      "at": 1791125057500
+    },
+    {
+      "receivedAt": 1791125058299,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125058293
+    },
+    {
+      "receivedAt": 1791125061075,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "delta",
+      "at": 1791125061066
+    },
+    {
+      "receivedAt": 1791125061075,
+      "type": "team_report",
+      "kind": "team_report"
+    },
+    {
+      "receivedAt": 1791125061075,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_start",
+      "name": "finish",
+      "id": "call_1865689",
+      "at": 1791125061068
+    },
+    {
+      "receivedAt": 1791125061075,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "tool_end",
+      "name": "finish",
+      "id": "call_1865689",
+      "ok": true,
+      "at": 1791125061068,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125061101,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "turn",
+      "at": 1791125061069
+    },
+    {
+      "receivedAt": 1791125061101,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "prompt_inspection",
+      "at": 1791125061074
+    },
+    {
+      "receivedAt": 1791125063301,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125063299
+    },
+    {
+      "receivedAt": 1791125068304,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125068302
+    },
+    {
+      "receivedAt": 1791125070851,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "delta",
+      "at": 1791125070820
+    },
+    {
+      "receivedAt": 1791125070852,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "assistant",
+      "at": 1791125070820
+    },
+    {
+      "receivedAt": 1791125070893,
+      "type": "agent_event",
+      "agentId": "orchestrator-1",
+      "kind": "done",
+      "at": 1791125070846
+    },
+    {
+      "receivedAt": 1791125070980,
+      "type": "agent_spawn",
+      "agentId": "reviewer-1",
+      "kind": "agent_spawn",
+      "role": "reviewer",
+      "memberId": "reviewer",
+      "mapId": null,
+      "label": "검수 조수"
+    },
+    {
+      "receivedAt": 1791125070980,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "start",
+      "at": 1791125070974
+    },
+    {
+      "receivedAt": 1791125071021,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125070998
+    },
+    {
+      "receivedAt": 1791125071047,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125071014
+    },
+    {
+      "receivedAt": 1791125073304,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125073302
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "list_team_agents",
+      "id": "call_889432",
+      "at": 1791125074016
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "get_project_summary",
+      "id": "call_889439",
+      "at": 1791125074016
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "run_lint",
+      "id": "call_889440",
+      "at": 1791125074016
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "get_project_summary",
+      "id": "call_889439",
+      "ok": true,
+      "at": 1791125074016,
+      "summary": "프로젝트 '새 프로젝트' — 맵 2개, 아이템 1000, 트룹 7"
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "run_lint",
+      "id": "call_889440",
+      "ok": true,
+      "at": 1791125074017,
+      "summary": "lint: error 0건 / warning 26건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+    },
+    {
+      "receivedAt": 1791125074031,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "list_team_agents",
+      "id": "call_889432",
+      "ok": true,
+      "at": 1791125074017,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125074074,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125074049
+    },
+    {
+      "receivedAt": 1791125074091,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125074069
+    },
+    {
+      "receivedAt": 1791125077829,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "get_map_region",
+      "id": "call_323769",
+      "at": 1791125077805
+    },
+    {
+      "receivedAt": 1791125077829,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "get_map_region",
+      "id": "call_323772",
+      "at": 1791125077805
+    },
+    {
+      "receivedAt": 1791125077868,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "get_map_region",
+      "id": "call_323769",
+      "ok": true,
+      "at": 1791125077805,
+      "summary": "시장 · 관찰 A(map_faf53c78-806f-4e98-a7ef-89e35ae33e29) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+    },
+    {
+      "receivedAt": 1791125077869,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "get_map_region",
+      "id": "call_323772",
+      "ok": true,
+      "at": 1791125077807,
+      "summary": "시장 · 관찰 B(team_observe_b) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+    },
+    {
+      "receivedAt": 1791125077892,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125077830
+    },
+    {
+      "receivedAt": 1791125077892,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125077850
+    },
+    {
+      "receivedAt": 1791125078310,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125078303
+    },
+    {
+      "receivedAt": 1791125081966,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "check_reachability",
+      "id": "call_1672425",
+      "at": 1791125081941
+    },
+    {
+      "receivedAt": 1791125082002,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "check_reachability",
+      "id": "call_1672425",
+      "ok": true,
+      "at": 1791125081941,
+      "summary": "도달성: 전부 도달 가능"
+    },
+    {
+      "receivedAt": 1791125082050,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125081965
+    },
+    {
+      "receivedAt": 1791125082055,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125081990
+    },
+    {
+      "receivedAt": 1791125083310,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125083306
+    },
+    {
+      "receivedAt": 1791125085973,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "check_reachability",
+      "id": "call_1958539",
+      "at": 1791125085935
+    },
+    {
+      "receivedAt": 1791125085973,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "check_reachability",
+      "id": "call_1958539",
+      "ok": true,
+      "at": 1791125085935,
+      "summary": "도달성: 전부 도달 가능"
+    },
+    {
+      "receivedAt": 1791125085973,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125085938
+    },
+    {
+      "receivedAt": 1791125085995,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125085957
+    },
+    {
+      "receivedAt": 1791125088312,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125088310
+    },
+    {
+      "receivedAt": 1791125092000,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_start",
+      "name": "report_task",
+      "id": "call_1846037",
+      "at": 1791125091993
+    },
+    {
+      "receivedAt": 1791125092000,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "tool_end",
+      "name": "report_task",
+      "id": "call_1846037",
+      "ok": true,
+      "at": 1791125091994,
+      "summary": ""
+    },
+    {
+      "receivedAt": 1791125092026,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "turn",
+      "at": 1791125091995
+    },
+    {
+      "receivedAt": 1791125092027,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "prompt_inspection",
+      "at": 1791125092014
+    },
+    {
+      "receivedAt": 1791125093319,
+      "type": "heartbeat",
+      "kind": "heartbeat",
+      "at": 1791125093317
+    },
+    {
+      "receivedAt": 1791125096090,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "delta",
+      "at": 1791125096086
+    },
+    {
+      "receivedAt": 1791125096215,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "delta",
+      "at": 1791125096178
+    },
+    {
+      "receivedAt": 1791125096215,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "assistant",
+      "at": 1791125096179
+    },
+    {
+      "receivedAt": 1791125096262,
+      "type": "agent_event",
+      "agentId": "reviewer-1",
+      "kind": "done",
+      "at": 1791125096207
+    },
+    {
+      "receivedAt": 1791125096327,
+      "type": "agent_done",
+      "agentId": "reviewer-1",
+      "kind": "agent_done",
+      "ok": true
+    },
+    {
+      "receivedAt": 1791125096327,
+      "type": "team_report",
+      "kind": "team_report"
+    },
+    {
+      "receivedAt": 1791125096327,
+      "type": "agent_done",
+      "agentId": "orchestrator-1",
+      "kind": "agent_done",
+      "ok": true
+    },
+    {
+      "receivedAt": 1791125096412,
+      "type": "done",
+      "kind": "done",
+      "stats": {
+        "ms": 52852,
+        "turns": 15,
+        "toolCalls": 15,
+        "toolErrors": 0,
+        "usage": {
+          "input": 289719,
+          "output": 3486,
+          "cacheRead": 218380,
+          "cacheWrite": 0,
+          "totalTokens": 511585,
+          "calls": 15
+        }
+      },
+      "changedKeys": []
+    }
+  ],
+  "snapshots": [
+    {
+      "at": 1791125031254,
+      "phase": "준비",
+      "rows": [
+        {
+          "id": "pending:builder",
+          "state": "대기",
+          "text": "구조 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n맵과 이벤트, 게임 데이터를 만들고 필요한 내용을 살펴봐요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        },
+        {
+          "id": "pending:events",
+          "state": "대기",
+          "text": "동선 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n맵과 이벤트, 게임 데이터를 만들고 필요한 내용을 살펴봐요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125049453,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "실행 중",
+          "text": "구조 조수\n실행 중\n시장 · 관찰 A\n다음 모델 응답을 기다리는 중\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 아직 처리 결과가 없어요\n최근 활동 1초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "실행 중",
+          "text": "동선 조수\n실행 중\n시장 · 관찰 B\n다음 모델 응답을 기다리는 중\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 아직 처리 결과가 없어요\n최근 활동 1초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125052473,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "실행 중",
+          "text": "구조 조수\n실행 중\n시장 · 관찰 A\n다음 모델 응답을 기다리는 중\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 1초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "실행 중",
+          "text": "동선 조수\n실행 중\n시장 · 관찰 B\n다음 모델 응답을 기다리는 중\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 1초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125054491,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "실행 중",
+          "text": "구조 조수\n실행 중\n시장 · 관찰 A\n다음 모델 응답을 기다리는 중\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 3초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 0초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125056499,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 0초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 1초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125058506,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 2초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 3초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125060522,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 4초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 5초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125062528,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 6초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 7초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125064534,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 8초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 9초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125066540,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 10초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 11초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125068548,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 12초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 13초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125070554,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 14초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 15초 전"
+        },
+        {
+          "id": "pending:reviewer",
+          "state": "대기",
+          "text": "검수 조수\n대기\n배정 전\n팀장의 작업 배정을 기다리는 중\n직접 바꾸지 않고, 잘 만들어졌는지 확인해요.\n최근 처리 · 아직 실행하지 않았어요\n배정 후 시작합니다"
+        }
+      ]
+    },
+    {
+      "at": 1791125072614,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 16초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 17초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 아직 처리 결과가 없어요\n최근 활동 1초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125074631,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 18초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 19초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 완성도를 점검했어요\n최근 활동 0초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125076662,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 20초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 21초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 완성도를 점검했어요\n최근 활동 2초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125078668,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 22초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 23초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 0초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125080683,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 24초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 25초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 2초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125082692,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 26초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 27초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 0초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125084697,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 28초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 29초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 2초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125086714,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 30초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 31초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 0초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125088730,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 32초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 33초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 2초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125090751,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 34초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 35초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 4초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125092767,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 36초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 37초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 작업을 마쳤어요\n최근 활동 0초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125094804,
+      "phase": "실행 중",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 38초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 39초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "실행 중",
+          "text": "검수 조수\n실행 중\n프로젝트 전체\n다음 모델 응답을 기다리는 중\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 작업을 마쳤어요\n최근 활동 2초 전"
+        }
+      ]
+    },
+    {
+      "at": 1791125096816,
+      "phase": "완료",
+      "rows": [
+        {
+          "id": "builder-1",
+          "state": "완료",
+          "text": "구조 조수\n완료\n시장 · 관찰 A\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 맵 구조를 읽고, 맵 구조에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 40초 전"
+        },
+        {
+          "id": "builder-2",
+          "state": "완료",
+          "text": "동선 조수\n완료\n시장 · 관찰 B\n작업을 마쳤어요\n화면 관찰용 읽기 작업입니다. 프로젝트를 전혀 수정하지 마세요. get_map_region을 한 번 실행하여 이동 동선을 읽고, 이동 동선에 대해 정확히 두 문장으로 보고해 주세요.\n최근 처리 · 맵을 살펴봤어요\n최근 활동 41초 전"
+        },
+        {
+          "id": "reviewer-1",
+          "state": "완료",
+          "text": "검수 조수\n완료\n프로젝트 전체\n작업을 마쳤어요\n제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: 화면 관찰용 읽기 작업이다. 프로젝트를 전혀 수정하지 마라. assign_map_agent로 map_faf53c78-806f-4e98-a7ef-89e35ae33e29에 builder를 배정해 get_map_region 한 번으로 맵 구조를 읽고 두 문장 보고하게 하고, team_observe_b에 events를 배정해 get_map_region 한 번으로 이동 동선을 읽고 두 문장 보고하게 해라. 두 맵은 서로 별개이므로 두 배정을 먼저 시작한 뒤 wait_agents로 받아라. 다른 배정과 review_map은 하지 말고, 완료하면 finish로 변경 없음과 두 보고를 알려라.\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.\n최근 처리 · 작업을 마쳤어요\n최근 활동 0초 전"
+        }
+      ]
+    }
+  ]
+}

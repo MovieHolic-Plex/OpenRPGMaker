@@ -1,10 +1,10 @@
 import { createNewProjectSeed } from "./genrePacks";
 import { newProjectChoiceById, type NewProjectChoiceId } from "./newProjectChoices";
-import { START_EXAMPLE_DETAILS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, START_SCREEN_RESOLUTIONS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
 import type { Project } from "@/project/types";
 
 /** Existing authored village and playable-segment tools own all tile placement. */
-export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null, title: string, mode?: ProjectStartMode, size: ProjectStartScreenSize = "classic"): Promise<Project> {
+export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null, title: string, mode?: ProjectStartMode, size: ProjectStartScreenSize = DEFAULT_START_SCREEN_SIZE): Promise<Project> {
   const choice = choiceId ? newProjectChoiceById(choiceId) : undefined;
   if (choiceId && !choice) throw new Error("선택한 시작 장르를 찾을 수 없습니다.");
   const startMode = projectStartMode(choiceId, mode);
@@ -30,6 +30,7 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
     project.flags.starterExample = true;
   }
   if (startMode !== "ai") project.flags.firstRunGuide = true;
-  if (size === "wide") project.system.playResolution = { width: 640, height: 360 };
+  const resolution = START_SCREEN_RESOLUTIONS[size];
+  if (resolution) project.system.playResolution = { ...resolution };
   return project;
 }

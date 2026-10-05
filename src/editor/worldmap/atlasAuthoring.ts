@@ -188,7 +188,7 @@ export function authorWorldAtlas(project: Project, request: AtlasAuthorRequest):
     if(request.structure==='run-path'){
       const reward: Command={kind:'changeGold',op:'+=',amount:node.kind==='elite'?80:node.kind==='treasure'?120:25};
       if(['battle','elite','boss'].includes(node.kind)){
-        const troops=project.database.troops.filter(t=>t.members.length>0);
+        const troops=project.database.troops.filter(t=>(t.members?.length??0)>0);
         if(!troops.length)throw new Error('런의 전투 무리가 없습니다. 전투 무리를 먼저 등록하세요.');
         const troop=troops[Math.min(node.kind==='boss'?2:node.kind==='elite'?1:0,troops.length-1)]!;
         ready=[{kind:'battleProcessing',troopId:troop.id,canEscape:true,canLose:true,branchOnResult:true,victoryBranch:[reward,...ready],

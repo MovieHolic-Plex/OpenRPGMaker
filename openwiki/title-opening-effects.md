@@ -174,6 +174,20 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 공유 머신 loadavg 121.58/77.35/45.29, 실제 GPU/60fps 달성을 뜻하지 않는다.
 블록 단위 교대 측정에는 한 회 역전(89.3→95.3ms)도 있어 성능 수치를 일반화하지 않는다.
 브라우저 전용 테스트는 `--config vitest.browser.config.ts`로 파일 하나만 실행한다.
+## 타이틀 키보드 이동·크레딧 닫기 (2026-10-04)
+
+`player.ts`의 위/아래·W/S 선택 이동은 `updateTitleSelection`으로 기존 메뉴의 선택 클래스,
+ARIA, tab stop, 디버그 선택값과 포커스만 바꾼다. `renderTitle`을 다시 부르면 무대·배경
+애니메이션·등장 시퀀스·음악까지 다시 만들어 화면이 움직이므로 커서 이동에서 호출하지 않는다.
+좌/우·A/D도 타이틀 입력으로 소비하여 브라우저의 기본 스크롤로 새지 않게 한다.
+
+`titleLicenseNotice.ts`는 닫기 버튼에 preventScroll 포커스를 주고 공통 확인/취소 키
+(Enter/Z/Space/E, Esc/X)로 닫는다. 반복 입력은 닫지 않는다. native dialog가 열린 동안
+window capture에서 키 전파를 막아 편집기 document capture의 Escape 처리보다 먼저 소유한다.
+닫을 때 리스너를 제거하고 기존 콜백으로 타이틀 선택 항목에 포커스를 돌린다.
+회귀 계약은 `test/titleScreen.test.ts`, `test/titleLicenseNotice.test.ts`.
+이번 변경에서는 세션 테스트 실행 제한에 따라 테스트·브라우저 QA를 실행하지 않았다.
+
 # 첫 제작의 필수 타이틀·오프닝 (2026-10-04)
 
 첫 플레이 제작(`firstPlay` 계약)은 핵심 행동 → 장소 → 첫 조작 안내 → 작품 타이틀/오프닝 → 이미지 검수 순서다.
@@ -269,3 +283,76 @@ DB 「오프닝」/「게임오버」 장면 폼에서 기본형·글자·장면
 수정하지 않은 UI 내보내기 → 출하 player.html 재생/GIF). 기능별 fixture는 실제 게임
 저작과 구별하여 `features/SUMMARY.md`에 기록한다. vitest/전체 typecheck/게이트는
 세션 실행 제한 때문에 실행하지 않는다. 회귀 계약은 `test/cinematicPresentation.test.ts`.
+
+## 스토리보드·독립 그림 모션·원곡 BGM (2026-10-04 후속)
+
+앞의 세 컷/12초 첫 제작 제한은 폐기했다. 그림 중심 기본은 서로 다른 실제 배경 5장 이상,
+5~8컷/25~45초 권장·최대90초·자동진행·건너뛰기다. 의도적인 글자 중심의 기존 계약은 유지한다.
+`firstPresentation`과 `firstScene` 두 검사 및 일반 context/capability 지침을 같이 바꿨다.
+
+`direction.layers` 최대4개의 독립 그림을 저장한다. `cinematicLayers.ts` 엄격 파서가 SQLite 로드,
+도구, 편집기 쓰기에 공통이다. width(무대 너비 비율0.05..1.5), depth(background/foreground),
+easing(linear/ease-in-out/ease-out), frames2..8(at0..1,x/y-0.5..1.5,scale0.1..3,opacity0..1,rotation-180..180).
+at은0 시작/1 끝·엄격히 증가한다. 각 그림은 배경 카메라와 별도로 WAAPI 이동/회전/등장한다.
+reduced motion은 가장 선명한 저작 지점의 정지 구도로 바꾸고, 다음 컷 대기에는 실제 위치/불투명도까지
+동결한다. 마지막 컷의 그림 조합은 canvas로 평탄화하여 맵 준비 중 유지한다(교차 출처 캔버스 실패는
+기존 배경 인계로 복구). 효과 캔버스의 동적 빛/글자 자체는 평탄화하지 않는다.
+편집기 기존 장면 카드의 「독립 그림」 아래에서 너비와 각 동작 지점을 네이티브 입력으로 수정한다.
+`generate_opening_image(role:foreground)`는 투명 단일 대상을 실제 이미지 모델로 생성한다.
+실제 투명 픽셀과 불투명 대상 픽셀을 검사하여 가짜 체커보드·전부 투명·불투명 배경을 거부한다.
+512px 참조·원화 검수에 레이어도 포함되며, 없는 그림 참조는 도구와 파일 로드에서 거부한다.
+
+음악은 `recommend_bgm` 후보의 전체 설명을 비교한다. 없으면 `generate_original_bgm`에 조수가
+직접 쓴 4/4 악보(tempo40..160, bars4..32, tracks1..5, 전체512음표 이내)를 전달한다.
+piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity를 지정한다.
+`originalMusic.ts`의 순수 합성기가 실제 22.05kHz/16bit/stereo WAV를 만든다. 피크0.8 상한,
+짧은 방 잔향·시작/끝 페이드가 있다. 외부 오디오 모델·음원 샘플을 쓰지 않는 악보 작곡+내장 합성이다.
+끝 페이드 때문에 완전 연속 루프는 아니며, 복잡한 관현악/보컬은 지원하지 않는다. 일반 write 도구로
+업로드 music과 프로젝트 설명을 등록하고 실제 체크포인트/SQLite/웹 내보내기 경로를 따른다.
+음악이 없으면 첫 제작 완료 검사는 실패한다. 메타데이터 조회·WAV 생성 성공은 청취 검수의 증거가 아니다.
+
+셸의 기존 이미지2병렬/lookahead2 캐시에 전경 그림도 포함한다. BGM은 별도 취소 가능 HTTP→blob
+캐시에서 타이틀 표시 후 미리 받아 오프닝 재생 때 같은 URL을 재요청하지 않는다. 다음 컷 이미지/
+전경을 준비하는 동안 현재 컷 시간·모션은 유지하고, 디코드 완료 후 새 컷 시계가 시작된다.
+기존 시작 맵 이미지와 엔진 모듈 워밍은 유지한다. Phaser 씬/텍스처 등록 자체는 실제 시작 때 수행한다.
+회귀 계약 `test/openingProduction.test.ts`; 이 세션의 vitest/전체 게이트 실행 제한을 따른다.
+
+실제 제작 증거는 `verify-shots/opening-production/`에 둔다. 기존 저장 게임을 실제 Pi 조수로
+수정한 것이며, 새 프로젝트 첫 제작의 자동 성공률을 입증하는 기록은 아니다. 배경5장/투명 전경2장,
+6컷/30.1초, BGM 후보 비교와 원곡 「기억의 태엽소리」(78BPM/16마디/49.23초)를 생성했다.
+이번 증거의 원곡 생성은 비교 후에도 원곡을 요청한 명시적 작업이다. 후보가 모두 부적합한 상황의
+자동 fallback 성공률과 구별한다. 악보의 잘못된 MIDI 저음은 도구가 거부하고 조수가 수정했다.
+`assistant-receipt.json`은 실제 tool_start/end를 id로 결합한 기록이며, 정본 저장·일반 재로드,
+네이티브 독립 그림 입력의 변경/재로드/복원을 따로 기록한다.
+
+마지막 그림 합성은 `shot.clientWidth/clientHeight` 논리 좌표를 출력 canvas의 화면 해상도로
+확대해서 그린다. 좌표 확대를 빼면 인계 그림 대부분이 투명하게 비고, canvas 자체를320×240으로
+낮추면 확대된 원화가 심하게 픽셀화된다. 화면 크기/네 모서리 alpha를 출하 fixture로 확인한다. 효과 캔버스와
+글자는 합성 대상이 아니며, 그려진 인물의 관절·표정 영상 애니메이션을 제공한다는 뜻도 아니다.
+런타임 셸은 자연 종료한 오프닝 음악을 실제 맵 준비까지 유지하고 ready에서600ms로 낮춘다.
+건너뛰기/닫기/다시 시작은 즉시 멈추며, 부팅 실패에서는 음악을 낮추고 복구 화면으로 간다.
+편집기 미리보기는 시퀀스 종료 시 음악도 끝낸다. Phaser 텍스처를 미리 등록하거나 맵 로딩 시간을
+없앴다는 뜻은 아니다. 느린 첫 실행의 인계 중 무음 공백을 없애는 것이다.
+출하 검증은 편집기 play를 거치지 않고 UI로 받은 ZIP의 `player.html`에서 수행한다.
+
+### 참고한 연출 계약
+
+[RPG Maker MZ 그림 명령](https://rpgmakerofficial.com/product/MZ_help-en/01_10_08.html)은
+그림의 독립 위치/크기/불투명도/회전과 시간·easing을 구분한다. 이번 독립 그림 모션도
+배경 카메라와 각각 따로 제어한다. [공식 컷신 안내](https://rpgmakerweb.com/blog/cutscene-basics)는
+한 제어 이벤트의 순서, 준비 중 화면 전환, 인물 이동과 SE의 시점을 예시로 보여 준다.
+이 프로젝트에서는 단일 시퀀스가 장면/자막/음악과 취소를 소유하며, 다음 그림 준비와 실제
+게임 씬 시작을 분리한다. [Sea of Stars 공식 소개](https://seaofstarsgame.co/)의 시네마틱 도입과
+분리한 탐색 흐름도 참고했다. 해당 게임의 동영상·그림·음악을 복사하지 않는다.
+
+## 실제 첫 맵을 오프닝 뒤에서 준비 (2026-10-05)
+
+`player.bootRun`은 한 play surface에서 시네마틱과 **실제 Phaser 게임 생성/텍스처 디코드/첫 맵 구성**을 함께 시작한다. `createPlayGame.initialPresentationPending` registry 경계를 통해 `PlayScene.update`의 시간·이동·병렬 이벤트를 멈추고, 시작 autorun/테스트 이벤트·NPC 일정·맵 BGM 재개는 `activateInitialPresentation()`의 1회 경계로 미룬다. 입력은 비활성화하고 전환 시 눌림/edge를 비운다. 준비 중 세션이 뒤에서 진행되면 실패다.
+
+일반 오프닝 부팅은 단계 카드가 보이지 않는다. 오프닝이 먼저 끝나거나 빨리 건너뛰면 마지막 합성 그림을 `opening-map-handoff`로 보존해 준비를 기다린다. 준비 후 그 표면을 페이드하고 게임을 활성화한다. 기존 엔진 timeout/실패는 시네마틱을 중단하고 실제 복구 패널을 보여 준다. 새 게임/재시작/종료의 run 세대 경계가 늦은 게임·전환을 폐기한다. 저장 불러오기/여기서 테스트/오프닝 없는 부팅은 기존 부팅 경로다. 타이틀에서는 기존 배경·엔진 import 워밍을 유지한다.
+
+`runtimeAudioWarmup`은 타이틀 키 SE·타이틀/첫 맵 음악 최대16 URL을 낮은 우선순위로 fetch해 셸 수명의 blob으로 재사용한다. 실패는 실제 재생 재시도로 넘어간다. `cinematicAssets`는 다음2컷 이미지와 장면 SE/내레이션도 준비하며 시네마틱 소리는 준비한 blob으로 재생한다. 셸 종료 시 fetch를 abort하고 URL을 회수한다.
+
+타이틀 크레딧 진입은 authored confirm, Escape/닫기로 돌아오면 authored cancel SE를 사용한다. 오프닝 장면 SE는 플레이어 SE 볼륨 설정을 따른다. `scripts/qa/audio-background-start-player.mjs`는 출하 플레이어의 분리 fixture에서 정상/느린 엔진/빠른 skip을 검증하고, 실제 WAV hash와 title cursor/confirm/cancel 및 첫 맵 음악의 재생을 대조한다. 실제 6컷 정본과 두 선택지는 `live-first-game-player.mjs`로 별도 검수한다.
+
+실제 Chromium 이동에서 document로 소비한 짧은 키 탭이 Phaser의 다음 프레임 이벤트로 다시 전달돼 한 칸 더 이동하는 사례를 확인했다. `Input`은 같은 DOM KeyboardEvent를 WeakSet으로 한 번만 캡처한다. 문서→다음 프레임 Phaser 전달 순서 계약은 `runtimeInputEditableTargets.test.ts`에 둔다.

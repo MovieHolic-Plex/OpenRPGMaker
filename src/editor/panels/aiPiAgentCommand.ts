@@ -16,9 +16,9 @@ import { modelForRole } from "@/ai/modelRoles";
 //
 //   /pi <지시>              현재 맵 범위, 에이전트 하나
 //   /pi map_a,map_b <지시>  맵마다 에이전트 하나씩 병렬
-//   /pi team <지시>         팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
-//   /pi team map_a,map_b <지시>  팀장이 쓸 후보 맵을 제한
-//   (`/team …` 도 같은 뜻으로 남는다 — Pi 가 유일한 실행 경로가 된 뒤에도 호환용)
+//   team <지시>            팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
+//   team map_a,map_b <지시> 팀장이 쓸 후보 맵을 제한
+//   (`/team …`·`/pi team …` 도 호환된다. 일반 지시는 Pi로 바로 실행한다.)
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
@@ -123,17 +123,18 @@ export function mergesMapBundles(input: { team: boolean; mapIds: readonly string
   return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
 }
 
-/** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
+/** 일반 지시는 기본 Pi 경로. `team …`·`/team …`·`/pi team …` → 팀 모드. 맵 토큰은 실제 id일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
   let mode: PiAgentMode = "single";
   let rest: string | null = null;
-  if (trimmed === TEAM_COMMAND_PREFIX || trimmed.startsWith(`${TEAM_COMMAND_PREFIX} `)) {
+  const teamPrefix = /^(?:team|\/team)(?=\s|$)/u.exec(trimmed);
+  if (teamPrefix) {
     mode = "team";
-    rest = trimmed.slice(TEAM_COMMAND_PREFIX.length).trim();
-  } else if (trimmed === PI_COMMAND_PREFIX || trimmed.startsWith(`${PI_COMMAND_PREFIX} `)) {
+    rest = trimmed.slice(teamPrefix[0].length).trim();
+  } else if (/^\/pi(?=\s|$)/u.test(trimmed)) {
     rest = trimmed.slice(PI_COMMAND_PREFIX.length).trim();
-    if (rest === "team" || rest.startsWith("team ")) {
+    if (/^team(?=\s|$)/u.test(rest)) {
       mode = "team";
       rest = rest.slice(4).trim();
     }
@@ -291,7 +292,7 @@ async function runOwnedPiCommand(
 
 async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits, projectKey: string): Promise<boolean> {
   if (!command.task) {
-    surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
+    surface.appendBubble("system", "지시를 바로 입력하세요. 팀 작업은 team <지시>로 시작합니다.");
     return false;
   }
   let interviewClaim: Awaited<ReturnType<typeof claimProjectInterviewExecution>> = null;
@@ -415,7 +416,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const hasPendingDraft = !applied && unpublishedChanges && changedCount > 0 && (!isLiveApplyMode(applyMode) || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
-        : streamErrors.length > 0 && changedCount === 0 ? "blocked" : "response-final",
+        : streamErrors.length > 0 ? "failed" : "response-final",
       hasPendingDraft,
       hasApplied: applied || publication.count > 0,
       persistence: "none",
@@ -450,7 +451,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     // 단계 기록은 이 행에 실린다 — 행을 만드는 자리가 하나라(startPiRunLog), 계측 때문에 두 번째 행을
     // 만들면 `npm run ai:log` 가 같은 실행을 두 건으로 세게 된다. 스냅숏은 읽기 전용이라 몇 번 찍어도 같다.
     const timing = options.timing?.snapshot();
-    void runLog.finish({ ...facts, board: boardState, ...(runNotes.length ? { notes: [...runNotes] } : {}), ...(timing ? { timing } : {}) }).then(
+    void runLog.finish({ ...facts, ...(facts.error === undefined && streamErrors.length ? { error: streamErrors.join("\n") } : {}), board: boardState, ...(runNotes.length ? { notes: [...runNotes] } : {}), ...(timing ? { timing } : {}) }).then(
       (rows) => surface.onRunAudit?.(rows),
       () => { /* 기록 실패는 이미 삼켜진다 — 감사 전달도 실행을 막지 않는다 */ },
     );
@@ -554,7 +555,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
     }
     showConstructionEvent(team ? event : scopePiGhostEvent(event, agentId));
-    if (event.type === "assistant") lastAssistantText = event.text;
+    if (event.type === "assistant" || event.type === "team_report") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
     if (event.type === "error" && streamErrors.length < 3) streamErrors.push(event.message);
@@ -755,31 +756,37 @@ ${contractReleased.message}`);
       + " 에이전트의 답과 달리 프로젝트는 그대로입니다.";
     // 「적용됨」은 커밋된 실행에만 쓴다 — 계획 턴과 답(질문) 턴은 바뀌지 않는 것이 정상이고,
     // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
-    const caption = options.planOnly
-      ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
-      : droppedEverything
-        ? spillReason
-        : answer
-          ? "프로젝트는 바뀌지 않았습니다."
-          : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
     ghost.dispose();
-    publishFinalOutcome();
-    boardState = droppedEverything
-      ? markTeamBoardFailed(boardState, spillReason)
+    boardState = droppedEverything || streamErrors.length > 0
+      ? markTeamBoardFailed(boardState, droppedEverything ? spillReason : friendlyExecutionError(streamErrors[0]!))
       : markTeamBoardDone(
         boardState,
         options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
       );
+    const failed = boardState.phase === "실패";
+    const failureReason = failed ? boardState.error
+      || boardState.agents.filter(agent => agent.state === "실패").map(agent => `${agent.roleLabel}: ${agent.summary || agent.lastLine}`).join("\n")
+      || "작업을 끝내지 못했어요." : undefined;
+    const caption = failed
+      ? droppedEverything ? spillReason : "작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요."
+      : options.planOnly
+        ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
+        : answer ? "프로젝트는 바뀌지 않았습니다." : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
+    if (failed) {
+      boardState = { ...boardState, applied: caption };
+      if (streamErrors.length === 0) streamErrors.push(failureReason!);
+    }
+    publishFinalOutcome();
     sync();
     finishLog({
       applied: false,
       changedCount: 0,
-      stoppedReason: options.planOnly ? "계획만" : droppedEverything ? "범위 밖 버림" : answer ? "답변" : "변경 없음",
+      stoppedReason: failed ? "작업 실패" : options.planOnly ? "계획만" : answer ? "답변" : "변경 없음",
       // 실행 기록의 ok 는 error 유무로 정해진다(activityLog). 버려진 턴을 성공으로 적으면
       // `npm run ai:log --failed` 가 이 실패를 영영 못 본다.
-      ...(droppedEverything ? { error: spillReason } : {}),
+      ...(failed ? { error: failureReason } : {}),
     });
-    surface.setStatus(droppedEverything ? "적용 실패" : "대기");
+    surface.setStatus(droppedEverything ? "적용 실패" : streamErrors.length ? "응답을 마치지 못했어요." : failed ? "작업 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
     if (answer && !droppedEverything) surface.appendBubble("assistant", answer);
     if (streamErrors.length) {
@@ -788,7 +795,7 @@ ${contractReleased.message}`);
     }
     if (droppedEverything) surface.appendProcess?.(spillReason);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
-    return true;
+    return !failed;
   }
   // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵, 그것도 없으면 프로젝트의 첫 맵.
   // 마지막 후보가 없으면 맵 없는 프로젝트에서 영수증이 통째로 사라진다(그림은 못 그려도 이름은 남아야 한다).
@@ -1012,15 +1019,27 @@ ${contractReleased.message}`);
     const appliedText = team
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
-    boardState = markTeamBoardApplied(boardState, appliedText); sync();
+    boardState = streamErrors.length
+      ? markTeamBoardFailed(boardState, `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
+      : markTeamBoardApplied(boardState, appliedText); sync();
     observeActivitySave((name, summary, status, data) => {
       if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
       board.update(boardState);
       // Do not replace a newer run in the live team rail.
       if (!background && currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
+    // Keep the run alive until its final assets and connections reach the save
+    // boundary. A completed worker is not an accepted project revision.
+    surface.setStatus("적용됨 · 저장 중");
+    let saveAccepted = false;
+    try {
+      saveAccepted = (await store.flush()).kind === "saved";
+    } catch (error) {
+      surface.appendProcess?.(`변경은 적용됐지만 저장하지 못했어요: ${error instanceof Error ? error.message : String(error)}`);
+    }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
+    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,

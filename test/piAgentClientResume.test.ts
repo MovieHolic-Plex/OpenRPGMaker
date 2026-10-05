@@ -19,6 +19,25 @@ async function bodyOf(init?: RequestInit): Promise<Record<string, unknown>> {
 afterEach(() => resetHeavyWireForTests());
 
 describe("Pi 클라이언트 이어 받기", () => {
+  it("실시간 리더가 조용히 멈춰도 같은 실행 기록의 완료된 음원 결과를 이어 받는다", async () => {
+    const methods: string[] = [];
+    const authored = createBlankProject();
+    authored.assets.uploaded['original_se_saved'] = { id: 'original_se_saved', kind: 'sound', name: 'Key', dataUrl: 'data:audio/wav;base64,UklGRg==', meta: {} };
+    const fetchImpl = (async (_url: string, init?: RequestInit) => {
+      methods.push(init?.method ?? 'GET');
+      if (init?.method === 'POST') return new Response(new ReadableStream({ start(c) {
+        c.enqueue(line({ seq: 0, type: 'turn', index: 1 }));
+        // Host keeps the result; the connected reader receives no further bytes.
+      } }), { headers: { 'X-Oprn-Run-Id': String((await bodyOf(init)).runId) } });
+      expect(String(_url)).toContain('after=1');
+      return new Response(new ReadableStream({ start(c) { c.enqueue(line({ seq: 1, ...done, project: authored, changedKeys: ['assets'] })); c.close(); } }));
+    }) as unknown as typeof fetch;
+    const result = await runPiAgentViaCompanion({ provider: 'google-antigravity', task: 'original soundtrack', mapIds: [], project }, {
+      fetchImpl, staleMs: 20, resumeDelayMs: 1,
+    });
+    expect(methods).toEqual(['POST', 'GET']);
+    expect(result.project.assets.uploaded.original_se_saved).toEqual(authored.assets.uploaded.original_se_saved);
+  });
   it("도중에 끊기면 마지막 번호 다음부터 이어 받고, 겹친 줄은 한 번만 처리한다", async () => {
     const calls: string[] = [];
     let runId = "";

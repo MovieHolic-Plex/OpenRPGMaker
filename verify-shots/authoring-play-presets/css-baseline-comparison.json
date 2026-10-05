@@ -1,0 +1,24 @@
+{
+  "baselineCommit": "4d79023de824882af048ff0bc937589a4feeb129",
+  "baselineExitCode": 1,
+  "currentExitCode": 1,
+  "identicalStdout": false,
+  "diff": [
+    "--- \n",
+    "+++ \n",
+    "@@ -5549,3 +5549,3 @@\n",
+    "    FAIL R3 [map] important 27 → 32",
+    "-   css-winners: 승자 52421건이 바뀌었다 (benchmark/ui/styles.css=233 editor/panels/aiAuthoring/style.css=451 editor/panels/databaseFieldHud.css=144 editor/panels/spatialPlaceLibrary.css=85 player/player.css=13718 start/startScreen.css=1083 styles/components/app-modal.css=228 styles/database/external-tilesets.css=24 styles/database/index.css=23010 styles/database/workshop/index.css=169 styles/editor/relief-toolbar.css=222 styles/editor/terrain-design.css=101 styles/editor/terrain-help.css=52 styles/event/index.css=15173 styles/index.css=23097 styles/runtime/index.css=13512 styles/runtime/playerRuntime.css=13512 styles/shell/dialogs/cinematic-interview.css=360 styles/shell/dialogs/help-modal.css=224 styles/shell/dialogs/project-interview.css=192 styles/shell/dialogs/project-start.css=114 styles/shell/first-run-guide.css=77 styles/shell/first-world-arrival.css=174 styles/shell/window-controls.css=21)",
+    "+   css-winners: 승자 52421건이 바뀌었다 (benchmark/ui/styles.css=233 editor/panels/aiAuthoring/style.css=457 editor/panels/databaseFieldHud.css=144 editor/panels/spatialPlaceLibrary.css=85 player/player.css=13718 start/startScreen.css=1083 styles/components/app-modal.css=228 styles/database/external-tilesets.css=24 styles/database/index.css=23010 styles/database/workshop/index.css=169 styles/editor/relief-toolbar.css=222 styles/editor/terrain-design.css=101 styles/editor/terrain-help.css=52 styles/event/index.css=15173 styles/index.css=23097 styles/runtime/index.css=13512 styles/runtime/playerRuntime.css=13512 styles/shell/dialogs/cinematic-interview.css=360 styles/shell/dialogs/help-modal.css=224 styles/shell/dialogs/project-interview.css=192 styles/shell/dialogs/project-start.css=114 styles/shell/first-run-guide.css=77 styles/shell/first-world-arrival.css=174 styles/shell/window-controls.css=21)",
+    "      [src/benchmark/ui/styles.css] :root|--cinema-accent"
+  ],
+  "newFailureDiagnostics": 0,
+  "changedExistingWinners": {
+    "baseline": 52421,
+    "current": 52421
+  },
+  "declarationCount": {
+    "baseline": 451,
+    "current": 457
+  }
+}

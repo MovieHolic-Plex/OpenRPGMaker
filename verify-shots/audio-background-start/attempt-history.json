@@ -1,0 +1,116 @@
+{
+  "attempts": [
+    {
+      "stage": "initial stalled live reader",
+      "requests": [
+        {
+          "runId": "25b1ac14-5998-4419-9cef-9149b2683147",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 1701,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        },
+        {
+          "runId": "25b1ac14-5998-4419-9cef-9149b2683147",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 1701,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        },
+        {
+          "runId": "666809e5-2930-44b6-970c-20a21589a058",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 7133,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        }
+      ],
+      "workerCompleted": true,
+      "passed": false,
+      "failure": null,
+      "persisted": true,
+      "generatedMusic": 2,
+      "generatedSounds": 4,
+      "revision": 70
+    },
+    {
+      "stage": "idle recovery before final save wait",
+      "requests": [
+        {
+          "runId": "5d873965-4226-46f2-b74a-eb74b1c35644",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 1701,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        },
+        {
+          "runId": "d81b01d0-7044-40f6-a563-883db13301f2",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 3606,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        }
+      ],
+      "workerCompleted": true,
+      "passed": false,
+      "failure": "page.reload: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for navigation until \"load\"\u001b[22m\n\u001b[2m    - navigated to \"http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590&map=map_blank_start\"\u001b[22m\n",
+      "persisted": null,
+      "generatedMusic": null,
+      "generatedSounds": null,
+      "revision": 73
+    },
+    {
+      "stage": "malformed assignment call",
+      "requests": [
+        {
+          "runId": "b75841dd-aed8-4270-8b0c-4e86a7ba5988",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 1171,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        }
+      ],
+      "workerCompleted": true,
+      "passed": false,
+      "failure": "page.evaluate: Error: No accepted project revision: saved\n    at eval (eval at evaluate (:303:30), <anonymous>:1:233)\n    at async <anonymous>:329:30",
+      "persisted": null,
+      "generatedMusic": null,
+      "generatedSounds": null,
+      "revision": 76
+    },
+    {
+      "stage": "native final assignment and canonical reload",
+      "requests": [
+        {
+          "runId": "1c01a93b-adaa-489c-bef5-2a35f8308b75",
+          "model": "gemini-3.8-flash",
+          "mode": "single",
+          "characters": 483,
+          "requestOrigin": "http://127.0.0.1:18435",
+          "imageProvider": "google-antigravity",
+          "imageModel": "gemini-3.1-flash-image"
+        }
+      ],
+      "workerCompleted": true,
+      "passed": true,
+      "failure": null,
+      "persisted": true,
+      "generatedMusic": 2,
+      "generatedSounds": 4,
+      "revision": 78
+    }
+  ],
+  "interpretation": "Compositions and sound patches were authored by the real assistant. Failed/partial native delivery was recovered through the editor store; the final native run proves assignment plus accepted save, not a fresh full composition benchmark."
+}

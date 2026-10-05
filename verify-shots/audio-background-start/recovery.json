@@ -1,0 +1,49 @@
+{
+  "mode": "Actual assistant generated assets, route BGM and title/opening sound assignments restored through the loaded editor store and canonical host save. The study BGM is left for the next native assistant run. No new audio authored by the QA runner.",
+  "runId": "d81b01d0-7044-40f6-a563-883db13301f2",
+  "ids": [
+    "original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55",
+    "original_bgm_c5548347-7466-4a5d-98c3-dc81fd0e55dc",
+    "original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e",
+    "original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b",
+    "original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4",
+    "original_se_891e9a12-2109-40a7-b3a1-60f107db1402"
+  ],
+  "recovery": {
+    "result": {
+      "kind": "saved",
+      "receipt": {
+        "revisionId": "c529aa14-55c0-4c81-abe7-8639bd83fa7b",
+        "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+        "mutationGeneration": 1,
+        "contentIdentity": "350ca27977796472b3e65022a7d3fc82295d76a563d32bbbb3300e9e1c74c1a9",
+        "sha256": "aa42a52f21461c0ecb60c579e2523bf22a5a9d54d1e5e2650ecccf9721a5d7c4"
+      },
+      "revision": 77,
+      "sha256": "aa42a52f21461c0ecb60c579e2523bf22a5a9d54d1e5e2650ecccf9721a5d7c4"
+    },
+    "proof": {
+      "kind": "verified",
+      "receipt": {
+        "revisionId": "c529aa14-55c0-4c81-abe7-8639bd83fa7b",
+        "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+        "mutationGeneration": 1,
+        "contentIdentity": "350ca27977796472b3e65022a7d3fc82295d76a563d32bbbb3300e9e1c74c1a9",
+        "sha256": "aa42a52f21461c0ecb60c579e2523bf22a5a9d54d1e5e2650ecccf9721a5d7c4"
+      },
+      "isCurrent": true
+    },
+    "dirty": false,
+    "originals": [
+      "original_bgm_8492eb03-bfc6-4bc5-bdb5-ce221454b78d",
+      "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+      "original_bgm_7fb7d503-517a-4808-a1f1-9b1d3947dda4",
+      "original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55",
+      "original_bgm_c5548347-7466-4a5d-98c3-dc81fd0e55dc",
+      "original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e",
+      "original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b",
+      "original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4",
+      "original_se_891e9a12-2109-40a7-b3a1-60f107db1402"
+    ]
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "caseId": "npc-delete",
+  "title": "대상 NPC만 삭제",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "9de413b56118bb02c30577e7611613c02120de8cba329f0da31e3e8d0fd1197a",
+  "startedAt": "2026-10-04T15:55:03.038Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "target-deleted",
+          "ok": true,
+          "detail": "지정 이벤트만 한 개 삭제"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: tilesets.shared_paw_modern_interiors.$blob, tilesets.shared_refmap_crayon.$blob, tilesets.shared_refmap_snow.$blob, tilesets.shared_refmap_town_outside.$blob, maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "blocked",
+      "detail": "재로드 중 공용 라이브러리 판본이 바뀌었다. 게임 내용은 같지만 동일 판본의 저장 게이트는 판정할 수 없다.",
+      "receipt": {
+        "projectId": "7a3becc6-c838-4f56-a9ea-4efddfd7c2e1",
+        "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-delete/project",
+        "beforeRevision": 2,
+        "afterRevision": 4,
+        "afterSha256": "a707670ad19dcbc49490d5bdcaf160dc7197337ce295e1db20f2581620267404",
+        "reloadedSha256": "3bbdabef284d15baa4e51615849b278fd9f961fd49baf20c48de25ce1fe9cdc5",
+        "sameTarget": true,
+        "sameStoredDocument": false,
+        "reloadEqual": true,
+        "flush": {
+          "kind": "saved",
+          "dirty": false
+        },
+        "indexedDb": {
+          "exists": true,
+          "conversations": 0,
+          "userEntries": 0
+        },
+        "libraryRevisionChange": {
+          "before": "779759833c823c40d20cbbf80b0c4e9e8955855ab393650b72e81596a674d1d9|gb93e850",
+          "after": "f44fd84d70a2742b143bfc0a480140fdb19ce2eada7f0a31235a8894a83d8001|gb93e850",
+          "gameContentEqual": true
+        }
+      }
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "실제 저장 결과와 새 context에서 미루 자리 E 마커만 없어지고 여관·파수꾼·문 마커는 남았다. 플레이에서 주인공이 미루 자리로 걸어 들어가고 대화 창이 뜨지 않는다. 캐릭터·배경과 다른 두 NPC가 정상으로 보인다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/04-walk-through-deleted-npc.png"
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "deleted-position",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "walk-through-deleted-npc",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-deleted-position.png",
+        "runtime/04-walk-through-deleted-npc.png"
+      ]
+    }
+  },
+  "elapsedMs": 167618,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129458752
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "f31c4b06-7f2d-4bfb-9a10-cce9d72f06c0",
+      "at": 1791129481951
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "f31c4b06-7f2d-4bfb-9a10-cce9d72f06c0",
+      "at": 1791129502122
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129538510
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129538545
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791129538667
+    }
+  ],
+  "projectId": "7a3becc6-c838-4f56-a9ea-4efddfd7c2e1",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/npc-delete/project",
+  "finishedAt": "2026-10-04T16:01:14.181Z",
+  "status": "fail",
+  "verification": {
+    "harnessDigest": "9be8ce3938d43980ca0bc62b813a985987589331e920a02f19f9855b569966cd",
+    "priorResultDigest": "dc1d64f219f5864312038dd5423c5387d7b678429e0f0a2a763534fb1dceed68",
+    "archive": "verification-history/1791131768822",
+    "at": "2026-10-04T16:36:09.055Z",
+    "newModelTurn": false
+  },
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T15:55:03.038Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

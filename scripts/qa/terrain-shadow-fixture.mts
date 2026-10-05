@@ -1,0 +1,41 @@
+// Separate canonical QA project. Never writes the user's project or an active host.
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {resolve} from 'node:path';
+import {initLocalProjectStore,openLocalProjectStore} from '../../electron/local-store/store';
+import {roughReliefStroke} from '../../src/project/relief/roughBrush';
+import {prepareWebExport} from '../../src/project/webExport';
+import {deserialize} from '../../src/project/io';
+import {execFileSync} from 'node:child_process';
+const root=resolve('.vite-cache/terrain-shadows'),folder=resolve(root,'project');
+fs.mkdirSync(root,{recursive:true});fs.mkdirSync('verify-shots/terrain-shadows',{recursive:true});
+const baseline=execFileSync('git',['show','63a2d681444d10b8355f6fe49d775496477c1945:src/project/sunlight.ts'],{encoding:'utf8'})
+ .replaceAll('"./types"','"../../src/project/types"').replaceAll('"./relief/','"../../src/project/relief/').replaceAll('"./sunlightArt"','"../../src/project/sunlightArt"');
+fs.writeFileSync(resolve(root,'sunlight-before.ts'),baseline);
+fs.writeFileSync(resolve(root,'render-before.mts'),fs.readFileSync('scripts/qa-game/render.mts','utf8').replace('"../../src/project/sunlight.ts"','"./sunlight-before.ts"').replace('"./check.mts"','"../../scripts/qa-game/check.mts"').replace('"./lib/recorder.ts"','"../../scripts/qa-game/lib/recorder.ts"'));
+const beforeRenderer=await import(resolve(root,'render-before.mts'));
+const source=await openLocalProjectStore({projectDir:resolve('.vite-cache/gabled-roof/project')});
+const p=structuredClone(source.loadSnapshot()!.project);source.close();
+const m=structuredClone(p.maps.houses_native!);
+m.id='shadow_receivers';m.name='높이 붓과 도로 그림자';m.width=48;m.height=40;
+m.lowerTiles=Array(48*40).fill(737);m.upperTiles=Array(48*40).fill(-1);m.events=[];
+delete m.structurePlacements;delete m.doodadGroups;delete m.lowerTileStacks;delete m.upperTileStacks;delete m.terrainDesign;
+m.relief={width:48,height:40,levels:Array(48*40).fill(0),ramps:Array(48*40).fill(0)};
+roughReliefStroke(m.relief,23,17,'raise',{radius:5,base:0,peak:4,cap:8});
+// Reuse the native road already authored in the source project, not a substitute chipset.
+const old=p.maps.houses_native!,road=old.lowerTiles[50*old.width+24]!;
+for(let y=0;y<40;y++)for(let x=0;x<48;x++)if(x>=28&&x<33||y>=28&&y<32)m.lowerTiles[y*48+x]=road;
+m.sunlight={enabled:true,azimuth:315,altitude:65,opacity:.32,softness:1,heightScale:1};
+p.maps[m.id]=m;p.startMapId=m.id;p.startPos={x:9,y:32};p.meta.title='도로·높이 지형 그림자 QA';
+const normalized=deserialize(JSON.stringify(p));
+let store=await initLocalProjectStore({projectDir:folder});
+assert.equal((await store.saveSerialized(JSON.stringify(normalized))).kind,'saved');store.close();
+store=await openLocalProjectStore({projectDir:folder});const loaded=store.loadSnapshot()!;
+const projectId=store.info().projectId;store.close();assert.deepEqual(loaded.project.maps[m.id],normalized.maps[m.id]);
+fs.writeFileSync(resolve(root,'fixture.json'),JSON.stringify(loaded.project));
+fs.writeFileSync(resolve(folder,'player.json'),prepareWebExport(loaded.project).projectJson);
+const proof={projectId,folder,revision:loaded.revision,canonicalReload:true,mapId:m.id,userProjectWritten:false,roadTile:road};
+fs.writeFileSync('verify-shots/terrain-shadows/canonical.json',JSON.stringify(proof,null,2));
+fs.writeFileSync(resolve(root,'terrain-before.png'),beforeRenderer.renderMapPng(loaded.project,loaded.project.maps[m.id]!).png);
+fs.writeFileSync(resolve(root,'house-before.png'),Buffer.from(beforeRenderer.renderToolRegionPngBase64(loaded.project,{mapId:'houses_native',x:15,y:36,w:22,h:16}),'base64'));
+console.log(proof);

@@ -1,0 +1,48 @@
+{
+  "provenance": "Actual browser recordings; waiting intervals omitted. No reconstructed UI.",
+  "output": "verify-shots/ai-team-exploration-findings/team-exploration-highlights.mp4",
+  "segments": [
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-parallel/team-exploration.mp4",
+      "start": 48,
+      "duration": 10,
+      "label": "서로 다른 맵: 등대 조수와 부두 조수가 실제로 동시에 실행"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 147.0,
+      "duration": 6,
+      "label": "팀 토글: 두 맵의 대사 수정 · 폴더 문제로 순차 완료"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 263.096,
+      "duration": 6,
+      "label": "같은 맵: 첫 작업 완료 뒤 다음 조수에게 배정"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 338.112,
+      "duration": 6,
+      "label": "공통 데이터: 조회 보고 뒤 주인공 이름을 “하린”으로 수정"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 581.0,
+      "duration": 6,
+      "label": "번역 검수 실패: 최신 원문을 오판해 올바른 번역을 덮어씀"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 622.203,
+      "duration": 6,
+      "label": "중단: 실제 조수 시작 뒤 실행 종료 · 새 변경 없음"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/951f/rpg-zzu/verify-shots/ai-team-exploration-20261005-continued/team-exploration.mp4",
+      "start": 684.256,
+      "duration": 6,
+      "label": "중단 후 재시도: 새 조회 정상 완료 · 예약 누수 없음"
+    }
+  ]
+}

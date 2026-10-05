@@ -87,7 +87,7 @@ const ENDING_CONDITION_SCHEMA: JsonSchema = {
   ...CONDITION_SCHEMA,
   properties: {
     ...CONDITION_SCHEMA.properties,
-    kind: { type: "string", enum: [...(CONDITION_SCHEMA.properties?.kind?.enum ?? []), "newGamePlus"] },
+    kind: { type: "string", enum: [...new Set([...(CONDITION_SCHEMA.properties?.kind?.enum ?? []), "newGamePlus"])] },
   },
 };
 

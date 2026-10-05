@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "fault-injected-ui-controls",
+  "modelCalls": 0,
+  "pass": true,
+  "checks": [
+    {
+      "id": "false:controlled-route",
+      "ok": true,
+      "detail": {
+        "nativeRequests": 2,
+        "unexpectedModelRequests": 0
+      }
+    },
+    {
+      "id": "false:execution-failed",
+      "ok": true,
+      "detail": {
+        "execution": "failed",
+        "delivery": "no-change"
+      }
+    },
+    {
+      "id": "false:applied-fact",
+      "ok": true
+    },
+    {
+      "id": "false:delivery-fact",
+      "ok": true,
+      "detail": "no-change"
+    },
+    {
+      "id": "false:visible-error",
+      "ok": true
+    },
+    {
+      "id": "false:no-success-status",
+      "ok": true
+    },
+    {
+      "id": "true:controlled-route",
+      "ok": true,
+      "detail": {
+        "nativeRequests": 2,
+        "unexpectedModelRequests": 0
+      }
+    },
+    {
+      "id": "true:execution-failed",
+      "ok": true,
+      "detail": {
+        "execution": "failed",
+        "delivery": "applied"
+      }
+    },
+    {
+      "id": "true:applied-fact",
+      "ok": true
+    },
+    {
+      "id": "true:delivery-fact",
+      "ok": true,
+      "detail": "applied"
+    },
+    {
+      "id": "true:visible-error",
+      "ok": true
+    },
+    {
+      "id": "true:no-success-status",
+      "ok": true
+    }
+  ],
+  "recheck": {
+    "at": "2026-10-04T23:57:16.052Z",
+    "note": "원본 UI 관측은 보존. 계획과 실행이 각각 native 요청을 보낼 수 있어 두 요청 모두 가로챘다는 원래 영수증을 새 검사 기준으로 재평가. 브라우저·모델 재실행 없음."
+  }
+}

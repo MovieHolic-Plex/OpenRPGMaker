@@ -1,0 +1,1 @@
+서린의 서재(map_blank_start)의 배경음악을 이미 있는 원곡 original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55 로 지정해라. set_map_properties 도구의 bgm은 mode custom, resourceId는 위 ID다. 새 음원은 만들지 마라. 맵의 나머지 내용과 타이틀·오프닝은 모두 그대로 둬라. 변경 뒤 get_soundtrack으로 서재와 기억의 길 음악을 확인해라.

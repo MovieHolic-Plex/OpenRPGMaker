@@ -1,0 +1,20 @@
+{
+  "baselineCommit": "4d79023de824882af048ff0bc937589a4feeb129",
+  "command": "npm test -- test/aiToolCatalogBudget.test.ts --maxWorkers=1",
+  "baseline": {
+    "exitCode": 1,
+    "passed": 2,
+    "failed": 1
+  },
+  "current": {
+    "exitCode": 1,
+    "passed": 2,
+    "failed": 1
+  },
+  "failure": "opening family expected list omits existing show_title_opening",
+  "baselineSource": {
+    "tool": "src/editor/tools/presentationTools.ts",
+    "registration": "src/editor/tools/toolRegistry.ts"
+  },
+  "newFailures": 0
+}

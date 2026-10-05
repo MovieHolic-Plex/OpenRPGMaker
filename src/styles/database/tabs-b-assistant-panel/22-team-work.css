@@ -113,6 +113,7 @@
 
 /* ── 2. 페인 골격 — 데크 안에서는 탭 높이만큼 키를 키운다 ─────── */
 .ai-team-work {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -144,7 +145,7 @@
 .ai-team-work-body {
   display: grid;
   flex: 1 1 auto;
-  grid-template-columns: minmax(168px, 200px) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
   min-height: 0;
 }
 
@@ -154,6 +155,19 @@
 
 .ai-team-work-body.is-single > .ai-team-work-members {
   display: none;
+}
+
+.ai-team-work-progress { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: auto; }
+.ai-team-work-current { flex: none; margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; color: var(--accent); }
+.ai-team-work-member-action { font-size: 13px; line-height: 1.5; margin-top: 8px; color: var(--text-1); }
+.ai-team-work-member-result, .ai-team-work-member-signal { font-size: 11px; line-height: 1.5; margin-top: 6px; color: var(--text-2); white-space: normal; overflow-wrap: anywhere; }
+.ai-team-work-member-signal { color: var(--text-3); }
+
+/* The studio's narrow team column needs a full-width activity body. */
+@container (max-width: 560px) {
+  .ai-team-work .ai-team-work-body:not(.is-single),
+  .ai-team-work.is-detail .ai-team-work-body:not(.is-single) { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 40%) minmax(0, 1fr); }
+  .ai-team-work-body:not(.is-single) > .ai-team-work-members { grid-template-columns: repeat(2, minmax(0, 1fr)); border-right: 0; border-bottom: 1px solid var(--border-subtle); }
 }
 
 /* ── 3. 팀원 열 ──────────────────────────────────────────────── */

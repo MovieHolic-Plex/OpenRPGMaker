@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "caseId": "inn-price",
+  "title": "숙박 요금과 안내 일치",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "codeCommit": "b93e85080aa9a17d4053ac9d1bfad8d0300473e8",
+  "harnessDigest": "9efd1a7db9b220bf03b75a4ca0849b34004c67c5ef3bd3edef7bd38ec927ec19",
+  "startedAt": "2026-10-04T16:07:16.748Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "inn-price",
+          "ok": true,
+          "detail": "실제 숙박 명령 25G"
+        },
+        {
+          "id": "inn-message",
+          "ok": true,
+          "detail": "안내 25G·옛 요금 제거"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": false,
+          "detail": "허용 범위 밖 변경: maps.map_ash_pass.upperTiles.58, maps.map_ash_pass.upperTiles.291, maps.map_ash_pass.upperTiles.308, maps.map_mist_forest.upperTiles.1, maps.map_mist_forest.upperTiles.2, maps.map_mist_forest.upperTiles.3, maps.map_mist_forest.upperTiles.4, maps.map_mist_forest.upperTiles.5, maps.map_mist_forest.upperTiles.6, maps.map_mist_forest.upperTiles.7, maps.map_mist_forest.upperTiles.8, maps.map_mist_forest.upperTiles.9, maps.map_mist_forest.upperTiles.10, maps.map_mist_forest.upperTiles.11, maps.map_mist_forest.upperTiles.12, maps.map_mist_forest.upperTiles.13, maps.map_mist_forest.upperTiles.17, maps.map_mist_forest.upperTiles.18, maps.map_mist_forest.upperTiles.19, maps.map_mist_forest.upperTiles.20"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "price-dialogue",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "offer",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "decline",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "offer-again",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "accept",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-price-dialogue.png",
+        "runtime/04-offer.png",
+        "runtime/05-decline.png",
+        "runtime/06-offer-again.png",
+        "runtime/07-accept.png"
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"c282f743-be68-490a-a3df-68271b634c2c\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inn-price/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"7552fed95a2a638d777250b5548a50c63ebde6d61ab38f89f966bbc31ba7abd2\",\"reloadedSha256\":\"7552fed95a2a638d777250b5548a50c63ebde6d61ab38f89f966bbc31ba7abd2\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "변경 결과와 재로드의 여관 E 마커·주변 지도는 정상이다. 플레이 안내의 바뀐 25와 여관 선택 창의 하룻밤 25G, 소지금 100→75를 읽었다. 예·아니오·회복 요약·인물 도트에 잘림이나 가림이 없다. 안내 그림은 타자 출력 중 캡처되어 뒤쪽 문장이 흐린 상태이며 전체 문자열과 차감은 별도 플레이 관측으로 확인했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/03-price-dialogue.png",
+        "runtime/04-offer.png"
+      ]
+    }
+  },
+  "elapsedMs": 118449,
+  "models": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130166369
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "1a73293b-7dfa-40f3-8e3e-88233e93161b",
+      "at": 1791130171808
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "1a73293b-7dfa-40f3-8e3e-88233e93161b",
+      "at": 1791130176473
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130207110
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130207158
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791130207163
+    }
+  ],
+  "projectId": "c282f743-be68-490a-a3df-68271b634c2c",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inn-price/project",
+  "finishedAt": "2026-10-04T16:13:00.153Z",
+  "status": "fail",
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T16:07:16.748Z",
+      "status": "fail",
+      "nativeInput": true
+    }
+  ]
+}

@@ -110,6 +110,27 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 .choice-reasons summary,.choice-docs>summary{cursor:pointer;padding:6px 0}
 .choice-error{color:#f1ab94!important}
 .choice-docs{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}.choice-docs>summary{font-size:16px;font-weight:bold}.choice-docs[open]>summary{margin-bottom:18px}
+
+#activity-overview{margin:16px 20px 0;padding:16px;border:1px solid #3c526e;border-radius:10px;background:#1d2835}
+#activity-overview h2{font-size:16px;margin:0 0 8px}
+.live-jobs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.live-jobs button{text-align:left;padding:10px 12px}.live-jobs small{display:block;color:#b4c5d8}
+.progress-panel{border:1px solid #3c526e;border-radius:10px;background:#192430;padding:18px;margin:12px 0 24px;overflow-wrap:anywhere}
+.progress-panel h2{font-size:20px;margin:0 0 8px}.progress-kicker{font-size:12px;color:#a6c9ea;letter-spacing:.04em}
+.progress-note{margin:8px 0;color:#d1dce8}.progress-timing{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.progress-timing span{background:#111a25;padding:6px 10px;border-radius:6px}
+.progress-job{border-top:1px solid #334254;padding:10px 0}.progress-job p{margin:4px 0;font-size:13px;color:#b8c9da}
+.progress-warning{padding:10px 12px;border-left:3px solid #eab65d;background:#342d20;margin:10px 0}
+.progress-steps{list-style:none!important;display:flex;flex-wrap:wrap;gap:6px;padding:0!important;margin:14px 0!important;font-size:12px;color:#9ba9b8}
+.progress-steps li{border:1px solid #394555;padding:4px 8px;border-radius:6px}.progress-steps [aria-current=step]{color:#d4edff;border-color:#6db9ec;background:#254562}
+.progress-events{padding-left:20px;font-size:13px;color:#c3cbd6}.progress-events time{color:#90abc5;margin-right:8px}
+.progress-footer{color:#9eafc1;font-size:12px;margin-top:12px}.progress-card{font-size:12px;color:#acbdcf;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.progress-stale{color:#ffd294!important}.progress-action{font-weight:600;margin-top:12px}
+@media(max-width:600px){#activity-overview{margin:12px 12px 0}.progress-panel{padding:12px}.progress-panel h2{font-size:18px}.live-jobs button{width:100%}}
+
+.choice-checklist{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.choice-checklist button{flex:1;min-width:160px;text-align:left;padding:10px}.choice-checklist small{display:block;color:#afbdcd;margin-top:4px}.choice-checklist [aria-current=step]{border-color:#86c6ff;background:#263d55}
+.choice-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.choice-option{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;background:#151a20}.choice-option.selected{border:2px solid #77c799}.choice-option h3{margin:0 0 10px;font-size:18px}.choice-option h4{margin:14px 0 6px}.choice-badge{font-size:12px;float:right;color:#a7d8b8}.unavailable .choice-badge{color:#ecb3a6}
+.choice-part{height:196px;width:100%;display:flex;align-items:center;justify-content:center;background:#20252e;border:0;cursor:zoom-in}.choice-part img{image-rendering:pixelated;max-width:100%;max-height:180px;height:auto;object-fit:contain}.choice-option .choose-candidate{width:100%;padding:12px;margin:8px 0}.choice-option .choice-scene{max-height:300px;object-fit:contain}.choice-only{padding:12px;background:#342f23;border-radius:8px;color:#f5db9b!important}.choice-reject{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.choice-reject small{color:var(--dim)}.choice-group .choice-states{align-items:center;flex-wrap:wrap;margin:12px 0}.choice-group{padding-top:6px}.choice-option .choice-caption{min-height:40px;margin:6px 0}
+#choice-status{margin-top:18px}#choice-status>summary{cursor:pointer;color:#a9bfd5;padding:8px 0}
+@media(max-width:600px){.choice-compare{grid-template-columns:1fr}.choice-checklist button{min-width:100%;}.choice-lead{font-size:17px}.choice-panel h1{font-size:23px}}
 </style>
 </head>
 <body>
@@ -120,6 +141,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
   <span class="muted">하루 상한 없음</span>
   <button id="pause"></button>
 </header>
+<section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section>
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
@@ -129,6 +151,7 @@ import { renderMarkdown } from "/markdown.js";
 import { renderChoices } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0;
+let activityState = null, activityFetched = 0, activityBusy = false;
 const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내 선택 필요'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
@@ -138,7 +161,7 @@ const cards = new Map();
 
 function cardHtml(it) {
   return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
-    <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div></div>`;
+    <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
 function render() {
@@ -170,7 +193,75 @@ async function refresh() {
   $('line').textContent = `${L.paused ? '전체 자동 실행 멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
   $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
-  if (!ordersPage) render();
+  if (!ordersPage) { render(); paintProgress(); }
+}
+
+
+const duration = value => value == null ? '확인 불가' : value < 60 ? `${value}초` : value < 3600 ? `${Math.floor(value/60)}분 ${value%60}초` : `${Math.floor(value/3600)}시간 ${Math.floor(value%3600/60)}분`;
+function jobHtml(job) {
+  const quiet = job.outputAgeSeconds != null && job.outputAgeSeconds >= 180;
+  return `<div class="progress-job"><b>${job.alive ? '● 실행 중' : '실행 확인 필요'} · ${esc(job.label)}${job.reviewer ? ` · 검수자 ${esc(job.reviewer)}` : ''}</b>
+    <div class="progress-timing"><span>시작 후 ${duration(job.elapsedSeconds)}</span><span>마지막 출력 ${job.outputAgeSeconds == null ? '없음' : duration(job.outputAgeSeconds)+' 전'}</span></div>
+    ${job.model ? `<p>모델 ${esc(job.model)}${job.effort ? ` · ${esc(job.effort)}` : ''}</p>` : ''}
+    ${quiet ? '<p class="progress-stale">최근 3분 이상 새 출력이 없습니다. 프로세스 존재만으로 정상 진행을 보장할 수 없습니다.</p>' : ''}</div>`;
+}
+function paintProgress() {
+  const overview = $('activity-overview');
+  if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
+  const alive = activityState.jobs.filter(j => j.alive);
+  $('line').textContent = `${activityState.paused ? '전체 자동 큐 멈춤' : '전체 자동 큐 실행'} · 실제 실행 ${alive.length}개`;
+  const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
+  overview.innerHTML = `<h2>현재 실행 ${alive.length}개 · 지정 공간 대기 ${queued.length}개</h2>
+    <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
+    <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
+    ${queued.length ? `<div>순서 대기: ${queued.map(i => esc(i.title)).join(' · ')}</div>` : ''}
+    <div class="progress-footer">5초마다 상태 확인 · 마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 단계별 소요 시간은 달라 남은 시간은 확정할 수 없습니다.</div>`;
+  overview.querySelectorAll('[data-open-concept]').forEach(b => b.onclick = () => b.dataset.openConcept && openConcept(b.dataset.openConcept));
+  for (const el of document.querySelectorAll('[data-progress-id]')) {
+    const item = activityState.items.find(i => i.id === el.dataset.progressId);
+    if (!item) continue;
+    const job = item.jobs.find(j => j.alive);
+    const status = el.parentElement.querySelector('.s');
+    if (status && (job || item.managed || item.jobs.length)) status.textContent = job ? '실행 중' : item.jobs.length ? '실행 확인 필요' : item.state === 'queued' ? '지정 실행기 · 순서 대기' : item.label;
+    el.textContent = job ? `${job.label} · ${duration(job.elapsedSeconds)} 경과` : item.reason || item.label;
+  }
+  const panel = $('concept-progress');
+  const item = activityState.items.find(i => i.id === openId);
+  if (!panel || !item) return;
+  const detail = activityState.detail?.id === openId ? activityState.detail : item;
+  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '막힘' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
+  const expanded = [...panel.querySelectorAll('details[open]')].map(d => d.dataset.section);
+  const focused = document.activeElement?.parentElement?.dataset.section;
+  panel.innerHTML = `<div class="progress-kicker">${esc(item.title)} · 실시간 진행</div><h2>${status} — ${esc(item.label)}</h2>
+    <p class="progress-note">${esc(item.note)}</p>
+    <ol class="progress-steps" aria-label="제작 단계">${activityState.steps.map((s,i) => `<li ${item.step === i ? 'aria-current="step"' : ''}>${i+1}. ${esc(s)}</li>`).join('')}</ol>
+    <div class="progress-timing"><span>기획 ${item.planAttempt}차</span>${item.artRevision ? `<span>자동 그림 수정 ${item.artRevision} / ${item.artLimit}회</span>` : ''}</div>
+    ${item.jobs.map(jobHtml).join('')}
+    ${item.reason ? `<div class="progress-warning">${esc(item.reason)}</div>` : ''}
+    ${item.reasons.length ? `<details data-section="reasons"><summary>최근 반려 사유</summary><ul>${item.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul></details>` : ''}
+    <p><b>다음:</b> ${esc(item.next)}</p><div class="progress-action">${esc(item.action)}</div>
+    ${detail.events?.length ? `<details data-section="events"><summary>최근 처리 기록 ${detail.events.length}건 보기</summary><ol class="progress-events">${detail.events.map(e => `<li><time>${esc(e.at.slice(11))}</time>${esc(e.text)}</li>`).join('')}</ol></details>` : ''}
+    <div class="progress-footer">마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 5초 자동 갱신 · 단계가 바뀌면 아래 자료는 ‘새로고침’으로 불러옵니다.</div>`;
+  for (const d of panel.querySelectorAll('details')) { d.open = expanded.includes(d.dataset.section); if (d.dataset.section === focused) d.querySelector('summary').focus({preventScroll:true}); }
+}
+async function refreshActivity() {
+  if (ordersPage || document.hidden || activityBusy) return;
+  activityBusy = true;
+  const selected = openId;
+  try {
+    const urls = ['/api/activity', ...(selected ? ['/api/activity?id='+encodeURIComponent(selected)] : [])];
+    const results = await Promise.all(urls.map(async url => { const r = await fetch(url, {signal: AbortSignal.timeout(8000)}); if (!r.ok) throw Error('상태 응답 오류'); return r.json(); }));
+    activityState = results[0]; activityState.detail = results[1]?.items[0]; activityFetched = Date.now();
+    paintProgress();
+  } catch {
+    const message = `상태 갱신 실패 · ${activityFetched ? new Date(activityFetched).toLocaleTimeString('ko-KR')+' 이후의 진행은 확인되지 않았습니다.' : '현재 진행 상태를 확인할 수 없습니다.'} 5초 후 다시 확인합니다.`;
+    for (const target of [$('activity-overview'), $('concept-progress')]) {
+      if (!target) continue;
+      let warning = target.querySelector('.connection-error');
+      if (!warning) { warning = document.createElement('p'); warning.className = 'connection-error progress-stale'; warning.setAttribute('role','status'); target.prepend(warning); }
+      warning.textContent = message;
+    }
+  } finally { activityBusy = false; }
 }
 
 async function documentView(target, path, { modal = false } = {}) {
@@ -225,6 +316,10 @@ async function documentView(target, path, { modal = false } = {}) {
     show('read');
     if (modal) {
       const cid = decodeURIComponent(path.slice(4, -3));
+      const progress = document.createElement('section'); progress.id = 'concept-progress'; progress.className = 'progress-panel';
+      target.insertBefore(progress, target.querySelector('.doc-tools'));
+      paintProgress();
+      refreshActivity();
       const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
       const choice = response.ok ? await response.json() : null;
       if (current !== requestId) return;
@@ -233,7 +328,17 @@ async function documentView(target, path, { modal = false } = {}) {
         const docs = document.createElement('details'); docs.className = 'choice-docs';
         const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
         docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
-        renderChoices(panel, choice, refresh, url => { $('big').querySelector('img').src=url; $('big').classList.add('on'); });
+        if (choice.stage === 'art-review') {
+          const statusDetails=document.createElement('details');statusDetails.id='choice-status';
+          const statusLabel=document.createElement('summary');statusLabel.textContent='제작 단계·실행 기록 보기';
+          statusDetails.append(statusLabel,progress);target.insertBefore(statusDetails,docs);
+        }
+        renderChoices(panel, choice, refresh, url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); }, group => {
+          const field=target.querySelector('#fix');if(!field)return;
+          field.closest('details').open=true;
+          if(!field.value.trim())field.value=`${group.title} 후보 수정 요청: `;
+          field.scrollIntoView({block:'center'});field.focus();
+        });
       }
       const actions = document.createElement('section');
       actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
@@ -276,6 +381,7 @@ async function post(body) {
 Object.assign(window, { setTab, closeModal, act });
 if (ordersPage) {
   $('orders-link').textContent = '← 개념 갤러리'; $('orders-link').href = '/';
+  $('activity-overview').hidden = true;
   $('tabs').hidden = true; $('grid').className = 'orders';
   documentView($('grid'), '/md/orders.md');
 } else {
@@ -284,6 +390,9 @@ if (ordersPage) {
 }
 refresh();
 setInterval(refresh, 15000);
+refreshActivity();
+setInterval(refreshActivity, 5000);
+document.addEventListener('visibilitychange', refreshActivity);
 document.addEventListener('visibilitychange', refresh);
 </script>
 </body>

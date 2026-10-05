@@ -1,4 +1,5 @@
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { AUTHORING_PRESET_TOOLS } from './authoringPresetTools';
 import { AUTHORING_HARNESS_TOOLS } from '../../harnesses/_core/authoringRegistry';
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
@@ -83,6 +84,7 @@ import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
 import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
+import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
@@ -204,6 +206,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
+  ...AUTHORING_PRESET_TOOLS,
   ...PROJECT_WIKI_TOOLS,
   ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
@@ -303,6 +306,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
+  ...withDomain(ORIGINAL_MUSIC_TOOLS, 'system'),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),

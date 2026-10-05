@@ -70,6 +70,7 @@ def create(options):
 
 
 def _create(options):
+    import motion
     count = int(options.get('count', 100))
     par = int(options.get('par', 4))
     batch_size = int(options.get('batchSize', 2))
@@ -102,9 +103,9 @@ def _create(options):
     characters = [dict(key=f'free-{root.name[-8:]}-{i+1:03d}', name=f'자유 캐릭터 {i+1:03d}',
                        base=bases[i % len(bases)], brief=prompt, strength='free', reviewMode='human',
                        source='upload' if source else 'rtp', genre='자유', role='', gender='', age='',
-                       animationMode=H.FRAME_AUTHOR_MODE) for i in range(count)]
+                       animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=motion.VERSION) for i in range(count)]
     manifest = dict(run=root.name, reviewMode='human', animationMode=H.FRAME_AUTHOR_MODE, characters=characters, genres=['자유'],
-                    sourceOriginal=str(source) if source else None)
+                    sourceOriginal=str(source) if source else None, motionPolicy=motion.VERSION)
     H.write_json_atomic(root / 'manifest.json', manifest)
     return dict(launch(root, par, batch_size), count=count)
 

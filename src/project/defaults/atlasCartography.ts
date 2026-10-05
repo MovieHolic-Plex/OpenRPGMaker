@@ -8,8 +8,9 @@ export const ATLAS_CARTOGRAPHY_TEXTURE = 'tex_atlas_cartography';
 export const ATLAS_CARTOGRAPHY_ICONS = sheet.icons;
 export function ensureAtlasCartographyTerrain(project:Project):void {
   project.tilesets.atlas_cartography??=createAtlasCartographyTileset();
-  let ladder=project.database.terrains.findIndex(t=>t.id==='atlas_room_ladder');
-  if(ladder<0){ladder=project.database.terrains.length;project.database.terrains.push({id:'atlas_room_ladder',name:'방 사다리',damage:0,encounterRatePercent:100,characterDisplay:'normal',vehiclePassage:{boat:false,ship:false,airshipLand:false},climbable:true});}
+  const terrains=project.database.terrains??=[];
+  let ladder=terrains.findIndex(t=>t.id==='atlas_room_ladder');
+  if(ladder<0){ladder=terrains.length;terrains.push({id:'atlas_room_ladder',name:'방 사다리',damage:0,encounterRatePercent:100,characterDisplay:'normal',vehiclePassage:{boat:false,ship:false,airshipLand:false},climbable:true});}
   project.tilesets.atlas_cartography.terrain[50]=ladder+1;
 }
 export function createAtlasCartographyTileset(): TilesetDef {
