@@ -137,7 +137,7 @@ const name=it=>it.desc?.label||it.name;
 let noticeTimer=null;
 function notice(text,error=false){clearTimeout(noticeTimer);$('notice').textContent=text;$('notice').classList.toggle('error',error);if(text&&!error)noticeTimer=setTimeout(()=>{$('notice').textContent=''},3500)}
 async function post(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:path==='/api/decide'?AbortSignal.timeout(12000):undefined});const result=await response.json();if(!response.ok){const error=Error(result.error||'저장 실패');error.status=response.status;throw error}return result}
-function scoped(){return state.items.map(displayed).filter(it=>(run==='all'||it.run===run)&&(kind==='all'||(kind==='creatures')===isCreature(it)))}
+function scoped(){return state.items.map(displayed).filter(it=>(run==='all'||it.run===run||state.runs.find(r=>r.run===it.run)?.continuationOf===run)&&(kind==='all'||(kind==='creatures')===isCreature(it)))}
 function visible(){return scoped().filter(it=>{if(dismissed.has(imageKey(it)))return false;const decision=it.decision?.decision;if(tab==='todo'&&(decision||it.status!=='done'))return false;if(tab==='accept'&&decision!=='accept')return false;if(tab==='reject'&&decision!=='reject')return false;return [name(it),it.desc?.appearance,it.desc?.role,...(it.desc?.tags||[])].join(' ').toLowerCase().includes(query.toLowerCase())})}
 function move(step){const rows=visible(),idx=rows.findIndex(it=>it.id===current);if(!rows.length)return;current=rows[Math.max(0,Math.min(rows.length-1,idx+step))].id;render()}
 const walkFile=it=>it.alpha_previews_fresh&&reviewBackground!=='lawn'?`views/walk_${reviewBackground}.gif`:'views/walk.gif';

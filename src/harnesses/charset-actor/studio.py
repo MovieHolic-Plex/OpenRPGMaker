@@ -79,10 +79,11 @@ def runs(items=None, *, blocked_by_run=None, decisions=None):
         phase = ('pausing' if (root / 'pause-request.json').exists() else current_phase if current_phase in ('running', 'waiting-review', 'pausing') else 'running') if alive else state.get('phase', 'interrupted')
         if not alive and phase in ('running', 'waiting-review', 'pausing'):
             phase = 'interrupted'
-        result.append(dict(run=root.name, planned=len(manifest['characters']), ready=len(ready), kept=kept,
+        result.append(dict(run=root.name, planned=state.get('plannedHere', len(manifest['characters'])), ready=len(ready), kept=kept,
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
                            title=manifest.get('title'), artists=driver.get('par', layout.get('par', 4)),
                            recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), continuedIn=state.get('continuedIn'),
+                           continuationOf=manifest.get('continuationOf'), ordered=len(manifest['characters']),
                            maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
                            blocked=blocked_by_run.get(root.name, 0) if blocked_by_run is not None else sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
                                        for p in root.glob('*__*') if (p / 'out.chr.txt').exists())))
