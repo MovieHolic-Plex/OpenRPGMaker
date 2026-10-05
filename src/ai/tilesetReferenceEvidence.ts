@@ -53,6 +53,11 @@ export class TilesetReferenceEvidence {
   observeImageUrls(urls: ReadonlySet<string>): void {
     for (const [id, url] of this.pendingImages) if (urls.has(url)) { this.images.add(id); this.pendingImages.delete(id); }
   }
+  private groupFullyRead(tilesetId: string, ownerId: string, group: NonNullable<Project["tilesets"][string]["referenceDocuments"]>[number]): boolean {
+    const base = key({ tilesetId, ownerId, categoryId: group.id, revision: referenceRevision(group) });
+    return group.documents.every(doc => referencePageStarts(doc.markdown).every(offset => this.pages.has(`${base}:doc:${doc.id}:${offset}`)))
+      && group.images.every(image => this.images.has(`${base}:image:${image.id}`) && this.imageMetadata.has(`${base}:image:${image.id}`));
+  }
   /** 타일을 직접 고르는 도구만 막는다(TILESET_REFERENCE_TILE_CHOOSERS). 빈 맵 생성·결정론 파이프라인은 문서를 읽어도 결과가 같다. */
   beforeWrite(project: Project, name: string, args: Record<string, unknown>): ToolResult | null {
     const stampSource = terrainStampSource(project, name, args);
@@ -87,7 +92,12 @@ export class TilesetReferenceEvidence {
       visitedOwners.add(owner.id);
       const groups = owner.referenceDocuments ?? [];
       if (!groups.length) continue;
-      const group = args.referencePurpose === undefined && groups.length === 1 ? groups[0] : groups.find(g => g.id === args.referencePurpose);
+      // 용도를 빼먹었어도 끝까지 읽은 용도가 하나뿐이면 그것으로 친다. 모델은 읽은 뒤 배치에서 referencePurpose 를
+      // 자주 빠뜨렸고, 이미 읽은 자료를 두고 거절 한 번을 매번 태웠다(2026-10-05 스트레스 실측: 연애 시공·던전·꿈 탐험).
+      const fullyRead = args.referencePurpose === undefined && groups.length > 1
+        ? groups.filter(g => this.groupFullyRead(id, owner.id, g)) : [];
+      const group = args.referencePurpose === undefined && groups.length === 1 ? groups[0]
+        : fullyRead.length === 1 ? fullyRead[0] : groups.find(g => g.id === args.referencePurpose);
       if (!group) { missing.push(`${id}: referencePurpose에 용도 ID 지정 (${groups.map(g => `${g.id}=${g.name}`).join(", ")})`); continue; }
       const packet: Packet = { tilesetId: id, ownerId: owner.id, categoryId: group.id, revision: referenceRevision(group) };
       const base = key(packet);
