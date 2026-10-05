@@ -159,8 +159,8 @@ import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','제작 중']];
-const OPERATOR_TABS = [['all','전체 기록'],['wait','대기'],['stop','운영 점검'],['discarded','폐기 기록']];
+const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','진행 현황']];
+const OPERATOR_TABS = [['all','전체 기록'],['wait','단계 배정 대기'],['stop','운영 점검'],['discarded','폐기 기록']];
 let L = null, tab = 'pick', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -224,14 +224,15 @@ function paintProgress() {
   const overview = $('activity-overview');
   if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
   const alive = activityState.jobs.filter(j => j.alive);
-  $('line').textContent = `실제 작업 ${alive.length}개 실행 중`;
-  const attention=activityState.items.filter(i=>i.stage==='blocked').length;
+  $('line').textContent = `워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개`;
+  const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
   $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
   const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
-  overview.innerHTML = `<h2>현재 실행 ${alive.length}개 · 지정 공간 대기 ${queued.length}개</h2>
+  overview.innerHTML = `<h2>워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
     <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
-    ${queued.length ? `<div>순서 대기: ${queued.map(i => esc(i.title)).join(' · ')}</div>` : ''}
+    ${queued.length ? `<div class="queue-reasons">${queued.map(i => `<p><b>${esc(i.title)}</b> · ${esc(i.label)} 대기<br><small>${esc(i.reason)}</small></p>`).join('')}</div>` : ''}
+    ${activityState.items.filter(i=>i.waitKind==='integration-missing').map(i=>`<p class="progress-warning"><b>${esc(i.title)}</b> · 실행 예약 없음<br>${esc(i.reason)}</p>`).join('')}
     <div class="progress-footer">5초마다 상태 확인 · 마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 단계별 소요 시간은 달라 남은 시간은 확정할 수 없습니다.</div>`;
   overview.querySelectorAll('[data-open-concept]').forEach(b => b.onclick = () => b.dataset.openConcept && openConcept(b.dataset.openConcept));
   for (const el of document.querySelectorAll('[data-progress-id]')) {

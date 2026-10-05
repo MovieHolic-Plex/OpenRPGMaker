@@ -10,6 +10,7 @@ from pathlib import Path
 
 import store
 import art_feedback
+import art_choices
 
 STEPS = ["공간 기획", "기획 검수", "재료 조사·검수", "칩 제작·검수", "공간 조립", "시각 검수", "조수 시험", "공용 등록"]
 STAGE = {
@@ -71,7 +72,7 @@ def job_view(job, now):
     except (OSError, TypeError):
         pass
     reviewer = job.get("tag") if job.get("tag") in ("A", "B") else None
-    return dict(id=job["id"], concept=job["concept"], label=label, reviewer=reviewer,
+    return dict(id=job["id"], concept=job["concept"], kind=job["kind"], label=label, reviewer=reviewer,
                 alive=process_alive(job), model=model, effort=effort, elapsedSeconds=max(0, int(now-started)) if started else None,
                 outputAgeSeconds=max(0, int(now-modified)) if modified else None)
 
@@ -125,49 +126,80 @@ def snapshot(cid=None):
         live = [j for j in own if j["alive"]]
         group = next((g for g in managed if c["id"] in g), None)
         index, label = STAGE.get(c["stage"], (-1, c["stage"]))
-        reason = ""
+        if live:
+            label = live[0]['label']
+        elif c['stage'] == 'art':
+            label = '도면 반려에 따른 배치 명세 수정' if c.get('note', '').startswith('도면 반려') else '그림 주문서·제작 입력 준비'
+        reason, wait_kind, waiting_for = "", None, []
         action = "지금 누를 버튼은 없습니다. 단계가 끝나면 다음 판정을 확인합니다."
         if c["stage"] == "blocked":
+            wait_kind = "operator-attention"
             reason = c.get("note") or "검수 또는 결과 처리에서 멈췄습니다."
             action = "운영 조치가 필요합니다. 기존 예시와 사용자 결정은 보존됩니다."
         elif c["stage"] == "art-review":
-            action = "예시를 보고 Allow / Deny만 눌러 주세요. 선택이 끝났다면 추가 입력은 없습니다."
+            try:
+                choices = art_choices.view(store.DATA, c['id'])
+                if choices['complete'] and not choices['installation']:
+                    wait_kind = 'integration-missing'
+                    reason = '선택은 끝났지만 공용 등록·조립을 잇는 실행 단계가 없습니다. 워커 차례를 기다리는 상태가 아닙니다.'
+                    action = '사용자 추가 선택 없이 운영에서 연결을 구현해야 합니다.'
+                    label = '공용 등록 연결 필요 · 실행 예약 없음'
+                elif choices['installation']:
+                    action = '선택 구역의 등록·저장 근거를 확인했습니다.'
+                else:
+                    wait_kind = 'user-decision'
+                    action = '예시를 보고 Allow / Deny만 눌러 주세요.'
+            except (OSError, ValueError, KeyError, TypeError):
+                wait_kind = 'operator-attention'
+                reason = '예시 자료를 확인하지 못했습니다. 실행 대기로 간주하지 않습니다.'
+
         elif c["stage"] == "result-review":
+            wait_kind = "user-decision"
             action = "결과를 보고 수정 / Allow / Deny를 선택해 주세요."
         elif c["stage"] in ("done", "discarded"):
             action = "현재 실행 중인 단계가 없습니다."
         elif own and not live:
+            wait_kind = "operator-attention"
             reason = "실행 기록은 있지만 해당 작업 프로세스를 확인할 수 없습니다. 종료 처리 또는 복구 확인이 필요합니다."
             action = "진행 중으로 간주하지 않습니다. 실행기 확인이 필요합니다."
         elif not own and c["stage"] not in ("blocked", "done", "discarded", "art-review"):
-            drawing = [j for j in views if j["alive"] and any(k["id"] == j["id"] and k["kind"] in ("art", "art-native") for k in jobs)]
-            siblings = [j for j in views if j["alive"] and group and j["concept"] in group]
-            if group and c["stage"] == "art" and drawing:
-                reason = "칩 제작 자리를 기다립니다. 현재 사용: " + " · ".join(dict.fromkeys(j["title"] for j in drawing))
-            elif group and siblings:
-                reason = "지정 공간을 순서대로 처리 중입니다. 현재 작업: " + " · ".join(dict.fromkeys(j["title"] for j in siblings))
+            siblings = [j for j in views if j['alive'] and group and j['concept'] in group]
+            if group and siblings:
+                wait_kind = 'pipeline-order'
+                waiting_for = [{'id': j['id'], 'concept': j['concept'], 'title': j['title'], 'step': j['label']} for j in siblings]
+                reason = '전용 실행기가 한 단계씩 처리합니다. 현재: ' + ' · '.join(dict.fromkeys(j['title'] + ' / ' + j['label'] for j in siblings))
+                action = '앞 단계가 끝나면 이 공간의 ' + label + '을 배정합니다. 사용자 입력은 없습니다.'
             elif group:
-                reason = "지정 공간 실행기의 다음 단계 배정을 기다립니다."
-            elif paused and c["status"] == "queued":
-                reason = "전체 자동 큐가 멈춰 있습니다. 이 공간을 담당하는 실행기의 최근 활동은 확인되지 않았습니다."
-                action = "전체 큐 재개는 다른 공간도 실행합니다. 이 공간만 계속할지 운영 상태를 확인해야 합니다."
-            elif c["stage"] not in ("blocked", "done", "discarded", "art-review"):
-                reason = "실행 작업이 없습니다. 다음 단계 배정 또는 선행 재료를 기다립니다."
+                wait_kind = 'scheduling'
+                reason = '전용 실행기는 살아 있으며 다음 단계 배정을 기다립니다.'
+            elif paused and c['status'] == 'queued':
+                wait_kind = 'global-pause'
+                reason = '전체 자동 큐가 일시 정지되어 있고 이 공간은 별도 실행기에 배정되지 않았습니다.'
+                action = '워커 부족이 아니라 실행 범위 밖입니다. 사용자 선택 요청은 없습니다.'
+            else:
+                wait_kind = 'unassigned'
+                reason = '실행 중인 작업이나 이 공간을 맡은 전용 실행기를 확인하지 못했습니다.'
         if live:
             next_step = "현재 결과 검수 → 통과하면 다음 단계, 반려면 피드백을 반영해 재시도"
         elif c["stage"] == "blocked":
             next_step = "막힘 원인 교정 → 해당 단계 재실행"
         elif c["stage"] in ("done", "discarded"):
             next_step = "예약된 다음 단계 없음"
+        elif wait_kind == "integration-missing":
+            next_step = "공용 등록·조립 실행 연결 구현 필요 (예약 없음)"
         elif c["stage"] == "art-review":
-            next_step = "선택·공용 등록·저장 근거 확인"
+            next_step = "예시 Allow / Deny"
         else:
             next_step = label + " 실행 → 결과 검수"
         items.append(dict(id=c["id"], title=c["title"], stage=c["stage"], label=label, step=index,
                           state=c["status"], note=c.get("note") or "", jobs=own, managed=bool(group),
-                          reason=reason, action=action, next=next_step,
+                          reason=reason, action=action, next=next_step, waitKind=wait_kind, waitingFor=waiting_for,
                           planAttempt=c.get("plan_attempt", 1), artRevision=c.get("art_revision", 0),
                           artLimit=art_feedback.limits(store.DATA, c["id"])["maxRevisions"],
                           reasons=(c.get("reasons") or [])[:3],
                           events=events(c["id"]) if cid else []))
-    return dict(at=now, paused=paused, steps=STEPS, jobs=views, items=items)
+    alive = [j for j in views if j['alive']]
+    return dict(at=now, paused=paused, steps=STEPS, jobs=views, items=items,
+                workers={'active': len(alive), 'nativeDrawing': sum(j['kind'] == 'art-native' for j in alive),
+                         'preparing': sum(j['kind'] == 'art' for j in alive),
+                         'reviewing': sum(j['kind'] in ('plan-review','material-review','art-layout-review','art-context-review','review','judge') for j in alive)})
