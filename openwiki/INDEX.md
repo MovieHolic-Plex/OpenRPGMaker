@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **145쪽 / 4989KB / 약 1,452,374 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **145쪽 / 5000KB / 약 1,455,672 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
 | `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
-| `openwiki/harnesses/super-harness.md` | 50KB | 4KB | 486 | ~15,742 |
+| `openwiki/harnesses/super-harness.md` | 59KB | 4KB | 580 | ~18,398 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
 | `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1555 | ~60,403 |
@@ -89,7 +89,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/modern-chipset.md` | 2 | `.input.json`, `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness.md` | 18 | `B.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `result-review.json`, `supervisor-authorization.json`, `verdict.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness.md` | 19 | `B.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `result-review.json`, `supervisor-authorization.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -1280,7 +1280,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L129` 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
 
-### `openwiki/harnesses/super-harness.md` — 50KB · 486줄 · ~15,742 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/super-harness.md` — 59KB · 580줄 · ~18,398 토큰 · 통째읽기 잘림
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1307,6 +1307,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L418` 운영 오류의 책임과 지정 공간 실행기 (2026-10-05)
   - `L452` open 공간도 면적 축소를 검토한다 (2026-10-05)
   - `L469` 대기 원인과 실제 그림 실행 구분 (2026-10-05)
+  - `L488` 요청 공간 병렬 운영과 축소 검수 보정 (2026-10-05)
+  - `L518` 첫 화면의 실제 진행·산출물 카드 (2026-10-05)
+  - `L551` 완성 그림 뒤의 기술 실패와 복구 (2026-10-05)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -2634,15 +2637,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L123` 시각 수정판 (2026-10-05)
 - `L138` 실제 조수 경로의 칩셋 계열 검사 (2026-10-05)
 
-### `openwiki/worldmap-terrain-editing.md` — 20KB · 191줄 · ~6,184 토큰
+### `openwiki/worldmap-terrain-editing.md` — 22KB · 209줄 · ~6,826 토큰
 
 - `L16` 흐름
   - `L18` 세계관별 준비 상태와 우주 조수 (2026-10-04)
   - `L36` 호스트 공용 DB와 조수 (2026-10-04)
-- `L83` 계약
-- `L109` 새 구조 만들기 — `base: "generate"` (2026-10-03)
-- `L155` 후속 조수 실행·SQLite 재로드 (2026-10-04)
-- `L163` 지형 경계 v9 (2026-10-03)
-- `L169` 글자 지도
-- `L175` 조수 역할 적대 시험 (2026-10-03)
-- `L182` 함정
+- `L87` 재사용 팔레트 전환 (2026-10-05)
+- `L101` 계약
+- `L127` 새 구조 만들기 — `base: "generate"` (2026-10-03)
+- `L173` 후속 조수 실행·SQLite 재로드 (2026-10-04)
+- `L181` 지형 경계 v9 (2026-10-03)
+- `L187` 글자 지도
+- `L193` 조수 역할 적대 시험 (2026-10-03)
+- `L200` 함정

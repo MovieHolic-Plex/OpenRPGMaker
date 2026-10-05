@@ -1,6 +1,6 @@
 # 세계 지도 지형 편집 — 조수가 대륙·바다·섬·산맥을 바꾼다 (2026-10-03)
 
-세계 지도(월드맵 키트, 96×72칸·16px)는 타일을 찍어 만들지 않는다. **지형 작업(ops)** 목록을 키트가 다시 그린다.
+세계 지도(월드맵 키트, 96×72칸·16px)의 큰 지형은 **지형 작업(ops)** 목록을 키트가 다시 그린다. 저장 결과는 재사용 지형 칸과 별도 위층 거점으로 구성되며, 편집기 붓으로도 손 편집할 수 있다.
 조수는 `read_world_terrain` 으로 칸 좌표를 보고 `edit_world_terrain` 으로 작업을 얹는다.
 대륙을 해협으로 가르기, 섬, 산줄기·고개, 강, 숲, 바닥(사막·설원·늪…), 고원, 장소 옮기기까지 된다.
 
@@ -55,9 +55,9 @@ Pi의 지형 조회·편집, 맵 속성 변경, 지역 가져오기, 공간 참�
 편집기와 같은 Pi 실행·도구 발견·참고문서 관문을 쓰며, 실제 공용 DB를 로드하고 별도 SQLite에 저장·재로드한다.
 UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함하지 않는다.
 
-월드 키트는 숲·길·기존 건물까지 한 이미지에 굽는다. `layoutQuality.measureLayoutQuality`의
+월드 키트 지형 재료는 숲·길이 합성된 칸이며 거점 아이콘은 별도 위층이다. `layoutQuality.measureLayoutQuality`의
 위층 소품 수로 빈 바닥을 재는 일반 마을 검사는 이 형식에 적용하지 않는다.
-worldmapSource + 업로드 그림 + 16px + 지도 폭과 같은 시트 열 수 + `lowerTiles[i]===i`가 모두 맞을 때만 제외한다.
+`worldmapSource.tilemap.version===1`과 worldmap-kit 계열이 맞으면 제외한다. 옛 형식은 worldmapSource + 업로드 그림 + 16px + 지도 폭과 같은 시트 열 수 + `lowerTiles[i]===i` 조건으로 제외한다.
 일반 월드 타일셋이나 임의 배열은 계속 검사한다. 모델이 바닥 풍경을 덮어 채우게 하던 실호출의 오탐 수정이다.
 
 ```
@@ -65,27 +65,45 @@ worldmapSource + 업로드 그림 + 16px + 지도 폭과 같은 시트 열 수 +
                                     ├ 편집기: POST /v1/worldmap/build (동반 앱, scripts/lib/ohMyPiHttp.mjs)
                                     └ Bun 일꾼·헤드리스: scripts/lib/worldmapBuild.mjs 를 프로세스 안에서(setWorldmapBuilder)
                                          └ python3 tiledata/worldmap-kit/kit/build_world.py --theme T --terrain <json> [--preview]
-        run: 결과 PNG → assets.uploaded["worldmap_<mapId>_image"]
-             tilesets["worldmap_<mapId>"]  칸마다 한 타일(tilesPerRow 96, 6912칸), 통행 = 키트 걷기 표(world.walk)
-             maps[mapId]  lowerTiles 0..6911, locations = 여정 장소, worldmapSource = {theme, ops, terrainId, palette}
+        run: 완성 PNG → picture assets.uploaded["worldmap_<mapId>_image"]
+             지형 재료 PNG → uploaded worldmap_<mapId>_materials (12열, 픽셀·통행·낱말 해시로 중복 제거)
+             tilesets["worldmap_<mapId>"]  재사용 지형 + 사람 선택 아이콘 이식, 34개 대표 지형 그룹(판본별 상이)
+             maps[mapId]  lowerTiles = 재료 번호 배열, upperTiles = 거점 배열
+             worldmapSource.tilemap = 생성 기준 배열 + 재료 해시(손 편집 보존용)
 ```
 
 | 파일 | 역할 |
 |---|---|
 | `src/editor/tools/worldTerrainTools.ts` | 두 도구. 스키마는 `kit_terrain.py` 의 거울 — 자유 키 객체 금지(Gemini 400) |
 | `src/editor/worldmap/worldmapBuild.ts` | 빌드 요청·결과 타입, 기본 빌더(fetch), `setWorldmapBuilder` |
-| `scripts/lib/worldmapBuild.mjs` | python 키트 실행 → `{imageDataUrl, world, ascii, journeyCheck, warnings}` |
+| `scripts/lib/worldmapBuild.mjs` | python 키트 실행 → `{imageDataUrl, tilemap, world, ascii, journeyCheck, warnings}` |
+| `tiledata/worldmap-kit/kit/lib/kit_tilemap.py` | 거점 합성 전 지형을 좌표와 독립된 12열 재료로 패킹 |
+| `src/editor/worldmap/worldmapTilemap.ts` | 재료 그룹·거점 키트·위층·손 편집 기준 배열 구성 |
 | `tiledata/worldmap-kit/kit/lib/kit_terrain.py` | ops 검사·적용(make_map_v4 목록에 다각형을 얹는다), `coverage` 경고 |
 | `tiledata/worldmap-kit/terrains/<id>.json` | 이름 붙은 지형(예: `archipelago` — 군도 테마가 쓴다) |
 | `scripts/qa-game/worldmap-terrain-offline.mts` | 모델 없이 도구 사슬 끝까지(읽기 → 틀린 작업 → 새 지도 → 작업 누적) |
 | `scripts/qa/runtime/worldmap-terrain.scenario.mjs` | 출하 플레이어로 걷기(절벽은 막히고 평지는 걸어진다) |
+
+## 재사용 팔레트 전환 (2026-10-05)
+
+옛 지도 PNG 전체를 팔레트로 쓰던 형식은 왼쪽 팔레트에 **지형·거점 재료로 바꾸기** 버튼을 표시한다.
+클릭하면 같은 `edit_world_terrain({mapId,ops:[]})` 저장/undo 경로를 사용한다. 새 지도는 처음부터 재료 형식이다.
+완성 지도 그림은 picture이며 타일셋이 아니다. 34개 그룹은 대표 조각을 보여 주고, 경계 변형은 스포이트로 선택한다.
+해안 연결 오토타일은 아니다. 큰 형상 편집은 ops를 쓴다. 거점은 사람 선택 구조물 키트로 놓는다.
+생성 거점은 ★/열린 통행로 기존 `world.walk`를 따르고, 새 스탬프는 원본 입구/벽 계약을 따른다.
+아이콘 원본의 분홍 키(255,103,139)는 투명, (254,103,139)는 검정 alpha80 그림자로 번들과 동일하게 합성한다.
+
+공용 참고문서 `wmi-materials`는 `worldmap_selected`가 소유하며 파생 지도는 referenceSourceTilesetId로 공유한다.
+출처 `tiledata/worldmap-kit/selected/materials/`, 준비 `node scripts/content/prepare-worldmap-material-references.mjs`,
+번들 `src/assets/worldmapMaterialReferences.json`, 그림 `public/assets/worldmap-icons-references/material*.png`.
+새 프로젝트와 기존 프로젝트의 ensureWorldmapSelectedTileset 양쪽에 배선되어 있다.
 
 ## 계약
 
 - HTTP 빌더의 LLM 클라이언트는 호출 시 불러온다. 레지스트리 → 지형 도구 → 빌더 → LLM 클라이언트 → 레지스트리 순환 초기화를 피하며, 주입한 헤드리스 빌더는 이 경로를 읽지 않는다.
 - 선택 아이콘 그림은 내보내기 자산 수집에 이식 소스 키로 포함되고 출처 MD도 함께 싣는다. AI 참고문서 JSON은 플레이어 빌드에서 빈 배열로 바꾼다.
 
-- **따로 저작한 위층·이식은 보존한다**(2026-10-04). 같은 크기로 지형을 다시 그리면 위층·2/4층·그림자·이식 슬롯의 소스·통행을 남긴다.
+- **손 편집 보존**(2026-10-05). 기준 배열과 다른 바닥·위층, 2/4층·스택·doodad 번호를 새 재료 번호로 옮긴다. 동일 재료 해시 또는 원래 이식을 찾을 수 없으면 원자적으로 실패한다. 그림자·relief·이벤트는 유지한다.
   별도 배치가 있는 지도 크기를 바꾸는 재생성은 `authored-worldmap-resize`로 거부한다. 새 mapId로 만든 뒤 옮긴다.
 - **사람 선택 아이콘 공용 스탬프:** `worldmap_selected`(79개·1,620칸)와 `list_worldmap_icons → stamp_worldmap_icon → inspect_worldmap_icon`.
   16px 생성 지도에 타일 이식으로 덧붙여 바닥 번호·지도 id를 보존한다. 참고문서는 소스 `worldmap_selected`에서 읽는다.
