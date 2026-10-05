@@ -618,6 +618,8 @@ export interface UploadedAsset {
     frames?: number;
     frameWidth?: number;
     frameHeight?: number;
+    /** Uploaded charset gait cadence; omitted retains the legacy 80ms walk frames. */
+    walkFrameMs?: number;
     width?: number;
     height?: number;
     transparentColor?: string;

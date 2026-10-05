@@ -152,7 +152,8 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
       if (state.isCharset) {
         const walkElapsed = (followerWalkElapsedMs.get(key) ?? 0) + Math.max(0, deltaMs);
         followerWalkElapsedMs.set(key, walkElapsed);
-        sprite.setFrame(charsetWalkFrameIndex(state.baseFrame, state.direction, charsetWalkStepFromElapsedMs(walkElapsed)));
+        const frameMs = store.getCurrent().assets.uploaded[state.texture]?.meta.walkFrameMs;
+        sprite.setFrame(charsetWalkFrameIndex(state.baseFrame, state.direction, charsetWalkStepFromElapsedMs(walkElapsed, frameMs)));
       }
     } else if (motion) {
       // 걸음 완료 — 슬롯 중앙에 정착하고 정지 프레임으로.

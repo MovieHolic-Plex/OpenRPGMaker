@@ -99,7 +99,13 @@ export function validateAssets(value: unknown): void {
     requireNumber(`${id}.frameWidth`, record.frameWidth);
     requireNumber(`${id}.frameHeight`, record.frameHeight);
   }
-  requireRecord("assets.uploaded", assets.uploaded);
+  const uploaded = requireRecord("assets.uploaded", assets.uploaded);
+  for (const [id, value] of Object.entries(uploaded)) {
+    if (!isRecord(value) || !isRecord(value.meta) || value.meta.walkFrameMs === undefined) continue;
+    const cadence = requireNumber(`${id}.meta.walkFrameMs`, value.meta.walkFrameMs);
+    assert(value.kind === 'charset' && Number.isFinite(cadence) && cadence >= 50 && cadence <= 1000,
+      `${id}.meta.walkFrameMs requires a charset cadence of 50..1000ms`);
+  }
 }
 
 export function validateResourceProfiles(value: unknown): void {

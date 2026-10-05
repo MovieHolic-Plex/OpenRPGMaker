@@ -89,3 +89,13 @@ detached shipping copy before resolving public files. This is the existing
 replacement policy for retired EasyRPG Blow/Sword1/Arrow sheets; it keeps the
 canonical document intact and avoids reintroducing retired files. Hydrated host
 assets must match their exact SHA, including the currently authored opening BGM.
+
+
+## Approved field-kit surfaces (2026-10-05)
+
+The Emerald field menu/party/bag and shop use the human-approved field-kit mint,
+cream and dark-green palette. The right command window is192logical pixels wide
+(left288in480×320), with the native controller and save behavior unchanged.
+`oprnMenuSounds` selects the three approved cues, so menu transitions keep the
+existing map BGM source alive. This is a scoped change to the Emerald opt-in CSS;
+see `pokemon-like-field-kit.md` for approval, canonical adoption and player proof.

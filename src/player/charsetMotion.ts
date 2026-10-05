@@ -39,9 +39,10 @@ export function charsetIdleFrameIndex(
   });
 }
 
-export function charsetWalkStepFromElapsedMs(elapsedMs: number): number {
+export function charsetWalkStepFromElapsedMs(elapsedMs: number, frameMs = NPC_WALK_FRAME_MS): number {
   if (!Number.isFinite(elapsedMs)) return 0;
-  return Math.floor(Math.max(0, elapsedMs) / NPC_WALK_FRAME_MS);
+  const cadence = Number.isFinite(frameMs) && frameMs >= 50 && frameMs <= 1000 ? frameMs : NPC_WALK_FRAME_MS;
+  return Math.floor(Math.max(0, elapsedMs) / cadence);
 }
 
 function walkPatternIndex(walkStep: number): number {

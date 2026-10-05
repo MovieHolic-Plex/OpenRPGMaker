@@ -1489,3 +1489,13 @@ compact/pretty wire serialization and `prepareWebExport` retain the entire table
 Absent fields remain absent, with no schema version change. Runtime continuation
 is transient scene state; saves do not acquire a new slide field. Native evidence
 and state ownership: [runtime-sessions.md](runtime-sessions.md#authored-sliding-floors-restored-in-the-current-engine-2026-10-04).
+
+
+## Uploaded charset pose cadence (2026-10-05)
+
+`assets.uploaded[id].meta.walkFrameMs` optionally declares milliseconds per walking
+pose, for charset assets only. Shape validation requires a finite number50..1000.
+Absent values preserve the80ms legacy cadence. Autonomous NPCs and party followers
+read the value by their uploaded texture ID; it does not change tile movement speed,
+frame geometry or idle pose. Runtime fallback also rejects nonfinite/out-of-range
+values. Approved field-kit snow cats use150ms; see `pokemon-like-field-kit.md`.

@@ -6,24 +6,24 @@
   position:absolute; inset:auto; left:50%; top:50%; transform:translate(-50%,-50%);
   padding:0; margin:0; min-width:0; min-height:0; border:0; border-radius:0;
   display:block; background:none; box-shadow:none; backdrop-filter:none;
-  overflow:hidden; animation:none; color:#303038; z-index:75;
+  overflow:hidden; animation:none; color:#384840; z-index:75;
   --emerald-shop-scale:1;
 }
 .emerald-shop-overlay .emerald-shop-shell {
   position:absolute; left:0; top:0; width:480px; height:320px; margin:0;
   transform:scale(var(--emerald-shop-scale)); transform-origin:top left;
-  font:400 16px/1.4 var(--runtime-pixel-font,"Galmuri11",sans-serif);
-  color:#303038; text-shadow:1px 1px #d0d0c8;
+  font:400 16px/1.4 var(--runtime-pixel-font,"Galmuri9",sans-serif);
+  color:#384840; text-shadow:none;
 }
 /* Once the real field crop is available it is the only displayed map image.
    Opaque unused space prevents the original centered canvas appearing a second time.
    If capture is unavailable, the transparent buy shell retains the single live field. */
 .emerald-shop-overlay .emerald-shop-shell[data-shop-mode="buy"]:has(.emerald-shop-map-view[data-map-source="game-canvas-snapshot"]),
-.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="sell"]:not([data-shop-phase="menu"]) { background:#788898; }
+.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="sell"]:not([data-shop-phase="menu"]) { background:#83bba3; }
 .emerald-shop-overlay .emerald-shop-window {
-  position:absolute; box-sizing:border-box; background:#f8f8f0;
-  border:4px solid #485060; border-radius:4px;
-  box-shadow:inset 0 0 0 2px #c8d0e0,inset 0 0 0 4px #ffffff;
+  position:absolute; box-sizing:border-box; background:#f8f8e8;
+  border:4px solid #487068; border-radius:0;
+  box-shadow:inset 0 0 0 2px #a8c0a0,inset 0 0 0 4px #ffffff;
   padding:8px 12px; overflow:hidden;
 }
 .emerald-shop-overlay .emerald-shop-action {
@@ -35,7 +35,7 @@
 }
 .emerald-shop-overlay .emerald-shop-action.selected::before {
   content:"▶"; position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-size:12px; color:#303038; text-shadow:none;
+  font-size:12px; color:#384840; text-shadow:none;
 }
 .emerald-shop-overlay .emerald-shop-action:focus { outline:none; }
 .emerald-shop-overlay .emerald-shop-action:focus-visible { outline:none; }
@@ -49,7 +49,7 @@
 .emerald-shop-overlay .emerald-shop-map-view canvas { display:block; width:224px; height:144px; image-rendering:pixelated; }
 .emerald-shop-overlay .emerald-shop-goods {
   left:224px; top:24px; width:248px; height:288px; padding:12px 10px;
-  background:#f8f8f0; overflow-y:auto; scrollbar-width:none;
+  background:#f8f8e8; overflow-y:auto; scrollbar-width:none;
 }
 .emerald-shop-overlay .emerald-shop-goods::-webkit-scrollbar { display:none; }
 .emerald-shop-overlay .emerald-shop-goods .emerald-shop-action { height:32px; flex-shrink:0; gap:6px; font-size:15px; }

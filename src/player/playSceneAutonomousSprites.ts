@@ -19,7 +19,8 @@ export function setNpcWalkFrame(
   if (!animationEnabled) return;
   if (animationType === "fixedGraphic") return;
   if (!sprite || !isCharsetSprite(sprite.texture.key)) return;
-  sprite.setFrame(charsetWalkFrameIndex(baseFrame, dir, charsetWalkStepFromElapsedMs(elapsedMs)));
+  const frameMs = store.getCurrent().assets.uploaded[sprite.texture.key]?.meta.walkFrameMs;
+  sprite.setFrame(charsetWalkFrameIndex(baseFrame, dir, charsetWalkStepFromElapsedMs(elapsedMs, frameMs)));
 }
 
 export function setNpcIdleFrame(

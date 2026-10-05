@@ -45,8 +45,43 @@ uses `bridgeProject: ""` rather than nesting the old hostProject selector again.
 AI conversation table had0rows. Read evidence is private under
 `~/.local/share/oprn/monster-expedition-evidence/field-ui-music-20261005/`.
 
-No candidate from this pass has been approved or installed into the game. After
-actual human choices, an external adapter must preserve native sprite geometry,
-bind the approved menu/audio settings through the host service, fresh-load the
-saved project and verify the exported player. A JSON preview or this harness's
-Allow record alone is not canonical integration evidence.
+## Approved integration (2026-10-05)
+
+All three current package hashes received real `human-browser` Allow decisions on
+18327 (monster07:57:45Z, UI07:57:47Z, music07:57:49Z). Approved source files and
+receipts remain immutable. `scripts/content/prepare-approved-field-kit.mjs` checks
+them and prepares a detached patch; `monster-expedition-store.mjs save` owns the
+backup, compare-and-swap save and fresh host reload. Review-tool votes are never
+fabricated by the adoption script.
+
+- `pack-reviewed-field-monster.py` checks that each native32×32 frame has four
+  transparent columns on each side, packs the unchanged24×32 ink into slot0 of the
+  engine288×256 sheet and reorders directions. Reconstructing all12native frames
+  must reproduce every RGBA byte. No resampling, palette changes or redrawing.
+- `mx_field_flurrykit_approved_v1` uses manual scale1 and150ms walk poses. The
+  species `mx_species_flurrykit.graphic.fieldGraphic` also uses it for followers.
+- Two same-priority, solid roaming events live at home11,10 and frost6,9. Every
+  route edge is checked against actual map passability and existing NPC routes.
+- Approved town/route scores replace60authored references; three cues bind native
+  title/menu sounds. The existing Emerald UI controllers retain party, medicine,
+  shop transactions and save behavior; their surfaces use the approved palette.
+- Canonical session, hero start and opening remain unchanged. Export keeps the
+  original `starlight-islands-v1` save namespace.
+
+`field-kit-native.probe.mjs` checks the built exported player using a genuine
+predecessor save in a private browser: preserved party/inventory/money, visible
+walk frames, solid collision, dialogue, native healing, menu audio continuity,
+real shop purchase and slot save/load. Temporary HP damage and a paused NPC are
+explicit QA setup. This is separate from the prototype review evidence.
+
+Integration evidence: `verify-shots/field-kit-adoption-20261005/`. Full canonical
+snapshots, asset bytes and official receipts stay in the private evidence folder
+`~/.local/share/oprn/monster-expedition-evidence/field-kit-adoption-20261005/`.
+
+Canonical adoption completed at revision35, SHA
+`85fb2d5b0bde403c319e13d972e6268dc11e8786e3026decf90a0c89fc34b418`.
+The first save completed but its final media read lost a transport socket; no
+second save was attempted. A fresh read plus `verify-approved-field-kit.mjs`
+confirmed the full normalized document and all6media byte hashes. That recovery
+script performs reads only. The exported live entry remains
+`http://mdc-server:18301/monster-expedition/player.html`.
