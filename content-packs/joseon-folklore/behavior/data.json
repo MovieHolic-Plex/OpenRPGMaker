@@ -56,9 +56,9 @@
           "skillId": "skill_jf_enemy_tusk_charge",
           "priority": 80,
           "condition": {
-            "kind": "hp",
-            "minPercent": 0,
-            "maxPercent": 65
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -201,7 +201,7 @@
           "priority": 85,
           "condition": {
             "kind": "turn",
-            "start": 2,
+            "start": 1,
             "interval": 4
           },
           "switchOnAfterAction": {

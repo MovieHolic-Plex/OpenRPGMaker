@@ -1,0 +1,25 @@
+{
+  "projectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
+  "projectDir": "/home/main/z-project/rpg-zzu/.oprn-projects/joseon-starter-preset-20261004",
+  "beforeRevision": 8,
+  "revision": 9,
+  "sha256": "324573d3b54f3ea898cb49d185bdc48e68e15f27367e44f749e5d1f99753ce6b",
+  "reopened": true,
+  "changedEnemies": [
+    "enemy_jf_wild_boar",
+    "enemy_jf_maiden_ghost"
+  ],
+  "changedSkills": [
+    "skill_jf_enemy_tusk_charge",
+    "skill_jf_enemy_straw_club",
+    "skill_jf_enemy_sorrow_cry"
+  ],
+  "choreographies": [
+    "chor_jf_tusk_charge",
+    "chor_jf_straw_club",
+    "chor_jf_sorrow_cry"
+  ],
+  "mapsUnchanged": true,
+  "sessionUnchanged": true,
+  "referenceIssues": []
+}

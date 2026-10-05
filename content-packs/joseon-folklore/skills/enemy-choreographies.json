@@ -1,0 +1,51 @@
+{
+  "skillBindings": {
+    "skill_jf_enemy_tusk_charge": "chor_jf_tusk_charge",
+    "skill_jf_enemy_straw_club": "chor_jf_straw_club",
+    "skill_jf_enemy_sorrow_cry": "chor_jf_sorrow_cry"
+  },
+  "skillChoreographies": [
+    {
+      "id": "chor_jf_tusk_charge",
+      "name": "엄니돌진 · 흙먼지 돌격",
+      "description": "움츠림 → 가속 돌격 → 엄니 접촉 → 원위치. 전투의 실제 표적 좌표를 쓴다.",
+      "sourceId": "skill_mon_tusk_charge",
+      "motion": "lunge",
+      "movement": { "pattern": "dash", "anticipationMs": 280, "travelMs": 360, "recoveryMs": 460, "acceleration": 1.6 },
+      "weight": "heavy",
+      "screen": { "shake": 2 },
+      "layers": [
+        { "sheet": "mon_charge_dust", "anchor": "user" },
+        { "sheet": "mon_tusk_hit", "anchor": "target" }
+      ]
+    },
+    {
+      "id": "chor_jf_straw_club",
+      "name": "짚방망이 · 접근 강타",
+      "description": "두 발로 다가서서 방망이를 들고 내려친 뒤 돌아온다.",
+      "sourceId": "skill_mon_axe_cleave",
+      "motion": "lunge",
+      "movement": { "pattern": "walk", "anticipationMs": 340, "travelMs": 480, "recoveryMs": 480 },
+      "weight": "heavy",
+      "screen": { "shake": 2 },
+      "layers": [
+        { "sheet": "mon_cleave_arc", "anchor": "target" },
+        { "sheet": "mon_slam_hit", "anchor": "target", "scale": 0.7 }
+      ]
+    },
+    {
+      "id": "chor_jf_sorrow_cry",
+      "name": "한의울음 · 귀기 파동",
+      "description": "제자리에서 원한을 모아 파티 전체에 귀기 파동을 보낸다. HP 피해 없이 귀봉 상태를 판정한다.",
+      "sourceId": "skill_mon_banshee_wail",
+      "motion": "cast",
+      "weight": "light",
+      "screen": { "dim": true },
+      "tint": "dark",
+      "layers": [
+        { "sheet": "mon_wail_sky", "anchor": "screen", "startMs": 620 },
+        { "sheet": "mon_screech_ring", "anchor": "allTargets", "startMs": 620, "scale": 0.8 }
+      ]
+    }
+  ]
+}

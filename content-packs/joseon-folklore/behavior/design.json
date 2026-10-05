@@ -25,7 +25,7 @@
       },
       "scenarioStats": {
         "maxHp": 65,
-        "maxMp": 12,
+        "maxMp": 6,
         "attack": 12,
         "defense": 6,
         "mind": 6,
@@ -111,7 +111,7 @@
         ],
         "stats": {
           "maxHp": 65,
-          "maxMp": 0,
+          "maxMp": 6,
           "attack": 12,
           "defense": 6,
           "mind": 6,
@@ -143,9 +143,7 @@
         },
         "elementRates": {}
       },
-      "scenarioStatOverrides": {
-        "maxMp": 12
-      },
+      "scenarioStatOverrides": {},
       "integrationRequirements": {
         "basicAttackAlwaysCandidate": true,
         "requiredMaximumMpForOneUse": 3,
@@ -159,16 +157,16 @@
       "name": "산멧돼지",
       "role": "normal",
       "recommendedLevel": 3,
-      "playerResponse": "HP65% 아래에서 돌진 준비를 더 자주 선택. 실제 chargeTurns=1 예고 후 방어/단일 회복. 준비 다음 자기 차례에 단일 HP 피해.",
+      "playerResponse": "첫 전투 차례부터 1+3n에 돌진 준비. 실제 chargeTurns=1 예고 후 방어/단일 회복. 준비 다음 자기 차례에 단일 HP 피해.",
       "hpThreshold": null,
       "primaryCondition": {
-        "kind": "hp",
-        "minPercent": 0,
-        "maxPercent": 65
+        "kind": "turn",
+        "start": 1,
+        "interval": 3
       },
       "scenarioStats": {
         "maxHp": 110,
-        "maxMp": 12,
+        "maxMp": 9,
         "attack": 14,
         "defense": 10,
         "mind": 8,
@@ -192,9 +190,9 @@
           "skillId": "skill_jf_enemy_tusk_charge",
           "priority": 80,
           "condition": {
-            "kind": "hp",
-            "minPercent": 0,
-            "maxPercent": 65
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -248,7 +246,7 @@
         ],
         "stats": {
           "maxHp": 110,
-          "maxMp": 0,
+          "maxMp": 9,
           "attack": 14,
           "defense": 10,
           "mind": 8,
@@ -280,9 +278,7 @@
         },
         "elementRates": {}
       },
-      "scenarioStatOverrides": {
-        "maxMp": 12
-      },
+      "scenarioStatOverrides": {},
       "integrationRequirements": {
         "basicAttackAlwaysCandidate": true,
         "requiredMaximumMpForOneUse": 3,
@@ -305,7 +301,7 @@
       },
       "scenarioStats": {
         "maxHp": 85,
-        "maxMp": 16,
+        "maxMp": 8,
         "attack": 14,
         "defense": 7,
         "mind": 10,
@@ -388,7 +384,7 @@
         ],
         "stats": {
           "maxHp": 85,
-          "maxMp": 0,
+          "maxMp": 8,
           "attack": 14,
           "defense": 7,
           "mind": 10,
@@ -420,9 +416,7 @@
         },
         "elementRates": {}
       },
-      "scenarioStatOverrides": {
-        "maxMp": 16
-      },
+      "scenarioStatOverrides": {},
       "integrationRequirements": {
         "basicAttackAlwaysCandidate": true,
         "requiredMaximumMpForOneUse": 4,
@@ -445,7 +439,7 @@
       },
       "scenarioStats": {
         "maxHp": 140,
-        "maxMp": 12,
+        "maxMp": 9,
         "attack": 18,
         "defense": 12,
         "mind": 10,
@@ -525,7 +519,7 @@
         ],
         "stats": {
           "maxHp": 140,
-          "maxMp": 0,
+          "maxMp": 9,
           "attack": 18,
           "defense": 12,
           "mind": 10,
@@ -557,9 +551,7 @@
         },
         "elementRates": {}
       },
-      "scenarioStatOverrides": {
-        "maxMp": 12
-      },
+      "scenarioStatOverrides": {},
       "integrationRequirements": {
         "basicAttackAlwaysCandidate": true,
         "requiredMaximumMpForOneUse": 3,
@@ -708,11 +700,11 @@
       "name": "처녀귀신",
       "role": "normal",
       "recommendedLevel": 5,
-      "playerResponse": "모으기1 예고 후 전체 귀봉50%: 기본 공격·아이템 허용, HP 피해 없음. 준비 중 회복하고 봉인 후 정화/정화부로 기술 사용을 회복.",
+      "playerResponse": "첫 전투 차례부터 1+4n에 모으기1 예고 후 전체 귀봉50%: 기본 공격·아이템 허용, HP 피해 없음. 준비 중 회복하고 봉인 후 정화/정화부로 기술 사용을 회복.",
       "hpThreshold": null,
       "primaryCondition": {
         "kind": "turn",
-        "start": 2,
+        "start": 1,
         "interval": 4
       },
       "scenarioStats": {
@@ -742,7 +734,7 @@
           "priority": 85,
           "condition": {
             "kind": "turn",
-            "start": 2,
+            "start": 1,
             "interval": 4
           },
           "switchOnAfterAction": {
@@ -2281,7 +2273,7 @@
     }
   ],
   "skillSource": {
-    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-skills/content-packs/joseon-folklore/skills/data.json",
+    "path": "content-packs/joseon-folklore/skills/data.json",
     "sha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
     "missingIds": []
   },

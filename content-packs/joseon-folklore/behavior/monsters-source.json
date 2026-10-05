@@ -1,6 +1,6 @@
 {
-  "sourcePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/data.json",
-  "sha256": "a4e13a9e9baa90b3fe44a014caee1c1c95ce35552e9f16918e2d83a0f0ac74ed",
+  "sourcePath": "content-packs/joseon-folklore/monsters/data.json",
+  "sha256": "ab23ee7e804ff6237e8090a6ec2a9b81ffd1d25c56cd7b5ae56d8e246b16f43c",
   "purpose": "read-only source snapshot; no cross-role mutations",
   "records": {
     "enemies": [
@@ -24,7 +24,7 @@
         ],
         "stats": {
           "maxHp": 65,
-          "maxMp": 0,
+          "maxMp": 6,
           "attack": 12,
           "defense": 6,
           "mind": 6,
@@ -76,7 +76,7 @@
         ],
         "stats": {
           "maxHp": 110,
-          "maxMp": 0,
+          "maxMp": 9,
           "attack": 14,
           "defense": 10,
           "mind": 8,
@@ -128,7 +128,7 @@
         ],
         "stats": {
           "maxHp": 85,
-          "maxMp": 0,
+          "maxMp": 8,
           "attack": 14,
           "defense": 7,
           "mind": 10,
@@ -180,7 +180,7 @@
         ],
         "stats": {
           "maxHp": 140,
-          "maxMp": 0,
+          "maxMp": 9,
           "attack": 18,
           "defense": 12,
           "mind": 10,

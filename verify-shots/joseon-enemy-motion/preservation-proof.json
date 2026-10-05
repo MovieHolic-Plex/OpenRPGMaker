@@ -1,0 +1,31 @@
+{
+  "fromRevision": 6,
+  "toRevision": 9,
+  "changedTopFields": [
+    "database"
+  ],
+  "changedExistingRecords": {
+    "skills": {
+      "skill_jf_enemy_tusk_charge": [
+        "retroChoreographyId"
+      ],
+      "skill_jf_enemy_straw_club": [
+        "retroChoreographyId"
+      ],
+      "skill_jf_enemy_sorrow_cry": [
+        "retroChoreographyId"
+      ]
+    },
+    "enemies": {
+      "enemy_jf_wild_boar": [
+        "actions"
+      ],
+      "enemy_jf_maiden_ghost": [
+        "actions"
+      ]
+    }
+  },
+  "newCollection": "skillChoreographies",
+  "newRecords": 3,
+  "allMapsTilesAssetsSystemsSessionStatsCostsStateChancesPreserved": true
+}

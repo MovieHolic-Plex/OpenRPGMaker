@@ -1,5 +1,9 @@
 # Behavior full · root 인계 보고
 
+이 문서는 초기 worker 인계 기록이다. 2026-10-05 이후의 통합 기력·멧돼지/처녀귀신 조건·
+실제 동작 녹화는 `README.md`와 `verify-shots/joseon-enemy-motion/`을 따른다.
+이 보고서의 124개 실행·보드·미통합 표기를 현재 조건의 새 합격 근거로 사용하지 않는다.
+
 ## 완료 산출물
 
 - 일반12/보스3 전15종 enemyActions /37행동. 기본 공격 always/priority1/빈skillId는 모든 종에서 유지.

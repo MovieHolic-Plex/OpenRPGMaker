@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 const root=path.resolve('content-packs/joseon-folklore');
-const collections=['classes','skills','items','equipment','enemies','troops','states','elements'];
+const collections=['classes','skills','items','equipment','enemies','troops','states','elements','skillChoreographies'];
 const data={packId:'joseon-folklore',schemaVersion:1,...Object.fromEntries(collections.map(key=>[key,[]]))};
 const roles=['consumables','equipment','monsters','behavior','classes','skills'];
 let actions=[];
@@ -12,6 +12,13 @@ for(const role of roles) {
   const source=JSON.parse(fs.readFileSync(file,'utf8'));
   for(const key of collections) data[key].push(...(source[key]??[]));
   actions.push(...(source.enemyActions??[]));
+}
+const enemyChoreographies=JSON.parse(fs.readFileSync(path.join(root,'skills/enemy-choreographies.json'),'utf8'));
+data.skillChoreographies.push(...enemyChoreographies.skillChoreographies);
+for(const [skillId,choreographyId] of Object.entries(enemyChoreographies.skillBindings)) {
+  const skill=data.skills.find(row=>row.id===skillId);
+  if(!skill || !data.skillChoreographies.some(row=>row.id===choreographyId)) throw new Error('Missing enemy choreography: '+skillId);
+  skill.retroChoreographyId=choreographyId;
 }
 for(const patch of actions) {
   const enemy=data.enemies.find(row=>row.id===patch.enemyId);

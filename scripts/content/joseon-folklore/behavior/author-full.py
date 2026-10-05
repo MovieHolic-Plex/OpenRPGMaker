@@ -2,10 +2,9 @@
 import argparse,hashlib,json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];OUT=ROOT/'content-packs/joseon-folklore/behavior'
-BASE=ROOT.parent
 ap=argparse.ArgumentParser()
-ap.add_argument('--skills',type=Path,default=BASE/'rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-skills/content-packs/joseon-folklore/skills/data.json')
-ap.add_argument('--monsters',type=Path,default=BASE/'rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/data.json')
+ap.add_argument('--skills',type=Path,default=ROOT/'content-packs/joseon-folklore/skills/data.json')
+ap.add_argument('--monsters',type=Path,default=ROOT/'content-packs/joseon-folklore/monsters/data.json')
 args=ap.parse_args();ids=json.loads((ROOT/'content-packs/joseon-folklore/ids.json').read_text())
 def save(name,value):(OUT/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -20,11 +19,11 @@ def allies(lo,hi):return {'kind':'allies','min':lo,'max':hi}
 def act(key,p,c):return {'skillId':ids['enemySkills'][key] if key else '', 'priority':p,'condition':c,'switchOnAfterAction':{'enabled':False},'switchOffAfterAction':{'enabled':False}}
 normal=[
  ('field-rat','들쥐',1,'poison-bite',72,turn(3,4),'독 물기의 실제 상태 효과에 맞춰 해독/정화. 기술 미저장 시 효과를 가정하지 않는다.'),
- ('wild-boar','산멧돼지',3,'tusk-charge',80,hp(0,65),'HP65% 아래에서 돌진 준비를 더 자주 선택. 실제 chargeTurns=1 예고 후 방어/단일 회복. 준비 다음 자기 차례에 단일 HP 피해.'),
+ ('wild-boar','산멧돼지',3,'tusk-charge',80,turn(1,3),'첫 전투 차례부터 1+3n에 돌진 준비. 실제 chargeTurns=1 예고 후 방어/단일 회복. 준비 다음 자기 차례에 단일 HP 피해.'),
  ('cave-bat','굴박쥐',3,'wing-flurry',75,allies(1,99),'동료가 있는 동안 기술 선택. 박쥐를 먼저 처치하거나 동료를 처치하면 기본 공격만 남는다.'),
  ('straw-dokkaebi','짚도깨비',4,'straw-club',70,turn(2,2),'짝수 전투 차례 직전 방어/회복. 기절/모으기 효과 없음.'),
  ('lantern-wisp','등불귀',5,'ghost-fire',76,mp(45,100),'기력45% 이상에서만 도깨비불. 실제 비용 소모로 범위 아래가 되면 기본 공격으로 전환.'),
- ('maiden-ghost','처녀귀신',5,'sorrow-cry',85,turn(2,4),'모으기1 예고 후 전체 귀봉50%: 기본 공격·아이템 허용, HP 피해 없음. 준비 중 회복하고 봉인 후 정화/정화부로 기술 사용을 회복.'),
+ ('maiden-ghost','처녀귀신',5,'sorrow-cry',85,turn(1,4),'첫 전투 차례부터 1+4n에 모으기1 예고 후 전체 귀봉50%: 기본 공격·아이템 허용, HP 피해 없음. 준비 중 회복하고 봉인 후 정화/정화부로 기술 사용을 회복.'),
  ('drowned-ghost','물귀신',7,'drowning-hand',83,hp(0,50),'HP50% 아래의 손아귀에 대비하여 피해 대상을 회복. 실제 기술 효과 외 이동구속을 발명하지 않음.'),
  ('grave-ghoul','무덤귀',8,'grave-grasp',78,state('state_poison',True),'자신이 독에 걸리면 무덤저주 선택. 실제 효과는 단일 여우홀림55%(공격0.75배). 독 부여 시 이 반응을 고려하고 집중 처치.'),
  ('fox-spirit','여우령',10,'fox-charm',88,mp(70,100),'기력70% 이상에서 홀림. 실제 여우홀림은 공격력0.75배이며 동료 공격/명령 강제 아님.'),

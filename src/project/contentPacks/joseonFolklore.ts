@@ -6,10 +6,11 @@ import {
   normalizeStateRecord,
 } from "@/project/databaseRecordModel";
 import type { Project, ProjectDatabaseRecords } from "@/project/types";
+import { normalizeSkillChoreographyRecords } from "@/project/skillChoreographyRecords";
 
 export const JOSEON_FOLKLORE_PACK_ID = "joseon-folklore";
 export const JOSEON_FOLKLORE_COLLECTIONS = [
-  "classes", "skills", "items", "equipment", "enemies", "troops", "states", "elements",
+  "classes", "skills", "items", "equipment", "enemies", "troops", "states", "elements", "skillChoreographies",
 ] as const;
 type PackCollection = typeof JOSEON_FOLKLORE_COLLECTIONS[number];
 export type ContentPackInstallResult = { added: number; preserved: number; counts: Record<PackCollection, number> };
@@ -26,6 +27,7 @@ export function createJoseonFolkloreRecords(): Pick<ProjectDatabaseRecords, Pack
     troops: raw.troops.map(normalizeTroopRecord),
     states: raw.states.map(normalizeStateRecord),
     elements: raw.elements,
+    skillChoreographies: normalizeSkillChoreographyRecords(raw.skillChoreographies) ?? [],
   };
 }
 
@@ -33,9 +35,9 @@ export function joseonFolklorePackStatus(project: Project) {
   const records = createJoseonFolkloreRecords();
   let total = 0, installed = 0;
   for (const collection of JOSEON_FOLKLORE_COLLECTIONS) {
-    const present = new Set(project.database[collection].map(record => record.id));
-    total += records[collection].length;
-    installed += records[collection].filter(record => present.has(record.id)).length;
+    const present = new Set((project.database[collection] ?? []).map(record => record.id));
+    total += (records[collection] ?? []).length;
+    installed += (records[collection] ?? []).filter(record => present.has(record.id)).length;
   }
   return { total, installed, complete: total > 0 && installed === total };
 }
@@ -44,11 +46,12 @@ export function joseonFolklorePackStatus(project: Project) {
 export function applyJoseonFolklorePack(project: Project): ContentPackInstallResult {
   const records = createJoseonFolkloreRecords();
   const result: ContentPackInstallResult = { added: 0, preserved: 0, counts: {} as Record<PackCollection, number> };
+  project.database.skillChoreographies ??= [];
   for (const collection of JOSEON_FOLKLORE_COLLECTIONS) {
     const target = project.database[collection] as { id: string }[];
     const present = new Set(target.map(record => record.id));
     result.counts[collection] = 0;
-    for (const record of records[collection]) {
+    for (const record of records[collection] ?? []) {
       if (present.has(record.id)) { result.preserved++; continue; }
       target.push(record); present.add(record.id);
       result.counts[collection]++; result.added++;

@@ -1,144 +1,33 @@
 {
-  "phase": "full",
+  "phase": "integrated-motion",
   "ready": true,
-  "readyMeaning": "15 authored enemyActions, actual skills runtime evidence and direct review boards saved; not canonical game integration or user approval",
-  "counts": {
-    "enemyActions": 15,
-    "actionPatterns": 37,
-    "normals": 12,
-    "bosses": 3,
-    "reservedEnemySkillsUsed": 12,
-    "runtimeScenarios": 124,
-    "sourceMonsterCompatibilityScenarios": 30,
-    "normalizationReadbacks": 15,
-    "reviewPngs": 3
-  },
-  "reviewFiles": [
-    "public/assets/joseon-folklore/behavior/full-normals-1.png",
-    "public/assets/joseon-folklore/behavior/full-normals-2.png",
-    "public/assets/joseon-folklore/behavior/full-bosses.png",
-    "content-packs/joseon-folklore/behavior/smoke-results.json"
+  "readyMeaning": "Three selected enemy motions installed in shared pack and canonical project, then recorded in shipping player; not approval of every enemy or final balance",
+  "userApproved": false,
+  "canonicalProjectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
+  "canonicalRevision": 9,
+  "readback": true,
+  "historicalWorkerEvidence": "initial-handoff-status.json",
+  "currentEvidence": "verify-shots/joseon-enemy-motion/SUMMARY.md",
+  "patterns": 37,
+  "enemies": 15,
+  "changedActionPatterns": [
+    "enemy_jf_wild_boar",
+    "enemy_jf_maiden_ghost"
   ],
-  "visualReview": {
-    "performed": true,
-    "reviewer": "behavior worker; subjective self-review",
-    "userApproved": false,
-    "originalMonsterSheetsViewed": 15,
-    "findings": [
-      "full 15 species boards opened directly; labels and timelines visible",
-      "source-native cells with nearest scaling; state/support and HP damage distinguished",
-      "strict/gauge timing differences and real charge markers visible",
-      "four actual MP0 source deficits explicitly disclosed"
-    ],
-    "imageHashes": {
-      "public/assets/joseon-folklore/behavior/full-normals-1.png": "1b2f8f4b99a17755f3454c6e849aac45c2dd851b665f6d44b951b683056fc1f6",
-      "public/assets/joseon-folklore/behavior/full-normals-2.png": "625ab9f2b9966c15744a699daeabc731f6e3fe9f87c6bdbd5794dc115891577f",
-      "public/assets/joseon-folklore/behavior/full-bosses.png": "4f632835f18806a240c9ccd3a10dec2196f2b998fc7b63a6a6ad64092a03f485"
-    }
-  },
-  "validation": {
-    "focusedSmoke": true,
-    "skillRecordsInvented": false,
-    "skillSourceHash": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
-    "monsterSourceHash": "a4e13a9e9baa90b3fe44a014caee1c1c95ce35552e9f16918e2d83a0f0ac74ed",
-    "normalizationReadback": true,
-    "mpCostsObserved": true,
-    "strictGaugeDifferences": [
-      "enemy_jf_wild_boar",
-      "enemy_jf_cave_bat",
-      "enemy_jf_drowned_ghost",
-      "enemy_jf_grave_ghoul",
-      "enemy_jf_fox_spirit"
-    ],
-    "fullGatesRun": false,
-    "liveStoreWritten": false
-  },
-  "integrationReady": false,
-  "pending": [
-    "actual field-rat/wild-boar/cave-bat/straw-dokkaebi MP0 cannot pay source costs3/3/4/3; root/owners must reconcile",
-    "root merges enemyActions, registers public content and performs canonical save/reload/player QA"
-  ],
-  "handoffReport": "content-packs/joseon-folklore/behavior/full-report.md",
-  "sharedQueries": "content-packs/joseon-folklore/behavior/shared-queries.md",
+  "selectedEnemyChoreographies": 3,
+  "fullGatesRun": false,
   "files": [
     {
-      "path": "content-packs/joseon-folklore/behavior/README.md",
-      "sha256": "e8ad1fd6b7d9d267a4d64c34d0070d26b0d0a6eb785b136226cfa9a0e08771e6"
-    },
-    {
       "path": "content-packs/joseon-folklore/behavior/data.json",
-      "sha256": "cb1096213fe80a3b96bba6bb8ca93c3848ee06ff0e210de7f080578aeacbef0f"
+      "sha256": "4c7c87a8a8a6a6757fd12aa1515e3fd1c955900dccb4982b556da78b0a263185"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/design.json",
-      "sha256": "f6d25b9c9f3a81dfb9a6665368916476db592514fc22cded6116172e1c81be00"
+      "sha256": "4c356235c572b001eab095948dc527e9ac5091b9a601f22e790868d7f093053c"
     },
     {
-      "path": "content-packs/joseon-folklore/behavior/full-report.md",
-      "sha256": "8949e9ab46b8fda0bc9309192ff4743d4f8c8ded8b048486049ab8f9c9bca413"
-    },
-    {
-      "path": "content-packs/joseon-folklore/behavior/monsters-source.json",
-      "sha256": "38bc4723ad3ef0bf6990fcae0d60b2ae3b50183d93a430c80861b5c69fb9c5e0"
-    },
-    {
-      "path": "content-packs/joseon-folklore/behavior/provenance.json",
-      "sha256": "79bc4784f69804541c5def9692530af4a8d8c2bc61360cc9aef1f886874796ff"
-    },
-    {
-      "path": "content-packs/joseon-folklore/behavior/shared-queries.md",
-      "sha256": "3ee1054b5101265f5b9b55abbcd37ad3249f69872f8043bdbeaed32a9eb92ab6"
-    },
-    {
-      "path": "content-packs/joseon-folklore/behavior/skills-source.json",
-      "sha256": "c8a59d882f0fe534358a0bf0099879db990f51b7d8b4507035a6232821df1938"
-    },
-    {
-      "path": "content-packs/joseon-folklore/behavior/smoke-results.json",
-      "sha256": "ccdcf7d3d3d9c6f8f4803e5cccb05f0ac8a2a6bb0edd2d992213f04a6af5eb05"
-    },
-    {
-      "path": "public/assets/joseon-folklore/behavior/README.md",
-      "sha256": "bb414f6c965aba3e9ee37e6be2369e5ab38ae88462a46845b44f0f3451fc788a"
-    },
-    {
-      "path": "public/assets/joseon-folklore/behavior/full-bosses.png",
-      "sha256": "4f632835f18806a240c9ccd3a10dec2196f2b998fc7b63a6a6ad64092a03f485"
-    },
-    {
-      "path": "public/assets/joseon-folklore/behavior/full-normals-1.png",
-      "sha256": "1b2f8f4b99a17755f3454c6e849aac45c2dd851b665f6d44b951b683056fc1f6"
-    },
-    {
-      "path": "public/assets/joseon-folklore/behavior/full-normals-2.png",
-      "sha256": "625ab9f2b9966c15744a699daeabc731f6e3fe9f87c6bdbd5794dc115891577f"
-    },
-    {
-      "path": "scripts/content/joseon-folklore/behavior/README.md",
-      "sha256": "008c7b13f91863f7bbe5c5ff77671a84c3e1a8c665df4de0c90e85480519326d"
-    },
-    {
-      "path": "scripts/content/joseon-folklore/behavior/author-full.py",
-      "sha256": "d994e266d4a1d45def70f0506e551a17dd741c31722feea70d67f023ef28fb1e"
-    },
-    {
-      "path": "scripts/content/joseon-folklore/behavior/render-review.py",
-      "sha256": "f186b211913f99ef0f7269eba1c924d1c4399243ad1d4e832c94f685283779fe"
-    },
-    {
-      "path": "scripts/content/joseon-folklore/behavior/run-smoke.mjs",
-      "sha256": "a464afb5cd411c1b0f7f29cc3a7d978f1ea6b02f13a7c445ab36f2b1c5bf9816"
-    },
-    {
-      "path": "scripts/content/joseon-folklore/behavior/smoke.mts",
-      "sha256": "6b3396d96c27be6ff9ef099a322e68956565fc6b05f92358071ee10ecca421eb"
+      "path": "content-packs/joseon-folklore/skills/enemy-choreographies.json",
+      "sha256": "d22a958805d62dd694b2104fcf0c3cb9c639cd68207461324f5580fbfbeaae91"
     }
-  ],
-  "delivery": {
-    "mode": "portable real feat commit bundle",
-    "sharedGitMetadataWritable": false,
-    "bundle": "content-packs/joseon-folklore/behavior/full-handoff.bundle",
-    "manifest": "content-packs/joseon-folklore/behavior/handoff.json",
-    "requiresRootFetchAndCherryPick": true
-  }
+  ]
 }

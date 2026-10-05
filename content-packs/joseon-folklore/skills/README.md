@@ -1,5 +1,11 @@
 # 조선 설화 기술 팩 · 전체판
 
+2026-10-05: 엄니돌진·짚방망이·한의울음의 현재 배포 연출은
+`enemy-choreographies.json`의 프로젝트 레코드 3종과 `skillBindings`다.
+공용 생성기가 이 연결을 적용한다. 초기 `data.json`의 기본 계약은 원본으로 보존한다.
+피해·기력·타수·귀봉 확률은 바꾸지 않고 접근·타격·복귀와 파동만 저작했다.
+화면 근거: `verify-shots/joseon-enemy-motion/`. 다른 9개 적 기술의 연출 승인을 뜻하지 않는다.
+
 직업24·적12 기술, 예약 상태6·기본 상태4, 속성5, 원본32px 아이콘36개다. `data.json`은 실제 `normalizeSkillRecord`·`normalizeStateRecord`·`normalizeElementRecords`를 거친 배열이다. 이 폴더에 파일 기반 후보를 저장했다. public 등록, 실제 직업/적 연결, 프로젝트 정본 저장과 출하 플레이어 검토는 감독자 담당이다.
 
 ## 직업 습득 계약
