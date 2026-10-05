@@ -42,7 +42,9 @@ try {
   });
   const url = (process.env.QA_BASE_URL ?? 'http://127.0.0.1:9861') + '/?devProject=1&marketTown=1';
   await page.goto(url, { waitUntil: 'domcontentloaded' });
+  console.log('navigation-ready');
   await page.locator('[data-testid="edit-canvas"] canvas').waitFor({ state: 'visible', timeout: 300000 });
+  console.log('editor-ready');
   await page.evaluate(async () => {
     const { createTeamBoardState, reduceTeamBoard } = await import('/src/ai/piAgent/teamBoardState.ts');
     const { publishTeamActivity } = await import('/src/ai/piAgent/teamActivity.ts');
@@ -87,6 +89,7 @@ try {
   }
   // Reload into the same context; addInitScript must not overwrite the preference.
   await page.reload({ waitUntil: 'domcontentloaded' });
+  console.log('reload-navigation-ready');
   await page.locator('[data-testid="edit-canvas"] canvas').waitFor({ state: 'visible', timeout: 300000 });
   const reloaded = await geometry();
   check('reload-restores-choice', reloaded.folded && reloaded.dock === 44 && reloaded.team === 44, reloaded);
