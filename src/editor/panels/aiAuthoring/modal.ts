@@ -4,11 +4,12 @@ import { registerModal, unregisterModal } from '@/editor/ui/modalStack';
 import { deckIcon } from '../aiDeckIcons';
 import { createPromptLibrary } from './library';
 import { createQuestPresets } from './quests';
+import { createAuthoringPresets } from './presets';
 import { createDialogueInventory } from './dialogue';
 import { createPromptInspector } from './inspector';
 import { button, type FeaturePane } from './shared';
 import './style.css';
-export type AiAuthoringTab = 'quests' | 'library' | 'dialogue' | 'inspector';
+export type AiAuthoringTab = 'quests' | 'presets' | 'library' | 'dialogue' | 'inspector';
 let closeActive: (() => void) | null = null;
 export function closeAiAuthoringModal(): void { closeActive?.(); }
 export function openAiAuthoringModal(tab: AiAuthoringTab, options: { composer: string; apply: (text: string) => void }): void {
@@ -32,12 +33,13 @@ export function openAiAuthoringModal(tab: AiAuthoringTab, options: { composer: s
   const show = (next: AiAuthoringTab) => {
     pane?.dispose();
     pane = next === 'quests' ? createQuestPresets(text => { close(); options.apply(text); })
+      : next === 'presets' ? createAuthoringPresets(text => { close(); options.apply(text); })
       : next === 'library' ? createPromptLibrary(text => { options.apply(text); close(); }, options.composer)
       : next === 'dialogue' ? createDialogueInventory(close) : createPromptInspector();
     body.replaceChildren(pane.root);
     for (const child of Array.from(tabs.children)) child.setAttribute('aria-pressed', String((child as HTMLElement).dataset.tab === next));
   };
-  for (const [key, title] of [['quests', '퀘스트 프리셋'], ['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const) {
+  for (const [key, title] of [['quests', '퀘스트 프리셋'], ['presets', '플레이 프리셋'], ['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const) {
     const control = button(title, `tab-${key}`, () => show(key)); control.dataset.tab = key; tabs.append(control);
   }
   const dismiss = button('닫기', 'close', close);
