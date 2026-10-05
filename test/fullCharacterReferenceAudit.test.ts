@@ -102,4 +102,14 @@ describe("Complete character reference census regressions", () => {
     const row=listMonsterResources(project()).find(row=>row.resourceId===`generated-enemy-${suffix}`)!;
     expect(row.name).toContain(name); expect(row.tags).not.toContain(obsoleteTag);
   });
+
+  it("resolves exact monster IDs without semantic tags", async () => {
+    const p = project();
+    for (const id of ["generated-enemy-golem-clay","scarloxy-monster-atrox"]) {
+      const result = (await tool("list_resources").run(p,{kind:"monster",query:id,limit:50})).data as {matches:{id:string;label:string}[]};
+      expect(result.matches).toHaveLength(1);
+      expect(result.matches[0]?.id).toBe(id);
+      expect(result.matches[0]?.label).toBe(listMonsterResources(p).find(row=>row.resourceId===id)?.name);
+    }
+  });
 });

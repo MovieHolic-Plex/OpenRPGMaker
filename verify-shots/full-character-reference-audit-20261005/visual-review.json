@@ -1549,7 +1549,12 @@
   "scopeLimits": [
     "Battlers: representative idle pose and walking identity; not every animation frame.",
     "Browser IndexedDB and inaccessible external project hosts excluded.",
-    "Species names and narrative/gender roles are authored intent, not verified by pixels.",
-    "10 faces-core pages were rerendered to remove erroneous secondary previews; primary face pixels were inspected before rerender and are unchanged."
-  ]
+    "Species names and narrative/gender roles are authored intent, not verified by pixels."
+  ],
+  "secondPass": {
+    "reviewedAt": "2026-10-05T08:40:12.160136+00:00",
+    "facesCorePages": 10,
+    "monsterPages": 14,
+    "method": "Actual view_image inspection of current published contacts; includes source-linked secondary portraits."
+  }
 }

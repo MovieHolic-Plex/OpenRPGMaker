@@ -1,0 +1,92 @@
+
+> oprn@0.137.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fullCharacterReferenceAudit.test.ts test/charsetReferenceRoutes.test.ts test/sharedPortraitAssets.test.ts test/sharedCharacterGraphicsStore.test.ts test/monsterResourceCatalog.test.ts test/placeNpcGraphicQuery.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ❯ test/fullCharacterReferenceAudit.test.ts (16 tests | 3 failed) 19021ms
+   ✓ Complete character reference census regressions > migrates untouched old rows, preserves authored edits, and is idempotent 137ms
+   ✓ Complete character reference census regressions > removes 19 blank cells from picker, prompt and search despite stored profiles  5371ms
+   ✓ Complete character reference census regressions > does not mistake an uploaded replacement for the public blank/face pixels  2013ms
+   ✓ Complete character reference census regressions > updates seeded old face names in existing projects and retains custom names  1866ms
+   × Complete character reference census regressions > uses the accepted host mapping for search, NPC candidates, auto-face and reconciliation 1406ms
+     → expected '2026-09-18 얼굴 원본 독립 검토: FaceSet/actor…' to contain 'people3#0 왕'
+   ✓ Complete character reference census regressions > withholds incompatible monster3 #1 automatic face 12ms
+   ✓ Complete character reference census regressions > withholds incompatible monster3 #4 automatic face 9ms
+   ✓ Complete character reference census regressions > withholds incompatible monster3 #6 automatic face 12ms
+   ✓ Complete character reference census regressions > withholds incompatible actor4 #5 automatic face 9ms
+   × Complete character reference census regressions > offers source-linked original face portraits and searches non-base expressions 1719ms
+     → the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   × Complete character reference census regressions > corrects replaced monster pixels: king-slime-01 1054ms
+     → expected '금관 쓴 파란 슬라임' to contain '왕 슬라임'
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: golem-clay  995ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: skeleton-bone  1018ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: puppet-string  1093ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: wyvern-cliff  1101ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: armor-living  1202ms
+ ✓ test/placeNpcGraphicQuery.test.ts (6 tests) 11567ms
+   ✓ place_npc graphic.query > 감사 로그의 place_npc 호출이 이제 성공한다  1806ms
+   ✓ place_npc graphic.query > 자유 질의 old woman으로 노년 여성 그래픽을 배치한다  1509ms
+   ✓ place_npc graphic.query > 그래픽 해석 실패는 주민 그림으로 대체하지 않고 graphic-not-found 로 거절한다  1621ms
+   ✓ place_npc graphic.query > default villager graphics diversify across sequential placements  3800ms
+   ✓ place_npc graphic.query > places matching changeFace for diversified charset slots  2821ms
+ ✓ test/sharedPortraitAssets.test.ts (5 tests) 231ms
+ ✓ test/monsterResourceCatalog.test.ts (6 tests) 59ms
+ ✓ test/sharedCharacterGraphicsStore.test.ts (4 tests) 318ms
+ ✓ test/charsetReferenceRoutes.test.ts (4 tests) 3405ms
+   ✓ Character reference paths use the audited walking chip > describes paired walking chips with the current canonical name  1794ms
+   ✓ Character reference paths use the audited walking chip > preserves a project author name in the paired walking description  1579ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/fullCharacterReferenceAudit.test.ts > Complete character reference census regressions > uses the accepted host mapping for search, NPC candidates, auto-face and reconciliation
+AssertionError: expected '2026-09-18 얼굴 원본 독립 검토: FaceSet/actor…' to contain 'people3#0 왕'
+
+Expected: "people3#0 왕"
+Received: "2026-09-18 얼굴 원본 독립 검토: FaceSet/actor1 #00. 걷기 그림 속성을 복사하지 않음. 원본 얼굴·표정 얼굴·흉상·전신은 별도 그림이다. 복장과 장식을 각각 확인한다. 짝 걷기 그림: tex_easyrpg_charset_actor1#0 청년 용사 (approximate; 얼굴에는 머리띠가 있고 걷기에는 머리띠가 식별되지 않는다. 2026-10-05 원본 픽셀 대조; 같은 인물의 정확한 외형으로 단정하지"
+
+ ❯ test/fullCharacterReferenceAudit.test.ts:77:67
+     75|     const npc = (await tool("list_npc_graphics").run(p,{query:"왕"})).d…
+     76|     expect(npc.matches.find(match=>match.textureKey===row.textureKey)?…
+     77|     expect((await search(p,"호스트 검토 얼굴")).matches[0]?.description).toCo…
+       |                                                                   ^
+     78|     expect(reconcileSharedFaceWithCharset("easyrpg-faceset-people1-00"…
+     79|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/fullCharacterReferenceAudit.test.ts > Complete character reference census regressions > offers source-linked original face portraits and searches non-base expressions
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ test/fullCharacterReferenceAudit.test.ts:94:84
+     92|     expect((await search(p,id)).matches).toHaveLength(1);
+     93|     expect((await search(p,id)).matches[0]?.id).toBe(id);
+     94|     expect((await search(p,"generated-face-actor1-full")).matches[0]?.…
+       |                                                                                    ^
+     95|   });
+     96| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/fullCharacterReferenceAudit.test.ts > Complete character reference census regressions > corrects replaced monster pixels: king-slime-01
+AssertionError: expected '금관 쓴 파란 슬라임' to contain '왕 슬라임'
+
+Expected: "왕 슬라임"
+Received: "금관 쓴 파란 슬라임"
+
+ ❯ test/fullCharacterReferenceAudit.test.ts:103:22
+    101|   ])("corrects replaced monster pixels: %s", (suffix,name,obsoleteTag)…
+    102|     const row=listMonsterResources(project()).find(row=>row.resourceId…
+    103|     expect(row.name).toContain(name); expect(row.tags).not.toContain(o…
+       |                      ^
+    104|   });
+    105| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  3 failed | 38 passed (41)
+   Start at  17:15:16
+   Duration  90.12s (transform 27.68s, setup 0ms, collect 50.59s, tests 34.60s, environment 2ms, prepare 1.59s)
+

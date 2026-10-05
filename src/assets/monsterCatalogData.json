@@ -12,16 +12,18 @@
     "description": "청록색 비대칭 젤리 몸에 두꺼운 밝은 반사 띠와 돌출한 눈살, 작은 코와 입이 있다."
   },
   "generated-enemy-bat-01": {
-    "name": "보라색 박쥐",
+    "name": "회갈색 털 분홍 날개 박쥐",
     "tags": [
       "박쥐",
       "bat",
-      "보라색",
-      "purple",
       "날개",
       "wing",
       "비행",
-      "flying"
+      "flying",
+      "회갈색",
+      "grey brown",
+      "분홍 날개",
+      "pink wings"
     ],
     "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
   },
@@ -79,16 +81,18 @@
     "description": "청록색 둥근 젤리 몸에 밝은 반사 덩어리와 오른쪽을 보는 두 눈이 있다."
   },
   "generated-enemy-ontology-8da61312": {
-    "name": "빛나는 룬 다면체",
+    "name": "룬 둘러싼 부유 조각돌",
     "tags": [
-      "결정",
       "광물",
       "룬",
-      "crystal",
       "mineral",
-      "rune"
+      "rune",
+      "돌",
+      "stone",
+      "부유",
+      "floating"
     ],
-    "description": "청록·보라 룬 소용돌이 주위의 다섯 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
+    "description": "청록·보라 룬 소용돌이 주위의 여러 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
   },
   "generated-enemy-zombie-01": {
     "name": "좀비",
@@ -267,14 +271,17 @@
     "description": "아이보리 몸과 보라빛 갈기, 긴 말 주둥이와 밝은 이마 뿔이 있는 유니콘이다."
   },
   "generated-enemy-salamander-01": {
-    "name": "적흑무늬 도마뱀",
+    "name": "청회색 목지느러미 도마뱀",
     "tags": [
       "도마뱀",
       "파충류",
       "몬스터",
       "lizard",
       "reptile",
-      "monster"
+      "monster",
+      "청회색",
+      "blue grey",
+      "목지느러미"
     ],
     "description": "청회색 비늘의 샐러맨더는 긴 주둥이와 드러난 코, 목의 지느러미 부채와 작은 등 가시, 굽은 꼬리와 넓은 네 다리를 가진다."
   },
@@ -333,15 +340,17 @@
     "description": "황갈색 겹깃털과 붉은 볏, 굵은 새발과 녹색 비늘 꼬리를 가진 코카트리스다."
   },
   "generated-enemy-parasite-01": {
-    "name": "붉은 촉수 벌레",
+    "name": "분홍 마디 기생충",
     "tags": [
       "벌레",
       "worm",
       "괴물",
       "monster",
-      "촉수",
-      "tentacle",
-      "붉은색"
+      "분홍색",
+      "pink",
+      "마디",
+      "segmented",
+      "갈고리 다리"
     ],
     "description": "분홍색 두꺼운 마디 몸과 갈고리 다리, 이빨이 둘러진 넓은 흡착 입을 가진 기생충이다."
   },
@@ -671,18 +680,20 @@
     "description": "푸른 회색 털과 분홍빛 날개막, 긴 귀, 갈고리 발과 송곳니를 가진 동굴 박쥐다."
   },
   "generated-enemy-bat-vampire": {
-    "name": "붉은 흡혈 박쥐",
+    "name": "분홍 날개 보라 흡혈 박쥐",
     "tags": [
       "박쥐",
       "bat",
       "흡혈",
       "vampire",
-      "붉은색",
-      "red",
       "날개",
-      "wing"
+      "wing",
+      "보라색",
+      "purple",
+      "분홍 날개",
+      "pink wings"
     ],
-    "description": "짙은 보라색 털과 붉은 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
+    "description": "짙은 보라색 털과 분홍빛 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
   },
   "generated-enemy-bee-giant": {
     "name": "거대 벌",
@@ -767,9 +778,12 @@
       "벌레",
       "bug",
       "절지동물",
-      "arthropod"
+      "arthropod",
+      "자주색",
+      "purple",
+      "금빛 불꽃 가시"
     ],
-    "description": "등이 아치형으로 솟은 붉은 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
+    "description": "등이 아치형으로 솟은 자줏빛 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
   },
   "generated-enemy-moth-dust": {
     "name": "아이보리 눈무늬 나방",
@@ -791,10 +805,9 @@
       "worm",
       "괴물",
       "monster",
-      "촉수",
-      "tentacle",
-      "가시",
-      "spike"
+      "모래벌레",
+      "sand worm",
+      "갈라진 이빨 입"
     ],
     "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
   },
@@ -823,14 +836,16 @@
     "description": "청회색 털과 밝은 목털, 두꺼운 뒷다리, 드러난 송곳니를 가진 회색 늑대다."
   },
   "generated-enemy-wolf-dire": {
-    "name": "보랏빛 눈 늑대",
+    "name": "검은 갈기 청회색 다이어울프",
     "tags": [
       "늑대",
       "wolf",
       "짐승",
       "beast",
-      "검은색",
-      "black"
+      "검은 갈기",
+      "black mane",
+      "청회색",
+      "blue grey"
     ],
     "description": "짙은 청회색의 육중한 어깨와 긴 검은 갈기, 낮은 머리와 넓은 발을 가진 다이어울프다."
   },
@@ -901,16 +916,16 @@
     "description": "갈색 겹날개와 밝은 가슴깃, 굽은 황금 부리와 굵은 발톱을 가진 매다."
   },
   "generated-enemy-snake-viper": {
-    "name": "초록 코브라",
+    "name": "청녹색 독사",
     "tags": [
       "뱀",
       "snake",
-      "코브라",
-      "cobra",
       "녹색",
       "green",
       "독사",
-      "viper"
+      "viper",
+      "청녹색",
+      "teal"
     ],
     "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
   },
@@ -971,15 +986,18 @@
     "description": "검붉은 비늘 털과 뿔, 금빛 균열과 큰 턱을 가진 불타는 지옥 사냥개다."
   },
   "generated-enemy-ape-stone": {
-    "name": "이끼 낀 바위 고릴라",
+    "name": "돌판 몸 바위 유인원",
     "tags": [
       "고릴라",
       "gorilla",
       "바위",
       "stone",
-      "이끼",
-      "moss",
-      "주황빛 틈새"
+      "유인원",
+      "ape",
+      "돌판",
+      "stone plates",
+      "회녹색",
+      "grey green"
     ],
     "description": "돌판이 박힌 회녹색 큰 근육과 육중한 주먹, 넓은 턱을 가진 돌유인원이다."
   },
@@ -1056,14 +1074,18 @@
     "description": "썩은 녹색 얼굴의 넓은 코와 벌어진 턱, 찢긴 붉은 셔츠와 부풀어 오른 어깨가 보인다."
   },
   "generated-enemy-ghoul-grave": {
-    "name": "녹색 좀비",
+    "name": "망토 입은 녹색 구울",
     "tags": [
-      "좀비",
-      "zombie",
       "언데드",
       "undead",
       "괴물",
-      "monster"
+      "monster",
+      "구울",
+      "ghoul",
+      "망토",
+      "cloak",
+      "녹색",
+      "green"
     ],
     "description": "흙빛의 찢긴 망토 아래 낮게 웅크린 구울이 긴 코와 넓은 갈고리 손을 내민다."
   },
@@ -1138,16 +1160,19 @@
     "description": "청회색 긴 머리카락과 주름 많은 치마의 밴시가 긴 코와 크게 열린 입을 드러낸다."
   },
   "generated-enemy-revenant-vengeful": {
-    "name": "무장한 해골 검사",
+    "name": "검은 강철 투구 복수자",
     "tags": [
-      "해골",
-      "skeleton",
       "언데드",
       "undead",
       "검사",
       "swordsman",
       "갑옷",
-      "armor"
+      "armor",
+      "복수자",
+      "revenant",
+      "검은 강철",
+      "black steel",
+      "붉은 망토"
     ],
     "description": "뿔 달린 검은 강철 투구와 붉은 망토, 상처 난 흉갑과 붉은 긴 칼의 복수자이다."
   },
@@ -1273,16 +1298,18 @@
     "description": "파란 불꽃 도깨비불이 큰 비대칭 불꽃 볏과 밝은 중심, 뾰족한 코와 갈라진 꼬리를 갖는다."
   },
   "generated-enemy-sylph-air": {
-    "name": "구름 정령",
+    "name": "흰 깃날개 바람 요정",
     "tags": [
       "정령",
       "spirit",
-      "유령",
-      "ghost",
-      "구름",
-      "cloud",
       "파란색",
-      "blue"
+      "blue",
+      "요정",
+      "fairy",
+      "바람",
+      "wind",
+      "깃날개",
+      "feather wings"
     ],
     "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
   },
@@ -1299,14 +1326,18 @@
     "description": "금색 조개 관과 긴 물결 머리의 운디네가 비늘 배판과 크게 말린 물고기 꼬리를 갖는다."
   },
   "generated-enemy-salamander-flame": {
-    "name": "주황 검정 무늬 도마뱀",
+    "name": "금빛 불꽃등 붉은 도마뱀",
     "tags": [
       "도마뱀",
       "lizard",
       "파충류",
       "reptile",
       "비늘",
-      "가시"
+      "가시",
+      "붉은색",
+      "red",
+      "금빛 불꽃",
+      "gold flame"
     ],
     "description": "주홍색 비늘의 샐러맨더는 등 위의 세 갈래 금빛 화염과 붉은 목 지느러미, 긴 주둥이와 굽은 꼬리, 넓은 네 다리를 가진다."
   },
@@ -1315,11 +1346,14 @@
     "tags": [
       "골렘",
       "바위",
-      "이끼",
       "golem",
       "rock",
       "monster",
-      "돌"
+      "돌",
+      "회색",
+      "grey",
+      "거석",
+      "boulder"
     ],
     "description": "회색 각진 거석과 깊은 균열, 불균형한 넓은 어깨와 돌 코를 가진 육중한 골렘이다."
   },
@@ -1383,14 +1417,18 @@
     "description": "두꺼운 청회색 판금의 빈 갑옷이 뾰족한 투구, 넓은 어깨와 장식된 검을 갖는다."
   },
   "generated-enemy-sword-flying": {
-    "name": "룬 장식 검",
+    "name": "보석 해골 손잡이 부유 검",
     "tags": [
       "검",
       "sword",
       "무기",
       "weapon",
-      "룬",
-      "rune"
+      "보석",
+      "gem",
+      "해골 손잡이",
+      "skull hilt",
+      "부유",
+      "floating"
     ],
     "description": "넓고 휜 강철 검날과 금빛 날개 가드, 보석과 해골 손잡이의 부유 검이 리본 같은 마력을 두른다."
   },
@@ -1442,8 +1480,10 @@
       "wood",
       "괴물",
       "monster",
-      "이끼",
-      "moss"
+      "잎",
+      "leaf",
+      "가면",
+      "mask"
     ],
     "description": "깊이 조각한 두꺼운 나무 가면 세 층이 노란 눈과 긴 코, 잎 볏과 뿌리 팔을 갖는다."
   },
@@ -1639,14 +1679,18 @@
     "description": "이끼빛 두꺼운 피부와 큰 코, 삐죽한 엄니, 거친 가죽 치마와 돌 몽둥이를 든 트롤이다."
   },
   "generated-enemy-ogre-club": {
-    "name": "곤봉을 든 녹색 거인",
+    "name": "곤봉 든 누런 오거",
     "tags": [
-      "오크",
-      "orc",
       "인간형",
       "humanoid",
       "괴물",
-      "monster"
+      "monster",
+      "오거",
+      "ogre",
+      "곤봉",
+      "club",
+      "누런색",
+      "yellow"
     ],
     "description": "넓은 누런 몸과 큰 배, 긴 코와 두 엄니를 가진 오거는 가죽 어깨띠와 들쭉날쭉한 치마, 굵은 팔과 무거운 곤봉을 지닌다."
   },
@@ -1688,14 +1732,16 @@
     "description": "짙은 보라색 두꺼운 외투막과 큰 청록빛 눈, 굵은 흡반 팔을 펼친 심해오징어다."
   },
   "generated-enemy-shark-land": {
-    "name": "사족보행 상어",
+    "name": "여섯 다리 육상 상어",
     "tags": [
       "상어",
       "괴물",
-      "사족보행",
       "shark",
       "monster",
-      "quadruped"
+      "여섯 다리",
+      "six legs",
+      "육상",
+      "land"
     ],
     "description": "청회색 육중한 몸과 높은 등지느러미, 큰 이빨 턱과 여섯 굵은 보행 다리의 육상 상어다."
   },
@@ -1860,14 +1906,18 @@
     "description": "청록 비늘과 산호 지느러미, 세 갈래의 굵은 목, 금빛 배판과 고리 모양의 꼬리를 가진 삼두 히드라입니다."
   },
   "generated-enemy-behemoth-horn": {
-    "name": "뿔 달린 흑갈색 마수",
+    "name": "보랏빛 뿔 마수",
     "tags": [
       "마수",
       "beast",
       "괴물",
       "monster",
       "뿔",
-      "horns"
+      "horns",
+      "보라색",
+      "purple",
+      "네발",
+      "quadruped"
     ],
     "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
   },

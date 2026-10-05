@@ -4742,5 +4742,669 @@
       "note": "2026-09-28 AI 생성 짝 얼굴(EasyRPG People1 작화). 짝 걷기 그림: tex_scarloxy_charset_people1#0. 2026-10-05 원본 얼굴 픽셀의 모자·머리색 대조."
     },
     "reason": "Face pixels, not the paired walking sprite."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bat-01",
+    "before": {
+      "name": "보라색 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "보라색",
+        "purple",
+        "날개",
+        "wing",
+        "비행",
+        "flying"
+      ],
+      "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
+    },
+    "after": {
+      "name": "회갈색 털 분홍 날개 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "날개",
+        "wing",
+        "비행",
+        "flying",
+        "회갈색",
+        "grey brown",
+        "분홍 날개",
+        "pink wings"
+      ],
+      "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-bat-vampire",
+    "before": {
+      "name": "붉은 흡혈 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "흡혈",
+        "vampire",
+        "붉은색",
+        "red",
+        "날개",
+        "wing"
+      ],
+      "description": "짙은 보라색 털과 붉은 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
+    },
+    "after": {
+      "name": "분홍 날개 보라 흡혈 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "흡혈",
+        "vampire",
+        "날개",
+        "wing",
+        "보라색",
+        "purple",
+        "분홍 날개",
+        "pink wings"
+      ],
+      "description": "짙은 보라색 털과 분홍빛 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-parasite-01",
+    "before": {
+      "name": "붉은 촉수 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "붉은색"
+      ],
+      "description": "분홍색 두꺼운 마디 몸과 갈고리 다리, 이빨이 둘러진 넓은 흡착 입을 가진 기생충이다."
+    },
+    "after": {
+      "name": "분홍 마디 기생충",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "분홍색",
+        "pink",
+        "마디",
+        "segmented",
+        "갈고리 다리"
+      ],
+      "description": "분홍색 두꺼운 마디 몸과 갈고리 다리, 이빨이 둘러진 넓은 흡착 입을 가진 기생충이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-wolf-dire",
+    "before": {
+      "name": "보랏빛 눈 늑대",
+      "tags": [
+        "늑대",
+        "wolf",
+        "짐승",
+        "beast",
+        "검은색",
+        "black"
+      ],
+      "description": "짙은 청회색의 육중한 어깨와 긴 검은 갈기, 낮은 머리와 넓은 발을 가진 다이어울프다."
+    },
+    "after": {
+      "name": "검은 갈기 청회색 다이어울프",
+      "tags": [
+        "늑대",
+        "wolf",
+        "짐승",
+        "beast",
+        "검은 갈기",
+        "black mane",
+        "청회색",
+        "blue grey"
+      ],
+      "description": "짙은 청회색의 육중한 어깨와 긴 검은 갈기, 낮은 머리와 넓은 발을 가진 다이어울프다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-salamander-01",
+    "before": {
+      "name": "적흑무늬 도마뱀",
+      "tags": [
+        "도마뱀",
+        "파충류",
+        "몬스터",
+        "lizard",
+        "reptile",
+        "monster"
+      ],
+      "description": "청회색 비늘의 샐러맨더는 긴 주둥이와 드러난 코, 목의 지느러미 부채와 작은 등 가시, 굽은 꼬리와 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "청회색 목지느러미 도마뱀",
+      "tags": [
+        "도마뱀",
+        "파충류",
+        "몬스터",
+        "lizard",
+        "reptile",
+        "monster",
+        "청회색",
+        "blue grey",
+        "목지느러미"
+      ],
+      "description": "청회색 비늘의 샐러맨더는 긴 주둥이와 드러난 코, 목의 지느러미 부채와 작은 등 가시, 굽은 꼬리와 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-salamander-flame",
+    "before": {
+      "name": "주황 검정 무늬 도마뱀",
+      "tags": [
+        "도마뱀",
+        "lizard",
+        "파충류",
+        "reptile",
+        "비늘",
+        "가시"
+      ],
+      "description": "주홍색 비늘의 샐러맨더는 등 위의 세 갈래 금빛 화염과 붉은 목 지느러미, 긴 주둥이와 굽은 꼬리, 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "금빛 불꽃등 붉은 도마뱀",
+      "tags": [
+        "도마뱀",
+        "lizard",
+        "파충류",
+        "reptile",
+        "비늘",
+        "가시",
+        "붉은색",
+        "red",
+        "금빛 불꽃",
+        "gold flame"
+      ],
+      "description": "주홍색 비늘의 샐러맨더는 등 위의 세 갈래 금빛 화염과 붉은 목 지느러미, 긴 주둥이와 굽은 꼬리, 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-snake-viper",
+    "before": {
+      "name": "초록 코브라",
+      "tags": [
+        "뱀",
+        "snake",
+        "코브라",
+        "cobra",
+        "녹색",
+        "green",
+        "독사",
+        "viper"
+      ],
+      "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
+    },
+    "after": {
+      "name": "청녹색 독사",
+      "tags": [
+        "뱀",
+        "snake",
+        "녹색",
+        "green",
+        "독사",
+        "viper",
+        "청녹색",
+        "teal"
+      ],
+      "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-shark-land",
+    "before": {
+      "name": "사족보행 상어",
+      "tags": [
+        "상어",
+        "괴물",
+        "사족보행",
+        "shark",
+        "monster",
+        "quadruped"
+      ],
+      "description": "청회색 육중한 몸과 높은 등지느러미, 큰 이빨 턱과 여섯 굵은 보행 다리의 육상 상어다."
+    },
+    "after": {
+      "name": "여섯 다리 육상 상어",
+      "tags": [
+        "상어",
+        "괴물",
+        "shark",
+        "monster",
+        "여섯 다리",
+        "six legs",
+        "육상",
+        "land"
+      ],
+      "description": "청회색 육중한 몸과 높은 등지느러미, 큰 이빨 턱과 여섯 굵은 보행 다리의 육상 상어다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-centipede-fire",
+    "before": {
+      "name": "자줏빛 등갑 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod"
+      ],
+      "description": "등이 아치형으로 솟은 붉은 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
+    },
+    "after": {
+      "name": "자줏빛 등갑 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod",
+        "자주색",
+        "purple",
+        "금빛 불꽃 가시"
+      ],
+      "description": "등이 아치형으로 솟은 자줏빛 갑판과 밝은 불꽃 가시, 수많은 다리를 가진 불지네다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-worm-sand",
+    "before": {
+      "name": "갈색 거대 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "가시",
+        "spike"
+      ],
+      "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
+    },
+    "after": {
+      "name": "갈색 거대 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "모래벌레",
+        "sand worm",
+        "갈라진 이빨 입"
+      ],
+      "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ape-stone",
+    "before": {
+      "name": "이끼 낀 바위 고릴라",
+      "tags": [
+        "고릴라",
+        "gorilla",
+        "바위",
+        "stone",
+        "이끼",
+        "moss",
+        "주황빛 틈새"
+      ],
+      "description": "돌판이 박힌 회녹색 큰 근육과 육중한 주먹, 넓은 턱을 가진 돌유인원이다."
+    },
+    "after": {
+      "name": "돌판 몸 바위 유인원",
+      "tags": [
+        "고릴라",
+        "gorilla",
+        "바위",
+        "stone",
+        "유인원",
+        "ape",
+        "돌판",
+        "stone plates",
+        "회녹색",
+        "grey green"
+      ],
+      "description": "돌판이 박힌 회녹색 큰 근육과 육중한 주먹, 넓은 턱을 가진 돌유인원이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ghoul-grave",
+    "before": {
+      "name": "녹색 좀비",
+      "tags": [
+        "좀비",
+        "zombie",
+        "언데드",
+        "undead",
+        "괴물",
+        "monster"
+      ],
+      "description": "흙빛의 찢긴 망토 아래 낮게 웅크린 구울이 긴 코와 넓은 갈고리 손을 내민다."
+    },
+    "after": {
+      "name": "망토 입은 녹색 구울",
+      "tags": [
+        "언데드",
+        "undead",
+        "괴물",
+        "monster",
+        "구울",
+        "ghoul",
+        "망토",
+        "cloak",
+        "녹색",
+        "green"
+      ],
+      "description": "흙빛의 찢긴 망토 아래 낮게 웅크린 구울이 긴 코와 넓은 갈고리 손을 내민다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-revenant-vengeful",
+    "before": {
+      "name": "무장한 해골 검사",
+      "tags": [
+        "해골",
+        "skeleton",
+        "언데드",
+        "undead",
+        "검사",
+        "swordsman",
+        "갑옷",
+        "armor"
+      ],
+      "description": "뿔 달린 검은 강철 투구와 붉은 망토, 상처 난 흉갑과 붉은 긴 칼의 복수자이다."
+    },
+    "after": {
+      "name": "검은 강철 투구 복수자",
+      "tags": [
+        "언데드",
+        "undead",
+        "검사",
+        "swordsman",
+        "갑옷",
+        "armor",
+        "복수자",
+        "revenant",
+        "검은 강철",
+        "black steel",
+        "붉은 망토"
+      ],
+      "description": "뿔 달린 검은 강철 투구와 붉은 망토, 상처 난 흉갑과 붉은 긴 칼의 복수자이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-sylph-air",
+    "before": {
+      "name": "구름 정령",
+      "tags": [
+        "정령",
+        "spirit",
+        "유령",
+        "ghost",
+        "구름",
+        "cloud",
+        "파란색",
+        "blue"
+      ],
+      "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
+    },
+    "after": {
+      "name": "흰 깃날개 바람 요정",
+      "tags": [
+        "정령",
+        "spirit",
+        "파란색",
+        "blue",
+        "요정",
+        "fairy",
+        "바람",
+        "wind",
+        "깃날개",
+        "feather wings"
+      ],
+      "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-golem-stone",
+    "before": {
+      "name": "바위 골렘",
+      "tags": [
+        "골렘",
+        "바위",
+        "이끼",
+        "golem",
+        "rock",
+        "monster",
+        "돌"
+      ],
+      "description": "회색 각진 거석과 깊은 균열, 불균형한 넓은 어깨와 돌 코를 가진 육중한 골렘이다."
+    },
+    "after": {
+      "name": "바위 골렘",
+      "tags": [
+        "골렘",
+        "바위",
+        "golem",
+        "rock",
+        "monster",
+        "돌",
+        "회색",
+        "grey",
+        "거석",
+        "boulder"
+      ],
+      "description": "회색 각진 거석과 깊은 균열, 불균형한 넓은 어깨와 돌 코를 가진 육중한 골렘이다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ogre-club",
+    "before": {
+      "name": "곤봉을 든 녹색 거인",
+      "tags": [
+        "오크",
+        "orc",
+        "인간형",
+        "humanoid",
+        "괴물",
+        "monster"
+      ],
+      "description": "넓은 누런 몸과 큰 배, 긴 코와 두 엄니를 가진 오거는 가죽 어깨띠와 들쭉날쭉한 치마, 굵은 팔과 무거운 곤봉을 지닌다."
+    },
+    "after": {
+      "name": "곤봉 든 누런 오거",
+      "tags": [
+        "인간형",
+        "humanoid",
+        "괴물",
+        "monster",
+        "오거",
+        "ogre",
+        "곤봉",
+        "club",
+        "누런색",
+        "yellow"
+      ],
+      "description": "넓은 누런 몸과 큰 배, 긴 코와 두 엄니를 가진 오거는 가죽 어깨띠와 들쭉날쭉한 치마, 굵은 팔과 무거운 곤봉을 지닌다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-behemoth-horn",
+    "before": {
+      "name": "뿔 달린 흑갈색 마수",
+      "tags": [
+        "마수",
+        "beast",
+        "괴물",
+        "monster",
+        "뿔",
+        "horns"
+      ],
+      "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
+    },
+    "after": {
+      "name": "보랏빛 뿔 마수",
+      "tags": [
+        "마수",
+        "beast",
+        "괴물",
+        "monster",
+        "뿔",
+        "horns",
+        "보라색",
+        "purple",
+        "네발",
+        "quadruped"
+      ],
+      "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-sword-flying",
+    "before": {
+      "name": "룬 장식 검",
+      "tags": [
+        "검",
+        "sword",
+        "무기",
+        "weapon",
+        "룬",
+        "rune"
+      ],
+      "description": "넓고 휜 강철 검날과 금빛 날개 가드, 보석과 해골 손잡이의 부유 검이 리본 같은 마력을 두른다."
+    },
+    "after": {
+      "name": "보석 해골 손잡이 부유 검",
+      "tags": [
+        "검",
+        "sword",
+        "무기",
+        "weapon",
+        "보석",
+        "gem",
+        "해골 손잡이",
+        "skull hilt",
+        "부유",
+        "floating"
+      ],
+      "description": "넓고 휜 강철 검날과 금빛 날개 가드, 보석과 해골 손잡이의 부유 검이 리본 같은 마력을 두른다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-totem-cursed",
+    "before": {
+      "name": "나무 토템",
+      "tags": [
+        "토템",
+        "totem",
+        "나무",
+        "wood",
+        "괴물",
+        "monster",
+        "이끼",
+        "moss"
+      ],
+      "description": "깊이 조각한 두꺼운 나무 가면 세 층이 노란 눈과 긴 코, 잎 볏과 뿌리 팔을 갖는다."
+    },
+    "after": {
+      "name": "나무 토템",
+      "tags": [
+        "토템",
+        "totem",
+        "나무",
+        "wood",
+        "괴물",
+        "monster",
+        "잎",
+        "leaf",
+        "가면",
+        "mask"
+      ],
+      "description": "깊이 조각한 두꺼운 나무 가면 세 층이 노란 눈과 긴 코, 잎 볏과 뿌리 팔을 갖는다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
+  },
+  {
+    "group": "monster",
+    "key": "generated-enemy-ontology-8da61312",
+    "before": {
+      "name": "빛나는 룬 다면체",
+      "tags": [
+        "결정",
+        "광물",
+        "룬",
+        "crystal",
+        "mineral",
+        "rune"
+      ],
+      "description": "청록·보라 룬 소용돌이 주위의 다섯 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
+    },
+    "after": {
+      "name": "룬 둘러싼 부유 조각돌",
+      "tags": [
+        "광물",
+        "룬",
+        "mineral",
+        "rune",
+        "돌",
+        "stone",
+        "부유",
+        "floating"
+      ],
+      "description": "청록·보라 룬 소용돌이 주위의 여러 두꺼운 조각돌에 깊은 면과 밝은 문양이 새겨져 있다."
+    },
+    "reason": "Second independent name/tag/description pass of all 160 original selectable monster portraits; contact pages 01–14."
   }
 ]
