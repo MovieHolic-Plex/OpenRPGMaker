@@ -1,0 +1,38 @@
+{
+  "recommendation": "rework",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 36,
+      "y": 41,
+      "message": "The right torso edge ends in dark clothing at (35,41) and the sash ends at (36,42), with background at (36,41), (37,41), and (37,42) beside the diagonal blade. This leaves the waist border open beneath the sleeve. Restore a one-pixel dark contour at (36,41) and (37,42), following the adjacent contour at (37,40); preserve the remaining air gap between body and blade so the draw stays readable."
+    }
+  ],
+  "issueCoordinatesPreservedFromParent": [
+    {
+      "x": 36,
+      "y": 41,
+      "parent": ".",
+      "current": "."
+    },
+    {
+      "x": 37,
+      "y": 41,
+      "parent": ".",
+      "current": "."
+    },
+    {
+      "x": 37,
+      "y": 42,
+      "parent": ".",
+      "current": "."
+    },
+    {
+      "x": 37,
+      "y": 40,
+      "parent": "o",
+      "current": "o"
+    }
+  ],
+  "reasonUnchanged": "이번 사용자 요청은 두 눈을 오른쪽으로 이동하는 부분 수정이며 기존 허리/칼 주변 픽셀은 보존했다. 검수 의견은 참고이며 사용자 선택을 대신하지 않는다."
+}

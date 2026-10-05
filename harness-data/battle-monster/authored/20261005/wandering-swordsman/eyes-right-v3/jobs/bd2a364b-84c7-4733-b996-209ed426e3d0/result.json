@@ -1,0 +1,12 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs at native 1x and their exact nearest-neighbor 3x previews. The broad black gat, blue-gray robe, darker vest, red sash, two visible eyes and brows, and slightly right-facing cheek/nose read as the specified swordsman. Left/top cloth highlights and darker inner folds give usable volume; the black hat has subdued contrast on the dark background. Standing frames retain separated shoes on y=60; the wider move/attack stance and fallen body are readable. Draw, step, horizontal cut, and downward recovery are distinct. Most hand/grip connections read clearly. Skill preparation lowers the blade behind the body, contact connects the blade to the silver crescent, and recovery shows a short exposed blade beside the sheath with detached fading fragments. Poison uses a distressed face and changing arm/torso pose, stun uses slack arms/open mouth and overhead stars, and sleep uses closed lids and a small body sway; these are visibly distinct states rather than palette tints. Local rework is recommended for the windup waist outline break, not a redesign. Other small background gaps between arms, torso, and weapon read as negative space rather than confirmed missing body pixels. Rendered foreground uses 18 colors, and the portrait has binary alpha. These are pose previews, not battle footage: timing, runtime transitions, battle-scale contrast, and literal pxgrid authorship cannot be verified from these PNGs; geometry compliance alone does not establish visual approval.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 36,
+      "y": 41,
+      "message": "The right torso edge ends in dark clothing at (35,41) and the sash ends at (36,42), with background at (36,41), (37,41), and (37,42) beside the diagonal blade. This leaves the waist border open beneath the sleeve. Restore a one-pixel dark contour at (36,41) and (37,42), following the adjacent contour at (37,40); preserve the remaining air gap between body and blade so the draw stays readable."
+    }
+  ]
+}

@@ -72,12 +72,12 @@
     "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7"
   },
   {
-    "key": "wandering-swordsman/fresh-eyes-v2",
-    "name": "검객 · 눈 위치 수정",
+    "key": "wandering-swordsman/eyes-right-v3",
+    "name": "검객 · 눈 오른쪽 이동",
     "nativeCell": 64,
     "poses": 18,
     "phase": "suite",
-    "binding": "0e458117f24224da62ba2618884463032ecdd7a5c997095d09ad0bcafa77d8a9",
+    "binding": "804fb38f1647f2f87a50fee599dd80c872f850205032476ee841a1f309517445",
     "userChoiceRequired": true
   }
 ]

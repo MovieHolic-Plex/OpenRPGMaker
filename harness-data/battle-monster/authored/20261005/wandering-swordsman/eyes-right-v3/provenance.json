@@ -1,0 +1,89 @@
+{
+  "createdAt": "2026-10-05T11:44:12.452212+00:00",
+  "kind": "eyes-right-correction",
+  "displayName": "검객 · 눈 오른쪽 이동",
+  "parent": "wandering-swordsman/fresh-eyes-v2",
+  "parentBinding": "0e458117f24224da62ba2618884463032ecdd7a5c997095d09ad0bcafa77d8a9",
+  "userRequest": "좀 더 눈을 오른쪽으로 옮겨라",
+  "userCorrection": "좀 더 눈을 오른쪽으로 옮겨라",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "55869415-795b-4829-b436-fe23c79dd299",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T11:44:12.457479+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/reference.png",
+        "-"
+      ],
+      "promptSha256": "d7c3254bdaf8b9a97f8cae40ec009934b665593064d44bb78015d68c55335f9a",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "reference.png": "a85a59f34efae9c8c294d1601ff0252f82af835314d1a4576e92d6695083deaf"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T11:46:04.636236+00:00"
+    },
+    {
+      "id": "bd2a364b-84c7-4733-b996-209ed426e3d0",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T11:46:06.496525+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/jobs/bd2a364b-84c7-4733-b996-209ed426e3d0",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/preview/suite/portrait.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/preview/suite/light.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/preview/suite/dark.png",
+        "-i",
+        "/home/main/.local/share/oprn/battle-monster-eyes-right/candidates/wandering-swordsman/eyes-right-v3/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "115a2f8a8e5686cad095eaecc6d58643ef56a441aca3395355be8b47898cd156",
+      "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+      "imageHashes": {
+        "preview/suite/portrait.png": "e5a7c882571c7c5d59b0f2f2db3cc227735f39d47aeedf743032bfece4e839ae",
+        "preview/suite/light.png": "7ca03964eca3f448d2fcbf9b79be950af28e4c8f615b3cda20fd624733b66f6a",
+        "preview/suite/dark.png": "0128cdb11e1aee9e0585792c529411e9d80fa5afd7e75be4066747dc9da0c357",
+        "preview/suite/checker.png": "9655048d485460ecdc13da987ce94cc3d3a0532fcc25bfa4328fd118eb682f9f"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T11:49:17.411766+00:00"
+    }
+  ]
+}
