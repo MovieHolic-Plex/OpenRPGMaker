@@ -18,7 +18,7 @@ import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
-import { START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_TESTIDS = {
@@ -203,7 +203,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     showHidden: false,
     choiceId: null,
     startMode: "example",
-    screenSize: "classic",
+    screenSize: DEFAULT_START_SCREEN_SIZE,
     intent: "",
     // 입력칸 값은 번역 계층이 건드리지 않으므로 기본 제목은 여기서 직접 번역한다.
     title: t(DEFAULT_TITLE),
@@ -506,8 +506,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         el("label", { class: "start-field", children: [
           el("span", { class: "start-label", text: "화면 크기" }),
           el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [
+            el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }),
             el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }),
-            el("option", { text: "와이드 · 640 × 360 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }),
           ], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } }),
         ] }),
       ] }),
@@ -605,7 +605,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const fields = el("div", { class: "start-seed-fields", children: [
       el("label", { class: "start-field", children: [el("span", { class: "start-label", attrs: { for: "start-title" }, text: "게임 이름" }), titleInput, el("small", { class: "start-hint", text: "나중에 바꿀 수 있어요." })] }),
       el("div", { class: "start-field", children: [el("span", { class: "start-label", text: "저장 위치" }), el("p", { class: "start-location", children: [icon("folder"), el("code", { text: state.projectDir ?? "…", dataset: { testid: START_SCREEN_TESTIDS.location } }), el("button", { class: "start-link", text: "위치 바꾸기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.changeLocation }, on: { click: chooseRoot } })] }), el("small", { class: "start-hint", text: "이 폴더에 프로젝트와 작업 내용이 저장돼요." })] }),
-      el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }), el("option", { text: "와이드 · 640 × 360 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
+      el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }), el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
     ] });
     return [el("div", { class: "start-new-head", children: [el("button", { class: "start-btn start-btn-icon", attrs: { type: "button", "aria-label": "시작 방식 다시 고르기" }, dataset: { testid: START_SCREEN_TESTIDS.back }, children: [icon("back")], on: { click: () => showView("new", null, "example") } }), el("h1", { class: "start-title", text: "이 장면으로 시작해 볼까요?" })] }),
       el("div", { class: "start-seed-layout", children: [preview, fields] }),
