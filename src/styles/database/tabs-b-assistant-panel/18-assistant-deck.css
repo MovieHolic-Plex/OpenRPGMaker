@@ -137,7 +137,6 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-work-inline-actions:empty, .ai-work-inline-live:empty { display: none; }
 
 /* Sidebar header and overflow retain the original controls and keyboard behavior. */
-.ai-chat-panel.is-left-sidebar:not(.is-studio) [data-testid="ai-collapse"] { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state:empty { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
 .ai-chat-secondary-actions { display: grid; gap: 3px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
@@ -753,6 +752,31 @@ html[data-ai-render="off"] {
 .ai-right-dock > .ai-chat-float-host.ai-chat-sidebar-host {
   position: relative; inset: auto; flex: 1; min-width: 0; min-height: 0; pointer-events: auto; z-index: 40; display: flex;
 }
+
+/* Fold the conversation itself, keeping the live deck and draft mounted. */
+.ai-right-dock.is-collapsed { width: 44px; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) {
+  position: relative; inset: auto; display: flex; flex-direction: column; align-items: center;
+  width: 100%; min-width: 0; max-width: none; height: 100%; min-height: 0; padding: 6px 0;
+  background: var(--bg-raised); border: 0; box-shadow: none; pointer-events: auto;
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > :not(.ai-collapsed-restore):not(.ai-collapsed-undo) { display: none; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  flex: 0 0 auto; gap: 8px; width: 40px; height: auto; min-width: 0; min-height: 44px;
+  padding: 8px 4px; border: 0; border-radius: var(--radius-s); box-shadow: none;
+  background: transparent; color: var(--text-1); overflow: hidden;
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-name,
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-state { writing-mode: vertical-rl; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-dot { margin: 0; flex: 0 0 auto; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-undo:not([hidden]) {
+  position: static; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: 32px; height: 32px; margin-top: 8px; padding: 0; transform: none;
+  border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1);
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:hover { background: var(--bg-hover); }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
 
 
 /* ── 왼쪽 활동 막대 패널: 즐겨찾기 · 진행 · 연결 (2026-09-27) ───────────────────── */
