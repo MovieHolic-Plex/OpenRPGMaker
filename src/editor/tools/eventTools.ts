@@ -751,7 +751,12 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
   }
 }
 
+// 이 두 함수는 형식 검사(assertEventShape) **앞에서** 돈다 — 플래그를 먼저 만들어야 참조 검사가 통과하기 때문이다.
+// 그래서 모양이 틀린 명령(then 없는 fork, options 없는 choices)을 만나도 던지지 말고 건너뛴다. 던지면 모델은
+// 「undefined is not an object (evaluating 'command of commands')」만 받고, 뒤의 형식 검사가 주는 고칠 방법을 못 본다
+// (2026-10-05 스트레스 실측: place_npc 의 victoryBranch/otherwiseBranch fork).
 function ensureConditionStoryFlags(project: Project, condition: Condition, eventId: string, warnings: string[]): void {
+  if (!condition || typeof condition !== "object") return;
   if (condition.kind === "switch") {
     if (!project.switches.some((entry) => entry.id === condition.switchId)) {
       ensureNamedSwitch(project, condition.switchId, `이벤트 ${eventId}: ${condition.switchId}`);
@@ -763,14 +768,16 @@ function ensureConditionStoryFlags(project: Project, condition: Condition, event
       warnings.push(`미등록 variableId 자동 생성: ${condition.variableId}`);
     }
   } else if (condition.kind === "all" || condition.kind === "any") {
-    for (const child of condition.conditions) ensureConditionStoryFlags(project, child, eventId, warnings);
+    for (const child of Array.isArray(condition.conditions) ? condition.conditions : []) ensureConditionStoryFlags(project, child, eventId, warnings);
   } else if (condition.kind === "not") {
     ensureConditionStoryFlags(project, condition.condition, eventId, warnings);
   }
 }
 
-function ensureCommandStoryFlags(project: Project, commands: readonly Command[], eventId: string, warnings: string[]): void {
+function ensureCommandStoryFlags(project: Project, commands: readonly Command[] | undefined, eventId: string, warnings: string[]): void {
+  if (!Array.isArray(commands)) return;
   for (const command of commands) {
+    if (!command || typeof command !== "object") continue;
     if (command.kind === "setSwitch") {
       if (!project.switches.some((entry) => entry.id === command.switchId)) {
         ensureNamedSwitch(project, command.switchId, `이벤트 ${eventId}: ${command.switchId}`);
@@ -782,10 +789,10 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
         warnings.push(`미등록 variableId 자동 생성: ${command.variableId}`);
       }
     } else if (command.kind === "choices") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "presentItem") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "fork") {
@@ -800,9 +807,9 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
 
 function ensureEventStoryFlags(project: Project, event: GameEvent, warnings: string[]): void {
   ensureCommandStoryFlags(project, event.commands, event.id, warnings);
-  for (const page of event.pages ?? []) {
-    for (const condition of page.conditions) ensureConditionStoryFlags(project, condition, event.id, warnings);
-    ensureCommandStoryFlags(project, page.commands, event.id, warnings);
+  for (const page of Array.isArray(event.pages) ? event.pages : []) {
+    for (const condition of Array.isArray(page?.conditions) ? page.conditions : []) ensureConditionStoryFlags(project, condition, event.id, warnings);
+    ensureCommandStoryFlags(project, page?.commands, event.id, warnings);
   }
 }
 
