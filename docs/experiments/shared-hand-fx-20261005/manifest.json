@@ -1,0 +1,377 @@
+[
+  {
+    "key": "hand_stone_spike",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 23,
+    "pngSha256": "5ee1bbaa60b987ce1d70b0acefd10073b60fa90fc6532a71966861f9eb71ddc7",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_stone_spike.png"
+  },
+  {
+    "key": "hand_dust_quake",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 8,
+    "pngSha256": "7b68b5e564c47716c43f6751813551b3f62c5e616628ed7ec14d5bb9dd34c3d8",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_dust_quake.png"
+  },
+  {
+    "key": "hand_wind_cutter",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 7,
+    "pngSha256": "55135321ab6c38ae67f3a72979ce907fa48a122a413154fcd3c6f7e024b9db3b",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_wind_cutter.png"
+  },
+  {
+    "key": "hand_whirlpool",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 4,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 9,
+    "pngSha256": "66851217531288378bc81de7a6a2f9cd91f191f3c79b682b84660bf880ea7614",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_whirlpool.png"
+  },
+  {
+    "key": "hand_vine_bind",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 5,
+    "pngSha256": "2a0c6e9b6015f097408cc566c939655576d9742ac31b2c457b86176ba4906609",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_vine_bind.png"
+  },
+  {
+    "key": "hand_shadow_fang",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 5,
+    "pngSha256": "0b8fd84eb9114575b252288bd82ba6485a7263417371d18b852bb88f954f2eeb",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_shadow_fang.png"
+  },
+  {
+    "key": "hand_holy_lance",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "007e54f2943afcdd2b70bf920bb3cde10c82934eb7a01ecfe75e79c72a0c1e10",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_holy_lance.png"
+  },
+  {
+    "key": "hand_haste_wing",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 4,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "898e45fa723a553b68a0e991f699b5d49d1adeb3ddc36ef0774432c222ea9724",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_haste_wing.png"
+  },
+  {
+    "key": "hand_slow_chain",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 4,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 12,
+    "pngSha256": "dc2a099176190b37f1616de9b6a8263f4c939d31cd1d209d9f2a2f398d1781b3",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_slow_chain.png"
+  },
+  {
+    "key": "hand_silence_seal",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 5,
+    "pngSha256": "4b617f287f24be4307eabc12f718e22bb1ef3ae3835bf3889bef463be7340e4d",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_silence_seal.png"
+  },
+  {
+    "key": "hand_mana_drain",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "ef7830561f060e5d3d43f7a04b5882d3f1995fc103f7e8dd4a1f1c236cf8ac29",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_mana_drain.png"
+  },
+  {
+    "key": "hand_comet",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 7,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 6,
+    "pngSha256": "93f283f482003f47dcafac20385638e290c326aa010f0d03fe876b93dfa2f883",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_comet.png"
+  },
+  {
+    "key": "hand_summon_gate",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 4,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 22,
+    "pngSha256": "713786ab421b1e8a90cc2fd21f1cbc553188466ae8d47acce586a14f49c0b105",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_summon_gate.png"
+  },
+  {
+    "key": "hand_heal_drop",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 6,
+    "pngSha256": "0009fc058651481328b0c02c57645142691a9b8d46a1a6533bc752aef907e10b",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_heal_drop.png"
+  },
+  {
+    "key": "hand_regen_leaf",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "3293e0828f77191e3e5afeabc85d815cd5eb495df4a06c2f44997bd0caf0e7dc",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_regen_leaf.png"
+  },
+  {
+    "key": "hand_revive_feather",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 4,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "57404902699d631965d1202a9073c1f8fe7186001195b198d232ada3e1cbe187",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_revive_feather.png"
+  },
+  {
+    "key": "hand_cleanse",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 4,
+    "pngSha256": "f38a59420b1c862dc7ba8ca89d80c92e26de98d120d25778c972bc724bf441c3",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_cleanse.png"
+  },
+  {
+    "key": "hand_guard_crystal",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 5,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 8,
+    "pngSha256": "fce88c2a7f027f68fa9d5e7d5712ac9943eb7d8ec0ec214ff1e0326e164b0a19",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_guard_crystal.png"
+  },
+  {
+    "key": "hand_mirror",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 6,
+    "pngSha256": "21e7cc9386cac3119a8a8645ad5804ec6b92b125d82254f814419901644ae935",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_mirror.png"
+  },
+  {
+    "key": "hand_impact",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 10,
+    "pngSha256": "95f26b051049dc75e3549edf23d5e5dec75b5d52167e7cf29b5c444ca2b4f3b6",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_impact.png"
+  },
+  {
+    "key": "hand_thrust",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 6,
+    "pngSha256": "4421dbb9e6d3ef9e44099eb3588ee24b6bb2cb05e7c2f74a53346e04ad6ebc89",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_thrust.png"
+  },
+  {
+    "key": "hand_claw",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 7,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 6,
+    "pngSha256": "693911d0dba4bc5f6d3f8d78db23ce9deffccd4e895f59e40914631761c7dd5c",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_claw.png"
+  },
+  {
+    "key": "hand_axe",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 7,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 3,
+    "pngSha256": "6fb31531010884ef486da9f9cb99f5894869a7066975177da78787f07de212f2",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_axe.png"
+  },
+  {
+    "key": "hand_bomb",
+    "frames": 8,
+    "nativeSize": [
+      64,
+      64
+    ],
+    "opaqueColors": 6,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 9,
+    "pngSha256": "e0446d29521151eb303c0edf8f65185b2baba7b3f4bee9ce15f94bbbb59fd525",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/hand_bomb.png"
+  },
+  {
+    "key": "monk_dragon_aura",
+    "frames": 12,
+    "nativeSize": [
+      128,
+      128
+    ],
+    "opaqueColors": 14,
+    "registeredPixelsMatchGrid": true,
+    "minimumChangedPixels": 120,
+    "pngSha256": "efaab8650412599735bb2d0a18c2b90bd2c8fabb5e58b029158521bc0f48eabc",
+    "reviewStatus": "rejected-by-user",
+    "installed": false,
+    "archivedAsset": "rejected-release/public/assets/generated/pixel-fx/monk_dragon_aura.png"
+  }
+]

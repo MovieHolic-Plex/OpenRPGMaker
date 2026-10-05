@@ -1,0 +1,12 @@
+{
+  "method": "esbuild transform only; no typecheck or bundle",
+  "files": [
+    "src/assets/retroClassSkills.ts",
+    "src/assets/retroSkillCatalog.ts",
+    "src/battle/retroChoreographyHandles.ts",
+    "src/battle/retroSkillTimeline.ts",
+    "src/editor/panels/databaseMonsterSkillStage.ts",
+    "src/editor/panels/databaseSkillRetroStage.ts",
+    "src/player/retroSkillChoreography.ts"
+  ]
+}

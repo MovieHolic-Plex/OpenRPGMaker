@@ -82,6 +82,7 @@ function scaled(event: RetroTimelineEvent, speed: number): RetroTimelineEvent {
         ...event,
         at,
         frameMs: Math.max(1, Math.round(event.frameMs / speed)),
+        ...(event.frameDurationsMs ? { frameDurationsMs: event.frameDurationsMs.map(ms => Math.max(1, Math.round(ms / speed))) } : {}),
       };
     case "projectile":
       return {
@@ -206,7 +207,7 @@ export function applyChoreographyHandles(
         impactLayers.set(event.layer, group);
       }
     events = events.flatMap((event): RetroTimelineEvent[] => {
-      if (event.kind !== "fx" || event.anchor !== "target" || !contacts.length)
+      if (event.kind !== "fx" || event.anchor !== "target" || !contacts.length || event.frameDurationsMs)
         return [event];
       const group = impactLayers.get(event.layer)!,
         index = group.indexOf(event),
@@ -330,7 +331,7 @@ export function applyChoreographyHandles(
             ("durationMs" in e
               ? e.durationMs
               : e.kind === "fx"
-                ? e.cells.length * e.frameMs
+                ? e.frameDurationsMs?.reduce((sum, ms) => sum + ms, 0) ?? e.cells.length * e.frameMs
                 : 0),
         ),
       ) + 120;

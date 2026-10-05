@@ -1,0 +1,22 @@
+{
+  "skills": 24,
+  "pixelAnimations": 41,
+  "sharedContracts": 24,
+  "sharedSearch": 24,
+  "guardSheets": [
+    "hand_guard_crystal"
+  ],
+  "issues": [],
+  "changed": [
+    true,
+    false
+  ],
+  "second": [
+    false,
+    false
+  ],
+  "existingSkills": 24,
+  "preservedSkill": true,
+  "preservedAnimation": true,
+  "restoredRegen": true
+}

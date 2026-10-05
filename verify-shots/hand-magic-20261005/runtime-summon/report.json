@@ -1,0 +1,14 @@
+{
+  "set": "class",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": false,
+  "variant": "normal",
+  "clips": [],
+  "errors": [
+    "[group 0] page.goto: Page crashed\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:35883/player.html?e2eVitals=1\", waiting until \"domcontentloaded\"\u001b[22m\n\n    at recordGroup (/home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:280:18)\n    at async file:///home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:115:55"
+  ],
+  "evidence": [],
+  "passed": false
+}

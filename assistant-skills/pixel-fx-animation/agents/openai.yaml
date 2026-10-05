@@ -1,0 +1,4 @@
+interface:
+  display_name: "전투 효과 도트 애니메이션"
+  short_description: "마법과 타격 효과의 각 프레임을 직접 도트로 찍고 동작을 검토합니다"
+  default_prompt: "$pixel-fx-animation으로 FF6를 참고한 전투 효과를 각 프레임의 픽셀을 직접 찍어서 만들어 줘."

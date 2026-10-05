@@ -46,6 +46,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
    - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
+   - 직접 픽셀 저작과 전투 효과 애니메이션 스킬: `openwiki/pixel-dot-authoring.md` (문자 격자·명시한 좌표 패치, 형식 확인과 미감 판단 분리)
    - Character battle motion (136 actors, current class/equipment, contact geometry): `openwiki/character-battle-motion.md`
    - 측면 전투의 타격감·정지 시계·검 포즈/소리·피격 반동: `openwiki/battle-impact-contact.md`
    - 공용 몬스터 140종 · 옛 그림 폐기 · native 초상/포즈 · RM2003 스킬 비교: `openwiki/native-enemy-retirement.md`

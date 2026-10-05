@@ -1,0 +1,228 @@
+{
+  "inventory": {
+    "choices": 25,
+    "thumbnails": 25,
+    "loaded": [
+      {
+        "key": "monk_dragon_aura",
+        "frames": 12
+      },
+      {
+        "key": "hand_impact",
+        "frames": 8
+      },
+      {
+        "key": "hand_thrust",
+        "frames": 8
+      },
+      {
+        "key": "hand_claw",
+        "frames": 8
+      },
+      {
+        "key": "hand_axe",
+        "frames": 8
+      },
+      {
+        "key": "hand_bomb",
+        "frames": 8
+      },
+      {
+        "key": "hand_stone_spike",
+        "frames": 8
+      },
+      {
+        "key": "hand_dust_quake",
+        "frames": 8
+      },
+      {
+        "key": "hand_wind_cutter",
+        "frames": 8
+      },
+      {
+        "key": "hand_whirlpool",
+        "frames": 8
+      },
+      {
+        "key": "hand_vine_bind",
+        "frames": 8
+      },
+      {
+        "key": "hand_shadow_fang",
+        "frames": 8
+      },
+      {
+        "key": "hand_holy_lance",
+        "frames": 8
+      },
+      {
+        "key": "hand_heal_drop",
+        "frames": 8
+      },
+      {
+        "key": "hand_regen_leaf",
+        "frames": 8
+      },
+      {
+        "key": "hand_revive_feather",
+        "frames": 8
+      },
+      {
+        "key": "hand_cleanse",
+        "frames": 8
+      },
+      {
+        "key": "hand_guard_crystal",
+        "frames": 8
+      },
+      {
+        "key": "hand_mirror",
+        "frames": 8
+      },
+      {
+        "key": "hand_haste_wing",
+        "frames": 8
+      },
+      {
+        "key": "hand_slow_chain",
+        "frames": 8
+      },
+      {
+        "key": "hand_silence_seal",
+        "frames": 8
+      },
+      {
+        "key": "hand_mana_drain",
+        "frames": 8
+      },
+      {
+        "key": "hand_comet",
+        "frames": 8
+      },
+      {
+        "key": "hand_summon_gate",
+        "frames": 8
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "key": "monk_dragon_aura",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_impact",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_thrust",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_claw",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_axe",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_bomb",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_stone_spike",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_dust_quake",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_wind_cutter",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_whirlpool",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_vine_bind",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_shadow_fang",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_holy_lance",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_heal_drop",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_regen_leaf",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_revive_feather",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_cleanse",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_guard_crystal",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_mirror",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_haste_wing",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_slow_chain",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_silence_seal",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_mana_drain",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_comet",
+      "nextChangesPixels": true
+    },
+    {
+      "key": "hand_summon_gate",
+      "nextChangesPixels": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 704,
+      "scrollWidth": 704,
+      "canvasWidth": 256
+    },
+    {
+      "width": 288,
+      "scrollWidth": 288,
+      "canvasWidth": 256
+    }
+  ],
+  "playback": {
+    "label": "8/8 · 끝",
+    "button": "재생",
+    "repeat": false
+  },
+  "errors": []
+}

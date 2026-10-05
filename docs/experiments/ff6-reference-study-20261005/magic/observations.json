@@ -1,0 +1,145 @@
+{
+  "source": "https://www.youtube.com/watch?v=XSoHSGRyNPo",
+  "title": "Final Fantasy VI (SNES) Combat Exhibition (All Items, Magic, Espers, Skills, Desperation Attacks) - YouTube",
+  "sampling": {
+    "id": "XSoHSGRyNPo",
+    "start": 315,
+    "end": 420,
+    "step": 3
+  },
+  "observations": [
+    {
+      "at": 315,
+      "currentTime": 315.189886,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 318,
+      "currentTime": 318.046092,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 321,
+      "currentTime": 321.042308,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 324,
+      "currentTime": 324.029446,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 327,
+      "currentTime": 327.031024,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 330,
+      "currentTime": 330.016532,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 333,
+      "currentTime": 333.012295,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 336,
+      "currentTime": 336.036853,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 339,
+      "currentTime": 339.046352,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 342,
+      "currentTime": 342.017677,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 345,
+      "currentTime": 345.022747,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 348,
+      "currentTime": 348.011623,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 351,
+      "currentTime": 351.039518,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 354,
+      "currentTime": 354.034796,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 357,
+      "currentTime": 357.029713,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 360,
+      "currentTime": 360.01105,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 363,
+      "currentTime": 363.029027,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 366,
+      "currentTime": 366.034787,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 369,
+      "currentTime": 2.073693,
+      "readyState": 4,
+      "videoWidth": 854,
+      "videoHeight": 480
+    }
+  ]
+}

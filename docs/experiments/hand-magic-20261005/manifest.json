@@ -1,0 +1,54 @@
+[
+  {
+    "key": "mage_fire_burst",
+    "kind": "fire",
+    "frames": 10,
+    "size": 64,
+    "sourceSha256": "28d77f4975b64e5bca07f5b872b0a3f0036539ff94b09d7217f98d52f2e13f42",
+    "assetSha256": "0135a6d017b9e81972ae920a78bf50293439694ee9d99c1bb59a227e047dff54",
+    "registeredPixelsMatchGrid": true,
+    "reviewStatus": "awaiting-user-review",
+    "runtimeFrameMs": 60,
+    "reviewGifFrameMs": 60
+  },
+  {
+    "key": "mage_blizzard",
+    "kind": "ice",
+    "frames": 10,
+    "size": 64,
+    "sourceSha256": "8f24471f6dadc5057d56c132b7d9a6fbab17f20ff9ecc1efca2b63969ddbdb3a",
+    "assetSha256": "7bda0570ec3dff8c5e16afb325cf66b24f8eb4229311269b16e0199bfe3a140e",
+    "registeredPixelsMatchGrid": true,
+    "reviewStatus": "awaiting-user-review",
+    "runtimeFrameMs": 60,
+    "reviewGifFrameMs": 60
+  },
+  {
+    "key": "mage_chain_bolt",
+    "kind": "thunder",
+    "frames": 8,
+    "size": 64,
+    "sourceSha256": "94d7ef531f29c49c55cb2b4d1b3c1291b91598c581a04996cd2b148b14bddace",
+    "assetSha256": "dc37a8cc622590d27041554f1851b6b1e0cfa366f1cf259b892a20da3abfeff8",
+    "registeredPixelsMatchGrid": true,
+    "reviewStatus": "awaiting-user-review",
+    "runtimeFrameMs": 60,
+    "reviewGifFrameMs": 60
+  },
+  {
+    "key": "monk_dragon_aura",
+    "kind": "summon",
+    "frames": 12,
+    "size": 128,
+    "sourceSha256": "f2fd0ed78ae3201bfbb2d68646d175667ebfcae5819cfe92b6af4abb4551e373",
+    "assetSha256": "ced352c79eb7f7f68573bdcddf7cbecd4c41360b0cb4b65750935dde719226d2",
+    "registeredPixelsMatchGrid": true,
+    "reviewStatus": "rejected-by-user",
+    "runtimeFrameMs": 72,
+    "reviewGifFrameMs": 70,
+    "supersededBy": "shared-hand-fx-20261005",
+    "archivedSource": "docs/experiments/shared-hand-fx-20261005/rejected-summon/monk_dragon_aura.hand.json",
+    "archivedAsset": "docs/experiments/shared-hand-fx-20261005/rejected-summon/monk_dragon_aura.png",
+    "currentAssetMatchesThisVersion": false
+  }
+]

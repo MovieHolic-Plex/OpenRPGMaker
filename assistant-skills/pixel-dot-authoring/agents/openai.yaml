@@ -1,0 +1,4 @@
+interface:
+  display_name: "직접 도트 저작"
+  short_description: "픽셀 격자를 직접 찍고 좌표 패치와 확대 검토로 그림을 수정합니다"
+  default_prompt: "$pixel-dot-authoring으로 픽셀 격자를 직접 저작하고 원본 크기와 확대 그림을 보며 수정해 줘."

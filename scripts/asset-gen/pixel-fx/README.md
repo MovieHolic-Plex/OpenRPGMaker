@@ -1,5 +1,50 @@
 # retro2003 skill effects
 
+## 직접 저작 요청의 최신 경로 (2026-10-05)
+
+직전 `snes-study-redraw-20261005` 판도 사용자 반려다. 현재 공용 화염/빙결/번개/홀리/용권은
+`hero_magic_rework.py`가 선택한 `flame_cels.py`·`crystal_cels.py`·`lightning_cels.py`·
+`aether_cels.py`·`water_band_cels.py`의 직접 쓴 문자 행과 좌표를 사용한다.
+소환 본체는 기존 `pixel-enemies/hydra-three.png` 첫 셀을 재사용한 `summon-hydra-reuse.json`이다.
+`python3 scripts/asset-gen/pixel-fx/snes_study_redraw.py --install`로 10개 층과 배경 셀 사본 4장을 패킹한다.
+완전한 원본은 `hand-authored/*.study.px.json`; `hand_pixels.py`는 이 원본을 먼저 읽는다.
+화염·빙결·번개·용권 본체·착탄의 기존 개별 `.py`도 같은 그림을 재현한다.
+층 크기/칸 수/노출 시간/앞뒤 순서는 `src/assets/retroClassSkills.ts`에 함께 등록돼 있다.
+소환 원화는 96px 본체를 128px 한 칸에 배치해 유지한다. 새로 그린 용이라고 보고하지 않는다.
+배경은 직접 저작한 128px 폭의 긴 물결 띠를 배치하고 단색 바탕만 32px 타일로 반복한다.
+10개 층의 64칸을 각각 새로 그린 그림 64장으로 보고하지 않는다.
+근거와 범위: `docs/experiments/hero-magic-rework-20261005/README.md`.
+
+### 이전 반려/철회 기록
+
+후속 공용 효과 **24종(각64×8)과 소환 v2도 사용자 반려**다. 공용 등록/기본값 배선을 철회했다.
+`build_shared_hand_fx.py`는 반려 기록 폴더에만 출력한다. `dragon_hand_cels.py`는 반려 원본이다.
+철회 당시 소환 PNG와 `monk_dragon_aura.py`는 작업 전 HEAD로 복원했다. 이후 위의 새 원본으로 교체했다.
+원본/PNG/배선 사본과 당시 기술 확인 기록은 `docs/experiments/shared-hand-fx-20261005/README.md`.
+
+도형/수식으로 만든 FF6 참고4종 시안은 사용자 반려다. 새 직접 도트 작업은
+`openwiki/pixel-dot-authoring.md`의 두 스킬로 각 프레임의 문자 격자·좌표를 직접 저작한다.
+보조 코드는 출력·검사만 맡는다. 아래는 기존 시트의 생성/재현 경로이며 새 직접 저작의 품질 기준이 아니다.
+
+### 첫 화염·빙결·번개·소환 직접 도트 4종 (역사)
+
+`hand-authored/<key>.hand.json`이 픽셀 저작 원본이고, `hand_pixels.py`는 명시된 행을
+1:1로 배치해 `<key>.px.json`으로 펼친다. 이름을 가진 몸통/얼굴 조각은 같은 좌표에서 유지하고,
+날개 자세와 브레스는 별도의 행으로 찍었다. 도형 생성·자동 변형·보간은 없다.
+
+| 스킬 | 원본 키 | 셀 × 프레임 | 런타임 간격 |
+|---|---|---|---|
+| 파이어볼 | mage_fire_burst | 64 × 10 | 60ms |
+| 블리자드 | mage_blizzard | 64 × 10 | 60ms |
+| 연쇄 번개 | mage_chain_bolt | 64 × 8 | 60ms |
+| 용권 멸살의 소환 층 | monk_dragon_aura | 128 × 12 | 72ms |
+
+화염·빙결·번개의 기존 `.py` 진입점도 같은 문자 원본을 읽는다. 소환 직접 격자는 반려 기록만 남겼다.
+공용 PNG는 `public/assets/generated/pixel-fx/`에 반영된다. 시트 크기·프레임 수·앵커·스킬 ID는 기존 계약을 따른다.
+직접 도트 검토판과 수정 전 공용 시트는 `docs/experiments/hand-magic-20261005/`에 있다.
+소환의 별도 검토 GIF는 시간 단위가 10ms이므로 70ms, 실제 플레이어와 대화 미리보기는 72ms다.
+옛 라이브러리의 보조 GIF 속도는 런타임 검증 근거로 쓰지 않는다.
+
 Original pixel-coordinate art authored for OPRN Studio with Python 3 and Pillow.
 No AI image generation, source-image tracing, resizing or antialiasing is used.
 

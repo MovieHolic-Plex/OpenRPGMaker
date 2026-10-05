@@ -396,6 +396,8 @@
   z-index: 34;
 }
 .battle-scene[data-battle-motion="retro"] .retro-class-fx-screen { translate: -50% -50%; z-index: 36; }
+.battle-scene[data-battle-motion="retro"] .retro-class-fx-behind { z-index: 2; }
+.battle-scene[data-battle-motion="retro"] .retro-class-fx-backdrop { translate: 0 0; z-index: 1; }
 .battle-scene[data-battle-motion="retro"] .retro-class-fx-projectile { translate: -50% -50%; z-index: 37; }
 .battle-scene[data-battle-motion="retro"] .retro-class-veil {
   position: absolute;

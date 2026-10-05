@@ -1,0 +1,141 @@
+{
+  "layers": [
+    {
+      "key": "mage_fire_burst",
+      "size": [
+        512,
+        64
+      ],
+      "frames": 8,
+      "opaqueColors": 7,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "f4bd6de0b46b8ae1099624b874b4f3d6b8836f02454cf6ead2ec793aa9acac4f"
+    },
+    {
+      "key": "mage_blizzard",
+      "size": [
+        512,
+        64
+      ],
+      "frames": 8,
+      "opaqueColors": 8,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "22f951745ab707211a8427fba0958c54267d6895ee70ff792fd4508ced176dfa"
+    },
+    {
+      "key": "mage_chain_bolt",
+      "size": [
+        448,
+        64
+      ],
+      "frames": 7,
+      "opaqueColors": 7,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "3dcb1b4059f5ba73634aebb1993298e419bc9d1c9bab7769287a4b137291cf2a"
+    },
+    {
+      "key": "cleric_holy_hit",
+      "size": [
+        384,
+        64
+      ],
+      "frames": 6,
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "ba669ee1a719b21a3a382f6e259306dfca680f5e1867673498ec9c5dd60d8566"
+    },
+    {
+      "key": "monk_dragon_aura",
+      "size": [
+        128,
+        128
+      ],
+      "frames": 1,
+      "opaqueColors": 13,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "7957fb3e8586a9af53f537a68df0e590402b1d1df036932bd00134f78d0e9067"
+    },
+    {
+      "key": "cleric_holy_field",
+      "size": [
+        256,
+        128
+      ],
+      "frames": 2,
+      "opaqueColors": 3,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "a1ca99a534894db6c7fad9663f379a4eeaa4c9e5dff4a667a727f32d397802cd"
+    },
+    {
+      "key": "cleric_holy_orbs_front",
+      "size": [
+        768,
+        64
+      ],
+      "frames": 12,
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "309dc0f34b580215a1d8339278fc6ae45b6f0c147a3acb38de238e55f0dba6cf"
+    },
+    {
+      "key": "cleric_holy_orbs_back",
+      "size": [
+        768,
+        64
+      ],
+      "frames": 12,
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "064e27a7e46f84967de0ce21ac5904378f175e6b5f64d906ff3879b544352ef8"
+    },
+    {
+      "key": "monk_dragon_hit",
+      "size": [
+        384,
+        64
+      ],
+      "frames": 6,
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "b2c2be80aa36d7f5228f2245e34c0ade744c293989e5925f4da6d0fb2ac973ff"
+    },
+    {
+      "key": "monk_dragon_wave",
+      "size": [
+        256,
+        128
+      ],
+      "frames": 2,
+      "opaqueColors": 3,
+      "binaryAlpha": true,
+      "sourceAndPngMatch": true,
+      "pngBytesReproduced": true,
+      "assetSha256": "1dfed9fa4e2fe4b6862ef1a18494a25ada6b470061f9837fd44ff48dbcbc7a18"
+    }
+  ],
+  "entrypointRgbaMatches": [
+    "mage_fire_burst",
+    "mage_blizzard",
+    "mage_chain_bolt",
+    "monk_dragon_aura",
+    "monk_dragon_hit"
+  ]
+}

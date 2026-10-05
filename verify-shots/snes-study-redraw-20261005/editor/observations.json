@@ -1,0 +1,146 @@
+{
+  "rows": [
+    {
+      "id": "mage_fireball",
+      "found": true,
+      "time": "940",
+      "effects": [
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_fire_burst.png\")",
+          "position": "-128px 0px",
+          "size": "512px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        }
+      ],
+      "width": 620,
+      "scroll": 620
+    },
+    {
+      "id": "mage_blizzard",
+      "found": true,
+      "time": "800",
+      "effects": [
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_blizzard.png\")",
+          "position": "-192px 0px",
+          "size": "512px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_blizzard.png\")",
+          "position": "-192px 0px",
+          "size": "512px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_blizzard.png\")",
+          "position": "-192px 0px",
+          "size": "512px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        }
+      ],
+      "width": 620,
+      "scroll": 620
+    },
+    {
+      "id": "mage_chain_lightning",
+      "found": true,
+      "time": "580",
+      "effects": [
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_chain_bolt.png\")",
+          "position": "-64px 0px",
+          "size": "448px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_chain_bolt.png\")",
+          "position": "-64px 0px",
+          "size": "448px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/mage_chain_bolt.png\")",
+          "position": "-64px 0px",
+          "size": "448px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        }
+      ],
+      "width": 620,
+      "scroll": 620
+    },
+    {
+      "id": "cleric_holy_smite",
+      "found": true,
+      "time": "1700",
+      "effects": [
+        {
+          "key": "url(\"/assets/generated/pixel-fx/cleric_holy_hit.png\")",
+          "position": "-64px 0px",
+          "size": "384px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/cleric_holy_field-f1.png\")",
+          "position": "0px 0px",
+          "size": "128px 128px",
+          "z": "4",
+          "parent": "db-skill-retro-world",
+          "width": "240px"
+        }
+      ],
+      "width": 620,
+      "scroll": 620
+    },
+    {
+      "id": "monk_dragon_fist",
+      "found": true,
+      "time": "1880",
+      "effects": [
+        {
+          "key": "url(\"/assets/generated/pixel-fx/monk_dragon_aura.png\")",
+          "position": "0px 0px",
+          "size": "160px 160px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "160px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/monk_dragon_hit.png\")",
+          "position": "-64px 0px",
+          "size": "384px 64px",
+          "z": "",
+          "parent": "db-skill-retro-fx-layer",
+          "width": "64px"
+        },
+        {
+          "key": "url(\"/assets/generated/pixel-fx/monk_dragon_wave-f1.png\")",
+          "position": "0px 0px",
+          "size": "128px 128px",
+          "z": "4",
+          "parent": "db-skill-retro-world",
+          "width": "240px"
+        }
+      ],
+      "width": 620,
+      "scroll": 620
+    }
+  ],
+  "errors": []
+}

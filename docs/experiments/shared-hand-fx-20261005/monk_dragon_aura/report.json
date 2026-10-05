@@ -1,0 +1,265 @@
+{
+  "sourceSha256": "58d618ebd0f203d19ec2dd358a06c58b2f793921007d0be9410679a5b0914dff",
+  "width": 128,
+  "height": 128,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 70,
+      "opaquePixels": 76,
+      "opaqueColors": 4,
+      "boundsInclusive": [
+        40,
+        106,
+        67,
+        108
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "344687adbbc5a23dcd37e569be946b476bcc96150d60ecfa4c69ccf78a2c2cb0",
+      "changedFromPrevious": null,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "발밑 인장"
+    },
+    {
+      "id": "f01",
+      "durationMs": 70,
+      "opaquePixels": 626,
+      "opaqueColors": 10,
+      "boundsInclusive": [
+        30,
+        37,
+        67,
+        108
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "2d5bfde02c958ba58f66432530f247a2901560919256453b518cc3a879c81f7d",
+      "changedFromPrevious": 550,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "머리 현현"
+    },
+    {
+      "id": "f02",
+      "durationMs": 70,
+      "opaquePixels": 3614,
+      "opaqueColors": 13,
+      "boundsInclusive": [
+        7,
+        37,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "c9cfe1501d0c2ab393f00fda0dc1f6fb5809473aa40d043d5f6fb2b89d07c393",
+      "changedFromPrevious": 3140,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "날개 펼치기"
+    },
+    {
+      "id": "f03",
+      "durationMs": 70,
+      "opaquePixels": 3829,
+      "opaqueColors": 13,
+      "boundsInclusive": [
+        7,
+        12,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "71839bb9c324e13c83506c1ba7551bc08d84f1ebdfca65ebc5aeed92abbf5d4b",
+      "changedFromPrevious": 2608,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "날개 올리기"
+    },
+    {
+      "id": "f04",
+      "durationMs": 70,
+      "opaquePixels": 3874,
+      "opaqueColors": 14,
+      "boundsInclusive": [
+        7,
+        12,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "2a5a64078b25adc54ba90d430031c03021cd9e75980021deb640100aee2accf6",
+      "changedFromPrevious": 196,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "턱 열기"
+    },
+    {
+      "id": "f05",
+      "durationMs": 70,
+      "opaquePixels": 3795,
+      "opaqueColors": 14,
+      "boundsInclusive": [
+        1,
+        37,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "49ddd9c524d76fdef14a2b154e6956caa9324d3b0058f8419d9a8b4163d0b17a",
+      "changedFromPrevious": 2694,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "브레스"
+    },
+    {
+      "id": "f06",
+      "durationMs": 70,
+      "opaquePixels": 3932,
+      "opaqueColors": 14,
+      "boundsInclusive": [
+        3,
+        12,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "775f1db18e2e98c625b6b0b2b3dbea2dfff6d95c23c798cfb875e2cd62eea674",
+      "changedFromPrevious": 2710,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "브레스 찢김"
+    },
+    {
+      "id": "f07",
+      "durationMs": 70,
+      "opaquePixels": 3887,
+      "opaqueColors": 14,
+      "boundsInclusive": [
+        7,
+        12,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "c54c530caeb3055a8bc401480ca53e491918f1929e33b2dc7db92a0027e2f2d9",
+      "changedFromPrevious": 156,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "토식 종료"
+    },
+    {
+      "id": "f08",
+      "durationMs": 70,
+      "opaquePixels": 3619,
+      "opaqueColors": 13,
+      "boundsInclusive": [
+        7,
+        15,
+        120,
+        107
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "0a04c297667fa31753dc411e433c5368ee6be88d43d9fbe7c671dc2a38cd8c2e",
+      "changedFromPrevious": 2651,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "턱 닫기"
+    },
+    {
+      "id": "f09",
+      "durationMs": 70,
+      "opaquePixels": 72,
+      "opaqueColors": 6,
+      "boundsInclusive": [
+        19,
+        25,
+        114,
+        104
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "48a2fe6e5960756113c5b1b453aa877a8df8fad7eacd2db96e1770e0a0b0532c",
+      "changedFromPrevious": 3645,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "비늘 소멸"
+    },
+    {
+      "id": "f10",
+      "durationMs": 70,
+      "opaquePixels": 102,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        16,
+        22,
+        118,
+        100
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "6e7ec756a3a0c761b13290d19cf89af8184b5ee9f8b20f7cc4d50c5862d8ad91",
+      "changedFromPrevious": 169,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "잔광"
+    },
+    {
+      "id": "f11",
+      "durationMs": 70,
+      "opaquePixels": 18,
+      "opaqueColors": 2,
+      "boundsInclusive": [
+        13,
+        19,
+        118,
+        93
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "b8955658627f9433fd9206a347e5e014c71405d122513550f1afc6a94b6f54b5",
+      "changedFromPrevious": 120,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "소멸"
+    }
+  ],
+  "opaqueColors": 14,
+  "alpha": [
+    0,
+    255
+  ],
+  "totalDurationMs": 840,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "f195ca1786a1ebdc93414d0fe4e47db8df4c1151eded4305c464b49fe69f0090",
+    "contact-grid-00.png": "be88f748d2f550b77c22937906f5431937d111cf2e66e99e1b90bcbdacd971ba",
+    "contact-native-00.png": "947caf828d88f0ce0845cff5ac8b11c27a9beb69561de4059cb02c11c2e7c17d",
+    "dark.gif": "39399dfe5039442dd0e55a83f4386738f185777bdf3b30e8e71c12cb79caa227",
+    "light.gif": "0d5a63880f46369373118f6143676ac97a3d399ef6ee1b76f492c386e16cf790",
+    "sheet.png": "efaab8650412599735bb2d0a18c2b90bd2c8fabb5e58b029158521bc0f48eabc"
+  }
+}

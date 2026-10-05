@@ -47,7 +47,7 @@ HUES = ['rr', 'ro', 'ry', 'rg', 'rb', 'rv']
 def contract():
     text = CONTRACT.read_text(encoding='utf8')
     layers = {}
-    for m in re.finditer(r'classId: "(\w+)".*?layers: \[(.*?)\] \}', text):
+    for m in re.finditer(r'classId: "(\w+)".*?layers: \[(.*?)\] \}', text, re.S):
         for l in re.finditer(r'key: "(\w+)", anchor: "(\w+)", frame: (\d+), frames: (\d+)', m.group(2)):
             layers.setdefault(l.group(1), dict(cls=m.group(1), anchor=l.group(2), frame=int(l.group(3)), frames=int(l.group(4))))
     return layers

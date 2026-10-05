@@ -19,9 +19,11 @@ const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-skills/recording' },
   set: { type: 'string', default: 'class' },
   fps: { type: 'string', default: '15' }, width: { type: 'string', default: '640' },
+  'browser-graphics': { type: 'string', default: 'software' },
   slots: {type:'string'}, skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false }, linger: { type: 'string' }, 'enemy-skill': { type: 'string' }, feel: { type: 'string' }, speed: { type: 'string' }, 'impact-audit': { type: 'boolean', default: false }, variant: { type: 'string', default: 'normal' },
 } });
 const fps = Number(values.fps), width = Number(values.width);
+if (!['software','default'].includes(values['browser-graphics'])) throw new Error('--browser-graphics software|default');
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
 if (!['class', 'new', 'old', 'legacy', 'roster', 'party-pixel', 'custom', 'motion'].includes(values.set)) throw new Error('--set class|new|old|legacy|roster|party-pixel|custom');
 if (values.set === 'custom' && !values.custom) throw new Error('--set custom 은 --custom <스펙.json> 이 필요하다(retro-assistant-build-project.mts 가 만든다)');
@@ -36,14 +38,14 @@ process.env.TMPDIR = join(out, 'browser-tmp');
 process.env.VITE_CACHE_DIR ??= resolve('.omo/retro-skills/vite-cache');
 const run = promisify(execFile);
 const LEGACY = ['sword_slash','focus','arcane_bolt','heal','sleep_mist','weaken','poison_sting','fire','ice','thunder','earth','wind','dark','holy','water','leaf','throwing_knife'].map((name) => 'skill_' + name);
-const report = { set: values.set, reduced: values.reduced, feel: values.feel ?? 'impact', speed: values.speed ?? '1', impactAudit: values['impact-audit'], variant: values.variant, clips: [], errors: [], evidence: [] };
+const report = { set: values.set, browserGraphics: values['browser-graphics'], reduced: values.reduced, feel: values.feel ?? 'impact', speed: values.speed ?? '1', impactAudit: values['impact-audit'], variant: values.variant, clips: [], errors: [], evidence: [] };
 let server, browser, topLevel = 22;
 let customChoreographies = []; // --set custom 스펙의 프로젝트 연출 레코드(database.skillChoreographies)
 const selector = (id) => '[data-testid="' + id + '"]';
 
 try {
   server = await startPlayerQaServer({ logLevel: 'error' });
-  browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
+  browser = await chromium.launch({ args: values['browser-graphics'] === 'default' ? ['--no-sandbox'] : ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
   // 현재 기본 DB(스킬·상태·직업·애니메이션)를 Vite 로 읽는다. 옛 데모 픽스처에는 새 스킬이 없다.
   const setup = await browser.newPage();
   await setup.route('**/__skill-setup', (route) => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
@@ -265,6 +267,8 @@ async function recordGroup(groupIndex, group, defaults, contract) {
           if (seen.has(node)) continue; seen.add(node);
           const frames = [], positions = [];
           const row = { at: Math.round(performance.now()), fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, box: node.dataset.fxBox, frames, positions,
+            plane: node.dataset.retroFxPlane, fieldWidth: node.parentElement.offsetWidth,
+            backgroundSize: getComputedStyle(node).backgroundSize,
             filter: getComputedStyle(node).filter, width: getComputedStyle(node).width, rendering: getComputedStyle(node).imageRendering };
           window.__skillEvidence.push(row);
           const capture = () => { const n = Number(node.dataset.fxFrame); if (frames.at(-1) !== n) { frames.push(n); positions.push(node.style.backgroundPosition); } };
@@ -397,8 +401,10 @@ async function recordGroup(groupIndex, group, defaults, contract) {
           const scale = contract.get(skill)?.scales?.[e.fx] ?? 1;
           const size = scale === 1 ? base : Math.max(1, Math.round(base * scale));
           if (e.box && Number(e.box) !== size) row.problems.push('box ' + e.fx + ' ' + e.box + ' != ' + size);
-          if (e.width !== size + 'px' || e.rendering !== 'pixelated') row.problems.push('scale ' + e.fx + ' ' + e.width);
-          e.positions.forEach((p, i) => { const want = e.frames[i] === 0 ? '0px 0px' : '-' + size * e.frames[i] + 'px 0px'; if (p !== want) row.problems.push('frame step ' + e.fx + ' ' + p + ' != ' + want); });
+          const width = e.plane === 'backdrop' ? e.fieldWidth : size;
+          if (e.width !== width + 'px' || e.rendering !== 'pixelated') row.problems.push('scale ' + e.fx + ' ' + e.width);
+          if (e.plane === 'backdrop' && e.backgroundSize !== Number(e.size)*2+'px '+Number(e.size)*2+'px') row.problems.push('background pixel size '+e.fx+' '+e.backgroundSize);
+          e.positions.forEach((p, i) => { const want = e.plane === 'backdrop' || e.frames[i] === 0 ? '0px 0px' : '-' + size * e.frames[i] + 'px 0px'; if (p !== want) row.problems.push('frame step ' + e.fx + ' ' + p + ' != ' + want); });
         }
         row.problems = [...new Set(row.problems)];
       }

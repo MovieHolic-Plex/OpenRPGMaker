@@ -333,7 +333,9 @@ export function createMonsterFxPainter(
     const layer = layers[layerIndex];
     if (!layer || missing.has(layer.key)) return;
     const size = monsterFxBox(layer, stageH);
-    const node = nodeFor(id, layer.anchor === "screen");
+    const node = nodeFor(id, layer.anchor === "screen" || Boolean(layer.plane));
+    if (layer.opacity !== undefined) node.style.opacity = String(layer.opacity);
+    if (layer.plane) node.style.zIndex = layer.plane === "backdrop" ? "4" : "9";
     used.add(id);
     node.style.width = size + "px";
     node.style.height = size + "px";
@@ -345,6 +347,11 @@ export function createMonsterFxPainter(
     node.dataset.key = layer.key;
     node.dataset.anchor = layer.anchor;
     node.dataset.cell = String(cell);
+    if (layer.plane === "backdrop") {
+      const host = node.parentElement;
+      Object.assign(node.style, {left:"0px",top:"0px",width:(host?.clientWidth ?? size)+"px",height:stageH+"px",
+        backgroundImage:'url("'+monsterFxUrl(layer.key+"-f"+cell)+'")',backgroundSize:"128px 128px",backgroundPosition:"0px 0px",backgroundRepeat:"repeat"});
+    }
   };
   const feet = (point: Point): Point => ({ x: point.x, y: point.y + 6 });
   const paint = (state: RetroStageState, g: MonsterFxGeometry): void => {

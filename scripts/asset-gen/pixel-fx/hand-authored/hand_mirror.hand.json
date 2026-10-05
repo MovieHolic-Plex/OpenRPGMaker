@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "key": "hand_mirror",
+  "width": 64,
+  "height": 64,
+  "anchor": "target",
+  "frameMs": 60,
+  "palette": {
+    "A": "#624570",
+    "B": "#a47e9c",
+    "C": "#cda778",
+    "D": "#ebd298",
+    "E": "#fff3c6",
+    "F": "#ffffee",
+    "G": "#93cad1"
+  },
+  "frames": [
+    {
+      "phase": "발동",
+      "pieces": [
+        {
+          "x": 26,
+          "y": 43,
+          "rows": [
+            "CCCCCCCCCC",
+            ".CDDDDDDC",
+            "..CCCCCC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접근",
+      "pieces": [
+        {
+          "x": 25,
+          "y": 27,
+          "rows": [
+            "...CCCC",
+            "..CDEEDC",
+            ".CDEGGEDC",
+            "CDEGGGGEDC",
+            "CDEGGGGEDC",
+            ".CDEGGEDC",
+            "..CDEEDC",
+            "...CCCC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접촉",
+      "pieces": [
+        {
+          "x": 19,
+          "y": 12,
+          "rows": [
+            "......CCCCCCCC",
+            "....CCDEEEEEEDCC",
+            "...CDEEGGGGGGEEDC",
+            "..CDEGGGGGGGGGGEDC",
+            ".CDEGGGGGFFGGGGGEDC",
+            "CDEGGGGGFFGGGGGGGEDC",
+            "CDEGGGGFFGGGGGGGGEDC",
+            "CDEGGGFFGGGGGGGGGEDC",
+            "CDEGGFFGGGGGGGGGGEDC",
+            "CDEGFFGGGGGGGGGGGEDC",
+            "CDEFFGGGGGGGGGGGGEDC",
+            "CDEFGGGGGGGGGGGGGEDC",
+            "CDEGGGGGGGGGGGGGGEDC",
+            ".CDEGGGGGGGGGGGGEDC",
+            "..CDEGGGGGGGGGGEDC",
+            "...CDEEGGGGGGEEDC",
+            "....CCDEEEEEEDCC",
+            "......CCCCCCCC",
+            ".........CC",
+            "........CDDC",
+            ".......CDDDDC",
+            "......CCCCCCCC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "전개",
+      "pieces": [
+        {
+          "x": 19,
+          "y": 12,
+          "rows": [
+            "......CCCCCCCC",
+            "....CCDEEEEEEDCC",
+            "...CDEEGGGGGGEEDC",
+            "..CDEGGGGGGGGGGEDC",
+            ".CDEGGGGGGGGGGGGEDC",
+            "CDEGGGGGGGGGGGFFGEDC",
+            "CDEGGGGGGGGGGFFGGEDC",
+            "CDEGGGGGGGGGFFGGGEDC",
+            "CDEGGGGGGGGFFGGGGEDC",
+            "CDEGGGGGGGFFGGGGGEDC",
+            "CDEGGGGGGFFGGGGGGEDC",
+            "CDEGGGGGFFGGGGGGGEDC",
+            "CDEGGGGFFGGGGGGGGEDC",
+            ".CDEGGFFGGGGGGGGEDC",
+            "..CDEFFGGGGGGGGEDC",
+            "...CDEEGGGGGGEEDC",
+            "....CCDEEEEEEDCC",
+            "......CCCCCCCC",
+            ".........CC",
+            "........CDDC",
+            ".......CDDDDC",
+            "......CCCCCCCC"
+          ]
+        },
+        {
+          "x": 43,
+          "y": 9,
+          "rows": [
+            "D",
+            "DED",
+            ".D"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "분해",
+      "pieces": [
+        {
+          "x": 20,
+          "y": 13,
+          "rows": [
+            ".....CCCCCCCC",
+            "...CCD......DCC",
+            "..CD..........DC",
+            ".CD............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            "CD..............DC",
+            ".CD............DC",
+            "..CD..........DC",
+            "...CCD......DCC",
+            ".....CCCCCCCC"
+          ]
+        },
+        {
+          "x": 47,
+          "y": 6,
+          "rows": [
+            "D",
+            "DE",
+            ".D"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "잔상",
+      "pieces": [
+        {
+          "x": 24,
+          "y": 14,
+          "rows": [
+            "..CCD",
+            ".CD",
+            "CD",
+            "CD"
+          ]
+        },
+        {
+          "x": 39,
+          "y": 14,
+          "rows": [
+            "DCC",
+            "..DC",
+            "...DC",
+            "...DC"
+          ]
+        },
+        {
+          "x": 26,
+          "y": 28,
+          "rows": [
+            "CD........DC",
+            ".CCDD..DDCC",
+            "...CCCCCC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "소멸",
+      "pieces": [
+        {
+          "x": 26,
+          "y": 12,
+          "rows": [
+            "CC"
+          ]
+        },
+        {
+          "x": 42,
+          "y": 15,
+          "rows": [
+            "C"
+          ]
+        },
+        {
+          "x": 31,
+          "y": 34,
+          "rows": [
+            "CC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "끝",
+      "pieces": [
+        {
+          "x": 33,
+          "y": 35,
+          "rows": [
+            "B"
+          ]
+        }
+      ]
+    }
+  ]
+}

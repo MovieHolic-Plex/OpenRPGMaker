@@ -1,0 +1,32 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": false,
+  "variant": "normal",
+  "clips": [],
+  "errors": [
+    "[group 0] page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"actor-skill-skill_hand_summon_review\"]') to be visible\u001b[22m\n\n    at recordGroup (/home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:325:20)\n    at async file:///home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:115:55"
+  ],
+  "evidence": [],
+  "custom": {
+    "file": "docs/experiments/hand-magic-20261005/summon-runtime-fixture.json",
+    "contract": [
+      {
+        "id": "skill_hand_summon_review",
+        "actorId": "actor_hero",
+        "motion": "fury",
+        "level": 1,
+        "layers": [
+          "monk_dragon_aura",
+          "monk_dragon_hit"
+        ]
+      }
+    ],
+    "log": [
+      "Runtime preview fixture: hero borrows skill_monk_dragon_fist choreography; no project save."
+    ]
+  },
+  "passed": false
+}
