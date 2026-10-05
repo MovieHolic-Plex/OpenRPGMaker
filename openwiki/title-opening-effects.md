@@ -354,3 +354,5 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 `runtimeAudioWarmup`은 타이틀 키 SE·타이틀/첫 맵 음악 최대16 URL을 낮은 우선순위로 fetch해 셸 수명의 blob으로 재사용한다. 실패는 실제 재생 재시도로 넘어간다. `cinematicAssets`는 다음2컷 이미지와 장면 SE/내레이션도 준비하며 시네마틱 소리는 준비한 blob으로 재생한다. 셸 종료 시 fetch를 abort하고 URL을 회수한다.
 
 타이틀 크레딧 진입은 authored confirm, Escape/닫기로 돌아오면 authored cancel SE를 사용한다. 오프닝 장면 SE는 플레이어 SE 볼륨 설정을 따른다. `scripts/qa/audio-background-start-player.mjs`는 출하 플레이어의 분리 fixture에서 정상/느린 엔진/빠른 skip을 검증하고, 실제 WAV hash와 title cursor/confirm/cancel 및 첫 맵 음악의 재생을 대조한다. 실제 6컷 정본과 두 선택지는 `live-first-game-player.mjs`로 별도 검수한다.
+
+실제 Chromium 이동에서 document로 소비한 짧은 키 탭이 Phaser의 다음 프레임 이벤트로 다시 전달돼 한 칸 더 이동하는 사례를 확인했다. `Input`은 같은 DOM KeyboardEvent를 WeakSet으로 한 번만 캡처한다. 문서→다음 프레임 Phaser 전달 순서 계약은 `runtimeInputEditableTargets.test.ts`에 둔다.
