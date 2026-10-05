@@ -599,6 +599,50 @@ function unguardedItemSpendWarnings(event: GameEvent): string[] {
 }
 
 /**
+ * 전투 승리 분기에서 골드를 또 준다 — 적 그룹의 전투 보상 골드(enemy.rewards.gold)는 승리 때 이미 지급된다.
+ * 2026-10-05 스트레스 실측: 「이기면 500G」를 적 보상 500 과 victoryBranch changeGold +500 으로 둘 다 넣어
+ * 실제로는 1000G 가 들어왔다. 일부러 추가 보상을 주는 경우도 있으니 거부하지 않고 합계를 알린다.
+ */
+function doubleBattleGoldWarnings(project: Project, event: GameEvent): string[] {
+  const warnings: string[] = [];
+  const troopGold = (troopId: unknown): number => {
+    const troop = project.database.troops.find((entry) => entry.id === troopId);
+    if (!troop) return 0;
+    const enemyIds = troop.members?.length ? troop.members.map((member) => member.enemyId) : troop.enemyIds ?? [];
+    return enemyIds.reduce((sum, enemyId) => sum + (project.database.enemies.find((enemy) => enemy.id === enemyId)?.rewards?.gold ?? 0), 0);
+  };
+  const branchGold = (commands: readonly Command[] | undefined): number => {
+    let total = 0;
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object" || command.kind !== "changeGold") continue;
+      const amount = (command as { amount?: unknown }).amount;
+      const op = (command as { op?: unknown }).op;
+      if (typeof amount === "number" && amount > 0 && op !== "-=") total += amount;
+    }
+    return total;
+  };
+  const walk = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "battleProcessing") {
+        const rewarded = troopGold((command as { troopId?: unknown }).troopId);
+        const extra = branchGold((command as { victoryBranch?: readonly Command[] }).victoryBranch);
+        if (rewarded > 0 && extra > 0) {
+          warnings.push(`이벤트 '${event.id}': 적 그룹 ${(command as { troopId?: string }).troopId} 의 전투 보상 골드 ${rewarded} 가 승리 때 이미 지급되는데 `
+            + `victoryBranch 에서 changeGold +${extra} 를 또 줍니다 — 실제 합계 ${rewarded + extra}G. 요청한 보상이 한 번이면 적의 rewards.gold 나 이 changeGold 중 하나를 빼세요.`);
+        }
+      }
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const list of nested) walk(list);
+    }
+  };
+  walk(event.commands);
+  for (const page of event.pages ?? []) walk(page.commands);
+  return warnings;
+}
+
+/**
  * 모든 선택지의 분기가 비어 있는 choices 명령 — 무엇을 골라도 아무 일도 없다.
  *
  * 2026-09-23 등대지기 재시험: 동료 카일의 「동행을 제안한다」와 보스의 「정령과 맞선다!」가 둘 다
@@ -740,6 +784,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
     for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
+    if (project) for (const warning of doubleBattleGoldWarnings(project, event)) warnings?.push(warning);
     if (project && (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "pages") || Object.prototype.hasOwnProperty.call(supplied, "commands"))) {
       relocateImpassableTransfers(project, event, warnings);
     }
@@ -751,7 +796,12 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
   }
 }
 
+// 이 두 함수는 형식 검사(assertEventShape) **앞에서** 돈다 — 플래그를 먼저 만들어야 참조 검사가 통과하기 때문이다.
+// 그래서 모양이 틀린 명령(then 없는 fork, options 없는 choices)을 만나도 던지지 말고 건너뛴다. 던지면 모델은
+// 「undefined is not an object (evaluating 'command of commands')」만 받고, 뒤의 형식 검사가 주는 고칠 방법을 못 본다
+// (2026-10-05 스트레스 실측: place_npc 의 victoryBranch/otherwiseBranch fork).
 function ensureConditionStoryFlags(project: Project, condition: Condition, eventId: string, warnings: string[]): void {
+  if (!condition || typeof condition !== "object") return;
   if (condition.kind === "switch") {
     if (!project.switches.some((entry) => entry.id === condition.switchId)) {
       ensureNamedSwitch(project, condition.switchId, `이벤트 ${eventId}: ${condition.switchId}`);
@@ -763,14 +813,16 @@ function ensureConditionStoryFlags(project: Project, condition: Condition, event
       warnings.push(`미등록 variableId 자동 생성: ${condition.variableId}`);
     }
   } else if (condition.kind === "all" || condition.kind === "any") {
-    for (const child of condition.conditions) ensureConditionStoryFlags(project, child, eventId, warnings);
+    for (const child of Array.isArray(condition.conditions) ? condition.conditions : []) ensureConditionStoryFlags(project, child, eventId, warnings);
   } else if (condition.kind === "not") {
     ensureConditionStoryFlags(project, condition.condition, eventId, warnings);
   }
 }
 
-function ensureCommandStoryFlags(project: Project, commands: readonly Command[], eventId: string, warnings: string[]): void {
+function ensureCommandStoryFlags(project: Project, commands: readonly Command[] | undefined, eventId: string, warnings: string[]): void {
+  if (!Array.isArray(commands)) return;
   for (const command of commands) {
+    if (!command || typeof command !== "object") continue;
     if (command.kind === "setSwitch") {
       if (!project.switches.some((entry) => entry.id === command.switchId)) {
         ensureNamedSwitch(project, command.switchId, `이벤트 ${eventId}: ${command.switchId}`);
@@ -782,10 +834,10 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
         warnings.push(`미등록 variableId 자동 생성: ${command.variableId}`);
       }
     } else if (command.kind === "choices") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "presentItem") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "fork") {
@@ -800,9 +852,9 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
 
 function ensureEventStoryFlags(project: Project, event: GameEvent, warnings: string[]): void {
   ensureCommandStoryFlags(project, event.commands, event.id, warnings);
-  for (const page of event.pages ?? []) {
-    for (const condition of page.conditions) ensureConditionStoryFlags(project, condition, event.id, warnings);
-    ensureCommandStoryFlags(project, page.commands, event.id, warnings);
+  for (const page of Array.isArray(event.pages) ? event.pages : []) {
+    for (const condition of Array.isArray(page?.conditions) ? page.conditions : []) ensureConditionStoryFlags(project, condition, event.id, warnings);
+    ensureCommandStoryFlags(project, page?.commands, event.id, warnings);
   }
 }
 
@@ -2923,6 +2975,13 @@ const makeChaseScene: ToolDefinition = {
     // 스위치로 깨우는 추격(「금고를 열자 달려온다」)은 주인공이 벽 너머에 있어도 와야 한다. 추적 정책을 안 정했으면
     // persistent 로 둔다 — lastSeen 은 직접 봐야 움직여서, 깨운 추격자가 복도에 가만히 서 있었다(2026-09-24).
     const parsedPursuit = args.pursuit === undefined ? undefined : parsePursuit(args.pursuit);
+    // 포기 스위치는 다시 발견하는 순간 꺼진다 — 깨우는 스위치와 같으면 추격자가 주인공을 보자마자 자기 페이지를 끈다
+    // (2026-10-05 스트레스 g-ashen-chase: lostSwitchId=activateSwitch=switch_chase 라 추격자가 복도에서 한 칸도 안 움직였다).
+    for (const key of ["lostSwitchId", "followSwitchId"] as const) {
+      if (activateSwitch && parsedPursuit?.[key] === activateSwitch) {
+        throw new ToolError(`pursuit.${key} 에 activateSwitch(${activateSwitch})를 쓸 수 없습니다 — ${key === "lostSwitchId" ? "다시 발견하면 꺼지므로 추격자가 주인공을 보는 순간 사라집니다" : "넘어오기 연출 스위치이지 추격을 켜는 스위치가 아닙니다"}. 연출용 스위치를 따로 쓰거나 빼세요.`);
+      }
+    }
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];

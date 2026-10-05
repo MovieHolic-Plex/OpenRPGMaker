@@ -1,7 +1,7 @@
 // 팀 런타임의 배정 계약. 하위 에이전트는 가짜 실행기로 갈음하고(LLM 은 결정적으로 만들 수 없다)
 // 팀장 툴을 직접 호출해 런타임의 락·예산·병합·안전망을 검증한다.
 import { describe, expect, it } from "vitest";
-import { PI_AGENT_DEFAULT_TIMEOUT_MS, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
+import { PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
@@ -568,6 +568,39 @@ it("live team checkpoints merge owned maps before another agent's final result",
   expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
   expect(result.project.maps.map_a!.name).toBe("live:map_a");
   expect(result.project.maps.map_b!.name).toBe("live:map_b");
+});
+
+// 2026-10-05 스트레스: 맵 삭제 거절 하나가 팀 발행 줄을 막아 뒤의 팀원이 모두 같은 거절로 죽었고,
+// 거절을 모르는 팀장은 같은 요청을 두 번 더 배정했다.
+it("a declined map-loss checkpoint neither blocks later members nor stays hidden from the lead", async () => {
+  const project = seeded();
+  const req = { ...request(project), applyMode: "default" as const };
+  let waited: Record<string, unknown> = {};
+  let laterPublished = false;
+  await runPiTeam(req, {
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.label === "map_a") throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} 맵 1개 삭제를 취소했습니다 — 프로젝트는 그대로입니다.`);
+      laterPublished = true;
+      return checkpoint.project;
+    },
+    runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "A", member: "builder" });
+        await callTool(options.extraTools, "wait_agents", {});
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_b", task: "B", member: "builder" });
+        waited = await callTool(options.extraTools, "wait_agents", {});
+        return doneWith(child.project);
+      }
+      const id = child.mapIds[0]!;
+      const next = built(child.project, id, `live:${id}`);
+      // 실제 워커는 거절을 도구 실패로 바꿔 모델에게 돌려주고 계속한다 — 여기선 그 변경 없이 끝낸다.
+      try { await options.onCheckpoint!({ project: next, label: id, toolName: "remove_map" }); }
+      catch { return doneWith(child.project); }
+      return doneWith(next, [`maps.${id}`]);
+    },
+  });
+  expect(laterPublished).toBe(true);
+  expect(JSON.stringify(waited.userDeclined)).toContain("맵 1개 삭제를 취소했습니다");
 });
 
 // 2026-09-27 프리셋 팀 첫 생성 실측: 프로젝트 공통 작업 팀원의 체크포인트는 안 바뀐 타일셋·DB 를 비워서 온다.

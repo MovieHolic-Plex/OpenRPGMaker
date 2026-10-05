@@ -38,6 +38,40 @@ describe("Pi 클라이언트 이어 받기", () => {
     expect(methods).toEqual(['POST', 'GET']);
     expect(result.project.assets.uploaded.original_se_saved).toEqual(authored.assets.uploaded.original_se_saved);
   });
+  it("페이지가 멈췄다 풀릴 때 밀린 워치독이 먼저 울려도 대기 중인 줄을 듣고 끊지 않는다", async () => {
+    // 실측(2026-10-05 연애 팀 첫 생성): 편집기가 86초 멈춘 사이 워커는 줄을 계속 썼는데, 풀린 순간 워치독이 먼저 돌아
+    // 「워커에서 80초 동안 신호가 없어」로 끝났다.
+    const methods: string[] = [];
+    const fetchImpl = (async (_url: string, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      if ((init?.method ?? "GET") === "GET") return new Response(JSON.stringify({ error: "gone" }), { status: 404 });
+      const runId = String((await bodyOf(init)).runId);
+      return new Response(new ReadableStream({ start(c) {
+        c.enqueue(line({ type: "turn", index: 1 }));
+        let beats = 0;
+        const beat = setInterval(() => {
+          c.enqueue(line({ type: "heartbeat", at: Date.now() }));
+          if (++beats < 4) return;
+          clearInterval(beat);
+          setTimeout(() => {
+            const until = Date.now() + 600;
+            while (Date.now() < until) { /* 페이지 주 스레드가 멈춘다 */ }
+            setTimeout(() => {
+              c.enqueue(line({ type: "turn", index: 2 }));
+              setTimeout(() => { c.enqueue(line(done)); c.close(); }, 20);
+            }, 0);
+          }, 30);
+        }, 30);
+      } }), { headers: { "X-Oprn-Run-Id": runId } });
+    }) as unknown as typeof fetch;
+    const turns: number[] = [];
+    const result = await runPiAgentViaCompanion({ provider: "google-antigravity", task: "t", mapIds: [], project }, {
+      fetchImpl, staleMs: 150, resumeDelayMs: 1, onEvent: (event) => { if (event.type === "turn") turns.push(event.index); },
+    });
+    expect(result.type).toBe("done");
+    expect(turns).toEqual([1, 2]);
+    expect(methods).toEqual(["POST"]);
+  });
   it("도중에 끊기면 마지막 번호 다음부터 이어 받고, 겹친 줄은 한 번만 처리한다", async () => {
     const calls: string[] = [];
     let runId = "";

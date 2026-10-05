@@ -1022,6 +1022,25 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   - **판정 — 브라우저 워치독(`client.ts`).** `PI_AGENT_STALE_MS`(30초, heartbeat 의 6배) 동안 줄이 하나도 안 오면
     리더를 취소하고 「워커가 응답하지 않습니다」로 끝낌다. 이제 **침묵은 정상이 아니다** — 생각하는 중이면
     heartbeat 가 오기 때문이다. 이게 없으면 죽은 워커를 10분 상한까지 「실행 중」으로 띄우게 된다.
+    단, **타이머가 제때보다 늦게 울렸으면 침묵은 페이지 쪽이다**(주 스레드가 막혀 줄을 못 읽었다). 그때는 heartbeat 두 번만큼
+    더 듣고 판정하며, 줄 처리 시간은 침묵에 넣지 않는다(2026-10-05: 편집기 86초 멈춤 뒤 워치독이 먼저 울려 살아 있는 팀 실행을 끊었다).
+  - **실행 도중 키 갱신 — `scripts/lib/piWorkerKeys.ts`.** 호스트는 실행 시작 때 키를 한 번 풀어(남은 수명 ≥15분) 워커에 넘긴다.
+    15분보다 긴 실행(팀 첫 생성은 흔하다)은 중간에 pi-ai 의 「OAuth token expired before request」로 에이전트가 죽었다.
+    이제 호스트(`ohMyPiPiAi.mjs` `keepWorkerKeysFresh`)가 실행 중 5분마다 키를 다시 풀어 워커 `POST /agent/keys` 로 밀고,
+    `piAgentRuntime` 의 `getApiKey` 는 요청마다 `providerApiKeys` 를 다시 읽는다. 워커에는 여전히 인증이 없다.
+  - **체크포인트 거절 중 실행을 잇는 것 — 두 가지뿐.** 적용 검증 거부(`적용 실패(commit-rejected)`)와 맵 소실 확인의 「그만두기」
+    (`PI_MAP_LOSS_DECLINED_PREFIX`)는 그 쓰기만 되돌리고 도구 실패로 모델에게 돌려준다. 같은 맵 소실은 두 번 묻지 않는다(`aiPiPublication`).
+    권위·기준선·단계 중단은 그대로 실행을 멈춘다. 워커가 거절을 받아 넘기고 `done` 을 보냈으면 `client.ts` 는 첫 거절로 실행을 실패 처리하지 않는다.
+    팀 발행 줄(`piTeamRuntime` `publication`)은 거부된 발행 뒤에도 다음 팀원을 받는다 — 2026-10-05 스트레스 g-ashen-chase 에서는
+    builder-1 의 빈 맵 삭제를 거절하자 builder-2~8 이 확인 창 없이 첫 쓰기마다 같은 거절로 죽었다. 계약: `test/piApplyModes.bun.test.ts`.
+    팀장은 `wait_agents`·`check_agents` 결과의 `userDeclined` 로 거절을 안다 — 모르면 「요청 일부가 안 됐다」고 보고 같은 요청을 다시 배정했다
+    (p-team-delete-declined: 「작은 숲」 맵을 한 벌 더 짓고 35분 시간 초과). 계약: `test/piAgentTeamRuntime.test.ts`.
+  - **팀장은 살아 있는 작업 사본을 읽는다(`liveProject`).** 팀장 읽기 도구(`get_map_region`·`get_database_records`·`run_lint`)는
+    예전엔 시작 사본만 봤다 — 팀원이 맵을 만들어도 「maps 1건」·「맵을 찾을 수 없습니다」라서 같은 일을 다시 배정했다(2026-10-05 r8: 「작은 숲」 세 벌).
+    `runPiAgent({ liveProject })` 는 도구가 도는 동안만 최신 사본 복제본으로 바꾸고 끝나면 제 사본으로 되돌린다 — 실행 끝 배치 품질·마을 검사가
+    팀원 변경을 팀장 변경으로 읽지 않게. 쓰기 도구가 있는 실행에는 주지 않는다.
+  - **워커 안의 `event_command_assist`.** 이 도구는 안에서 LLM 을 한 번 더 부른다. 워커(Bun)에는 편집기 동반 서비스 주소가 없어
+    기본 주소(상대 `/v1`)로 매번 「fetch() URL is invalid」였다. `piAgentRuntime` 이 실행의 제공자·키로 부르는 `eventAssistChat` 을 넘긴다.
   `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
   다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
   워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,

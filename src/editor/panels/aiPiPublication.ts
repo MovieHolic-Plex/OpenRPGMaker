@@ -1,7 +1,7 @@
 import { isMapDestruction } from "@/ai/approvalPolicy";
 import type { PiApplyMode } from "@/ai/piAgent/applyMode";
 import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
-import { changedProjectKeys, restoreCheckpointProject } from "@/ai/piAgent/protocol";
+import { changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject } from "@/ai/piAgent/protocol";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { describeMergeConflicts } from "@/project/projectMerge";
@@ -26,6 +26,8 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
   let { base: authority, baseline } = captureApplyAuthority(base);
   let count = 0;
   let queue: Promise<unknown> = Promise.resolve();
+  // 사용자가 한 번 거절한 맵 소실 — 모델이 같은 맵을 또 지우려 하면 다시 묻지 않고 거절한다.
+  const declinedLoss = new Set<string>();
   const approveStage = (next: Project, title: string): Promise<void> => new Promise((resolve, reject) => {
     surface.signal?.throwIfAborted();
     const finish = (accepted: boolean) => {
@@ -51,8 +53,15 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     if (mode === "step") await approveStage(next, checkpoint.label);
     const loss = mapLossConfirmRequest(project, next) ?? (isMapDestruction(checkpoint.toolName) ? { title: "맵 전체 청소 확인", message: "맵의 타일을 전부 비웁니다. 계속할까요?", confirmLabel: "전체 청소", cancelNotice: "맵 청소를 취소했습니다." } : null);
     if (loss && mode !== "yolo" && mode !== "auto") {
-      const accepted = await requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
-      if (!accepted) throw new Error(loss.cancelNotice);
+      const lostIds = "removedMapIds" in loss ? [...loss.removedMapIds, ...loss.emptiedMapIds] : [];
+      const repeat = lostIds.length > 0 && lostIds.every(id => declinedLoss.has(id));
+      const accepted = !repeat && await requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
+      if (!accepted) {
+        lostIds.forEach(id => declinedLoss.add(id));
+        if (!repeat) surface.appendProcess?.(`${loss.cancelNotice} 나머지 작업은 계속합니다.`);
+        // 머리가 붙은 거절은 워커가 그 변경만 되돌리고 실행을 잇는다 — 작업 전체를 멈추는 건 중단 버튼이다.
+        throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} ${loss.cancelNotice}`);
+      }
     }
     surface.signal?.throwIfAborted();
     await presentation?.beforeApply(project, next);

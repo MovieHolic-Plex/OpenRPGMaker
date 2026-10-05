@@ -205,6 +205,21 @@ describe("make_chase_scene tool", () => {
     expect(chaser?.pages?.[0]?.commands).toContainEqual({ kind: "killPlayer", message: "붙잡혔다." });
   });
 
+  // 2026-10-05 스트레스 g-ashen-chase: 포기 스위치=깨우는 스위치라 추격자가 주인공을 보자마자 자기 페이지를 껐다.
+  it("pursuit.lostSwitchId 가 activateSwitch 와 같으면 거부한다", () => {
+    const project = createBlankProject();
+    const ctx = { project };
+    const result = runTool(ctx, "make_chase_scene", {
+      mapId: project.startMapId,
+      chaser: { at: { x: 4, y: 4 }, graphic: { textureKey: "tex_easyrpg_charset_monster1" } },
+      killOnTouch: true,
+      activateSwitch: "switch_chase",
+      pursuit: { scope: "connected", doorDelayMs: 1000, searchMs: 3000, onLost: "wait", lostSwitchId: "switch_chase" },
+    });
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("lostSwitchId");
+  });
+
   it("은신처 칸을 진짜 은신 이벤트로 만들고, 느린 추격자와 추적 정책을 알린다", () => {
     const project = createBlankProject();
     const mapId = project.startMapId;

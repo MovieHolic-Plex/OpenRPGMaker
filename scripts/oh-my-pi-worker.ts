@@ -16,6 +16,7 @@ import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
 import { preparePiWorkerAudio } from './lib/piWorkerAudio.ts';
+import { holdWorkerKeys, refreshWorkerKeys } from "./lib/piWorkerKeys.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { piTimer } from "./lib/piRunTiming.mjs";
@@ -99,6 +100,11 @@ const server = Bun.serve({
         const found = typeof body.checkpointId === "string" && resolvePiCheckpoint(body.checkpointId, { ok: body.ok === true, issue: body.issue, project: body.project });
         return json({ ok: found }, found ? 200 : 409);
       }
+      if (request.method === "POST" && url.pathname === "/agent/keys") {
+        // 호스트가 실행 도중 갱신한 요청 키. 진행 중인 실행의 다음 모델 요청부터 쓰인다(piWorkerKeys.ts).
+        const body = await request.json() as { providerApiKeys?: Record<string, string | undefined> };
+        return json({ updated: refreshWorkerKeys(body.providerApiKeys ?? {}) });
+      }
       if (request.method === "POST" && url.pathname === "/agent/run") {
         // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
         // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
@@ -119,9 +125,10 @@ const server = Bun.serve({
         // Team members reuse this revision rather than blocking its heartbeat.
         await preparePiWorkerSharedContent();
         await preparePiWorkerAudio();
+        const held = holdWorkerKeys(body.providerApiKeys, agentRequest.provider, apiKey);
         const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
-          providerApiKeys: body.providerApiKeys,
+          providerApiKeys: held.keys,
           codexApiKey: body.codexApiKey,
           signal: request.signal,
           onEvent,
@@ -129,7 +136,7 @@ const server = Bun.serve({
           onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, onEvent, signal ?? request.signal),
           ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
           ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),
-        }));
+        }).finally(held.release));
         return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache", "X-Oprn-Heavy-Refs": "1" } });
       }
       if (request.method === "POST" && url.pathname === "/image") {

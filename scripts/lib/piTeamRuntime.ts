@@ -24,7 +24,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
-import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
@@ -192,6 +192,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
   const candidateMaps = request.mapIds.length > 0 ? [...request.mapIds] : Object.keys(base.maps);
   const mapName = (id: string | null) => (id ? working.maps[id]?.name ?? null : null);
+  /** 팀원이 마지막으로 한 말. report_task 를 빼먹고 끝난 팀원의 보고를 팀장에게 대신 전한다. */
+  const lastSaid = new Map<string, string>();
   const child = (agentId: string, provider = request.provider): RunPiAgentOptions => ({
     apiKey: provider === request.provider ? options.apiKey : undefined,
     providerApiKeys: options.providerApiKeys,
@@ -216,7 +218,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         else if (event.type === "tool_end") {
           if (!event.ok) row.toolErrors += 1;
           row.lastLine = `${event.ok ? "✓" : "✗"} ${event.name} — ${plainLine(event.summary)}`;
-        } else if (event.type === "assistant") row.lastLine = plainLine(event.text, 220);
+        } else if (event.type === "assistant") { row.lastLine = plainLine(event.text, 220); lastSaid.set(agentId, event.text); }
       }
       emit({ type: "agent_event", agentId, event });
     },
@@ -291,6 +293,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     for (const report of done.interiorCompletion) interiorReports.set(report.mapId, report);
   };
   let publication: Promise<unknown> = Promise.resolve();
+  // 사용자가 맵 소실 확인에서 거절한 변경. 팀장은 이걸 모르면 「요청 일부가 안 됐다」고 보고 같은 요청을 새 팀원에게 다시 맡긴다
+  // (2026-10-05 스트레스 p-team-delete-declined: 시작 맵 삭제를 거절하자 팀장이 요청 전체를 두 번 더 배정해 「작은 숲」을 한 벌 더 짓고
+  // 타이틀·BGM·장비까지 손대다 35분 시간 초과). 팀장이 받는 결과마다 싣는다.
+  const userDeclined: string[] = [];
+  const userDecisions = (): Record<string, unknown> => userDeclined.length === 0 ? {} : { userDeclined: {
+    changes: userDeclined,
+    note: "사용자가 직접 거절한 변경이다. 요청의 이 부분은 사용자 결정으로 끝났다 — 다시 배정하거나 다른 팀원에게 맡기지 말고, 나머지가 끝났으면 finish 보고에 「사용자가 거절해 하지 않음」으로 적는다.",
+  } };
   const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
     const next = publication.then(async () => {
       // 팀원 체크포인트는 안 바뀐 무거운 키(타일셋·DB)를 비워서 온다. 작업 사본에서 다시 붙인 뒤에만
@@ -314,11 +324,21 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         ...rest, project: wire.project, unchangedKeys: wire.unchangedKeys,
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
         spatialProof: exportSpatialToolProof(proposed),
-      }, signal);
+      }, signal).catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.startsWith(PI_MAP_LOSS_DECLINED_PREFIX)) {
+          const notice = message.slice(PI_MAP_LOSS_DECLINED_PREFIX.length).trim();
+          if (!userDeclined.includes(notice)) userDeclined.push(notice);
+        }
+        throw error;
+      });
       working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
       return working;
     });
-    publication = next;
+    // 거부된 발행 하나가 줄을 막지 않게 한다 — `publication = next` 였을 때는 한 번 거부되면 뒤에 배정된 팀원의
+    // 모든 쓰기가 같은 거부로 끝났다(2026-10-05 스트레스 g-ashen-chase: builder-1 의 맵 삭제를 사용자가 거절하자
+    // builder-2~8 이 확인 창 없이 첫 쓰기마다 「맵 1개 삭제를 취소했습니다」로 죽었다). 편집기 쪽 발행 줄과 같은 규칙.
+    publication = next.catch(() => undefined);
     return await next;
   };
 
@@ -434,7 +454,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           ],
         }, { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: mode === "read", ...(mode === "project" && options.onCheckpoint ? { onCheckpoint: checkpointFor(null, snapshot) } : {}), extraTools: [...mailbox.tools(agentId), reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
-        if (!report) throw new Error("report_task 결과가 없어 작업을 완료 처리하지 않았습니다.");
+        if (!report) {
+          // 체크포인트로 이미 작업 사본에 들어간 변경은 남는다. 「변경 없음」처럼 알리면 팀장이 같은 일을 새 팀원에게 다시 맡겨
+          // 세계관을 덮어쓰고 마을·들판 맵을 한 벌 더 만들었다(2026-10-05 스트레스 실측: 칩셋 질문으로 끝난 빌더 → 재배정 2회).
+          const applied = mode === "project" ? changedProjectKeys(snapshot, working) : [];
+          const summary = missingReportSummary(snapshot, working, applied, lastSaid.get(agentId));
+          const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: false, summary, changedKeys: applied, spills: [], conflicts: [] };
+          outcomes.set(agentId, outcome);
+          emit({ type: "agent_done", agentId, ok: false, summary, stats: done.stats, changedKeys: applied, spills: [], conflicts: [] });
+          return outcome;
+        }
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
@@ -620,7 +649,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       parameters: { type: "object", properties: { agentIds: { type: "array", items: { type: "string" } } }, required: [], additionalProperties: false },
       async execute(_id, params) {
         const ids = selectAgents((params as Record<string, unknown>)?.agentIds);
-        return text({ agents: ids.map(reportFor) });
+        return text({ agents: ids.map(reportFor), ...userDecisions() });
       },
     },
     {
@@ -637,7 +666,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (parentSignal?.aborted) controller.abort();
         try {
           const reason = await waitForTeam(inflight.filter(entry => ids.includes(entry.agentId)).map(entry => entry.promise), controller.signal);
-          return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1") });
+          return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1"), ...userDecisions() });
         } finally { controller.abort(); parentSignal?.removeEventListener("abort", abort); }
       },
     },
@@ -1002,7 +1031,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   try {
     orchDone = await runAgent(
       { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
-      { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
+      // 팀장 도구는 읽기뿐이다 — 팀원이 발행할 때마다 바뀌는 작업 사본을 읽게 한다.
+      { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools, liveProject: () => working },
     );
   } catch (error) {
     // Keep the parent run's host reservation until all previously launched children stop.
@@ -1057,6 +1087,26 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
   emit(slimDoneEvent(done, base));
   return done;
+}
+
+/** report_task 없이 끝난 팀원의 결과. 이미 반영된 맵·키를 밝혀 팀장이 같은 일을 다시 맡기지 않게 한다. */
+export function missingReportSummary(before: Project, after: Project, changedKeys: readonly string[], lastSaid: string | undefined): string {
+  const added = Object.keys(after.maps).filter((id) => !before.maps[id]);
+  const changed = Object.keys(after.maps).filter((id) => before.maps[id] && before.maps[id] !== after.maps[id] && JSON.stringify(before.maps[id]) !== JSON.stringify(after.maps[id]));
+  const name = (id: string) => `${after.maps[id]?.name ?? id}(${id})`;
+  const other = changedKeys.filter((key) => key !== "maps" && !key.startsWith("maps."));
+  const parts = [
+    added.length ? `새 맵 ${added.map(name).join(", ")}` : "",
+    changed.length ? `고친 맵 ${changed.map(name).join(", ")}` : "",
+    other.length ? `바뀐 프로젝트 데이터 ${other.join(", ")}` : "",
+  ].filter(Boolean);
+  return [
+    "report_task 없이 끝나 완료로 치지 않았다.",
+    parts.length
+      ? `그러나 이미 프로젝트에 반영된 변경이 있다 — ${parts.join(" · ")}. 같은 일을 처음부터 다시 맡기지 말고, 남은 일만 이 맵·데이터를 이어서 배정하라.`
+      : "프로젝트에 반영된 변경은 없다.",
+    lastSaid?.trim() ? `팀원의 마지막 말: ${lastSaid.trim().slice(0, 1500)}` : "",
+  ].filter(Boolean).join(" ");
 }
 
 function summaryOf(done: PiAgentDoneEvent): string {

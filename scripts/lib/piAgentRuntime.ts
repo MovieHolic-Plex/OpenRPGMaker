@@ -52,7 +52,7 @@ import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
@@ -97,6 +97,11 @@ export interface RunPiAgentOptions {
   readonly model?: ReturnType<typeof resolveOhMyPiModel>;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
+  /**
+   * 읽기만 하는 실행이 볼 최신 공유 사본(팀장). 주면 레지스트리 도구를 부를 때마다 ctx.project 를 이것으로 바꾼다 —
+   * 쓰기 도구가 있는 실행에는 주지 않는다(자기 변경을 덮는다).
+   */
+  readonly liveProject?: () => Project;
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
   readonly streamFn?: StreamFn;
   /** Team mailbox notifications, delivered through the core steering queue at a tool boundary. */
@@ -259,6 +264,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
+  // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
+  const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
+  const findToolsCallable = (name: string): boolean => allowedNames.has(name);
+  // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
+  const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
+    const key = (options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? options.apiKey;
+    const result = await completeProvider(request.provider, {
+      model: String((model as { id?: string }).id ?? request.model ?? ""), max_tokens: 8192, messages: chat.messages,
+    }, { ...(key ? { apiKey: key } : {}), ...(chat.signal ? { signal: chat.signal } : {}) });
+    const choice = result.completion.choices[0];
+    return { message: { role: "assistant" as const, content: typeof choice?.message.content === "string" ? choice.message.content : "" }, finishReason: choice?.finish_reason ?? null };
+  };
   const shapeFor = (name: string): PiToolShape | undefined => {
     if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
       if (request.readOnly || options.readOnlyTools) return undefined;
@@ -285,6 +302,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       referenceGate,
       charsetGate,
       modernTilesetPolicy,
+      findToolsCallable,
+      eventAssistChat: eventAssistChat as never,
       ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
@@ -372,10 +391,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // 내용 무결성 거부(commit-rejected)는 방금 그 도구의 변경 탓이다 — 체크포인트는 쓰기마다 돈다.
       // 실행 전체를 죽이지 말고 그 변경만 되돌린 뒤 도구 실패로 모델에게 돌려준다(2026-09-24:
       // upsert_event 하나의 movement.speed 누락이 38호출짜리 실행을 통째로 버렸다).
-      // 권위·기준선·파괴 승인·중단은 실행 단위 문제라 그대로 중단한다.
+      // 권위·기준선·중단은 실행 단위 문제라 그대로 중단한다.
       if (/^적용 실패\(commit-rejected\)/u.test(message) && !options.signal?.aborted) {
         ctx.project = snapshotProjectKeepingHeavy(accepted);
         throw new Error(`${message} — 이 도구의 변경은 적용 검증에서 거부돼 되돌렸습니다. 인자를 고쳐 다시 호출하세요.`);
+      }
+      // 맵 소실 확인에서 사용자가 「그만두기」를 골랐다 — 그 변경 하나를 거절한 것이지 작업 전체를 멈춘 게 아니다
+      // (중단은 따로 있다). 되돌리고 모델에게 알린다. 2026-10-05 스트레스: 빈 시드 맵 삭제 거절이 팀 작업을 통째로 끝냈다.
+      if (message.startsWith(PI_MAP_LOSS_DECLINED_PREFIX) && !options.signal?.aborted) {
+        ctx.project = snapshotProjectKeepingHeavy(accepted);
+        throw new Error(`${message.slice(PI_MAP_LOSS_DECLINED_PREFIX.length).trim()} 사용자가 이 변경(맵 삭제·비우기)을 거절해 되돌렸습니다. 같은 맵을 지우거나 비우지 말고 나머지 작업을 계속하세요.`);
       }
       rejected = true;
       fatal = message;
@@ -383,7 +408,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  // 팀장처럼 남이 쓰는 공유 사본을 읽기만 하는 실행 — 도구마다 최신 사본으로 갈아 끼운다(시작 사본에 머물면
+  // 팀원이 만든 맵이 안 보여 같은 일을 다시 배정한다. 2026-10-05 스트레스 p-team-delete-declined: 팀장 get_database_records 가
+  // 끝까지 「maps 1건」이라 「작은 숲」을 세 번 짓게 했다).
+  // 도구가 도는 동안만 바꾸고 끝나면 제 사본으로 되돌린다 — 실행 끝의 배치 품질·마을 검사가 남의 변경을 이 실행의 변경으로
+  // 읽고 쓰기 도구도 없는 팀장에게 수리를 시키지 않게. 읽기 도구는 겹쳐 돌 수 있어 마지막 것이 끝날 때 되돌린다.
+  let liveDepth = 0;
+  let ownProject = ctx.project;
+  const wrapTool = (tool: PiToolShape): PiToolShape => {
+    const wrapped = wrapCoreTool(tool);
+    const live = options.liveProject;
+    return live ? { ...wrapped, async execute(id, params, signal) {
+      if (liveDepth++ === 0) ownProject = ctx.project;
+      ctx.project = cloneProjectSharingSharedDictionaries(live());
+      try { return await wrapped.execute(id, params, signal); }
+      finally { if (--liveDepth === 0) ctx.project = ownProject; }
+    } } : wrapped;
+  };
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -461,6 +503,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     referenceGate,
     charsetGate,
     modernTilesetPolicy,
+    findToolsCallable,
+    eventAssistChat: eventAssistChat as never,
     ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
@@ -553,7 +597,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       ...(thinkingLevel ? { thinkingLevel: thinkingLevel as never } : {}),
       tools: tools as never,
     },
-    ...(apiKey ? { getApiKey: () => apiKey as never } : {}),
+    // 요청마다 다시 읽는다 — 긴 실행 도중 호스트가 갱신한 키가 providerApiKeys 에 들어온다(piWorkerKeys.ts).
+    ...(apiKey ? { getApiKey: () => ((options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? apiKey) as never } : {}),
     ...(options.streamFn ? { streamFn: options.streamFn } : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
