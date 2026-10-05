@@ -29,7 +29,8 @@ def prepare(root, request, resume=False):
     work_base = Path(os.environ.get('SUPER_HARNESS_DATA', Path.home()/'.local/share/oprn/super-harness')) / 'work' / 'native'
     work = work_base / (root.name + '-' + hashlib.sha256(str(request.get('data', '')).encode()).hexdigest()[:12])
     work.mkdir(parents=True, exist_ok=True)
-    env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work))
+    env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work),
+               VEH_CODEX_BIN=os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex'))
     harness = request.get('harness')
     if harness == 'interior-props':
         env.update(PROP_HARNESS_DATA=local('data'), HIP_DATA=local('picks'), HIP_PICK=local('picks'))

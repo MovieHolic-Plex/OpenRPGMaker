@@ -105,3 +105,7 @@ Super-harness의 기술 재시도는 queued 후보만 `_run`하며 이미 끝난
 `resumePhase`가 review이면 원래 attempt에서 기계 검사와 독립 검수만 다시 수행한다.
 429 등 실제 공급자 오류는 native 품질 수정 회차를 소비하지 않고 감독의 지속 예약으로 넘긴다.
 오래된 verdict.json은 새 검수 전에 제거하고, 문맥 예산은 파일 절 단위 읽기로 제한한다.
+
+Codex뿐 아니라 Claude도 `VEH_HARNESS_WORK`의 외부 작업 폴더에서 실행한다.
+Claude는 같은 native interior-props 실행기의 최소 도구/MCP 설정을 사용하고 저장소는
+`--add-dir`로 제공한다. 모델/노력 수준/그림 계약은 바꾸지 않고 불필요한 저장소 문맥만 제거한다.
