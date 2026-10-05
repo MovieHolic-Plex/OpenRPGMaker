@@ -172,3 +172,18 @@ SQLite 사본에 저장→재조회와 낡은 해시 거부를 확인했다. 서
 
 운영 복구 결과: 공동묘지/교실 모두 art queued로 이동, 원래 FAIL과 각각 4개 수정 지시·art_revision=0 보존.
 기존 하수도 작업 691은 서비스 재시작 전후 생존. 근거: `verify-shots/super-harness-review-recovery/`.
+
+## 전체 제작 통합 방향 (2026-10-05)
+
+사용자가 키워드 하나에서 공간·타일·캐릭터·필요한 몬스터/장면을 전문 하네스로 배정하고,
+슈퍼하네스 한 화면에서 실제 데모와 Allow/Deny만 보는 방향을 확인했다.
+구현 전 계약·현재 결손·이관 순서·완료 근거는
+[`docs/superpowers/specs/2026-10-05-unified-harness-production.md`](../../docs/superpowers/specs/2026-10-05-unified-harness-production.md).
+공통 registry, 작업 의존 관계, native 선택 영수증, 공용 판본, 정본 설치 증거를 연결한다.
+현재 직접 그림 실행 어댑터는 interior-props/modern-chipset 두 종이며 전체 하네스 통합이 끝났다는 뜻은 아니다.
+
+
+공통 목록의 첫 연결은 구현했다: `npm run harness -- list`가 정본 registry에서
+`src/harnesses/catalog.json`도 생성하고, 슈퍼하네스 기획/재료/그림 준비 프롬프트가
+같은 목록과 장르 범위를 읽는다. 현재 생성 결과는 등록된 10종이다.
+이 변경은 native 실행 어댑터를 추가하거나 기존 작업/선택/공용 등록 상태를 변경하지 않는다.
