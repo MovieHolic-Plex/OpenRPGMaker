@@ -213,3 +213,44 @@ PR에 코드/자료 범위, 의존하는 미병합 변경, 기존 저장/브라�
 별도 브라우저 컨텍스트에서 state GET을 고정하고 모든 비-GET 요청을 가로채 모의 성공/실패를 반환한다.
 검사 종료 시 pagehide/sendBeacon도 실제 서버에 가지 않도록 차단을 유지한다.
 조작 계약과 렌더 경계는 [기물 파생 문서](interior-prop-derivations.md)의 「이름·그림 먼저」 절을 따른다.
+
+
+### 2026-10-05 제작 풀의 콘텐츠 경로 누락 복구
+
+증상: HTTP 서비스는 `PROP_HARNESS_CONTENT_ROOT`를 가지고 있지만 `systemd-run --user`로 띄운
+제작 풀의 `/proc/<MainPID>/environ`에는 없다. transient service는 호출 프로세스가 아닌 user manager
+환경을 물려받는다. 후보가 코드 워크트리에 쓰이고, 실제 콘텐츠 워크트리의 v5/resize/기준 그림을
+못 읽어 검수 `FileNotFoundError`가 난다. pool alive만으로 정상 제작이라고 판단하지 않는다.
+
+`harness.ensure_pool`은 이제 콘텐츠/DB 경로와 모델·병렬도 등 명시한 비밀이 아닌 설정만
+`--setenv=KEY=VALUE` argv로 전달한다. 전체 환경이나 자격 증명은 출력/전달 목록에 넣지 않는다.
+HTTP 프로세스는 Python 모듈을 이미 로드했으므로 파일 배포만으로 기존 ensure_pool 함수가 바뀌지 않는다.
+실행 중인 공간 업무 때문에 통합 서버를 재시작하지 않는 경우, 임시 서비스 prefix drop-in
+`/run/user/<uid>/systemd/user/prop-harness-pool-.service.d/60-content-root.conf`의 `[Service] Environment=...`로
+향후 풀에도 현재 콘텐츠 경로를 전달할 수 있다. 통합 서버가 수정 코드를 로드한 뒤 제거할 수 있다.
+
+복구 풀에만 `PROP_HARNESS_RECOVER_ROOT=<잘못 저장된 코드 체크아웃>`을 지정한다.
+`_recover_candidate`는 해당 판·후보 파일만 정본 후보 폴더로 복사하고 원본을 남긴다.
+이미 있는 대상은 덮지 않고 충돌 시 중단한다. 메인 pxgrid를 마지막에 복사하며,
+`technical-file-recovery` feedback에 경로와 pxgrid SHA-256을 기록한다. 사용자 pick을 만들지 않는다.
+잘못된 경로로 시작했던 채택 작업도 `_finish`에서 파일을 가져와 기계 검사부터 진행한다.
+
+살아 있는 제작 작업을 유지하며 풀 관리자만 교체한 절차:
+1. 기존 풀 유닛에 한정한 runtime drop-in으로 `KillMode=process`를 설정하고 daemon-reload 후 실제 값을 확인한다.
+2. 실행 중 run id/pid를 읽고 기존 유닛을 stop한다. 자식 PID 생존을 다시 확인한다.
+3. 올바른 content root와 recovery root로 새 풀을 시작한다. pool의 기존 `_Adopted`가 살아 있는 PID를 이어받는다.
+4. 기존 기술 오류는 `retry-review-errors <판...> --queue-only`로 실제 기계 검사를 다시 거쳐 검수에 올린다.
+   크기/레이어 등 기계 검사가 실패하면 통과로 바꾸지 않는다. 그 경우 현재 크기 명세에 맞는 재제작이 필요하다.
+5. API 상태뿐 아니라 새 풀의 경로 환경, 실제 검수 프로세스, 복구 파일을 확인한다.
+
+후보·검수 DB 복구는 하네스 CLI/저장 계층으로 수행하며 SQLite SQL로 사용자 선택을 패치하지 않는다.
+이번 인계 근거는 `verify-shots/props-worker-recovery/`이며, 전체 gates/vitest/typecheck는 실행하지 않았다.
+
+
+이번 복구에서는 크기 검사에 맞는 기존 후보를 검수로 돌리고, 잘못된 경로 탓에 resize.json을
+놓친 20종은 기존 판/파일을 보존한 채 최신 크기로 h728~h747 새 판을 만들었다.
+복구 인계 당시 살아 있던 자식 13개를 모두 유지했다. 이후 새 풀에서 32작업 동시 진행을 확인했다.
+재개는 완성 판정이 아니다. `live.json`은 작업 중 스냅숏이며 사용자가 후보를 고르기 전에는 공용 선택으로 게시하지 않는다.
+기술 복구 history에도 `attempt`를 넣어 기존 상태 serializer와 호환한다. 재제작 지시문은
+`hard`/`review` 판정만 읽도록 제한해 기술 이력이 마지막에 붙어도 KeyError가 나지 않게 했다.
+기술 이력은 DB에 남고 사용자 선택은 바꾸지 않았다.
