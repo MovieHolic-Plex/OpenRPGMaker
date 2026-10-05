@@ -712,3 +712,9 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 재개한다. 격리 콘텐츠 루트는 승인된 `tiledata/hand-interior/new/items.json`에서 찾는다.
 공간 슬롯 확인과 실행 예약은 공통 `space-admission.lock`으로 직렬화한다.
 여러 supervisor가 동시에 마지막 슬롯을 보고 작업을 중복 입장시키지 않도록 한다.
+
+교실 `scope:classroom`은 `classroom_choices.py`가 전용 영수증을 읽는다. `contractSha256`이 있다는
+이유만으로 주차장 `candidate/machine/independent` 구조로 읽지 않는다. native 실행 직후
+`art_receipts.py`가 원래 교실 어댑터의 receipt 함수를 호출하여 현재 state/check/verdict와 문 상태
+그림을 묶는다. 오래된 실패 영수증 때문에 PNG 생성 이후에도 멈추던 현상을 방지한다.
+실제 품목/assembly FAIL은 유지하며 전체 데모 → 독립 검수 → 피드백 수정으로 보낸다.
