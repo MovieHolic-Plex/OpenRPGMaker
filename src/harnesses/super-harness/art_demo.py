@@ -30,10 +30,13 @@ def prepare(data, cid):
     for g in manifest['groups']:
         for c in g['candidates']:
             for ref in c['sources'] + [c['sheet']]: choices.verified(root, ref)
+    import theme_production
+    theme_sources=theme_production.demo_sources(cid,choices.read(folder/'art-result.json'),manifest)
     inputs = dict(version=1, root=str(root), generation=generation, components=manifest,
                   selections=choices.selections(cid), title=store.concept(cid)['title'])
     layout = folder / 'art-layout-input.json'
     inputs['layout'] = choices.read(layout) if layout.exists() else {}
+    inputs['themeAllowedSources']=sorted(theme_sources) if theme_sources is not None else None
     inputs['planningPath'] = str(folder / 'planning.json')
     inputs['outputDirectory'] = 'art-output/space-demos/' + generation[:16]
     inputs['fingerprint'] = choices.fingerprint(inputs)
@@ -86,6 +89,8 @@ def accept(data, cid, result):
         raise ValueError('데모 제작 도중 원본 후보 목록이 변경되었습니다.')
     demos = result.get('demos', [])
     if not isinstance(demos, list) or not 1 <= len(demos) <= 3: raise ValueError('공간 전체 데모 1~3개가 필요합니다.')
+    import theme_production
+    theme_sources=theme_production.demo_sources(cid,choices.read(folder/'art-result.json'),inputs['components'])
     originals = {g['id']: {c['id']: c for c in g['candidates']} for g in inputs['components']['groups']}
     candidates = []
     for number, demo in enumerate(demos, 1):
@@ -110,6 +115,8 @@ def accept(data, cid, result):
                            if str(r.get('path', '')).lower().endswith('.png'))
             # Legacy spaces have no layout input. Only checked-in atlases can supplement their candidates.
             for ref in recipe.get('sources', []):
+                if theme_sources is not None and ref['sha256'] not in theme_sources:
+                    raise ValueError('테마 전용 세트에서 승인하지 않은 기존 그림은 조립에 사용할 수 없습니다: '+ref['path'])
                 if ref['sha256'] not in allowed:
                     source = choices.verified(root, ref)
                     import subprocess

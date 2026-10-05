@@ -173,6 +173,8 @@ def _planning_report(folder, approved=True, document=None, detail=False):
 
 def planning_report(folder, approved=True):
     try:
+        import theme_production
+        theme_production.require_plan(Path(folder).name,read(Path(folder)/'planning.json',{}))
         return _planning_report(folder, approved)
     except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'기획 근거 형식 오류: {error}'], 'fingerprint': '', 'variants': []}
@@ -240,7 +242,10 @@ def _material_report(folder, approved=True):
         for req in pv.get('requirements', []):
             if any(actual.get(req['id'], {}).get(k) != req.get(k) for k in ('role', 'what')):
                 issues.append(f'{vid}/{req["id"]}: 기획의 필수 재료가 삭제/변경됨')
-        if world not in worlds or v.get('tilesetId') not in worlds.get(world, {}).get('native', []):
+        import theme_production
+        theme=theme_production.policy(Path(folder).name)
+        native=[theme['packId']] if theme else worlds.get(world,{}).get('native',[])
+        if world not in worlds or v.get('tilesetId') not in native:
             issues.append(f'{vid}: 시대에 맞는 공용 칩셋이 없음 — 다른 시대의 바닥·벽도 대용 금지')
         if not isinstance(v.get('purpose'), str) or not v['purpose'].strip():
             issues.append(f'{vid}: 공간의 목적 근거가 없음')

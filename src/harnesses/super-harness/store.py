@@ -10,7 +10,7 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'art-layout-review', 'art-context-review', 'art-demo', 'waiting', 'art', 'build', 'review', 'probe', 'result-review', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+STAGES = ['theme-wait', 'discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'art-layout-review', 'art-context-review', 'art-demo', 'waiting', 'art', 'build', 'review', 'probe', 'result-review', 'bake', 'done', 'blocked', 'discarded', 'unbake']
 ACTIVE = ('plan', 'plan-review', 'survey', 'material-review', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {

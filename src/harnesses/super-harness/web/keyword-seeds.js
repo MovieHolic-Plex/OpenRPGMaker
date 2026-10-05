@@ -16,7 +16,7 @@ export function mountKeywordSeeds(host, changed) {
     key = next;
     list.innerHTML = items.length ? `<button data-filter="" aria-pressed="${!active}">모든 공간 보기</button>` + items.map(s => `<article>
       <div class="seed-title"><button data-filter="${esc(s.id)}" aria-pressed="${active===s.id}">${esc(s.keyword)} · 공간 ${s.concepts.length}개 보기</button><button data-seed="${esc(s.id)}" data-action="${s.active?'pause':'resume'}-seed" ${busy?'disabled':''}>${s.active?'새 공간 추가 중지':'계속 추가하기'}</button></div>
-      <p>${esc(s.label)}</p><small>기획 ${s.wave}차 · 검수/선택 단계 ${s.review} · 완성 ${s.done}${s.blocked?' · 수정 점검 '+s.blocked:''}</small>
+      <p>${esc(s.label)}</p>${s.theme?`<p><strong>전용 세트 제작</strong> · ${esc(s.theme.label)}</p><p><small>건축 · 바닥 · 가구 · 식생 · 인물 · 생물 · 탈것 · 효과를 함께 기획합니다. 기존 그림으로 자동 대체하지 않습니다.</small></p>${s.theme.error?`<p class="seed-error">${esc(s.theme.error)}</p>`:""}`:""}<small>기획 ${s.wave}차 · 검수/선택 단계 ${s.review} · 완성 ${s.done}${s.blocked?' · 수정 점검 '+s.blocked:''}</small>
       ${s.error?`<p class="seed-error">공간 제안 오류: ${esc(s.error)}${s.errors>=3?' · 3회 실패해 새 추가를 멈췄습니다. 기존 공간과 그림은 보존됩니다.':''}</p>`:''}</article>`).join('') : '';
   };
   async function refresh() {
