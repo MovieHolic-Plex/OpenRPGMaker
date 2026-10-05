@@ -76,10 +76,13 @@ def runs(items=None, *, blocked_by_run=None, decisions=None):
         kept = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'accept' for it in ready)
         rejected = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'reject' for it in ready)
         current_phase = state.get('phase', 'running')
+        transfer_file = root / 'novelty-transfers.json'
+        transfers = json.loads(transfer_file.read_text()) if transfer_file.exists() else []
+        planned = max(0, state.get('plannedHere', len(manifest['characters'])) - len(transfers))
         phase = ('pausing' if (root / 'pause-request.json').exists() else current_phase if current_phase in ('running', 'waiting-review', 'pausing') else 'running') if alive else state.get('phase', 'interrupted')
         if not alive and phase in ('running', 'waiting-review', 'pausing'):
             phase = 'interrupted'
-        result.append(dict(run=root.name, planned=state.get('plannedHere', len(manifest['characters'])), ready=len(ready), kept=kept,
+        result.append(dict(run=root.name, planned=planned, ready=len(ready), kept=kept,
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
                            title=manifest.get('title'), artists=driver.get('par', layout.get('par', 4)),
                            recipe=manifest.get('recipe'), animalPolicy=manifest.get('animalPolicy'), continuedIn=state.get('continuedIn'),

@@ -56,5 +56,12 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 사람이 남긴 그림과 설명은 사용자 공용 SQLite의 `charset-actor-kept`에 자동 등록한다. 에디터를 새로고침하면 새/기존 프로젝트와 AI NPC 검색에서 쓴다.
 폐기/되돌리기는 공용 목록에서 제외하고 기존 프로젝트 그림을 보존한다. 과거 모델 검수 모드는 이전 실행 재현용으로 유지한다.
 
+명시적으로 새 몸 구조를 주문한 `noveltyPolicy` 실행은 `novelty.py`의 팔레트 독립 구조 비교와
+`body_diversity.py`의 네 방향 정지 외곽 비교를 통과한 그림만 공개한다. 비교 기준/그림 해시와 입고 영수증을 보존하고
+사람의 선택 기록을 대신 만들지 않는다. `original_monsters.py`는 전체 최대 6명의 native 작업자로 같은 slot의 실패를
+최대 두 번 재저작하며 실제 납품한 고유 slot만 완료로 센다. 재배분은 `novelty-transfers.json`에 남겨 주문 수 중복을 막는다.
+2026-10-06 사용자의 폐기 지시로 실패한 변주 100종을 공방·공용 SQLite에서 제거하고 서로 다른 몸/이동 지시 100개로 다시 시작했다.
+원본 Monster 그림은 46개이고 입력 개수가 100개인 것은 아니다. 기존 URL에서 후속 새 후보를 확인한다.
+
 상세 계약은 [캐릭터 하네스](../charset-actor-harness.md), 명령과 저장 구조는
 [실행 지침](../../src/harnesses/charset-actor/README.md). 화면 http://mdc-server:18314/.
