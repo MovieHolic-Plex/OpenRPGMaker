@@ -1,0 +1,626 @@
+[
+  {
+    "caseId": "inspect-readonly",
+    "rasterChanges": []
+  },
+  {
+    "caseId": "plan-readonly",
+    "rasterChanges": []
+  },
+  {
+    "caseId": "npc-line",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "npc-move",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "npc-delete",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "item-price",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "map-rename",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "inn-price",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "dialogue-choice",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "caseId": "reward-once",
+    "rasterChanges": [
+      {
+        "mapId": "map_ash_pass",
+        "mapName": "잿빛 고개",
+        "layer": "upperTiles",
+        "changedCells": 3,
+        "examples": [
+          {
+            "index": 58,
+            "x": 10,
+            "y": 2,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 291,
+            "x": 3,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 308,
+            "x": 20,
+            "y": 12,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      },
+      {
+        "mapId": "map_mist_forest",
+        "mapName": "안개 숲",
+        "layer": "upperTiles",
+        "changedCells": 582,
+        "examples": [
+          {
+            "index": 1,
+            "x": 1,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 2,
+            "x": 2,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 3,
+            "x": 3,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 4,
+            "x": 4,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          },
+          {
+            "index": 5,
+            "x": 5,
+            "y": 0,
+            "before": -1,
+            "after": 260
+          }
+        ]
+      }
+    ]
+  }
+]

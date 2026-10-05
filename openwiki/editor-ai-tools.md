@@ -2687,3 +2687,9 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 `generate_original_bgm` write 도구는 조수가 쓴 음표 악보를 실제 WAV로 합성·등록한다.
 원곡 리소스는 기존 BGM 피커/조회·정본 저장·출하 플레이어로 이어진다. 실제 합성·등록 성공을 청취로
 보고하지 않는다. 세부 계약은 [title-opening-effects.md](title-opening-effects.md)의 마지막 절.
+
+## 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+
+`toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
+
+choices의 `choice1`~`choice5`는 Esc가 해당 선택지를 실행하는 설정이다. 취소하면 아무 일 없이 종료하는 요청은 `cancelBehavior:"branch",cancelBranch:[]`다. 도구 스키마와 Pi 저작 지침에 이 의미를 함께 제공한다. `run_scene_test`도 실제 대화창과 같은 `choiceCancellation.cancelChoiceIndex`를 사용한다. 취소 불가·설정 생략·없는 선택지로 취소는 검사 실패로 알리며 강제로 종료하지 않는다.

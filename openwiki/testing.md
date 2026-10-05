@@ -2085,3 +2085,7 @@ Committed evidence and its limitations: `verify-shots/maker-click-first/README.m
 The live maker task finished and saved/reloaded, but its observer composite is
 FAIL because of one framebuffer error; the subsequent read-only resize probe and
 dedicated exported player passed. Do not describe this as all browser checks green.
+
+## 조수 기능별 실제 수행 점검 (2026-10-05)
+
+`assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.

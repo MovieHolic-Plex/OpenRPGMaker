@@ -20,7 +20,8 @@ import {
 } from "@/project/session";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import type { Command, Dir, GameMap, Project } from "@/project/types";
+import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/project/types";
+import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { useItemFromMenu } from "@/player/playerItemUse";
@@ -333,7 +334,7 @@ export interface SceneTestResult {
 
 type PumpStop =
   | { stop: "done" }
-  | { stop: "choices"; choiceCount: number }
+  | { stop: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior }
   | { stop: "present"; itemIds: readonly string[] }
   | { stop: "animation" }
   | { stop: "shop"; step: ShopStep }
@@ -389,7 +390,7 @@ interface RunnerState {
   readonly messages: string[];
   gameOver: boolean;
   held: ({ interp: Interpreter; currentEventId?: string } & (
-    { mode: "choices"; choiceCount: number } | { mode: "present"; itemIds: readonly string[] }
+    { mode: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior } | { mode: "present"; itemIds: readonly string[] }
     | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
@@ -1119,9 +1120,11 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   const held = state.held;
   if (!held || held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   if (!Number.isInteger(index) || index < -1 || index >= held.choiceCount) return `Choice index ${index} is out of range (${held.choiceCount} options).`;
+  const resolvedIndex = index === -1 ? cancelChoiceIndex(held.cancelBehavior, held.choiceCount) : index;
+  if (resolvedIndex === null) return "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다.";
   state.held = null;
   state.executingEventId = held.currentEventId;
-  const stop = pump(state, held.interp, held.interp.resume(index));
+  const stop = pump(state, held.interp, held.interp.resume(resolvedIndex));
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
@@ -1190,7 +1193,7 @@ function updateHeldInterpreter(
   }
   if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
-      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }
+      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount, cancelBehavior: stop.cancelBehavior }
       : stop.stop === "present" ? { interp, mode: "present", currentEventId, itemIds: stop.itemIds }
       : stop.stop === "shop" ? { interp, mode: "shop", currentEventId, step: stop.step }
       : { interp, mode: "animation", currentEventId };
@@ -1212,7 +1215,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "openLoadMenu":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
-        return { stop: "choices", choiceCount: step.options.length };
+        return { stop: "choices", choiceCount: step.options.length, cancelBehavior: step.cancelBehavior };
       case "presentItem":
         if (step.prompt) state.messages.push(step.prompt);
         // 보여줄 것이 없으면 실플레이어처럼 prompt 만 띄우고 닫힘(취소)으로 이어 간다.
