@@ -712,15 +712,6 @@ function applyLayout(): void {
   setEditorLeftSafe(`${effectiveLeftWidth + resizerWidth}px`);
 }
 
-/** 렌더된 폭(px). 아직 레이아웃되지 않았거나 fake DOM 이면 폴백. */
-function measuredWidth(node: HTMLElement, fallback: number): number {
-  const rect = node.getBoundingClientRect?.();
-  if (rect && Number.isFinite(rect.width) && rect.width > 0) return Math.round(rect.width);
-  const offset = node.offsetWidth;
-  if (Number.isFinite(offset) && offset > 0) return offset;
-  return fallback;
-}
-
 // fakeDom(단위 테스트)에는 documentElement가 없으므로 옵셔널 체이닝으로 가드.
 function setEditorLeftSafe(px: string): void {
   document.documentElement?.style?.setProperty?.("--editor-left-safe", px);
