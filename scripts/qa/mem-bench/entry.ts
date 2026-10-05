@@ -3,7 +3,7 @@ export { createNewProjectSeed } from "@/editor/genrePacks";
 export { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 export { projectIdentityDigest } from "@/project/authoredProjectBaseline";
 export { projectLint, warmRoundtripCheck } from "@/project/lint/projectLint";
-export { planHeavyWire, resetHeavyWireForTests } from "@/ai/piAgent/heavyWire";
+export { planHeavyWire, resetHeavyWireForTests, withHeavyBlobs } from "@/ai/piAgent/heavyWire";
 export { serializeReusingSharedDictionaries } from "@/project/io/sharedDictionaryJson";
 export { sharedEntryDigest, jsonContentDigest } from "@/project/persistence/core/contentDigest";
 export { serialize } from "@/project/io";

@@ -21,6 +21,7 @@ await step('identity digest (proposal)', () => M.projectIdentityDigest(project, 
 await step('save-diff trust (sharedEntryDigest)', () => { for (const [id, e] of Object.entries(project.tilesets)) M.sharedEntryDigest(e, id); });
 await step('lint roundtrip', () => M.warmRoundtripCheck(project));
 const plan = await step('heavy wire plan', () => M.planHeavyWire({ project }));
+await step('409 blobs (rebuild + verify, dropped)', async () => { if (plan) { const b = await M.withHeavyBlobs(plan, 'bench', [...plan.blobs.keys()]); const ok = Object.keys(b.heavyBlobs ?? {}).sort().join() === Object.values(b.heavy ?? {}).sort().join(); if (!ok || b.heavy !== plan.body.heavy) console.log('HASH CHANGED', b.heavy, plan.body.heavy); } });
 const clone = await step('checkpoint clone', () => M.cloneProjectSharingSharedDictionaries(project));
 await step('clone identity digest', () => M.projectIdentityDigest(clone, 'proposal'));
 await step('clone lint roundtrip', () => M.warmRoundtripCheck(clone));
@@ -28,4 +29,4 @@ await step('clone heavy wire plan', () => M.planHeavyWire({ project: clone }));
 await step('untrusted re-digest (save receipt / visual fingerprint)', () => M.jsonContentDigest(clone));
 await step('save serialize (reuse)', () => M.serializeReusingSharedDictionaries(clone).length);
 console.table(rows);
-console.log('TOTAL retained over seed:', Math.round(last - rows[0].heapMB), 'MB', plan ? `heavy blobs ${[...plan.blobs.values()].reduce((a, s) => a + s.length, 0) >> 20}MB chars` : '');
+console.log('TOTAL retained over seed:', Math.round(last - rows[0].heapMB), 'MB', plan ? `heavy keys ${[...plan.blobs.values()].map(s => s.key).join(',')}` : '');

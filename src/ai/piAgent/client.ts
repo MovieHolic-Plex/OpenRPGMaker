@@ -59,12 +59,12 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
     return doFetch(url, { method: "POST", ...wire, headers: { ...wire.headers, ...companionTokenHeaders() }, ...(signal ? { signal } : {}) });
   };
   if (!plan) return post({ ...request, runId });
-  let response = await post({ ...withHeavyBlobs(plan, origin, []), runId });
+  let response = await post({ ...(await withHeavyBlobs(plan, origin, [])), runId });
   if (response.status === 409) {
     const payload = await readError(response.clone());
     if (payload.error === "heavy-missing" && Array.isArray(payload.missing)) {
       forgetHeavySent(origin, payload.missing);
-      response = await post({ ...withHeavyBlobs(plan, origin, payload.missing), runId });
+      response = await post({ ...(await withHeavyBlobs(plan, origin, payload.missing)), runId });
     }
   }
   if (response.ok && response.headers.get("X-Oprn-Run-Id")) markHeavySent(origin, plan);
