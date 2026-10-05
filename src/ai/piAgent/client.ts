@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
-import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
+import { createPiAgentLineDecoder, PI_AGENT_HEARTBEAT_MS, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 import { defaultYieldToUi } from "../yieldToUi";
@@ -202,9 +202,17 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // Resume that same run before declaring it dead; never launch another authoring worker.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
   let idleResumeRequested = false;
+  /** 워치독을 건 시각. 타이머가 이보다 한참 늦게 울렸으면 페이지 주 스레드가 멈춰 있었던 것이다. */
+  let armedAt = Date.now();
+  const arm = (ms: number) => { armedAt = Date.now(); watchdog = setTimeout(onStale, ms); };
   const onStale = () => {
     // 우리가 응답 중이거나, 타이머가 늦게 울렸을 뿐 마지막 줄 이후 staleMs 가 안 지났으면 다시 건다.
-    if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { watchdog = setTimeout(onStale, staleMs); return; }
+    if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { arm(staleMs); return; }
+    // 타이머가 제때보다 heartbeat 한 번 넘게 늦었다 = 페이지가 멈춰 있었다. 그동안 도착한 줄은 아직 읽기 대기열에 있고
+    // 브라우저는 밀린 타이머를 그보다 먼저 돌릴 수 있다. 침묵은 워커가 아니라 우리 쪽이므로 heartbeat 두 번만큼 더 듣는다.
+    // 실측(2026-10-05 연애 팀 첫 생성): 편집기가 86초 멈췄다 풀린 순간 워치독이 먼저 울려 「워커에서 80초 동안 신호가
+    // 없어」로 실행을 끊었다 — 워커는 그 사이에도 줄을 쓰고 있었고(빌더 완료·run_lint) 결과는 이미 저장돼 있었다.
+    if (Date.now() - armedAt > staleMs + Math.min(PI_AGENT_HEARTBEAT_MS, staleMs / 2)) { arm(Math.min(PI_AGENT_HEARTBEAT_MS * 2, staleMs)); return; }
     if (done) { abortStream(); return; }
     if (resumable && !stopped && !options.signal?.aborted && failures < resumeAttempts) {
       idleResumeRequested = true;
@@ -216,6 +224,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     abortStream();
   };
   let watchdog = setTimeout(onStale, staleMs);
+  armedAt = Date.now();
   const resumeAttempts = options.resumeAttempts ?? 6;
   const resumeBase = options.resumeDelayMs ?? 2_000;
   let failures = 0;
@@ -227,11 +236,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           const { value, done: finished } = await reader.read();
           if (finished) break;
           if (value) {
-            clearTimeout(watchdog);
-            watchdog = setTimeout(onStale, staleMs);
-            lastLineAt = Date.now();
             failures = 0;
             decoder.push(text.decode(value, { stream: true }));
+            // 줄 처리(적용 대기열·화면 갱신)에 쓴 시간은 워커의 침묵이 아니다 — 처리 뒤에 잰다.
+            clearTimeout(watchdog);
+            arm(staleMs);
+            lastLineAt = Date.now();
           }
         }
         if (!idleResumeRequested) dropError = null;
@@ -263,7 +273,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       reader = resumed.body.getReader();
       lastLineAt = Date.now();
       clearTimeout(watchdog);
-      watchdog = setTimeout(onStale, staleMs);
+      arm(staleMs);
     }
   } finally {
     clearTimeout(watchdog);

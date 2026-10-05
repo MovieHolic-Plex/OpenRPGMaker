@@ -126,6 +126,13 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
     const real = window.fetch.bind(window);
     window.fetch = async (input, init) => {
       const url = new URL(typeof input === 'string' ? input : input.url, location.href);
+      if (url.pathname === '/v1/agent/run' && init?.method !== 'POST') {
+        // 이어 받기(GET ?runId=&after=) — 워치독이 끊었는지, 이어 받았는지 결과에서 가려 보려고 남긴다.
+        const resume = { at: Date.now(), after: url.searchParams.get('after') };
+        (window.__stress.resumes ??= []).push(resume);
+        const response = await real(input, init); resume.status = response.status;
+        return response;
+      }
       if (url.pathname !== '/v1/agent/run' || init?.method !== 'POST') return real(input, init);
       let body = init.body;
       if (new Headers(init.headers).get('Content-Encoding') === 'gzip') body = await new Response(new Blob([body]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
@@ -133,6 +140,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
       const receipt = { at: Date.now(), mode: req.mode, runId: req.runId, provider: req.provider, model: req.model, task: String(req.task ?? '').slice(0, 300) };
       window.__stress.requests.push(receipt);
       const response = await real(input, init); receipt.status = response.status;
+      receipt.resumable = response.headers.get('X-Oprn-Run-Id') === req.runId;
       if (!response.ok || !response.body) return response;
       const [observe, application] = response.body.tee();
       void (async () => {
@@ -183,11 +191,12 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   let wireSeen = 0;
   const dumpWire = async () => {
     // 렌더러가 죽어도 그때까지의 기록은 남게 매 폴링 새 사건만 덧붙인다.
-    const fresh = await timed(page.evaluate(n => ({ events: window.__stress.events.slice(n), requests: window.__stress.requests }), wireSeen)).catch(() => null);
+    const fresh = await timed(page.evaluate(n => ({ events: window.__stress.events.slice(n), requests: window.__stress.requests, resumes: window.__stress.resumes ?? [] }), wireSeen)).catch(() => null);
     if (!fresh) return;
     wireSeen += fresh.events.length;
     if (fresh.events.length) await writeFile(out + '/wire-live.ndjson', fresh.events.map(e => JSON.stringify(e)).join('\n') + '\n', { flag: 'a' });
-    result.liveRequests = fresh.requests.map(r => ({ mode: r.mode, model: r.model, status: r.status }));
+    result.liveRequests = fresh.requests.map(r => ({ mode: r.mode, model: r.model, status: r.status, resumable: r.resumable }));
+    result.resumes = fresh.resumes;
   };
   const t0 = Date.now();
   try {
