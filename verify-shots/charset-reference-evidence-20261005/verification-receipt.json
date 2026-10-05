@@ -1,0 +1,89 @@
+{
+  "baseCommit": "0c3a186fa476896f5e15fabe5cb11c06bbb0fd9a",
+  "checks": [
+    {
+      "name": "final-targeted-tests",
+      "exitCode": 0,
+      "files": 7,
+      "tests": 73,
+      "log": "targeted-tests.txt"
+    },
+    {
+      "name": "final-typecheck-app",
+      "exitCode": 0,
+      "heapMb": 8192,
+      "log": "typecheck-app.txt"
+    },
+    {
+      "name": "final-real-tool-probe",
+      "exitCode": 0,
+      "modelCalls": 0,
+      "log": "tool-route-probe.log"
+    },
+    {
+      "name": "before-search-helper-probe",
+      "exitCode": 0,
+      "modelCalls": 0,
+      "log": "before-probe.log"
+    },
+    {
+      "name": "initial-targeted-tests",
+      "exitCode": 1,
+      "reason": "Exact custom_golem upload ID also returned two semantic golems; fixed exact upload priority.",
+      "log": "initial-targeted-tests.txt"
+    },
+    {
+      "name": "initial-route-checker",
+      "exitCode": 1,
+      "reason": "Checker omitted label-as-tag for 155 project label overrides; 155 rows had only tags checks fail. Expected canonical traits did not change.",
+      "log": "initial-checker-report.json"
+    }
+  ],
+  "files": [
+    {
+      "path": "before-search-results.json",
+      "sha256": "d20034cc2ef41383ddf6458dab59fb0eefbe20fe4131132be69adc5a54ff8ac5"
+    },
+    {
+      "path": "tool-route-proof.json",
+      "sha256": "891a1ec74c38559e7040c69a5e4fe7ebd098d49871584d8fbf5fd4bcc5f3c9e6"
+    },
+    {
+      "path": "targeted-tests.txt",
+      "sha256": "35a94b372ad7f675d551670ba073549a1612fef5f2a023f11b5f84b6b4f759b5"
+    },
+    {
+      "path": "typecheck-app.txt",
+      "sha256": "8255f51160f3f289c1fc2ad29fc40fc448932dd439d697ac8b3c18adb2116aa2"
+    },
+    {
+      "path": "initial-targeted-tests.txt",
+      "sha256": "669c8e043a0310f733aa9c2107ed4eb9038dc2f700d5e6190bf3ce2f7e5a0268"
+    },
+    {
+      "path": "initial-checker-report.json",
+      "sha256": "2764f9eb0ce993d11d4871328e27fcd1a7efdc530015c7d4198efe61e09d637f"
+    },
+    {
+      "path": "before-probe.log",
+      "sha256": "5c458a2ead57f24922d3e389afd435218eee4edea025150b368e3454f9373e2e"
+    },
+    {
+      "path": "tool-route-probe.log",
+      "sha256": "d920116e203c601b9e96054e077855ae655895bca506302d5959c0a2a6bd2a1d"
+    },
+    {
+      "path": "before-probe-source.mts",
+      "sha256": "c950655ca3dd88d7cf2581aa3d3b3cf3158a0650bb8ddd7be80b2e6c2928c525"
+    }
+  ],
+  "limits": [
+    "Before results call the resource search helper on the base code, not a provider or model.",
+    "Final probe calls actual QUERY_TOOLS.run with a read-only frozen shared SQLite snapshot and an in-memory fixture.",
+    "The earlier two actual Pi runs are separate evidence; their source hashes differ from this follow-up."
+  ],
+  "probeSource": {
+    "path": "scripts/content/probe-charset-reference-routes.mts",
+    "sha256": "c8f604bb5c2a668e68fd69cd01ec7d882a83044f670629bfce1581a0209b3253"
+  }
+}
