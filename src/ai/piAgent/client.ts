@@ -198,11 +198,20 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let stopped = false;
   const abortStream = () => { stopped = true; void reader.cancel().catch(() => undefined); };
   const text = new TextDecoder();
-  // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 실행 상한(PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)까지 「실행 중」이 떠 있는다.
+  // The host journal can already contain done while a live reader has stalled.
+  // Resume that same run before declaring it dead; never launch another authoring worker.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
+  let idleResumeRequested = false;
   const onStale = () => {
     // 우리가 응답 중이거나, 타이머가 늦게 울렸을 뿐 마지막 줄 이후 staleMs 가 안 지났으면 다시 건다.
     if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { watchdog = setTimeout(onStale, staleMs); return; }
+    if (done) { abortStream(); return; }
+    if (resumable && !stopped && !options.signal?.aborted && failures < resumeAttempts) {
+      idleResumeRequested = true;
+      dropError = new Error('실시간 연결에서 신호를 받지 못해 실행 기록을 이어 받습니다.');
+      void reader.cancel().catch(() => undefined);
+      return;
+    }
     stale = true;
     abortStream();
   };
@@ -225,11 +234,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
             decoder.push(text.decode(value, { stream: true }));
           }
         }
-        dropError = null;
+        if (!idleResumeRequested) dropError = null;
       } catch (error) {
         // 연결이 도중에 끊겼다(와이파이·절전·네트워크 변경, Firefox 「Error in input stream」). 호스트는 실행을 계속 들고 있다.
         dropError = error;
       }
+      idleResumeRequested = false;
       decoder.push(text.decode());
       decoder.flush();
       // 끝까지 받았거나, 우리가 끊었거나, 이어 받을 수 없는 호스트면 멈춘다.

@@ -1,0 +1,12 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "revision": 79,
+  "target": "output/qa/first-presentation/project/.oprn-projects/ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "mode": "Final read-only SQLite audit after native save/reload and shipping playback. The host is stopped after this task.",
+  "checks": {
+    "systemMatchesPlayedZip": true,
+    "mapsMatchPlayedZip": true,
+    "generatedAudioMatchesPlayedZip": true
+  },
+  "passed": true
+}

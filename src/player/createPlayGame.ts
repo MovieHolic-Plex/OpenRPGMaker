@@ -10,6 +10,8 @@ import { installRuntimeQaFrames } from "@/player/runtimeQaFrames";
 import { PLAY_PIXEL_DENSITY_KEY } from "@/player/runtimeViewScale";
 
 export type PlayGameBootOptions = {
+  /** Build textures/map behind the opening without advancing gameplay or audio. */
+  readonly initialPresentationPending?: boolean;
   /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
   readonly qaInstrumentation?: boolean;
   /** Keyboard-only play disables Phaser's independent mouse/touch input managers. */
@@ -65,6 +67,7 @@ export async function createPlayGame(
     scene: [PlayScene],
     callbacks: {
       preBoot: (game) => {
+        game.registry.set('initialPresentationPending', options.initialPresentationPending === true);
         game.registry.set(PLAY_PIXEL_DENSITY_KEY, density);
         if (options.qaInstrumentation === true) {
           game.registry.set("qaInstrumentation", true);

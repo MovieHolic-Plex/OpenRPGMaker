@@ -1,0 +1,132 @@
+{
+  "passed": true,
+  "branches": [
+    {
+      "name": "keep",
+      "passed": true,
+      "seconds": 99.853,
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening-1",
+          "failures": []
+        },
+        {
+          "id": "opening-2",
+          "failures": []
+        },
+        {
+          "id": "opening-3",
+          "failures": []
+        },
+        {
+          "id": "opening-4",
+          "failures": []
+        },
+        {
+          "id": "opening-5",
+          "failures": []
+        },
+        {
+          "id": "opening-6",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "name": "release",
+      "passed": true,
+      "seconds": 80.602,
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening-1",
+          "failures": []
+        },
+        {
+          "id": "opening-2",
+          "failures": []
+        },
+        {
+          "id": "opening-3",
+          "failures": []
+        },
+        {
+          "id": "opening-4",
+          "failures": []
+        },
+        {
+          "id": "opening-5",
+          "failures": []
+        },
+        {
+          "id": "opening-6",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "loadingSamples": [
+    {
+      "branch": "keep",
+      "count": 0
+    },
+    {
+      "branch": "release",
+      "count": 0
+    }
+  ],
+  "generatedOpeningSePlayed": true,
+  "actualMapTracks": [
+    "original_bgm_c5548347-7466-4a5d-98c3-dc81fd0e55dc",
+    "original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55"
+  ]
+}

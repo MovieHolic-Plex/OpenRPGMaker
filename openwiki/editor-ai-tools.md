@@ -2700,6 +2700,10 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 원곡 리소스는 기존 BGM 피커/조회·정본 저장·출하 플레이어로 이어진다. 실제 합성·등록 성공을 청취로
 보고하지 않는다. 세부 계약은 [title-opening-effects.md](title-opening-effects.md)의 마지막 절.
 
+## OST·효과음 직접 작곡 (2026-10-05)
+
+`get_soundtrack`으로 유효 맵 음악/사용처를 읽고 `generate_original_bgm(score.loop:true)`을 맵 `set_map_properties.bgm` custom에 연결한다. 타이틀·오프닝·전투도 공통 도구를 쓴다. `generate_original_se`은 실제 음향 패치를 WAV로 등록해 타이틀 sounds나 image direction.soundResourceId/컷신 se에 연결한다. 범위·저장·오디오 모델과의 구분은 [BGM 카탈로그](bgm-catalog.md)의 2026-10-05 절. map 예약은 기존 실행기 계약을 따른다.
+
 ## 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
 
 `toolRunner`는 도구 실행 직후 실제 타일 배열이 바뀐 맵 ID를 먼저 잡는다. 나무 짝 보정과 숲 그림자는 그 집합만 처리하며 이벤트·DB·맵 이름 변경으로 기존 나무를 수선하지 않는다. 동결된 래스터와 dryRun 경계는 유지한다. 프로젝트 전체를 명시적으로 수리하는 `repairTreePairsOnProject` 유틸리티는 별도다.
