@@ -55,7 +55,9 @@ def prepare(data, cid):
         receipt_path = verified(root, receipt_ref)
         receipt = read(receipt_path)
         if receipt.get('harness') == 'modern-chipset' and receipt.get('contractSha256'):
-            contract_path = safe(root, 'harness-data/modern-chipset-parking/parking-contract.json')
+            # Expanded scenes retain their own immutable contract; do not make
+            # them overwrite the small scene's selected source to be collected.
+            contract_path = safe(root, receipt.get('contractPath', 'harness-data/modern-chipset-parking/parking-contract.json'))
             if digest(contract_path) != receipt['contractSha256']:
                 raise ValueError('주차장 부품 명세가 검수 이후 바뀌었습니다.')
             contract = read(contract_path)
