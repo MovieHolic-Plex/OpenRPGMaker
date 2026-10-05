@@ -259,6 +259,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
+  // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
+  const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
+  const findToolsCallable = (name: string): boolean => allowedNames.has(name);
   const shapeFor = (name: string): PiToolShape | undefined => {
     if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
       if (request.readOnly || options.readOnlyTools) return undefined;
@@ -285,6 +288,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       referenceGate,
       charsetGate,
       modernTilesetPolicy,
+      findToolsCallable,
       ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
@@ -461,6 +465,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     referenceGate,
     charsetGate,
     modernTilesetPolicy,
+    findToolsCallable,
     ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.

@@ -86,6 +86,12 @@ export interface CreatePiToolsetOptions {
   readonly scopeMapIds?: readonly string[];
   /** 평문 병합 실행(`piMapScopeGuard`) — 거부 문구가 「DB·시스템은 되고 다른 맵만 안 된다」고 말한다. */
   readonly scopeAllowsSystem?: boolean;
+  /**
+   * 이 실행이 실제로 부를 수 있는 이름인가 — find_tools 결과를 실행 경계로 거른다.
+   * find_tools 는 레지스트리 전체를 찾는다. 경계(팀원 역할 등) 밖 이름을 그대로 보여 주면 모델이 부르고
+   * 「Tool … not found」로 턴을 태운다(2026-10-05 스트레스 g-ember-mine: 빌더가 set_map_properties 를 찾고 연속 실패).
+   */
+  readonly findToolsCallable?: (name: string) => boolean;
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
@@ -167,6 +173,8 @@ export function harvestFindToolsNames(result: ToolResult): string[] {
 export interface ResolvePiToolOptions {
   readonly charsetGate?: PiCharsetSelectionGate;
   readonly referenceGate?: PiTilesetReferenceGate;
+  /** 현대 칩셋 정책 — 발견·폴백으로 만든 쓰기 셰이프도 처음 선언된 도구와 같은 검사를 받는다. */
+  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
   readonly readOnly?: boolean;
   /** 실행의 하드 경계(팀 역할 제한 등). 설정되면 이 목록 안 이름만 만든다. */
@@ -175,6 +183,33 @@ export interface ResolvePiToolOptions {
   readonly maxDataChars?: number;
   readonly scopeMapIds?: readonly string[];
   readonly scopeAllowsSystem?: boolean;
+  readonly findToolsCallable?: (name: string) => boolean;
+}
+
+/**
+ * find_tools 결과에서 이 실행이 부를 수 없는 후보를 빼고, 뺀 이름은 요약에 「범위 밖」으로만 남긴다.
+ * 이름을 아예 숨기지 않는 까닭: 모델이 필요한 도구가 없다는 사실을 알아야 보고로 넘긴다 — 숨기면 다른 말로 다시 찾는다.
+ */
+export function scopeFindToolsResult(result: ToolResult, callable: (name: string) => boolean): ToolResult {
+  if (!result.ok) return result;
+  const data = result.data as { readonly matches?: unknown } | undefined;
+  if (!data || !Array.isArray(data.matches)) return result;
+  const nameOf = (match: unknown): string | undefined => {
+    const name = match && typeof match === "object" ? (match as { name?: unknown }).name : undefined;
+    return typeof name === "string" ? name : undefined;
+  };
+  const inside = data.matches.filter(match => { const name = nameOf(match); return name === undefined || callable(name); });
+  const outside = data.matches.map(nameOf).filter((name): name is string => name !== undefined && !callable(name));
+  if (outside.length === 0) return result;
+  const note = `범위 밖(이 실행에서는 호출할 수 없음 — 꼭 필요하면 결과 보고에 적어 넘기세요): ${outside.join(", ")}`;
+  const missing = /\. 없는 툴 이름: .*$/.exec(result.summary)?.[0] ?? "";
+  return {
+    ...result,
+    summary: inside.length > 0
+      ? `편집기 툴 ${inside.length}개 발견: ${inside.map(nameOf).filter(Boolean).join(", ")}${missing}. ${note}`
+      : `이 실행에서 호출할 수 있는 툴 중 맞는 것이 없습니다${missing}. ${note}`,
+    data: { ...data, matches: inside },
+  };
 }
 
 /**
@@ -188,10 +223,12 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     toolNames: [name],
     charsetGate: options.charsetGate,
     referenceGate: options.referenceGate,
+    modernTilesetPolicy: options.modernTilesetPolicy,
     readOnly: options.readOnly,
     onCall: options.onCall,
     scopeMapIds: options.scopeMapIds,
     scopeAllowsSystem: options.scopeAllowsSystem,
+    findToolsCallable: options.findToolsCallable,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
   }).find(tool => tool.name === name);
 }
@@ -249,6 +286,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         : tool.mode === "write"
           ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
           : runTool(ctx, tool.name, args));
+      if (tool.name === "find_tools" && options.findToolsCallable) result = scopeFindToolsResult(result, options.findToolsCallable);
       if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
