@@ -93,7 +93,7 @@ def runners(now):
                 result.append(dict(value, members=members))
         except (OSError, ValueError, KeyError, TypeError):
             continue
-    return result
+    return sorted(result, key=lambda r: (bool(r.get("draining")), -r.get("parallelSpaces", 1)))
 
 
 def batches(now):
@@ -236,6 +236,8 @@ def snapshot(cid=None):
                           events=events(c["id"]) if cid else []))
     alive = [j for j in views if j['alive']]
     return dict(at=now, paused=paused, steps=STEPS, jobs=views, items=items,
+                limits={'spaces': max((r.get('parallelSpaces', 1) for r in managed if not r.get('draining')), default=0),
+                        'jobs': int(store.setting('max_codex'))},
                 workers={'active': len(alive), 'nativeDrawing': sum(j['kind'] == 'art-native' for j in alive),
                          'preparing': sum(j['kind'] == 'art' for j in alive),
                          'reviewing': sum(j['kind'] in ('plan-review','material-review','art-layout-review','art-context-review','review','judge') for j in alive)})

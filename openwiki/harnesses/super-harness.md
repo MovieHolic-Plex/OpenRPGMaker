@@ -488,14 +488,14 @@ UI 헤더는 실행 워커와 실제 칩 제작 수를 별도로 표시한다. �
 ### 요청 공간 병렬 운영과 축소 검수 보정 (2026-10-05)
 
 기존 전용 실행기는 `not sh.PROCS`와 전체 그림 작업 조회로 모든 공간을 직렬화했다.
-`space_supervisor.admission`은 기본 3개 공간의 기획·A/B 기획 검수·재료 조사/검수·그림 준비·
+`space_supervisor.admission`은 기본 6개 공간의 기획·A/B 기획 검수·재료 조사/검수·그림 준비·
 도면 검수·native 저작·조립 그림 검수를 병렬로 허용한다. 같은 공간의 단계는 동시에 시작하지 않는다.
 A/B 두 작업은 한 공간 슬롯과 두 작업 슬롯을 사용한다. DB running 기록은 종료 수거 전까지 슬롯을 차지한다.
 공용 코드/프로젝트를 쓰는 build/review/probe/bake는 다른 작업이 모두 끝난 뒤 실행하고,
 대기 중인 공용 단계가 있으면 새 병렬 작업 배정을 멈춰 계속 밀리지 않게 한다.
 
-- `SUPER_HARNESS_SPACE_PARALLEL` 기본 3; `max_codex`는 작업 배정 상한이다.
-- 하위 interior-props 풀도 `SUPER_HARNESS_SPACE_PROP_PAR` 기본 4로 제한한다.
+- `SUPER_HARNESS_SPACE_PARALLEL` 기본 6; `max_codex`는 작업 배정 상한이다.
+- 하위 interior-props 풀도 `SUPER_HARNESS_SPACE_PROP_PAR` 기본 2로 제한한다.
   native 작업 수는 내부 모델 수가 아니다. 다른 기물 서비스의 32명 설정을 바꾸지 않는다.
 - Codex scratch cwd는 work/<concept>/<kind-tag>, 쓰기 허용은 자기 개념 폴더와 명시된 저작
   워크트리다. 기획/조사/검수에 공용 소스 쓰기 권한을 주지 않는다. build/review/judge/discover는
@@ -718,3 +718,21 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 `art_receipts.py`가 원래 교실 어댑터의 receipt 함수를 호출하여 현재 state/check/verdict와 문 상태
 그림을 묶는다. 오래된 실패 영수증 때문에 PNG 생성 이후에도 멈추던 현상을 방지한다.
 실제 품목/assembly FAIL은 유지하며 전체 데모 → 독립 검수 → 피드백 수정으로 보낸다.
+
+
+### 동시 공간 6개와 원본 이미지 확대 보기 (2026-10-05)
+
+사용자 요청에 따라 공간 슬롯을 3→6, 공간별 interior-props 동시 제작은 4→2로 바꿨다.
+단계 작업 `max_codex=16`과 하위 native 후보 작업 수는 별도다. 화면은 **동시 공간/한도**,
+**단계 작업**, **칩 제작 묶음**을 구분하여 묶음 하나를 모델 한 명처럼 표시하지 않는다.
+활성 heartbeat를 drain 중인 옛 실행기보다 먼저 사용한다. 기존 작업은 종료까지 수거한다.
+운영 정본 서비스는 `super-harness-production-spaces.service`이며 기존 5개 공간과 사용자 키워드를
+하나의 scoped supervisor에서 맡는다. 이전 spaces/keyword-spaces 서비스는 disable+drain한다.
+공용 조립/저장 단계의 독점, 마무리 우선순위, 429 예약 재시도는 유지한다.
+
+`web/art-choice.js`의 `createImageViewer`는 진행 이미지·문서 그림·Allow/Deny 예시가 함께 쓴다.
+`gallery.html`의 native `<dialog>`가 상세창 위 최상단에 열리고 `/data/`의 원본을 로드한다.
+화면 맞춤, 100%, 5~1600% 배율, 휠 줌, 포인터 드래그, 키보드 +/−/0·Esc,
+원본 새 창, 명시적인 닫기를 지원한다. Esc는 확대창만 닫아 뒤의 상세창을 유지한다.
+관찰 근거: `verify-shots/harness-image-viewer/`의 주차장 desktop/mobile 그림. 390px 화면에서
+대화상자 너비366px, 드래그 후 스크롤 x+150/y+100, 브라우저 pageerror 0을 확인했다.
