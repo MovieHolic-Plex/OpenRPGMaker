@@ -55,3 +55,17 @@ item(id/ko/w/h/category/desc/why/worldviewId)을 쓴다. 현재 하네스의 지
 조선은 joseon-baram, 현대는 modern-chipset, 일본은 jp-city, 중세 실내는 interior-props.
 지원하지 않는 종류는 그 하네스의 확장 필요 사항까지 적는다. 도구/구조 마감도 그림 한 장으로 해결했다고 하지 않는다.
 결과는 위 두 파일만. 기존 card.json과 examples는 과거 초안으로 보존한다.
+
+
+## 다른 하네스와의 제작 연결
+
+에디터와 같은 정본 목록 `{{ROOT}}/src/harnesses/catalog.json`을 읽는다.
+산출물 종류와 시대·장르에 맞는 항목을 찾은 다음 그 항목의 doc/seed/진입 경로를 확인한다.
+하네스 id를 기억이나 임의 목록으로 지어내지 않는다. 목록이 없으면 그 사실을 기록하고
+정본 registry.ts와 해당 manifest를 확인한다. CLI/editorUi 존재는 감독 실행 어댑터 지원을 뜻하지 않는다.
+monster-collect-species는 monster-collect 게임 전용이며 일반 생물/적 캐릭터 제작에 배정하지 않는다.
+캐릭터·월드맵·타일·장면은 서로 다른 산출물이다. 다른 종류의 검사 합격으로 대신하지 않는다.
+다른 하네스가 이미 공용으로 등록한 현재 승인 결과가 있으면 새 제작 전에 재사용 가능성을 조사한다.
+기존 선택 원본·공용 판본·참고문서와 실제 그림을 확인한다. 사용자의 결정이나 native 판정을 대신 쓰지 않는다.
+부족한 연결은 어느 단계(실행/결과 수집/사용자 결정/공용 등록/프로젝트 설치)인지 기록한다.
+통합 설계: `{{ROOT}}/docs/superpowers/specs/2026-10-05-unified-harness-production.md`.
