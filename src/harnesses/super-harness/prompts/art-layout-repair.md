@@ -7,6 +7,8 @@
 ## 대상과 근거
 현재 개념 폴더의 art-execution.json에서 실제 harness/data/판 경로를 읽고 그대로 같은 하네스를 쓴다.
 art-layout-input.json과 art-layout-review.json의 반려 지적, art-feedback.json의 policy를 읽는다.
+현재 planning.json/materials.json이 새로 승인되었으면 새 기획의 크기·좌표를 따른다.
+옛 planning-source나 기존 queued 판의 넓은 크기를 그대로 고정하지 말고 시드·조립 계약까지 새 기획과 일치시킨다.
 교실은 교실, 공동묘지는 공동묘지, 하수도는 하수도다. 다른 공간의 명세나 기준차를 요구하지 않는다.
 parking-repair-brief.json, art-acceptance.json, art-calibration.json은 있을 때만 적용한다.
 없는 선택 파일을 사용자에게 요구하거나 다른 공간 파일로 대체하지 않는다.
@@ -14,7 +16,10 @@ parking-repair-brief.json, art-acceptance.json, art-calibration.json은 있을 �
 기존 수정 제안서가 있으면 활용하고 이미 조사한 전체 자료/위키를 반복 조사하지 않는다.
 
 ## 수정 범위
-반려된 치수·방향·접합·여백·문 개구·배치부터 수정한다. 실패를 만든 기존 keep 조건도 재검토한다.
+반려된 치수·방향·접합·여백·문 개구·배치부터 수정한다.
+빈 공간이 많으면 외벽과 canvas를 줄인다. open/corridor도 축소 대상이다.
+가로·세로 축소안을 실제 좌표와 기능으로 비교하고 가능한 더 작은 안을 채택한다.
+통로/발표/시야라는 이름, 소품 추가, 가구 축소, 필수 좌석 삭제로 과대 바닥을 정당화하지 않는다. 실패를 만든 기존 keep 조건도 재검토한다.
 policy.route/phase를 따르고 layout.repairPlan에 변경점과 폐기한 잘못된 가정을 구체적으로 남긴다.
 completionRepairs의 필수 항목, 승인된 시점, 다른 Allow 예시와 기존 검수 기록을 보존한다.
 별도의 data/판 경로에서 기존 하네스의 prepare 경로로 새 queued 입력만 준비한다.
