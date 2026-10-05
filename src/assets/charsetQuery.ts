@@ -119,8 +119,8 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   return "object";
 }
 
-function directTextureAlias(normalized: string): string | null {
-  for (const entry of CHARSET_SEMANTICS) {
+function directTextureAlias(normalized: string, catalog: readonly CharsetSemanticEntry[]): string | null {
+  for (const entry of catalog) {
     const shortKey = textureShortKey(entry.textureKey).toLowerCase();
     if (normalized === entry.textureKey.toLowerCase()) return entry.textureKey;
     // "animal" is the whole category, not just the RTP Animal.png sheet.
@@ -210,7 +210,7 @@ function catalogFor(overrides?: readonly CharsetLabelOverride[]): readonly Chars
 }
 
 function exactAliasMatches(normalized: string, catalog: readonly CharsetSemanticEntry[]): NpcGraphicMatch[] | null {
-  const textureKey = directTextureAlias(normalized);
+  const textureKey = directTextureAlias(normalized, catalog);
   if (textureKey) {
     return catalog
       .filter((entry) => entry.textureKey === textureKey)
@@ -234,23 +234,22 @@ function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_S
     .sort((a, b) => b.score - a.score);
 }
 
-export function queryNpcGraphics(
+/** Complete semantic matches; resource pagination must not lose entries after 100. */
+export function findNpcGraphicMatches(
   query: string | undefined,
-  limit = 20,
   overrides?: readonly CharsetLabelOverride[],
 ): NpcGraphicMatch[] {
   const catalog = catalogFor(overrides);
   const normalized = normalizeQuery(query ?? "");
-  const cappedLimit = Math.max(1, Math.min(100, Math.floor(limit)));
   if (!normalized || normalized === "*" || normalized === "all" || normalized === "전체") {
-    return defaultNpcGraphics(catalog).slice(0, cappedLimit);
+    return defaultNpcGraphics(catalog);
   }
   const exactAlias = exactAliasMatches(normalized, catalog);
-  if (exactAlias) return exactAlias.slice(0, cappedLimit);
+  if (exactAlias) return exactAlias;
   // 라벨과 글자 그대로 같은 칸이 있으면 그 칸이 답이다. 성별·나이 의도 필터를 거치면 「금발 소년」(나이 youth)이
   // 「소년=child」 의도에 걸려 자기 이름으로도 안 나온다(2026-09-27 전수 조사).
   const exactLabel = catalog.filter((entry) => entry.label.toLowerCase() === normalized);
-  if (exactLabel.length > 0) return exactLabel.map((entry, index) => ({ entry, score: 2000 - index })).slice(0, cappedLimit);
+  if (exactLabel.length > 0) return exactLabel.map((entry, index) => ({ entry, score: 2000 - index }));
 
   const intent = intentFromQuery(normalized);
   const queryTerms = normalized.split(/\s+/).filter((term) => term.length > 0);
@@ -268,8 +267,12 @@ export function queryNpcGraphics(
       return { entry, score: intentScore(entry, intent) + wholeTextScore + splitTextScore };
     })
     .filter((match) => match.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, cappedLimit);
+    .sort((a, b) => b.score - a.score);
+}
+
+export function queryNpcGraphics(query: string | undefined, limit = 20, overrides?: readonly CharsetLabelOverride[]): NpcGraphicMatch[] {
+  const cappedLimit = Math.max(1, Math.min(100, Math.floor(limit)));
+  return findNpcGraphicMatches(query, overrides).slice(0, cappedLimit);
 }
 
 export function resolveNpcGraphic(
