@@ -147,3 +147,28 @@ python3 src/harnesses/super-harness/unified.py serve --port 18315 --legacy-port 
 
 확인: `verify-shots/super-harness-example-evaluation/`. 원본 DB의 피드백/선택은 변경하지 않고,
 SQLite 사본에 저장→재조회와 낡은 해시 거부를 확인했다. 서비스 재시작 전후 별도 작업 689 생존 유지.
+
+## 검수 응답 형식 오류의 복구 (2026-10-05)
+
+공동묘지 작업 688, 교실 작업 690은 실제 FAIL 근거와 수정 지시가 있었으나 `fixes[].type`을
+`category`로 읽지 못해 품질 수정으로 넘어가지 못했다. 품질 반려와 응답 형식 오류를 구분한다.
+
+- `art_layout.normalize_fixes`는 알려진 asset/assembly/spec 값의 type→category 별칭만 정규화한다.
+  대상·문제·변경·보존 문자열을 만들거나 판정을 통과시키지 않는다. 도면과 조립 검수에서 같은 함수를 쓴다.
+- 입력 해시·기준 버전·전체/세부 판정 불일치는 계속 거부한다. 없는 필드·관찰·수정 지시는
+  `ReviewFormatError`로 구분하여 `repair_art_layout_response`가 같은 검수자에게 최대 2회 보완 요청한다.
+- 보완 단계는 art-layout-review의 format-1/2 작업이다. 원본 판정/기존 관찰/수정 내용을 보존하는지
+  `preserve_verdict`로 확인한다. 그림 수정 회차를 올리지 않는다. 끝까지 실패하면 구체 오류와 함께 막힘으로 둔다.
+- raw/정규화/보완 응답은 `art-layout-response-errors/`에 보존한다. 성공한 FAIL은 기존 도면 반려→준비 수정 경로로 넘긴다.
+  네이티브 그림·합격 관문은 그대로 유지한다. 도면 품질 반복 한도(동일 art_revision에서 3회)는 별도다.
+- 검수 프롬프트에 category/target/problem/change/keep을 모두 가진 실제 JSON 형식을 명시했다.
+- `review_recovery.recover(sh,cid)`는 아직 이전 모듈을 들고 있는 감독자의 저장된 도면 응답 오류를 복구한다.
+  최근 완료 작업·현재 입력 fingerprint·동일 개념 실행 작업 부재를 확인하고 작업별 replay marker로 중복 처리를 막는다.
+- 현재 지정 3공간 배치는 기존 감독자 작업을 끊지 않고 `super-harness-review-response-watch.service`가
+  호환 복구를 감시한다. 운영 스크립트는 DATA/monitoring/space-batch-20261005/review-response-watch.py.
+  같은 배치가 종료됐지만 복구된 queued 작업이 있으면 새 코드로 같은 배치만 다시 시작하며, 전체 큐를 풀지 않는다.
+  배치 종료 후 복구/대기 작업이 없으면 감시도 종료한다.
+- 화면의 막힘/폐기를 별도 탭으로 분리했다. 형식 보완 작업은 실행 현황에 ‘검수 응답 형식 보완’으로 표시한다.
+
+운영 복구 결과: 공동묘지/교실 모두 art queued로 이동, 원래 FAIL과 각각 4개 수정 지시·art_revision=0 보존.
+기존 하수도 작업 691은 서비스 재시작 전후 생존. 근거: `verify-shots/super-harness-review-recovery/`.
