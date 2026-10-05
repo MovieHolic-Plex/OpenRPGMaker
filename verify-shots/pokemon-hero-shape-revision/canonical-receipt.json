@@ -1,0 +1,18 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+  "host": "http://127.0.0.1:18584",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "bridgeProject": "",
+  "url": "http://127.0.0.1:18584/",
+  "revision": 33,
+  "sha256": "136e7fedd09380e7bc346060d01e0c4afd78bbd40f1fbc37130da8075b60b13d",
+  "reloadedThroughFreshConnection": true,
+  "mediaByteReloads": [
+    {
+      "id": "oprn_emerald_field_cast_1",
+      "sha256": "e9c9dc0f61d04f71e9cfe685b70f6db9812782bac3c1b779e8449ffe2bd15941"
+    }
+  ],
+  "maps": 72
+}

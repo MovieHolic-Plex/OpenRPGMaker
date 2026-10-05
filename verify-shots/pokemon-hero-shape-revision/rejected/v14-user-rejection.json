@@ -1,0 +1,31 @@
+{
+  "version": "v14",
+  "userVerdict": "rejected",
+  "currentArtBaseline": false,
+  "userText": "아직 많이 이상함.....",
+  "preservedHistoricalReview": "verify-shots/pokemon-hero-refinement-2/quality/",
+  "critic": "hero_shape_review",
+  "sourceSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+  "findings": [
+    {
+      "region": "front",
+      "coordinates": "y10..22 versus y23..30",
+      "defect": "Thirteen head rows over eight lower-body rows; pinched shoulder transition."
+    },
+    {
+      "region": "profile",
+      "coordinates": "chin y22, torso y23..27",
+      "defect": "Narrow exposed neck and insufficient connected torso volume."
+    },
+    {
+      "region": "walking",
+      "coordinates": "legs y28..30",
+      "defect": "Step poses mostly lower the body and delete toe pixels instead of convincing support exchange."
+    },
+    {
+      "region": "shoe contact",
+      "coordinates": "front idle x4/x10,y30",
+      "defect": "Bright one-pixel toes and exposed narrow shin clusters lack grounded foot mass."
+    }
+  ]
+}

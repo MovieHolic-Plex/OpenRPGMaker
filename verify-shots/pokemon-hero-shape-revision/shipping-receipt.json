@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "public": "/home/main/claude-viz/monster-expedition",
+  "backup": "/home/main/claude-viz/monster-expedition-before-hero-shape-v18",
+  "previousReport": "/home/main/claude-viz/emerald-hero-reference-report-v14.html",
+  "exactCopiedFiles": 3292,
+  "projectSha256": "7060e3e682d9a3d7366f24290ac87824116fef51ef0e297c84a18b64cdd50f31",
+  "playerSha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+  "allFileFingerprintSha256": "03bb08433e1be251f486d0f96d9b378e5c78360ce4b7aebf667e030ff4e4c37c",
+  "scope": "Exact verified export with freshly saved hero; unchanged previous compiled engine reused."
+}

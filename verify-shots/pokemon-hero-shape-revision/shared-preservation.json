@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "unchangedPngs": 138,
+  "changedPngs": [
+    "public/assets/emerald-monster/cast/cast-1.png",
+    "public/assets/harnesses/pokemon-character-motion/emerald/hero/editor-charset.png",
+    "public/assets/harnesses/pokemon-character-motion/emerald/hero/review-evidence-0.png",
+    "public/assets/harnesses/pokemon-character-motion/emerald/hero/charset.png",
+    "public/assets/harnesses/pokemon-character-motion/emerald/hero/review-evidence-1.png"
+  ]
+}
