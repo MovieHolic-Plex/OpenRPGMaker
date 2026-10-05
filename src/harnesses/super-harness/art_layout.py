@@ -61,7 +61,12 @@ def build_input(root, request):
     if layout['phase'] == 'calibration' and len(objects) > 4:
         raise ValueError('시점 표본은 기준 기물·저상 기물·벽 모서리 등 최대 4종만 사용합니다.')
     data = Path(request['data'])
-    required = {str(data/name) for name in ('seed.json', 'harness.sqlite', 'harness.sqlite-wal') if (Path(root)/data/name).is_file()}
+    required = {str(data/name) for name in ('seed.json', 'harness.sqlite') if (Path(root)/data/name).is_file()}
+    # A read-only SQLite connection may create a zero-byte WAL. It contains no
+    # transaction and must not invalidate an otherwise identical prepared input.
+    wal = Path(root)/data/'harness.sqlite-wal'
+    if wal.is_file() and wal.stat().st_size:
+        required.add(str(data/'harness.sqlite-wal'))
     if not required: raise ValueError('준비된 시드 또는 native 후보 저장소가 필요합니다.')
     if request['harness'] == 'modern-chipset':
         seed_path = Path(root) / data / 'seed.json'
@@ -83,7 +88,7 @@ def build_input(root, request):
             p = Path('src/harnesses/modern-chipset')/name
             if (Path(root)/p).is_file(): required.add(str(p))
     if not required <= paths:
-        raise ValueError('실행 시드·치수 명세·주문서·준비 판을 도면 해시에 묶어야 합니다.')
+        raise ValueError('실행 시드·치수 명세·주문서·준비 판을 도면 해시에 묶어야 합니다: ' + ', '.join(sorted(required - paths)))
     for key in ('proportions', 'negativeSpace', 'identityCues'):
         if len(str(layout.get(key, '')).strip()) < 20: raise ValueError('도면 설명 누락: '+key)
     snapshot = {'version':VERSION, 'layout':layout, 'layoutRef':request['layout'],

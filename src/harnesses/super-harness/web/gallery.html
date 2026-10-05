@@ -138,17 +138,17 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 .binary-actions{display:flex;gap:10px;margin-top:14px}.binary-actions button{flex:1;padding:14px 10px;font-size:18px;font-weight:700;min-height:60px}.binary-actions small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:#c6d3df}.binary-actions [data-decision=allow]{background:#204d3a;border-color:#4e916e}.binary-actions [data-decision=deny]{background:#40303a;border-color:#926577}.binary-actions [aria-pressed=true]{outline:2px solid #e2eaf3;outline-offset:2px}.binary-actions button:disabled{opacity:.55;cursor:default}
 .example-pictures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.example-pictures figure{margin:0;min-width:0}.example-pictures figcaption{font-size:12px;color:var(--dim);margin-top:5px}.choice-option.denied{border-style:dashed}.decided-examples>summary{cursor:pointer;padding:14px 0;font-size:16px}.choice-panel form{margin-top:20px}.choice-panel form button{padding:12px 20px}.choice-panel .choice-lead{color:#aec3d8}
 @media(max-width:600px){.example-pictures{grid-template-columns:1fr}.binary-actions button{font-size:16px}}
+.user-inbox{padding:24px 20px 4px}.user-inbox h2{margin:0 0 8px;font-size:24px}.user-inbox p{color:#b7cadd;font-size:16px}#operations{margin:14px 20px;border:1px solid var(--line);border-radius:10px;padding:12px}#operations>summary,.operator-controls>summary{cursor:pointer;color:var(--dim)}.operator-controls{margin-left:auto}.operator-controls[open]{display:flex;gap:8px}.s.stop{color:var(--dim)}
 </style>
 </head>
 <body>
 <header>
   <h1>슈퍼하네스</h1>
   <span id="line">불러오는 중…</span>
-  <a class="header-link" id="orders-link" href="/orders">그림 주문서</a>
-  <span class="muted">하루 상한 없음</span>
-  <button id="pause"></button>
+<details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
 </header>
-<section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section>
+<section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
+<details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
@@ -159,8 +159,9 @@ import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내가 볼 그림'], ['wait', '작업 대기'], ['stop', '막힘'], ['discarded', '폐기']];
-let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
+const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','제작 중']];
+const OPERATOR_TABS = [['all','전체 기록'],['wait','대기'],['stop','운영 점검'],['discarded','폐기 기록']];
+let L = null, tab = 'pick', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
@@ -171,15 +172,17 @@ function cardHtml(it) {
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
-function matchesTab(i,g) { return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
+function matchesTab(i,g) { if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
 function render() {
   const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('operator-tabs').innerHTML=OPERATOR_TABS.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('inbox-summary').textContent=n('pick')?`확인할 그림 ${n('pick')}개 · 예시는 Allow / Deny, 결과는 수정 / Allow / Deny로 결정하세요.`:'지금 선택하실 그림은 없습니다. 새 예시나 결과가 준비되면 여기에 표시됩니다.';
   const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
   const list = L.items.filter((i) => matchesTab(i,tab))
     .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
   const grid = $('grid');
-  if (!list.length) { grid.innerHTML = '<p class="empty">없다</p>'; cards.clear(); return; }
+  if (!list.length) { grid.innerHTML = '<p class="empty">'+(tab==='pick'?'지금 하실 일은 없습니다.':'이 목록에 표시할 공간이 없습니다.')+'</p>'; cards.clear(); return; }
   if (grid.querySelector('.empty')) grid.innerHTML = '';
   const keep = new Set(list.map((i) => i.id));
   for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
@@ -192,7 +195,7 @@ function render() {
   });
 }
 
-function setTab(k) { tab = k; localStorage.setItem('sh-tab', k); render(); }
+function setTab(k) { tab = k; render(); }
 
 async function refresh() {
   if (document.hidden) return;
@@ -221,7 +224,9 @@ function paintProgress() {
   const overview = $('activity-overview');
   if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
   const alive = activityState.jobs.filter(j => j.alive);
-  $('line').textContent = `${activityState.paused ? '전체 자동 큐 멈춤' : '전체 자동 큐 실행'} · 실제 실행 ${alive.length}개`;
+  $('line').textContent = `실제 작업 ${alive.length}개 실행 중`;
+  const attention=activityState.items.filter(i=>i.stage==='blocked').length;
+  $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
   const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
   overview.innerHTML = `<h2>현재 실행 ${alive.length}개 · 지정 공간 대기 ${queued.length}개</h2>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
@@ -241,7 +246,7 @@ function paintProgress() {
   const item = activityState.items.find(i => i.id === openId);
   if (!panel || !item) return;
   const detail = activityState.detail?.id === openId ? activityState.detail : item;
-  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '막힘' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
+  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '운영 점검' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
   const expanded = [...panel.querySelectorAll('details[open]')].map(d => d.dataset.section);
   const focused = document.activeElement?.parentElement?.dataset.section;
   panel.innerHTML = `<div class="progress-kicker">${esc(item.title)} · 실시간 진행</div><h2>${status} — ${esc(item.label)}</h2>
@@ -348,7 +353,8 @@ async function documentView(target, path, { modal = false } = {}) {
       } else if (['art-review','art-layout-review','art-context-review','art','blocked'].includes(choice?.stage) && choice.groups.length) {
         renderChoices(panel, choice, refresh, enlarge);
       } else {
-        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 선택할 그림은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p>`;
+        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${detail?.stage==='blocked'?'제작 중 문제가 있어 운영 점검이 필요합니다.':esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 하실 일은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p><button data-back-inbox>확인할 그림 목록으로</button>`;
+        panel.querySelector('[data-back-inbox]').onclick=()=>{closeModal();setTab('pick');};
       }
 
     }
