@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four supplied PNGs, including the native 64px portrait and every native 1x and nearest 3x pose on light, dark and checker backgrounds. The broad black gat, tied dark hair, gray-blue robe, dark inner garment and red belt read consistently as the same Joseon swordsman. The face reads toward the right with two separate eyes and eyebrows; the compact adult SD anatomy remains consistent through the standing poses. Upper-left highlights give the sleeves and robe folds volume, while the blade has a distinct pale metallic edge. Two separate black shoes remain planted at native y=60 in standing frames. No obvious unintended transparency holes or broken major silhouettes are visible; the small background windows beneath bent forearms read as arm-to-torso separation. Windup shows the blade being drawn between the two hands, move spreads the stride, attack extends a horizontal cut, and recover lowers the connected blade. Hit contracts the guard; dead clearly collapses with the hat displaced. Skill preparation lowers the sword behind the body, contact connects the crescent to the actual blade held in the hand, and recovery shows a short exposed blade entering the scabbard with detached residual sparks. Poison changes the mouth and clutches the torso, stun drops the arms with an open mouth and overhead stars, and sleep closes both eyes with small changes in sleeve and robe shape. These are readable pose changes rather than tint variants. This recommendation concerns static pose previews: actual battle timing, interpolation, movement and literal palette-grid authorship cannot be established from these PNGs. Final selection remains with the user.",
+  "issues": [],
+  "binding": "e91a5291975762d89b34fa85894a2bacc198600d2dfff74ead060f166741b41d",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60",
+    "preview/suite/light.png": "1c708d11330854751c1f1a206e708da62962d394085142b71eacd5133d595ed5",
+    "preview/suite/dark.png": "063bc73f811b5ce60f210f5a27572af954b3d1b1fd47f09da6b3a28c113485c5",
+    "preview/suite/checker.png": "478da7737fe077f753133b3ce76fb7a2edd6aa617f80d49e87d1b82fd5699c9f"
+  },
+  "jobId": "ee1ccca8-dc33-4feb-b431-2c7df3e605f2",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T12:18:03.988070+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,144 @@
+[
+  {
+    "id": "idle",
+    "label": "대기",
+    "available": true,
+    "frames": 4,
+    "durationMs": 880,
+    "sequence": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "durations": [
+      220,
+      220,
+      220,
+      220
+    ]
+  },
+  {
+    "id": "attack",
+    "label": "공격",
+    "available": true,
+    "frames": 6,
+    "durationMs": 2140,
+    "sequence": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    "durations": [
+      600,
+      200,
+      100,
+      120,
+      220,
+      900
+    ]
+  },
+  {
+    "id": "hit",
+    "label": "피격",
+    "available": true,
+    "frames": 3,
+    "durationMs": 1780,
+    "sequence": [
+      "idle_a",
+      "hit",
+      "idle_a"
+    ],
+    "durations": [
+      700,
+      180,
+      900
+    ]
+  },
+  {
+    "id": "dead",
+    "label": "쓰러짐",
+    "available": true,
+    "frames": 3,
+    "durationMs": 2550,
+    "sequence": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "durations": [
+      700,
+      150,
+      1700
+    ]
+  },
+  {
+    "id": "skill",
+    "label": "스킬",
+    "available": true,
+    "frames": 5,
+    "durationMs": 2260,
+    "sequence": [
+      "idle_a",
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "durations": [
+      700,
+      260,
+      160,
+      240,
+      900
+    ]
+  },
+  {
+    "id": "poison",
+    "label": "독",
+    "available": true,
+    "frames": 2,
+    "durationMs": 840,
+    "sequence": [
+      "poison_a",
+      "poison_b"
+    ],
+    "durations": [
+      420,
+      420
+    ]
+  },
+  {
+    "id": "stun",
+    "label": "기절",
+    "available": true,
+    "frames": 2,
+    "durationMs": 600,
+    "sequence": [
+      "stun_a",
+      "stun_b"
+    ],
+    "durations": [
+      300,
+      300
+    ]
+  },
+  {
+    "id": "sleep",
+    "label": "수면",
+    "available": true,
+    "frames": 2,
+    "durationMs": 1300,
+    "sequence": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "durations": [
+      650,
+      650
+    ]
+  }
+]

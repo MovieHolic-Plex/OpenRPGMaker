@@ -1,0 +1,43 @@
+{
+  "parent": "wandering-swordsman/eyes-right-v3",
+  "candidate": "wandering-swordsman/eyes-right-v4",
+  "binding": "e91a5291975762d89b34fa85894a2bacc198600d2dfff74ead060f166741b41d",
+  "changedPixels": {
+    "stun_b": 14,
+    "sleep_b": 8,
+    "poison_b": 17,
+    "skill_a": 15,
+    "skill_b": 15,
+    "poison_a": 17,
+    "sleep_a": 8,
+    "skill_c": 15,
+    "stun_a": 14,
+    "attack": 15,
+    "dead": 4,
+    "idle_a": 15,
+    "idle_c": 15,
+    "idle_b": 15,
+    "windup": 15,
+    "hit": 17,
+    "move": 15,
+    "recover": 15
+  },
+  "screenRightNativePixels": 1,
+  "exactChosenRuns": true,
+  "outsideEyesAndPalettePreserved": true,
+  "alphaFootprintPreserved": true,
+  "productionTimingPreserved": true,
+  "sourceArchiveBindingMatches": true,
+  "independentReviewRecommendation": "keep",
+  "userApprovalCreated": false,
+  "selectionPreserved": [
+    "earthen-jar-fiend/motions-v2",
+    "jangseung-spirit/motions-v2",
+    "venom-toad/motions-v2",
+    "wild-boar/motions-v2",
+    "black-cloth-assassin/motions-v1",
+    "cult-sorcerer/motions-v1",
+    "fallen-taoist/motions-v1",
+    "mountain-spearman/motions-v1"
+  ]
+}

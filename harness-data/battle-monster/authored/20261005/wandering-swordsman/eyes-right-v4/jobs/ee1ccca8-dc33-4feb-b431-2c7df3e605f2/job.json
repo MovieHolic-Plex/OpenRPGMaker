@@ -1,0 +1,43 @@
+{
+  "id": "ee1ccca8-dc33-4feb-b431-2c7df3e605f2",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T12:14:10.430964+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/.local/share/oprn/battle-monster-eyes-right-v4/candidates/wandering-swordsman/eyes-right-v4/jobs/ee1ccca8-dc33-4feb-b431-2c7df3e605f2",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eyes-right-v4/candidates/wandering-swordsman/eyes-right-v4/preview/suite/portrait.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eyes-right-v4/candidates/wandering-swordsman/eyes-right-v4/preview/suite/light.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eyes-right-v4/candidates/wandering-swordsman/eyes-right-v4/preview/suite/dark.png",
+    "-i",
+    "/home/main/.local/share/oprn/battle-monster-eyes-right-v4/candidates/wandering-swordsman/eyes-right-v4/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "d0b41c22703a3d9fe188c2251a4ff8565df2e6efd2fa9681cfc696ac156c2040",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60",
+    "preview/suite/light.png": "1c708d11330854751c1f1a206e708da62962d394085142b71eacd5133d595ed5",
+    "preview/suite/dark.png": "063bc73f811b5ce60f210f5a27572af954b3d1b1fd47f09da6b3a28c113485c5",
+    "preview/suite/checker.png": "478da7737fe077f753133b3ce76fb7a2edd6aa617f80d49e87d1b82fd5699c9f"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T12:18:03.795504+00:00"
+}

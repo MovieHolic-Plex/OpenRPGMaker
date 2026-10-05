@@ -72,12 +72,12 @@
     "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7"
   },
   {
-    "key": "wandering-swordsman/eyes-right-v3",
-    "name": "검객 · 눈 오른쪽 이동",
+    "key": "wandering-swordsman/eyes-right-v4",
+    "name": "검객 · 오른쪽 1px 더",
     "nativeCell": 64,
     "poses": 18,
     "phase": "suite",
-    "binding": "804fb38f1647f2f87a50fee599dd80c872f850205032476ee841a1f309517445",
+    "binding": "e91a5291975762d89b34fa85894a2bacc198600d2dfff74ead060f166741b41d",
     "userChoiceRequired": true
   }
 ]
