@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { t } from "@/i18n";
 import type { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createWorkspaceLogs } from "./aiWorkspaceLogs";
 
@@ -8,12 +9,14 @@ type Tab = "chat" | "team";
 /** One live workspace, with each existing session/input kept mounted. */
 export function createAiWorkspace(options: {
   panel: HTMLElement; deck: HTMLElement; body: HTMLElement; commandBar: HTMLElement; outcome: HTMLElement;
-  team: ReturnType<typeof createAiTeamSidebar>; requestOpen(): void; requestFold(): void;
+  team: ReturnType<typeof createAiTeamSidebar>; input: HTMLTextAreaElement; requestOpen(): void; requestFold(): void;
 }) {
   let active: Tab = "chat";
   try { if (localStorage.getItem(TAB_KEY) === "team") active = "team"; } catch { /* Local preference is optional. */ }
+  let explicitTeam = false;
   let wide = false;
   let studio = false;
+  let empty = false;
   const { panel, deck, body, commandBar, outcome, team } = options;
   panel.classList.add("is-workspace");
   const tabs = el("div", { class: "ai-workspace-tabs", attrs: { role: "tablist", "aria-label": "AI 작업 보기" }, dataset: { testid: "ai-workspace-tabs" } });
@@ -28,7 +31,33 @@ export function createAiWorkspace(options: {
   const logs = createWorkspaceLogs(() => team.getLogSelection(), () => options.requestOpen());
   tabs.after(logs.root);
   deck.querySelector(".ai-deck-rail-actions")?.prepend(logs.trigger);
+  const starterButtons: HTMLButtonElement[] = [];
+  const starter = el("section", { class: "ai-workspace-starter", attrs: { hidden: "", "aria-label": "첫 요청 시작하기" }, dataset: { testid: "ai-workspace-starter" }, children: [
+    el("h3", { text: "무엇을 도와드릴까요?" }),
+    el("p", { text: "원하는 일을 적어주세요. 아래 예시로 시작해도 좋아요." }),
+  ] });
+  for (const [label, request] of [
+    ["현재 맵 살펴보기", "현재 맵을 살펴보고, 무엇이 있는지와 개선할 점을 알려줘. 아직 수정하지 마."],
+    ["만들고 싶은 장면 설명하기", "만들고 싶은 장면: "]
+  ]) {
+    const button = el("button", { text: label, attrs: { type: "button" }, on: { click: () => {
+      // A starter is a draft, never an execution or replacement of an existing request.
+      if (!options.input.value.trim()) {
+        options.input.value = t(request);
+        options.input.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      options.input.focus();
+    } } }) as HTMLButtonElement;
+    starterButtons.push(button); starter.append(button);
+  }
+  body.prepend(starter);
+  const syncDraft = () => starterButtons.forEach(button => button.disabled = Boolean(options.input.value.trim()));
+  options.input.addEventListener("input", syncDraft); syncDraft();
   const sync = () => {
+    const count = team.root.querySelectorAll('[data-testid="ai-team-member"]').length;
+    if (!count && active === "team" && !explicitTeam) active = "chat";
+    starter.hidden = !empty || studio;
+    panel.classList.toggle("has-workspace-starter", empty && !studio);
     const showChat = wide || studio || active === "chat";
     const showTeam = !studio && (wide || active === "team");
     body.hidden = !showChat; body.inert = !showChat;
@@ -36,17 +65,17 @@ export function createAiWorkspace(options: {
     commandBar.hidden = !showChat && !team.root.querySelector<HTMLElement>(".ai-team-member-detail")?.hidden;
     commandBar.inert = commandBar.hidden;
     outcome.hidden = !showChat;
-    tabs.hidden = wide || studio;
+    tabs.hidden = wide || studio || (!count && active === "chat");
     panel.dataset.workspaceTab = active;
     chatTab.setAttribute("aria-selected", String(active === "chat"));
     teamTab.setAttribute("aria-selected", String(active === "team"));
     chatTab.tabIndex = active === "chat" ? 0 : -1;
     teamTab.tabIndex = active === "team" ? 0 : -1;
-    const count = team.root.querySelectorAll('[data-testid="ai-team-member"]').length;
     teamTab.textContent = count ? `조수 ${count}` : "조수";
   };
   const select = (tab: Tab, remember = true) => {
     active = tab;
+    explicitTeam = tab === "team";
     if (remember) try { localStorage.setItem(TAB_KEY, tab); } catch { /* Preference only. */ }
     if (tab === "team") team.openFirstMember();
     sync();
@@ -68,9 +97,10 @@ export function createAiWorkspace(options: {
   // Member render events update counts without opening or switching the workspace.
   sync();
   return {
+    setEmpty(on: boolean) { empty = on; syncDraft(); sync(); },
     showChat() { select("chat", false); },
     setStudio(on: boolean) { studio = on; sync(); },
     setWide(on: boolean) { wide = on; team.setEmbedded(!on); if (on) logs.close(); sync(); },
-    dispose() { logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
+    dispose() { options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
   };
 }

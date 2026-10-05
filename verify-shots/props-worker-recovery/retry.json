@@ -1,0 +1,158 @@
+[
+  {
+    "round": 696,
+    "exit": 0,
+    "output": "2026-10-05T13:47:43+09:00 h696-A 후보 파일 복구\n2026-10-05T13:47:50+09:00 h696-B 후보 파일 복구\n기존 그림 보존 · 기술 오류 검수 2개 재개 대기\n",
+    "error": ""
+  },
+  {
+    "round": 697,
+    "exit": 0,
+    "output": "2026-10-05T13:47:57+09:00 h697-A 후보 파일 복구\n2026-10-05T13:48:07+09:00 h697-B 후보 파일 복구\n기존 그림 보존 · 기술 오류 검수 2개 재개 대기\n",
+    "error": ""
+  },
+  {
+    "round": 698,
+    "exit": 1,
+    "output": "2026-10-05T13:48:15+09:00 h698-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h698-A\n"
+  },
+  {
+    "round": 699,
+    "exit": 0,
+    "output": "2026-10-05T13:48:19+09:00 h699-A 후보 파일 복구\n2026-10-05T13:48:26+09:00 h699-B 후보 파일 복구\n기존 그림 보존 · 기술 오류 검수 2개 재개 대기\n",
+    "error": ""
+  },
+  {
+    "round": 700,
+    "exit": 0,
+    "output": "2026-10-05T13:48:34+09:00 h700-A 후보 파일 복구\n2026-10-05T13:48:40+09:00 h700-B 후보 파일 복구\n기존 그림 보존 · 기술 오류 검수 2개 재개 대기\n",
+    "error": ""
+  },
+  {
+    "round": 701,
+    "exit": 1,
+    "output": "2026-10-05T13:48:47+09:00 h701-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h701-A\n"
+  },
+  {
+    "round": 702,
+    "exit": 1,
+    "output": "2026-10-05T13:48:49+09:00 h702-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h702-A\n"
+  },
+  {
+    "round": 703,
+    "exit": 1,
+    "output": "2026-10-05T13:48:51+09:00 h703-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h703-A\n"
+  },
+  {
+    "round": 704,
+    "exit": 1,
+    "output": "2026-10-05T13:48:53+09:00 h704-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h704-A\n"
+  },
+  {
+    "round": 705,
+    "exit": 1,
+    "output": "2026-10-05T13:48:55+09:00 h705-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h705-A\n"
+  },
+  {
+    "round": 706,
+    "exit": 1,
+    "output": "2026-10-05T13:48:57+09:00 h706-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h706-A\n"
+  },
+  {
+    "round": 707,
+    "exit": 1,
+    "output": "2026-10-05T13:48:58+09:00 h707-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h707-A\n"
+  },
+  {
+    "round": 708,
+    "exit": 1,
+    "output": "2026-10-05T13:49:00+09:00 h708-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h708-A\n"
+  },
+  {
+    "round": 709,
+    "exit": 1,
+    "output": "2026-10-05T13:49:02+09:00 h709-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h709-A\n"
+  },
+  {
+    "round": 710,
+    "exit": 0,
+    "output": "2026-10-05T13:49:05+09:00 h710-A 후보 파일 복구\n2026-10-05T13:49:16+09:00 h710-B 후보 파일 복구\n기존 그림 보존 · 기술 오류 검수 2개 재개 대기\n",
+    "error": ""
+  },
+  {
+    "round": 711,
+    "exit": 1,
+    "output": "2026-10-05T13:49:21+09:00 h711-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h711-A\n"
+  },
+  {
+    "round": 712,
+    "exit": 1,
+    "output": "2026-10-05T13:49:23+09:00 h712-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h712-A\n"
+  },
+  {
+    "round": 713,
+    "exit": 1,
+    "output": "2026-10-05T13:49:25+09:00 h713-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h713-A\n"
+  },
+  {
+    "round": 714,
+    "exit": 1,
+    "output": "2026-10-05T13:49:27+09:00 h714-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h714-A\n"
+  },
+  {
+    "round": 715,
+    "exit": 1,
+    "output": "2026-10-05T13:49:29+09:00 h715-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h715-A\n"
+  },
+  {
+    "round": 716,
+    "exit": 1,
+    "output": "2026-10-05T13:49:30+09:00 h716-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h716-A\n"
+  },
+  {
+    "round": 717,
+    "exit": 1,
+    "output": "2026-10-05T13:49:32+09:00 h717-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h717-A\n"
+  },
+  {
+    "round": 718,
+    "exit": 1,
+    "output": "2026-10-05T13:49:33+09:00 h718-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h718-A\n"
+  },
+  {
+    "round": 719,
+    "exit": 1,
+    "output": "2026-10-05T13:49:35+09:00 h719-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h719-A\n"
+  },
+  {
+    "round": 721,
+    "exit": 1,
+    "output": "2026-10-05T13:49:36+09:00 h721-A 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h721-A\n"
+  },
+  {
+    "round": 722,
+    "exit": 1,
+    "output": "2026-10-05T13:49:38+09:00 h722-B 후보 파일 복구\n",
+    "error": "Traceback (most recent call last):\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 664, in <module>\n    main()\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 653, in main\n    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)\n                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/main/z-project/rpg-zzu-super-harness-unified/src/harnesses/interior-props/harness.py\", line 469, in retry_review_errors\n    raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))\nValueError: 기존 그림 기계 검사 실패: h722-B\n"
+  }
+]

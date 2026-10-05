@@ -19,14 +19,27 @@ export function sharedCharacterAttributes(row: SharedCharacter): GraphicAttribut
   const d = row.description;
   return { ...d.attributes, ...(d.gender ? { gender: d.gender.slice(0, 80) } : {}), ...(d.role ? { role: d.role.slice(0, 80) } : {}) };
 }
+/** Index visible traits, keeping the author's full description in the library. */
+function visibleDescription(value: string): string {
+  return value.split(/;|\.(?:\s+|$)/u)
+    .map(part => part.trim().replace(/별도 갑피 없이\s*/gu, ''))
+    .filter(part => part && !/(?:없음|제거했다)$/u.test(part))
+    .join('; ');
+}
 export function sharedCharacterSemantics(): CharsetSemanticEntry[] {
   const ages: Record<string, CharsetAge> = { child:'child', youth:'youth', middle:'middle', elder:'elder', 어린이:'child', 청년:'youth', 중년:'middle', 노인:'elder', 노년:'elder' };
   return sharedCharacters().map(row => {
     const d = row.description, a = sharedCharacterAttributes(row);
     const gender = /^(여|여성|female)$/.test(a.gender ?? '') ? 'female' : /^(남|남성|male)$/.test(a.gender ?? '') ? 'male' : 'none';
+    // kind is an authored description, often a sentence rather than the exact
+    // search tag. Do not infer species from clothing, hair, or suggested places.
+    const kind = a.kind ?? '';
+    const monster = /몬스터|마수|monster/i.test(kind) || (/짐승/.test(kind) && /몬스터/.test(d.role ?? ''));
+    const categoryTags = monster ? ['몬스터'] : /^(동물|animal)$/i.test(kind.trim()) ? ['동물'] : [];
     return { textureKey:row.assetId, characterIndex:row.characterIndex, spriteType:'uploaded', label:d.label, gender,
-      ...(a.age && ages[a.age] ? {age:ages[a.age]} : {}), appearance:d.appearance,
-      tags:[...new Set([...(d.tags ?? []), ...Object.values(a), d.role, d.fits, d.appearance].filter((value): value is string => typeof value === 'string' && !!value))] };
+      ...(a.age && ages[a.age] ? {age:ages[a.age]} : {}), appearance:d.appearance ? visibleDescription(d.appearance) : undefined,
+      tags:[...new Set([...categoryTags, ...(d.tags ?? []), ...Object.values(a), d.role, d.fits, d.appearance]
+        .filter((value): value is string => typeof value === 'string' && !!value).map(visibleDescription).filter(Boolean))] };
   });
 }
 /** Add descriptions without changing authored events, residents, or manual face mappings. */

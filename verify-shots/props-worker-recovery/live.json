@@ -1,0 +1,693 @@
+{
+  "at": "2026-10-05T04:55:18.379Z",
+  "pool": {
+    "alive": true,
+    "queued": 31,
+    "running": 29,
+    "par": 32,
+    "attempts": 3,
+    "reviewEffort": "medium",
+    "model": "gpt-6.1-sol",
+    "effort": "medium"
+  },
+  "statuses": {
+    "ready": 1,
+    "drawing": 31,
+    "done": 541
+  },
+  "recent": [
+    {
+      "id": "cobbler bench",
+      "round": 710,
+      "canvas": [
+        16,
+        32
+      ],
+      "status": "ready",
+      "runs": [
+        {
+          "status": "done",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "done",
+          "phase": "review",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "birthday cake table",
+      "round": 696,
+      "canvas": [
+        16,
+        32
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "done",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "dog bed",
+      "round": 697,
+      "canvas": [
+        16,
+        16
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "sled",
+      "round": 699,
+      "canvas": [
+        32,
+        16
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "rum barrel",
+      "round": 700,
+      "canvas": [
+        16,
+        32
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "done",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "round library shelf",
+      "round": 720,
+      "canvas": [
+        80,
+        80
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "stretcher",
+      "round": 722,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": "size: 16x48 ≠ resize.json 캔버스 32x64"
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": "size: 16x48 ≠ resize.json 캔버스 32x64"
+        }
+      ]
+    },
+    {
+      "id": "shopping cart",
+      "round": 723,
+      "canvas": [
+        32,
+        32
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": "size: 16x32 ≠ resize.json 캔버스 32x32"
+        }
+      ]
+    },
+    {
+      "id": "hospital bed",
+      "round": 724,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": "size: 16x48 ≠ resize.json 캔버스 32x64"
+        },
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "katana rack",
+      "round": 725,
+      "canvas": [
+        32,
+        32
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "review",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "med bay bed",
+      "round": 726,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "review",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "conveyor belt",
+      "round": 727,
+      "canvas": [
+        48,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "review",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": "size: 32x32 ≠ resize.json 캔버스 48x48"
+        }
+      ]
+    },
+    {
+      "id": "fire extinguisher",
+      "round": 728,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "ski rack",
+      "round": 729,
+      "canvas": [
+        16,
+        32
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "treadmill",
+      "round": 730,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "dumbbell rack",
+      "round": 731,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "bench press",
+      "round": 732,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "operating table",
+      "round": 733,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "shower booth",
+      "round": 734,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "running",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "broken bed",
+      "round": 735,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "gargoyle statue",
+      "round": 736,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "healer cot",
+      "round": 737,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "dragon egg incubator",
+      "round": 738,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "tanner frame",
+      "round": 739,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "glass furnace",
+      "round": 740,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "knight bed",
+      "round": 741,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "living vine wardrobe",
+      "round": 742,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "orc war drum",
+      "round": 743,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "vampire coffin",
+      "round": 744,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "angel statue",
+      "round": 745,
+      "canvas": [
+        32,
+        64
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "cursed idol",
+      "round": 746,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    },
+    {
+      "id": "cold jade bed",
+      "round": 747,
+      "canvas": [
+        32,
+        48
+      ],
+      "status": "drawing",
+      "runs": [
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        },
+        {
+          "status": "queued",
+          "phase": "draw",
+          "error": ""
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

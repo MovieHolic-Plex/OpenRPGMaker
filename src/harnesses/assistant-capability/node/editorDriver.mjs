@@ -124,6 +124,11 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
   // Wait for the editor's own rendered tile residency before taking evidence.
   await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
   const welcome=page.getByTestId('editor-welcome-skip');if(await welcome.isVisible().catch(()=>false))await welcome.click();
+  // A fresh editor now starts with the conversation folded. Open it through
+  // the visible restore control before using the actual input/settings UI.
+  const restore = page.getByTestId('ai-collapsed-restore');
+  if (await restore.isVisible().catch(()=>false)) await restore.click();
+  await page.getByTestId('ai-input').waitFor({state:'visible',timeout:120000});
   return { page,context,loads };
 }
 async function saveThroughUi(page) {

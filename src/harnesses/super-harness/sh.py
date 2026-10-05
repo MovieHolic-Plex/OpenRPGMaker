@@ -34,6 +34,8 @@ import store  # noqa: E402
 import gates  # noqa: E402
 import planning_details  # noqa: E402
 import art_execution  # noqa: E402
+import art_demo
+import keyword_seeds
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
 import art_repair  # noqa: E402
@@ -279,8 +281,9 @@ def hold_for_requirements(cid):
     return False
 
 
-def release_waiting():
+def release_waiting(ids=None):
     for c in store.concepts("stage='waiting'"):
+        if ids is not None and c['id'] not in ids: continue
         reqs = [store.concept(r) for r in c['requires']]
         if any(r and r['stage'] not in ('done', 'discarded', 'blocked') for r in reqs):
             continue
@@ -404,7 +407,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -734,6 +737,9 @@ def on_art(meta, code, result):
 
 
 def advance_art_review(cid):
+    if art_demo.required(DATA, cid):
+        store.update_concept(cid, stage='art-demo', status='queued', note='실제 타일로 공간 전체 데모 조립 대기')
+        return
     state = art_choices.view(DATA, cid)
     if art_repair.finish_calibration(DATA, cid, state, write_json, art_feedback.limits): return
     if not state['groups']:
@@ -747,6 +753,42 @@ def advance_art_review(cid):
                                  note='새 후보 조립 예시 독립 검수 대기')
         else:
             art_feedback.queue_repair(DATA, cid)
+
+
+def start_art_demo(c):
+    cid = c['id']
+    try:
+        inputs = art_demo.prepare(DATA, cid)
+        output = cdir(cid, 'art-demo-result.json')
+        if os.path.exists(output): os.remove(output)
+        prompt = fill(prompt_template('art-demo.md'), INPUT=cdir(cid, 'art-demo-input.json'), OUTPUT=output, ROOT=inputs['root'], RENDERER=os.path.join(HERE, 'art_demo.py'))
+        prompt += art_choices.example_feedback_prompt(c)
+        error = read_json(cdir(cid, 'art-demo-error.json'), {})
+        if error: prompt += '\n지난 데모 조립의 기술 오류를 고친다: ' + json.dumps(error, ensure_ascii=False)
+        start_codex(cid, 'art-demo', 'assemble', prompt, output, write_root=inputs['root'])
+        store.update_concept(cid, status='running', note='실제 타일로 공간 전체 데모 조립 중')
+    except (ValueError, OSError, KeyError, TypeError) as error:
+        store.update_concept(cid, stage='blocked', status='idle', note='데모 입력 준비 오류', reasons=[str(error)])
+
+
+def on_art_demo(meta, code, result):
+    cid = meta['concept']
+    if store.concept(cid)['stage'] != 'art-demo': return
+    try:
+        if code != 0: raise ValueError(f'데모 조립 작업 종료 {code}')
+        art_demo.accept(DATA, cid, result)
+    except (ValueError, OSError, KeyError, TypeError) as error:
+        generation = read_json(cdir(cid, 'art-demo-input.json'), {}).get('generation')
+        attempts = read_json(cdir(cid, 'art-demo-errors.json'), {}) or {}
+        count = attempts.get(generation, 0) + 1
+        attempts[generation] = count
+        write_json(cdir(cid, 'art-demo-errors.json'), attempts)
+        write_json(cdir(cid, 'art-demo-error.json'), {'error': str(error), 'attempt': count, 'result': result})
+        store.update_concept(cid, stage='art-demo' if count < 3 else 'blocked', status='queued' if count < 3 else 'idle',
+                             note='데모 조립 오류 수정 대기' if count < 3 else '데모 조립 실행 오류', reasons=[str(error)])
+        return
+    store.log(cid, '실제 타일 공간 전체 데모 렌더 완료 → 독립 검수')
+    advance_art_review(cid)
 
 
 def start_art_context_review(c):
@@ -808,6 +850,9 @@ def on_art_context_review(meta, code, result):
     for gid, candidates in report['groups'].items(): merged.setdefault(gid, {}).update(candidates)
     current['version'] = 1
     write_json(cdir(cid, 'art-context-review.json'), current)
+    if art_demo.required(DATA, cid):
+        advance_art_review(cid)
+        return
     state = art_choices.view(DATA, cid)
     if art_repair.finish_calibration(DATA, cid, state, write_json, art_feedback.limits): return
     if all(any(c['ready'] for c in g['candidates']) for g in state['groups']):
@@ -1185,11 +1230,12 @@ def tick():
     if store.setting('paused') == '1':
         return
     max_codex = int(store.setting('max_codex'))
+    keyword_seeds.tick(sys.modules[__name__])
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
-    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','build','review','probe','bake','unbake')")
+    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','art-demo','build','review','probe','bake','unbake')")
     for c in store.concepts("stage='discovered'"):
         if len([a for a in active if a['stage'] != 'bake']) >= int(store.setting('max_active')):
             break
@@ -1227,6 +1273,8 @@ def tick():
             start_material_review(c)
         elif c['stage'] == 'art-layout-review' and codex_free():
             start_art_layout_review(c)
+        elif c['stage'] == 'art-demo' and codex_free():
+            start_art_demo(c)
         elif c['stage'] == 'art-context-review' and codex_free():
             start_art_context_review(c)
         elif c['stage'] == 'build' and codex_free():
@@ -1296,6 +1344,11 @@ def action(body):
         store.set_setting('paused', '1' if kind == 'pause' else '0')
         store.log(None, '사람: 전체 멈춤' if kind == 'pause' else '사람: 다시 돌림')
         return {'ok': True}
+    if kind in ('start-seed', 'pause-seed', 'resume-seed'):
+        try:
+            return keyword_seeds.action(body)
+        except (ValueError, TypeError) as error:
+            return {'ok': False, 'error': str(error)}
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
@@ -1355,7 +1408,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'result-review': 'pick', 'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'result-review': 'pick', 'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'art-demo': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1384,6 +1437,8 @@ def plain_status(c):
         return '시대·필수 칩 독립 검수'
     if stage == 'art-layout-review':
         return '제작 전 배치·비례·여백 검수'
+    if stage == 'art-demo':
+        return '실제 타일 공간 데모 조립 중' if c['status'] == 'running' else '공간 데모 조립 대기'
     if stage == 'art-context-review':
         return '조립 예시 독립 검수 중' if c['status'] == 'running' else '조립 예시 검수 대기'
     if stage == 'art-review':
@@ -1393,6 +1448,7 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
+        if choices.get('demo') and choices['complete']: return '공간 데모 Allow 저장 완료'
         return '공용 등록 연결 필요 · 실행 예약 없음' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
         if c['status'] == 'running':
@@ -1453,6 +1509,14 @@ def planning_images(cid):
     return verified_images(cdir(cid), manifest.get('images'), '기획도', '기획도')
 
 
+def demo_images(cid):
+    manifest = read_json(cdir(cid, 'art-choices.json'), {}) or {}
+    if manifest.get('demoVersion') != 1: return []
+    root = os.path.join(DATA, 'art-worktrees', cid)
+    return [im for g in manifest.get('groups', []) for c in g['candidates']
+            for im in verified_images(root, c['images'], '실제 타일 공간 데모 · 검수 상태 확인', '공간 데모')]
+
+
 def candidate_images(cid):
     result = read_json(cdir(cid, 'art-result.json'), {}) or {}
     if not isinstance(result, dict) or not isinstance(result.get('candidates'), list):
@@ -1463,7 +1527,7 @@ def candidate_images(cid):
 
 
 def before_build(c):
-    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review', 'art-layout-review', 'art-context-review') or (
+    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review', 'art-layout-review', 'art-context-review', 'art-demo') or (
         c['stage'] == 'blocked' and not gates.material_report(cdir(c['id']))['ok'])
 
 
@@ -1472,7 +1536,7 @@ def gallery_list():
     for c in store.concepts():
         card = read_json(cdir(c['id'], 'card.json'), {}) or {}
         if before_build(c):
-            imgs = candidate_images(c['id']) or planning_images(c['id'])
+            imgs = demo_images(c['id']) or candidate_images(c['id']) or planning_images(c['id'])
         else:
             imgs = example_images(c['id'])
         status = plain_status(c)
@@ -1707,8 +1771,8 @@ class Handler(BaseHTTPRequestHandler):
             page = 'gallery.html' if url.path != '/detail' else 'index.html'
             with open(os.path.join(HERE, 'web', page), 'rb') as f:
                 return self.send(200, f.read(), 'text/html; charset=utf-8')
-        if url.path == '/art-choice.js':
-            with open(os.path.join(HERE, 'web', 'art-choice.js'), 'rb') as f:
+        if url.path in ('/art-choice.js', '/keyword-seeds.js'):
+            with open(os.path.join(HERE, 'web', url.path[1:]), 'rb') as f:
                 return self.send(200, f.read(), 'text/javascript; charset=utf-8')
         if url.path == '/markdown.js':
             try:
@@ -1718,6 +1782,8 @@ class Handler(BaseHTTPRequestHandler):
         q = parse_qs(url.query)
         if url.path == '/api/activity':
             return self.send(200, activity.snapshot(q.get('id', [None])[0]))
+        if url.path == '/api/seeds':
+            return self.send(200, keyword_seeds.snapshot())
         if url.path == '/api/list':
             return self.send(200, gallery_list())
         if url.path == '/api/art-choices':
