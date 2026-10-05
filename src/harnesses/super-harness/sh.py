@@ -1389,12 +1389,14 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
-        return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
+        return '공용 등록 연결 필요 · 실행 예약 없음' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
-        if c.get('art_revision'):
-            return f'피드백 반영 재생성 {c["art_revision"]}차 ' + ('진행 중' if c['status'] == 'running' else '대기 · 전체 멈춤' if store.setting('paused') == '1' else '대기')
-        orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
-        return '칩 후보 제작 중' if c['status'] == 'running' else f'부족분 {len(orders)}건 — 칩 제작 대기'
+        if c['status'] == 'running':
+            active = store.jobs("concept=? AND status='running'", (c['id'],))
+            if any(j['kind'] == 'art-native' and activity.process_alive(j) for j in active):
+                return '실제 칩 제작·검수 중'
+            return '그림 주문서·제작 입력 준비 중'
+        return '도면 반려 · 배치 명세 수정 차례 대기' if c.get('note', '').startswith('도면 반려') else '그림 주문서·제작 입력 준비 차례 대기'
     if stage == 'build':
         return f'고치는 중 ({n}번째)' if c['reasons'] or n > 1 else '만드는 중'
     return {'review': '검수 중', 'probe': '조수에게 시켜 보는 중', 'bake': '에디터에 넣는 중', 'unbake': '에디터에서 빼는 중',
@@ -1470,7 +1472,7 @@ def gallery_list():
         else:
             imgs = example_images(c['id'])
         status = plain_status(c)
-        group = 'stop' if status.startswith('후보 수정 필요') else 'wait' if c['stage'] == 'art-review' and status.startswith('선택 완료') else GROUP.get(c['stage'], 'work')
+        group = 'stop' if status.startswith('후보 수정 필요') else 'stop' if c['stage'] == 'art-review' and status.startswith('공용 등록 연결 필요') else GROUP.get(c['stage'], 'work')
         needs_user, choices = False, {}
         if c['stage'] in ('art-review', 'result-review'):
             try:
