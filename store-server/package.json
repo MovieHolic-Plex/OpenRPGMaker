@@ -1,0 +1,24 @@
+{
+  "name": "oprn-store-server",
+  "private": true,
+  "version": "0.1.0",
+  "description": "OPRN 에셋 스토어 서버 — 둘러보기·업로드·검증·심사 API 와 웹 화면",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node dist/server.mjs",
+    "test": "node scripts/run-tests.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "seed": "node scripts/seed.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.9.0"
+  }
+}

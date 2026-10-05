@@ -274,8 +274,10 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
     for (const sha of blobs.keys()) if (!used.has(sha)) errors.push(`쓰이지 않는 blob 이 있습니다: ${sha.slice(0, 12)}`);
   }
 
-  if (!Array.isArray(m.previews) || m.previews.length === 0 || m.previews.length > STORE_LIMITS.previews) {
-    errors.push(`미리보기는 1~${STORE_LIMITS.previews}장이어야 합니다.`);
+  // 그림이 든 팩은 표지가 있어야 한다. 음원만 든 팩은 표지 없이 올 수 있다(화면이 음표로 대신한다).
+  const hasImage = Array.isArray(m.blobs) && m.blobs.some((b) => isRecord(b) && typeof b.mime === "string" && b.mime.startsWith("image/"));
+  if (!Array.isArray(m.previews) || m.previews.length > STORE_LIMITS.previews || (hasImage && m.previews.length === 0)) {
+    errors.push(`미리보기는 ${hasImage ? 1 : 0}~${STORE_LIMITS.previews}장이어야 합니다.`);
   } else {
     for (const sha of m.previews) {
       const blob = isSha256(sha) ? blobs.get(sha) : undefined;
