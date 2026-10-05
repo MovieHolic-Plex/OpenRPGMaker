@@ -1,0 +1,68 @@
+{
+  "nativeFrames": 18,
+  "binding": "3e3a0faf25c4052a712bf56d8d8793f66da4831cc22439bb7a81c91a7fd97eb4",
+  "pixelsPass": true,
+  "independentReview": {
+    "recommendation": "rework",
+    "summary": "Viewed all four supplied actual PNGs, including the native 64px portrait and the 1x/nearest 3x poses on light, dark and checker backgrounds. The beardless human swordsman, tied long black hair, rightward action, separated legs and grounded boot soles at y=60 are readable. Upper-left sleeve and hair highlights establish volume; cloth shadows and bright metal distinguish materials. No obvious accidental interior transparency or broken body outline is visible, although black hair and boots lose separation on the dark background. Windup, wide-step move, extended attack, lowered recover, recoil hit and prone dead have distinct silhouettes. The appearance misses the requested pale gray-blue long dopo and teal sash: it reads as a short navy coat with a red-brown belt. The exposed sword reads as a short dagger. Skill preparation/contact/recovery have different authored-looking pixel arrangements rather than simple tints; the silver-blue crescent in skill_b visibly joins the actual blade around (56,33), and skill_c has short broken remnants. However, skill_c does not clearly show resheathing. Poison has a crouch change and hollow yellow particles; stun has star particles and a small sway; sleep has closed eyelid clusters and a small body change. Poison and especially sleep remain weakly identified at 1x. These are static pose previews, not battle footage: timing, dash travel, looping continuity and runtime ground placement cannot be approved. PNG appearance cannot verify literal pxgrid authorship, absence of synthesized poses or the author model. This is a visual recommendation, not a user selection or approval; geometry compliance alone does not resolve the visual issues.",
+    "issues": [
+      {
+        "pose": "idle_a",
+        "x": 30,
+        "y": 46,
+        "message": "The hem cluster around x=20..40,y=42..51 exposes both trouser legs high on the thigh and reads as a short dark tunic. Reauthor the coat with a longer split/skirt silhouette toward the knees and broader pale gray-blue lit planes; carry the same garment length and material through every upright pose while preserving leg separation and y=60 soles."
+      },
+      {
+        "pose": "idle_a",
+        "x": 32,
+        "y": 40,
+        "message": "The waist band at x=21..35,y=39..41 is visibly red/rust, conflicting with the teal sash. Replace its red-brown clusters with coordinated teal light/base/shadow clusters across the suite, keeping the brown scabbard and skin separate and preserving the 18-color limit."
+      },
+      {
+        "pose": "attack",
+        "x": 55,
+        "y": 31,
+        "message": "The exposed horizontal blade at roughly x=51..62,y=30..33 is only about 12px long and reads as a dagger beside the adult body and long scabbard. Reposition the attacking arm/body left enough to author a substantially longer continuous single-edged blade within the 64px cell and 1px edge margin; retain a distinct grip/guard connected to the hand and consistent weapon proportions in idle, move, recover and skill poses."
+      },
+      {
+        "pose": "skill_c",
+        "x": 27,
+        "y": 45,
+        "message": "The short silver blade ends around (27,45) and continues visually into a brown diagonal down-left, while the other hand still holds another brown scabbard at x=38..43,y=45..50. This reads as two brown shafts rather than blade entering scabbard. Reauthor the two wrists and tool clusters so one continuous silver blade tip aligns with the single scabbard mouth beneath the other hand; remove the misleading second brown continuation and retain the detached short afterglow remnants."
+      },
+      {
+        "pose": "poison_a",
+        "x": 47,
+        "y": 31,
+        "message": "The bright yellow square ring at x=45..50,y=29..33 reads as a floating coin/spark; together with the upright guard it gives weak poison identification beside the yellow stun stars. Reshape this ring and the corresponding poison_b rings into irregular rising bubbles or vapor curls, and make the body visibly ill with a bowed head and hand pressing the abdomen, preserving a coherent sickness progression between the pair."
+      },
+      {
+        "pose": "sleep_a",
+        "x": 30,
+        "y": 28,
+        "message": "Closed eyelid pixels are present at y=24, but the head, shoulders and hands still hold an alert upright guard at 1x. Reauthor the chin/neck and shoulder clusters around x=24..37,y=22..34 into a clear forward droop, lower the wrists and relax the weapon angle so sleep reads from the silhouette as well as the two-pixel eyelids."
+      },
+      {
+        "pose": "sleep_b",
+        "x": 31,
+        "y": 32,
+        "message": "The second sleep state largely preserves the upright guard with a small downward head/body change; its mouth pixel alone does not establish a readable breathing beat. Follow the repaired sleep_a slumped anatomy with a subtle authored shoulder/chest rise and fall, matching the closed-eye face and relaxed hand/tool connections while keeping both soles grounded at y=60."
+      }
+    ],
+    "binding": "3e3a0faf25c4052a712bf56d8d8793f66da4831cc22439bb7a81c91a7fd97eb4",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "5c207b4d0e3f0295053126f599dd5ee2af1e6639354704cbe14ace2faaf3fd90",
+      "preview/suite/light.png": "2760321ed8b5e5d19d5b586e679a131e42bff94d774228805d6e3036cda9b062",
+      "preview/suite/dark.png": "7087b7f64df06b03d572ed75efbf864cf6929f2d4cb3aa0018ade9498902c3fa",
+      "preview/suite/checker.png": "f064d0ab166e189f1bc927aad851f712e61fb334c29c68aa22f5f6d5b9465254"
+    },
+    "jobId": "8170ba96-0efc-4442-90eb-6c741635c19c",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-05T04:53:41.423214+00:00",
+    "userApproved": false
+  },
+  "newCandidateChoice": "pending",
+  "oldCandidateChoice": "discard"
+}

@@ -5,6 +5,7 @@ let items = [], selected = null, filter = 'pending', busy = false;
 let playing = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 let rendered = '', modification = null, toastTimer, uiVersion = '';
 const restoredFilter = sessionStorage.getItem('monster-review-filter');
+const requestedCandidate = new URLSearchParams(location.search).get('candidate');
 if (['pending','allow','deny','history'].includes(restoredFilter)) filter = restoredFilter;
 const labels = {pending:'검토 대기',allow:'Allow · 선택 반영됨',modify:'Modify · 수정 요청',deny:'Deny · 제외됨'};
 const imageCache = new Map();
@@ -96,7 +97,14 @@ async function refresh(force=false){
   const fingerprint=JSON.stringify(data);
   const count=data.working+(data.making??0);
   $('activity').textContent=count?`작업 ${count}개 진행 중 · 선택은 즉시 반영`:'그림과 움직임을 보고 골라주세요';
-  if(fingerprint!==rendered||force){if(!rendered&&!restoredFilter&&!data.items.some(i=>i.choice==='pending')&&data.items.some(i=>i.choice==='allow'))filter='allow';items=data.items;rendered=fingerprint;await render();}
+  if(fingerprint!==rendered||force){
+    if(!rendered){
+      const requested=data.items.find(i=>i.key===requestedCandidate);
+      if(requested){selected=requested.key;filter=requested.choice==='modify'||(requested.choice==='allow'&&requested.active===false)?'history':requested.choice;}
+      else if(!restoredFilter&&!data.items.some(i=>i.choice==='pending')&&data.items.some(i=>i.choice==='allow'))filter='allow';
+    }
+    items=data.items;rendered=fingerprint;await render();
+  }
 }
 function requestId(){return crypto.randomUUID?.()??'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const n=Math.floor(Math.random()*16);return(c==='x'?n:(n&3|8)).toString(16);});}
 async function decide(action,note='',target=row()){

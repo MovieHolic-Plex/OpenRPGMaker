@@ -1,0 +1,78 @@
+{
+  "originalLiteralSourceFrames": 18,
+  "allNativeRGBAAndTimingChecksPassed": true,
+  "scenes": [
+    {
+      "id": "idle",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 4,
+      "gifSha256": "08e327fb2c3c1e87e2fd9175cc8edf889b47b310471bf0eee5f0dc1256203d65"
+    },
+    {
+      "id": "attack",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 6,
+      "gifSha256": "5fb08a88099a63a9e03629fd3758d96d40689dc22933699332eff232740a87f2"
+    },
+    {
+      "id": "hit",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 3,
+      "gifSha256": "6f969544d4155575ee29f00d4a92e05d7e3ac8627f7ddb69ec1d21147ab6dafb"
+    },
+    {
+      "id": "dead",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 3,
+      "gifSha256": "19e4a11a6111e7f48dce02fd15a77c63249a3d5bfee071b7259910a4b34a9770"
+    },
+    {
+      "id": "skill",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 5,
+      "gifSha256": "25b26f3bb494724356acb41b6f59ffc8830c2d576f24d6cee1975cf63a065d4f"
+    },
+    {
+      "id": "poison",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 2,
+      "gifSha256": "9371ea2450fcfe526ec82ac8c8d3ef40e832760d16dd812bb3a361a0b6c077d2"
+    },
+    {
+      "id": "stun",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 2,
+      "gifSha256": "909fddba5a0147f87837eb833bb0c10522e1cbd8f93f00ca4ba7902686a91691"
+    },
+    {
+      "id": "sleep",
+      "nativeSize": [
+        64,
+        64
+      ],
+      "decodedFrames": 2,
+      "gifSha256": "36828fd1a34a1746dc3c7faa01bcfa714b99873f032f2de29cb847a9a8254abd"
+    }
+  ]
+}

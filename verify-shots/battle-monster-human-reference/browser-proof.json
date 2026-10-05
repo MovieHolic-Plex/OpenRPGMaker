@@ -1,0 +1,42 @@
+{
+  "key": "wandering-swordsman/reference-v3",
+  "choice": "pending",
+  "phase": "suite",
+  "ready": true,
+  "motions": [
+    {
+      "id": "idle",
+      "available": true
+    },
+    {
+      "id": "attack",
+      "available": true
+    },
+    {
+      "id": "hit",
+      "available": true
+    },
+    {
+      "id": "dead",
+      "available": true
+    },
+    {
+      "id": "skill",
+      "available": true
+    },
+    {
+      "id": "poison",
+      "available": true
+    },
+    {
+      "id": "stun",
+      "available": true
+    },
+    {
+      "id": "sleep",
+      "available": true
+    }
+  ],
+  "comparisonImages": 16,
+  "errors": []
+}

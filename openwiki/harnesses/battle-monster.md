@@ -82,7 +82,9 @@ npm run harness -- battle-monster wave --work qa-runs/battle-monster-extra-motio
 선택과 파일 준비는 별도 상태다. Allow/Deny를 먼저 화면과 ledger에 반영하고, 포장 중에도
 Modify/Deny로 바꿀 수 있다. 새 선택은 이전 요청을 superseded/cancelled로 기록하며, 워커가
 이전 요청을 마쳐도 새 선택을 덮어쓰지 않는다. 재시작 때도 오래된 요청을 취소한다.
-대시보드 Allow에는 종마다 가장 최근에 선택한 유효 버전 하나를 표시한다. 과거 Allow 버전은
+대시보드 Allow에는 실제 ledger 사건을 재생한 종별 현재 버전 하나를 표시한다.
+현재 버전의 Deny/Modify가 이전 Allow를 자동 복귀시키지 않으며, 경쟁 후보를 Deny한 경우는
+현재 선택을 보존한다. 과거 Allow 버전은
 지난 결과에, Deny는 별도 제외 목록에 남는다. `/api/state.selection`은 현재 선택의 투영이며,
 원본 선택 기록을 삭제하지 않는다. 파일 준비 실패가 선택을 철회하지 않는다.
 idle Allow의 추가 동작은 별도 child 후보로 만들고, 선택된 palette/idle은 보존한다.
