@@ -6,8 +6,10 @@ AI는 자유롭게 도트를 만들고 사용자는 걷는 GIF를 보며 **남�
 ### 에디터 전체 원본 100종 변주
 
 ```bash
-npm run harness -- charset-actor produce --all-sources --count 100 --par 2 --max-review-pending 12
+npm run harness -- charset-actor produce --all-sources --distinct-sources --count 100 --par 2 --max-review-pending 12
 ```
+
+「에디터 전체 원본으로 다양하게」는 같은 원본 픽셀을 한 주문에 한 번씩만 배정하고 몸 형태가 다른 원본부터 고른다. CLI는 `--distinct-sources`, API는 `distinctSources: true`로 지정한다. 원본 수보다 많이 요청하면 같은 원본을 자동 반복하지 않고 사용 가능한 수를 알려준다. 서로 다른 ID여도 12프레임 RGBA가 같으면 같은 원본이다. 실제 배정은 manifest의 `diversityPlan`에 기록한다. 원본 선택이 다르다는 근거이며 산출물의 미감/종 차이를 보장하는 검사는 아니다.
 
 ### 검토를 기다리지 않는 연속 제작
 

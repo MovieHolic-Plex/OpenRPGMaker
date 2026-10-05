@@ -101,7 +101,7 @@ def _create(options):
     par = int(options.get('par', 2))
     batch_size = int(options.get('batchSize', 2))
     if not 1 <= count <= 500 or not 1 <= par <= MAX_ARTISTS or not 1 <= batch_size <= 8:
-        raise ValueError('개수 1~500, 동시 작업 1~4, 묶음 크기 1~8')
+        raise ValueError(f'개수 1~500, 동시 작업 1~{MAX_ARTISTS}, 묶음 크기 1~8')
     reserve_artists(par)
     concepts = options.get('concepts', [])
     if not isinstance(concepts, list) or len(concepts) > 500 or any(not isinstance(c, str) or not c.strip() or len(c) > 500 for c in concepts):
@@ -145,6 +145,7 @@ def _create(options):
 def _create_catalog(options, count, par):
     import catalog_sources as S
     import recipes as R
+    distinct = options.get('distinctSources', True)
     if any(options.get(k) for k in ('image', 'reference', 'creatures', 'seedRun', 'recipe')):
         raise ValueError('에디터 전체 원본 제작에 다른 원본 방식을 섞지 않습니다')
     animal_count = min(8, count // 12)
@@ -174,6 +175,9 @@ def _create_catalog(options, count, par):
         root.mkdir()
         prepared.append((root, par - bool(animal_count)))
         manifest = R.bind(root, sources['id'], count-animal_count)
+        if distinct:
+            import distinct_sources
+            distinct_sources.spread_catalog(manifest, root / 'recipe', recipe)
         S.enrich_manifest(manifest, recipe)
         for index, row in enumerate(manifest['characters']):
             if options.get('prompt'):
@@ -191,6 +195,11 @@ def _create_catalog(options, count, par):
             animal_root.mkdir()
             prepared.append((animal_root, 1))
             animal_manifest = R.bind(animal_root, animals['id'], animal_count, options.get('prompt', ''))
+            if distinct:
+                distinct_sources.validate(animal_manifest, animal_root / 'recipe',
+                                          R.load(animal_root / 'recipe', check_tools=True))
+                if set(manifest['diversityPlan']['pixelHashes']) & set(animal_manifest['diversityPlan']['pixelHashes']):
+                    raise ValueError('일반 원본과 동물 원본의 픽셀이 겹칩니다. 다른 원본을 추가하거나 원본 변주 방식으로 제작하세요.')
             animal_manifest.update(title=title+' · 동물', collectionId=cid,
                                    productionPolicy=dict(maxReviewPending=min(limit, max(1, animal_count)), repairRounds=rounds))
             H.write_json_atomic(animal_root / 'manifest.json', animal_manifest)
@@ -252,6 +261,9 @@ def _create_variations(options, count, par):
     root.mkdir(parents=True)
     try:
         manifest = recipes.bind(root, rid, count, options.get('prompt', ''), int(options.get('startIndex', 0)))
+        if options.get('distinctSources'):
+            import distinct_sources
+            distinct_sources.validate(manifest, root / 'recipe', recipes.load(root / 'recipe', check_tools=True))
         concepts = options.get('concepts', [])
         for index, row in enumerate(manifest['characters']):
             if concepts:
@@ -408,11 +420,12 @@ if __name__ == '__main__':
     parser.add_argument('--recipe', help='보존한 제작 기준 ID로 같은 조건의 새 실행을 만든다')
     parser.add_argument('--creatures', action='store_true', help='동물 8종을 원본으로 필드 몬스터를 직접 저작한다')
     parser.add_argument('--all-sources', action='store_true', help='에디터 Actor/People/Monster/Scarloxy/농장 동물을 섞어 변주한다')
+    parser.add_argument('--distinct-sources', action='store_true', help='같은 원본 픽셀을 반복 배정하지 않는다. 전체 원본 제작은 몸 형태가 다른 원본부터 고른다')
     parser.add_argument('--start-index', type=int, default=0, help='새 기준에서 이어 만들 때 생략할 원본/콘셉트 순번 수')
     parser.add_argument('--max-review-pending', type=int, default=12)
     parser.add_argument('--repair-rounds', type=int, default=2)
     args = parser.parse_args()
     print(json.dumps(create(dict(count=args.count, prompt=args.prompt, reference=args.reference,
                                  title=args.title, concepts=args.concept, par=args.par if args.par is not None else 2,
-                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures, allSources=args.all_sources, startIndex=args.start_index,
+                                 batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe, creatures=args.creatures, allSources=args.all_sources, distinctSources=args.distinct_sources or args.all_sources, startIndex=args.start_index,
                                  maxReviewPending=args.max_review_pending, repairRounds=args.repair_rounds)), ensure_ascii=False))
