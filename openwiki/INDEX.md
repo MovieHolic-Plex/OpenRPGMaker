@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **146쪽 / 5047KB / 약 1,469,707 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **146쪽 / 5049KB / 약 1,470,318 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1148,12 +1148,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
 
-### `openwiki/harnesses/README.md` — 4KB · 49줄 · ~1,206 토큰
+### `openwiki/harnesses/README.md` — 5KB · 61줄 · ~1,467 토큰
 
 - `L6` 위치 (저장소 루트 기준)
-- `L26` 규칙
-- `L36` 기존 것과의 관계 (2026-10-01 실측)
-- `L42` 하네스 목록
+- `L27` 규칙
+- `L37` 기존 것과의 관계 (2026-10-01 실측)
+- `L43` 하네스 목록
+- `L52` 다른 실행기와 공유하는 하네스 목록
 
 ### `openwiki/harnesses/assistant-capability.md` — 15KB · 101줄 · ~4,828 토큰
 
@@ -1273,7 +1274,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Maker-owned repair loop (2026-10-04)
 - `L45` Reproduction
 
-### `openwiki/harnesses/super-harness-integration.md` — 15KB · 175줄 · ~4,673 토큰
+### `openwiki/harnesses/super-harness-integration.md` — 16KB · 190줄 · ~5,023 토큰
 
 - `L6` 운영 계약
 - `L19` 실행과 경로
@@ -1284,6 +1285,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L115` 부품 선택의 판단 순서 (2026-10-05)
 - `L129` 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
+- `L176` 전체 제작 통합 방향 (2026-10-05)
 
 ### `openwiki/harnesses/super-harness.md` — 65KB · 653줄 · ~20,405 토큰 · 통째읽기 잘림
 

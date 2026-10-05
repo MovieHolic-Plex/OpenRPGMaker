@@ -1,0 +1,48 @@
+{
+  "testedSourceCommit": "68619dbd5134d776f88f45c30a0e236750f74fab",
+  "integrationCommit": "396c3c2a5aa627396634bdb49013ef20a02ed9da",
+  "sourceChecks": [
+    {
+      "path": "src/assets/charsetSemantics.ts",
+      "expected": "f8290c34aeb5b74a485d4a62db24deb0667fe44a6dfb7c99d8f439f0cf531203",
+      "actual": "f8290c34aeb5b74a485d4a62db24deb0667fe44a6dfb7c99d8f439f0cf531203"
+    },
+    {
+      "path": "src/assets/charsetAppearances.ts",
+      "expected": "08e429b03d0ccc1fc50539a26f82380d7ded09989a73543d2db51bafcb0a1b5c",
+      "actual": "08e429b03d0ccc1fc50539a26f82380d7ded09989a73543d2db51bafcb0a1b5c"
+    },
+    {
+      "path": "src/assets/charsetQuery.ts",
+      "expected": "0d1ea3d48879e36c5b92ba6072c9600c00ce24636878278f576d4151bdc6960e",
+      "actual": "0d1ea3d48879e36c5b92ba6072c9600c00ce24636878278f576d4151bdc6960e"
+    },
+    {
+      "path": "src/assets/resourceSearch.ts",
+      "expected": "61b70f018d49b05a67c772fb0512be145f205325b237745d1b305b090d0f5a28",
+      "actual": "61b70f018d49b05a67c772fb0512be145f205325b237745d1b305b090d0f5a28"
+    },
+    {
+      "path": "src/project/sharedCharacters.ts",
+      "expected": "a1845a193c436c942d286d165234310615994bc58ed53f33d471d7e7ce9904ea",
+      "actual": "a1845a193c436c942d286d165234310615994bc58ed53f33d471d7e7ce9904ea"
+    },
+    {
+      "path": "src/editor/tools/queryTools.ts",
+      "expected": "02ca52950a7fef61084ce178b281b8a0a6fa5a5b4b65152c3679f5c26c9b97c2",
+      "actual": "02ca52950a7fef61084ce178b281b8a0a6fa5a5b4b65152c3679f5c26c9b97c2"
+    },
+    {
+      "path": "src/ai/piAgent/firstScene.ts",
+      "expected": "ba2fb93327a429c27fb15e83f4a6e172cbbd9abf7f5e2fcdb1b2271c7b92efaf",
+      "actual": "ba2fb93327a429c27fb15e83f4a6e172cbbd9abf7f5e2fcdb1b2271c7b92efaf"
+    },
+    {
+      "path": "src/editor/content/skyStairMaps.ts",
+      "expected": "cb6a7a2a037661e17f8115cbcb2cca90a1d107c26418a49d8f8487e50f056a8b",
+      "actual": "cb6a7a2a037661e17f8115cbcb2cca90a1d107c26418a49d8f8487e50f056a8b"
+    }
+  ],
+  "evidenceFileMismatches": [],
+  "note": "Main #2174 merged after verification; all eight task source file hashes remain identical. No new model trial claimed."
+}
