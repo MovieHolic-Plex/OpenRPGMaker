@@ -1,6 +1,6 @@
 import { firefox } from 'playwright';
 import { resolve } from 'node:path';
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, appendFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { startPlayerQaServer, runRuntimeQa } from '../../../../scripts/lib/runtimeQaRun.mjs';
 import { MAP } from './checks.mjs';
@@ -19,6 +19,14 @@ const beat = (id,ops,expect={},typed=true) => ({id,ops:[...ops,
   ...(typed&&expect.visibleText?.['dialogue-box']&&!expect.testidPresent?.includes('runtime-choice-0')?
     [{kind:'waitForVisible',testid:'dialogue-box',descendant:'.dialogue-page-cursor',timeoutMs:10000}]:[]),
 ],expect,shot:true});
+export function markVisualTargets(entry,out,report) {
+  const ids={line:['first-message','repeat-message'],move:['first-message','repeat-message'],
+    delete:['walk-through-deleted-npc'],inn:['price-dialogue','offer','decline','accept'],
+    choice:['question','choices','east-branch','inn-branch','cancel'],reward:['first-message','repeat-message','after-reentry']};
+  const targets=report.beats.filter(b=>b.shot&&(ids[entry.runtime]??[]).includes(b.id)).map(b=>b.shot);
+  if(targets.length)appendFileSync(resolve(out,'SUMMARY.md'),'\n## 수행 하네스 필수 시각 QA\n\n비트 통과와 별도로 실제 화면을 읽어 판정한다.\n\n'+targets.map(file=>`- 즉시 확인: ${file} — 요청한 대사·선택·금액·취소 결과 또는 대상 보존`).join('\n')+'\n');
+  return targets.map(file=>`runtime/${file}`);
+}
 export function scenarioFor(entry, projectFile, initial) {
   const position={mapId:MAP,...initial.startPos};
   const beats=[beat('title',[],{testidPresent:['title-screen']}),
@@ -83,11 +91,12 @@ export async function verifyRuntime(entry, dir, initial) {
       return asset?route.fulfill({path:asset.file,contentType:asset.mime}):route.fulfill({status:404,body:'Saved export dependency missing'});
     });
     const report=await runRuntimeQa(page,scenario,{serverUrl:server.url,outDir:out});
+    const requiredVisualEvidence=markVisualTargets(entry,out,report);
     // Follow the repository QA contract: SUMMARY first, only then relevant PNGs.
     console.log(readFileSync(resolve(out,'SUMMARY.md'),'utf8').slice(0,2000));
     const failed=report.beats.filter(b=>b.failures.length);
     return {status:failed.length||report.errors.length?'fail':'pass',
       checks:report.beats.map(b=>({id:b.id,ok:b.failures.length===0,detail:b.failures.join('; ')})),
-      errors:report.errors,evidence:report.beats.filter(b=>b.shot).map(b=>`runtime/${b.shot}`)};
+      errors:report.errors,requiredVisualEvidence,evidence:report.beats.filter(b=>b.shot).map(b=>`runtime/${b.shot}`)};
   } finally {await browser?.close();await server.close();}
 }

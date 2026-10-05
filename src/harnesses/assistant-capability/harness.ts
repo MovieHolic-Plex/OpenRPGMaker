@@ -17,6 +17,7 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
     { id: 'self-check', title: '검증기 반례', summary: '정상 결과와 무변경·잘못된 대상·범위 위반·분기 결손 결과의 오판을 검사한다.' },
     { id: 'self-check-tools', title: '제품 회귀 반례', summary: '실제 도구의 비타일 편집 보존·타일 보정 범위·dry run·취소 의미를 모델 점수와 분리해 검사한다.' },
     { id: 'self-check-errors', title: '오류 표시 반례', summary: '별도 정본에서 응답 오류를 주입하여 미반영·반영 상태와 실패 표시를 검사한다. 실모델 점수에 넣지 않는다.' },
+    { id: 'discover-tools', title: '후속 범위 감사', summary: '작은 타일 편집이 같은 맵의 요청하지 않은 기존 칸을 바꾸는지 엄격하게 검사한다. 모델 시험과 분리한다.' },
     { id: 'self-check-runtime', title: '플레이 검증기 교정', summary: '알려진 정상 결과를 출하 플레이어에서 실행하여 플레이 검사 자체의 오판을 확인한다.' },
     { id: 'review', title: '시각 검수', summary: '실제로 열어 본 그림의 해시에 묶어 독립 검수 결과를 기록한다.' },
     { id: 'report', title: '결과 집계', summary: '미검증·실패·환경 차단을 숨기지 않고 JSON·HTML·Markdown으로 집계한다.' },

@@ -72,3 +72,25 @@ export function checkTools(root: string): number {
   console.log(JSON.stringify(outcome, null, 2));
   return outcome.pass ? 0 : 1;
 }
+
+/** A strict follow-up audit, not a success calibration or model trial. */
+export function discoverTools(root: string): number {
+  const project=createEmberQuestProject(),map=createBlankMap('scope sentinel',24,18,COMBINED_TOWN_TILESET_ID);
+  map.id=project.startMapId;project.maps[map.id]=map;
+  map.lowerTiles[3*map.width+3]=290;
+  map.upperTiles[2*map.width+3]=TILE.EMPTY;
+  const before=structuredClone(project),ctx={project};
+  const result=runTool(ctx,'paint_tiles',{mapId:map.id,layer:'upper',mode:'cells',tile:TILE.FLOWERS,cells:[{x:8,y:8}]});
+  const changed=[];
+  for(const [id,old] of Object.entries(before.maps))for(const layer of ['lowerTiles','upperTiles'] as const) {
+    const next=ctx.project.maps[id]!;
+    for(let i=0;i<old[layer].length;i++)if(old[layer][i]!==next[layer][i])changed.push({mapId:id,layer,x:i%old.width,y:Math.floor(i/old.width),before:old[layer][i],after:next[layer][i]});
+  }
+  const unexpected=changed.filter(c=>c.mapId!==map.id||c.x!==8||c.y!==8);
+  const outcome={schemaVersion:1,kind:'post-merge-tool-discovery',modelCalls:0,tool:result.summary,toolOk:result.ok,
+    requested:{mapId:map.id,x:8,y:8,tile:TILE.FLOWERS},changed,unexpected,
+    status:!result.ok?'blocked':unexpected.length?'fail':'pass',
+    interpretation:'도구 수준 검사. 다른 맵 보존 수정 이후에도 같은 맵의 요청하지 않은 기존 나무를 수선하는지 검사한다. 실모델 성공률에 넣지 않는다.'};
+  mkdirSync(root,{recursive:true});writeFileSync(resolve(root,'post-merge-tool-audit.json'),JSON.stringify(outcome,null,2));
+  console.log(JSON.stringify(outcome,null,2));return outcome.status==='pass'?0:1;
+}

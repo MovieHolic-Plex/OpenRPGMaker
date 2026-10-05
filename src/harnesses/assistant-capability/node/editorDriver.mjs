@@ -68,6 +68,9 @@ export async function startHost(projectDir, dir) {
 export async function newEditor(browser, url, projectDir, config) {
   const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce' });
   const page=await context.newPage();
+  // Bundled asset installation and SQLite flush can hold the UI main thread.
+  // Keep UI action deadlines consistent with the existing load/save deadlines.
+  page.setDefaultTimeout(120000);
   const loads=[];
   page.on('response',response=>{
     if(!['oprn:project.load','oprn:project.loadFolded'].includes(response.request().headers()['x-oprn-channel']))return;
@@ -134,6 +137,8 @@ export async function execute(entry, dir, timeoutMs, config) {
       try{const raw=request.postDataBuffer(),b=JSON.parse(raw?.[0]===31?gunzipSync(raw):raw);
         requests.push({endpoint:new URL(request.url()).pathname,model:b.model,provider:request.headers()['x-oprn-provider'],runId:b.runId,at:Date.now()});
       }catch{requests.push({endpoint:new URL(request.url()).pathname,observationError:true});}
+      // Browser loss must not erase the evidence that a real request was sent.
+      writeFileSync(resolve(dir,'requests.json'),JSON.stringify(requests,null,2));
     });
     // Normalize boot-time migration through the real host before capturing the
     // task baseline, so authored changes are not confused with asset installation.
@@ -208,12 +213,13 @@ export async function execute(entry, dir, timeoutMs, config) {
       elapsedMs:Date.now()-start,realRun:requests.some(r=>r.endpoint==='/v1/agent/run')&&events.some(e=>e.type==='done')};
   } catch(error) {
     error.harnessPhase=phase;
+    let events=[];
     if(context) {
       const page=context.pages()[0];
       if(page){await page.screenshot({path:resolve(dir,'failure.png')}).catch(()=>{});
-        const events=await page.evaluate(()=>window.__capEvents??[]).catch(()=>[]);
-        if(!existsSync(resolve(dir,'trace.json')))writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors},null,2));}
+        events=await page.evaluate(()=>window.__capEvents??[]).catch(()=>[]);}
     }
+    if(!existsSync(resolve(dir,'trace.json')))writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,harnessPhase:phase},null,2));
     throw error;
   } finally { await context?.close().catch(()=>{});await browser?.close().catch(()=>{});await host.close(); }
 }

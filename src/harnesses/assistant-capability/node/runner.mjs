@@ -251,6 +251,7 @@ function review() {
   const result=JSON.parse(readFileSync(file,'utf8'));
   if(!files.includes('after.png')||!files.includes('reloaded.png'))throw Error('변경 화면과 재로드 화면 둘 다 실제 검수해야 합니다');
   if(entries[0].runtime!=='none'&&!files.some(f=>f.startsWith('runtime/')))throw Error('이 과제는 실제 플레이 PNG 검수도 필수입니다');
+  if(status==='pass'&&(result.gates.runtime.requiredVisualEvidence??[]).some(file=>!files.includes(file)))throw Error('플레이 SUMMARY에 표시된 필수 시각 QA 그림을 모두 읽고 --images에 포함하세요');
   if(entries[0].visual==='database'&&!files.includes('database.png'))throw Error('아이템 상세 화면 검수 필수');
   const images=files.map(file=>{
     const path=resolve(dir,file),rel=relative(dir,path);
@@ -278,7 +279,7 @@ let code;
 if(stage==='list'){console.log(seed.cases.map(c=>`${c.id} — ${c.title} (플레이: ${c.runtime})`).join('\n'));code=0;}
 else if(stage==='self-check')code=await selfCheck();
 else if(stage==='self-check-runtime')code=await runtimeSelfCheck();
-else if(stage==='self-check-errors')code=await (await import('./errorControls.mjs')).checkErrorUi(root);
+else if(stage==='self-check-errors')code=await (await import('./errorControls.mjs')).checkErrorUi(root,args.includes('--recheck'));
 else if(stage==='recheck')code=await recheckSaved();
 else if(stage==='recapture')code=await recapture();
 else if(stage==='run')code=await runCases();

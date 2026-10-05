@@ -76,3 +76,9 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 ## 제품 회귀와 오류 표시 controls (2026-10-05)
 
 `self-check-tools --out <controls>`는 실제 쓰기 도구의 기존 맵 보존·대상 래스터 보정·dryRun·취소 의미를 검사한다. `self-check-errors`는 별도 폴더에 `prepare --case map-rename` 후 실행한다. 실제 편집기 입력·적용·SQLite 저장 경로에서 제공자 error+done을 주입하며 무변경/변경 반영 두 경우의 실패·전달 축을 검사한다. 모델 요청은 가로채고 별도 kind와 modelCalls:0을 남긴다. 이 controls를 조수 실제 수행 결과로 집계하지 않는다.
+
+오류 controls에서 계획과 실행이 각각 Pi 요청을 만들 수 있다. native 요청 수를 1로 제한하지 않고 한 건 이상이며 전부 가로채졌는지 검사한다. `self-check-errors --recheck`는 원래 UI 관측/실패 영수증을 verification-history에 보존하고 이 요청 수 검사만 재평가하며 모델이나 브라우저를 다시 실행하지 않는다. UI 동작이 달라졌으면 새 controls 프로젝트를 준비해 다시 실행한다. `discover-tools`는 후속 한 칸 편집의 엄격한 범위 감사이며 발견 실패를 숨기거나 실모델 점수에 합치지 않는다.
+
+## 수정 확인 — 2026-10-05
+
+조회·아이템 가격·선택지의 새 실제 입력 3개는 요구/보존/저장/시각 게이트를 통과했다. 기존 타일 변경 0칸, 선택지 실제 플레이 11비트 통과와 Esc 종료를 직접 확인했다. 제품 회귀 controls 55/55, 오류 주입 UI controls 12/12를 별도 보존했다. 입력 전 UI 기동 실패와 브라우저 종료로 관측을 완성하지 못한 대사 시험은 성공으로 승격하지 않았다. 이것은 선택된 확인 시험이며 core 전체 새 성공률이 아니다. `verify-shots/assistant-capability-fixes-20261005/`에 정본·SHA·재로드 영수증, 시각 증거와 제한을 남겼다.

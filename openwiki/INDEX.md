@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **142쪽 / 4898KB / 약 1,423,997 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **142쪽 / 4900KB / 약 1,424,407 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1136,7 +1136,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L36` 기존 것과의 관계 (2026-10-01 실측)
 - `L42` 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 11KB · 79줄 · ~3,569 토큰
+### `openwiki/harnesses/assistant-capability.md` — 13KB · 85줄 · ~3,979 토큰
 
 - `L5` 실행 경로
 - `L11` 단계
@@ -1145,6 +1145,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L62` 산출물과 확장
 - `L68` 최초 실측 — 2026-10-05
 - `L76` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L82` 수정 확인 — 2026-10-05
 
 ### `openwiki/harnesses/charset-actor.md` — 6KB · 46줄 · ~1,748 토큰
 

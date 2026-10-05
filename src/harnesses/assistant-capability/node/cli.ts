@@ -5,9 +5,10 @@ import { prepare } from './fixture';
 export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
   const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
-  if (stage === 'self-check-tools') {
-    const { checkTools } = await import('./toolRegression');
-    return checkTools(resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/tool-controls'));
+  if (stage === 'self-check-tools' || stage === 'discover-tools') {
+    const { checkTools, discoverTools } = await import('./toolRegression');
+    const root=resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/tool-controls');
+    return stage==='discover-tools'?discoverTools(root):checkTools(root);
   }
   if (stage === 'prepare') {
     const root = option('out');
