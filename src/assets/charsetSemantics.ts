@@ -214,7 +214,7 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
   // tex_easyrpg_charset_animal — 동물.
   ...sheet("tex_easyrpg_charset_animal", [
     [0, "주황 고양이", ["고양이", "동물"], { gender: "none" }],
-    [1, "검은 고양이", ["고양이", "동물"], { gender: "none" }],
+    [1, "갈색 고양이", ["고양이", "동물"], { gender: "none" }],
     [2, "닭", ["닭", "동물", "가금류"], { gender: "none" }],
     [3, "양", ["양", "동물"], { gender: "none" }],
     [4, "소", ["소", "동물", "가축"], { gender: "none" }],

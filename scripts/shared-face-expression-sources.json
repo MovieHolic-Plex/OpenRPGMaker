@@ -105,7 +105,7 @@
   },
   {
     "stem": "pink-hat-expressions",
-    "name": "분홍 모자 여성",
+    "name": "분홍 머리 보라 모자 여성",
     "baseSheet": "Actor1",
     "baseCell": 13,
     "sourceFile": "codex-clipboard-d9ef0af7-51fe-4ed7-85eb-81e0aed6bb1c.png",
@@ -249,7 +249,7 @@
   },
   {
     "stem": "actor2-blue-hat-woman-expressions",
-    "name": "푸른 모자 여성",
+    "name": "붉은 모자 푸른 머리 여성",
     "baseSheet": "Actor2",
     "baseCell": 15,
     "sourceFile": "codex-clipboard-395c34f7-ee53-4583-b80e-f198599c52fa.png",

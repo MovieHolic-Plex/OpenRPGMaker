@@ -35,7 +35,7 @@ import {
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
-import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
+import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
 import {

@@ -1,0 +1,1555 @@
+{
+  "reviewedAt": "2026-10-05T07:44:32.478045+00:00",
+  "reviewer": "root/manual pixel inspection",
+  "pages": [
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-01.png",
+      "group": "faces-core",
+      "first": 0,
+      "count": 12,
+      "sha256": "43a7dc2fdfd0a2bfcbb064ae39dda7caf6cf36e49245ba346b3550b48ad7fbb8",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-02.png",
+      "group": "faces-core",
+      "first": 12,
+      "count": 12,
+      "sha256": "a6806d6ac44637a6a4dc6cdbe7e955f82aaf6732f2c4b1daddf47265286e567e",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-03.png",
+      "group": "faces-core",
+      "first": 24,
+      "count": 12,
+      "sha256": "3f798ce614c4abef5db25a03331c21ace990ba0b3ed9e3bdadb23c8d94516788",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-04.png",
+      "group": "faces-core",
+      "first": 36,
+      "count": 12,
+      "sha256": "82db5f51e8c8abccec72152329559881bc12dac967d797ef0062b2865cb1e94b",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-05.png",
+      "group": "faces-core",
+      "first": 48,
+      "count": 12,
+      "sha256": "f7feceeb7061fce91fd989a8f2f9abf36061bb396eac7505b61ab4bfa8695677",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-06.png",
+      "group": "faces-core",
+      "first": 60,
+      "count": 12,
+      "sha256": "2960da9da37a269342ba4c978264717ae4f63629511b0de70059fcda2f1acb6f",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-07.png",
+      "group": "faces-core",
+      "first": 72,
+      "count": 12,
+      "sha256": "494ab310ce5c8be216a925a0b313bad8c6d883241ceb8614583689298358624c",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-08.png",
+      "group": "faces-core",
+      "first": 84,
+      "count": 12,
+      "sha256": "cd36bf6a9843f5524f28c1e75d7cea8b85d28acb07d18e087af37fab273bec5d",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-09.png",
+      "group": "faces-core",
+      "first": 96,
+      "count": 12,
+      "sha256": "ff1626b7705d24d975d03a1f717c63f12d19c19e1e0f0d49839f11fa16066b56",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/faces-core-10.png",
+      "group": "faces-core",
+      "first": 108,
+      "count": 1,
+      "sha256": "ad2d2e5812bd854e1fca01b3a4d78b3602614c206de365ff9b28dda90cabb6d8",
+      "status": "inspected",
+      "scope": "primary face and provenance variants"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-01.png",
+      "group": "pairs",
+      "first": 0,
+      "count": 12,
+      "sha256": "ab162a957a8cd9f3d8bef94a6562f91aa899d26f7a0ee67e2583b9df52de6f55",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-02.png",
+      "group": "pairs",
+      "first": 12,
+      "count": 12,
+      "sha256": "f81d9185137c6ca2449d44779ac8942eabc03297af73dcb1bab1ec29b3cd803e",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-03.png",
+      "group": "pairs",
+      "first": 24,
+      "count": 12,
+      "sha256": "2c6144f79efe0415432f721f938e83daca97ddd54e57b12fec462354162851da",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-04.png",
+      "group": "pairs",
+      "first": 36,
+      "count": 12,
+      "sha256": "2fa93ca76fefbb390d5b997db45f25345ea4e418497c0a188799b3f376515c3f",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-05.png",
+      "group": "pairs",
+      "first": 48,
+      "count": 12,
+      "sha256": "97b940d7719f13f41f603fb0e10a49bc92ee1c86ae16036c1531357977485dad",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-06.png",
+      "group": "pairs",
+      "first": 60,
+      "count": 12,
+      "sha256": "42af351ea19942b4cf9668edfaacd784b7f901e0487ef5a80ecf10ae27e7dd2f",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-07.png",
+      "group": "pairs",
+      "first": 72,
+      "count": 12,
+      "sha256": "b4a6ea89763d32cd8f55ae849c0b1a6f1e0d388942ae5180b57c89b3f17d2f07",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-08.png",
+      "group": "pairs",
+      "first": 84,
+      "count": 12,
+      "sha256": "83035e73b9828411150f4d018fa37e76b8628491fd07ac0b2caf18de748f3e0d",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-09.png",
+      "group": "pairs",
+      "first": 96,
+      "count": 12,
+      "sha256": "e539deda765e4c802900a47df0a5c076bff1a72a106f63ee66248fa8c19ea535",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/pairs-10.png",
+      "group": "pairs",
+      "first": 108,
+      "count": 8,
+      "sha256": "7b6e9cb87fe5bc6aaf0786a5d04b55bf6f21ebfabbc1ccc5a6301532f168cbca",
+      "status": "inspected",
+      "scope": "identity labels and physical pairing"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-brown-headband-expressions.png",
+      "group": "expressions",
+      "setId": "shared-brown-headband-expressions",
+      "count": 48,
+      "sha256": "dc569a04819e647c370cb8bd8f4d9ec93ea52b67eea47b5747adea08b3f74918",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-blue-traveler-expressions.png",
+      "group": "expressions",
+      "setId": "shared-blue-traveler-expressions",
+      "count": 48,
+      "sha256": "da99106303d4ef0a070ca9a39fb4ee0dfd09b9b6af7aa166330d64c523aabac1",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-helmet-guard-expressions.png",
+      "group": "expressions",
+      "setId": "shared-helmet-guard-expressions",
+      "count": 48,
+      "sha256": "0c1e1dc4f4c2be2f6d96f6bd0632e78cc5ac750dd8783d4d47865c8477d86cd7",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-helmet-blonde-expressions.png",
+      "group": "expressions",
+      "setId": "shared-helmet-blonde-expressions",
+      "count": 48,
+      "sha256": "30d48bc51d404a1b321b5bc3c07679664928c3129cbd108d13ceaeadb9f4470e",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-blue-headband-expressions.png",
+      "group": "expressions",
+      "setId": "shared-blue-headband-expressions",
+      "count": 48,
+      "sha256": "fe9cdc2176f012e404afb6e0d48b88f0e005259f3d3e7b05386e6e7fe3f6198f",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-purple-mage-expressions.png",
+      "group": "expressions",
+      "setId": "shared-purple-mage-expressions",
+      "count": 48,
+      "sha256": "028292d67793afc9243c03834c8a7efd617dfa9ac7594c19a4670f507493fb28",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-black-headband-expressions.png",
+      "group": "expressions",
+      "setId": "shared-black-headband-expressions",
+      "count": 48,
+      "sha256": "36522153b6f9422b07816fbbe3ca43f1b33144d58ed078f37486beb428c80fcd",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-blue-hat-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-blue-hat-woman-expressions",
+      "count": 48,
+      "sha256": "300f180157edd55e4fef77396cc05660428e80db1667e01f7894282c009c3f93",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-black-martial-expressions.png",
+      "group": "expressions",
+      "setId": "shared-black-martial-expressions",
+      "count": 48,
+      "sha256": "2108cf2474f330261f20f5760144dabe9dad44d366e233e46c1339682ead8cd7",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-orange-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-orange-woman-expressions",
+      "count": 48,
+      "sha256": "1feaf1e680d3e33a60eff1b7bf8d5045281508a32252911287061483c762acd8",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-green-scholar-expressions.png",
+      "group": "expressions",
+      "setId": "shared-green-scholar-expressions",
+      "count": 48,
+      "sha256": "aa9f603f22d5e027fc3030274def0368fafd313e4738c649a9814113eae79ecf",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-green-goggles-expressions.png",
+      "group": "expressions",
+      "setId": "shared-green-goggles-expressions",
+      "count": 48,
+      "sha256": "2559756c87e3ee972c74a0fc11c1fb1653039a711c9bdefba4884d9754f21e86",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-bearded-bandana-expressions.png",
+      "group": "expressions",
+      "setId": "shared-bearded-bandana-expressions",
+      "count": 48,
+      "sha256": "805a30390e5965b1442b4b2b3cc637d97db1676f6402b0922ba2e7ef47981a41",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-pink-hat-expressions.png",
+      "group": "expressions",
+      "setId": "shared-pink-hat-expressions",
+      "count": 48,
+      "sha256": "605b4c6b825e09b96a26f34c26d9ddc508845ad128715fd8b784d6b625671376",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-green-bandana-expressions.png",
+      "group": "expressions",
+      "setId": "shared-green-bandana-expressions",
+      "count": 48,
+      "sha256": "1eeb85f157d1438689f48c60c24647e3ea778bda9a88603abf8b21d4a6eb2cc6",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-green-cap-blonde-expressions.png",
+      "group": "expressions",
+      "setId": "shared-green-cap-blonde-expressions",
+      "count": 48,
+      "sha256": "cdaacda90066299f1e38eb1fa50f952913aa3a3466a9fd22ab8cf1b04c57abb6",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-red-helmet-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-red-helmet-expressions",
+      "count": 48,
+      "sha256": "a5b1ebe8f27be09558d19b9fe4095354d4d2e6f4634cc3308c4a5492cd3b883d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-mustache-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-mustache-expressions",
+      "count": 48,
+      "sha256": "603fa8ff4213eacf30d58b906c4b35bf6a58adf14c2cc92d5200668f14cea0dd",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-masked-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-masked-expressions",
+      "count": 48,
+      "sha256": "147270272bf877b4fbcb8a2a8599947dfdf2553f2136d08a8f791e5138bb0316",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-white-band-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-white-band-expressions",
+      "count": 48,
+      "sha256": "81bcbb774696670685fbfe75667b46079de47d4cb522cde7be9a3d76b246ea77",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-blonde-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-blonde-expressions",
+      "count": 48,
+      "sha256": "c274199a2c75756d913a65093a489aa2f425a4604009ec2fc945b36f22a67a7d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-teal-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-teal-woman-expressions",
+      "count": 48,
+      "sha256": "3f91cccbeeb2cb6896f7bfaa69dd2d81edc7f0567fa3108b2688e0830043978d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-brown-youth-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-brown-youth-expressions",
+      "count": 48,
+      "sha256": "3b4b72b563e1c89c172884c40111cb5882d5c2fa39d7b7e3584db603e4bd398e",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-brown-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-brown-woman-expressions",
+      "count": 48,
+      "sha256": "fec8a638ba765e5b3aee2824a619b9a5906ba179e14a06467e11fb15b77f2ec4",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-blue-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-blue-man-expressions",
+      "count": 48,
+      "sha256": "0d63031fbab5b12b5486c97a061e4e3550982053b76b74b2039ff5522baddb17",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-blonde-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-blonde-man-expressions",
+      "count": 48,
+      "sha256": "824340e6d7f121ad8f0f8d30da93251cf8a01fbf0617c6318310639b656e1e85",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-red-band-blonde-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-red-band-blonde-expressions",
+      "count": 48,
+      "sha256": "3d4d3529622b51c218f73eb945dd37acb62721d8ed7c1f6239a702dbcff866de",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-long-blue-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-long-blue-expressions",
+      "count": 48,
+      "sha256": "21cdd7a6cc165358cc18ce9911f96fcdecae3582588234ef609e68854fdc7ab6",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-mauve-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-mauve-woman-expressions",
+      "count": 48,
+      "sha256": "150dc5307c7bcdab50c6db05920dcc5205dffc338645d0f7fbeee86a6cc46978",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-golden-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-golden-woman-expressions",
+      "count": 48,
+      "sha256": "75d59bf68bdc252ff34cf06bb983152922a7d9898ef388ea3f479fe2f7b795e2",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-purple-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-purple-woman-expressions",
+      "count": 48,
+      "sha256": "52c47ac48454e55b504131352fa71e67c2773b44f1fb3dd51ee39ed60685b490",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-actor2-blue-hat-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-actor2-blue-hat-woman-expressions",
+      "count": 48,
+      "sha256": "161209483e6ea3566c710539ae9d08a49980b73d122bff6865b04a98a4e8270f",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-boy-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-boy-expressions",
+      "count": 48,
+      "sha256": "dd8312d73c0cf92ff9fbc99564228817c228baa05e181709d0363532556679f4",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-girl-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-girl-expressions",
+      "count": 48,
+      "sha256": "de1506267c08bb1a00a87bf413a992ccf9258af3e0fac715beca2f69fd4f00c8",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-blue-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-blue-man-expressions",
+      "count": 48,
+      "sha256": "0e3d73f8043b2eeb17e393eb6f4fba8786fc4826aedeee0a9beec1542c0db119",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-blonde-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-blonde-woman-expressions",
+      "count": 48,
+      "sha256": "ba7badb5ccd1d2fa57141783f98b7b135e2f5578ea6524b4ed2755e3b8ac4fca",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-mustache-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-mustache-expressions",
+      "count": 48,
+      "sha256": "af78d8f002f95e7c8ffdb846a7d44f8af75c50baa96aaf8fff5b757472c93c48",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-village-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-village-woman-expressions",
+      "count": 48,
+      "sha256": "49fe8e193bbcc4c4651d1a4a729eb5a354a591142e1c0338692cf0a98d428742",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-old-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-old-man-expressions",
+      "count": 48,
+      "sha256": "ebb4f8404a25479fc5679dae575a8f015a958dea5df2c4190b6ef34b2bcafe73",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-old-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-old-woman-expressions",
+      "count": 48,
+      "sha256": "cb64ea5b77555dd595769fa3300e760698b55f890a2fcc34a9e1f16c9d4f1642",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-black-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-black-man-expressions",
+      "count": 48,
+      "sha256": "12651acb6d4345e9aa5f4e493d59c39fe2334c2d6123756c1e9cd64fe99d20ed",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-nun-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-nun-expressions",
+      "count": 48,
+      "sha256": "1899647fced56c9da1672e3c91cd7eedff384e70613ac62836e6846c6bb04eea",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-bald-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-bald-man-expressions",
+      "count": 48,
+      "sha256": "90d28b73150b1d7e3325d53da51150dd04cb518b8adc854594a58e2ff50b816d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-purple-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-purple-woman-expressions",
+      "count": 48,
+      "sha256": "06c9c52498d1818d42f0ca5e201772998c907daa7556f72e1bd761018099302f",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-black-wave-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-black-wave-expressions",
+      "count": 48,
+      "sha256": "baee08d48ea02ef76ccc93170cee0d1e106892ee4bc745262dbe123886c52602",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-blonde-wave-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-blonde-wave-expressions",
+      "count": 48,
+      "sha256": "646f467c86f54ef3256b3613bc1242c683e01a597fe8410f8c6e5353869188d3",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-red-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-red-woman-expressions",
+      "count": 48,
+      "sha256": "0bcb19dd316ad8777644d772cca23f0863238729b1f753629afc0818dcdb7cae",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people1-mint-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people1-mint-woman-expressions",
+      "count": 48,
+      "sha256": "236b97aa48ef0eb3b2349d94014c17cf0f44d32f5cdceb232f6863206e3516bf",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-king-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-king-expressions",
+      "count": 48,
+      "sha256": "4b2be60751bd884c796777ca7fab6963857f6f049009af93efda4c36d7b3c697",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-blue-woman-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-blue-woman-expressions",
+      "count": 48,
+      "sha256": "c45ba3ba01155699598d354f90d7c858dc78db76bcf2eb89b1e35561b044a47d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-auburn-man-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-auburn-man-expressions",
+      "count": 48,
+      "sha256": "a6c02ddcb536657d5ca822c0f096beee80ee26612d0358c11f5921b07c729259",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-blonde-curls-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-blonde-curls-expressions",
+      "count": 48,
+      "sha256": "4caa0f1bd7a5fce62f629706db38ffefb7cc1a6d26a51a42b8ba7443f5a3f4df",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-white-elder-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-white-elder-expressions",
+      "count": 48,
+      "sha256": "c7670d492d26146f07a0b8b9a9928041e9cedae0c308f56ca136f310ae996274",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-blue-ribbon-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-blue-ribbon-expressions",
+      "count": 48,
+      "sha256": "6e86543c7f343314f91dc29648393a34a6b932b883ee15922c6f48175d11bae3",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-mustache-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-mustache-expressions",
+      "count": 48,
+      "sha256": "92a2e4d8a5a96abd922b5c10fa77f9bb47586748365f7d2c711b471f214e7a89",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-blue-guard-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-blue-guard-expressions",
+      "count": 48,
+      "sha256": "ef0e3540f86bb7b3cc72c3a21b2afd0dbb0cb12ba54745d07b8e39801a228022",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-dog-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-dog-expressions",
+      "count": 48,
+      "sha256": "37b6670c8ad3e1278bdbfc9fe4c74744a453812bbea71aa246ffb1f6665254c9",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-cat-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-cat-expressions",
+      "count": 48,
+      "sha256": "19a4a22541cdd46ea262a378838bfa0b43cce75f225fa1d820a35e5f23f7cabc",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-rooster-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-rooster-expressions",
+      "count": 48,
+      "sha256": "520223601acd137975db64526f214608b8824ef00d7b558a23b47754e59cfbaa",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-sheep-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-sheep-expressions",
+      "count": 48,
+      "sha256": "6295e16643b5993a038e1c5f69cc09756f2179853b720fddd4f34ac29e194b32",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-cow-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-cow-expressions",
+      "count": 48,
+      "sha256": "c0380ef7c2030b7aefe6749448c50c376f8d3f5496fbaafcdae7e99dc57d235d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-horse-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-horse-expressions",
+      "count": 48,
+      "sha256": "5fa8c1acba28a41fa25826025a80ec0dcc97d45d3b91ac929024dff7970ba0cc",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-tiger-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-tiger-expressions",
+      "count": 48,
+      "sha256": "475e05cec13df1e3a011a3a5dc33a90e9c9a5d705a81a28cacf3e472c8db0c9f",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-people2-lion-expressions.png",
+      "group": "expressions",
+      "setId": "shared-people2-lion-expressions",
+      "count": 48,
+      "sha256": "1cc241376a116222a0ba8ba3f972dd19b3020b4160a833d03ddf08bafaf79f02",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-slime-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-slime-expressions",
+      "count": 48,
+      "sha256": "4385406977d12f830db30c9eb1ef443f2bd0aa7c8531d090db2e157d94123969",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-red-demon-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-red-demon-expressions",
+      "count": 48,
+      "sha256": "5df0f5a484ebf8960c395b678827acef2f5deb37364884be2f1405f539866f49",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-pig-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-pig-expressions",
+      "count": 48,
+      "sha256": "7a94e764bce60e1721e7d08f5ce6c207c572c41f313f0b27cd1f15515fa1cc6d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-ghost-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-ghost-expressions",
+      "count": 48,
+      "sha256": "dd7255d24ae6f49da94107f7a5c2ccfed8efbb3f65ddf2e30f5ca71448f3acfc",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-skeleton-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-skeleton-expressions",
+      "count": 48,
+      "sha256": "4480b773d319160771d903497517ccf1d0515fde2e52166d0fda3f43e63925ca",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-green-scar-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-green-scar-expressions",
+      "count": 48,
+      "sha256": "83f8a1d75f878f6eed14b7dfb3c6e2ddd64b80f94106a2b70e31435ef229dcde",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-hood-skeleton-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-hood-skeleton-expressions",
+      "count": 48,
+      "sha256": "c4c77de0d87880819f1cd499bbcd64c35b863978c44e5abf2ab57b42ea953ab4",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-beast-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-beast-expressions",
+      "count": 48,
+      "sha256": "ebc85e637517bafb9e1daf970404e12d92341d20a40a034aac320d31e338d6c2",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-green-hair-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-green-hair-expressions",
+      "count": 48,
+      "sha256": "1d64ddacee05e7e1acd74e75cb2fbc222510f9013d3631227abc195c219a9b0d",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-white-dragon-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-white-dragon-expressions",
+      "count": 48,
+      "sha256": "2b03fa1137ae11630d9975b6e539a741851714f485cf627b330cd5467d02bbe3",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-white-hair-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-white-hair-expressions",
+      "count": 48,
+      "sha256": "a756cf372fe799526356ef6982cbe45e6bd64b706d1567067869a047926a922c",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/expressions-monster-red-helm-expressions.png",
+      "group": "expressions",
+      "setId": "shared-monster-red-helm-expressions",
+      "count": 48,
+      "sha256": "fef2e268b261eb7ebd293edef5b841aa83e8abe9db5fd7950ef2a180dddc5a40",
+      "status": "inspected",
+      "scope": "all 16 faces, busts and full images"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-01.png",
+      "group": "monsters",
+      "first": 0,
+      "count": 12,
+      "sha256": "5d5e214fc975fae5020ce782aec16eeafd42d9fc9ef68a6c53c32500ca23ed1d",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-02.png",
+      "group": "monsters",
+      "first": 12,
+      "count": 12,
+      "sha256": "4ad1774bb9638732a0720e3b5b3ab9cf4963c557225ad8db0b4c9ffdff438c06",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-03.png",
+      "group": "monsters",
+      "first": 24,
+      "count": 12,
+      "sha256": "fdfa9af96cddd20381a490cda9ea0068f90dbde7f4b8723df567efa0cf9a57cc",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-04.png",
+      "group": "monsters",
+      "first": 36,
+      "count": 12,
+      "sha256": "110d5f752ef93ddf42f4a4ab6c0e19612d9a5e0a1e66f8522b56cc0386ea258b",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-05.png",
+      "group": "monsters",
+      "first": 48,
+      "count": 12,
+      "sha256": "0ada79c53247f592059a17128b3970053f3598540d29701ec73625d429e313ab",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-06.png",
+      "group": "monsters",
+      "first": 60,
+      "count": 12,
+      "sha256": "c7ce6c13c3837f098f2097241120c594db4b03bc580fabfe5a105c44f97132f8",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-07.png",
+      "group": "monsters",
+      "first": 72,
+      "count": 12,
+      "sha256": "818380cf6366cea82c0b039d535568c5b277ed9c5dea9c2dfe91f3f5281a10c0",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-08.png",
+      "group": "monsters",
+      "first": 84,
+      "count": 12,
+      "sha256": "31de0a54f92f7f754e51f01988923f6a862043b5796950b0f5faacd820bebfc3",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-09.png",
+      "group": "monsters",
+      "first": 96,
+      "count": 12,
+      "sha256": "909c74111e328fdc890ccffb2e728607ee9e5d1f119f2d525495c69bfe514e49",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-10.png",
+      "group": "monsters",
+      "first": 108,
+      "count": 12,
+      "sha256": "f0c3703ab0502fdd1af8f97ed56689acd1cb5fabe097f995f0d64829de516bfe",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-11.png",
+      "group": "monsters",
+      "first": 120,
+      "count": 12,
+      "sha256": "e173d4c7c0e54b0187c36b150f211ddd3f96df59e5be30bb2a1a2fd24a017545",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-12.png",
+      "group": "monsters",
+      "first": 132,
+      "count": 12,
+      "sha256": "b43c0175fc3073548fdc94523b700b43f73bf267bfe25413d0ce3fc36baac57a",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-13.png",
+      "group": "monsters",
+      "first": 144,
+      "count": 12,
+      "sha256": "e2d8b96bcf155acd6e4c5b92cac9248fd5bb299fdfe89b406d3ce7833f9cf262",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/monsters-14.png",
+      "group": "monsters",
+      "first": 156,
+      "count": 4,
+      "sha256": "a92efc82516297a32b3e61f6637ca1910b8ff2b56501bd378182be80cc1157a3",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/battlers-01.png",
+      "group": "battlers",
+      "first": 0,
+      "count": 15,
+      "sha256": "dad06e9485aea7fde904507ac131693ff13699dec0f27dc6d9a3c01bf447b087",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/battlers-02.png",
+      "group": "battlers",
+      "first": 15,
+      "count": 15,
+      "sha256": "3044622a47fd4965004e4a9b64cd28d0c2e862225c453d9f45d1d05d0307081d",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/battlers-03.png",
+      "group": "battlers",
+      "first": 30,
+      "count": 15,
+      "sha256": "1b114a4f52629c3c8a6ab3fd895a1ee4aae585baa6f706aa7e67b2f5f4d427d7",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/battlers-04.png",
+      "group": "battlers",
+      "first": 45,
+      "count": 15,
+      "sha256": "719070b82411a343ce9a2c9f1dd696d8d6234bc51248f4b244f181c558b25084",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/visual/battlers-05.png",
+      "group": "battlers",
+      "first": 60,
+      "count": 13,
+      "sha256": "5d441fbacb06c1200430757ce81ac91f5233768fa361eab41983880b932c3ab4",
+      "status": "inspected",
+      "scope": "identity metadata versus original pixels; battlers use representative idle pose"
+    }
+  ],
+  "notes": [
+    "Original contact renderer incorrectly showed cell 00 for faces with no known expression source; corrected renderer now leaves provenance variants empty.",
+    "Confirmed mismatches are separate findings; inspected does not mean passed."
+  ],
+  "walkingPages": [
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-01.png",
+      "keys": [
+        "tex_easyrpg_charset_actor1#0",
+        "tex_easyrpg_charset_actor1#1",
+        "tex_easyrpg_charset_actor1#2",
+        "tex_easyrpg_charset_actor1#3",
+        "tex_easyrpg_charset_actor1#4",
+        "tex_easyrpg_charset_actor1#5",
+        "tex_easyrpg_charset_actor1#6",
+        "tex_easyrpg_charset_actor1#7",
+        "tex_easyrpg_charset_actor2#0",
+        "tex_easyrpg_charset_actor2#1",
+        "tex_easyrpg_charset_actor2#2",
+        "tex_easyrpg_charset_actor2#3",
+        "tex_easyrpg_charset_actor2#4",
+        "tex_easyrpg_charset_actor2#5",
+        "tex_easyrpg_charset_actor2#6",
+        "tex_easyrpg_charset_actor2#7"
+      ],
+      "sha256": "c8a597512051378be90c30f661711ddbd25d5a90e5d4bd52be75b43554f708ba",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-02.png",
+      "keys": [
+        "tex_easyrpg_charset_actor3#0",
+        "tex_easyrpg_charset_actor3#1",
+        "tex_easyrpg_charset_actor3#2",
+        "tex_easyrpg_charset_actor3#3",
+        "tex_easyrpg_charset_actor3#4",
+        "tex_easyrpg_charset_actor3#5",
+        "tex_easyrpg_charset_actor3#6",
+        "tex_easyrpg_charset_actor3#7",
+        "tex_easyrpg_charset_actor4#0",
+        "tex_easyrpg_charset_actor4#1",
+        "tex_easyrpg_charset_actor4#2",
+        "tex_easyrpg_charset_actor4#3",
+        "tex_easyrpg_charset_actor4#4",
+        "tex_easyrpg_charset_actor4#5",
+        "tex_easyrpg_charset_actor4#6",
+        "tex_easyrpg_charset_actor4#7"
+      ],
+      "sha256": "9cfa9ccb290b74cd3f0ace60f240c4e63ae48c5b3aa80f6dc0c19abd93baf27c",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-03.png",
+      "keys": [
+        "tex_easyrpg_charset_animal#0",
+        "tex_easyrpg_charset_animal#1",
+        "tex_easyrpg_charset_animal#2",
+        "tex_easyrpg_charset_animal#3",
+        "tex_easyrpg_charset_animal#4",
+        "tex_easyrpg_charset_animal#5",
+        "tex_easyrpg_charset_animal#6",
+        "tex_easyrpg_charset_animal#7",
+        "tex_easyrpg_charset_monster1#0",
+        "tex_easyrpg_charset_monster1#1",
+        "tex_easyrpg_charset_monster1#2",
+        "tex_easyrpg_charset_monster1#3",
+        "tex_easyrpg_charset_monster1#4",
+        "tex_easyrpg_charset_monster1#5",
+        "tex_easyrpg_charset_monster1#6",
+        "tex_easyrpg_charset_monster1#7"
+      ],
+      "sha256": "0dc34740ab7dc9ff6f93207dfb9ab78331b2b4bbc330fdec2faef8dfe3f0b99d",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-04.png",
+      "keys": [
+        "tex_easyrpg_charset_monster2#0",
+        "tex_easyrpg_charset_monster2#1",
+        "tex_easyrpg_charset_monster2#2",
+        "tex_easyrpg_charset_monster2#3",
+        "tex_easyrpg_charset_monster2#4",
+        "tex_easyrpg_charset_monster2#5",
+        "tex_easyrpg_charset_monster2#6",
+        "tex_easyrpg_charset_monster2#7",
+        "tex_easyrpg_charset_monster3#0",
+        "tex_easyrpg_charset_monster3#1",
+        "tex_easyrpg_charset_monster3#2",
+        "tex_easyrpg_charset_monster3#3",
+        "tex_easyrpg_charset_monster3#4",
+        "tex_easyrpg_charset_monster3#5",
+        "tex_easyrpg_charset_monster3#6",
+        "tex_easyrpg_charset_monster3#7"
+      ],
+      "sha256": "156ed5d714ce073a9f655743d6bfa3d1b9c83787fe9ee4afd4a8fe4b7a92f5bd",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-05.png",
+      "keys": [
+        "tex_easyrpg_charset_object1#0",
+        "tex_easyrpg_charset_object1#1",
+        "tex_easyrpg_charset_object1#2",
+        "tex_easyrpg_charset_object1#3",
+        "tex_easyrpg_charset_object1#4",
+        "tex_easyrpg_charset_object1#5",
+        "tex_easyrpg_charset_object1#6",
+        "tex_easyrpg_charset_object1#7",
+        "tex_easyrpg_charset_object2#0",
+        "tex_easyrpg_charset_object2#1",
+        "tex_easyrpg_charset_object2#2",
+        "tex_easyrpg_charset_object2#3",
+        "tex_easyrpg_charset_object2#4",
+        "tex_easyrpg_charset_object2#5",
+        "tex_easyrpg_charset_object2#6",
+        "tex_easyrpg_charset_object2#7"
+      ],
+      "sha256": "f7b38a0bcc2addcf9104c1bcf3e8a812151bc4a4bc03312f4153b2db0ba3ea0b",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-06.png",
+      "keys": [
+        "tex_easyrpg_charset_people1#0",
+        "tex_easyrpg_charset_people1#1",
+        "tex_easyrpg_charset_people1#2",
+        "tex_easyrpg_charset_people1#3",
+        "tex_easyrpg_charset_people1#4",
+        "tex_easyrpg_charset_people1#5",
+        "tex_easyrpg_charset_people1#6",
+        "tex_easyrpg_charset_people1#7",
+        "tex_easyrpg_charset_people2#0",
+        "tex_easyrpg_charset_people2#1",
+        "tex_easyrpg_charset_people2#2",
+        "tex_easyrpg_charset_people2#3",
+        "tex_easyrpg_charset_people2#4",
+        "tex_easyrpg_charset_people2#5",
+        "tex_easyrpg_charset_people2#6",
+        "tex_easyrpg_charset_people2#7"
+      ],
+      "sha256": "e588535ceffb96d7ab3d367160c29f989f0d7f89ce1d3fd8a6c07ddc6a325a97",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-07.png",
+      "keys": [
+        "tex_easyrpg_charset_people3#0",
+        "tex_easyrpg_charset_people3#1",
+        "tex_easyrpg_charset_people3#2",
+        "tex_easyrpg_charset_people3#3",
+        "tex_easyrpg_charset_people3#4",
+        "tex_easyrpg_charset_people3#5",
+        "tex_easyrpg_charset_people3#6",
+        "tex_easyrpg_charset_people3#7",
+        "tex_easyrpg_charset_people4#0",
+        "tex_easyrpg_charset_people4#1",
+        "tex_easyrpg_charset_people4#2",
+        "tex_easyrpg_charset_people4#3",
+        "tex_easyrpg_charset_people4#4",
+        "tex_easyrpg_charset_people4#5",
+        "tex_easyrpg_charset_people4#6",
+        "tex_easyrpg_charset_people4#7"
+      ],
+      "sha256": "4eafa6cface7c93b437bd9c99664e5017f876f07830bda434c8990bcb6d9a41b",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-08.png",
+      "keys": [
+        "tex_easyrpg_charset_people5#0",
+        "tex_easyrpg_charset_people5#1",
+        "tex_easyrpg_charset_people5#2",
+        "tex_easyrpg_charset_people5#3",
+        "tex_easyrpg_charset_people5#4",
+        "tex_easyrpg_charset_people5#5",
+        "tex_easyrpg_charset_people5#6",
+        "tex_easyrpg_charset_people5#7",
+        "tex_easyrpg_charset_template#0",
+        "tex_easyrpg_charset_template#1",
+        "tex_easyrpg_charset_template#2",
+        "tex_easyrpg_charset_vehicles#0",
+        "tex_easyrpg_charset_vehicles#1",
+        "tex_easyrpg_charset_vehicles#2",
+        "tex_easyrpg_charset_vehicles#3",
+        "tex_easyrpg_charset_vehicles#4"
+      ],
+      "sha256": "b41334eec93584cf530597ad9ad07d42132f651a28d64a1bb5cd7c8ab3de3783",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-09.png",
+      "keys": [
+        "tex_easyrpg_charset_vehicles#5",
+        "tex_easyrpg_charset_vehicles#6",
+        "tex_easyrpg_charset_vehicles#7",
+        "tex_scarloxy_charset_people1#0",
+        "tex_scarloxy_charset_people1#1",
+        "tex_scarloxy_charset_people1#2",
+        "tex_scarloxy_charset_people1#3",
+        "tex_scarloxy_charset_people1#4",
+        "tex_scarloxy_charset_people1#5",
+        "tex_scarloxy_charset_people1#6",
+        "tex_scarloxy_charset_people1#7",
+        "tex_scarloxy_charset_people2#0",
+        "tex_scarloxy_charset_people2#1",
+        "tex_farming_charset_chicken#0",
+        "tex_farming_charset_cow#0",
+        "tex_easyrpg_charset_monster4#0"
+      ],
+      "sha256": "7aba30f619af97a58512f0f9054549ac35a7751ff7ffede798735dd218bbb950",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-10.png",
+      "keys": [
+        "tex_easyrpg_charset_monster4#1",
+        "tex_easyrpg_charset_monster4#2",
+        "tex_easyrpg_charset_monster4#3",
+        "tex_easyrpg_charset_monster4#4",
+        "tex_easyrpg_charset_monster4#5",
+        "tex_easyrpg_charset_monster4#6",
+        "tex_easyrpg_charset_monster4#7",
+        "tex_easyrpg_charset_monster5#0",
+        "tex_easyrpg_charset_monster5#1",
+        "tex_easyrpg_charset_monster5#2",
+        "tex_easyrpg_charset_monster5#3",
+        "tex_easyrpg_charset_monster5#4",
+        "tex_easyrpg_charset_monster5#5",
+        "tex_easyrpg_charset_monster5#6",
+        "tex_easyrpg_charset_monster5#7",
+        "tex_easyrpg_charset_monster6#0"
+      ],
+      "sha256": "ebde703e2b4622e822f7dbf85f183a75d6773787d29f188d56d13653e3bbe163",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-11.png",
+      "keys": [
+        "tex_easyrpg_charset_monster6#1",
+        "tex_easyrpg_charset_monster6#2",
+        "tex_easyrpg_charset_monster6#3",
+        "tex_easyrpg_charset_monster6#4",
+        "tex_easyrpg_charset_monster6#5",
+        "tex_easyrpg_charset_monster6#6",
+        "tex_easyrpg_charset_monster6#7",
+        "shared_charset_actor_8fdd8e7801d612a1c6226755#0",
+        "shared_charset_actor_d6bb6490e5157cb200df2b2e#0",
+        "shared_charset_actor_35dccff3a96f78b64ebb2ba1#0",
+        "shared_charset_actor_89a8c168b42a386b7fd18509#0",
+        "shared_charset_actor_6315ffdd4735b96ddffd409c#0",
+        "shared_charset_actor_d0f9f5fed296177c5c6ec46b#0",
+        "shared_charset_actor_455032738338152396c3511c#0",
+        "shared_charset_actor_bbc6edef4ad8502819a198a6#0",
+        "shared_charset_actor_3bd0d64c00742e7131b3565d#0"
+      ],
+      "sha256": "d8126bd79bdbccf71b56da0ee8febc327f6daae4285dba79b2b86b56a994ad24",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-12.png",
+      "keys": [
+        "shared_charset_actor_1c7bfb452daa8709d8feb1e9#0",
+        "shared_charset_actor_fd8748ebb430a4a086a5aefe#0",
+        "shared_charset_actor_b621f09c489c823e841f32db#0",
+        "shared_charset_actor_924cf6aa494e61dc2d7e5440#0",
+        "shared_charset_actor_6ba670d6053fc1ccfbaaa1ea#0",
+        "shared_charset_actor_4d29ea96ff787aae2605682a#0",
+        "shared_charset_actor_365ba77b1ad650b8c9aa83ac#0",
+        "shared_charset_actor_cd8c995d9268185f90ed2118#0",
+        "shared_charset_actor_2c73a6185b4c5854d9f5951e#0",
+        "shared_charset_actor_0c4128febd522e8eddf40857#0",
+        "shared_charset_actor_02632d7333594f71d818410f#0",
+        "shared_charset_actor_c957dc0d23caf1c746941683#0",
+        "shared_charset_actor_0dd17190451bc0bbad6d4f43#0",
+        "shared_charset_actor_ec3b35561a2a349315a46eb8#0",
+        "shared_charset_actor_197da07ed39deb016727ee65#0",
+        "shared_charset_actor_89a179e9be4b81d939c71e80#0"
+      ],
+      "sha256": "ee38bc1af35c33c110cf955046bae3a2f987d17e3e7fbc9b630898b01dcb7198",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-13.png",
+      "keys": [
+        "shared_charset_actor_b6939773d876a9f1b485e712#0",
+        "shared_charset_actor_7f952617ada7f56994f44bb5#0",
+        "shared_charset_actor_b5d02ca1a934932c7a019dcb#0",
+        "shared_charset_actor_8b42e20af268086c746a68a4#0",
+        "shared_charset_actor_4ad9a2fe0a170c5694471afb#0",
+        "shared_charset_actor_07122fb3105ae879fb551d8f#0",
+        "shared_charset_actor_fbb23ea1db4dfda21ea7e83d#0",
+        "shared_charset_actor_ee94e6df9a99c9732768e982#0",
+        "shared_charset_actor_457fe5b7234f8bc4813ef7e1#0",
+        "shared_charset_actor_1e5ed6420e2ef0167d9b322e#0",
+        "shared_charset_actor_7cd55d541bd7f3d5078cdffb#0",
+        "shared_charset_actor_b2d197b31eb433842565422c#0",
+        "shared_charset_actor_f9e0013f39f9ad3d5ef02de6#0",
+        "shared_charset_actor_411ce1bbcf10a437c93553a7#0",
+        "shared_charset_actor_d632345c4572998d1da26f6f#0",
+        "shared_charset_actor_1572eb35401a302910edb9a1#0"
+      ],
+      "sha256": "91f70813742f39fe512805a59f8dd2e517515fb2899c8ea65e9ec4b6247f0670",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-14.png",
+      "keys": [
+        "shared_charset_actor_5c3f2f751147163b6f1893a4#0",
+        "shared_charset_actor_e87fd01fcad8bad5de951a99#0",
+        "shared_charset_actor_f011d99f58a0f72907a52b80#0",
+        "shared_charset_actor_abeb18dbb8cd376456f22239#0",
+        "shared_charset_actor_0e6e611b752feb5ea9f3fe96#0",
+        "shared_charset_actor_c1efc0a7dc127cd870df416b#0",
+        "shared_charset_actor_22115041551bc9f213a95d5e#0",
+        "shared_charset_actor_5325958566a48e7bb7cd72d1#0",
+        "shared_charset_actor_cd16c274f98a1bc06d1356e4#0",
+        "shared_charset_actor_5624ea240544ac2f51638b6e#0",
+        "shared_charset_actor_5e8f0cd454ef21215d4cac63#0",
+        "shared_charset_actor_b36bbae678b9ee9bef715702#0",
+        "shared_charset_actor_bb0ab2c8b33e28b671f7cc96#0",
+        "shared_charset_actor_71ddaf4f77376df8f4cd2924#0",
+        "shared_charset_actor_3b08541741b00d9bcefd57ff#0",
+        "shared_charset_actor_fd389ce83d79ae0b1f0959e9#0"
+      ],
+      "sha256": "1ff3a60154c65a90fe2c295685c1d6e638da7c62d67b834ae326a300ed9707b4",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-15.png",
+      "keys": [
+        "shared_charset_actor_0f853b1c5e34e9e5b1bcc3f6#0",
+        "shared_charset_actor_4c0b1b28de28be1054442ec6#0",
+        "shared_charset_actor_93179924207ba6ac8a6f0463#0",
+        "shared_charset_actor_78f18c284ed7989320a03daa#0",
+        "shared_charset_actor_e24b1904d7206f6b67742650#0",
+        "shared_charset_actor_6d21e415b5c8b87844409a7d#0",
+        "shared_charset_actor_2e2fb5ddfa02953fba6a4b9a#0",
+        "shared_charset_actor_ee544faa3c4e7b52b098445a#0",
+        "shared_charset_actor_17ab019339467e191ee50e09#0",
+        "shared_charset_actor_aa7aaa2d60ffab3e9a1b32bf#0",
+        "shared_charset_actor_fa326ab8803e05fc3f977b62#0",
+        "shared_charset_actor_e5d1eff501e2d85ea1f85c09#0",
+        "shared_charset_actor_a4d919d5284623e98c838068#0",
+        "shared_charset_actor_9e7d0c2812327b6204cd9f19#0",
+        "shared_charset_actor_95ea826ba2295e79e542430d#0",
+        "shared_charset_actor_a79453e06d8bfde66ed2d702#0"
+      ],
+      "sha256": "e8e49b99488754d32f92d89141babb6abeee881ec733e5c90dcc9581502cdcdd",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-16.png",
+      "keys": [
+        "shared_charset_actor_935067e443d46d499b6ce703#0",
+        "shared_charset_actor_770ec05303967db67d6a467e#0",
+        "shared_charset_actor_cc7ce3fd5768813e24d07513#0",
+        "shared_charset_actor_0237fe677d8c189f28f8e112#0",
+        "shared_charset_actor_96c30a0bda1b0709cc59deb5#0",
+        "shared_charset_actor_55b23fc144eff16035cb1cba#0",
+        "shared_charset_actor_e669779e1e5538fd977cc1c2#0",
+        "shared_charset_actor_56b273480417f90a3c916c74#0",
+        "shared_charset_actor_37c57e2e19e6d03023005293#0",
+        "shared_charset_actor_7370ce4623989b27b7c6c22b#0",
+        "shared_charset_actor_025e884aebd4cc9ac2108aa0#0",
+        "shared_charset_actor_4f5198c875837d42cafd9ced#0",
+        "shared_charset_actor_b6a47a24299e52177ebea888#0",
+        "shared_charset_actor_b03ae9d2436b590dfa45482d#0",
+        "shared_charset_actor_81d87696699bb8469d1722ef#0",
+        "shared_charset_actor_7bf8426ba0be2d6d9936df91#0"
+      ],
+      "sha256": "c55b05d0f03e95d843d635edbc24aca61fd4b955abd55af134d39105384c9ce7",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-17.png",
+      "keys": [
+        "shared_charset_actor_c2f51a571570e4f85f29e95a#0",
+        "shared_charset_actor_e2f352d478a8c3902a8d37be#0",
+        "shared_charset_actor_50ab0db33f11293c63a5daf9#0",
+        "shared_charset_actor_f47492029de64734d6c704ff#0",
+        "shared_charset_actor_381d3a80a0234ade2eea7034#0",
+        "shared_charset_actor_f3c69c410efda9f1507667af#0",
+        "shared_charset_actor_f80c1690f53b215a6f57083c#0",
+        "shared_charset_actor_6fd470043363bf3ac41a20a7#0",
+        "shared_charset_actor_e308195ddc056c1d20bc28f6#0",
+        "shared_charset_actor_0f0ad0287c16dcf426e35e04#0",
+        "shared_charset_actor_a4c18b71095e2d66817b07ba#0",
+        "shared_charset_actor_0ab0b1e12952f33797c9ddc7#0",
+        "shared_charset_actor_c8c8e0acc9bfba977fe6266b#0",
+        "shared_charset_actor_bc1e08b1e81d03d690a506cc#0",
+        "shared_charset_actor_9c21cd8ba052bfd1266c0e81#0",
+        "shared_charset_actor_dbe853f2d5e9b089df46c2da#0"
+      ],
+      "sha256": "53494127a03492b6a206b69daf536a04f2770d72d4690cb3c09bea3c4728c2c9",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-18.png",
+      "keys": [
+        "shared_charset_actor_87dee29135875f78ac54074b#0",
+        "shared_charset_actor_401339656b215fa7fc6e9a60#0",
+        "shared_charset_actor_56a2cdca9cb3ca991d34cd74#0",
+        "shared_charset_actor_626e013c6e4eb9f092f65318#0",
+        "shared_charset_actor_397395f7a42fd9e55bf3b57f#0",
+        "shared_charset_actor_93f9ee14f8acb228e25ef9f9#0",
+        "shared_charset_actor_2f48cef433e6a3d0c9da92e2#0",
+        "shared_charset_actor_6f0dedbc49ab83dc84934330#0",
+        "shared_charset_actor_4756c3689dcaa1a196dc5751#0",
+        "shared_charset_actor_aed976ab2df94f4fff9fbe59#0",
+        "shared_charset_actor_cd6c16904f0fdf83082efcd1#0",
+        "shared_charset_actor_283da73a0f13600d3c339061#0",
+        "shared_charset_actor_03b6fa6cb856a0141829fc6f#0",
+        "shared_charset_actor_075e9b75c250cec74a1a96dd#0",
+        "shared_charset_actor_06d88e89fe548aba7e9417ab#0",
+        "shared_charset_actor_981685d0e576f8b8d19a5fdf#0"
+      ],
+      "sha256": "faade4332c7aa87db85b3a68670ebbc7ddb2e58db49237a6dcddca0d10ec6da3",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-19.png",
+      "keys": [
+        "shared_charset_actor_d2f620048d5f89f4f405b191#0",
+        "shared_charset_actor_3282f1b3d6ffedd69f83bca3#0",
+        "shared_charset_actor_80dbe8b9dc59bc2156d01d30#0",
+        "shared_charset_actor_20052b573756d660bacffce7#0",
+        "shared_charset_actor_f03fd4c8091231fc4bd70645#0",
+        "shared_charset_actor_860ffe41901cd0ce528c0a18#0",
+        "shared_charset_actor_18f9a4f4f4f5e5929f5575df#0",
+        "shared_charset_actor_c8e142f9dceacfc5febd4cff#0",
+        "shared_charset_actor_32388d8d80eed406c21d351f#0",
+        "shared_charset_actor_cb4a607ee34a8e92045b2d33#0",
+        "shared_charset_actor_664a71f651127569d9377cf2#0",
+        "shared_charset_actor_19cdb4a901258a4655b76051#0",
+        "shared_charset_actor_5b80e8e8e1917ee987e391af#0",
+        "shared_charset_actor_417adf15680f5d2802f79853#0",
+        "shared_charset_actor_c3c033e13ef4f6b29f74eb02#0",
+        "shared_charset_actor_9ede304902734ca4151ef416#0"
+      ],
+      "sha256": "04f502adea1cce970f9b0026f6c16a952e57afeba34da3d1e51eca4e2295451a",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-20.png",
+      "keys": [
+        "shared_charset_actor_60b4c35fcb85bc8c5dd49407#0",
+        "shared_charset_actor_6034c5e1d436c0c62283ccdb#0",
+        "shared_charset_actor_b21f8a6080ce222c429f1f09#0",
+        "shared_charset_actor_556ba719a1a4b7cb9956537a#0",
+        "shared_charset_actor_cca28e338a2bba287acc84b5#0",
+        "shared_charset_actor_cf8c207ac3e339a4ecfa5f75#0",
+        "shared_charset_actor_628c442bd23b95ffd458f909#0",
+        "shared_charset_actor_1ad763c837902738cb9e25b7#0",
+        "shared_charset_actor_3b8b532636bf5f6c7ddf2cc4#0",
+        "shared_charset_actor_04049e6ac576560dd97560f1#0",
+        "shared_charset_actor_7393c8da7f9efee9380e608a#0",
+        "shared_charset_actor_5513e558938ca7ff7b38e210#0",
+        "shared_charset_actor_b8dd0090c3ed1353a5695854#0",
+        "shared_charset_actor_46e0954703fbd7eb8435b483#0",
+        "shared_charset_actor_32746007f5aa462db8ba95e2#0",
+        "shared_charset_actor_62df373fdb8e1edab0b36f65#0"
+      ],
+      "sha256": "5790335e487962142b6515510dd9602abb2d6eff54452c2859f387536a8053c2",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    },
+    {
+      "file": "verify-shots/full-character-reference-audit-20261005/walking/contact-21.png",
+      "keys": [
+        "shared_charset_actor_f645ac9fceaa9ea06308d54c#0",
+        "shared_charset_actor_4ec58c36b3c464051292644a#0",
+        "shared_charset_actor_206c2480cae2383132c3a35a#0",
+        "shared_charset_actor_9e2394ad0095ff2403e81f8c#0"
+      ],
+      "sha256": "3192158b5470e4ae08ee3ecdc9a0abeafcf36175062eedb386d9c3b13ae7dc8a",
+      "status": "inspected",
+      "scope": "down still and all four directions, with full semantic text"
+    }
+  ],
+  "privateScope": {
+    "projectsReadOnly": 47,
+    "uniquePrivateAssets": 185,
+    "monsterImages": 180,
+    "charsetVersions": 5,
+    "faces": 0,
+    "visuallyInspectedPages": 9,
+    "uploadedNamesAreAuthored": true,
+    "publication": "Private names, ids, paths and images excluded."
+  },
+  "scopeLimits": [
+    "Battlers: representative idle pose and walking identity; not every animation frame.",
+    "Browser IndexedDB and inaccessible external project hosts excluded.",
+    "Species names and narrative/gender roles are authored intent, not verified by pixels.",
+    "10 faces-core pages were rerendered to remove erroneous secondary previews; primary face pixels were inspected before rerender and are unchanged."
+  ]
+}

@@ -6,7 +6,7 @@ import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFi
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
+import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
