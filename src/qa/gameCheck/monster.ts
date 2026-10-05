@@ -134,7 +134,7 @@ export function checkMonster(project: Project, briefText?: string): Finding[] {
     const lower = new Set(map.lowerTiles ?? []);
     const upperUsed = (map.upperTiles ?? []).some((tile) => tile !== TILE.EMPTY && tile !== 0);
     if (lower.size <= 1 && !upperUsed) {
-      findings.push({ severity: "warning", code: "monster-gym-map-bare", message: `체육관 맵 ${map.name} 이 한 가지 바닥 타일뿐인 빈 판입니다(벽·장식 없음) — run_dungeon_room_pipeline 등으로 시공하세요.`, where: { mapId: map.id, mapName: map.name } });
+      findings.push({ severity: "warning", code: "monster-gym-map-bare", message: `체육관 맵 ${map.name} 이 한 가지 바닥 타일뿐인 빈 판입니다(벽·장식 없음) — build_hand_interior_room 등으로 시공하세요.`, where: { mapId: map.id, mapName: map.name } });
     }
   }
   return findings;

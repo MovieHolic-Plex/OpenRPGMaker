@@ -6,6 +6,7 @@ import diverseReferences from "@/assets/sharedDiverseVillageReferences.json";
 import proseCorrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-prose-corrections.json";
 import corrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-corrections.json";
 import signLabels from "../../../tiledata/rpg-places/sign-labels.json";
+import { isRetiredEasyRpgTileset } from "../retiredEasyRpgTilesets";
 import type { Project, TilesetDef } from "../types";
 
 export const FOREST_HARMONY_TEXTURE = "tex_forest_harmony";
@@ -20,20 +21,19 @@ export function createForestHarmonyTileset(): TilesetDef {
 
 /**
  * 새 야외 저작의 기본 타일셋.
- * - 버들항(기본 타일셋)을 가졌고 **모든 맵이 버들항**이면(새 프로젝트, 버들항만 쓰는 프로젝트) 버들항이다 —
- *   "마을 만들어 줘" 가 숲마을이나 합본 마을로 새어 나가지 않게 한다.
- * - 이미 숲마을·합본 마을 등 다른 계열 맵이 하나라도 있으면 종전대로 숲마을(없으면 기본 타일셋)을 유지한다.
- *   기존 프로젝트의 기본값을 바꾸지 않는다.
+ * - 버들항(기본 타일셋)을 가졌으면 버들항이다. 숲마을(EasyRPG 재칠)은 폐기됐다(2026-10-06 「대체품이 생기기 전까지 막고」).
+ * - 예외: 버들항 맵이 하나도 없고 EasyRPG 계열 맵(숲마을·합본 마을 등)이 있는 옛 프로젝트는 숲마을을 유지한다 — 사람이 새 맵을 열 때 그림체가 바뀌지 않게.
+ *   조수는 그 칩셋으로 새 맵을 만들지 못한다(실행기 rejectRetiredEasyRpgMaps) — 그림체 변경을 사용자에게 묻는다.
+ * 예전엔 버들항이 아닌 맵이 하나라도 있으면(실내 v5·세계 지도 포함) 숲마을로 갔다 — 버들항 프로젝트에 실내 하나만 지어도
+ * 다음 「마을 만들어 줘」가 숲마을로 새었다.
  */
 export function defaultOutdoorTilesetId(project: Pick<Project, "tilesets"> & Partial<Pick<Project, "maps">>): string {
-  if (project.tilesets[DEFAULT_TILESET_ID] && onlyDefaultTilesetMaps(project.maps)) return DEFAULT_TILESET_ID;
-  return isForestHarmonyTileset(project.tilesets[FOREST_HARMONY_ID])
-    ? FOREST_HARMONY_ID : DEFAULT_TILESET_ID;
-}
-
-function onlyDefaultTilesetMaps(maps: Project["maps"] | undefined): boolean {
-  if (!maps) return false;
-  return Object.values(maps).every((m) => m.tilesetId === DEFAULT_TILESET_ID);
+  const forest = isForestHarmonyTileset(project.tilesets[FOREST_HARMONY_ID]);
+  if (!project.tilesets[DEFAULT_TILESET_ID]) return forest ? FOREST_HARMONY_ID : DEFAULT_TILESET_ID;
+  const maps = Object.values(project.maps ?? {});
+  const legacyForest = forest && !maps.some((m) => m.tilesetId === DEFAULT_TILESET_ID)
+    && maps.some((m) => isRetiredEasyRpgTileset(project, m.tilesetId));
+  return legacyForest ? FOREST_HARMONY_ID : DEFAULT_TILESET_ID;
 }
 
 /** tilesetId 생략 도구의 대상: 시작 맵 타일셋, 없으면 새 야외 기본(숲마을). 합본 마을로 폴백하지 않는다. */

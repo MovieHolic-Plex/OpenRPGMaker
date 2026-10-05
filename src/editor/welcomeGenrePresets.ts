@@ -176,7 +176,7 @@ export const MONSTER_COLLECT_AUTHORING_GUIDE = [
   "- 첫 파트너는 give_starter_monsters(3종 선택 + 재지급 방지)로 만든다.",
   "- 도로·필드 맵은 create_map 뒤 author_wild_route({mapId, exits, grassPatches, encounters:[{troopId,weight}]}) 로 흙길·숲·키큰 풀숲과 「풀숲에서만」 나오는 야생 조우를 한 번에 시공한다. 결과 exits 칸에 create_transfer_pair 로 문을 달고, trainerSpots 에 트레이너를 둔다.",
   "- 트레이너·관장은 place_npc 페이지 commands 에 {kind:\"battleProcessing\", troopId:\"조회한 troop id\", canEscape:false, canLose:false} 를 넣는다. 트레이너의 몬스터는 upsert_enemy(speciesId) → upsert_troop 로 만든다.",
-  "- 체육관은 create_map 빈 잔디로 만들지 않는다 — run_dungeon_room_pipeline({mapId:\"map_gym\", name:\"○○ 체육관\", theme:\"stone\", character:\"crypt\", path:\"straight\", hazard:false, linkMapId:\"들어오는 맵\"}) 로 석상이 선 돌 회관을 시공하고, 관장은 입구에서 먼 안쪽 칸에 place_npc 로 세운다.",
+  "- 체육관은 create_map 빈 잔디로 만들지 않는다 — build_hand_interior_room(손 도트 실내 v5)으로 넓은 홀 한 칸(석상·기둥·양탄자)을 짓고, 관장은 입구에서 먼 안쪽 칸에 place_npc 로 세운다. 던전 방 생성기는 EasyRPG 칩셋이라 쓰지 않는다.",
   "- 연구소·회복 센터·상점은 마을 집 실내를 쓴다 — 그 맵 이름을 시설 이름으로 바꾸고(set_map_properties) 마을 문 앞에 표지판을 둔다.",
 ].join("\n");
 
