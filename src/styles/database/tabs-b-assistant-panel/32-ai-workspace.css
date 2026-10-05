@@ -1,5 +1,10 @@
 /* One overlay workspace; the map keeps the same width when it opens. */
 .ai-right-dock { flex: 0 0 44px; width: 44px; min-width: 44px; z-index: 43; }
+/* The conversation overlay must leave map controls clickable. */
+.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar {
+  right: min(348px, calc(100vw - 80px));
+  max-width: calc(100% - 360px);
+}
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
   position: absolute; inset: 0 0 0 auto; width: min(380px, calc(100vw - 48px));
   min-width: 0; max-width: none; height: 100%; max-height: none;

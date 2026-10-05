@@ -70,6 +70,7 @@ export interface EditorState {
   paintShape: PaintShape;
   selectedTile: number;
   autoConnectMode: AutoConnectMode;
+  worldmapAutoBackground: boolean;
   clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
@@ -161,6 +162,7 @@ class EditorStateStore {
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.
     autoConnectMode: false,
+    worldmapAutoBackground: true,
     // 보조 배치가 기본 — 평범한 사용자에게는 짝이 자동으로 맞는 쪽이 안전하다.
     clusterAssistMode: true,
     activePaletteStamp: null,
@@ -297,6 +299,7 @@ const PALETTE_REFRESH_KEYS = [
   "paintShape",
   "selectedTile",
   "autoConnectMode",
+  "worldmapAutoBackground",
   "clusterAssistMode",
   "activePaletteStamp",
   "brushSize",

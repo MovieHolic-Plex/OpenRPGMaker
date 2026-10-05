@@ -181,6 +181,7 @@ function paletteRenderInputs(): readonly unknown[] | null {
     state.paintShape,
     state.selectedTile,
     state.autoConnectMode,
+    state.worldmapAutoBackground,
     state.clusterAssistMode,
     state.activePaletteStamp,
     state.brushSize,
@@ -474,14 +475,13 @@ function makePaletteSurface(input: {
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
   if (state.tool === 'paint' && !state.activePaletteStamp) options.append(makePaintShapeSelect(model));
-  if (assist.modeRow) options.append(assist.modeRow);
+  if (assist.modeRow && !hasWorldmapBrushes(tileset)) options.append(assist.modeRow);
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
-  if (assist.clusterRow) options.append(assist.clusterRow);
+  if (assist.clusterRow && !hasWorldmapBrushes(tileset)) options.append(assist.clusterRow);
   root.append(options);
   if(hasWorldmapBrushes(tileset)) {
     const palette=makeWorldmapBrushShelf(tileset,tileLayer,state.selectedTile,selectPaletteTile,renderPalettePreservingViewport);
     palette.dataset.testid='tile-palette';palette.dataset.retainKey=paintSheetRetainKey(tileset,tileLayer);
-    if(tileLayer==='upper'&&tileset.structureKits?.length)palette.append(makeStructureKitShelf({tileset,title:'거점 · 전체 아이콘',activeKitId:state.activePaletteStamp?.kitId??null,rerender:renderPalettePreservingViewport})!);
     root.append(palette);return{root,palette,sheetSlot:null};
   }
   if (usesMaterialGrid(tileset) && tileLayer === 'upper' && tileset.structureKits?.length) {
@@ -1010,14 +1010,14 @@ export function selectPaletteTile(index: number): void {
       if (home !== "both" && home !== state.layer) nextLayer = home;
     }
     const keepTools = new Set(["paint", "fill", "erase", "event"]);
-    const switchToPaint = !keepTools.has(state.tool) && nextLayer !== "event";
+    const switchToPaint = (!keepTools.has(state.tool) || state.tool === 'erase' && !!tileset && hasWorldmapBrushes(tileset)) && nextLayer !== "event";
     editorState.set({
       activePaletteStamp: null,
       layer: nextLayer,
       selectedTile: index,
       ...(switchToPaint ? { tool: "paint" as const } : {}),
     });
-    if (nextLayer !== state.layer) {
+    if (nextLayer !== state.layer && !tileset?.autotileGroups?.some(g=>g.id==='worldmap-brush-grass-sea')) {
       toast(
         nextLayer === "upper" ? "상위 레이어 타일 — 상위 레이어 편집으로 전환" : "하위 레이어 타일 — 하위 레이어 편집으로 전환",
         "ok"

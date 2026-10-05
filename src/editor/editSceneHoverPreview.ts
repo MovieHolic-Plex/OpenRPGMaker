@@ -1,5 +1,6 @@
 import { prepareReliefRead } from "./reliefGroundSurface";
 import { mapTileSize } from "@/project/tileGeometry";
+import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
 import type Phaser from "phaser";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { comboBrushPlacement } from "@/editor/comboBrush";
@@ -129,7 +130,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     : "";
   return [
     spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
-    state.selectedTile, state.brushSize, state.paintShape, stampKey,
+    state.selectedTile, state.worldmapAutoBackground, state.brushSize, state.paintShape, stampKey,
     state.terrainSymmetry, state.terrainStampId, state.terrainStampRotation, state.terrainStampMirror, state.terrainStampCapture,
     state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
@@ -196,7 +197,9 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   for (const { x, y } of brushStrokePoints({ centerX: spec.centerX, centerY: spec.centerY, size })) {
     if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
     if (!erasing) {
-      const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, state.selectedTile);
+      const tile = state.worldmapAutoBackground && state.clusterAssistMode
+        ? worldmapAutoTile(map, tileset, state.selectedTile, x, y) : state.selectedTile;
+      const preview = createChipsetTileObject(spec.scene, map, tileset, x, y, tile);
       preview.setAlpha(0.62);
       spec.layer.add(preview);
     }

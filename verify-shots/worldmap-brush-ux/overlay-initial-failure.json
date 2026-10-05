@@ -1,0 +1,13 @@
+{
+  "prompt": "지금 여행 지도에 왼쪽 초원에서 오른쪽 설원까지, (4,18)부터 (55,18)까지 한 칸 폭의 길을 만들어줘. 초원·사막·설원 바탕은 유지하고 세 강을 건널 수 있게 다리를 이어줘. 초원 북쪽에는 둥근 숲, 사막 북쪽에는 산맥, 설원 북쪽에는 눈 덮인 숲을 조금 깔고, 길 가까이에 초원 마을과 설원 마을 하나씩 놓아줘. 실제 지도에 적용하고 그림을 확인해.",
+  "nativeComposer": true,
+  "requests": [],
+  "errors": [],
+  "events": [],
+  "before": {
+    "projectId": "12f33278-9290-483d-9270-2e3eed11de27",
+    "revision": 3,
+    "sha256": "3cd547405664a62ae35ede3221f0c08a3ddb0a645cbeda31f20660e7d5c00f86"
+  },
+  "failure": "locator.click: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('editor-zoom-stepper')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" title=\"배율 목록\" aria-label=\"현재 2배\" aria-expanded=\"false\" data-testid=\"editor-zoom-stepper\" class=\"oprn-tool-button zoom-stepper-current\">2x</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <span class=\"ai-deck-rail-ctx\" data-testid=\"ai-deck-rail-ctx\">초원·사막·설원 여행 지도</span> from <aside aria-label=\"조수\" class=\"ai-right-dock\" data-testid=\"editor-ai-dock\">…</aside> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <span class=\"ai-deck-rail-ctx\" data-testid=\"ai-deck-rail-ctx\">초원·사막·설원 여행 지도</span> from <aside aria-label=\"조수\" class=\"ai-right-dock\" data-testid=\"editor-ai-dock\">…</aside> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    219 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m        - element is visible, enabled and stable\u001b[22m\n\u001b[2m        - scrolling into view if needed\u001b[22m\n\u001b[2m        - done scrolling\u001b[22m\n\u001b[2m        - <span class=\"ai-deck-rail-ctx\" data-testid=\"ai-deck-rail-ctx\">초원·사막·설원 여행 지도</span> from <aside aria-label=\"조수\" class=\"ai-right-dock\" data-testid=\"editor-ai-dock\">…</aside> subtree intercepts pointer events\u001b[22m\n\u001b[2m      - retrying click action\u001b[22m\n\u001b[2m        - waiting 500ms\u001b[22m\n"
+}
