@@ -1,5 +1,6 @@
 """Run prepared drawing harnesses outside the planning worker's nested sandbox."""
 import json
+import hashlib
 import os
 from pathlib import Path
 import signal
@@ -25,6 +26,10 @@ def prepare(root, request):
     # own prepared worktree and choice store instead of inheriting those paths.
     env.pop('PROP_HARNESS_CONTENT_ROOT', None)
     env.pop('HIP_DB', None)
+    work_base = Path(os.environ.get('SUPER_HARNESS_DATA', Path.home()/'.local/share/oprn/super-harness')) / 'work' / 'native'
+    work = work_base / (root.name + '-' + hashlib.sha256(str(request.get('data', '')).encode()).hexdigest()[:12])
+    work.mkdir(parents=True, exist_ok=True)
+    env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work))
     harness = request.get('harness')
     if harness == 'interior-props':
         env.update(PROP_HARNESS_DATA=local('data'), HIP_DATA=local('picks'), HIP_PICK=local('picks'))

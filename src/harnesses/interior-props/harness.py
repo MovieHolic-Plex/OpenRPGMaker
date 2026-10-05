@@ -35,7 +35,7 @@ N_DEFAULT = 2   # 후보 둘(설명 충실·같은 방 화풍, 또는 최소 수
 CANDS = os.path.join(os.path.abspath(os.environ['PROP_HARNESS_CONTENT_ROOT']), 'tiledata/hand-interior/pick/candidates') if os.environ.get('PROP_HARNESS_CONTENT_ROOT') else 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
-WORK = os.path.join(store.DATA, 'work')   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
+WORK = os.path.abspath(os.environ.get('PROP_HARNESS_WORK', os.path.join(store.DATA, 'work')))   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
 
 
 def claude_bin():

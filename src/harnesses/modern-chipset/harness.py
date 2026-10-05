@@ -159,7 +159,11 @@ def run_claude(prompt, log, effort, images=()):
                        '권고는 warnings에 남기고 기존 native 결과 JSON 형식·그림 해시·품목별 검수는 유지하세요. '
                        '실제 그림의 필수 결함은 도면 PASS로 면제되지 않습니다.')
     if os.environ.get('VEH_HARNESS_BACKEND') == 'codex':
-        cmd = ['codex', 'exec', '--dangerously-bypass-approvals-and-sandbox', '--skip-git-repo-check', '-C', ROOT,
+        # Keep unrelated project instructions out of a single-pixel-worker session.
+        work = os.path.abspath(os.environ.get('VEH_HARNESS_WORK', ROOT))
+        os.makedirs(work, exist_ok=True)
+        prompt += '\n실제 저장소 루트는 ' + ROOT + '. 상대 경로 명령은 먼저 이 루트로 cd하고 실행한다. 파일은 필요한 절만 나눠 읽고 큰 JSON/이미지 목록을 한꺼번에 출력하지 않는다.'
+        cmd = [os.environ.get('VEH_CODEX_BIN', 'codex'), 'exec', '--dangerously-bypass-approvals-and-sandbox', '--skip-git-repo-check', '-C', work,
                '-c', f'model_reasoning_effort="{os.environ.get("VEH_CODEX_EFFORT", "high")}"']
         if os.environ.get('VEH_CODEX_MODEL'): cmd += ['-m', os.environ['VEH_CODEX_MODEL']]
         for im in images: cmd += ['-i', im]
