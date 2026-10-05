@@ -177,3 +177,5 @@ behavior is in [monster-campaign-menu.md](monster-campaign-menu.md).
 
 Generated character art, human-selected monster candidates, opening atmosphere,
 trainer battle portraits and victory repairs: [emerald-monster-art-v2.md](emerald-monster-art-v2.md).
+
+- Field monster / UI / music candidate review (independent harness): [pokemon-like-field-kit.md](pokemon-like-field-kit.md).
