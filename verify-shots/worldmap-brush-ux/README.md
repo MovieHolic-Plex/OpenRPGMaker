@@ -40,6 +40,9 @@
 `native.json`: 8항목 모두 true, page error 0.
 조수 펼친 채 배율 선택 / 세 바탕 길·다리 / 숲 층·바닥 보존 / 전체 거점 배열 /
 다리 지우기 / undo / 직접 바탕 설정 / 전체 context 종료 후 SQLite 재로드.
+`axes.json`: 추가 4항목 모두 true, page error 0. 가로 강에 세로 길을 놓으면 설원 바탕의
+세로 다리를 자동 선택하고, 상하 통행/좌우 차단이 맞는지 확인한 뒤 저장·재로드했다.
+![가로 강을 건너는 세로 다리](vertical-bridge.png)
 초기 오버레이 인터셉트와 지우개에서 붓 전환 실패도 보존했다.
 `native-initial-failure.json`, `overlay-initial-failure.json`.
 
@@ -53,6 +56,7 @@
 | 횡단 길·거점 | d73b111f-1dd9-4cea-ae1b-9105704010c0 | qa-runs/worldmap-brush-ux-20261005/automatic/project | 7 | 일치 |
 | 호수·곡선 강·설원 숲 | fc38705e-4f30-4b72-af1f-2e44177f4ebf | qa-runs/worldmap-brush-ux-20261005/varied/project | 7 | 일치 |
 | native 손 편집 | e92cdb03-69df-4c0f-9ce1-47c51554bb23 | qa-runs/worldmap-brush-ux-20261005/native-fixed/project | 9 | 일치 |
+| 세로 다리 추가 검수 | e92cdb03-69df-4c0f-9ce1-47c51554bb23 | qa-runs/worldmap-brush-ux-20261005/native-fixed/project | 11 | 일치 |
 
 저장 SHA는 각 proof/native JSON에 있다. 처음 경로의 저장은 성공했으나 renderer 번들을 교체하는 중
 옛 호스트의 새 context가 로드에 실패했다. 이 실행의 재로드를 통과로 세지 않았다(`baseline-proof.json`).
@@ -66,6 +70,7 @@ npx tsx --tsconfig tsconfig.json scripts/qa/worldmap-ux-fixture.mts <독립 폴�
 npm run build:packaged
 node scripts/qa/worldmap-ux-live.mjs <독립 폴더> '<자연어 프롬프트>'
 node scripts/qa/worldmap-ux-native.mjs <별도 손 편집 폴더>
+node scripts/qa/worldmap-ux-native.mjs <같은 손 편집 폴더> vertical-only
 ```
 
 실제 시트 출처는 정본 r7의 참고문서를 export-tileset-references로 추출해 읽고 실제 그림을 열었다.
@@ -76,6 +81,6 @@ node scripts/qa/worldmap-ux-native.mjs <별도 손 편집 폴더>
 
 - 자동 배경 그림은 제공된 초원/사막/설원 변형이다. 바다 횡단은 다리를 따로 설계한다.
 - 모델의 첫 재료 선택까지 항상 옳다는 근거는 없다. 실제 시각/통행 검사가 필요하다.
-- 이 기록의 도구 호출 감소는 두 고정 프롬프트의 실측이며 전체 요청 성공률이 아니다.
+- 이 기록의 도구 호출 감소는 동일 프롬프트를 개선 전후에 실행한 실측이며 전체 요청 성공률이 아니다.
 - native/조수 시험은 편집기와 저장 경로 검수다. 새 출하 player 게임 검수로 표기하지 않는다.
 - 영상 원본: qa-runs/worldmap-brush-ux-20261005/automatic/assistant.webm. MP4는 이를 6배속으로 변환했다.
