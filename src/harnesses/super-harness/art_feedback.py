@@ -107,12 +107,7 @@ def validate_review(data, cid, result, request):
             art_acceptance.validate(r, current_acceptance, CHECKS)
             art_repair.validate_comparison(r, request, group['id'])
             if failed:
-                fixes = r.get('fixes')
-                if not isinstance(fixes, list) or not fixes: raise ValueError('실패에는 구체적인 수정 지시 필요')
-                for fix in fixes:
-                    if (fix.get('category') not in ('asset', 'assembly', 'spec') or
-                        any(not isinstance(fix.get(k), str) or not fix[k].strip() for k in ('target', 'problem', 'change', 'keep'))):
-                        raise ValueError('수정 대상·문제·변경·보존 항목 필요')
+                r['fixes'] = art_layout.normalize_fixes(r.get('fixes'))
     # Recheck image/receipt sources; a unchanged manifest alone is not sufficient.
     state = art_choices.view(data, cid)
     if any(c['stale'] for g in state['groups'] for c in g['candidates']): raise ValueError('검수 대상 파일 해시가 변경됨')

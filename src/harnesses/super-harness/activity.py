@@ -55,6 +55,8 @@ def job_view(job, now):
     label = STAGE.get(job["kind"], (-1, "작업 처리"))[1]
     if job["kind"] == "art":
         label = {"prepare": "그림 주문서·제작 입력 준비", "collect": "후보 그림·검수 결과 정리"}.get(job["tag"], label)
+    if job['kind'] == 'art-layout-review' and str(job.get('tag', '')).startswith('format-'):
+        label = '검수 응답 형식 보완'
     model = None
     effort = None
     try:

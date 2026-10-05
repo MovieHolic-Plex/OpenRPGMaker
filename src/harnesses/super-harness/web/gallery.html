@@ -155,7 +155,7 @@ import { renderChoices } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '예시 평가·선택'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
+const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '예시 평가·선택'], ['wait', '작업 대기'], ['stop', '막힘'], ['discarded', '폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -167,11 +167,12 @@ function cardHtml(it) {
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
+function matchesTab(i,g) { return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
 function render() {
-  const n = (g) => L.items.filter((i) => g === 'all' || i.group === g).length;
+  const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
   const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
-  const list = L.items.filter((i) => tab === 'all' || i.group === tab)
+  const list = L.items.filter((i) => matchesTab(i,tab))
     .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
   const grid = $('grid');
   if (!list.length) { grid.innerHTML = '<p class="empty">없다</p>'; cards.clear(); return; }

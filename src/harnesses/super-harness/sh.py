@@ -829,6 +829,37 @@ def start_art_layout_review(c):
     store.update_concept(cid, status='running', note='제작 전 도면의 비례·여백·구성 검수 중')
 
 
+def repair_art_layout_response(meta, result, layout, error):
+    """Ask the reviewer to complete its response, retaining every existing verdict/evidence."""
+    cid = meta['concept']
+    attempt = int(meta.get('format_attempt', 0))
+    original = meta.get('format_original', result)
+    stamp = str(time.time_ns())
+    write_json(cdir(cid, 'art-layout-response-errors', stamp + '.json'),
+               {'at': store.now(), 'attempt': attempt, 'error': str(error), 'response': result,
+                'original': original, 'fingerprint': layout['fingerprint']})
+    if attempt >= 2:
+        store.update_concept(cid, stage='blocked', status='idle',
+                             note='검수 응답 보완 2회 실패 — 확인 필요', reasons=[str(error)])
+        store.log(cid, '검수 응답 보완 중단 — 원본과 오류를 보존했습니다: ' + str(error))
+        return
+    output = cdir(cid, 'art-layout-response-errors', stamp + '-corrected.json')
+    prompt = fill(prompt_template('art-layout-review.md'), INPUT=cdir(cid, 'art-layout-input.json'),
+                  OUTPUT=output, ROOT=layout['root'], FEEDBACK=read_json(cdir(cid, 'art-feedback.json'), {}))
+    prompt += art_acceptance.instructions(layout.get('acceptance'))
+    prompt += ('\n## 이전 검수 응답 보완\n원본의 fingerprint/gateVersion/verdict/checks/reasons와 이미 작성한 '
+               '수정 대상·문제·변경·보존 내용은 그대로 유지한다. 빠진 수정 지시 내용은 입력을 다시 확인하여 채운다. '
+               'type은 같은 값의 category로 바꿀 수 있다. 판정을 뒤집거나 근거를 줄이지 않는다. '
+               '그림·도면·계약 파일은 수정하지 않고 위 OUTPUT에 완전한 JSON 하나만 쓴다.\n'
+               + '오류: ' + str(error) + '\n원본: ' + json.dumps(original, ensure_ascii=False))
+    jid = start_codex(cid, 'art-layout-review', 'format-' + str(attempt + 1), prompt, output)
+    PROCS[jid][2].update(format_attempt=attempt + 1, format_original=original,
+                         adjudication=bool(meta.get('adjudication')))
+    store.update_concept(cid, stage='art-layout-review', status='running',
+                         note=f'검수 응답 보완 중 ({attempt + 1}/2) — 그림 수정 횟수 유지', reasons=[str(error)])
+    store.log(cid, f'검수 응답 보완 {attempt + 1}/2 시작: {error}')
+
+
 def on_art_layout_review(meta, code, result):
     cid = meta['concept']
     try:
@@ -836,7 +867,18 @@ def on_art_layout_review(meta, code, result):
         request = read_json(cdir(cid, 'art-execution.json'))
         wt = os.path.join(DATA, 'art-worktrees', cid)
         layout = art_layout.build_input(wt, request)
-        art_layout.validate_verdict(result, layout['fingerprint'], art_layout.LAYOUT_CHECKS)
+        raw = json.loads(json.dumps(result))
+        try:
+            if meta.get('format_attempt'):
+                art_layout.preserve_verdict(meta.get('format_original'), result)
+            art_layout.validate_verdict(result, layout['fingerprint'], art_layout.LAYOUT_CHECKS)
+        except art_layout.ReviewFormatError as error:
+            repair_art_layout_response(meta, result, layout, error)
+            return
+        if raw != result:
+            write_json(cdir(cid, 'art-layout-response-errors', str(time.time_ns()) + '-normalized.json'),
+                       {'original': raw, 'normalized': result, 'fingerprint': layout['fingerprint']})
+            store.log(cid, '검수 응답 표기 정규화 — 판정·근거·수정 지시 보존')
         art_acceptance.validate(result, layout.get('acceptance'), art_layout.LAYOUT_CHECKS, meta.get('adjudication', False))
         prior = art_acceptance.prior_layout_pass(cdir(cid), layout)
         if prior and result['verdict'] == 'FAIL' and not meta.get('adjudication'):
@@ -866,6 +908,7 @@ def on_art_layout_review(meta, code, result):
             write_json(cdir(cid, 'art-layout-rejections.json'), history)
             store.update_concept(cid, stage='art' if count < 3 else 'blocked', status='queued' if count < 3 else 'idle',
                 note='도면 반려 — 배치 명세부터 수정' if count < 3 else '도면 3회 반려 — 확인 필요', reasons=result.get('reasons', []))
+            store.log(cid, '도면 반려 → 배치 명세 수정 대기' if count < 3 else '도면 수정 반복 한도 도달 — 확인 필요')
             return
         request['layoutApproval'] = cdir(cid, 'art-layout-review.json')
         write_json(cdir(cid, 'art-execution.json'), request)

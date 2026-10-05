@@ -15,7 +15,7 @@
 - composition: 실제 타일 게임 화면으로 볼 때 내용에 맞는 화면 크기, 벽과 주차열의 관계, 시선 위계, 명암/재료 구분이 계획되었는가? 단색 바닥과 선만 큰 방에 놓은 도면이면 FAIL.
 
 손상된 부분을 조금 고치는 것으로 완료 선언하지 않는다. 이전 후보가 더 큰 구조 문제를 보이면 그 문제도 기록한다.
-한 축 FAIL이면 전체 FAIL. 수정은 asset/assembly/spec로 구분하고 구체 target/problem/change/keep을 기록한다.
+한 축 FAIL이면 전체 FAIL. fixes의 각 객체에는 category(asset/assembly/spec), target, problem, change, keep을 모두 기록한다. category가 정확한 필드명이다.
 출력:
 {"gateVersion":3,"fingerprint":"입력 fingerprint","verdict":"PASS 또는 FAIL","checks":{"projection":{"verdict":"PASS 또는 FAIL","evidence":"바닥과 높이·접지·가림 검토"},"proportions":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"spaceUse":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"circulation":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"identity":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"composition":{"verdict":"PASS 또는 FAIL","evidence":"관찰"}},"reasons":[],"fixes":[]}
 
@@ -24,3 +24,7 @@ layout.repairPlan이 피드백 policy의 단계로 되돌아갔는지 본다. �
 phase=calibration이면 최대 4종(기준차+낮은 멈춤턱+벽 모서리)의 작은 시점 표본이다. 전체 주차장/두 주차면/완성 출입 동선은 요구하지 않는다.
 표본 범위의 접지·면 구분·기준 대비 관계를 먼저 확정하고 scene은 그 뒤 별도로 검수한다.
 통행은 도색선이 아닌 실제 장애물/걷는 바닥으로 판단한다. 도색선 경계 하나만 보고 좁다고 반려하지 않는다.
+
+FAIL의 fixes 예시(문자열은 실제 관찰로 채운다):
+{"category":"assembly","target":"좌표와 조립 대상","problem":"관찰한 결함","change":"다음 제작자가 실행할 구체 수정","keep":"유지해야 할 기존 요소"}
+FAIL이면 fixes를 비워 두지 않는다. 필드를 type으로 쓰지 말고 category로 쓴다.
