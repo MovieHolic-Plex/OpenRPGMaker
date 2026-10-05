@@ -1,0 +1,95 @@
+{
+  "realModelRun": false,
+  "blank": true,
+  "groups": 77,
+  "kits": 36,
+  "idempotentAttach": true,
+  "commonUnchanged": true,
+  "familyCounts": {
+    "worldmap-brush-grass-sea": 11,
+    "worldmap-brush-river-grass": 2,
+    "worldmap-brush-road-grass": 3,
+    "worldmap-brush-forest-any": 9
+  },
+  "calls": [
+    {
+      "name": "create_map",
+      "args": {
+        "id": "authoring_tool_contract",
+        "name": "월드맵 연결 붓 도구 확인",
+        "width": 24,
+        "height": 20,
+        "tilesetId": "worldmap_authoring",
+        "bgm": {
+          "mode": "none"
+        }
+      },
+      "ok": true,
+      "summary": "맵 '월드맵 연결 붓 도구 확인' (24x20) 생성 — id authoring_tool_contract, BGM none"
+    },
+    {
+      "name": "fill_region",
+      "args": {
+        "mapId": "authoring_tool_contract",
+        "material": "초원 해안",
+        "layer": "lower",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "w": 18,
+          "h": 14
+        }
+      },
+      "ok": true,
+      "summary": "월드맵 연결 붓 도구 확인 (3,3) 18×14을 '초원 해안'로 채움 — 252/252칸, 실제 변경 252칸, 오토타일 재계산 60칸."
+    },
+    {
+      "name": "fill_region",
+      "args": {
+        "mapId": "authoring_tool_contract",
+        "material": "활엽수 숲",
+        "layer": "upper",
+        "rect": {
+          "x": 6,
+          "y": 8,
+          "w": 4,
+          "h": 4
+        }
+      },
+      "ok": true,
+      "summary": "월드맵 연결 붓 도구 확인 (6,8) 4×4을 '활엽수 숲'로 채움 — 16/16칸, 실제 변경 16칸, 오토타일 재계산 12칸."
+    },
+    {
+      "name": "fill_region",
+      "args": {
+        "mapId": "authoring_tool_contract",
+        "material": "강 · 초원",
+        "layer": "lower",
+        "rect": {
+          "x": 14,
+          "y": 9,
+          "w": 1,
+          "h": 8
+        }
+      },
+      "ok": true,
+      "summary": "월드맵 연결 붓 도구 확인 (14,9) 1×8을 '강 · 초원'로 채움 — 8/8칸, 실제 변경 27칸, 오토타일 재계산 27칸."
+    },
+    {
+      "name": "fill_region",
+      "args": {
+        "mapId": "authoring_tool_contract",
+        "material": "길 · 초원",
+        "layer": "lower",
+        "rect": {
+          "x": 6,
+          "y": 14,
+          "w": 7,
+          "h": 1
+        }
+      },
+      "ok": true,
+      "summary": "월드맵 연결 붓 도구 확인 (6,14) 7×1을 '길 · 초원'로 채움 — 8/7칸 (벽 틈 메움 1칸), 실제 변경 8칸, 오토타일 재계산 8칸."
+    }
+  ]
+}

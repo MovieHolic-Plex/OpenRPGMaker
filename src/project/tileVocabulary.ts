@@ -300,6 +300,9 @@ function groupContainingTile(tileset: TilesetDef, tileId: number): TileGroupMeta
 }
 
 function isAutotileGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  // Explicit connection groups can live on the upper layer (worldmap forests/mountains).
+  if (tileset.autotileGroups?.some(auto => auto.id === group.id
+    && auto.memberTileIds.some(tile => group.tileIds.includes(tile)))) return true;
   const kind = group.patternGrammar?.kind;
   // 문법이 명시되면 역할보다 문법이 이긴다 — 역할 능력으로 접히지 않는 우선순위다.
   if (kind === "autotile_3x3" || kind === "animated_terrain") return true;

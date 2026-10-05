@@ -1,6 +1,7 @@
 import type { GameMap, Project, TilesetDef, TilesetId } from '@/project/types';
 import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID, WORLDMAP_SELECTED_TEXTURE } from '@/project/defaults/worldmapSelected';
 import type { WorldmapBuildResult } from './worldmapBuild';
+import { attachWorldmapAuthoringBrushes, WORLDMAP_AUTHORING_TEXTURE } from '@/project/defaults/worldmapAuthoring';
 
 type Build = Extract<WorldmapBuildResult, { ok: true }>;
 
@@ -53,6 +54,7 @@ export function makeWorldmapTilemap(project: Project, id: TilesetId, assetId: st
     }
   }
   const generatedUpper = [...upper], lower = [...packed.lowerTiles];
+  attachWorldmapAuthoringBrushes(tileset);
   if (old) {
     const previous = project.tilesets[old.tilesetId]!;
     const baseline = old.worldmapSource?.tilemap;
@@ -61,6 +63,10 @@ export function makeWorldmapTilemap(project: Project, id: TilesetId, assetId: st
       if (tile < 0) return tile;
       const oldGraft = previous.tileGrafts?.find(g => g.targetTile === tile);
       if (oldGraft) {
+        if(oldGraft.sourceChipset===WORLDMAP_AUTHORING_TEXTURE) {
+          const shared=tileset.tileGrafts?.find(g=>g.sourceChipset===oldGraft.sourceChipset&&g.sourceTile===oldGraft.sourceTile);
+          if(shared)return shared.targetTile;
+        }
         const known = remappedGrafts.get(tile);
         if (known !== undefined) return known;
         const target = tileset.count++;

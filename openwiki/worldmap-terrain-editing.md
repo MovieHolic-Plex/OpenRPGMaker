@@ -1,5 +1,34 @@
 # 세계 지도 지형 편집 — 조수가 대륙·바다·섬·산맥을 바꾼다 (2026-10-03)
 
+## 빈 지도부터 팔레트로 저작 (2026-10-05)
+
+`worldmap_authoring` / `tex_worldmap_authoring`은 공용 16px 연결 붓이다. 새 맵 창의 **빈 월드맵**은
+48×36 바다(0)에서 시작한다. 지형 47개 연결 상태(8방향 전체 256 입력), 길 16개 상태,
+위층 숲·산, 가로/세로 다리, 기존 사람 선택 판타지 거점 36개를 실제 타일로 놓는다.
+파이프라인은 `scripts/content/build-worldmap-authoring.py` → 번들 PNG/`worldmapAuthoringSheet.json`이다.
+새 경계·길·다리는 `tiledata/worldmap-kit/authoring/pixels.json`의 명시 픽셀 격자, 질감과 숲/산은 현재 키트 원본을 쓴다.
+완성 대륙은 입력이 아니다. 대표 붓 79개(배경별 변형 포함), 그림 3,543칸이다.
+
+팔레트 배경(바다/초원/사막/설원)을 고르면 그 바탕을 포함한 불투명 아래층 붓을 보여 준다.
+숲·산은 투명 위층이며 바닥을 바꾸지 않는다. 길과 강은 배경을 자동 추정하지 않는다.
+다른 배경 위에 칠하면 고른 바탕이 들어간다. 거점/고개 자리의 숲·산은 위층 지우개로 먼저 비운다.
+고원·절벽/높이 지우기/고개·경사로 버튼은 기존 실제 relief 붓을 선택하며 원래 바닥 그림을 보존한다.
+아래층 지형 붓은 기존 위층 거점을 덮지 않는다. 해안 지우기는 바다 붓을 쓴다.
+
+`worldmapAuthoring.ts`의 `attachWorldmapAuthoringBrushes`는 생성 지도에도 공용 소스를 뒤에 이식한다.
+기존 맵 배열/원본 재료/통행은 바꾸지 않는다. `ensureBundledTilesets`가 기존 프로젝트에 소급 배선하고
+`makeWorldmapTilemap`도 새 생성/재생성 때 배선한다. 재생성은 공용 이식 원본 번호로 손 편집을 보존한다.
+옛 대표 크롭 34개는 원본 재현용 재료이며, 저작 팔레트는 새 연결 붓을 쓴다.
+`worldmap_selected`의 공용 참고문서 두 용도(`wmi-authoring`, `wmi-authoring-more`)에 전체 좌표,
+variantMap, 실제 배열과 정상/오류 PNG를 싣는다. 새/기존 프로젝트 모두 같은 자료를 받는다.
+조수는 `fill_region`에서 `강 · 초원`/`길 · 사막`처럼 배경까지 적힌 재료 이름을 사용한다.
+숲·산 면은 `upper`, 바닥·강·길은 `lower`다. 해당 툴도 주변 세계 지도 그룹을 다시 맞춘다. `tileVocabulary`는 실제 연결 그룹과 같은 ID·멤버가 있는 상위 숲/산도 면 재료로 받는다.
+
+편집기 페인트·지우기·채우기는 상위 연결도 다시 맞추고 변경 이웃 칸을 통지한다.
+native 증거 실행기는 `scripts/qa/worldmap-palette-authoring-native.mjs`이다. 전체 테스트/게이트와 별개다.
+고개 붓은 월드맵 길에 맞춘 폭 1칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
+실제 빈 지도 저작·통행·공용 사전·정본 재로드 근거는 [검증 기록](../verify-shots/worldmap-authoring/README.md)을 따른다.
+
 세계 지도(월드맵 키트, 96×72칸·16px)의 큰 지형은 **지형 작업(ops)** 목록을 키트가 다시 그린다. 저장 결과는 재사용 지형 칸과 별도 위층 거점으로 구성되며, 편집기 붓으로도 손 편집할 수 있다.
 조수는 `read_world_terrain` 으로 칸 좌표를 보고 `edit_world_terrain` 으로 작업을 얹는다.
 대륙을 해협으로 가르기, 섬, 산줄기·고개, 강, 숲, 바닥(사막·설원·늪…), 고원, 장소 옮기기까지 된다.

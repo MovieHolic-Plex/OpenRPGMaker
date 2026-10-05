@@ -1177,7 +1177,7 @@ const fillRegion: ToolDefinition = {
     }
     // MV 팩 재료는 서로 다른 오토타일끼리 맞닿으면 양쪽이 가장자리를 그린다 — 흙 속 잔디·보도 속 화단의
     // 둘레 흙·보도 칸도 다시 맞춘다. 내장 타일셋은 기존 결과(재료 자신만 재계산)를 그대로 둔다.
-    const neighborsReshaped = tileset.mvPack
+    const neighborsReshaped = (tileset.mvPack || tileset.autotileGroups?.some(candidate=>candidate.id.startsWith('worldmap-brush-')))
       ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset).filter((candidate) => candidate.id !== autotile?.id), exit.cells)
       : 0;
     // 3×3 테두리 바닥은 채운 면의 가장자리에 테두리를, 안쪽에 몸통을 둔다(1칸 폭 줄은 몸통 그대로).

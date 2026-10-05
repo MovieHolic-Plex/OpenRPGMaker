@@ -1,0 +1,209 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/project-r7",
+  "steps": [
+    {
+      "name": "boot",
+      "seconds": 7.846
+    },
+    {
+      "name": "native-blank-map-dialog",
+      "seconds": 102.378
+    },
+    {
+      "name": "land-coasts-islands",
+      "seconds": 145.057
+    },
+    {
+      "name": "biomes-rivers",
+      "seconds": 153.454
+    },
+    {
+      "name": "transparent-forest-mountains",
+      "seconds": 167.6
+    },
+    {
+      "name": "roads-bridge",
+      "seconds": 180.9
+    },
+    {
+      "name": "whole-approved-settlements",
+      "seconds": 192.847
+    },
+    {
+      "name": "native-plateau-slope",
+      "seconds": 200.175
+    },
+    {
+      "name": "native-save",
+      "seconds": 203.169
+    },
+    {
+      "name": "fresh-browser-reload",
+      "seconds": 208.774
+    },
+    {
+      "name": "complete",
+      "seconds": 259.295
+    }
+  ],
+  "errors": [],
+  "nativeOnly": true,
+  "videoBeganSeconds": 7.846,
+  "networkFailures": [
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/ai-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/ai-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/ai-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/ai-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/__oprn/edit-activity",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "captureStartSeconds": 102.378,
+  "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+  "blank": {
+    "width": 48,
+    "height": 36,
+    "allSea": true,
+    "allUpperEmpty": true
+  },
+  "erasePreservesGround": true,
+  "eraseReshapesNeighbor": true,
+  "undoRestoresForest": true,
+  "plateau": {
+    "sameGround": true,
+    "levels": 5,
+    "ramps": 0
+  },
+  "saved": {
+    "projectId": "d37612d4-9453-4395-8a09-fe65a7192e01",
+    "revision": 8,
+    "sha256": "96ce70a6e5412610a2c3e4c6fe241c4151601991716bc56d16a86128b2ab8989",
+    "sameMap": true,
+    "tilesetId": "worldmap_authoring"
+  },
+  "videoPath": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/native-r9/video/page@2a7c2990ce20833de5f6c162105e3d2f.webm",
+  "freshBrowserLoadedSameMap": true,
+  "reopenedStoredSameMap": true,
+  "passed": true
+}

@@ -12,6 +12,7 @@ import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
+import { hasWorldmapBrushes, makeWorldmapBrushShelf } from './worldmapBrushShelf';
 import { comboBrushShelfEntries, makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
 import { makeTileBrushAssistControls, makeTileBrushAssistPanel, syncTileBrushAssistSelection } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
@@ -90,6 +91,7 @@ function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">
 
 /** 필터가 켜져 있으면 기본 판은 칸 집합이 달라져 못 살린다. 커스텀 판은 언제나 살린다. */
 function canRetainPalette(tileset: TilesetDef): boolean {
+  if(hasWorldmapBrushes(tileset))return false;
   return usesSourceSheet(tileset) || !isFilterActive();
 }
 
@@ -151,7 +153,7 @@ const renderedPaletteInputs = new WeakMap<HTMLElement, { readonly shell: Element
 
 /** Generated world materials have no source-sheet layout to preserve in the palette. */
 function usesMaterialGrid(tileset: TilesetDef): boolean {
-  return tileset.family === 'worldmap-kit' && tileset.tileGroups?.some(group => group.id.startsWith('worldmap-material-')) === true;
+  return hasWorldmapBrushes(tileset) || tileset.family === 'worldmap-kit' && tileset.tileGroups?.some(group => group.id.startsWith('worldmap-material-')) === true;
 }
 
 function usesSourceSheet(tileset: TilesetDef): boolean {
@@ -476,6 +478,12 @@ function makePaletteSurface(input: {
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
   if (assist.clusterRow) options.append(assist.clusterRow);
   root.append(options);
+  if(hasWorldmapBrushes(tileset)) {
+    const palette=makeWorldmapBrushShelf(tileset,tileLayer,state.selectedTile,selectPaletteTile,renderPalettePreservingViewport);
+    palette.dataset.testid='tile-palette';palette.dataset.retainKey=paintSheetRetainKey(tileset,tileLayer);
+    if(tileLayer==='upper'&&tileset.structureKits?.length)palette.append(makeStructureKitShelf({tileset,title:'거점 · 전체 아이콘',activeKitId:state.activePaletteStamp?.kitId??null,rerender:renderPalettePreservingViewport})!);
+    root.append(palette);return{root,palette,sheetSlot:null};
+  }
   if (usesMaterialGrid(tileset) && tileLayer === 'upper' && tileset.structureKits?.length) {
     const palette = makeStructureKitShelf({ tileset, title: '거점 · 전체 아이콘', activeKitId: state.activePaletteStamp?.kitId ?? null,
       rerender: renderPalettePreservingViewport })!;
