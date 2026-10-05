@@ -17,7 +17,7 @@ npm run harness -- charset-actor produce --all-sources --count 100 --par 2 --max
 python3 src/harnesses/charset-actor/continuous.py --run RUN --out /absolute/new-evidence-folder --par 2
 ```
 
-- 현재 작업자는 자연스럽게 마치고 원래 주문의 미완성 행을 최대 40종씩 분할한다. 각 묶음의 검토 버퍼는 그 묶음 전체 개수라 사람이 검토하지 않아도 주문 끝까지 제작한다. 전체 동시 예약은 2명이다. 여러 `--run`은 동물 전용 정책과 원본을 각각 유지한다.
+- 현재 작업자는 자연스럽게 마치고 원래 주문의 미완성 행을 최대 40종씩 분할한다. 각 묶음의 검토 버퍼는 그 묶음 전체 개수라 사람이 검토하지 않아도 주문 끝까지 제작한다. 연속 제작의 기본 예약은 2명이며 `--par 6`까지 지정할 수 있다. 여러 `--run`은 동물 전용 정책과 원본을 각각 유지한다.
 - 원래 manifest/recipe/공개된 픽셀/사람 선택은 그대로 보존한다. 새 주문은 같은 봉인 recipe와 원본 행을 복사하며 새로운 key를 갖는다. 기술 검사·12프레임 직접 저작·동물 검사·수정 횟수는 유지한다.
 - 원래 실행 상태에 새 주문 배분과 `plannedHere`를 기록한다. 공방의 전체 계획 수에 옮긴 미완성 행을 두 번 더하지 않는다. 원래 URL의 작업 필터는 `continuationOf`가 같은 새 후보도 표시한다. 원래 주문 수는 `ordered`로 별도 보존한다.
 - 준비 중 사용자 정지/재개가 바뀌면 해당 작업을 건드리지 않고, 수동 시작/정지도 존중한다. 분할 계획과 시작 결과는 지정한 증거 폴더에 기록한다. 기존의 12종 검토 버퍼 제작 방식도 그대로 사용할 수 있다.
@@ -40,7 +40,7 @@ npm run harness -- charset-actor audit --run RUN --refresh-previews
 npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outside-repo
 ```
 
-- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 2 --batch-size 2`가 기본이다. 생성/재개는 전체 살아 있는 driver의 동시 예약을 최대 4명으로 제한한다. 사람과 몬스터를 독립 실행 폴더에서 함께 제작할 수 있다.
+- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 2 --batch-size 2`가 기본이다. 생성/재개는 전체 살아 있는 driver의 동시 예약을 최대 6명으로 제한한다. 사람과 몬스터를 독립 실행 폴더에서 함께 제작할 수 있다.
 - 기본 제작은 원본 ASCII 격자 편집으로 돌아간다(2026-10-04 사용자 피드백). 초기 PNG 첨부·남김/폐기 비교·추가 조형 지시를 자동으로 넣지 않는다. manifest에 `visualReferences: ["pixel-style-reference.png"]`를 명시한 실험만 원본과 실행 폴더 안 참고 최대 4장을 `--image`로 첨부한다. `visual-inputs.json`/후보 meta는 기본 `[]`, 실험은 첨부 순서·파일 SHA256을 기록한다. 경로 지시나 열람 선언만으로 이미지 입력을 증명하지 않는다.
 - UI의 「새 캐릭터 만들기」에서 남긴 그림의 변주 또는 자유 저작을 고른다. 자유 저작의 전체 방향·참고 시트를 비우면 AI가 인물과 복식을 정한다.
 - 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향의 세 자세, 12장을 직접 그린다.

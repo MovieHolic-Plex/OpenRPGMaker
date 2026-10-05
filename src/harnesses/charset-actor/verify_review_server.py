@@ -19,18 +19,18 @@ def verify(check, isolated_store):
         producer.mkdir(parents=True)
         H.write_json_atomic(producer / 'driver.json', dict(pid=42, par=2))
         with patch.object(H, '_alive', side_effect=lambda pid: pid in (42, 43)):
-            studio.reserve_artists(2)
+            studio.reserve_artists(studio.MAX_ARTISTS-2)
             check('studio-reserves-slots-before-production-layout-exists', studio.active_productions() == [dict(run='producer', par=2)])
             other = H.DATA / 'runs/other'
             other.mkdir()
             H.write_json_atomic(other / 'driver.json', dict(pid=43))
-            H.write_json_atomic(other / 'production.json', dict(par=2))
+            H.write_json_atomic(other / 'production.json', dict(par=studio.MAX_ARTISTS-2))
             try:
                 studio.reserve_artists(1)
             except ValueError:
-                check('studio-blocks-overlapping-producers-over-four-artists', True)
+                check('studio-blocks-overlapping-producers-over-six-artists', True)
             else:
-                check('studio-blocks-overlapping-producers-over-four-artists', False)
+                check('studio-blocks-overlapping-producers-over-six-artists', False)
             studio.reserve_artists(2, exclude='producer')
             check('studio-resume-excludes-its-own-reservation', True)
             H.write_json_atomic(other / 'driver.json', dict(pid=0, par=4))

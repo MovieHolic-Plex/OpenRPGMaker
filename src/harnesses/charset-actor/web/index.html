@@ -84,13 +84,13 @@ kbd{font:11px system-ui;color:inherit;opacity:.65;margin-left:12px;border:1px so
 <footer class="review-help"><span id="stats">네 방향과 걷기를 보고 남길 캐릭터를 골라 주세요.</span><button id="undo" hidden>↶ 직전 선택 되돌리기</button></footer>
 </div>
 <p id="notice" role="status" aria-live="polite"></p>
-<div class="modal drawer" id="productionModal" hidden role="dialog" aria-modal="true" aria-labelledby="productionTitle"><section class="dialog-panel"><div class="dialog-head"><h2 id="productionTitle">제작 관리</h2><button class="close-icon" id="closeProduction" aria-label="제작 관리 닫기">×</button></div><p>GPT 6.1 sol high · 동시 작업 최대 4개<br>완성된 GIF는 검토 목록에 바로 나타납니다.</p><div id="production"></div><details id="productionHistory"><summary>이전 제작 보기</summary><div id="productionPast"></div></details></section></div>
+<div class="modal drawer" id="productionModal" hidden role="dialog" aria-modal="true" aria-labelledby="productionTitle"><section class="dialog-panel"><div class="dialog-head"><h2 id="productionTitle">제작 관리</h2><button class="close-icon" id="closeProduction" aria-label="제작 관리 닫기">×</button></div><p>GPT 6.1 sol high · 동시 작업 최대 6개<br>완성된 GIF는 검토 목록에 바로 나타납니다.</p><div id="production"></div><details id="productionHistory"><summary>이전 제작 보기</summary><div id="productionPast"></div></details></section></div>
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="createTitle"><form id="form"><div class="dialog-head"><h2 id="createTitle">새 캐릭터 만들기</h2><button class="close-icon" id="close" type="button" aria-label="생성 창 닫기">×</button></div><p>GPT 6.1 sol high가 네 방향과 걷기를 직접 그립니다.</p><label>제작 방식<select id="produceMode"><option value="catalog">에디터 전체 원본으로 다양하게</option><option value="kept">남긴 캐릭터로 변주</option><option value="free">새로운 인물</option><option value="creatures">동물 기반 몬스터</option></select></label><label id="seedLabel">기준이 될 남긴 캐릭터<select id="seedRun"></select></label><p id="seedHelp">남긴 그림의 비율과 걷기를 이어갑니다. 검토할 GIF가 쌓이면 잠시 쉬었다가 선택 후 다시 만듭니다.</p><label>작업 이름 (선택)<input id="productionName" maxlength="80" placeholder="예: 마을 주민, 숲 몬스터"></label><label>몇 종 만들까요?<input id="count" type="number" min="1" max="500" value="12" required></label><label>어떤 캐릭터인가요? (선택)<textarea id="prompt" placeholder="비우면 머리·의상·작은 소품을 자유롭게 변주합니다."></textarea></label><label id="fileLabel">참고 캐릭터 시트 (선택)<input id="file" type="file" accept="image/png,image/gif,image/bmp"></label><p id="fileHelp">한 명 72×128 / 여덟 명 288×256. 비우면 기본 캐릭터를 참고합니다.</p><img id="preview" class="prev" hidden alt="업로드한 참고 캐릭터 시트"><p id="capacityNote" hidden>현재 동시 제작 자리가 찼습니다. 새 작업을 시작하려면 제작 관리에서 한 작업을 일시 정지하세요. <button type="button" id="capacityManage">제작 관리 열기</button></p><p id="formMsg" role="status"></p><div class="form-actions"><button id="cancelCreate" type="button">취소</button><button class="keep" id="start" type="submit">제작 시작</button></div></form></div>
 
 <script>
 
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const params=new URLSearchParams(location.search);
+const MAX_ARTISTS=6, params=new URLSearchParams(location.search);
 if(params.has('collection')){params.delete('collection');history.replaceState(null,'',location.pathname+(params.size?'?'+params:'')+location.hash)}
 let state={items:[],runs:[]}, tab=['todo','accept','reject','all'].includes(params.get('show'))?params.get('show'):'todo', run=params.get('run')||'all', current=null, query='', kind='all', image=null, busy=false, loading=false, pollTimer=null, lastAction=null;
 let reviewBackground='black';try{reviewBackground=localStorage.getItem('charset-review-background')||'black'}catch{}if(!['checker','white','black','lawn'].includes(reviewBackground))reviewBackground='black';
@@ -209,7 +209,7 @@ function render(){
   $('filters').classList.toggle('active',run!=='all'||kind!=='all'||!!query);$('undo').hidden=!lastAction;
   renderProduction();
   const artists=state.runs.filter(r=>['running','waiting-review','pausing'].includes(r.phase)).reduce((n,r)=>n+(r.artists??2),0);
-  $('capacityNote').hidden=artists<=2;$('start').disabled=createSubmitting||artists>2;
+  $('capacityNote').hidden=artists+2<=MAX_ARTISTS;$('start').disabled=createSubmitting||artists+2>MAX_ARTISTS;
   const rows=visible();if(!rows.some(it=>it.id===current))current=rows[0]?.id;const idx=rows.findIndex(it=>it.id===current);
   $('position').textContent=rows.length?`${{todo:'검토',accept:'남김',reject:'폐기',all:'현재 목록'}[tab]} ${idx+1} / ${rows.length}종${run!=='all'?' · '+runLabel(run):''}`:'검토 목록';$('previous').disabled=idx<=0;$('next').disabled=idx<0||idx>=rows.length-1;
   const existing=new Map([...$('stage').querySelectorAll('[data-card]')].map(el=>[el.dataset.card,el]));
