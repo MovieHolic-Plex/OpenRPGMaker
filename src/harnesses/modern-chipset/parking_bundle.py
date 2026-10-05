@@ -199,12 +199,17 @@ bake의 재조립은 PNG 화소를 대조한다. 게임 통행은 16px 단위로
 '''
     target = root / 'tiledata/modern-city/parking-approved/assembly.md'
     target.write_text(markdown)
-    return {'id':'mc-parking','name':'지하 주차장 두 면','description':'선택한 작은 구역의 두 층 배열과 사용 범위.',
+    category = {'id':'mc-parking','name':'지하 주차장 두 면','description':'선택한 작은 구역의 두 층 배열과 사용 범위.',
             'documents':[{'id':'mc-parking-assembly','name':'조립·전체 배열·검사','markdown':markdown}],
             'images':[{'id':'mc-parking-approved','name':'검수된 주차장','caption':'원본 1배. 2층 배열 재조립의 기준 그림.',
                        'dataUrl':'/assets/modern-city/parking-approved.png'},
                       {'id':'mc-parking-layer-error','name':'정상과 위층 누락 비교','caption':'좌: 정상. 우: E_MISSING_UPPER로 원본 차량이 사라진 오류. 같은 1배 크기.',
                        'dataUrl':'/assets/modern-city/parking-layer-comparison.png'}]}
+    wide = root / 'tiledata/modern-city/parking-wide/reference.md'
+    if wide.is_file():
+        category['documents'].append({'id':'mc-parking-wide-experiment','name':'12면 확장 실험 · 완성 시설 아님','markdown':wide.read_text()})
+        category['images'].append({'id':'mc-parking-wide-experiment','name':'12면 기존 칩 확장 실험','caption':'기둥·천장등·외곽 구조·출입 시설 부족. 완성 시설 참고로 쓰지 않는다.','dataUrl':'/assets/modern-city/parking-wide.png'})
+    return category
 
 
 if __name__ == '__main__':

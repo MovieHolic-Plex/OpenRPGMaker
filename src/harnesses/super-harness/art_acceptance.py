@@ -53,6 +53,12 @@ def validate(report, acceptance, axes, adjudication=False):
         expected = 'FAIL' if axis in failed_axes else 'PASS'
         if report['checks'][axis]['verdict'] != expected:
             raise ValueError('필수 조건과 축 판정 불일치: ' + axis)
+    # Layout feasibility is not a facility image verdict. Only a full context
+    # review (which includes attachments) may declare visual completion.
+    if acceptance['contract'].get('requiresFacilityVerdict') and 'attachments' in axes:
+        expected = 'INCOMPLETE' if failed_axes else 'COMPLETE'
+        if report.get('facilityVerdict') != expected:
+            raise ValueError('시설 미완성 판정과 완료 필수 조건이 일치해야 합니다.')
     warnings = report.get('warnings', [])
     if not isinstance(warnings, list) or any(not isinstance(w, str) for w in warnings):
         raise ValueError('개선 권고는 별도 문자열 목록으로 기록합니다.')
@@ -89,6 +95,8 @@ checks의 각 축은 연결된 필수 조건 중 FAIL이 있을 때만 FAIL이�
 계약에 없는 물리적 실측값을 추측하여 새 탈락 기준으로 삼지 않는다.
 '''
     text += json.dumps(acceptance, ensure_ascii=False)
+    if acceptance['contract'].get('requiresFacilityVerdict'):
+        text += '\n이 계약은 시설 전체 완료 조건이다. 최종 조립 검수는 facilityVerdict:COMPLETE|INCOMPLETE도 기록한다. 필수 조건 하나라도 FAIL이면 INCOMPLETE와 전체 FAIL이다. 조립 가능/보행 가능만으로 시각 완성을 대신하지 않는다.\n'
     if dispute:
         text += '''\n\n## 독립 재판정
 같은 필수 조건의 기존 PASS와 새 FAIL이 충돌했다. 양쪽 근거와 현재 입력/그림을 직접 대조한다.

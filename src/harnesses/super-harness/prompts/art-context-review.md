@@ -6,6 +6,9 @@
 
 입력 JSON만 먼저 읽고 groups의 모든 candidates.images를 실제로 연다. 모든 열림/닫힘 그림을 확인한다.
 부품별 PASS는 공간 합격이 아니다. 기존 실패 피드백과 repairBrief를 읽고 지적이 실제로 해결됐는지 확인한다.
+comparisonObligations의 required=true 항목은 시설 완료를 막는 결함이다. 다음 세대에도 전부 비교하며
+advisory/deferred로 낮출 수 없다. 미해결이면 FAIL+fixes로 재작업한다. 실제 전후 그림으로 반증한
+invalid-prior-claim은 가능하지만 필수 criterionResults와 모순되어서는 안 된다.
 그림·시드·기획·선택·공용 저장소는 수정하지 않는다. 출력 JSON만 기록한다. 하위 작업자를 부르지 않는다.
 
 아홉 축을 각각 관찰 좌표/물체와 함께 판정한다.

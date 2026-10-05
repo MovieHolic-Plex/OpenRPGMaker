@@ -365,3 +365,17 @@ native 실행 실패가 원인처럼 남지 않게 한다. 기존 이미지/검�
 화면은 이 근거가 있을 때 ‘선택 구역 완성 · 공용 등록·맵 저장 완료’로 표시한다.
 이 표시는 원래의 더 큰 기획·재료 조사·개념 카드 전체를 done으로 우회시키지 않는다.
 주차장 첫 구역은 두 면이고, 원래 12면 시설 계획은 별도 범위로 남는다.
+
+### 확장판 미완성 → 실제 수정 큐 (2026-10-05)
+
+확장판은 별도 검수 파일에 assembly PASS/facility INCOMPLETE를 남겼지만 art 큐에 들어가지 않아
+수정이 실행되지 않았다. `scene_followup.py`가 현재 이미지·기획 해시, 모든 지적별 수정 주문,
+새 범위의 합격 계약을 확인하고 기존 art 파이프라인으로 연결한다. 도입 표본은 modern-chipset의
+`parking-followup` 단계다. 기존 선택/설치/계약은 해시별 history에 보존한다.
+
+- SQLite scene_followups가 동일 요청의 중복 소비를 막는다. 기존 누적 art_revision과 상한을 유지한다.
+- `completionRepairs`는 다음 세대의 반려에도 남는다. 대상 그룹 교체로 비교를 생략할 수 없다.
+- required 비교 항목은 advisory/deferred로 낮출 수 없다. unresolved가 있으면 PASS 불가다.
+- `requiresFacilityVerdict` 계약의 최종 조립 판정은 facilityVerdict와 필수 조건 판정이 일치해야 한다.
+  도면의 기하학적 가능성이나 보행 PASS는 시설 시각 완료를 대신하지 않는다.
+- 그림 저작은 기존 전용 워크트리/native 하네스만 쓴다. 전역 pause를 풀어 다른 개념을 실행하지 않는다.

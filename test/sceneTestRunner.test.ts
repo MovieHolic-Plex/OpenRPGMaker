@@ -74,6 +74,24 @@ describe("run_scene_test", () => {
     expect(result.finalState.switchesOn).toContain("sw_cancelled");
   });
 
+  it.each([['choice1', true, 25], ['choice2', true, 0], ['disallow', false, 0], [undefined, false, 0]] as const)(
+    "matches player cancellation for %s", (cancelBehavior, ok, goldDelta) => {
+      const project = createBlankProject(), map = project.maps[project.startMapId]!;
+      const initialGold = project.session.gold;
+      map.events.push({ id: 'cancel-contract', x: 2, y: 3, trigger: { kind: 'action' }, commands: [
+        { kind: 'choices', cancelBehavior, options: [
+          { text: 'Paid', branch: [{ kind: 'changeGold', op: '+=', amount: 25 }] },
+          { text: 'Free', branch: [] },
+        ] },
+      ] });
+      const result = runSceneTest(project, { mapId: map.id, start: { x: 2, y: 2 }, steps: [
+        { kind: 'interact' }, { kind: 'choose', index: -1 },
+      ] });
+      expect(result.ok, result.failureReason).toBe(ok);
+      expect(result.finalState.gold).toBe(initialGold + goldDelta);
+    },
+  );
+
   it("accepts structurally compatible start points from existing scene callers", () => {
     const project = createBlankProject();
     const start = { x: 2, y: 2, dir: "right" };
