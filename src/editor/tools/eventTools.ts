@@ -2975,6 +2975,13 @@ const makeChaseScene: ToolDefinition = {
     // 스위치로 깨우는 추격(「금고를 열자 달려온다」)은 주인공이 벽 너머에 있어도 와야 한다. 추적 정책을 안 정했으면
     // persistent 로 둔다 — lastSeen 은 직접 봐야 움직여서, 깨운 추격자가 복도에 가만히 서 있었다(2026-09-24).
     const parsedPursuit = args.pursuit === undefined ? undefined : parsePursuit(args.pursuit);
+    // 포기 스위치는 다시 발견하는 순간 꺼진다 — 깨우는 스위치와 같으면 추격자가 주인공을 보자마자 자기 페이지를 끈다
+    // (2026-10-05 스트레스 g-ashen-chase: lostSwitchId=activateSwitch=switch_chase 라 추격자가 복도에서 한 칸도 안 움직였다).
+    for (const key of ["lostSwitchId", "followSwitchId"] as const) {
+      if (activateSwitch && parsedPursuit?.[key] === activateSwitch) {
+        throw new ToolError(`pursuit.${key} 에 activateSwitch(${activateSwitch})를 쓸 수 없습니다 — ${key === "lostSwitchId" ? "다시 발견하면 꺼지므로 추격자가 주인공을 보는 순간 사라집니다" : "넘어오기 연출 스위치이지 추격을 켜는 스위치가 아닙니다"}. 연출용 스위치를 따로 쓰거나 빼세요.`);
+      }
+    }
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
