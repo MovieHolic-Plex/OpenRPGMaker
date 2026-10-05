@@ -8,6 +8,7 @@ import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
 import { presentationArtImages } from '@/editor/tools/presentationTools';
 import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
+import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -267,7 +268,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
         ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, ['read_tileset_reference','read_worldmap_structure_reference'].includes(tool.name) ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
@@ -281,6 +282,9 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         }
       }
       if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'read_worldmap_structure_reference') for (const image of await worldAtlasReferenceImages(result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'get_concept_facility') for (const image of await interiorPresetImages(result.data)) {

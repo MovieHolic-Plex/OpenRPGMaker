@@ -60,6 +60,8 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { createWorldAtlasController } from './worldAtlasOverlay';
+import { visitAtlasMap } from '@/project/worldAtlas';
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import { installReliefSpriteLift, spriteReliefLiftPx } from "@/player/playSceneRelief";
@@ -178,6 +180,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
+  private worldAtlasController: ReturnType<typeof createWorldAtlasController> | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
@@ -309,6 +312,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncFollowerSprites(this);
     this.centerCamera();
     void this.syncMinimap();
+    this.worldAtlasController = createWorldAtlasController(this);
+    const destroyAtlas = (): void => { this.worldAtlasController?.destroy(); this.worldAtlasController = null; };
+    this.events.once('shutdown', destroyAtlas);
+    this.events.once('destroy', destroyAtlas);
     // M = minimap toggle. Input abstraction doesn't expose Phaser keyboard; use document.
     const toggleMinimap = (): void => {
       if (!this.minimap) return;
@@ -387,6 +394,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   update(_time: number, deltaMs: number): void {
     if (this.game.registry.get('initialPresentationPending') === true) return;
+    this.worldAtlasController?.update();
+    if (this.worldAtlasController?.isOpen) {
+      this.input_.resetEdges();
+      this.input_.clearDirectionTaps();
+      return;
+    }
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
@@ -459,6 +472,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
+    visitAtlasMap(store.getCurrent(), this.session, mapId);
     syncVehicleSprites(this);
     syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);

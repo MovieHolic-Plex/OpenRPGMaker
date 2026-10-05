@@ -2666,6 +2666,10 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 
 ## 세계 지도 지형 도구 (2026-10-03)
 
+2026-10-05: `list_worldmap_structures`·`read_worldmap_structure_reference`·`author_worldmap_structure`·
+`inspect_worldmap_structure`로 지역/대륙/필드/스테이지/방/런의 실제 맵과 이동을 만든다.
+`structure:"all"`은 57맵. UI·공용 PNG/문서·정본 계약은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
 `read_world_terrain`(읽기)·`edit_world_terrain`(쓰기, 도메인 world). 세계 지도는 타일을 찍지 않고 지형 작업(ops)을 월드맵 키트가 다시 그린다.
 prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기다리고 run 은 결과를 맵·타일셋·로케이션으로 쓴다. 도구 결과에 지도 그림(미리보기는 도식)을 붙인다.
 흐름·계약·함정: `openwiki/worldmap-terrain-editing.md`.

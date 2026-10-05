@@ -788,6 +788,8 @@ export interface Project {
   worldCanon?: WorldCanon;
   world?: ProjectWorld;
   worldGraph?: WorldGraph;
+  /** Playable navigation atlases. Gates, discovery, clears and pins use regular session switches. */
+  worldAtlases?: import('../worldAtlas').WorldAtlas[];
   // 런타임 진영 레지스트리 + 태도 행렬. world(세계관 lore 그래프)와 달리 전투 런타임이 직접 읽는다.
   // optional이라 마이그레이션 불필요.
   factions?: ProjectFactions;

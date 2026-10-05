@@ -234,10 +234,12 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture.png", name: "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)" },
   { textureKey: LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture-16px.png", name: LPC_WOODEN_FURNITURE_16_NAME },
   ...SCARLOXY_CHIPSET_ASSETS,
+  { textureKey: "tex_atlas_cartography", path: "assets/atlas-cartography/chipset.png", name: "지도 지형 · 새 손 도트 32px" },
 ] as const satisfies readonly BundledImageAsset[];
 
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
+  if (key === "tex_atlas_cartography") return 136;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;

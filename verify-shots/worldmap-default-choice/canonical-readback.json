@@ -1,0 +1,371 @@
+{
+  "cases": [
+    {
+      "kind": "default",
+      "mode": "default",
+      "toolName": "edit_world_terrain",
+      "projectId": "054c114f-6160-43c1-ae5c-e0f9cf2cb59d",
+      "folder": "/home/main/.local/share/oprn/worldmap-default-choice-20261005-2/default",
+      "revision": 2,
+      "reloaded": true,
+      "startPreserved": true,
+      "newMaps": [
+        "choice_default"
+      ],
+      "catalogue": {
+        "defaultMode": "default",
+        "preferredMode": "default",
+        "modes": [
+          {
+            "id": "default",
+            "name": "기본 · 기존 대륙 월드맵",
+            "description": "기존 월드맵 생성기로 대륙·바다·산맥·거점을 만듭니다. 세계관을 고르고 지형을 편집할 수 있습니다."
+          },
+          {
+            "id": "region-routes",
+            "name": "포켓몬풍 · 마을과 도로",
+            "inspiration": "Pokémon",
+            "description": "지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다."
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "inspiration": "Final Fantasy VI",
+            "description": "작게 그린 대륙을 직접 걷고 거점의 실제 맵으로 들어갑니다."
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "inspiration": "Zelda",
+            "description": "연속된 필드의 지형을 지도에 그대로 표시하고 능력으로 새 길을 엽니다."
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "inspiration": "Super Mario World",
+            "description": "코스를 클리어하면 다음 코스, 비밀 출구를 찾으면 지름길을 엽니다."
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "inspiration": "Hollow Knight",
+            "description": "횡스크롤 방을 연결하고 발견한 방과 능력 관문, 지도 핀을 기록합니다."
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "inspiration": "Slay the Spire",
+            "description": "전투·휴식·보물·상점을 선택하며 위층으로 전진합니다. 지나간 분기는 돌아가지 않습니다."
+          }
+        ],
+        "defaultAuthoring": {
+          "tool": "edit_world_terrain",
+          "args": {
+            "ops": [],
+            "theme": "fantasy"
+          },
+          "readTool": "read_world_terrain",
+          "themeTool": "list_worldmap_themes"
+        },
+        "selectionRule": "일반 새 월드맵은 기존 대륙 월드맵을 기본으로 사용한다. 몬스터 수집·포켓몬풍은 region-routes. 명시한 이동 방식은 우선하며, 기존 지도 수정은 해당 지도 원본과 도구를 유지한다.",
+        "structures": [
+          {
+            "id": "region-routes",
+            "name": "포켓몬풍 · 마을과 도로",
+            "inspiration": "Pokémon",
+            "description": "지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다."
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "inspiration": "Final Fantasy VI",
+            "description": "작게 그린 대륙을 직접 걷고 거점의 실제 맵으로 들어갑니다."
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "inspiration": "Zelda",
+            "description": "연속된 필드의 지형을 지도에 그대로 표시하고 능력으로 새 길을 엽니다."
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "inspiration": "Super Mario World",
+            "description": "코스를 클리어하면 다음 코스, 비밀 출구를 찾으면 지름길을 엽니다."
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "inspiration": "Hollow Knight",
+            "description": "횡스크롤 방을 연결하고 발견한 방과 능력 관문, 지도 핀을 기록합니다."
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "inspiration": "Slay the Spire",
+            "description": "전투·휴식·보물·상점을 선택하며 위층으로 전진합니다. 지나간 분기는 돌아가지 않습니다."
+          }
+        ],
+        "authorTool": "author_worldmap_structure",
+        "inspectTool": "inspect_worldmap_structure",
+        "referenceTool": "read_worldmap_structure_reference",
+        "examples": [
+          {
+            "id": "region-routes",
+            "name": "지역 · 마을과 도로",
+            "preview": "/assets/worldmap-structures/region-routes.png",
+            "sourceProjectId": "534aa187-356c-4263-832e-244377f2508a",
+            "authorArgs": {
+              "structure": "region-routes",
+              "seed": 7
+            },
+            "mapCount": 8
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "preview": "/assets/worldmap-structures/scaled-world.png",
+            "sourceProjectId": "cc091ead-61a3-409e-ab74-c65b600a115b",
+            "authorArgs": {
+              "structure": "scaled-world",
+              "seed": 7
+            },
+            "mapCount": 9
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "preview": "/assets/worldmap-structures/field-overview.png",
+            "sourceProjectId": "e274c63c-f00f-417c-95c3-0e99314b8379",
+            "authorArgs": {
+              "structure": "field-overview",
+              "seed": 7
+            },
+            "mapCount": 9
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "preview": "/assets/worldmap-structures/stage-nodes.png",
+            "sourceProjectId": "331c6a6c-4459-4edf-a250-5bcb9af7982b",
+            "authorArgs": {
+              "structure": "stage-nodes",
+              "seed": 7
+            },
+            "mapCount": 8
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "preview": "/assets/worldmap-structures/room-network.png",
+            "sourceProjectId": "64f38f6a-2237-425b-86e4-15fd499989ed",
+            "authorArgs": {
+              "structure": "room-network",
+              "seed": 7
+            },
+            "mapCount": 10
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "preview": "/assets/worldmap-structures/run-path.png",
+            "sourceProjectId": "8af71241-f680-4298-b051-f96544016fce",
+            "authorArgs": {
+              "structure": "run-path",
+              "seed": 7
+            },
+            "mapCount": 13
+          }
+        ]
+      },
+      "note": "[월드맵 선택] 일반 새 월드맵의 기본은 기존 대륙 월드맵이다. list_worldmap_themes → read_world_terrain → edit_world_terrain({ops:[],theme}) 경로를 사용한다.\n몬스터 수집·포켓몬풍의 새 지역 지도는 read_worldmap_structure_reference({structure:\"region-routes\"}) → author_worldmap_structure({id,structure:\"region-routes\"})로 마을·도로와 지역 전도를 만든다. theme:\"monster\"는 기존 대륙 그림의 세계관이며 포켓몬식 이동 구조를 대신하지 않는다.\n별도 방식 지정이 없으면 기본 대륙 월드맵을 선택한다.\n사용자가 다른 이동 방식을 명시하면 그 선택이 우선이다. 기존 지도 수정은 그 지도 원본과 도구를 유지하며, 기본 선택 때문에 교체하지 않는다."
+    },
+    {
+      "kind": "pokemon",
+      "mode": "region-routes",
+      "toolName": "author_worldmap_structure",
+      "projectId": "f3aaa617-423d-4535-ae69-3a9a8bd1535a",
+      "folder": "/home/main/.local/share/oprn/worldmap-default-choice-20261005-2/pokemon",
+      "revision": 1,
+      "reloaded": true,
+      "startPreserved": true,
+      "newMaps": [
+        "choice_pokemon_map0",
+        "choice_pokemon_map1",
+        "choice_pokemon_map2",
+        "choice_pokemon_map3",
+        "choice_pokemon_map4",
+        "choice_pokemon_map5",
+        "choice_pokemon_map6",
+        "choice_pokemon_map7"
+      ],
+      "catalogue": {
+        "defaultMode": "default",
+        "preferredMode": "region-routes",
+        "modes": [
+          {
+            "id": "default",
+            "name": "기본 · 기존 대륙 월드맵",
+            "description": "기존 월드맵 생성기로 대륙·바다·산맥·거점을 만듭니다. 세계관을 고르고 지형을 편집할 수 있습니다."
+          },
+          {
+            "id": "region-routes",
+            "name": "포켓몬풍 · 마을과 도로",
+            "inspiration": "Pokémon",
+            "description": "지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다."
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "inspiration": "Final Fantasy VI",
+            "description": "작게 그린 대륙을 직접 걷고 거점의 실제 맵으로 들어갑니다."
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "inspiration": "Zelda",
+            "description": "연속된 필드의 지형을 지도에 그대로 표시하고 능력으로 새 길을 엽니다."
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "inspiration": "Super Mario World",
+            "description": "코스를 클리어하면 다음 코스, 비밀 출구를 찾으면 지름길을 엽니다."
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "inspiration": "Hollow Knight",
+            "description": "횡스크롤 방을 연결하고 발견한 방과 능력 관문, 지도 핀을 기록합니다."
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "inspiration": "Slay the Spire",
+            "description": "전투·휴식·보물·상점을 선택하며 위층으로 전진합니다. 지나간 분기는 돌아가지 않습니다."
+          }
+        ],
+        "defaultAuthoring": {
+          "tool": "edit_world_terrain",
+          "args": {
+            "ops": [],
+            "theme": "fantasy"
+          },
+          "readTool": "read_world_terrain",
+          "themeTool": "list_worldmap_themes"
+        },
+        "selectionRule": "일반 새 월드맵은 기존 대륙 월드맵을 기본으로 사용한다. 몬스터 수집·포켓몬풍은 region-routes. 명시한 이동 방식은 우선하며, 기존 지도 수정은 해당 지도 원본과 도구를 유지한다.",
+        "structures": [
+          {
+            "id": "region-routes",
+            "name": "포켓몬풍 · 마을과 도로",
+            "inspiration": "Pokémon",
+            "description": "지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다."
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "inspiration": "Final Fantasy VI",
+            "description": "작게 그린 대륙을 직접 걷고 거점의 실제 맵으로 들어갑니다."
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "inspiration": "Zelda",
+            "description": "연속된 필드의 지형을 지도에 그대로 표시하고 능력으로 새 길을 엽니다."
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "inspiration": "Super Mario World",
+            "description": "코스를 클리어하면 다음 코스, 비밀 출구를 찾으면 지름길을 엽니다."
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "inspiration": "Hollow Knight",
+            "description": "횡스크롤 방을 연결하고 발견한 방과 능력 관문, 지도 핀을 기록합니다."
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "inspiration": "Slay the Spire",
+            "description": "전투·휴식·보물·상점을 선택하며 위층으로 전진합니다. 지나간 분기는 돌아가지 않습니다."
+          }
+        ],
+        "authorTool": "author_worldmap_structure",
+        "inspectTool": "inspect_worldmap_structure",
+        "referenceTool": "read_worldmap_structure_reference",
+        "examples": [
+          {
+            "id": "region-routes",
+            "name": "지역 · 마을과 도로",
+            "preview": "/assets/worldmap-structures/region-routes.png",
+            "sourceProjectId": "534aa187-356c-4263-832e-244377f2508a",
+            "authorArgs": {
+              "structure": "region-routes",
+              "seed": 7
+            },
+            "mapCount": 8
+          },
+          {
+            "id": "scaled-world",
+            "name": "축척 월드 · 대륙 걷기",
+            "preview": "/assets/worldmap-structures/scaled-world.png",
+            "sourceProjectId": "cc091ead-61a3-409e-ab74-c65b600a115b",
+            "authorArgs": {
+              "structure": "scaled-world",
+              "seed": 7
+            },
+            "mapCount": 9
+          },
+          {
+            "id": "field-overview",
+            "name": "필드 · 지형과 능력",
+            "preview": "/assets/worldmap-structures/field-overview.png",
+            "sourceProjectId": "e274c63c-f00f-417c-95c3-0e99314b8379",
+            "authorArgs": {
+              "structure": "field-overview",
+              "seed": 7
+            },
+            "mapCount": 9
+          },
+          {
+            "id": "stage-nodes",
+            "name": "스테이지 · 클리어와 비밀길",
+            "preview": "/assets/worldmap-structures/stage-nodes.png",
+            "sourceProjectId": "331c6a6c-4459-4edf-a250-5bcb9af7982b",
+            "authorArgs": {
+              "structure": "stage-nodes",
+              "seed": 7
+            },
+            "mapCount": 8
+          },
+          {
+            "id": "room-network",
+            "name": "방 · 발견과 재탐색",
+            "preview": "/assets/worldmap-structures/room-network.png",
+            "sourceProjectId": "64f38f6a-2237-425b-86e4-15fd499989ed",
+            "authorArgs": {
+              "structure": "room-network",
+              "seed": 7
+            },
+            "mapCount": 10
+          },
+          {
+            "id": "run-path",
+            "name": "런 · 일방향 분기",
+            "preview": "/assets/worldmap-structures/run-path.png",
+            "sourceProjectId": "8af71241-f680-4298-b051-f96544016fce",
+            "authorArgs": {
+              "structure": "run-path",
+              "seed": 7
+            },
+            "mapCount": 13
+          }
+        ]
+      },
+      "note": "[월드맵 선택] 일반 새 월드맵의 기본은 기존 대륙 월드맵이다. list_worldmap_themes → read_world_terrain → edit_world_terrain({ops:[],theme}) 경로를 사용한다.\n몬스터 수집·포켓몬풍의 새 지역 지도는 read_worldmap_structure_reference({structure:\"region-routes\"}) → author_worldmap_structure({id,structure:\"region-routes\"})로 마을·도로와 지역 전도를 만든다. theme:\"monster\"는 기존 대륙 그림의 세계관이며 포켓몬식 이동 구조를 대신하지 않는다.\n현재 프로젝트 또는 요청은 몬스터 수집·포켓몬풍이다. 별도 방식 지정이 없으면 region-routes를 선택한다.\n사용자가 다른 이동 방식을 명시하면 그 선택이 우선이다. 기존 지도 수정은 그 지도 원본과 도구를 유지하며, 기본 선택 때문에 교체하지 않는다."
+    }
+  ]
+}
