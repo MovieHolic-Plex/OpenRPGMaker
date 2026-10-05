@@ -9,13 +9,13 @@
 
 각 축 PASS/FAIL + 구체 좌표/비율/이용 동작을 포함한 evidence(20자 이상):
 - proportions: 실제 기준차/기물의 투영 크기와 주차면·폭·벽 높이의 비율이 자연스러운가? 들어가기만 하면 PASS가 아니다.
-- spaceUse: 모든 여백의 기능을 따져라. 화면 오른쪽/아래쪽의 이유 없는 패딩, 과도한 후퇴 간격, 넓은 빈 바닥을 검출한다. 빈칸을 clearance/circulation으로 이름만 바꿔도 통과시키지 않는다. 실제 출입/회전/보행에 필요한 위치·크기인지 본다. 밀도 숫자만 높이려고 장식을 채우는 것도 FAIL. 필요 없는 면적은 화면과 벽을 줄여야 한다.
+- spaceUse: compact/open/corridor 모두 과대 면적을 검토한다. 가로 축소안과 세로 축소안의 실제 행/열·동선을 비교하고 같은 기능이 유지되는 더 작은 안이 있으면 현재 안은 FAIL. 근거에 현재/축소 가로×세로와 유지/실패한 동작 좌표를 남긴다. 기획 PASS가 큰 면적을 고정하는 권한은 아니다. 모든 여백의 기능을 따져라. 화면 오른쪽/아래쪽의 이유 없는 패딩, 과도한 후퇴 간격, 넓은 빈 바닥을 검출한다. 빈칸을 clearance/circulation으로 이름만 바꿔도 통과시키지 않는다. 실제 출입/회전/보행에 필요한 위치·크기인지 본다. 밀도 숫자만 높이려고 장식을 채우는 것도 FAIL. 필요 없는 면적은 화면과 벽을 줄여야 한다.
 - circulation: 입구→접근→주차/활동→출구의 연결과 차체 기준 회전/하차 여유. 작은 표본의 범위를 넘어선 시설 전체를 요구하지 않는다.
 - identity: 라벨을 가려도 공간을 알 수 있는 구조·재료·설비 단서가 계획되어 있는가? 전체 경사로/차단기를 보류했어도 조명/벽 마감/구조 리듬 등 작은 구역에 필요한 단서는 남겨야 한다.
 - composition: 실제 타일 게임 화면으로 볼 때 내용에 맞는 화면 크기, 벽과 주차열의 관계, 시선 위계, 명암/재료 구분이 계획되었는가? 단색 바닥과 선만 큰 방에 놓은 도면이면 FAIL.
 
 손상된 부분을 조금 고치는 것으로 완료 선언하지 않는다. 이전 후보가 더 큰 구조 문제를 보이면 그 문제도 기록한다.
-한 축 FAIL이면 전체 FAIL. 수정은 asset/assembly/spec로 구분하고 구체 target/problem/change/keep을 기록한다.
+한 축 FAIL이면 전체 FAIL. fixes의 각 객체에는 category(asset/assembly/spec), target, problem, change, keep을 모두 기록한다. category가 정확한 필드명이다.
 출력:
 {"gateVersion":3,"fingerprint":"입력 fingerprint","verdict":"PASS 또는 FAIL","checks":{"projection":{"verdict":"PASS 또는 FAIL","evidence":"바닥과 높이·접지·가림 검토"},"proportions":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"spaceUse":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"circulation":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"identity":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"composition":{"verdict":"PASS 또는 FAIL","evidence":"관찰"}},"reasons":[],"fixes":[]}
 
@@ -24,3 +24,7 @@ layout.repairPlan이 피드백 policy의 단계로 되돌아갔는지 본다. �
 phase=calibration이면 최대 4종(기준차+낮은 멈춤턱+벽 모서리)의 작은 시점 표본이다. 전체 주차장/두 주차면/완성 출입 동선은 요구하지 않는다.
 표본 범위의 접지·면 구분·기준 대비 관계를 먼저 확정하고 scene은 그 뒤 별도로 검수한다.
 통행은 도색선이 아닌 실제 장애물/걷는 바닥으로 판단한다. 도색선 경계 하나만 보고 좁다고 반려하지 않는다.
+
+FAIL의 fixes 예시(문자열은 실제 관찰로 채운다):
+{"category":"assembly","target":"좌표와 조립 대상","problem":"관찰한 결함","change":"다음 제작자가 실행할 구체 수정","keep":"유지해야 할 기존 요소"}
+FAIL이면 fixes를 비워 두지 않는다. 필드를 type으로 쓰지 말고 category로 쓴다.

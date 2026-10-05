@@ -112,6 +112,10 @@ export type OprnAssetBrowser = {
 
 export type OprnBridge = {
   readonly windowControl?: (action: "toggle-fullscreen" | "close") => Promise<boolean>;
+  /** 데스크톱 앱 창의 네이티브 전체화면 여부. 브라우저 Fullscreen API 와는 별개다. */
+  readonly windowFullscreen?: () => Promise<boolean>;
+  /** 네이티브 전체화면 변화(F11·메뉴 포함) 구독. 해지 함수를 돌려준다. */
+  readonly onWindowFullscreen?: (callback: (fullscreen: boolean) => void) => () => void;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;

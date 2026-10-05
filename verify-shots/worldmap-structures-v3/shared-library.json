@@ -1,0 +1,14 @@
+{
+  "id": "worldmap-navigation-structures-v1",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "28cb55c8209aa42a97e0cd20ab3dba00f2e3e60f1d1e6713b765cae6515ea377",
+  "structures": [
+    "region-routes",
+    "scaled-world",
+    "field-overview",
+    "stage-nodes",
+    "room-network",
+    "run-path"
+  ],
+  "reloaded": true
+}

@@ -98,6 +98,10 @@ export function createCinematicAssets(): CinematicAssets {
         if (url) void prepareAudio(url).catch(() => undefined);
       }
       for (const scene of sequence.scenes.slice(index, index + 2)) {
+        for (const id of [scene.narrationAudioResourceId, scene.kind === 'image' ? scene.direction?.soundResourceId : undefined]) {
+          const url = id && resolveAssetResourceUrl(id, { project });
+          if (url) void prepareAudio(url).catch(() => undefined);
+        }
         if (scene.kind !== 'image') continue;
         for (const id of [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) {
           const url = resolveAssetResourceUrl(id, { project });

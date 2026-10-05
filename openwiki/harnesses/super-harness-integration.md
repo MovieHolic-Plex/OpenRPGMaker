@@ -111,3 +111,64 @@ python3 src/harnesses/super-harness/unified.py serve --port 18315 --legacy-port 
   예상 완료 시간·가짜 퍼센트는 만들지 않는다.
 - HTTP 서비스 재시작 시 `recover()`는 살아 있는 외부 작업을 lost로 바꾸지 않는다. 실행기는 원래 프로세스 소유를 유지한다.
   배포 전 통합 서비스 cgroup 및 기물 pool의 실행 작업이 없는지 확인하고, 재시작 후 외부 작업 PID/상태를 대조한다.
+
+## 부품 선택의 판단 순서 (2026-10-05)
+
+`art-review`에서는 선택할 부품 수와 체크리스트를 첫 화면에 두고, 실행 상태는 접힌 상세로 옮긴다.
+`art-choice.js`는 한 그룹의 A/B를 나란히 표시한다. 고르는 원본 부품은 같은 4배 확대 기준으로
+보여 주고 배치 예시를 아래에 붙인다. 문 열림·닫힘 전환은 두 후보의 배치 예시에 함께 적용한다.
+
+- 후보는 자동 선택하지 않는다. 사용자가 누른 기존 choose-art/clear-art API와 fingerprint 계약을 그대로 쓴다.
+- 합격 후보가 하나면 그 후보 이름을 명시한다. 불합격 후보는 버튼을 끄고 이유를 펼쳐 읽게 한다.
+- 저장 성공 응답 후 다음 미선택 그룹으로 이동한다. 실패하면 같은 그룹에 남는다.
+- ‘수정 요청 작성’은 기존 교정 입력란을 펼치고 부품명을 채운다. 기존 초안은 보존하며 자동 제출하지 않는다.
+- 선택·공용 등록·맵 완성을 구분한다. 설치 완료 상태에서는 선택 변경 버튼을 비활성화한다.
+- 실제 UI 확인은 `verify-shots/super-harness-choices/` 참조. 저장 흐름 확인은 브라우저에서 POST 응답만
+  가로채 확인했고, 정본의 사용자 선택은 0/3 그대로 보존했다.
+
+## 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
+
+위 부품 우선 비교 화면을 예시 우선으로 바꿨다. 원본 부품·A/B·검수 수치는 접힌 상세에 두고,
+공간에 배치한 실제 그림과 용도 설명을 먼저 보여 준다. 지하 감옥의 ‘남쪽 돌계단’은 native h1 brief의
+북쪽 낮은 감옥 바닥 → 남쪽 높은 랜딩 의도를 ‘출입구로 올라가는 계단’으로 설명한다.
+예시는 기존 검수 방의 배치 표본이며, 실제 전체 감옥 맵이나 통행 승인으로 표시하지 않는다.
+
+- `POST /api/action`, action=`evaluate-art`: group/candidate/fingerprint, imagePath/imageHash,
+  rating(like/revise/replace), tags, text(최대 2,000자). 그림/판정 fingerprint와 표시된 상태 이미지를 함께 확인한다.
+- 평가는 기존 `sh.sqlite.concepts.feedback`에 `kind=art-example` 레코드로 덧붙인다. 단계·선택·paused를 변경하지 않는다.
+  기존 기획 의견과 구분하고, 텍스트 요약과 구조화된 의견, 이미지 경로/해시, 시각을 저장한다.
+- GET art-choices는 현재 fingerprint/이미지에 해당하는 최근 평가를 `candidate.evaluations`로 돌려준다.
+  열림·닫힘 각각의 평가가 보존된다. 잘못된 후보/그림 해시와 빈 수정 의견은 서버도 거부한다.
+- `start_art`와 `start_art_context_review`는 저장한 의견을 다음 작업 프롬프트에 넣는다. 이전 판의
+  의견일 수 있음을 표시하고 이미지/해시를 확인하도록 한다. 사용자 호감은 기술 PASS를 대신하지 않는다.
+- ‘이 예시로 진행’은 기존 해시 결합 선택 API를 사용한다. 선택 후에도 같은 장면에 남아 평가할 수 있다.
+  평가만 저장해도 되며, 평가 저장은 자동 재제작을 시작하지 않는다. 그림이 바뀌면 이전 평가를 새 그림에 덮어 표시하지 않는다.
+- 화면 내 장면·열림/닫힘 전환에서 평가 초안을 유지한다. 전체 페이지 재로드 전 미저장 초안은 저장해야 한다.
+
+확인: `verify-shots/super-harness-example-evaluation/`. 원본 DB의 피드백/선택은 변경하지 않고,
+SQLite 사본에 저장→재조회와 낡은 해시 거부를 확인했다. 서비스 재시작 전후 별도 작업 689 생존 유지.
+
+## 검수 응답 형식 오류의 복구 (2026-10-05)
+
+공동묘지 작업 688, 교실 작업 690은 실제 FAIL 근거와 수정 지시가 있었으나 `fixes[].type`을
+`category`로 읽지 못해 품질 수정으로 넘어가지 못했다. 품질 반려와 응답 형식 오류를 구분한다.
+
+- `art_layout.normalize_fixes`는 알려진 asset/assembly/spec 값의 type→category 별칭만 정규화한다.
+  대상·문제·변경·보존 문자열을 만들거나 판정을 통과시키지 않는다. 도면과 조립 검수에서 같은 함수를 쓴다.
+- 입력 해시·기준 버전·전체/세부 판정 불일치는 계속 거부한다. 없는 필드·관찰·수정 지시는
+  `ReviewFormatError`로 구분하여 `repair_art_layout_response`가 같은 검수자에게 최대 2회 보완 요청한다.
+- 보완 단계는 art-layout-review의 format-1/2 작업이다. 원본 판정/기존 관찰/수정 내용을 보존하는지
+  `preserve_verdict`로 확인한다. 그림 수정 회차를 올리지 않는다. 끝까지 실패하면 구체 오류와 함께 막힘으로 둔다.
+- raw/정규화/보완 응답은 `art-layout-response-errors/`에 보존한다. 성공한 FAIL은 기존 도면 반려→준비 수정 경로로 넘긴다.
+  네이티브 그림·합격 관문은 그대로 유지한다. 도면 품질 반복 한도(동일 art_revision에서 3회)는 별도다.
+- 검수 프롬프트에 category/target/problem/change/keep을 모두 가진 실제 JSON 형식을 명시했다.
+- `review_recovery.recover(sh,cid)`는 아직 이전 모듈을 들고 있는 감독자의 저장된 도면 응답 오류를 복구한다.
+  최근 완료 작업·현재 입력 fingerprint·동일 개념 실행 작업 부재를 확인하고 작업별 replay marker로 중복 처리를 막는다.
+- 현재 지정 3공간 배치는 기존 감독자 작업을 끊지 않고 `super-harness-review-response-watch.service`가
+  호환 복구를 감시한다. 운영 스크립트는 DATA/monitoring/space-batch-20261005/review-response-watch.py.
+  같은 배치가 종료됐지만 복구된 queued 작업이 있으면 새 코드로 같은 배치만 다시 시작하며, 전체 큐를 풀지 않는다.
+  배치 종료 후 복구/대기 작업이 없으면 감시도 종료한다.
+- 화면의 막힘/폐기를 별도 탭으로 분리했다. 형식 보완 작업은 실행 현황에 ‘검수 응답 형식 보완’으로 표시한다.
+
+운영 복구 결과: 공동묘지/교실 모두 art queued로 이동, 원래 FAIL과 각각 4개 수정 지시·art_revision=0 보존.
+기존 하수도 작업 691은 서비스 재시작 전후 생존. 근거: `verify-shots/super-harness-review-recovery/`.

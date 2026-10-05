@@ -1,9 +1,9 @@
 // Read-only shipping-player observations and native audio recording. Never authors content.
 export async function installOpeningEvidence(page, captureAudio) {
   await page.addInitScript(({ captureAudio }) => {
-    const record = window.__oprnOpeningEvidence = { layers: [], audio: [], media: [], errors: [], startedAt: null };
+    const record = window.__oprnOpeningEvidence = { layers: [], audio: [], media: [], fieldAudio: [], background: [], visibleLoadingSamples: 0, errors: [], startedAt: null };
     let context, destination, analyser, recorder;
-    const chunks = [], connected = new WeakSet();
+    const chunks = [], connected = new WeakSet(), hashes = [];
     const originalPlay = HTMLMediaElement.prototype.play;
     if (captureAudio) HTMLMediaElement.prototype.play = function (...args) {
       try {
@@ -16,13 +16,25 @@ export async function installOpeningEvidence(page, captureAudio) {
           record.startedAt = Date.now(); recorder.start(1000);
         }
         if (!connected.has(this)) { context.createMediaElementSource(this).connect(analyser); connected.add(this); }
-        record.media.push({ at: Date.now(), testid: this.dataset.testid ?? null });
+        const sample = { at: Date.now(), testid: this.dataset.testid ?? null, src: this.src, loop: this.loop, played: false };
+        this.addEventListener('playing', () => { sample.played = true; }, { once: true });
+        record.media.push(sample);
+        hashes.push(fetch(this.src).then(r => r.arrayBuffer()).then(async bytes => {
+          sample.sha256 = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(n => n.toString(16).padStart(2, '0')).join('');
+        }).catch(() => undefined));
       } catch (error) { record.errors.push(error.message); }
       return originalPlay.apply(this, args);
     };
     const resume = () => { if (context?.state === 'suspended') void context.resume(); };
     window.addEventListener('keydown', resume, true); window.addEventListener('pointerdown', resume, true);
     const timer = setInterval(() => {
+      const loading = document.querySelector('[data-testid="play-loading-overlay"]');
+      if (loading?.getBoundingClientRect().width && getComputedStyle(loading).display !== 'none') record.visibleLoadingSamples++;
+      const scene = window.__oprnHooksScene;
+      if (scene && record.background.length < 500) record.background.push({ at: Date.now(), pending: scene.game.registry.get('initialPresentationPending') === true, mapId: scene.session.currentMapId });
+      if (scene && record.fieldAudio.length < 500) for (const media of document.querySelectorAll('audio[data-oprn-audio]')) {
+        if (media.loop && !media.paused && media.currentTime > 0) record.fieldAudio.push({ at: Date.now(), mapId: scene.session.currentMapId, resourceId: scene.session.audio.bgm?.resourceId, currentTime: media.currentTime, volume: media.volume });
+      }
       const root = document.querySelector('[data-testid="cinematic-sequence"]');
       const audio = document.querySelector('[data-testid="cinematic-music"]');
       if ((!root || root.dataset.transitionState !== 'playing') && !audio) return;
@@ -47,6 +59,7 @@ export async function installOpeningEvidence(page, captureAudio) {
     }, 150);
     window.__oprnStopOpeningRecording = async () => {
       clearInterval(timer);
+      await Promise.all(hashes);
       if (recorder?.state === 'recording') {
         await new Promise(resolve => { recorder.addEventListener('stop', resolve, { once: true }); recorder.stop(); });
       }

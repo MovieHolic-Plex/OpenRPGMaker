@@ -6,6 +6,12 @@ const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(ch
 const bridge = {
   closeIsHostDriven: true,
   windowControl: invoke(OPRN_CHANNELS.windowControl),
+  windowFullscreen: invoke(OPRN_CHANNELS.windowFullscreen),
+  onWindowFullscreen: (callback: (fullscreen: boolean) => void): (() => void) => {
+    const listener = (_event: unknown, fullscreen: unknown): void => callback(Boolean(fullscreen));
+    ipcRenderer.on(OPRN_CHANNELS.windowFullscreen, listener);
+    return () => ipcRenderer.removeListener(OPRN_CHANNELS.windowFullscreen, listener);
+  },
   team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
   // 동반 서비스 출처는 실행할 때마다 다른 포트라 프리로드 시점에 한 번 동기로 받는다.
   companionOrigin: (() => {

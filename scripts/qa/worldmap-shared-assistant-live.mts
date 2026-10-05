@@ -19,17 +19,19 @@ import { WORLDMAP_ICON_TOOLS } from '../../src/editor/tools/worldmapIconTools.ts
 import { canonicalJsonString } from '../../src/project/persistence/core/canonicalJson.ts';
 import { canMove } from '../../src/project/collision.ts';
 import type { Project } from '../../src/project/types.ts';
+import { inspectWorldAtlas } from '../../src/project/worldAtlasAudit.ts';
 
 const arg = (name: string, fallback?: string) => { const i = process.argv.indexOf('--'+name); return i < 0 ? fallback : process.argv[i+1]!; };
 const label = arg('label', 'yucatan')!;
 if (!/^[a-z0-9-]+$/.test(label)) throw Error('Invalid evidence label');
 const generatedTheme = arg('generated-theme');
+const expectedStructure = arg('structure');
 const out = path.resolve(arg('out', 'verify-shots/worldmap-shared-db/assistant-'+label)!);
 const folder = path.resolve(arg('project', path.join(os.homedir(), '.local/share/oprn/worldmap-shared-ai-'+label+'-20261004'))!);
 if (fs.existsSync(path.join(folder, 'project.sqlite'))) throw Error('Choose a fresh project directory; existing content is never replaced');
 fs.mkdirSync(out, {recursive:true});
 const task = fs.readFileSync(arg('task-file')!, 'utf8');
-const libraries = Object.fromEntries(['worldmap-human-selected','worldmap-real-joseon','worldmap-real-yucatan'].map(id => {
+const libraries = Object.fromEntries(['worldmap-human-selected','worldmap-real-joseon','worldmap-real-yucatan',...(expectedStructure?['worldmap-navigation-structures-v1']:[])].map(id => {
   const row = readSharedContentLibrary(id); if (!row) throw Error('Missing actual shared DB library '+id); return [id,row.library];
 }));
 await installSharedContent({ revision: createHash('sha256').update(JSON.stringify(libraries)).digest('hex'), libraries });
@@ -64,7 +66,7 @@ const done = await runPiAgent({provider:provider!,model:modelId!,task,mapIds:[],
   renderToolImage: async (draft,_name,data)=>renderToolRegionPngBase64(draft,data),
   onToolCall:r=>{ const data = r.result.data as any;
     trace.push({i:trace.length+1,name:r.name,args:r.args,ok:r.result.ok,summary:String(r.result.summary).slice(0,1200),warnings:r.result.warnings,
-      data:['stamp_worldmap_icon','inspect_worldmap_icon','import_region_reference','edit_world_terrain','read_world_terrain'].includes(r.name)?data:undefined});record(); },
+      data:['stamp_worldmap_icon','inspect_worldmap_icon','import_region_reference','edit_world_terrain','read_world_terrain','author_worldmap_structure','inspect_worldmap_structure'].includes(r.name)?data:undefined});record(); },
   onCheckpoint:async checkpoint=>{ fs.writeFileSync(path.join(out,'checkpoint.json'),JSON.stringify(checkpoint)); },
   onEvent:e=>{ if (['assistant','tool_end','error','execution_status'].includes(e.type)) {
       const event = Object.fromEntries(Object.entries(e).filter(([key])=>['type','at','id','name','ok','summary','text','message','durationMs'].includes(key)));
@@ -117,12 +119,17 @@ const sharedPassed=imported.length>0&&placements.length>=2&&placements.every(p=>
 const generatedPassed=generated.length===1&&generated[0]!.theme===generatedTheme&&generated[0]!.journeyCheck?.ok===true&&
   generated[0]!.privateTileset&&generated[0]!.iconSelection?.mode==='human-selected'&&originalMapsPreserved&&
   trace.every(t=>t.ok)&&saved.startMapId===project.startMapId&&canonicalJsonString(saved.startPos)===canonicalJsonString(project.startPos);
+const structures=(portable.worldAtlases??[]).map(atlas=>({id:atlas.id,structure:atlas.structure,audit:inspectWorldAtlas(portable,atlas)}));
+const structurePassed=structures.length===1&&structures[0]!.structure===expectedStructure&&structures[0]!.audit.ok&&originalMapsPreserved&&
+  trace.some(t=>t.name==='read_worldmap_structure_reference'&&t.ok)&&trace.some(t=>t.name==='author_worldmap_structure'&&t.ok)&&
+  trace.some(t=>t.name==='inspect_worldmap_structure'&&t.ok)&&trace.every(t=>t.ok)&&
+  saved.startMapId===project.startMapId&&canonicalJsonString(saved.startPos)===canonicalJsonString(project.startPos);
 const summary={realModel:true,provider,modelId,uiIntentRequestExercised:false,sharedDatabase:sharedContentFile(),libraries:Object.keys(libraries),
   folder,projectId,revision:snapshot.revision,elapsedSeconds:(Date.now()-started)/1000,
   counts:Object.fromEntries([...new Set(trace.map(t=>t.name))].map(name=>[name,trace.filter(t=>t.name===name).length])),
-  failures:trace.filter(t=>!t.ok).map(t=>({name:t.name,summary:t.summary})),imported,generated,placements,stats:done.stats,
+  failures:trace.filter(t=>!t.ok).map(t=>({name:t.name,summary:t.summary})),imported,generated,placements,structures,stats:done.stats,
   loadedCatalogLibraries:Object.keys(sharedContentSnapshot().libraries).length,originalMapsPreserved,
-  passed:generatedTheme?generatedPassed:sharedPassed,
+  passed:expectedStructure?structurePassed:generatedTheme?generatedPassed:sharedPassed,
   savedAndReopened:true};
 fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(summary,null,2));
 console.log(JSON.stringify(summary,null,2));

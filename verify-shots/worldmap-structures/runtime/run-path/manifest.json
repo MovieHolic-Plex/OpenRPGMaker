@@ -1,0 +1,265 @@
+{
+  "scenarioId": "worldmap-structure-run-path",
+  "projectPath": "verify-shots/worldmap-structures/run-path/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field",
+      "note": "정본에서 내보낸 실제 맵 시작",
+      "shot": "02-field.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 2,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "atlas",
+      "note": "M → 실제 세계 지도",
+      "shot": "03-atlas.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 2,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "m"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "present"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "world-atlas-picture",
+          "attr": "data-atlas-ready",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "paused-map",
+      "note": "지도가 열린 동안 방향키로 맵이 움직이지 않는다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 2,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "right",
+          "ms": 350
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "close",
+      "note": "Esc 닫기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 2,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "goal",
+      "note": "실제 관문과 대화하여 해금",
+      "shot": "06-goal.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 33,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "examples_run_path_map0",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "switches": {
+          "examples_run_path_clear0": true
+        }
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "examples_run_path_map0",
+          "x": 33,
+          "y": 17
+        },
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "goal-close",
+      "note": "관문 대화를 끝까지 확인하고 닫기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map0",
+        "x": 33,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "examples_run_path_map0",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "dialogue-box",
+          "text": "지도에서 다음 길을 확인하세요."
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 4,
+          "timeoutMs": 1500
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "travel",
+      "note": "열린 인접 장소로 실제 이동",
+      "shot": "08-travel.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_run_path_map2",
+        "x": 2,
+        "y": 17,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "examples_run_path_map0",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "switches": {
+          "examples_run_path_visit2": true
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "m"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "present"
+        },
+        {
+          "kind": "pointerClick",
+          "testid": "world-atlas-travel-examples_run_path_n2"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "examples_run_path_map2",
+          "x": 2,
+          "y": 17
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "absent"
+        }
+      ]
+    }
+  ]
+}

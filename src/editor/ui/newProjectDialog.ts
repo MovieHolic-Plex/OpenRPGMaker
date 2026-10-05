@@ -3,7 +3,7 @@
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
-import { START_EXAMPLE_DETAILS, type ProjectStartMode } from "@/start/projectStart";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, type ProjectStartMode } from "@/start/projectStart";
 import "@/styles/shell/dialogs/project-start.css";
 import { showProjectInterview } from "./projectInterviewDialog";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
@@ -22,7 +22,7 @@ export type NewProjectDialogResult = {
   readonly title: string;
   /** null = 빈 프로젝트. 값이 있으면 그 선택지의 시스템 프리셋을 씨앗에 적용한다. */
   readonly choiceId: NewProjectChoiceId | null;
-  /** 게임 화면 크기. classic = 320×240(기본), wide = 640×360. */
+  /** 게임 화면 크기. wide = 480×270(기본), classic = 320×240. */
   readonly screenSize: NewProjectScreenSize;
   readonly gameDesignBrief?: GameDesignBrief;
   readonly startMode?: ProjectStartMode;
@@ -90,8 +90,8 @@ export const NEW_PROJECT_SIZE_OPTIONS: readonly {
   readonly label: string;
   readonly blurb: string;
 }[] = [
-  { id: "classic", label: "클래식", blurb: "도트가 크게 보여요 (320×240 · 4:3)" },
-  { id: "wide", label: "와이드", blurb: "요즘 비율로 넓게 보여요 (640×360 · 16:9)" },
+  { id: "wide", label: "와이드", blurb: "요즘 모니터에 꽉 차요 (480×270 · 16:9)" },
+  { id: "classic", label: "클래식", blurb: "옛 RPG 만들기 화면 (320×240 · 4:3)" },
 ];
 
 /** 토스트·요약 문구용 표시 이름. 다이얼로그 밖(menu.ts)이 같은 문자열을 다시 적지 않게 한다. */
@@ -111,7 +111,7 @@ function domAvailable(): boolean {
 
 export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promise<NewProjectDialogResult | null> {
   const fallbackTitle = opts.defaultValue ?? "새 프로젝트";
-  if (!domAvailable()) return Promise.resolve({ title: fallbackTitle, choiceId: opts.defaultChoiceId ?? null, screenSize: "classic", startMode: opts.defaultChoiceId ? START_EXAMPLE_DETAILS[opts.defaultChoiceId] ? "example" : "ai" : "blank" });
+  if (!domAvailable()) return Promise.resolve({ title: fallbackTitle, choiceId: opts.defaultChoiceId ?? null, screenSize: DEFAULT_START_SCREEN_SIZE, startMode: opts.defaultChoiceId ? START_EXAMPLE_DETAILS[opts.defaultChoiceId] ? "example" : "ai" : "blank" });
   return new Promise(resolve => {
     const opener = document.activeElement;
     const overlay = el("div", { class: "app-modal-overlay", dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host } });
@@ -120,7 +120,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     let startMode: ProjectStartMode = opts.defaultChoiceId === undefined || (choiceId && !START_EXAMPLE_DETAILS[choiceId]) ? "ai" : "example";
     let choosing = opts.defaultChoiceId === null;
     let title = fallbackTitle;
-    let screenSize: NewProjectScreenSize = "classic";
+    let screenSize: NewProjectScreenSize = DEFAULT_START_SCREEN_SIZE;
     let idea = "";
     let busy = false;
     let settled = false;

@@ -107,12 +107,7 @@ def validate_review(data, cid, result, request):
             art_acceptance.validate(r, current_acceptance, CHECKS)
             art_repair.validate_comparison(r, request, group['id'])
             if failed:
-                fixes = r.get('fixes')
-                if not isinstance(fixes, list) or not fixes: raise ValueError('실패에는 구체적인 수정 지시 필요')
-                for fix in fixes:
-                    if (fix.get('category') not in ('asset', 'assembly', 'spec') or
-                        any(not isinstance(fix.get(k), str) or not fix[k].strip() for k in ('target', 'problem', 'change', 'keep'))):
-                        raise ValueError('수정 대상·문제·변경·보존 항목 필요')
+                r['fixes'] = art_layout.normalize_fixes(r.get('fixes'))
     # Recheck image/receipt sources; a unchanged manifest alone is not sufficient.
     state = art_choices.view(data, cid)
     if any(c['stale'] for g in state['groups'] for c in g['candidates']): raise ValueError('검수 대상 파일 해시가 변경됨')
@@ -184,3 +179,38 @@ def queue_repair(data, cid):
             note=f'그림 자동 수정 {revision}회 소진 — 사람 확인 필요' if exhausted else f'검수 피드백 반영 재생성 {revision + 1}/{cap["maxRevisions"]} 대기')
         store.log(cid, '조립 검수 반려 → ' + ('자동 수정 상한 도달' if exhausted else f'피드백을 포함한 재생성 {revision + 1}차 대기'))
         return True
+
+
+def ensure_layout_feedback(data, cid):
+    """Turn the actual rejected plan into executable repair input before prompting.
+
+    This is preparation work, so it does not spend a native drawing revision or
+    manufacture an art verdict. The original reviewer fixes remain authoritative.
+    """
+    folder = directory(data, cid)
+    review = read(folder / 'art-layout-review.json', {})
+    snapshot = read(folder / 'art-layout-input.json', {})
+    if review.get('verdict') != 'FAIL' or review.get('fingerprint') != snapshot.get('fingerprint'):
+        return False
+    # Validate the stored response without claiming its old source files are still
+    # current. Changed prepared inputs must go through a new independent review.
+    art_layout.validate_verdict(review, snapshot['fingerprint'], art_layout.LAYOUT_CHECKS)
+    source = art_choices.digest(folder / 'art-layout-review.json')
+    previous = read(folder / 'art-feedback.json', {})
+    if previous.get('layoutReviewSha256') == source:
+        return True
+    archive = folder / 'art-layout-feedback-history' / source
+    archive.mkdir(parents=True, exist_ok=True)
+    for name in ('art-layout-review.json', 'art-layout-input.json', 'art-execution.json'):
+        if (folder / name).is_file(): shutil.copy2(folder / name, archive / name)
+    categories = {f['category'] for f in review['fixes']}
+    route = 'spec' if 'spec' in categories else 'assembly' if 'assembly' in categories else 'asset'
+    revision = store.concept(cid).get('art_revision', 0)
+    feedback = dict(previous, layoutReviewSha256=source, created=store.now(), status='queued',
+                    revision=revision, limits=limits(data, cid),
+                    layoutRepairs=review['fixes'], layoutReasons=review.get('reasons', []),
+                    policy={'route': route, 'phase': snapshot['layout']['phase'], 'repeatedChecks': [],
+                            'reason': '실제 도면 반려 지적을 새 준비 입력에 반영한다. 그림 수정 회차는 유지한다.'})
+    write(archive / 'feedback.json', feedback)
+    write(folder / 'art-feedback.json', feedback)
+    return True

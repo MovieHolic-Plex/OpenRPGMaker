@@ -1,0 +1,10 @@
+{
+  "mockOnly": true,
+  "realWrites": 0,
+  "undoBeforeSend": true,
+  "failedSaveRestoresDraft": true,
+  "successfulSaveNotifies": true,
+  "outlineChoicePreserved": true,
+  "narrowViewportNoOverflow": true,
+  "errors": []
+}

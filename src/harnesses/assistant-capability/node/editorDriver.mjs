@@ -70,9 +70,11 @@ export async function startHost(projectDir, dir) {
     writeFileSync(resolve(dir,'host.json'),JSON.stringify({url,exitCode:child.exitCode,closed:true},null,2));
   } };
 }
-export async function newEditor(browser, url, projectDir, config) {
-  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce' });
+export async function newEditor(browser, url, projectDir, config, captureOptions={}) {
+  const {onPage,bootTimeoutMs=360000,...contextOptions}=captureOptions;
+  const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...contextOptions });
   const page=await context.newPage();
+  await onPage?.(page,context);
   // Bundled asset installation and SQLite flush can hold the UI main thread.
   // Keep UI action deadlines consistent with the existing load/save deadlines.
   page.setDefaultTimeout(120000);
@@ -116,8 +118,8 @@ export async function newEditor(browser, url, projectDir, config) {
     await page.locator('#access-code').fill(readFileSync(resolve(projectDir,'.oprn-host-access'),'utf8').trim());
     await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);
   }
-  await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:360000});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="project-export-json"]'),null,{timeout:120000});
+  await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
   // Companion readiness precedes canvas construction in a fresh context.
   // Wait for the editor's own rendered tile residency before taking evidence.
   await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});

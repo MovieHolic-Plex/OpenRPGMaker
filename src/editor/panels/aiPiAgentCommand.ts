@@ -1028,8 +1028,17 @@ ${contractReleased.message}`);
       // Do not replace a newer run in the live team rail.
       if (!background && currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
     });
+    // Keep the run alive until its final assets and connections reach the save
+    // boundary. A completed worker is not an accepted project revision.
+    surface.setStatus("적용됨 · 저장 중");
+    let saveAccepted = false;
+    try {
+      saveAccepted = (await store.flush()).kind === "saved";
+    } catch (error) {
+      surface.appendProcess?.(`변경은 적용됐지만 저장하지 못했어요: ${error instanceof Error ? error.message : String(error)}`);
+    }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
     if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({

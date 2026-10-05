@@ -1,0 +1,161 @@
+
+> oprn@0.130.0 gates
+> node scripts/verify-gates.mjs --only surface
+
+surface        exit=1  축=10
+   
+    RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+   
+    ❯ test/eventEditorShellSurface.baseline.test.ts (22 tests | 2 failed) 67ms
+      ✓ 이벤트에디터 셸 표면 스냅샷 > 두 페이지 모두 예외 없이 렌더된다 3ms
+      × 이벤트에디터 셸 표면 스냅샷 > 2페이지 선택이 1페이지와 다른 결과를 낸다 (페이지 선택 배선이 살아 있다) 17ms
+        → 1페이지 명령 testid 누락: event-command-setSwitch: expected [ 'ai-event-apply', …(201) ] to include 'event-command-setSwitch'
+      ✓ 이벤트에디터 셸 표면 스냅샷 > details→div 후처리가 실제로 발동한다 1ms
+      ✓ 이벤트에디터 셸 표면 스냅샷 > bare 변형이 미연결·조건0 분기를 실제로 렌더한다 1ms
+      ✓ 이벤트에디터 셸 표면 스냅샷 > allRows 변형이 고정 조건 13행을 전부 켠다 2ms
+      × 이벤트에디터 셸 표면 스냅샷 > 기준선과 일치한다 20ms
+        → [셸] 하한선 위반
+     하한선 미달: page1.testidCount 202 < 217
+     하한선 미달: page1.controlCount 107 < 125
+     하한선 미달: page1.detailsConverted 3 < 4
+     하한선 미달: page2.testidCount 218 < 260
+     하한선 미달: page2.controlCount 122 < 168
+     하한선 미달: page2.classCount 282 < 289
+     하한선 미달: page2.detailsConverted 3 < 4
+     하한선 미달: bare.testidCount 180 < 190
+     하한선 미달: bare.controlCount 96 < 108
+     하한선 미달: bare.detailsConverted 1 < 2
+     하한선 미달: flow.detailsConverted 3 < 4
+     하한선 미달: allRows.controlCount 139 < 140
+     하한선 미달: allRows.detailsConverted 1 < 2
+     ── 함께 관측된 표면 변화 5건 (원인은 여기 있다) ──
+     page1: testid 소실 33개 [event-command-changeItem, event-command-issue-badge-1, event-command-issue-badge-3, event-command-setSwitch, event-command-step-1, event-command-step-2, event-command-step-3, event-command-wait, event-editor-column-label-inspector, event-page-preview-host] | testid 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 클래스 소실 26개 [add-next, badge-on, ee-icon-branch, ee-icon-coin, ee-icon-pencil, ee-icon-warning, error, event-command-issue-badge, event-editor-column-label-inspector, event-page-preview-host] | 클래스 신규 37개 [ai-event-modal-header, body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-caption, ecp-message-body, ecp-message-content] | 태그 button 93→72 | 태그 circle 30→8 | 태그 details 5→6 | 태그 div 128→126 | 태그 h2 0→1 | 태그 h3 0→1 | 태그 input 17→18 | 태그 label 16→18 | 태그 option 129→153 | 태그 p 9→10 | 태그 path 53→21 | 태그 section 1→2 | 태그 select 15→16 | 태그 span 164→115 | 태그 svg 55→22 | tagByTestid 키 소실 33개 [event-command-changeItem, event-command-issue-badge-1, event-command-issue-badge-3, event-command-setSwitch, event-command-step-1, event-command-step-2, event-command-step-3, event-command-wait, event-editor-column-label-inspector, event-page-preview-host] | tagByTestid 키 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 컨트롤 키 소실 27개 [event-command-changeItem>button#0, event-command-changeItem>button#1, event-command-changeItem>button#2, event-command-setSwitch>button#0, event-command-setSwitch>button#1, event-command-setSwitch>button#2, event-command-wait>button#0, event-command-wait>button#1, event-command-wait>button#2, event-storyboard-add] | 컨트롤 키 신규 8개 [ai-event-assist>button#0, ai-event-stop, event-page-blend-mode, event-page-name-input, event-script-live-next, event-script-live-play, event-script-live-prev, event-script-live-restart] | 컨트롤 변경 6건 [ai-event-apply button[button]{inHidden}→button[button]{disabled}, ai-event-discard button[button]{inHidden}→button[button]{disabled}, event-command-empty-line button[button]{inHidden}→button[button], event-command-text>button#0 button[button]{inHidden}→button[button], event-command-text>button#1 button[button]{inHidden}→button[button], event-command-text>button#2 button[button]{inHidden}→button[button]] | select 신규 1개 [event-page-blend-mode] | select 옵션 변경 2건 [event-page-advanced-condition-kind 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-switch-condition-input 33→37개 신규[switch_shared_relay_earth,switch_shared_relay_moon,switch_shared_relay_sun,switch_shared_relay_tide]] | 라벨 소실 5개 [+ 다음 명령, AI 명령, 미리보기, 움직임정지, 위 목록이 초안이에요] | 라벨 신규 10개 [겹치기보통더하기 (빛·불꽃·유령)스크린 (부드러운 빛)곱하기 (그림자·물들임), 다음, 닫기, 명령 초안, 이전, 자동 재생, 전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤문장 표시: #페이지 대사, 중단, 처음으로, 페이지 이름] | testidCount 218→202 | controlCount 126→107 | classCount 268→279 | labelCount 96→101 | detailsConverted 4→3 | selectCount 15→16
+     page2: testid 소실 57개 [event-command-branch-empty-3-1, event-command-breakLoop, event-command-choices, event-command-issue-badge-1--3-0, event-command-loop, event-command-setVariable, event-command-step-1--3-0, event-command-step-2, event-command-step-2--5-0, event-command-step-3] | testid 신규 14개 [ai-event-stop, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview, event-script-live-caption, event-script-live-next, event-script-live-play] | 클래스 소실 34개 [add-next, branch, branch-h, choice-option, cmd-branch-empty, cmd-marker-choices, ee-icon-choice, ee-icon-pencil, event-editor-column-label-inspector, event-page-preview-host] | 클래스 신규 26개 [ai-event-modal-header, ecp-caption, ecp-current-state, ecp-gold-badge, ecp-icon-stage, ecp-op-strip, ee-icon-play, ee-icon-refresh, event-command-preview, event-editor-command-focused] | 태그 button 136→87 | 태그 circle 63→30 | 태그 details 5→6 | 태그 div 173→133 | 태그 h2 0→1 | 태그 h3 0→1 | 태그 input 16→17 | 태그 label 16→18 | 태그 option 130→198 | 태그 p 6→7 | 태그 path 97→39 | 태그 section 1→2 | 태그 select 16→17 | 태그 span 232→152 | 태그 svg 102→40 | tagByTestid 키 소실 57개 [event-command-branch-empty-3-1, event-command-breakLoop, event-command-choices, event-command-issue-badge-1--3-0, event-command-loop, event-command-setVariable, event-command-step-1--3-0, event-command-step-2, event-command-step-2--5-0, event-command-step-3] | tagByTestid 키 신규 14개 [ai-event-stop, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview, event-script-live-caption, event-script-live-next, event-script-live-play] | 컨트롤 키 소실 55개 [event-command-branch-empty-3-1, event-command-breakLoop>button#0, event-command-breakLoop>button#1, event-command-breakLoop>button#2, event-command-changeGold>button#0~1, event-command-changeGold>button#1~1, event-command-changeGold>button#2~1, event-command-choices>button#0, event-command-choices>button#1, event-command-choices>button#2] | 컨트롤 키 신규 8개 [ai-event-assist>button#0, ai-event-stop, event-page-blend-mode, event-page-name-input, event-script-live-next, event-script-live-play, event-script-live-prev, event-script-live-restart] | 컨트롤 변경 15건 [ai-event-apply button[button]{inHidden}→button[button]{disabled}, ai-event-discard button[button]{inHidden}→button[button]{disabled}, event-command-changeGold>button#0 button[button]{inHidden}→button[button], event-command-changeGold>button#1 button[button]{inHidden}→button[button], event-command-changeGold>button#2 button[button]{inHidden}→button[button], event-command-empty-line button[button]{inHidden}→button[button], event-command-fork>button#0 button[button]{inHidden}→button[button], event-command-fork>button#1 button[button]{inHidden}→button[button]] | select 신규 1개 [event-page-blend-mode] | select 옵션 변경 4건 [event-page-advanced-condition-child-kind-0 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-advanced-condition-kind 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-advanced-condition-kind-0-0 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-advanced-condition-kind-0-1 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize]] | 라벨 소실 6개 [+ 다음 명령, AI 명령, 미리보기, 비어 있음 — 여기에 명령 추가, 움직임정지, 위 목록이 초안이에요] | 라벨 신규 10개 [겹치기보통더하기 (빛·불꽃·유령)스크린 (부드러운 빛)곱하기 (그림자·물들임), 다음, 닫기, 명령 초안, 이전, 자동 재생, 전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤소지금 변경: 더하기 #, 중단, 처음으로, 페이지 이름] | testidCount 261→218 | controlCount 169→122 | classCount 290→282 | labelCount 100→104 | detailsConverted 4→3 | selectCount 16→17
+     bare: testid 소실 28개 [event-command-changeItem, event-command-issue-badge-3, event-command-step-3, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, event-storyboard-add, event-storyboard-card-0, event-storyboard-card-1, event-storyboard-card-2] | testid 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 클래스 소실 21개 [add-next, ee-icon-coin, ee-icon-pencil, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, event-storyboard-add, event-storyboard-card, event-storyboard-card-cat, event-storyboard-card-detail] | 클래스 신규 37개 [ai-event-modal-header, body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-caption, ecp-message-body, ecp-message-content] | 태그 button 89→74 | 태그 circle 30→21 | 태그 details 5→6 | 태그 div 114→118 | 태그 h2 0→1 | 태그 h3 0→1 | 태그 input 10→11 | 태그 label 13→15 | 태그 option 59→79 | 태그 p 6→7 | 태그 path 53→31 | 태그 section 1→2 | 태그 select 9→10 | 태그 span 139→113 | 태그 svg 55→33 | tagByTestid 키 소실 28개 [event-command-changeItem, event-command-issue-badge-3, event-command-step-3, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, event-storyboard-add, event-storyboard-card-0, event-storyboard-card-1, event-storyboard-card-2] | tagByTestid 키 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 컨트롤 키 소실 21개 [event-command-changeItem>button#0, event-command-changeItem>button#1, event-command-changeItem>button#2, event-storyboard-add, event-storyboard-delete-0, event-storyboard-delete-1, event-storyboard-delete-2, event-storyboard-delete-3, event-storyboard-edit-0, event-storyboard-edit-1] | 컨트롤 키 신규 8개 [ai-event-assist>button#0, ai-event-stop, event-page-blend-mode, event-page-name-input, event-script-live-next, event-script-live-play, event-script-live-prev, event-script-live-restart] | 컨트롤 변경 12건 [ai-event-apply button[button]{inHidden}→button[button]{disabled}, ai-event-discard button[button]{inHidden}→button[button]{disabled}, event-command-empty-line button[button]{inHidden}→button[button], event-command-setSwitch>button#0 button[button]{inHidden}→button[button], event-command-setSwitch>button#1 button[button]{inHidden}→button[button], event-command-setSwitch>button#2 button[button]{inHidden}→button[button], event-command-text>button#0 button[button]{inHidden}→button[button], event-command-text>button#1 button[button]{inHidden}→button[button]] | select 신규 1개 [event-page-blend-mode] | select 옵션 변경 1건 [event-page-advanced-condition-kind 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize]] | 라벨 소실 5개 [+ 다음 명령, AI 명령, 미리보기, 움직임정지, 위 목록이 초안이에요] | 라벨 신규 10개 [겹치기보통더하기 (빛·불꽃·유령)스크린 (부드러운 빛)곱하기 (그림자·물들임), 다음, 닫기, 명령 초안, 이전, 자동 재생, 전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤문장 표시: #페이지 대사, 중단, 처음으로, 페이지 이름] | testidCount 191→180 | controlCount 109→96 | classCount 235→251 | labelCount 86→91 | detailsConverted 2→1 | selectCount 9→10
+     flow: testid 소실 7개 [event-command-changeItem, event-command-issue-badge-3, event-command-step-3, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, event-view-toggle-preview] | testid 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 클래스 소실 6개 [ee-icon-coin, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, op-add, story] | 클래스 신규 38개 [ai-event-modal-header, body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-caption, ecp-message-body, ecp-message-content] | 태그 button 80→82 | 태그 circle 29→21 | 태그 details 5→6 | 태그 div 123→135 | 태그 h2 0→1 | 태그 h3 0→1 | 태그 input 17→18 | 태그 label 16→18 | 태그 option 129→153 | 태그 p 9→10 | 태그 path 33→31 | 태그 section 2→3 | 태그 select 15→16 | 태그 span 157→148 | 태그 svg 35→33 | tagByTestid 키 소실 7개 [event-command-changeItem, event-command-issue-badge-3, event-command-step-3, event-editor-column-label-inspector, event-page-preview-host, event-storyboard, event-view-toggle-preview] | tagByTestid 키 신규 17개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-list-loading, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview] | 컨트롤 키 소실 4개 [event-command-changeItem>button#0, event-command-changeItem>button#1, event-command-changeItem>button#2, event-view-toggle-preview] | 컨트롤 키 신규 8개 [ai-event-assist>button#0, ai-event-stop, event-page-blend-mode, event-page-name-input, event-script-live-next, event-script-live-play, event-script-live-prev, event-script-live-restart] | 컨트롤 변경 2건 [ai-event-apply button[button]{inHidden}→button[button]{disabled}, ai-event-discard button[button]{inHidden}→button[button]{disabled}] | select 신규 1개 [event-page-blend-mode] | select 옵션 변경 2건 [event-page-advanced-condition-kind 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-switch-condition-input 33→37개 신규[switch_shared_relay_earth,switch_shared_relay_moon,switch_shared_relay_sun,switch_shared_relay_tide]] | 라벨 소실 4개 [AI 명령, 미리보기, 움직임정지, 위 목록이 초안이에요] | 라벨 신규 10개 [겹치기보통더하기 (빛·불꽃·유령)스크린 (부드러운 빛)곱하기 (그림자·물들임), 다음, 닫기, 명령 초안, 이전, 자동 재생, 전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤문장 표시: #페이지 대사, 중단, 처음으로, 페이지 이름] | testidCount 205→215 | controlCount 113→117 | classCount 261→293 | labelCount 99→105 | detailsConverted 4→3 | selectCount 15→16
+     allRows: testid 소실 16개 [event-command-changeItem, event-command-drag-handle, event-command-empty-line, event-command-issue-badge-1, event-command-issue-badge-3, event-command-setSwitch, event-command-step-0, event-command-step-1, event-command-step-2, event-command-step-3] | testid 신규 16개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview, event-script-live-caption] | 클래스 소실 27개 [badge-on, cmd-actions, cmd-cat-icon, cmd-drag-handle, cmd-empty-line, cmd-head, cmd-item, cmd-kind, cmd-prefix, cmd-step] | 클래스 신규 38개 [ai-event-modal-header, body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-caption, ecp-message-body, ecp-message-content] | 태그 button 87→79 | 태그 circle 29→2 | 태그 details 5→6 | 태그 div 138→140 | 태그 h2 0→1 | 태그 h3 0→1 | 태그 input 33→34 | 태그 label 15→17 | 태그 option 183→211 | 태그 p 11→12 | 태그 path 33→17 | 태그 section 2→3 | 태그 select 24→25 | 태그 span 210→169 | 태그 svg 35→17 | tagByTestid 키 소실 16개 [event-command-changeItem, event-command-drag-handle, event-command-empty-line, event-command-issue-badge-1, event-command-issue-badge-3, event-command-setSwitch, event-command-step-0, event-command-step-1, event-command-step-2, event-command-step-3] | tagByTestid 키 신규 16개 [ai-event-stop, ecp-message-body, ecp-message-window, ecp-runtime-stage, event-classic-name, event-command-preview-body, event-page-blend-mode, event-page-name-input, event-page-preview, event-script-live-caption] | 컨트롤 키 소실 14개 [event-command-changeItem>button#0, event-command-changeItem>button#1, event-command-changeItem>button#2, event-command-empty-line, event-command-setSwitch>button#0, event-command-setSwitch>button#1, event-command-setSwitch>button#2, event-command-text>button#0, event-command-text>button#1, event-command-text>button#2] | 컨트롤 키 신규 8개 [ai-event-assist>button#0, ai-event-stop, event-page-blend-mode, event-page-name-input, event-script-live-next, event-script-live-play, event-script-live-prev, event-script-live-restart] | 컨트롤 변경 2건 [ai-event-apply button[button]{inHidden}→button[button]{disabled}, ai-event-discard button[button]{inHidden}→button[button]{disabled}] | select 신규 1개 [event-page-blend-mode] | select 옵션 변경 3건 [event-page-advanced-condition-kind 18→34개 신규[monsterSpecies,actorStat,actorState,partyLeader,partySize] · event-page-switch-condition-input 32→36개 신규[switch_shared_relay_earth,switch_shared_relay_moon,switch_shared_relay_sun,switch_shared_relay_tide] · event-page-switch2-condition-input 32→36개 신규[switch_shared_relay_earth,switch_shared_relay_moon,switch_shared_relay_sun,switch_shared_relay_tide]] | 라벨 소실 5개 [+ 여기에 명령 추가, AI 명령, 미리보기, 움직임정지, 위 목록이 초안이에요] | 라벨 신규 10개 [겹치기보통더하기 (빛·불꽃·유령)스크린 (부드러운 빛)곱하기 (그림자·물들임), 다음, 닫기, 명령 초안, 이전, 자동 재생, 전체 맥락 보기 · 긴 미리보기는 위 무대에서 스크롤문장 표시: #페이지 대사, 중단, 처음으로, 페이지 이름] | controlCount 145→139 | classCount 262→273 | labelCount 101→106 | detailsConverted 2→1 | selectCount 24→25: expected [ …(13) ] to deeply equal []
+      ✓ 크래시 진단은 스택 4프레임을 담는다 > name/message 뒤에 프레임이 붙는다 1ms
+      ✓ 크래시 진단은 스택 4프레임을 담는다 > Error 가 아닌 값도 삼키지 않는다 0ms
+      ✓ countDetailsConversion 은 미변환 details 를 실제로 구분한다 > div 로 바뀐 노드를 converted 로 센다 3ms
+      ✓ countDetailsConversion 은 미변환 details 를 실제로 구분한다 > details 로 남은 노드를 unconverted 로 센다 (후처리 소실 시나리오) 1ms
+      ✓ countDetailsConversion 은 미변환 details 를 실제로 구분한다 > 설정 칼럼이 없으면 0을 낸다 (칼럼 자체가 사라진 회귀는 detailsConverted 0 으로 잡힌다) 1ms
+      ✓ stableKey 는 래퍼 div 삽입에 불변이다 > testid 조상 아래 컨트롤의 키가 래퍼 전후로 같다 3ms
+      ✓ stableKey 는 래퍼 div 삽입에 불변이다 > testid 조상이 없으면 :root 폴백을 쓰고, 그 키도 래퍼에 불변이다 1ms
+      ✓ stableKey 는 래퍼 div 삽입에 불변이다 > 자기 testid 가 있으면 그걸 쓴다(위치 무관) 0ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > tagByTestid 항목을 details→div 로 바꾼다 → diff 가 보고한다 2ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > 클래스 1개를 제거한다 → diff 가 보고한다 2ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > controls 값에서 숨김/비활성 플래그를 지운다 → diff 가 보고한다 2ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > selectOptions 항목을 절단한다 → diff 가 보고한다 1ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > testid 1개를 제거한다 → diff 가 보고한다 1ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > detailsConverted 를 0으로 떨어뜨린다 → diff 가 보고한다 1ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > 라벨 1개를 제거한다 → diff 가 보고한다 1ms
+      ✓ 셸 게이트가 실제로 변이를 잡는다 (합성 변이) > 변이가 없으면 diff 는 침묵한다 1ms
+    ❯ test/eventEditorConditionSurface.baseline.test.ts (11 tests | 1 failed) 9783ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 조건 종류 키 집합이 CONDITION_KINDS 와 정확히 일치한다 10ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 모든 항목이 예외 없이 렌더된다 2ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 모든 항목의 컨트롤 수가 0 이 아니다 0ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 각 조건 종류가 공용 껍데기 밖의 자기 컨트롤을 낸다 3ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 조건 종류마다 testid 집합이 서로 다르다 6ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 그룹 항목이 자식 수/중첩 깊이만큼 더 큰 표면을 낸다 5ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 같은 kind 의 열거값 변형끼리 표면이 서로 다르다 20ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 축에 완전히 같은 표면이 중복 등재되지 않는다 7ms
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 합성 변이를 diff 가 전부 잡는다 15ms
+      × 이벤트에디터 조건/열거값 표면 스냅샷 > 기준선과 일치한다 62ms
+        → [조건/열거값] 표면이 기준선과 다르다 (13건)
+     fork:switch: 태그 개수 [option 68→72] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:all: 태그 개수 [option 102→106] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:any: 태그 개수 [option 102→106] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:not: 태그 개수 [option 102→106] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:group-all-two: 태그 개수 [option 163→167] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:group-any-two: 태그 개수 [option 142→146] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:group-all-nested: 태그 개수 [option 237→241] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     fork:group-not-nested: 태그 개수 [option 176→180] | select 선택지 변경 1개 [event-condition-switch-target>select#0: 32→36종]
+     setSwitch:value=true: 태그 개수 [option 57→61] | select 선택지 변경 1개 [event-command-switch-target>select#0: 32→36종]
+     setSwitch:value=toggle: 태그 개수 [option 57→61] | select 선택지 변경 1개 [event-command-switch-target>select#0: 32→36종]
+     setSwitch:value=var: 태그 개수 [option 57→61] | select 선택지 변경 1개 [event-command-switch-target>select#0: 32→36종]
+     learnSkill:action=learn: 라벨 소실 2개 [검검격MP 0 · 위력 22 · 적 1명, 마마법탄MP 4 · 위력 28 · 적 1명] | 라벨 신규 2개 [검검격MP 0 · 위력 67 · 적 1명, 마마법탄MP 4 · 위력 73 · 적 1명]
+     learnSkill:action=forget: 라벨 소실 2개 [검검격MP 0 · 위력 22 · 적 1명, 마마법탄MP 4 · 위력 28 · 적 1명] | 라벨 신규 2개 [검검격MP 0 · 위력 67 · 적 1명, 마마법탄MP 4 · 위력 73 · 적 1명]: expected [ …(13) ] to deeply equal []
+      ✓ 이벤트에디터 조건/열거값 표면 스냅샷 > 기각한 열거값 후보는 여전히 폼이 갈리지 않는다  9645ms
+    ❯ test/eventEditorPortalSurface.baseline.test.ts (16 tests | 2 failed) 36704ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 모든 포털이 예외 없이 열린다 3ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 항목 집합이 포털 정의와 일치한다 0ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 모든 포털이 body 에 실제로 무언가를 렌더한다 (testid ≥ 1, root ≥ 1) 0ms
+      × 포털(피커/모달) 표면 스냅샷 > preserves pre-feature picker control identities and signatures 20ms
+        → Picker controls changed from the pre-feature contract; badge removal must not remove or replace controls: expected { …(9) } to deeply equal { …(9) }
+      ✓ 포털(피커/모달) 표면 스냅샷 > 의도적으로 제외한 포털 수가 고정 수치와 같다 1ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 즐겨찾기·최근 상태에 쓰는 고정 commandId 가 픽커에 실재한다 1ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 즐겨찾기 상태가 실제로 즐겨찾기 섹션을 렌더한다 1ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 검색 상태가 검색 결과 표면을 렌더한다 0ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 검색 결과에만 나오는 정보 행(선택 불가) 표면이 축에 잡힌다 0ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 레코드 피커의 맵 스코프 섹션 헤딩이 축에 잡힌다 0ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 이 축이 두 사각 CSS 시트의 클래스를 렌더로 증명한다 4ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 수확 순서를 뒤집어도 결과가 같다 (document.body / localStorage 정리 누수 없음)  36646ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 래퍼 div 를 더 씌워도 컨트롤 stableKey 가 변하지 않는다 2ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > diff 가 합성 변이 4종을 모두 보고한다 2ms
+      ✓ 포털(피커/모달) 표면 스냅샷 > 변이가 없으면 diff 는 조용하다 3ms
+      × 포털(피커/모달) 표면 스냅샷 > 기준선과 일치한다 16ms
+        → [포털(피커/모달)] 하한선 위반
+     하한선 미달: recordPickerSwitch.classCount 33 < 34
+     ── 함께 관측된 표면 변화 12건 (원인은 여기 있다) ──
+     commandPicker: testid 신규 2종: command-picker-add-presentItem, command-picker-favorite-presentItem | 컨트롤 신규 2개: command-picker-add-presentItem, command-picker-favorite-presentItem | 태그 button 81→83, div 53→54, path 88→90, span 94→96, svg 87→89 | testidCount 88→90 | controlCount 82→84
+     commandPickerTab2: testid 신규 15종: command-picker-add-fuseMonsters, command-picker-add-m2-218-move-enemy, command-picker-add-recallParty, command-picker-add-removeMonster, command-picker-add-storeParty, command-picker-add-tacticsBattle, command-picker-add-tradeMonster, command-picker-favorite-fuseMonsters … 외 7종 | 컨트롤 신규 14개: command-picker-add-fuseMonsters, command-picker-add-m2-218-move-enemy, command-picker-add-recallParty, command-picker-add-removeMonster, command-picker-add-storeParty, command-picker-add-tacticsBattle, command-picker-add-tradeMonster, command-picker-favorite-fuseMonsters … 외 6종 | 태그 button 52→66, div 36→43, path 54→68, span 63→78, svg 53→67 | testidCount 61→76 | controlCount 53→67
+     commandPickerTab3: testid 소실 2종: command-runtime-badge-picker-m2-069-change-parallax-back, command-runtime-badge-picker-m2-202-screen-effect | testid 신규 4종: command-picker-add-m2-224-particle-effect, command-picker-add-m2-225-sprite-look, command-picker-favorite-m2-224-particle-effect, command-picker-favorite-m2-225-sprite-look | 컨트롤 신규 4개: command-picker-add-m2-224-particle-effect, command-picker-add-m2-225-sprite-look, command-picker-favorite-m2-224-particle-effect, command-picker-favorite-m2-225-sprite-look | 태그 button 95→99, div 59→61, path 101→105, span 117→119, svg 100→104 | testidCount 112→114 | controlCount 96→100
+     commandPickerTab4: testid 신규 12종: command-picker-add-m2-219-key-poll, command-picker-add-m2-220-timed-choice, command-picker-add-m2-221-quick-time-event, command-picker-add-m2-222-high-score, command-picker-add-m2-223-teleport-menu, command-picker-add-setDifficulty, command-picker-favorite-m2-219-key-poll, command-picker-favorite-m2-220-timed-choice … 외 4종 | 컨트롤 신규 12개: command-picker-add-m2-219-key-poll, command-picker-add-m2-220-timed-choice, command-picker-add-m2-221-quick-time-event, command-picker-add-m2-222-high-score, command-picker-add-m2-223-teleport-menu, command-picker-add-setDifficulty, command-picker-favorite-m2-219-key-poll, command-picker-favorite-m2-220-timed-choice … 외 4종 | 태그 button 59→71, circle 28→29, div 38→44, path 62→74, span 82→94, svg 61→73 | testidCount 80→92 | controlCount 60→72
+     commandPickerFavorites: testid 신규 2종: command-picker-add-presentItem, command-picker-favorite-presentItem | 컨트롤 신규 2개: command-picker-add-presentItem, command-picker-favorite-presentItem | 태그 button 89→91, div 59→60, path 96→98, span 106→108, svg 95→97 | testidCount 98→100 | controlCount 90→92
+     commandPickerGrid: testid 신규 2종: command-picker-add-presentItem, command-picker-favorite-presentItem | 컨트롤 신규 2개: command-picker-add-presentItem, command-picker-favorite-presentItem | 태그 button 81→83, div 53→54, path 88→90, span 94→96, svg 87→89 | testidCount 88→90 | controlCount 82→84
+     pageMoveRoute: selectOptions 변경: event-page-move-route-graphic-select 옵션 22→25 신규[tex_easyrpg_charset_monster4, tex_easyrpg_charset_monster5, tex_easyrpg_charset_monster6], event-page-move-route-switch-picker>select#0 옵션 32→36 신규[switch_shared_relay_earth, switch_shared_relay_moon, switch_shared_relay_sun, switch_shared_relay_tide] | 라벨 소실 6종: NPC 대상 맵빈 맵, NPC 방향아래왼쪽오른쪽위, 모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm), 모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm)People# (People), 스위치(선택)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음)(이름 없음), 옵션 선택 | 태그 option 60→67
+     npcGraphic: testid 신규 3종: event-graphic-resource-tex_easyrpg_charset_monster4, event-graphic-resource-tex_easyrpg_charset_monster5, event-graphic-resource-tex_easyrpg_charset_monster6 | 컨트롤 신규 3개: event-graphic-resource-tex_easyrpg_charset_monster4, event-graphic-resource-tex_easyrpg_charset_monster5, event-graphic-resource-tex_easyrpg_charset_monster6 | 라벨 소실 1종: Graphic | 태그 button 34→37, span 21→24 | testidCount 53→56 | controlCount 44→47
+     mapPoint: 라벨 소실 1종: 맵빈 맵
+     fieldMonsterTemplate: 라벨 소실 1종: 적 그룹(적 그룹 선택)슬라임 정찰대초원 슬라임 둘동굴 박쥐 떼슬라임 정찰대적 #명
+     recordPickerSwitch: testid 소실 1종: event-record-picker-name | testid 신규 5종: event-record-picker-rename-open, event-record-picker-row-32, event-record-picker-row-33, event-record-picker-row-34, event-record-picker-row-35 | 클래스 소실 3종: event-record-picker-rename, event-record-picker-rename-label, event-record-picker-rename-row | 클래스 신규 2종: event-record-picker-rename-open, small | 컨트롤 소실 1개: event-record-picker-name | 컨트롤 신규 5개: event-record-picker-rename-open, event-record-picker-row-32, event-record-picker-row-33, event-record-picker-row-34, event-record-picker-row-35 | 라벨 소실 1종: 이름 | 태그 button 35→40, div 14→13, input 2→1, span 191→214 | testidCount 38→42 | controlCount 37→41 | classCount 34→33
+     commandEditDialog: testid 신규 41종: ecp-runtime-stage, event-command-text-container, event-command-text-container-segment-balloon, event-command-text-container-segment-bark, event-command-text-container-segment-box, event-command-text-container-segment-corner, event-command-text-container-segment-inherit, event-command-text-context … 외 33종 | 클래스 소실 1종: ecp-message-text | 클래스 신규 23종: body, dialogue-box, dialogue-content, dialogue-overlay, dialogue-page-cursor, dialogue-text-column, ecp-message-content, ecp-runtime-frame … 외 15종 | 컨트롤 신규 38개: event-command-text-advanced>button#0, event-command-text-container, event-command-text-container-segment-balloon, event-command-text-container-segment-bark, event-command-text-container-segment-box, event-command-text-container-segment-corner, event-command-text-container-segment-inherit, event-command-text-context … 외 30종 | selectOptions 변경: event-command-text-container select 신규(옵션 5개), event-command-text-context select 신규(옵션 9개), event-command-text-position select 신규(옵션 5개), event-command-text-style select 신규(옵션 17개) | 태그 button 25→59, div 38→53, label 2→3, option 5→41, select 1→5, small 1→2, span 48→75 | testidCount 43→84 | controlCount 29→67 | classCount 63→85: expected [ Array(1) ] to deeply equal []
+   
+   <--- Last few GCs --->
+   
+   [331547:0x1e75c000]   425963 ms: Scavenge (interleaved) 8175.1 (8192.9) -> 8174.7 (8213.4) MB, pooled: 0 MB, 38.85 / 0.00 ms  (average mu = 0.305, current mu = 0.286) allocation failure; 
+   [331547:0x1e75c000]   432640 ms: Mark-Compact (reduce) 8191.6 (8216.3) -> 8080.3 (8096.4) MB, pooled: 0 MB, 4063.91 / 0.00 ms  (+ 1236.1 ms in 199 steps since start of marking, biggest step 14.7 ms, walltime since start of marking 5483 ms) (average mu = 0
+   FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+   ----- Native stack trace -----
+   
+    1: 0x72be1c node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node (vitest 1)]
+    2: 0xb9dc10  [node (vitest 1)]
+    3: 0xb9dcff  [node (vitest 1)]
+    4: 0xe367e5  [node (vitest 1)]
+    5: 0xe36812  [node (vitest 1)]
+    6: 0xe36b0a  [node (vitest 1)]
+    7: 0xe4702a  [node (vitest 1)]
+    8: 0xe4b3d0  [node (vitest 1)]
+    9: 0x18de281  [node (vitest 1)]
+   
+   ⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+   Error: Channel closed
+    ❯ target.send node:internal/child_process:753:16
+    ❯ ProcessWorker.send ../../../../z-project/rpg-zzu/node_modules/tinypool/dist/index.js:140:41
+    ❯ MessagePort.<anonymous> ../../../../z-project/rpg-zzu/node_modules/tinypool/dist/index.js:149:62
+    ❯ [nodejs.internal.kHybridDispatch] node:internal/event_target:845:20
+    ❯ MessagePort.<anonymous> node:internal/per_context/messageport:23:28
+   
+   ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+   Serialized Error: { code: 'ERR_IPC_CHANNEL_CLOSED' }
+   
+   
+   
+   FAIL: 렌더로 증명된 클래스 1종이 CSS 속성을 잃었다
+     .ee-icon — 속성 1종 소실 [margin-top]
+   
+   중복 제거로 의도한 감소라면: 같은 속성이 다른 시트에 남아 있는지 확인하라(남아 있으면 이 게이트는 통과한다).
+   정말로 속성을 없애는 변경이면 스크린샷 대조 후 기준선 갱신을 리뷰에 포함하세요.
+
+기준선 대비 회귀 12건:
+   surface 표면 스냅샷 축 실패 (vitest exit=1)
+   surface Required axis missing from results: test/databaseAllTabsRenderWalk.test.ts
+   surface Required axis missing from results: test/surfaceGateSupport.test.ts
+   surface Required axis missing from results: test/eventEditorFormSurface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorM2Surface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorShellSurface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorCommitProbe.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorConditionSurface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorPortalSurface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorInteractionSurface.baseline.test.ts
+   surface Required axis missing from results: test/eventEditorStagedState.test.ts
+   surface check-css-live-classes.mjs exit=1

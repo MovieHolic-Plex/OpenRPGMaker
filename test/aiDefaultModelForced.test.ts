@@ -57,4 +57,8 @@ describe("강제 기본 모델", () => {
   it("역할 모델이 저장돼 있지 않으면 modelForRole 폴백도 강제 기본값이다", () => {
     expect(modelForRole({} as AiConfig, "deep").model).toBe(FORCED_DEFAULT);
   });
+
+  it("공장 기본 추론 강도가 high 다(감독 지시 2026-10-05)", () => {
+    expect(defaultAiConfig().reasoningEffort).toBe("high");
+  });
 });

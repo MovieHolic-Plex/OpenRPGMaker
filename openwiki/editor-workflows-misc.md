@@ -8,6 +8,12 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### 세계 지도 만들기 (2026-10-05)
+
+새 맵 창의 「세계 지도 만들기」에서 지역 도로·축척 대륙·필드 전도·스테이지·방 탐험·런 분기를 고른다.
+실제 맵·문·관문이 같은 도구 트랜잭션으로 추가되고 기존 시작 맵은 유지한다.
+플레이 중 M 지도창·공용 자료·정본 계약은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
 ### 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
 
 근거: `verify-shots/editor-ux-audit-round2-20261004/agents/palette-maps.md`와 같은 폴더

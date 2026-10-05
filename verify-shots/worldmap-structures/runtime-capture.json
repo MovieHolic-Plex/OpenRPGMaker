@@ -1,0 +1,210 @@
+[
+  {
+    "structure": "region-routes",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "pin",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "physical-door",
+        "failures": []
+      }
+    ]
+  },
+  {
+    "structure": "scaled-world",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "physical-door",
+        "failures": []
+      }
+    ]
+  },
+  {
+    "structure": "field-overview",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "pin",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "physical-door",
+        "failures": []
+      }
+    ]
+  },
+  {
+    "structure": "stage-nodes",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "goal",
+        "failures": []
+      },
+      {
+        "id": "goal-close",
+        "failures": []
+      },
+      {
+        "id": "travel",
+        "failures": []
+      }
+    ]
+  },
+  {
+    "structure": "room-network",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "pin",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "physical-door",
+        "failures": []
+      }
+    ]
+  },
+  {
+    "structure": "run-path",
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "field",
+        "failures": []
+      },
+      {
+        "id": "atlas",
+        "failures": []
+      },
+      {
+        "id": "paused-map",
+        "failures": []
+      },
+      {
+        "id": "close",
+        "failures": []
+      },
+      {
+        "id": "goal",
+        "failures": []
+      },
+      {
+        "id": "goal-close",
+        "failures": []
+      },
+      {
+        "id": "travel",
+        "failures": []
+      }
+    ]
+  }
+]

@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-const out = resolve('verify-shots/opening-production');
+const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/opening-production');
 const p = JSON.parse(readFileSync(out + '/gameplay.json', 'utf8'));
 if (!p.passed) throw Error('Canonical shipping walkthrough must pass');
 const start = Math.max(0, p.recordingTimeline.find(s => s.shot === '01-title.png').atSec - 3);

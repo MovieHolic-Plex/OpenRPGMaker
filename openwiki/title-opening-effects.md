@@ -344,3 +344,15 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 이 프로젝트에서는 단일 시퀀스가 장면/자막/음악과 취소를 소유하며, 다음 그림 준비와 실제
 게임 씬 시작을 분리한다. [Sea of Stars 공식 소개](https://seaofstarsgame.co/)의 시네마틱 도입과
 분리한 탐색 흐름도 참고했다. 해당 게임의 동영상·그림·음악을 복사하지 않는다.
+
+## 실제 첫 맵을 오프닝 뒤에서 준비 (2026-10-05)
+
+`player.bootRun`은 한 play surface에서 시네마틱과 **실제 Phaser 게임 생성/텍스처 디코드/첫 맵 구성**을 함께 시작한다. `createPlayGame.initialPresentationPending` registry 경계를 통해 `PlayScene.update`의 시간·이동·병렬 이벤트를 멈추고, 시작 autorun/테스트 이벤트·NPC 일정·맵 BGM 재개는 `activateInitialPresentation()`의 1회 경계로 미룬다. 입력은 비활성화하고 전환 시 눌림/edge를 비운다. 준비 중 세션이 뒤에서 진행되면 실패다.
+
+일반 오프닝 부팅은 단계 카드가 보이지 않는다. 오프닝이 먼저 끝나거나 빨리 건너뛰면 마지막 합성 그림을 `opening-map-handoff`로 보존해 준비를 기다린다. 준비 후 그 표면을 페이드하고 게임을 활성화한다. 기존 엔진 timeout/실패는 시네마틱을 중단하고 실제 복구 패널을 보여 준다. 새 게임/재시작/종료의 run 세대 경계가 늦은 게임·전환을 폐기한다. 저장 불러오기/여기서 테스트/오프닝 없는 부팅은 기존 부팅 경로다. 타이틀에서는 기존 배경·엔진 import 워밍을 유지한다.
+
+`runtimeAudioWarmup`은 타이틀 키 SE·타이틀/첫 맵 음악 최대16 URL을 낮은 우선순위로 fetch해 셸 수명의 blob으로 재사용한다. 실패는 실제 재생 재시도로 넘어간다. `cinematicAssets`는 다음2컷 이미지와 장면 SE/내레이션도 준비하며 시네마틱 소리는 준비한 blob으로 재생한다. 셸 종료 시 fetch를 abort하고 URL을 회수한다.
+
+타이틀 크레딧 진입은 authored confirm, Escape/닫기로 돌아오면 authored cancel SE를 사용한다. 오프닝 장면 SE는 플레이어 SE 볼륨 설정을 따른다. `scripts/qa/audio-background-start-player.mjs`는 출하 플레이어의 분리 fixture에서 정상/느린 엔진/빠른 skip을 검증하고, 실제 WAV hash와 title cursor/confirm/cancel 및 첫 맵 음악의 재생을 대조한다. 실제 6컷 정본과 두 선택지는 `live-first-game-player.mjs`로 별도 검수한다.
+
+실제 Chromium 이동에서 document로 소비한 짧은 키 탭이 Phaser의 다음 프레임 이벤트로 다시 전달돼 한 칸 더 이동하는 사례를 확인했다. `Input`은 같은 DOM KeyboardEvent를 WeakSet으로 한 번만 캡처한다. 문서→다음 프레임 Phaser 전달 순서 계약은 `runtimeInputEditableTargets.test.ts`에 둔다.

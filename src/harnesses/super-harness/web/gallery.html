@@ -125,29 +125,43 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 .progress-footer{color:#9eafc1;font-size:12px;margin-top:12px}.progress-card{font-size:12px;color:#acbdcf;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 .progress-stale{color:#ffd294!important}.progress-action{font-weight:600;margin-top:12px}
 @media(max-width:600px){#activity-overview{margin:12px 12px 0}.progress-panel{padding:12px}.progress-panel h2{font-size:18px}.live-jobs button{width:100%}}
+
+.choice-checklist{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.choice-checklist button{flex:1;min-width:160px;text-align:left;padding:10px}.choice-checklist small{display:block;color:#afbdcd;margin-top:4px}.choice-checklist [aria-current=step]{border-color:#86c6ff;background:#263d55}
+.choice-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.choice-option{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;background:#151a20}.choice-option.selected{border:2px solid #77c799}.choice-option h3{margin:0 0 10px;font-size:18px}.choice-option h4{margin:14px 0 6px}.choice-badge{font-size:12px;float:right;color:#a7d8b8}.unavailable .choice-badge{color:#ecb3a6}
+.choice-part{height:196px;width:100%;display:flex;align-items:center;justify-content:center;background:#20252e;border:0;cursor:zoom-in}.choice-part img{image-rendering:pixelated;max-width:100%;max-height:180px;height:auto;object-fit:contain}.choice-option .choose-candidate{width:100%;padding:12px;margin:8px 0}.choice-option .choice-scene{max-height:300px;object-fit:contain}.choice-only{padding:12px;background:#342f23;border-radius:8px;color:#f5db9b!important}.choice-reject{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.choice-reject small{color:var(--dim)}.choice-group .choice-states{align-items:center;flex-wrap:wrap;margin:12px 0}.choice-group{padding-top:6px}.choice-option .choice-caption{min-height:40px;margin:6px 0}
+#choice-status{margin-top:18px}#choice-status>summary{cursor:pointer;color:#a9bfd5;padding:8px 0}
+@media(max-width:600px){.choice-compare{grid-template-columns:1fr}.choice-checklist button{min-width:100%;}.choice-lead{font-size:17px}.choice-panel h1{font-size:23px}}
+
+.example-option .choice-scene{width:100%;max-height:none;image-rendering:pixelated}.example-option .scene-open{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.example-option .scene-open img{height:100%;object-fit:contain}
+.example-option .choose-candidate{margin:8px 0 14px}.example-caption{font-size:12px;color:#b1becd;margin:8px 0;line-height:1.6}.example-guide{color:#e0e7ef!important;font-size:15px;line-height:1.8}.example-evaluation{border-top:1px solid #36414e;padding-top:14px;margin-top:10px}.example-evaluation fieldset{border:0;padding:0;margin:0;min-width:0}.example-evaluation legend{font-weight:600;margin-bottom:10px}.example-ratings,.example-tags{display:flex;flex-wrap:wrap;gap:7px}.example-ratings label,.example-tags label{padding:7px 8px;border:1px solid #42536a;border-radius:7px;cursor:pointer;font-size:13px}.example-ratings label:has(:checked),.example-tags label:has(:checked){background:#284a65;border-color:#8ac8f7}.example-ratings input,.example-tags input{margin:0 5px 0 0;accent-color:#82c7ff}.example-text{display:block;margin:12px 0 8px;font-size:13px}.example-text textarea{margin-top:6px;min-height:80px}.example-evaluation small{display:block;margin:8px 0;color:#aebdce}.save-evaluation{padding:9px 15px}.example-source{border-top:1px solid #36414e;margin-top:16px;padding-top:10px;font-size:12px;color:#aebdce}.example-source summary{cursor:pointer;padding:6px 0}.example-source .choice-part{margin:10px 0}.example-storage-note{color:#aebdce;font-size:13px;margin-top:16px}
+.decision-intro{font-size:18px;line-height:1.7;margin:16px 0;color:#d8e4f1}
+.binary-actions{display:flex;gap:10px;margin-top:14px}.binary-actions button{flex:1;padding:14px 10px;font-size:18px;font-weight:700;min-height:60px}.binary-actions small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:#c6d3df}.binary-actions [data-decision=allow]{background:#204d3a;border-color:#4e916e}.binary-actions [data-decision=deny]{background:#40303a;border-color:#926577}.binary-actions [aria-pressed=true]{outline:2px solid #e2eaf3;outline-offset:2px}.binary-actions button:disabled{opacity:.55;cursor:default}
+.example-pictures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.example-pictures figure{margin:0;min-width:0}.example-pictures figcaption{font-size:12px;color:var(--dim);margin-top:5px}.choice-option.denied{border-style:dashed}.decided-examples>summary{cursor:pointer;padding:14px 0;font-size:16px}.choice-panel form{margin-top:20px}.choice-panel form button{padding:12px 20px}.choice-panel .choice-lead{color:#aec3d8}
+@media(max-width:600px){.example-pictures{grid-template-columns:1fr}.binary-actions button{font-size:16px}}
+.user-inbox{padding:24px 20px 4px}.user-inbox h2{margin:0 0 8px;font-size:24px}.user-inbox p{color:#b7cadd;font-size:16px}#operations{margin:14px 20px;border:1px solid var(--line);border-radius:10px;padding:12px}#operations>summary,.operator-controls>summary{cursor:pointer;color:var(--dim)}.operator-controls{margin-left:auto}.operator-controls[open]{display:flex;gap:8px}.s.stop{color:var(--dim)}
 </style>
 </head>
 <body>
 <header>
   <h1>슈퍼하네스</h1>
   <span id="line">불러오는 중…</span>
-  <a class="header-link" id="orders-link" href="/orders">그림 주문서</a>
-  <span class="muted">하루 상한 없음</span>
-  <button id="pause"></button>
+<details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
 </header>
-<section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section>
+<section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
+<details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
 <div id="big"><img></div>
 <script type="module">
 import { renderMarkdown } from "/markdown.js";
-import { renderChoices } from "/art-choice.js";
+import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
-let requestId = 0;
+let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내 선택 필요'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
-let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
+const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','진행 현황']];
+const OPERATOR_TABS = [['all','전체 기록'],['wait','단계 배정 대기'],['stop','운영 점검'],['discarded','폐기 기록']];
+let L = null, tab = 'pick', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
@@ -158,14 +172,17 @@ function cardHtml(it) {
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
+function matchesTab(i,g) { if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
 function render() {
-  const n = (g) => L.items.filter((i) => g === 'all' || i.group === g).length;
+  const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('operator-tabs').innerHTML=OPERATOR_TABS.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('inbox-summary').textContent=n('pick')?`확인할 그림 ${n('pick')}개 · 예시는 Allow / Deny, 결과는 수정 / Allow / Deny로 결정하세요.`:'지금 선택하실 그림은 없습니다. 새 예시나 결과가 준비되면 여기에 표시됩니다.';
   const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
-  const list = L.items.filter((i) => tab === 'all' || i.group === tab)
+  const list = L.items.filter((i) => matchesTab(i,tab))
     .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
   const grid = $('grid');
-  if (!list.length) { grid.innerHTML = '<p class="empty">없다</p>'; cards.clear(); return; }
+  if (!list.length) { grid.innerHTML = '<p class="empty">'+(tab==='pick'?'지금 하실 일은 없습니다.':'이 목록에 표시할 공간이 없습니다.')+'</p>'; cards.clear(); return; }
   if (grid.querySelector('.empty')) grid.innerHTML = '';
   const keep = new Set(list.map((i) => i.id));
   for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
@@ -178,7 +195,7 @@ function render() {
   });
 }
 
-function setTab(k) { tab = k; localStorage.setItem('sh-tab', k); render(); }
+function setTab(k) { tab = k; render(); }
 
 async function refresh() {
   if (document.hidden) return;
@@ -188,6 +205,10 @@ async function refresh() {
   $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
   if (!ordersPage) { render(); paintProgress(); }
+  const opened=L.items.find(i=>i.id===openId);
+  if(opened && modalStage && opened.stage!==modalStage && !$('box').querySelector('[data-busy=true]') && !$('box').querySelector('textarea')?.value.trim()) {
+    modalStage=opened.stage; await openConcept(openId);
+  }
 }
 
 
@@ -203,12 +224,15 @@ function paintProgress() {
   const overview = $('activity-overview');
   if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
   const alive = activityState.jobs.filter(j => j.alive);
-  $('line').textContent = `${activityState.paused ? '전체 자동 큐 멈춤' : '전체 자동 큐 실행'} · 실제 실행 ${alive.length}개`;
+  $('line').textContent = `워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개`;
+  const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
+  $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
   const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
-  overview.innerHTML = `<h2>현재 실행 ${alive.length}개 · 지정 공간 대기 ${queued.length}개</h2>
+  overview.innerHTML = `<h2>워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
     <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
-    ${queued.length ? `<div>순서 대기: ${queued.map(i => esc(i.title)).join(' · ')}</div>` : ''}
+    ${queued.length ? `<div class="queue-reasons">${queued.map(i => `<p><b>${esc(i.title)}</b> · ${esc(i.label)} 대기<br><small>${esc(i.reason)}</small></p>`).join('')}</div>` : ''}
+    ${activityState.items.filter(i=>i.waitKind==='integration-missing').map(i=>`<p class="progress-warning"><b>${esc(i.title)}</b> · 실행 예약 없음<br>${esc(i.reason)}</p>`).join('')}
     <div class="progress-footer">5초마다 상태 확인 · 마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 단계별 소요 시간은 달라 남은 시간은 확정할 수 없습니다.</div>`;
   overview.querySelectorAll('[data-open-concept]').forEach(b => b.onclick = () => b.dataset.openConcept && openConcept(b.dataset.openConcept));
   for (const el of document.querySelectorAll('[data-progress-id]')) {
@@ -223,7 +247,7 @@ function paintProgress() {
   const item = activityState.items.find(i => i.id === openId);
   if (!panel || !item) return;
   const detail = activityState.detail?.id === openId ? activityState.detail : item;
-  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '막힘' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
+  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '운영 점검' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
   const expanded = [...panel.querySelectorAll('details[open]')].map(d => d.dataset.section);
   const focused = document.activeElement?.parentElement?.dataset.section;
   panel.innerHTML = `<div class="progress-kicker">${esc(item.title)} · 실시간 진행</div><h2>${status} — ${esc(item.label)}</h2>
@@ -314,20 +338,26 @@ async function documentView(target, path, { modal = false } = {}) {
       target.insertBefore(progress, target.querySelector('.doc-tools'));
       paintProgress();
       refreshActivity();
-      const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
-      const choice = response.ok ? await response.json() : null;
+      const [choiceResponse, detailResponse] = await Promise.all([
+        fetch('/api/art-choices?id=' + encodeURIComponent(cid)), fetch('/api/concept?id=' + encodeURIComponent(cid))]);
+      const choice = choiceResponse.ok ? await choiceResponse.json() : null;
+      const detail = detailResponse.ok ? await detailResponse.json() : null;
       if (current !== requestId) return;
-      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
-        const panel = document.createElement('section'); panel.className = 'choice-panel';
-        const docs = document.createElement('details'); docs.className = 'choice-docs';
-        const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
-        docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
-        renderChoices(panel, choice, refresh, url => { $('big').querySelector('img').src=url; $('big').classList.add('on'); });
+      modalStage = detail?.stage || choice?.stage;
+      const docs = document.createElement('details'); docs.className='choice-docs';
+      const summary=document.createElement('summary');summary.textContent='제작 과정·주문서·검수 기록';
+      docs.append(summary, progress, target.querySelector('.doc-tools'), article);target.append(docs);
+      const panel=document.createElement('section');panel.className='choice-panel';target.insertBefore(panel,docs);
+      const enlarge = url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); };
+      if(detail?.resultReview) {
+        renderResult(panel, detail.resultReview, refresh, enlarge);
+      } else if (['art-review','art-layout-review','art-context-review','art','blocked'].includes(choice?.stage) && choice.groups.length) {
+        renderChoices(panel, choice, refresh, enlarge);
+      } else {
+        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${detail?.stage==='blocked'?'제작 중 문제가 있어 운영 점검이 필요합니다.':esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 하실 일은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p><button data-back-inbox>확인할 그림 목록으로</button>`;
+        panel.querySelector('[data-back-inbox]').onclick=()=>{closeModal();setTab('pick');};
       }
-      const actions = document.createElement('section');
-      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
-      const correction = document.createElement('details'); correction.className='choice-docs';
-      const label=document.createElement('summary');label.textContent='교정 지시·재료 재확인·폐기';correction.append(label,actions);target.append(correction);
+
     }
   } catch (error) {
     if (current !== requestId) return;
@@ -344,7 +374,7 @@ async function openConcept(id) {
   await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
 }
 
-function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; }
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; modalStage = null; }
 $('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
 document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
 function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }

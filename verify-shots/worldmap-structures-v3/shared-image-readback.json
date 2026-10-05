@@ -1,0 +1,42 @@
+{
+  "id": "worldmap-navigation-structures-v1",
+  "revision": "28cb55c8209aa42a97e0cd20ab3dba00f2e3e60f1d1e6713b765cae6515ea377",
+  "images": [
+    {
+      "structure": "region-routes",
+      "bytes": 134493,
+      "sha256": "d80a15f8cf462c1d45fc40e1e0416e98eccafd516411f0547fb46333983db065",
+      "sqliteBytesMatch": true
+    },
+    {
+      "structure": "scaled-world",
+      "bytes": 81396,
+      "sha256": "946d042896c88ba5b9d68c68f316526acfbf2913a496de9f130847f62568b6ac",
+      "sqliteBytesMatch": true
+    },
+    {
+      "structure": "field-overview",
+      "bytes": 102866,
+      "sha256": "22ee8d444f24fe8d32a4de4de7fabee82df1bef3421b9fc8977e743c8fe0b547",
+      "sqliteBytesMatch": true
+    },
+    {
+      "structure": "stage-nodes",
+      "bytes": 119882,
+      "sha256": "9b6c4a3fd296db8678ea77fa9865598c5b67a429eb606e2220a2ddccba86376d",
+      "sqliteBytesMatch": true
+    },
+    {
+      "structure": "room-network",
+      "bytes": 48995,
+      "sha256": "d7e7aa12a85675d0759098dcfe7ce3f8a485bbc6aa27d701975c81996ec482ef",
+      "sqliteBytesMatch": true
+    },
+    {
+      "structure": "run-path",
+      "bytes": 108118,
+      "sha256": "86176474ede4f664f15b80bb28a37f7f1a626aac24a18bcaf2052c7715b470f6",
+      "sqliteBytesMatch": true
+    }
+  ]
+}

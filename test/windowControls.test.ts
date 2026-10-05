@@ -72,6 +72,29 @@ function installFullscreenDocument(): void {
   });
 }
 
+/**
+ * 데스크톱 앱 렌더러 흉내 — 기본 vitest 환경(node)에는 window 가 없다. 프리로드가 붙이는
+ * window.oprn 브릿지를 window 위에 세우고, 끝나면 지우는 함수를 돌려준다. 코드가
+ * `typeof window !== "undefined"` 로 가드를 걸므로 window 자체를 정의해야 하고,
+ * 없는 속성(addEventListener 등)은 no-op 함수로 돌려준다.
+ */
+function installDesktopBridge(bridge: object | null): () => void {
+  const base: Record<string, unknown> = bridge ? { oprn: bridge } : {};
+  const win = new Proxy(base, {
+    get(target, prop) {
+      if (prop in target) return (target as Record<string | symbol, unknown>)[prop];
+      if (prop === "document") return document;
+      if (prop in globalThis) return (globalThis as Record<string | symbol, unknown>)[prop];
+      return () => {};
+    },
+    has() { return true; },
+  });
+  Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: win });
+  return () => {
+    Reflect.deleteProperty(globalThis, "window");
+  };
+}
+
 beforeEach(() => {
   store.replace(createBlankProject());
   restoreDom = installFakeDom();
@@ -121,5 +144,56 @@ describe("상단 창 컨트롤", () => {
 
     expect(() => fullscreen.click()).not.toThrow();
     expect(findByTestId(fakeBody(), "toast")?.textContent).toContain("전체화면");
+  });
+
+  it("데스크톱 창 브릿지가 있으면 전체화면을 창 컨트롤로 토글한다", async () => {
+    // Break: 브릿지가 있는데도 브라우저 Fullscreen API 를 부르면, 네이티브 전체화면으로 뜬
+    // 앱 창은 「축소」가 되지 않는다(2026-10-05 사용자 보고).
+    const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
+    Object.defineProperty(document.documentElement, "requestFullscreen", { configurable: true, value: requestFullscreen });
+    const windowControl = vi.fn(async () => true);
+    const disposeBridge = installDesktopBridge({ windowControl });
+    try {
+      const topbar = document.createElement("div");
+      renderTopbar(topbar);
+      const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
+      if (!fullscreen) throw new Error("window-fullscreen button missing");
+
+      fullscreen.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(windowControl).toHaveBeenCalledWith("toggle-fullscreen");
+      expect(requestFullscreen).not.toHaveBeenCalled();
+    } finally {
+      disposeBridge();
+    }
+  });
+
+  it("데스크톱 네이티브 전체화면 상태를 구독해 aria-pressed 를 맞춘다", async () => {
+    // Break: 창 컨트롤로 들어간 전체화면은 document.fullscreenElement 를 바꾸지 않아
+    // 아이콘이 항상 「아님」으로 남는다.
+    const listeners: Array<(fullscreen: boolean) => void> = [];
+    const disposeBridge = installDesktopBridge({
+      windowControl: vi.fn(async () => true),
+      windowFullscreen: async () => true,
+      onWindowFullscreen: (callback: (fullscreen: boolean) => void) => {
+        listeners.push(callback);
+        return () => { listeners.length = 0; };
+      },
+    });
+    try {
+      const topbar = document.createElement("div");
+      renderTopbar(topbar);
+      const fullscreen = findByTestId(fakeElement(topbar), "window-fullscreen");
+      if (!fullscreen) throw new Error("window-fullscreen button missing");
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(fullscreen.getAttribute("aria-pressed")).toBe("true");
+
+      for (const listener of listeners) listener(false);
+      expect(fullscreen.getAttribute("aria-pressed")).toBe("false");
+    } finally {
+      disposeBridge();
+    }
   });
 });

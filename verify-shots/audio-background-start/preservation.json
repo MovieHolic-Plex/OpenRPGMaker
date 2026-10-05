@@ -1,0 +1,16 @@
+{
+  "baselineRevision": 67,
+  "finalRevision": 78,
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "scope": [
+    "map BGM",
+    "title cursor/confirm/cancel SE",
+    "opening scene 04 SE",
+    "generated audio assets/descriptions"
+  ],
+  "preserved": {
+    "mapsHash": true,
+    "titleContent": true,
+    "openingContent": true
+  }
+}

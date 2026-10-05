@@ -1,3 +1,4 @@
+import {ATLAS_CARTOGRAPHY_TEXTURE, createAtlasCartographyTileset, ensureAtlasCartographyReferences} from "./atlasCartography";
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
@@ -150,6 +151,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     // 목록에서 빼며, 맵이 있으면 칸 번호가 깨지지 않게 시트를 남긴다.
     if (id === SHARED_VILLAGE_OBJECT_ID && !villageObjectTilesetUsedByMaps(project)) {
       if (project.tilesets[id]) {
+      if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
         delete project.tilesets[id];
         changed = true;
       }
@@ -388,6 +390,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) return createAtlasBiomeInteriorTileset();
   if (asset.textureKey === ATLAS_BIOME_DUNGEON_TEXTURE) return createAtlasBiomeDungeonTileset();
+  if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) return createAtlasCartographyTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();

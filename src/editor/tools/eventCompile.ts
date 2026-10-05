@@ -17,6 +17,10 @@ import { ToolError } from "./types";
 import type { SimplePage, SimplePageChoice } from "./types";
 
 const PASSIVE_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
+// movement 를 안 준 페이지의 기본. 정지가 아니라 배회다 — AI 조수가 흔한 이름으로 NPC 를 깔았을 때
+// 예전에는 전부 제자리에 얼어붙었다(2026-10-05 실측: place_npc 9개 중 7개 fixed).
+// 제자리 이벤트가 필요하면 호출자가 movement:PASSIVE_MOVEMENT 를 명시한다.
+const DEFAULT_NPC_MOVEMENT: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
 const CONDITION_KIND_SET: ReadonlySet<string> = new Set(CONDITION_KINDS);
 const SIMPLE_PAGE_EXAMPLE = `{"pages":[{"lines":["안녕하세요"],"conditions":[],"commands":[{"kind":"text","body":"안녕하세요"}]}]}`;
 
@@ -563,7 +567,7 @@ export function compileSimplePage(
     trigger: { kind: "action" },
     priority,
     overlapForbidden: priority === "same",
-    movement: options.movement ?? PASSIVE_MOVEMENT,
+    movement: options.movement ?? DEFAULT_NPC_MOVEMENT,
     commands,
   };
 }
@@ -641,4 +645,4 @@ function faceFromArg(raw: unknown): FaceGraphic | null {
   return null;
 }
 
-export { PASSIVE_MOVEMENT };
+export { PASSIVE_MOVEMENT, DEFAULT_NPC_MOVEMENT };

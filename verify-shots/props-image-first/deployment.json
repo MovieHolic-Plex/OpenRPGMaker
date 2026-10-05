@@ -1,0 +1,14 @@
+{
+  "backup": "/home/main/.local/share/oprn/prop-harness/ui-backups/20261005-032219-image-first",
+  "serviceRestarted": false,
+  "files": {
+    "index.html": {
+      "before": "9b79ff2d37b7f53c3dbea51cf72db0acbfe550725c96f5c183829aaf1eb13c46",
+      "after": "65af44730b4e9c904fc327ee7467179d66041aab651637acfbd86481c6a65685"
+    },
+    "super.html": {
+      "before": "fc6bca193697e35b5741f0cc7432da19e74e9182aba987db58de4f4da0a41ab0",
+      "after": "c567be6a31e9be92d8215736e86242e0e17deeb1a58d0419c3a2458d2e2ea50a"
+    }
+  }
+}
