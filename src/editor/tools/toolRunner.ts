@@ -108,6 +108,10 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
     // 세계 지도를 만들거나 다시 빌드하는 것도 그림체를 바꾸는 게 아니다. 실측(2026-10-03 조선 시험): 버들항 빈 맵을 보던 조수의
     // edit_world_terrain 이 여기서 거부되고, 없는 타일셋으로 ask_tileset_change 를 부르다 턴을 끝냈다.
     if (isWorldmapKitMap(next)) continue;
+    // Requested atlases own their newly created navigation maps. Dedicated
+    // cartography does not replace the viewed town's tileset.
+    if (!previous && name === 'author_worldmap_structure' && next.tilesetId === 'atlas_cartography'
+      && draft.worldAtlases?.some(atlas => atlas.overviewMapId === id || atlas.nodes.some(node => node.mapId === id))) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;

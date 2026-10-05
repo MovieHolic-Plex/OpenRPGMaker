@@ -9,10 +9,11 @@ import { isDeepStrictEqual } from 'node:util';
 import { startHost,newEditor,stored,writeRuntimeProject } from './editorDriver.mjs';
 
 const root=resolve(process.argv[2]);
+const selected=(process.argv[3]??'default,pokemon').split(',');
 const cases=[
   {id:'default',label:'기본 대륙 월드맵',prompt:'일반 판타지 RPG용 세계지도를 하나 만들어줘. 이름은 「서녘 대륙」으로 해줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 만든 지도는 실제 프로젝트에 저장해줘.'},
   {id:'pokemon',label:'포켓몬풍 마을과 도로',prompt:'포켓몬스터처럼 마을과 도로를 따라 여행하는 지역 월드맵을 만들어줘. 이름은 「솔바람 지방」으로 해줘. 마을·도로·능력 관문을 실제 맵과 이동 이벤트로 만들어줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 실제 프로젝트에 저장해줘.'},
-];
+].filter(entry=>selected.includes(entry.id));
 const save=(file,value)=>writeFileSync(file,JSON.stringify(value,null,2)+'\n');
 async function saveUi(page){
   await page.getByTestId('toolbar-save').click();

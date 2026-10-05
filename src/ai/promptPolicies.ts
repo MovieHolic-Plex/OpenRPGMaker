@@ -16,7 +16,7 @@ export const HOUSE_VARIETY_POLICY_LINE =
  * 실행기가 다른 계열을 거부하므로(`tileset-family-change`) 여기서는 짧게 방향만 준다.
  */
 export const TILESET_FAMILY_POLICY_LINE =
-  "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다).";
+  "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다). 세계 지도 요청의 edit_world_terrain·author_worldmap_structure는 해당 지도 방식의 전용 칩셋으로 별도 맵을 만들며 기존 맵의 칩셋은 보존한다.";
 
 export const AGENT_UX_POLICY_LINES = [
   MODERN_TILESET_POLICY_LINE,

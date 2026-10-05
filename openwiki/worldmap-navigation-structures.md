@@ -134,3 +134,12 @@ create는 기존 project.sqlite가 있으면 덮지 않는다. images와 자료 
 지형 시트와 승인 아이콘 화소는 `scripts/content/build-atlas-cartography.py` → `public/assets/atlas-cartography/` / `src/assets/atlasCartographySheet.json`이다. 사전/배치/정상·오류 계약은 `tiledata/atlas-cartography/README.md`, 번들은 `atlasCartographyReferences.json`이다. `defaultAssets`는 새 프로젝트에 타일셋을 넣고 기존 프로젝트에도 누락된 번들/참고문서를 보충한다. 사람이 승인한 거점 원본은 변경하지 않고 최근접2배로만 시트에 넣는다.
 
 검증: 수정판6종의 전용player캡처43비트와JS오류, 실제문/관문/핀/M·Esc·지도중정지를 확인했다. 마지막 방/코스 수정은 해당 두 유형만 다시 캡처하고, 방 사다리로 점프 높이보다 높은6칸을 실제로 오르는 비트를 더했다. 최종 여섯 유형44비트는 실패0/JS오류0이다. 수정판 어댑터의 전체참고문서/PNG해시 일치는 `verify-shots/worldmap-structures-v3/assistant-tool-handoff.json`이다. 이 기록은 이동/관문 동작의 근거이며 원작급 미술·전투·전체 코스 완주의 합격을 뜻하지 않는다.
+
+## 실제 조수 경로의 칩셋 계열 검사 (2026-10-05)
+
+자연어 포켓몬풍 요청의 첫 실측에서는 현재 EasyRPG 마을을 기준으로 전용 atlas_cartography의
+새 지역 맵까지 그림체 변경으로 거부했다. toolRunner는 author_worldmap_structure가 방금
+저작한 atlas의 nodes/overviewMapId에 속한 새 atlas_cartography 맵만 지도 전용 예외로 처리한다.
+기존 맵의 칩셋 교체와 일반 create_map의 다른 계열 선택은 계속 검사를 받는다. 조수 정책도
+세계 지도용 전용 칩셋과 기존 개별 맵의 그림체를 구분한다. 실패한 실모델 시도는 보존하고
+수정 후 별도 프로젝트에서 같은 자연어를 다시 입력해 MP4와 SQLite 재로드를 기록한다.
