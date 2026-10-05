@@ -1,0 +1,11 @@
+{
+  "role": "professor",
+  "label": "박사",
+  "variant": "해명 · 판형 수정",
+  "description": "회색 머리와 하얀 연구복, 청록 조끼와 연구원 배지",
+  "identity": "회색 머리와 하얀 연구복, 청록 조끼와 연구원 배지 · 원작 체형과 발 교대 유지",
+  "collection": "full-cast-v1",
+  "base": "prof_birch-professor-full-cast-v1",
+  "templateId": "prof_birch",
+  "sourceNote": "에메랄드 prof_birch 원작을 판형으로 삼아 Codex가 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

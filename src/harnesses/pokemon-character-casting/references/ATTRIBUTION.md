@@ -16,3 +16,5 @@ six different source bodies/faces/outfits/gaits. Each stays pending until the
 user selects Allow; no original source is silently declared new hand drawing.
 
 Frame mapping: https://github.com/pret/pokeemerald/blob/master/src/data/object_events/object_event_anims.h
+
+The complete cast adds pinned walking templates for Brendan, Professor Birch, mart employee, mother, woman3, man3, black belt, Devon employee, man1, schoolboy, bug catcher and gentleman. `sources.json` records exact URLs and hashes (and a scientist reference examined during selection). The full-cast candidates explicitly edit these originals; their palettes/row operations and original/edited comparison images are preserved alongside each candidate. No new license or independent ownership is claimed for the underlying game sprites.

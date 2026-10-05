@@ -1,0 +1,322 @@
+[
+  {
+    "id": "hero-168b3d414498bda6",
+    "role": "hero",
+    "template": "brendan-walking",
+    "nativePass": true,
+    "media": {
+      "templateId": "brendan-walking",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.769; semantic playback required",
+      "right: whole-frame exact color/pose change 0.822; semantic playback required",
+      "down: whole-frame exact color/pose change 0.790; semantic playback required",
+      "left: whole-frame exact color/pose change 0.822; semantic playback required"
+    ]
+  },
+  {
+    "id": "rival-fd2a10bcfe84619a",
+    "role": "rival",
+    "template": "wally",
+    "nativePass": true,
+    "media": {
+      "templateId": "wally",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.668; semantic playback required",
+      "right: whole-frame exact color/pose change 0.820; semantic playback required",
+      "down: whole-frame exact color/pose change 0.783; semantic playback required",
+      "left: whole-frame exact color/pose change 0.820; semantic playback required"
+    ]
+  },
+  {
+    "id": "professor-23390ef500822b88",
+    "role": "professor",
+    "template": "prof_birch",
+    "nativePass": true,
+    "media": {
+      "templateId": "prof_birch",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.629; semantic playback required",
+      "right: whole-frame exact color/pose change 0.746; semantic playback required",
+      "down: whole-frame exact color/pose change 0.769; semantic playback required",
+      "left: whole-frame exact color/pose change 0.746; semantic playback required"
+    ]
+  },
+  {
+    "id": "nurse-77d0672d59345549",
+    "role": "nurse",
+    "template": "woman_3",
+    "nativePass": true,
+    "media": {
+      "templateId": "woman_3",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.674; semantic playback required",
+      "right: whole-frame exact color/pose change 0.821; semantic playback required",
+      "down: whole-frame exact color/pose change 0.822; semantic playback required",
+      "left: whole-frame exact color/pose change 0.821; semantic playback required"
+    ]
+  },
+  {
+    "id": "merchant-ec70dc333c7b98dd",
+    "role": "merchant",
+    "template": "mart_employee",
+    "nativePass": true,
+    "media": {
+      "templateId": "mart_employee",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.727; semantic playback required",
+      "right: whole-frame exact color/pose change 0.728; semantic playback required",
+      "down: whole-frame exact color/pose change 0.768; semantic playback required",
+      "left: whole-frame exact color/pose change 0.728; semantic playback required"
+    ]
+  },
+  {
+    "id": "mother-474d0899b3986e9b",
+    "role": "mother",
+    "template": "mom",
+    "nativePass": true,
+    "media": {
+      "templateId": "mom",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.613; semantic playback required",
+      "right: whole-frame exact color/pose change 0.761; semantic playback required",
+      "down: whole-frame exact color/pose change 0.792; semantic playback required",
+      "left: whole-frame exact color/pose change 0.761; semantic playback required"
+    ]
+  },
+  {
+    "id": "resident-4bbbb57bf10f45e2",
+    "role": "resident",
+    "template": "man_3",
+    "nativePass": true,
+    "media": {
+      "templateId": "man_3",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.725; semantic playback required",
+      "right: whole-frame exact color/pose change 0.739; semantic playback required",
+      "down: whole-frame exact color/pose change 0.797; semantic playback required",
+      "left: whole-frame exact color/pose change 0.739; semantic playback required"
+    ]
+  },
+  {
+    "id": "gym_leader-75e583cd3aa1ce3c",
+    "role": "gym_leader",
+    "template": "black_belt",
+    "nativePass": true,
+    "media": {
+      "templateId": "black_belt",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.862; semantic playback required",
+      "right: whole-frame exact color/pose change 0.890; semantic playback required",
+      "down: whole-frame exact color/pose change 0.866; semantic playback required",
+      "left: whole-frame exact color/pose change 0.890; semantic playback required"
+    ]
+  },
+  {
+    "id": "company_agent-80dae8233ee815ed",
+    "role": "company_agent",
+    "template": "devon_employee",
+    "nativePass": true,
+    "media": {
+      "templateId": "devon_employee",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.687; semantic playback required",
+      "right: whole-frame exact color/pose change 0.769; semantic playback required",
+      "down: whole-frame exact color/pose change 0.789; semantic playback required",
+      "left: whole-frame exact color/pose change 0.769; semantic playback required"
+    ]
+  },
+  {
+    "id": "captain-0bef85153d58f6f8",
+    "role": "captain",
+    "template": "sailor",
+    "nativePass": true,
+    "media": {
+      "templateId": "sailor",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.732; semantic playback required",
+      "right: whole-frame exact color/pose change 0.801; semantic playback required",
+      "down: whole-frame exact color/pose change 0.817; semantic playback required",
+      "left: whole-frame exact color/pose change 0.801; semantic playback required"
+    ]
+  },
+  {
+    "id": "worker-150dbd26f91d726f",
+    "role": "worker",
+    "template": "man_1",
+    "nativePass": true,
+    "media": {
+      "templateId": "man_1",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.668; semantic playback required",
+      "right: whole-frame exact color/pose change 0.790; semantic playback required",
+      "down: whole-frame exact color/pose change 0.721; semantic playback required",
+      "left: whole-frame exact color/pose change 0.790; semantic playback required"
+    ]
+  },
+  {
+    "id": "explorer-2fe0ce80a94b963f",
+    "role": "explorer",
+    "template": "camper",
+    "nativePass": true,
+    "media": {
+      "templateId": "camper",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.635; semantic playback required",
+      "right: whole-frame exact color/pose change 0.757; semantic playback required",
+      "down: whole-frame exact color/pose change 0.763; semantic playback required",
+      "left: whole-frame exact color/pose change 0.758; semantic playback required"
+    ]
+  },
+  {
+    "id": "student-fba78495cdb9764f",
+    "role": "student",
+    "template": "school_kid_m",
+    "nativePass": true,
+    "media": {
+      "templateId": "school_kid_m",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.697; semantic playback required",
+      "right: whole-frame exact color/pose change 0.801; semantic playback required",
+      "down: whole-frame exact color/pose change 0.844; semantic playback required",
+      "left: whole-frame exact color/pose change 0.801; semantic playback required"
+    ]
+  },
+  {
+    "id": "ranger-50b2b5f2e2d288fd",
+    "role": "ranger",
+    "template": "bug_catcher",
+    "nativePass": true,
+    "media": {
+      "templateId": "bug_catcher",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.906; semantic playback required",
+      "right: whole-frame exact color/pose change 0.932; semantic playback required",
+      "down: whole-frame exact color/pose change 0.923; semantic playback required",
+      "left: whole-frame exact color/pose change 0.932; semantic playback required"
+    ]
+  },
+  {
+    "id": "moon_leader-462fc7f3210ffa6b",
+    "role": "moon_leader",
+    "template": "gentleman",
+    "nativePass": true,
+    "media": {
+      "templateId": "gentleman",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.735; semantic playback required",
+      "right: whole-frame exact color/pose change 0.871; semantic playback required",
+      "down: whole-frame exact color/pose change 0.835; semantic playback required",
+      "left: whole-frame exact color/pose change 0.871; semantic playback required"
+    ]
+  },
+  {
+    "id": "hiker-1df7ff968271184c",
+    "role": "hiker",
+    "template": "hiker",
+    "nativePass": true,
+    "media": {
+      "templateId": "hiker",
+      "gifFrames": 4,
+      "sourcePixelsExact": true,
+      "durationMs": 130,
+      "paletteMax": 15,
+      "resizing": false
+    },
+    "warnings": [
+      "up: whole-frame exact color/pose change 0.828; semantic playback required",
+      "right: whole-frame exact color/pose change 0.850; semantic playback required",
+      "down: whole-frame exact color/pose change 0.887; semantic playback required",
+      "left: whole-frame exact color/pose change 0.850; semantic playback required"
+    ]
+  }
+]

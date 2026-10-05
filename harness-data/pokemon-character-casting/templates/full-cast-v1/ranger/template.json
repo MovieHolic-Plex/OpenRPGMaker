@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "templateId": "bug_catcher",
+  "templateSourceSha256": "31d75283f046c64b4dacc59c23ea0824646b954bf03321ae1100f07449a8f2e2",
+  "paletteOverrides": {
+    "5": "#e0bd72",
+    "6": "#ad8b4c",
+    "7": "#715833",
+    "8": "#8da774",
+    "9": "#58774c",
+    "A": "#2d493e",
+    "B": "#71975a",
+    "C": "#547144",
+    "D": "#2e4532"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 16,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        "..4A985588944..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 15,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        ".42A98555589A24."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 16,
+      "rows": [
+        "D11AB2B55B3BA11D"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "...449855889A4.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 16,
+      "rows": [
+        "D11AB2B55B3BA11D"
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 25,
+      "rows": [
+        "....A844558A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 15,
+      "rows": [
+        "D11AB2B55B3BA11D"
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 24,
+      "rows": [
+        "....A554458A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 16,
+      "rows": [
+        "D11AB2B55B3BA11D"
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 25,
+      "rows": [
+        "....A559448A...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 16,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 25,
+      "rows": [
+        "..4A985588444..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 15,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        ".42298555589224."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 16,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        "...444885589A4.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 16,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 25,
+      "rows": [
+        "....A855448A...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 15,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 24,
+      "rows": [
+        "....A854455A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....DB5555BD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "..BD32B55B23DB.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 16,
+      "rows": [
+        "D11AB3B55B2BA11D"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 25,
+      "rows": [
+        "....A844955A...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "숲색 챙모자의 밝은 띠, 짙은 초록 조끼와 어깨 장식",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "templateId": "mart_employee",
+  "templateSourceSha256": "7c2c5ad988d978df36d6858ef657f95c99f61f4fdc81c4281acfe9fa33eda088",
+  "paletteOverrides": {
+    "5": "#e8bc62",
+    "6": "#b28344",
+    "7": "#765633",
+    "8": "#82b5c5",
+    "9": "#497c96",
+    "A": "#2a445d",
+    "B": "#c28c57",
+    "C": "#80583f",
+    "D": "#443436",
+    "E": "#f5e8c9"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....DBBBBBBD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        "..445966669AA..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....DBBBBBBD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        ".42A59666695A24."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....DBBBBBBD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "...AA966669544.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....DCBBBBDD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "....A955E59A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....DCBBBBDD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "....A955E59A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....DCBBBBDD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "....A955E59A...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....DDBBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 25,
+      "rows": [
+        "..446EE66EEAA..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....DDBBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        ".4246EE66EE6424."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....DDBBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        "...AAEE66EE644.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....DDBBBBCD...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....A95E559A...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....DDBBBBCD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....A95E559A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....DDBBBBCD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....A95E559A...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "갈색 머리와 남색 셔츠, 노란 명찰과 줄무늬 앞치마",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

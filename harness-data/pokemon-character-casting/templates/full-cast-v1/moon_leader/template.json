@@ -1,0 +1,278 @@
+{
+  "version": 1,
+  "templateId": "gentleman",
+  "templateSourceSha256": "c6d7e3110764e0fc4a1e802443b3c3dde2a899a599a60c639bde215f12dede92",
+  "paletteOverrides": {
+    "5": "#e3dfd2",
+    "6": "#afb7c0",
+    "7": "#697586",
+    "8": "#d5b978",
+    "9": "#9b875d",
+    "A": "#514d50",
+    "B": "#9a82aa",
+    "C": "#655475",
+    "D": "#332c46"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "rows": [
+        ".43DCCEECCCDBD.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 11,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "rows": [
+        ".DBCDCCEECCDCBD."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "rows": [
+        "..DBDCCEECCCD34."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....DCC5ECCD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "....DC55C59A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 11,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....DCC5ECCD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "....DC55C59A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....DCC5ECCD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "....DC55C59A...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        ".43DDB5EE5BDBD.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 11,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        ".DBCDB5EE5BDCBD."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        "..DBDB5EE5BDD34."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....A95C55CD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 11,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....A95C55CD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 12,
+      "rows": [
+        "....DCE55ECD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....DCCE5CCD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....A95C55CD...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "보랏빛 중절모와 은빛 문장, 짙은 보라 코트와 금색 브로치",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

@@ -1,0 +1,414 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "all sixteen requested roles present exactly once",
+      "pass": true
+    },
+    {
+      "name": "sixteen distinct templates",
+      "pass": true
+    },
+    {
+      "name": "hero current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "rival current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "professor current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "nurse current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "merchant current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "mother current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "resident current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "gym_leader current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "company_agent current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "captain current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "worker current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "explorer current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "student current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "ranger current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "moon_leader current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "hiker current native/GIF/replay evidence valid",
+      "pass": true
+    },
+    {
+      "name": "unsafe candidate id rejected ../outside",
+      "pass": true
+    },
+    {
+      "name": "unsafe candidate id rejected hero/../../secret",
+      "pass": true
+    },
+    {
+      "name": "unsafe candidate id rejected hero%2foutside",
+      "pass": true
+    },
+    {
+      "name": "wave link shows exactly sixteen candidates",
+      "pass": true
+    },
+    {
+      "name": "wave filter retains all sixteen role options",
+      "pass": true
+    },
+    {
+      "name": "hero comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "hero five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "hero manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "rival comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "rival five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "rival manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "professor comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "professor five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "professor manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "nurse comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "nurse five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "nurse manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "merchant comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "merchant five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "merchant manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "mother comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "mother five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "mother manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "resident comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "resident five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "resident manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "gym_leader comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "gym_leader five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "gym_leader manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "gym_leader underscore id is routed and pending download blocked",
+      "pass": true
+    },
+    {
+      "name": "company_agent comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "company_agent five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "company_agent manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "company_agent underscore id is routed and pending download blocked",
+      "pass": true
+    },
+    {
+      "name": "captain comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "captain five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "captain manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "worker comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "worker five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "worker manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "explorer comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "explorer five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "explorer manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "student comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "student five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "student manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "ranger comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "ranger five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "ranger manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "moon_leader comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "moon_leader five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "moon_leader manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "moon_leader underscore id is routed and pending download blocked",
+      "pass": true
+    },
+    {
+      "name": "hiker comparison and walk GIF load",
+      "pass": true
+    },
+    {
+      "name": "hiker five observations and disabled Allow",
+      "pass": true
+    },
+    {
+      "name": "hiker manual opposite step visible",
+      "pass": true
+    },
+    {
+      "name": "selected character and wave survive reload",
+      "pass": true
+    },
+    {
+      "name": "role filter yields nurse only",
+      "pass": true
+    },
+    {
+      "name": "old review choices remain accessible",
+      "pass": true
+    },
+    {
+      "name": "mobile wave overview has no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "no browser/resource errors",
+      "pass": true
+    },
+    {
+      "name": "no existing human decisions changed or appended",
+      "pass": true
+    },
+    {
+      "name": "no stale or withdrawn wave packages",
+      "pass": true
+    }
+  ],
+  "states": [
+    {
+      "role": "hero",
+      "id": "hero-168b3d414498bda6",
+      "state": "pending"
+    },
+    {
+      "role": "rival",
+      "id": "rival-fd2a10bcfe84619a",
+      "state": "pending"
+    },
+    {
+      "role": "professor",
+      "id": "professor-23390ef500822b88",
+      "state": "pending"
+    },
+    {
+      "role": "nurse",
+      "id": "nurse-77d0672d59345549",
+      "state": "pending"
+    },
+    {
+      "role": "merchant",
+      "id": "merchant-ec70dc333c7b98dd",
+      "state": "pending"
+    },
+    {
+      "role": "mother",
+      "id": "mother-474d0899b3986e9b",
+      "state": "pending"
+    },
+    {
+      "role": "resident",
+      "id": "resident-4bbbb57bf10f45e2",
+      "state": "pending"
+    },
+    {
+      "role": "gym_leader",
+      "id": "gym_leader-75e583cd3aa1ce3c",
+      "state": "pending"
+    },
+    {
+      "role": "company_agent",
+      "id": "company_agent-80dae8233ee815ed",
+      "state": "pending"
+    },
+    {
+      "role": "captain",
+      "id": "captain-0bef85153d58f6f8",
+      "state": "pending"
+    },
+    {
+      "role": "worker",
+      "id": "worker-150dbd26f91d726f",
+      "state": "pending"
+    },
+    {
+      "role": "explorer",
+      "id": "explorer-2fe0ce80a94b963f",
+      "state": "pending"
+    },
+    {
+      "role": "student",
+      "id": "student-fba78495cdb9764f",
+      "state": "pending"
+    },
+    {
+      "role": "ranger",
+      "id": "ranger-50b2b5f2e2d288fd",
+      "state": "pending"
+    },
+    {
+      "role": "moon_leader",
+      "id": "moon_leader-462fc7f3210ffa6b",
+      "state": "pending"
+    },
+    {
+      "role": "hiker",
+      "id": "hiker-1df7ff968271184c",
+      "state": "pending"
+    }
+  ],
+  "productionVotesWritten": 0,
+  "productionDecisionCount": 1,
+  "errors": []
+}
