@@ -1,0 +1,37 @@
+{
+  "baselineCommit": "29e6f22ab759cd64514a1830127e6f190d1c618a",
+  "currentCodeCommit": "615344044716c3bafa8cf616dcd3e36881768c48",
+  "baselineFailed": 3,
+  "currentFailed": 3,
+  "identicalFailureDiagnostics": true,
+  "newFailures": 0,
+  "failures": [
+    {
+      "test": "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 전 툴 파라미터가 union type/비객체 properties/비배열 items 를 쓰지 않는다",
+      "messages": [
+        "AssertionError: expected [ …(4) ] to deeply equal []\n    at <source>/test/toolSchemaProviderCompat.test.ts:107:72\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "test": "툴 스키마 프로바이더 호환(Gemini 엄격 검증) 객체 타입 파라미터는 properties 를 선언한다 (모델이 {} 만 보내는 벽 방지)",
+      "messages": [
+        "AssertionError: expected [ …(10) ] to deeply equal []\n    at <source>/test/toolSchemaProviderCompat.test.ts:113:71\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    },
+    {
+      "test": "acceptance and requirement schema/runtime contract keeps the shared discriminator, closed structural keys and genuine dynamic args",
+      "messages": [
+        "AssertionError: expected { type: 'string', …(1) } to deeply equal { type: 'string', …(1) }\n    at <source>/test/toolSchemaProviderCompat.test.ts:266:36\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+      ]
+    }
+  ],
+  "additionalRun": {
+    "files": 2,
+    "passed": 123,
+    "failed": 3,
+    "providerPassed": 116,
+    "providerFailed": 3,
+    "presetPassed": 7,
+    "enumCompatibilityPassed": true
+  }
+}

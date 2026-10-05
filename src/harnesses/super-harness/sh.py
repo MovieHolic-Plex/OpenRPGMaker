@@ -39,6 +39,7 @@ import art_feedback  # noqa: E402
 import art_repair  # noqa: E402
 import art_layout  # noqa: E402
 import art_acceptance  # noqa: E402
+import activity  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -165,15 +166,22 @@ def reap():
 
 
 def recover():
-    """데몬이 다시 뜨면 돌던 작업은 잃은 것으로 치고 개념을 다시 대기열로."""
-    for job in store.jobs("status='running'"):
+    """Recover dead workers; independent runners retain ownership of live jobs."""
+    jobs = store.jobs("status='running'")
+    live = {job["id"] for job in jobs if activity.process_alive(job)}
+    surviving = {job["concept"] for job in jobs if job["id"] in live}
+    for job in jobs:
+        if job["id"] in live:
+            continue
         store.update_job(job['id'], status='lost', ended=store.now())
         if job['concept']:
             c = store.concept(job['concept'])
-            if c and (c['stage'] in store.ACTIVE or c['stage'] == 'art'):
+            if c and c['id'] not in surviving and (c['stage'] in store.ACTIVE or c['stage'] == 'art'):
                 store.update_concept(c['id'], status='queued')
-    # Probe concepts stay running between child jobs; no previous process survives a service restart.
+    # A separate runner may survive an HTTP/daemon service restart.
     for c in store.concepts("status='running'"):
+        if c["id"] in surviving:
+            continue
         if c['stage'] in store.ACTIVE or c['stage'] == 'art':
             store.update_concept(c['id'], status='queued')
 
@@ -1612,6 +1620,8 @@ class Handler(BaseHTTPRequestHandler):
             except subprocess.SubprocessError:
                 return self.send(500, {'error': '문서 표시기를 불러오지 못했습니다.'})
         q = parse_qs(url.query)
+        if url.path == '/api/activity':
+            return self.send(200, activity.snapshot(q.get('id', [None])[0]))
         if url.path == '/api/list':
             return self.send(200, gallery_list())
         if url.path == '/api/art-choices':

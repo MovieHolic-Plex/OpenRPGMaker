@@ -76,9 +76,17 @@ def prepare(data, cid):
                 review = row['independent']
                 failures = [i.get('reasons', '') for i in review.get('items', []) if i.get('verdict') != 'PASS']
                 groups_pass = {i.get('id', i.get('item')) for i in review.get('items', []) if i.get('verdict') == 'PASS'}
-                required = {c['item'] for c in contract['components']}
+                # Scene receipts review acceptance criteria rather than the
+                # original 13 loose pieces. Empty or absent declarations must
+                # not accidentally count as every component having passed.
+                required = set(contract.get('requiredReviewItems') or
+                               [c['item'] for c in contract.get('components', [])])
+                if not required:
+                    raise ValueError('주차장 명세에 필수 검수 항목이 없습니다.')
                 passed = (row['machine'].get('ok') is True and row['machine'].get('imageSha256') == digest(png)
                           and review.get('verdict') == 'PASS' and review.get('png_sha256') == digest(png) and required <= groups_pass)
+                if receipt.get('scope') == 'parking-facility-v1':
+                    passed = passed and review.get('facilityVerdict') == 'PASS' and review.get('assemblySha256') == digest(png)
                 group['candidates'].append({'id': letter, 'title': f'후보 {letter}', 'passed': passed,
                     'summary': f'{len(required)}품목 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음',
                     'reasons': failures or row.get('issues', []),

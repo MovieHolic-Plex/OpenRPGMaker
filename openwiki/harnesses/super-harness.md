@@ -379,3 +379,11 @@ native 실행 실패가 원인처럼 남지 않게 한다. 기존 이미지/검�
 - `requiresFacilityVerdict` 계약의 최종 조립 판정은 facilityVerdict와 필수 조건 판정이 일치해야 한다.
   도면의 기하학적 가능성이나 보행 PASS는 시설 시각 완료를 대신하지 않는다.
 - 그림 저작은 기존 전용 워크트리/native 하네스만 쓴다. 전역 pause를 풀어 다른 개념을 실행하지 않는다.
+
+확장판 첫 native 그림 이후 검수자가 `verdict.json`을 쓰지 않은 원인은 준비 작업자의 금지 문장이
+미래 reviewTemplate에도 들어간 역할 혼선이었다. 준비 프롬프트에 현재 역할과 미래 검수 출력을
+분리하도록 명시한다. 누락된 판정은 품질 FAIL로 취급하거나 그림 회차를 소비하지 않고, 원본 그림과
+승인 입력 해시를 보존한 채 실제 검수만 재실행한다. 독립 검수 결과를 합성하여 빈칸을 채우지 않는다.
+시설 receipt는 contractPath의 requiredReviewItems를 사용한다. 옛 components 13품목만 요구하면
+7개 시설 조건을 쓰는 새 판 수집이 실패한다. 필수 목록이 비었으면 거부하고 시설 native PASS에도
+facilityVerdict=PASS 및 현재 assemblySha256을 요구한다. 최종 감독 검수의 COMPLETE 판정은 별도다.
