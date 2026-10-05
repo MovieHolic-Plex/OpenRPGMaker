@@ -692,3 +692,23 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 
 수집기는 native 가구 `ctx-cand.png`와 장면 어댑터 `ground-context-x1.png`를 모두 지원한다.
 후보 검수 팩 내부의 실제 파일만 해시로 묶으며, 전체 공간 데모와 시각 검수 의무는 유지한다.
+
+### 마무리 우선 배정·실제 저장 상태 (2026-10-05)
+
+`settings.completion_priority`에 지정한 공간 중 실행 가능한 후반 단계(데모·검수·등록)를
+`finish_priority.py`로 먼저 배정한다. `space_supervisor.py`는 다음 빈 공간 슬롯을 이 순서로
+배정하고, `keyword_seeds.py`는 해당 대기열이 있을 때 새 키워드 제안을 보류한다.
+이미 실행 중인 작업은 끊지 않는다. 반려·사용자 판단 대기·429 대기는 영구 독점하지 않는다.
+현재 기존 5개 운영은 `super-harness-completion-spaces.service`이고 이전 requested 서비스는 drain한다.
+
+`art_choices.installationProgress`는 현재 선택 해시와 공용 등록·정본 저장·재로드 증거가
+맞을 때만 노출한다. 플레이 확인이 남았으면 **맵 저장 완료 · 플레이 확인 남음**으로 표시하고
+기존 `installation`의 `runtimePassed` 완료 조건은 유지한다. 저장했다고 게임 검수 PASS를 만들지 않는다.
+
+하수도에서 숫자 팔레트 RLE `2:3`을 해석하지 못해 PNG가 없던 문제를 수정했다.
+`interior-props recheck-format-errors <round> --queue-only`는 기존 pxg 해시와 실패 기록을
+보존해 기계 검사를 다시 실행한다. 통과한 그림만 독립 검수에 올리고 그림 회차는 늘리지 않는다.
+`art_execution.py --resume-review`는 승인 명세가 그대로이고 미완료 행이 전부 검수 대기일 때만
+재개한다. 격리 콘텐츠 루트는 승인된 `tiledata/hand-interior/new/items.json`에서 찾는다.
+공간 슬롯 확인과 실행 예약은 공통 `space-admission.lock`으로 직렬화한다.
+여러 supervisor가 동시에 마지막 슬롯을 보고 작업을 중복 입장시키지 않도록 한다.

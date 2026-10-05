@@ -260,10 +260,14 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     installation = None
+    installation_progress = None
     installation_path = Path(data) / 'concepts' / cid / 'art-installation.json'
     if installation_path.is_file() and groups and count == len(groups):
         receipt = read(installation_path)
         selected = {g['id']: next(i['fingerprint'] for i in g['candidates'] if i['selected']) for g in output}
+        if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
+                and receipt.get('publicRegistered') is True and receipt.get('projectId') and receipt.get('sha256')):
+            installation_progress = receipt
         if (receipt.get('selections') == selected and receipt.get('canonicalReload') is True
                 and receipt.get('publicRegistered') is True and receipt.get('runtimePassed') is True
                 and receipt.get('projectId') and receipt.get('sha256')):
@@ -274,7 +278,7 @@ def view(data, cid):
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
             'demo': document.get('demoVersion') == 1, 'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups),
-            'installation': installation}
+            'installation': installation, 'installationProgress': installation_progress}
 
 
 EVALUATION_TAGS = {

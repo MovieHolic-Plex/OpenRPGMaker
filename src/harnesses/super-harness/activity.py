@@ -155,7 +155,12 @@ def snapshot(cid=None):
         elif c["stage"] == "art-review":
             try:
                 choices = art_choices.view(store.DATA, c['id'])
-                if choices['complete'] and not choices['installation']:
+                if choices.get('installationProgress') and not choices['installation']:
+                    wait_kind = 'runtime-verification'
+                    reason = '공용 칩셋 등록과 실제 프로젝트 저장·재로드 완료. 플레이어에서의 최종 동작 확인이 남았습니다.'
+                    action = '사용자 추가 선택은 필요 없습니다. 저장된 맵의 보행·가림 확인 후 완료 처리합니다.'
+                    label = '맵 저장 완료 · 플레이 확인 남음'
+                elif choices['complete'] and not choices['installation']:
                     wait_kind = 'integration-missing'
                     reason = '선택은 끝났지만 공용 등록·조립을 잇는 실행 단계가 없습니다. 워커 차례를 기다리는 상태가 아닙니다.'
                     action = '사용자 추가 선택 없이 운영에서 연결을 구현해야 합니다.'
@@ -183,6 +188,7 @@ def snapshot(cid=None):
             if runner and runner.get('parallelSpaces', 1) > 1:
                 wait_kind = runner.get('waits', {}).get(c['id'], 'scheduling')
                 reason = {
+                    'completion-priority': '먼저 만든 공간의 데모·검수·등록을 마무리하고 새 제작을 배정합니다.',
                     'space-capacity': f"공간 {runner['parallelSpaces']}개가 동시에 작업 중입니다. 빈 슬롯에 배정합니다.",
                     'worker-capacity': '검수 작업자를 포함한 동시 실행 한도에 도달했습니다.',
                     'shared-stage': '공용 조립·시험·반영 단계의 충돌을 막기 위해 실행 중 작업의 종료를 기다립니다.',
@@ -213,6 +219,8 @@ def snapshot(cid=None):
             next_step = "막힘 원인 교정 → 해당 단계 재실행"
         elif c["stage"] in ("done", "discarded"):
             next_step = "예약된 다음 단계 없음"
+        elif wait_kind == "runtime-verification":
+            next_step = "저장된 맵의 플레이어 보행·가림 확인"
         elif wait_kind == "integration-missing":
             next_step = "공용 등록·조립 실행 연결 구현 필요 (예약 없음)"
         elif c["stage"] == "art-review":

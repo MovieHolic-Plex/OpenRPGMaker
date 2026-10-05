@@ -27,6 +27,7 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
     const completed=state.groups.filter(g=>!pending.includes(g));
     let status = '마음에 드는 예시에 Allow, 아닌 예시에 Deny를 눌러 주세요. 여러 개 Allow해도 됩니다.';
     if(state.installation) status='등록된 결과입니다.';
+    else if(state.installationProgress) status='공용 칩셋 등록과 맵 저장을 마쳤습니다. 최종 플레이 확인이 남아 있으며, 추가 선택은 필요 없습니다.';
     else if(state.complete && !pending.length) status='데모 평가를 저장했습니다. 추가로 선택하거나 입력하실 필요가 없습니다.';
     else if(state.stage==='blocked') status='제작 문제를 운영에서 확인해야 합니다. 지금 하실 일은 없고, 기존 그림과 결정은 보존됩니다.';
     else if(working) status=state.demo?'공간 전체 데모입니다. 검수와 필요한 수정을 진행하며, 끝나면 아래에서 평가할 수 있습니다.':state.status==='running'?'실제 타일로 공간 전체 데모를 준비하고 있습니다.':'공간 전체 데모 제작을 요청했습니다. 아래에서 현재 작업과 대기 이유를 확인할 수 있습니다.';

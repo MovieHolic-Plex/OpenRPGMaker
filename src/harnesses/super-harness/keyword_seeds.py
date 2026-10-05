@@ -8,6 +8,7 @@ import unicodedata
 
 import store
 import provider_retry
+import finish_priority
 
 BATCH = 6
 BACKLOG = 12
@@ -101,6 +102,7 @@ def failed(sid, message):
 
 def tick(sh, slots=3):
     """One cross-process admission lock; never runs an implicit/random seed."""
+    if finish_priority.waiting(): return
     init()
     store.set_setting('keyword_scheduler_tick', time.time())
     folder = Path(sh.DATA) / 'keyword-seeds'

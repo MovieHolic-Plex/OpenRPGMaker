@@ -2,7 +2,7 @@
 
 ## 읽기와 용도
 modern_city의 mc-start, mc-assemble을 읽고 이 문서를 읽는다. 키트 `mc-parking-two-bays`는 14×7칸,
-16px다. 이미지 `/assets/modern-city/modern-city-chipset.png`, 판본 SHA256 `8412d48c87be5a5648767014e282ae671953434b9d9194f9c49f95a3cdc0a923`. 자동차 1대/두 주차면의 작은 구역이며 전체 12면 시설의 재료 완비를 의미하지 않는다.
+16px다. 이미지 `/assets/modern-city/modern-city-chipset.png`, 판본 SHA256 `357828dee94a4e5137f8a78f3b1eaf083d64f1e3059aff0ea214e7abc2d00dbc`. 자동차 1대/두 주차면의 작은 구역이며 전체 12면 시설의 재료 완비를 의미하지 않는다.
 
 ## 사전과 조립
 아래층에는 콘크리트/도색/벽/턱, 위층에는 원본차만 있다. 실제 배열은 아래와 같다.
