@@ -1,0 +1,43 @@
+{
+  "id": "9317c5b7-f367-45f6-a0b8-a040c2cdb04b",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T14:52:18.238400+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/white-robed-sword-immortal/baram-wuxia-v2/jobs/9317c5b7-f367-45f6-a0b8-a040c2cdb04b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/white-robed-sword-immortal/baram-wuxia-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/white-robed-sword-immortal/baram-wuxia-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/white-robed-sword-immortal/baram-wuxia-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/white-robed-sword-immortal/baram-wuxia-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "959032593901cea035a6b7814d3d2dd02bb60cf12e317934165a0e70d5b37286",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "5f9d42215ea8a1e45468b7ddaec31eb10d7183b205db9443602066314cfe29fe",
+    "preview/suite/light.png": "44a6cb1cecd6235c7948ad8bc3051dfbdacfc2c000bbe27278903d9453756a44",
+    "preview/suite/dark.png": "5c89fb943f26789dd772ff33e1a293040a84797ceeea94e0915d109bbef23da8",
+    "preview/suite/checker.png": "36648470b9fe9e230f1fd76b5bb602f2a2070a06f1020b575b9ab69ec97f38a1"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T14:55:59.716086+00:00"
+}

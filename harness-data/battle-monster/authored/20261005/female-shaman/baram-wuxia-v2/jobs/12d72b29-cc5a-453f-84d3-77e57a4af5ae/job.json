@@ -1,0 +1,43 @@
+{
+  "id": "12d72b29-cc5a-453f-84d3-77e57a4af5ae",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T15:38:16.817980+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-shaman/baram-wuxia-v2/jobs/12d72b29-cc5a-453f-84d3-77e57a4af5ae",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-shaman/baram-wuxia-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-shaman/baram-wuxia-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-shaman/baram-wuxia-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-shaman/baram-wuxia-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "3251ab467b180df5daa86a760fe63e00c01531848d84a857a7c46a66b45aa725",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "195364a7cf74aaf85b4d0a2b59214af4b2960416a320864e49d0a370f5d95d70",
+    "preview/suite/light.png": "1099f659c04d4ecf9f1a5e8e966ea0b95240536354a4bf396e8e54fa30ae3f49",
+    "preview/suite/dark.png": "c6d4758e454da5597038adf6a35d5f41dce76117616f20242c30affe5ff4efc3",
+    "preview/suite/checker.png": "8f2772fe440202973a59321cbf1bddcb050c0d2f9603d65f561662deef0ba1f0"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T15:41:32.072571+00:00"
+}

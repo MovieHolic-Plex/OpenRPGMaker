@@ -1,0 +1,89 @@
+{
+  "userRequest": "그래 이런 식으로 캐릭터들 다 만들어라. 근데 중요한 건 화려한 캐릭도 있고 여자도 있꼬 조선시대 어 ... 아니다 '바람의나라' 를 고려하면서 만들면되고 '무협' 도 고려해야함.",
+  "existingStyle": "wandering-swordsman/eyes-right-v4",
+  "totalCharacters": 12,
+  "newCandidates": 11,
+  "nativeCell": 64,
+  "poses": 18,
+  "motionGifs": 8,
+  "humanChoiceRequired": true,
+  "groups": [
+    [
+      "female-swordswoman",
+      "female-shaman",
+      "golden-armored-general"
+    ],
+    [
+      "female-assassin",
+      "female-taoist",
+      "white-robed-sword-immortal"
+    ],
+    [
+      "black-cloth-assassin",
+      "fallen-taoist",
+      "cult-sorcerer"
+    ],
+    [
+      "mountain-spearman",
+      "mountain-bandit"
+    ]
+  ],
+  "roster": [
+    {
+      "id": "female-swordswoman",
+      "name": "청운 검희",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "female-shaman",
+      "name": "홍련 무녀",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "golden-armored-general",
+      "name": "금갑 무장",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "female-assassin",
+      "name": "비연 자객",
+      "candidate": "baram-wuxia-v1"
+    },
+    {
+      "id": "female-taoist",
+      "name": "백발 여도사",
+      "candidate": "baram-wuxia-v1"
+    },
+    {
+      "id": "white-robed-sword-immortal",
+      "name": "백의 검선",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "black-cloth-assassin",
+      "name": "흑건 자객 · 새 원안",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "fallen-taoist",
+      "name": "타락 도사 · 새 원안",
+      "candidate": "baram-wuxia-v1"
+    },
+    {
+      "id": "cult-sorcerer",
+      "name": "사교 술사 · 새 원안",
+      "candidate": "baram-wuxia-v2"
+    },
+    {
+      "id": "mountain-spearman",
+      "name": "산채 창수 · 새 원안",
+      "candidate": "baram-wuxia-v1"
+    },
+    {
+      "id": "mountain-bandit",
+      "name": "산적 칼잡이 · 새 원안",
+      "candidate": "baram-wuxia-v1"
+    }
+  ],
+  "referenceUrl": "https://baramy.nexon.com/"
+}

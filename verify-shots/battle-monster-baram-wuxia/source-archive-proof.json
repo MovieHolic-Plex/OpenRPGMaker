@@ -1,0 +1,101 @@
+[
+  {
+    "key": "female-swordswoman/baram-wuxia-v2",
+    "binding": "21bf154bfda81b61d46b99b36c4b045f2c582a175c546919c18398319e44f3ad",
+    "reviewRecommendation": "keep",
+    "reviewJob": "a0cf92b6-8c5e-4bf8-b16b-21a9a385f771",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "female-shaman/baram-wuxia-v2",
+    "binding": "c60d322bb3110fabb727bb44ddb46cb964be053728be0af6dc9e4608ed8bb1ce",
+    "reviewRecommendation": "keep",
+    "reviewJob": "12d72b29-cc5a-453f-84d3-77e57a4af5ae",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "golden-armored-general/baram-wuxia-v2",
+    "binding": "375c5bb77a85ed948c3b0428d5663bfcaad8e022c76890e0e612b8f260ea5d14",
+    "reviewRecommendation": "keep",
+    "reviewJob": "77f31cb3-c50e-4b89-9ec3-c6e0b1002a48",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "female-assassin/baram-wuxia-v1",
+    "binding": "f8dcd3bcd866b192160acefeabec96530d1196d3f81096fc1558292b443b98a7",
+    "reviewRecommendation": "rework",
+    "reviewJob": "d19bb937-65fb-49ea-b7e1-686046793534",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "female-taoist/baram-wuxia-v1",
+    "binding": "ddc410ad3646e3d19f6f692ba6e5346ac18c5de8e8fc7dd976288046515340dd",
+    "reviewRecommendation": "rework",
+    "reviewJob": "2d4f845e-49a8-4df4-a0ba-54388a6a5e9e",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "white-robed-sword-immortal/baram-wuxia-v2",
+    "binding": "9e36acf5fb041631325e5093f490dd5a2d0b300c7445478b28944d948f9c947d",
+    "reviewRecommendation": "rework",
+    "reviewJob": "9317c5b7-f367-45f6-a0b8-a040c2cdb04b",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "black-cloth-assassin/baram-wuxia-v2",
+    "binding": "9430737fedf836af6c5cc349e1ce36767ce8c4738b2735286f3dd216cbc04bf7",
+    "reviewRecommendation": "rework",
+    "reviewJob": "2cb298b8-a6b5-4d1a-bc56-953d9f1031cd",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "fallen-taoist/baram-wuxia-v1",
+    "binding": "4464bc39b95f04f71142bde0872634488f1a955ef52ff33ae2feec785c204c21",
+    "reviewRecommendation": "rework",
+    "reviewJob": "5ec67814-40b5-4673-9692-b74a8349304e",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "cult-sorcerer/baram-wuxia-v2",
+    "binding": "74081b43e5fb7af73ffae3d215d5a75c5f656a35ac6ab40cceb39473a1ef94ca",
+    "reviewRecommendation": "keep",
+    "reviewJob": "7f119f78-b7eb-4212-a260-be6a2cb22f3a",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "mountain-spearman/baram-wuxia-v1",
+    "binding": "19c7270c5013a816ba4934f6011a6821aba3466ee82bb8a93c3fbe917362a43b",
+    "reviewRecommendation": "rework",
+    "reviewJob": "8d46d5ce-2c3c-4595-9124-ec93b20dbf20",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "mountain-bandit/baram-wuxia-v1",
+    "binding": "e114213a2d837c1af9ad4bf331865f2d2836836eb530a7b4b1ad35ada3ffcd9f",
+    "reviewRecommendation": "rework",
+    "reviewJob": "298241f0-d381-41bc-8d2e-27eddc576b0f",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  }
+]

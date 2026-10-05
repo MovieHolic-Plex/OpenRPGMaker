@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four actual PNGs, including the sheets' native 1x and nearest 3x views on light, dark and checker backgrounds. The adult three-head silhouette, right-facing three-quarter face with separate eyes, brows and nose, black hair/red knot, cream sleeves, navy sash and red skirt read consistently. Upper-left highlights and darker lower/right folds give the cloth volume; bronze and pale paper remain distinct, though very small at 1x. Hair and boots have reduced contrast on the dark background but remain locatable. Both shoes connect to the skirt and reach native baseline y=60 in the standing states. No obvious accidental interior transparency or broken major contour is visible; the small spaces beside bent wrists and held paper read as gaps between separate forms. The hands, brown bell grips and bell bodies remain connected. Windup gathers the tools, move widens the step, attack extends the arms and releases paper/embers rightward, and recover lowers the tools. Hit changes the face and lean; dead presents a coherent horizontal body with dropped tools. Idle changes are restrained. Skill preparation holds burning paper beside the bell; contact has three red/gold flame branches visibly rooted in the held paper at the extended hand; recovery lowers the sleeve with warm fragments dispersing. Poison pairs alter the torso/abdominal hand and expression with green particles, stun pairs bend the knees and sag the arms under stars, and sleep pairs close the eyes and lower both hands with a deeper slump. These are readable pose changes, not tint substitutions. The light-sheet enlargements exactly repeat native pixels and show 18 opaque colors, but geometry is not the basis of this recommendation. Limits: static pose previews cannot establish motion timing, runtime battle readability, or literal-grid authorship. This is a visual recommendation, not a user selection or battle-footage approval.",
+  "issues": [],
+  "binding": "c60d322bb3110fabb727bb44ddb46cb964be053728be0af6dc9e4608ed8bb1ce",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "195364a7cf74aaf85b4d0a2b59214af4b2960416a320864e49d0a370f5d95d70",
+    "preview/suite/light.png": "1099f659c04d4ecf9f1a5e8e966ea0b95240536354a4bf396e8e54fa30ae3f49",
+    "preview/suite/dark.png": "c6d4758e454da5597038adf6a35d5f41dce76117616f20242c30affe5ff4efc3",
+    "preview/suite/checker.png": "8f2772fe440202973a59321cbf1bddcb050c0d2f9603d65f561662deef0ba1f0"
+  },
+  "jobId": "12d72b29-cc5a-453f-84d3-77e57a4af5ae",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T15:41:32.260742+00:00",
+  "userApproved": false
+}

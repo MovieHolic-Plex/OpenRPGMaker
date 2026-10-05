@@ -1,21 +1,5 @@
 [
   {
-    "key": "black-cloth-assassin/motions-v1",
-    "name": "흑건 자객",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "4a6ae545a7c71df12022fa91f1f7f300a6569735213a4ab179972791670d56f8"
-  },
-  {
-    "key": "cult-sorcerer/motions-v1",
-    "name": "사교 술사",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "1ba5b5eaba4831c550b2666a89fbaaccf85ca5cadbbb89ff131faaf7e0f580f9"
-  },
-  {
     "key": "earthen-jar-fiend/motions-v2",
     "name": "옹기귀",
     "nativeCell": 64,
@@ -24,36 +8,12 @@
     "binding": "d40de664fb837984ace7b689332f2ff6bf3f25bbf341182b523f8ecb37b78518"
   },
   {
-    "key": "fallen-taoist/motions-v1",
-    "name": "타락 도사",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "95f0d1ea5cbbfccfb1b0bc22a4a6ecd4e7cfcba283702f3920a24c1fc145e70c"
-  },
-  {
     "key": "jangseung-spirit/motions-v2",
     "name": "장승귀",
     "nativeCell": 64,
     "poses": 18,
     "userChoiceRequired": true,
     "binding": "8e03bcf8769d3fb92a6f118a2bebf074547ef72ec7dfd575e4d5bca227c47724"
-  },
-  {
-    "key": "mountain-bandit/motions-v1",
-    "name": "산적 칼잡이",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "0c9463541177db14e8cc9b20ea2ae8cefacaab744b11ba1edf1c59d971f51f16"
-  },
-  {
-    "key": "mountain-spearman/motions-v1",
-    "name": "산채 창수",
-    "nativeCell": 64,
-    "poses": 18,
-    "userChoiceRequired": true,
-    "binding": "5aec314719268c8d43d2e8387329a98bc1c8fd2996bbc9407956e0fbd4c30d1e"
   },
   {
     "key": "venom-toad/motions-v2",
@@ -78,6 +38,105 @@
     "poses": 18,
     "phase": "suite",
     "binding": "e91a5291975762d89b34fa85894a2bacc198600d2dfff74ead060f166741b41d",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "female-swordswoman/baram-wuxia-v2",
+    "name": "청운 검희",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "21bf154bfda81b61d46b99b36c4b045f2c582a175c546919c18398319e44f3ad",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "female-shaman/baram-wuxia-v2",
+    "name": "홍련 무녀",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "c60d322bb3110fabb727bb44ddb46cb964be053728be0af6dc9e4608ed8bb1ce",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "golden-armored-general/baram-wuxia-v2",
+    "name": "금갑 무장",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "375c5bb77a85ed948c3b0428d5663bfcaad8e022c76890e0e612b8f260ea5d14",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "female-assassin/baram-wuxia-v1",
+    "name": "비연 자객",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "f8dcd3bcd866b192160acefeabec96530d1196d3f81096fc1558292b443b98a7",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "female-taoist/baram-wuxia-v1",
+    "name": "백발 여도사",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "ddc410ad3646e3d19f6f692ba6e5346ac18c5de8e8fc7dd976288046515340dd",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "white-robed-sword-immortal/baram-wuxia-v2",
+    "name": "백의 검선",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "9e36acf5fb041631325e5093f490dd5a2d0b300c7445478b28944d948f9c947d",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "black-cloth-assassin/baram-wuxia-v2",
+    "name": "흑건 자객 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "9430737fedf836af6c5cc349e1ce36767ce8c4738b2735286f3dd216cbc04bf7",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "fallen-taoist/baram-wuxia-v1",
+    "name": "타락 도사 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "4464bc39b95f04f71142bde0872634488f1a955ef52ff33ae2feec785c204c21",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "cult-sorcerer/baram-wuxia-v2",
+    "name": "사교 술사 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "74081b43e5fb7af73ffae3d215d5a75c5f656a35ac6ab40cceb39473a1ef94ca",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "mountain-spearman/baram-wuxia-v1",
+    "name": "산채 창수 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "19c7270c5013a816ba4934f6011a6821aba3466ee82bb8a93c3fbe917362a43b",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "mountain-bandit/baram-wuxia-v1",
+    "name": "산적 칼잡이 · 새 원안",
+    "nativeCell": 64,
+    "poses": 18,
+    "phase": "suite",
+    "binding": "e114213a2d837c1af9ad4bf331865f2d2836836eb530a7b4b1ad35ada3ffcd9f",
     "userChoiceRequired": true
   }
 ]

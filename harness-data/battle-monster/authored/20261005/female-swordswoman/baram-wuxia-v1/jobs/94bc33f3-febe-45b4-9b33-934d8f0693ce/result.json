@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs at native 1x and the supplied nearest-neighbor 3x. The high ponytail, blue ribbon, fitted turquoise jacket, long side tails, red belt, separate trouser legs and small boots form a coherent female wuxia silhouette. Hair, sleeves and trousers have readable pixel volumes and mostly consistent upper-left lighting; the face is round and youthful but remains compatible with the requested adult SD proportions. No obvious accidental interior transparency or missing body contour is visible across light, dark and checker backgrounds; the darkest ponytail edge is less legible on dark. Standing soles share the ground level, the dash has a wide planted stride, and dead has a genuinely horizontal collapsed body. Visible grips, hilts and blades appear connected, including dead. Move to attack changes the blade from raised to a low diagonal cut, with consistent clothing and face identity. Skill preparation brings the blade behind the shoulder; skill contact has two cyan branches meeting the actual blade tip near (56,22); recovery lowers the sword and leaves separate fading particles as specified. Poison changes the body and expression as well as adding red particles, and stun has hanging arms, an open mouth and displaced stars. Sleep has authored closed eyes and lowered head/shoulders, but retains an actively balanced sword-bearing stance. Rework is recommended for clearer waist-draw preparation and a visibly relaxed sleeping posture; the remaining suite is visually coherent. This recommendation does not select the candidate for the user. Static pose previews cannot establish actual battle timing, contact, foot sliding or loop continuity, and cannot prove literal-grid authorship or full palette/alpha compliance. No geometry PASS was used as visual approval.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 40,
+      "y": 39,
+      "message": "The grip at the waist leads directly into an already fully extended rightward blade while the short sheath hangs downward. This reads as a low guard more readily than pulling the sword from the waist. Reauthor the hand/hilt cluster around (38..44,37..43), draw the elbow back and align the sheath mouth with the emerging blade; preserve a continuous hand-hilt-blade connection."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 34,
+      "y": 31,
+      "message": "Closed eyes identify sleep at 3x, but the head is mostly lowered vertically and the torso, planted legs and forward sword grip still read as a guarded crouch at 1x. Tilt the head forward at the neck around (31..38,28..33), lower the shoulder and relax the sword arm toward the thigh, keeping the hilt attached to the hand and both soles grounded."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 35,
+      "y": 32,
+      "message": "Carry the relaxed neck/shoulder and lowered-hand silhouette from the repaired sleep_a into this breathing frame. The present pair maintains a firm combat grip and balanced ready stance. Use a small chest/shoulder breathing change while keeping closed eyes, the drooping head and the relaxed blade direction consistent; avoid moving the entire figure or changing the grounded soles."
+    }
+  ]
+}

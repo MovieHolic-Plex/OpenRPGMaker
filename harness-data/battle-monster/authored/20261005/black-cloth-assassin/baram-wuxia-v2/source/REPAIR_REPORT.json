@@ -1,0 +1,290 @@
+{
+  "kind": "source comparison and render observations; no tests or artistic approval",
+  "frames": {
+    "poses/attack.pxgrid": {
+      "before_sha256": "d2b8592c2c67a2f13762138e4aab56ce28487228e3d170a42172feb817cc7a8c",
+      "after_sha256": "9e6098a79a6a3fbbde1c22c8944fe4f2a933fa07905a53a3586ddfd97ae7acef",
+      "bytes_unchanged": false,
+      "changed_pixels": 121,
+      "changed_bounds": [
+        32,
+        30,
+        60,
+        40
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/dead.pxgrid": {
+      "before_sha256": "9696a4c5ff6e34ff99edd366a1948c21e0ccccd08d1b03bf22bf361218349c7b",
+      "after_sha256": "9696a4c5ff6e34ff99edd366a1948c21e0ccccd08d1b03bf22bf361218349c7b",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/hit.pxgrid": {
+      "before_sha256": "2f37f3b2afe96acb7004a38efcfd8e08821adeca5ce0b30b0d15875a36a0745e",
+      "after_sha256": "2f37f3b2afe96acb7004a38efcfd8e08821adeca5ce0b30b0d15875a36a0745e",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/idle_a.pxgrid": {
+      "before_sha256": "bd08c0e4dcf28edaa7bcfff83de64b91aedc85bb1ad608942cfcc5ad869906fa",
+      "after_sha256": "ba970ce13932579e85c7e6cde51154287fab7584576006ef74950c157cd7abd9",
+      "bytes_unchanged": false,
+      "changed_pixels": 42,
+      "changed_bounds": [
+        36,
+        41,
+        41,
+        48
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/idle_b.pxgrid": {
+      "before_sha256": "b59165d3e4160278563555e7106fb3359fc7ca125d2a50b2e5af96a1a09fbec0",
+      "after_sha256": "100a6134dde65ac4a48db0af90198e25fdce6cd5a88a8718017a86fe356c69fe",
+      "bytes_unchanged": false,
+      "changed_pixels": 42,
+      "changed_bounds": [
+        36,
+        41,
+        41,
+        48
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/idle_c.pxgrid": {
+      "before_sha256": "7d1522e0fd7207d6a14dc48c01487c8f9e03818c90178420966b81d3057725b1",
+      "after_sha256": "17d48b0aad9bc06c9708d4702c8084193f1d71be0cf8672bf9f5bcb0b318d7d2",
+      "bytes_unchanged": false,
+      "changed_pixels": 42,
+      "changed_bounds": [
+        36,
+        41,
+        41,
+        48
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/move.pxgrid": {
+      "before_sha256": "476aee20779eeeac1ae32e79bfffe72b8cd0fc3807f2a31bcb84e053cfdb5599",
+      "after_sha256": "476aee20779eeeac1ae32e79bfffe72b8cd0fc3807f2a31bcb84e053cfdb5599",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/recover.pxgrid": {
+      "before_sha256": "7e48de5c97ce7139b10c5ef403134203ac3ff4d27c48c21c794725811f568bc1",
+      "after_sha256": "7e48de5c97ce7139b10c5ef403134203ac3ff4d27c48c21c794725811f568bc1",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "poses/windup.pxgrid": {
+      "before_sha256": "6c056c243c10d2ba38800d9dfae57405e68997ed14674342fdad802bd4f3d758",
+      "after_sha256": "6c056c243c10d2ba38800d9dfae57405e68997ed14674342fdad802bd4f3d758",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/poison_a.pxgrid": {
+      "before_sha256": "9b764de200f8931f113f10084304e5764b350628dcefe58a05c33b6be35fe092",
+      "after_sha256": "9b764de200f8931f113f10084304e5764b350628dcefe58a05c33b6be35fe092",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/poison_b.pxgrid": {
+      "before_sha256": "57a2e2c0768e4113948170abfc22ce4f8f432ee5abe206cde6ef1453ff3cc9cf",
+      "after_sha256": "57a2e2c0768e4113948170abfc22ce4f8f432ee5abe206cde6ef1453ff3cc9cf",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/skill_a.pxgrid": {
+      "before_sha256": "21707146ba531df22a5299d4c5f30c5801250f67773d747d47a7812c048f885c",
+      "after_sha256": "7f4ffc3aa597ee667bdd4ebdcf15f6730b066f2fa3280fa7028344e66d185fd0",
+      "bytes_unchanged": false,
+      "changed_pixels": 19,
+      "changed_bounds": [
+        38,
+        31,
+        44,
+        35
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/skill_b.pxgrid": {
+      "before_sha256": "96cfcefffa1c35521932feb54bfc99cfb872ffb2bce021db48080127617e7daf",
+      "after_sha256": "96cfcefffa1c35521932feb54bfc99cfb872ffb2bce021db48080127617e7daf",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/skill_c.pxgrid": {
+      "before_sha256": "6899da7618e71a42413fc84293421730a6b3be8e514c24ca6fdc6b134cfeec4e",
+      "after_sha256": "6899da7618e71a42413fc84293421730a6b3be8e514c24ca6fdc6b134cfeec4e",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/sleep_a.pxgrid": {
+      "before_sha256": "c077a775adb9011481e24f321faf6611680748ba1e54a5d3a613008de78398ed",
+      "after_sha256": "c077a775adb9011481e24f321faf6611680748ba1e54a5d3a613008de78398ed",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/sleep_b.pxgrid": {
+      "before_sha256": "0c58bf499a3ec786cfe6e2c6101e51fd03e21d813b300df69ec41701271c3fef",
+      "after_sha256": "0c58bf499a3ec786cfe6e2c6101e51fd03e21d813b300df69ec41701271c3fef",
+      "bytes_unchanged": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/stun_a.pxgrid": {
+      "before_sha256": "7d7dbd7a178952417f72bb5d06d4faa583a91f16d77c9b5a244dbb5ace02ff86",
+      "after_sha256": "160607ca738d18d805bc79e9db62db563fd77e3f7d125c38cd16f713273d2289",
+      "bytes_unchanged": false,
+      "changed_pixels": 49,
+      "changed_bounds": [
+        27,
+        21,
+        40,
+        27
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    },
+    "actions/stun_b.pxgrid": {
+      "before_sha256": "f8627e6edcf958054a8e797f727c4d846c8e67871956073bb2149793ce1fb3cc",
+      "after_sha256": "4d001234d7982f0b8f0981321a2c0e61646cb4cf534818f2cd30179f55e0e29f",
+      "bytes_unchanged": false,
+      "changed_pixels": 49,
+      "changed_bounds": [
+        27,
+        24,
+        40,
+        30
+      ],
+      "canvas": [
+        64,
+        64
+      ],
+      "lowest_ink_y": 60
+    }
+  },
+  "unchanged_support_files": [
+    {
+      "file": "palette.json",
+      "bytes_unchanged": true,
+      "sha256": "4e204e76c870ff3bf3ed16f4668fd3f963f500eedc1bb6e1d1cef3aeea398970"
+    },
+    {
+      "file": "actions_author.py",
+      "bytes_unchanged": true,
+      "sha256": "ea31a936d172ffc87713231303916db165ef381f2664e24514af624f6bb9b94c"
+    },
+    {
+      "file": "author.py",
+      "bytes_unchanged": true,
+      "sha256": "f3b9637cfd158add7962460c9d8169e746689d9481f04a5ad6e86753406199df"
+    },
+    {
+      "file": "idle_author.py",
+      "bytes_unchanged": true,
+      "sha256": "8e08dc699afe24e6a7ee4490d86788ac77c92444ea092d0831c75a12a7adb7dd"
+    },
+    {
+      "file": "poses_author.py",
+      "bytes_unchanged": true,
+      "sha256": "1a8674229b232289f63d6aaa313f65bf8c92b29fdf3f68988d33b8d2f0d8a0c4"
+    },
+    {
+      "file": "refine_author.py",
+      "bytes_unchanged": true,
+      "sha256": "061b2c32821e8ebd53b30de7c81b9f079ab63c6a8785f58518fb9168aa63bb6a"
+    }
+  ],
+  "restricted_frames_unchanged": true,
+  "all_18_frame_contents_distinct": true
+}

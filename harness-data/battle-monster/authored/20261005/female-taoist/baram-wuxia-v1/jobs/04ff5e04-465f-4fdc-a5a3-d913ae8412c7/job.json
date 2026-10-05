@@ -1,0 +1,41 @@
+{
+  "id": "04ff5e04-465f-4fdc-a5a3-d913ae8412c7",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T14:11:24.133745+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/female-taoist/baram-wuxia-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/female-taoist/baram-wuxia-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/female-taoist/baram-wuxia-v1/references/official-jobs-study.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/female-taoist/baram-wuxia-v1/references/style-suite.png",
+    "-"
+  ],
+  "promptSha256": "502a63d2a110816d320f73301244388b3c560f1363efb65941ab1a11e4809149",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "reference.png": "b6276a1cb213fda9fc0b4bff919e00d1fa4b82f7772b405e71964fbf074760df",
+    "references/official-jobs-study.png": "da681227c8ee4ab16fdaf8b80a96ff4277a7bd2cef805f83cc4d7131ceda3b43",
+    "references/style-suite.png": "478da7737fe077f753133b3ce76fb7a2edd6aa617f80d49e87d1b82fd5699c9f"
+  },
+  "interruptedAt": "2026-10-05T14:23:20.796178+00:00",
+  "controllerExitCode": 143,
+  "interruptionNote": "Root observed wave process exited143 and no corresponding active author subprocess; model completion and exit code unknown. Partial source preserved, not published."
+}

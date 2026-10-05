@@ -1,0 +1,9 @@
+idle_a: 954 ink pixels; bounds 17,8..49,60
+idle_b: 954 ink pixels; bounds 17,8..49,60
+idle_c: 946 ink pixels; bounds 18,8..49,60
+windup: 945 ink pixels; bounds 19,8..49,60
+move: 929 ink pixels; bounds 15,9..53,60
+attack: 976 ink pixels; bounds 15,9..60,60
+recover: 928 ink pixels; bounds 18,8..50,60
+hit: 850 ink pixels; bounds 17,10..46,60
+dead: 543 ink pixels; bounds 12,39..59,60

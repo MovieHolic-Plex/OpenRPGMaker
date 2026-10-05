@@ -1,0 +1,55 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs, including the native 1x tiles and nearest 3x tiles on light, dark and checker backgrounds. The right-facing three-quarter head, bare topknot, white chin tuft, muted green wide sleeves, red lining and bronze bell staff are recognizable. Upper-left cloth highlights give useful volume, although the white beard merges with the collar and the boots lose contour on the dark background. Upright poses retain a common foot baseline; the wide move/attack stance and horizontal fallen silhouette are readable. Windup gathers the arms and recovery lowers them. Hit recoils modestly but retains an unusually composed upright head. The attack shaft turns horizontal while its bell remains upright, making the weapon joint and grip ambiguous. Skill preparation has a green flame supported by the left palm, the contact frame has three cyan branches visibly connected to the bell, and recovery leaves separated fragments; this is a coherent skill sequence rather than a tint. Poison visibly clutches the abdomen with bubbles, stun has an open mouth, stars and a changed stance, and sleep closes the eyes and compresses the stance; sleep remains weak at 1x because the head stays upright and the weapon grip remains active. The bell apertures and space under the extended skill arm are intentional negative space; small enclosed gaps in the skill preparation torso and fallen cheek/neck look unintended. Static pose previews cannot establish animation timing, actual battle behavior, or literal authorship. This is an advisory rework recommendation, not a user selection or geometry approval.",
+  "issues": [
+    {
+      "pose": "skill_a",
+      "x": 33,
+      "y": 42,
+      "message": "The two background pixels at (33,42) and (34,42) form an enclosed hole inside the green torso beneath the sleeve. Replace them with the surrounding robe shadow/fold colors so the torso stays opaque; preserve the separate intentional arm negative space in skill_b."
+    },
+    {
+      "pose": "dead",
+      "x": 27,
+      "y": 51,
+      "message": "The background pixels at (27,51) and (28,51) punch through the fallen cheek/neck junction. Reconnect this junction with the adjacent skin shadow and neck contour so the head reads as attached to the body on the checker background."
+    },
+    {
+      "pose": "attack",
+      "x": 55,
+      "y": 31,
+      "message": "The horizontal bronze shaft at y=31-32 enters the side of the still-vertical bell head around (55,31), while the visible gripping hand sits below around (52,33). Author a bell head aligned with the horizontal shaft and bring the gripping fingers onto that shaft, preserving recognizable bell proportions and a continuous weapon axis."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 33,
+      "y": 24,
+      "message": "Closed-eye pixels at y=24 are the strongest sleep cue, but the head/neck silhouette stays alert and upright. Redraw the head and beard into a forward nod around this region, relax the shoulder and staff hand, and keep the soles on y=60 so sleep reads at native 1x without relying only on eyelids."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 34,
+      "y": 25,
+      "message": "The second sleep head remains nearly the same upright face with closed eyes. Author a distinct deeper or recovering nod with a changed neck/shoulder contour and relaxed grip, maintaining the same planted feet; make the pair read as sleeping breath rather than a small upright bob."
+    },
+    {
+      "pose": "idle_a",
+      "x": 20,
+      "y": 58,
+      "message": "The outer boot/toe and sole clusters around x=19-25 and x=32-39, y=57-60 nearly disappear into the dark background. Add a restrained boot midtone along the visible toe/outer edge above the sole, then carry the same material treatment through the standing poses while preserving the dark sole and common baseline."
+    }
+  ],
+  "binding": "3f60099d368cdd6744f59b214e1e304e1eb02f3d9b666134ec536df72aab536b",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "8ec3991f97aaca8eff2123f4138be49dbc9f561cfe3ce56d09b5c2ee58efe81c",
+    "preview/suite/light.png": "b8e61e75e87cec543a1807602731db76cf7d6b46a939630db8524207d0821671",
+    "preview/suite/dark.png": "c27dc5305794cdc38d78608cfead26280aae1f35e4af30ead48f5ba7d0c29f0d",
+    "preview/suite/checker.png": "4659ac3627e60ea88937839f6fa0c3bc1a0fde02bcc07e29a7df7aed435ba760"
+  },
+  "jobId": "3d8d76ec-f843-4b4b-b019-0f485ad8aa35",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T15:10:00.142760+00:00",
+  "userApproved": false
+}

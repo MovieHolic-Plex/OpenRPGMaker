@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 1x cells and existing nearest 3x panels. The adult three-head proportion, braid, narrow waist, bent knees and separated shoes read clearly. Teal folds and upper-left highlights give the clothing volume; the purple scarf and pale wraps remain identifiable. No obvious accidental transparent hole is visible on the checker view, although dark hair and boots lose some separation on the dark background. Windup, dash, recoil and collapse are distinct, with largely stable ground contact. The move frame has an excessively thin extended front sole. Attack presents several branching silver strokes instead of a clear pair of crossing held daggers. Skill preparation/contact/recovery are visibly different: purple energy follows the held blade region, contact has two teal tails, and recovery leaves separated remnants. Poison and stun have changed body poses as well as particles; sleep has lowered, closed-eye heads but retains a comparatively ready combat stance. Static previews cannot establish animation timing, actual battle readability or literal-grid authorship. This recommendation is advisory and does not select the candidate for the user.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 39,
+      "y": 60,
+      "message": "The front boot ends in a one-pixel horizontal line extending through x37–45 at y60. Replace this long line with a compact toe connected to the boot above, keeping the grounded sole at y60; give the toe a filled upper surface so it reads as footwear rather than a dragging mark."
+    },
+    {
+      "pose": "attack",
+      "x": 46,
+      "y": 35,
+      "message": "Around the two forward hands, the silver paths branch upward and downward, with additional upper-right segments; the result reads as a fan of strokes rather than two crossing daggers. Trace one blade continuously from each distinct grip and make their diagonals cross ahead of the wrists. Remove surplus metallic branches, or render a clearly separate short slash remnant so it cannot be mistaken for another held blade."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 38,
+      "y": 43,
+      "message": "Despite the lowered head and closed eyes, the forward wrist/blade arrangement and braced legs still read as combat readiness at 1x. Relax the forearm at this wrist and point the daggers farther down; carry a visibly slack shoulder and deeper head droop into sleep_b while preserving both planted shoes. Keep the closed-eye lines distinct from the brow pixels."
+    }
+  ]
+}

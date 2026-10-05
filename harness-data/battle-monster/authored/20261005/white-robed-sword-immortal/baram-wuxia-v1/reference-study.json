@@ -1,0 +1,16 @@
+{
+  "sources": [
+    {
+      "url": "https://baramy.nexon.com/",
+      "creator": "Nexon",
+      "scope": "official pixel class costume vocabulary: armor, robes, staff and thief clothing; no literal asset extraction",
+      "privateStudySha256": "da681227c8ee4ab16fdaf8b80a96ff4277a7bd2cef805f83cc4d7131ceda3b43"
+    },
+    {
+      "candidate": "wandering-swordsman/eyes-right-v4",
+      "creator": "project original GPT6.1sol/high authored pixel source",
+      "scope": "current restrained eyes/face, adult SD and layered fabric; visual study, no cloned source"
+    }
+  ],
+  "referenceImageBytesCommitted": false
+}

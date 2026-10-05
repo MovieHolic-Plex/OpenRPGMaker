@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "female-assassin",
+    "name": "비연 자객",
+    "role": "rogue",
+    "gender": "female",
+    "age": "adult",
+    "tier": "regular",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "idleFrameMs": 200,
+    "silhouette": "성인 여성 자객. 비스듬한 검은 앞머리와 길게 땋은 머리, 자주색 좁은 목수건, 짙은 청록 짧은 도복/밀착하지 않은 좁은 바지, 회백 손목 감개와 밝은 은색 짧은 쌍검. 얼굴 위쪽의 두 눈과 눈썹이 분리되며 아래는 짧은 복면. 가는 허리와 휘는 옷자락, 굽힌 두 무릎과 분리된 두 신발. 원본64 성인3등신, 머리18~21px, 전체키50~54px.",
+    "attack": "두 단검을 몸 옆에 모음 → 낮은 자세로 보폭을 벌림 → 교차 사선 베기 → 팔꿈치/머리땋은 끈과 칼을 회수.",
+    "skill": "비연살: 두 손목을 모아 날끝에 보라 기를 압축, 실제 양손 쌍검에 연결된 짧은 교차 검기와 두 개의 청록 꼬리, 검기를 짧은 잔상으로 찢으며 낮게 회수.",
+    "resourceId": "jf-enemy-female-assassin",
+    "kind": "human",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

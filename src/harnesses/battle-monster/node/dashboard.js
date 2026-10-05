@@ -14,7 +14,7 @@ function loadImage(src) {
   return imageCache.get(src);
 }
 function row(){return items.find(item=>item.key===selected);}
-function visible(){return items.filter(item=>filter==='history'?(item.choice==='modify'||(item.choice==='allow'&&item.active===false)):filter==='allow'?item.choice==='allow'&&item.active!==false:item.choice===filter);}
+function visible(){return items.filter(item=>filter==='history'?(item.reviewSupersededBy||item.choice==='modify'||(item.choice==='allow'&&item.active===false)):filter==='allow'?item.choice==='allow'&&item.active!==false:item.choice===filter&&!item.reviewSupersededBy);}
 function chooseFilter(value){filter=value;sessionStorage.setItem('monster-review-filter',filter);selected=null;render();}
 function draw(canvas,img,pose,size,scale=3){
   canvas.width=size*scale;canvas.height=size*scale;
@@ -53,9 +53,9 @@ function toast(message,error=false){
   $('toast').textContent=message;$('toast').setAttribute('role',error?'alert':'status');$('toast').classList.add('visible');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4500);
 }
-function stateText(item){return item.choice==='allow'&&item.active===false?'Allow · 이전에 선택한 버전':labels[item.choice];}
+function stateText(item){return item.reviewSupersededBy?'이전 결과':item.choice==='allow'&&item.active===false?'Allow · 이전에 선택한 버전':labels[item.choice];}
 async function render(){
-  const pending=items.filter(item=>item.choice==='pending').length;
+  const pending=items.filter(item=>item.choice==='pending'&&!item.reviewSupersededBy).length;
   const allowed=items.filter(item=>item.choice==='allow'&&item.active!==false).length;
   $('pending-count').textContent=pending;$('allow-count').textContent=allowed;
   $('deny-count').textContent=items.filter(item=>item.choice==='deny').length;
@@ -103,8 +103,8 @@ async function refresh(force=false){
   if(fingerprint!==rendered||force){
     if(!rendered){
       const requested=data.items.find(i=>i.key===requestedCandidate);
-      if(requested){selected=requested.key;filter=requested.choice==='modify'||(requested.choice==='allow'&&requested.active===false)?'history':requested.choice;}
-      else if(!restoredFilter&&!data.items.some(i=>i.choice==='pending')&&data.items.some(i=>i.choice==='allow'))filter='allow';
+      if(requested){selected=requested.key;filter=requested.reviewSupersededBy||requested.choice==='modify'||(requested.choice==='allow'&&requested.active===false)?'history':requested.choice;}
+      else if(!restoredFilter&&!data.items.some(i=>i.choice==='pending'&&!i.reviewSupersededBy)&&data.items.some(i=>i.choice==='allow'))filter='allow';
     }
     items=data.items;rendered=fingerprint;await render();
   }

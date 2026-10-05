@@ -1,0 +1,226 @@
+[
+  {
+    "key": "female-swordswoman/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect_pixels.py",
+      "author_pixels.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "female-shaman/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "golden-armored-general/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect_pixels.py",
+      "author_pixels.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "female-assassin/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "statuses.py",
+      "inspect.py",
+      "frames.py",
+      "author.py",
+      "repairs.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "female-taoist/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect_actions.py",
+      "inspect.py",
+      "actions_author.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "white-robed-sword-immortal/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "status_author.py",
+      "inspect.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "black-cloth-assassin/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "refine_author.py",
+      "idle_author.py",
+      "actions_author.py",
+      "author.py",
+      "poses_author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "fallen-taoist/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "progress/author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "cult-sorcerer/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "mountain-spearman/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "mountain-bandit/baram-wuxia-v1",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "draw_poison.py",
+      "draw_stun.py",
+      "draw_sleep.py",
+      "draw_idle.py",
+      "draw_motion.py",
+      "refine_idle.py",
+      "draw_outcomes.py",
+      "author.py",
+      "draw_skills.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "black-cloth-assassin/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "refine_author.py",
+      "idle_author.py",
+      "render_repair.py",
+      "actions_author.py",
+      "author.py",
+      "poses_author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "white-robed-sword-immortal/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "status_author.py",
+      "inspect.py",
+      "repair_neck.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "cult-sorcerer/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "repair_quality.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "female-swordswoman/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect_pixels.py",
+      "author_pixels.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "female-shaman/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect.py",
+      "author.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  },
+  {
+    "key": "golden-armored-general/baram-wuxia-v2",
+    "rootReadAuthorHelperFunctions": true,
+    "authorHelpers": [
+      "inspect_pixels.py",
+      "author_pixels.py"
+    ],
+    "nativeLiteralRowsAndSelectedCoordinateRuns": true,
+    "noRasterizationUsedToProduceArt": true,
+    "previewUsesOwnGridDecodeAndNearestZoomOnly": true,
+    "reviewIsAdvisory": true
+  }
+]

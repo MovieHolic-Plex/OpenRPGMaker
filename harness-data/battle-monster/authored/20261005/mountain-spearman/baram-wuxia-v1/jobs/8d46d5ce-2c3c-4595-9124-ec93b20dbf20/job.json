@@ -1,0 +1,43 @@
+{
+  "id": "8d46d5ce-2c3c-4595-9124-ec93b20dbf20",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T15:14:55.435448+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/mountain-spearman/baram-wuxia-v1/jobs/8d46d5ce-2c3c-4595-9124-ec93b20dbf20",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/mountain-spearman/baram-wuxia-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/mountain-spearman/baram-wuxia-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/mountain-spearman/baram-wuxia-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-silhouette-wave/candidates/mountain-spearman/baram-wuxia-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "4cc88a3a014beb0751359a5e20d2362bfa4f5e7b7ee178bd6923cce302fdf0da",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "e474ee2f0a28bccd7db7e3399456162dad4829d6e861841abfb4ee35a8366a82",
+    "preview/suite/light.png": "e42e938ef21b01726f7fa3eabc8dad30832501355948d4a3552de761a8f359eb",
+    "preview/suite/dark.png": "4c68363c994ed996578c7ec482b1caa398db63e832a96beb936bc944e74728f2",
+    "preview/suite/checker.png": "de9698504636acae046fae4606452bd5f383552ab1848a39e9c8cceb2aeeeeda"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T15:17:34.034041+00:00"
+}

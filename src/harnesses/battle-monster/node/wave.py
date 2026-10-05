@@ -12,7 +12,7 @@ def produce(args, monster):
     task = args.work / 'tasks' / (monster + '.json')
     state = load(task) if task.exists() else {'monster': monster, 'state': 'queued', 'createdAt': stamp()}
     workargs = argparse.Namespace(seed=args.seed, root=str(args.work / 'candidates'), monster=monster,
-        candidate=args.candidate, note='', prepare_only=False, out=None)
+        candidate=args.candidate, note=getattr(args, 'note', ''), prepare_only=False, out=None)
     harness = Harness(workargs)
     directory = harness.directory()
     final = args.publish / monster / args.candidate
@@ -66,7 +66,7 @@ def produce(args, monster):
                         shutil.copytree(parent / 'source/poses', directory / 'source/poses', dirs_exist_ok=True)
                     if attempt == 2:
                         raise ValueError(error)
-                    harness.args.note = ('Technical correction only: ' + error
+                    harness.args.note = (getattr(args, 'note', '') + '\nTechnical correction only: ' + error
                         + '. Preserve the intended design, repair literal row lengths/symbols/contact only. '
                           'Grounded idle_a feet touch y60. No ink below y60. Do not transform entire frames.')
             if parent is not None and harness.pixels(directory, 'poses')[2]['binding'] != state['coreBinding']:
@@ -99,8 +99,13 @@ def main():
     parser.add_argument('--candidate', default='motions-v1')
     parser.add_argument('--workers', type=int, default=3, choices=(1,2,3))
     parser.add_argument('--actions', action='store_true')
+    notes = parser.add_mutually_exclusive_group()
+    notes.add_argument('--note', default='', help='Shared art direction for every candidate.')
+    notes.add_argument('--note-file', type=Path, help='UTF-8 shared art direction; retained during technical repairs.')
     parser.add_argument('monsters', nargs='+')
     args = parser.parse_args()
+    if args.note_file:
+        args.note = args.note_file.read_text(encoding='utf-8')
     args.work = args.work.resolve(); args.publish = args.publish.resolve()
     with lock(args.work / 'wave.lock'):
         for monster in args.monsters:

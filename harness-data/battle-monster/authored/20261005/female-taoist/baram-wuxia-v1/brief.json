@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "female-taoist",
+    "name": "백발 여도사",
+    "role": "taoist",
+    "gender": "female",
+    "age": "elder adult",
+    "tier": "regular",
+    "cell": 64,
+    "grounded": true,
+    "motion": "shoot",
+    "idleFrameMs": 260,
+    "silhouette": "나이 든 성인 여성 도사. 은백색 머리를 둥글게 위로 묶고 뒤로 긴 두 가닥, 옥색 작은 비녀, 회백 긴 도포와 깊은 청록 깃/허리띠. 원본64의 성인3등신 머리18~21px, 키50~54px. 찡그리지 않은 가늘고 침착한 두 눈/따로 있는 눈썹, 주름은 소수 따뜻한 점/짧은 선. 작은 접은 종이 부적과 목제 지팡이를 두 손에 나누어 듦. 둥근 소매/긴 비대칭 옷자락과 가려지지 않는 두 신발.",
+    "attack": "부적 든 손을 눈 아래로 끌어옴 → 지팡이를 짚고 발을 내딛음 → 부적 손을 앞으로 펴 푸른 기를 보냄 → 팔과 옷자락을 회수.",
+    "skill": "청련호신: 손의 부적과 지팡이 꼭대기에 청록 기를 모음, 몸/가슴을 따라 감싸며 올라가는 둥근 청록/미색 보호 기운, 윗쪽으로 갈라진 잔기와 소매를 내림. 공격의 불꽃 대신 감싸는 보호 기술이며 손/지팡이 앵커에 연결.",
+    "resourceId": "jf-enemy-female-taoist",
+    "kind": "human",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

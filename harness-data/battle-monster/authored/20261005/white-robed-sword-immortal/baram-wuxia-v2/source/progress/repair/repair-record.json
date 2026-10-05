@@ -1,0 +1,117 @@
+{
+  "changes": [
+    {
+      "file": "poses/dead.pxgrid",
+      "x": 24,
+      "y": 50,
+      "before": ".",
+      "after": "P"
+    },
+    {
+      "file": "poses/dead.pxgrid",
+      "x": 25,
+      "y": 50,
+      "before": ".",
+      "after": "B"
+    }
+  ],
+  "preserved_files": [
+    "palette.json",
+    "poses/attack.pxgrid",
+    "poses/hit.pxgrid",
+    "poses/idle_a.pxgrid",
+    "poses/idle_b.pxgrid",
+    "poses/idle_c.pxgrid",
+    "poses/move.pxgrid",
+    "poses/recover.pxgrid",
+    "poses/windup.pxgrid",
+    "actions/poison_a.pxgrid",
+    "actions/poison_b.pxgrid",
+    "actions/skill_a.pxgrid",
+    "actions/skill_b.pxgrid",
+    "actions/skill_c.pxgrid",
+    "actions/sleep_a.pxgrid",
+    "actions/sleep_b.pxgrid",
+    "actions/stun_a.pxgrid",
+    "actions/stun_b.pxgrid"
+  ],
+  "sha256": {
+    "palette.json": {
+      "before": "3196d23468dcdaa5239037ab19e2f1587c07bbfc76a87e2ca552c18f6b8b7043",
+      "after": "3196d23468dcdaa5239037ab19e2f1587c07bbfc76a87e2ca552c18f6b8b7043"
+    },
+    "poses/attack.pxgrid": {
+      "before": "08d718a61f39cee5a918109bd5263e25cf9ec2a97f2785a2892e677b59b0778f",
+      "after": "08d718a61f39cee5a918109bd5263e25cf9ec2a97f2785a2892e677b59b0778f"
+    },
+    "poses/dead.pxgrid": {
+      "before": "c96c44fefe13005fd3993e837ea00cd2772e76582c583ad6ea57584926b2e946",
+      "after": "68e16d519d3fc2844f3fb6992bb907c2abc0d98e899ca4168b3ebbb65ccc3f10"
+    },
+    "poses/hit.pxgrid": {
+      "before": "84cf21416757d57f35e834b78666a4fbcfbf8e5d5ca9a5dde3e4626e36c95f7b",
+      "after": "84cf21416757d57f35e834b78666a4fbcfbf8e5d5ca9a5dde3e4626e36c95f7b"
+    },
+    "poses/idle_a.pxgrid": {
+      "before": "97dd4e55a85f0bd3aaa3046c7fae07a9ab29770ee59605b146f262ca8797eb2d",
+      "after": "97dd4e55a85f0bd3aaa3046c7fae07a9ab29770ee59605b146f262ca8797eb2d"
+    },
+    "poses/idle_b.pxgrid": {
+      "before": "d6674f7d3ee7b36008470d41169e7a2c2de2b5d21c8d9d288c4951e7a7e7a2ed",
+      "after": "d6674f7d3ee7b36008470d41169e7a2c2de2b5d21c8d9d288c4951e7a7e7a2ed"
+    },
+    "poses/idle_c.pxgrid": {
+      "before": "f5598390780d0d7d4a73f681693e7fcc7f2698491cbfa64a994cafc34ad68a71",
+      "after": "f5598390780d0d7d4a73f681693e7fcc7f2698491cbfa64a994cafc34ad68a71"
+    },
+    "poses/move.pxgrid": {
+      "before": "64179e666d368a63f962d556581ee55b24328485fd06de8fe0c2e465d7b05751",
+      "after": "64179e666d368a63f962d556581ee55b24328485fd06de8fe0c2e465d7b05751"
+    },
+    "poses/recover.pxgrid": {
+      "before": "83730510603e8d91adc1837073920bef755c215b9ed25754434c3e52598a8180",
+      "after": "83730510603e8d91adc1837073920bef755c215b9ed25754434c3e52598a8180"
+    },
+    "poses/windup.pxgrid": {
+      "before": "b6bf0d4a75080fc2a9ce1a7aad6df5aac75f48366f9d870ea59e1aa3f41c6d8b",
+      "after": "b6bf0d4a75080fc2a9ce1a7aad6df5aac75f48366f9d870ea59e1aa3f41c6d8b"
+    },
+    "actions/poison_a.pxgrid": {
+      "before": "b0afccb234a4712d4559dcf4091113cde704c9f8bbe8fc23b106b88cb09fca8c",
+      "after": "b0afccb234a4712d4559dcf4091113cde704c9f8bbe8fc23b106b88cb09fca8c"
+    },
+    "actions/poison_b.pxgrid": {
+      "before": "f6c257bcfbee8019284cc65d0025d16b97508e37ddbd14d31a1d76199e886850",
+      "after": "f6c257bcfbee8019284cc65d0025d16b97508e37ddbd14d31a1d76199e886850"
+    },
+    "actions/skill_a.pxgrid": {
+      "before": "978dc18388744b1704ab5d9136b012aacd7104d76704189ddbf3279745123713",
+      "after": "978dc18388744b1704ab5d9136b012aacd7104d76704189ddbf3279745123713"
+    },
+    "actions/skill_b.pxgrid": {
+      "before": "bd811115486becd30b2971eeaa2083c7ead8728bdd1fbac9c0352853c4999608",
+      "after": "bd811115486becd30b2971eeaa2083c7ead8728bdd1fbac9c0352853c4999608"
+    },
+    "actions/skill_c.pxgrid": {
+      "before": "945c0f9b8cf911268f05ef5d7d327f0abef95c788cff6669c02d9d0443b3fcb3",
+      "after": "945c0f9b8cf911268f05ef5d7d327f0abef95c788cff6669c02d9d0443b3fcb3"
+    },
+    "actions/sleep_a.pxgrid": {
+      "before": "f9078f4996582d16c1da920435adfd3746547547e7681078ee13e43dea9c6d7f",
+      "after": "f9078f4996582d16c1da920435adfd3746547547e7681078ee13e43dea9c6d7f"
+    },
+    "actions/sleep_b.pxgrid": {
+      "before": "dfdac2d0d641c10065a740df6891f38e7bcbfac2f26cd803d0e007b23acf5610",
+      "after": "dfdac2d0d641c10065a740df6891f38e7bcbfac2f26cd803d0e007b23acf5610"
+    },
+    "actions/stun_a.pxgrid": {
+      "before": "ceb3d193b47b3e73fa6dd66265420d9f2c6306febb51671f62eaebfcb7db3cb0",
+      "after": "ceb3d193b47b3e73fa6dd66265420d9f2c6306febb51671f62eaebfcb7db3cb0"
+    },
+    "actions/stun_b.pxgrid": {
+      "before": "31f80e3d9fa5c0957c5c3280b809afa371ffe0072cb746cc7a0acd8e9f7a73fd",
+      "after": "31f80e3d9fa5c0957c5c3280b809afa371ffe0072cb746cc7a0acd8e9f7a73fd"
+    }
+  },
+  "rendering": "Direct palette decoding. Enlargements are viewing aids only; no pixels authored from images."
+}

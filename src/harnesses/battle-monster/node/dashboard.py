@@ -81,7 +81,9 @@ class Dashboard:
             self.cache.clear()
 
     def snapshot(self, directory, already_locked=False):
-        files = sorted((directory / 'source').rglob('*')) + [directory / 'brief.json']
+        files = (sorted((directory / 'source').rglob('*'))
+                 + [directory / 'brief.json', directory / 'provenance.json']
+                 + sorted(directory.glob('critique-*.json')))
         fingerprint = [(str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files if p.is_file()]
         key = str(directory.relative_to(self.root))
         cached = self.cache.get(key)
@@ -112,7 +114,9 @@ class Dashboard:
                         'image': 'data:image/png;base64,' + base64.b64encode(image.read_bytes()).decode(),
                         'motions': motions, 'skill': brief['monster'].get('skill', '').split(':', 1)[0].split('.', 1)[0],
                         'kind': brief['monster'].get('kind', 'creature'),
-                        'parent': provenance.get('parent'), 'correction': provenance.get('userCorrection', '')}
+                        'parent': provenance.get('parent'), 'correction': provenance.get('userCorrection', ''),
+                        'replacesPendingParent': bool(provenance.get('kind') == 'bounded-quality-repair'
+                            and report['pass'] and self.harness.current_critique(directory, phase, report))}
         self.cache[key] = {'fingerprint': fingerprint, 'snapshot': snapshot}
         return copy.deepcopy(snapshot)
 
@@ -156,11 +160,18 @@ class Dashboard:
                     continue
             making = 0
             if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
-                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave'):
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave', 'battle-monster-baram-quality-wave'):
                     for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
                         making += load(task)['state'] in ('queued', 'running')
             selected = {}
             by_key = {i['key']: i for i in items}
+            # A finished, independently reviewed AI defect repair replaces its
+            # undecided draft in the review queue. Both stay in history, and
+            # real Allow/Modify/Deny decisions are never created or altered.
+            for item in items:
+                parent = by_key.get(item['parent'])
+                if item['replacesPendingParent'] and parent and parent['choice'] == 'pending':
+                    parent['reviewSupersededBy'] = item['key']
             # Replay real choices. Removing the active version never silently
             # resurrects a previously replaced Allow; rejecting a competing
             # pending candidate does not revoke the selected one either.

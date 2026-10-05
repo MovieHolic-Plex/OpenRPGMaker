@@ -1,0 +1,724 @@
+[
+  {
+    "name": "idle_a",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 30,
+    "changedBounds": [
+      27,
+      30,
+      47,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      47,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "ee715a95fac52a28346e646a3fff2d8ccf9015187d59168a09866b476af0cf6d"
+  },
+  {
+    "name": "idle_b",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 32,
+    "changedBounds": [
+      27,
+      30,
+      47,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      47,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "975ce455f65e28b69c8617d6e68d64890fa8ce97f090dd185a9df831b966e8e3"
+  },
+  {
+    "name": "idle_c",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 34,
+    "changedBounds": [
+      27,
+      30,
+      47,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      47,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "f82ac5742eeb4a959267eab5afc956da138a3a9d19518f18bc0040269766cfa4"
+  },
+  {
+    "name": "windup",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 34,
+    "changedBounds": [
+      27,
+      30,
+      44,
+      57
+    ],
+    "inkBounds": [
+      19,
+      9,
+      44,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "bedb5157da1fe612025c2f865264f2e566eea1b6d5ad7bcb292b6d4bb3afd7d2"
+  },
+  {
+    "name": "move",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 70,
+    "changedBounds": [
+      19,
+      30,
+      51,
+      57
+    ],
+    "inkBounds": [
+      13,
+      9,
+      48,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "dd9e72361df368d816978c29ce715203625ab50917aa696f09921289c71aabbd"
+  },
+  {
+    "name": "attack",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 68,
+    "changedBounds": [
+      20,
+      28,
+      51,
+      57
+    ],
+    "inkBounds": [
+      13,
+      10,
+      51,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "914f8854e9f2279076c9ac5925cd8b4eb0dca994a280c5b1d7643578d85fa463"
+  },
+  {
+    "name": "recover",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 37,
+    "changedBounds": [
+      28,
+      37,
+      48,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      48,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "ba4e93aa22ea4cf3c9f28804214dd36324104fe60bea8c63b03217c537cf90cb"
+  },
+  {
+    "name": "hit",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 42,
+    "changedBounds": [
+      27,
+      38,
+      46,
+      57
+    ],
+    "inkBounds": [
+      17,
+      10,
+      46,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "5c638ccfe493b882eba69538883e90646a5be5b6b45096abbb21f5dfb3d0dc22"
+  },
+  {
+    "name": "dead",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 15,
+    "changedBounds": [
+      12,
+      57,
+      57,
+      60
+    ],
+    "inkBounds": [
+      10,
+      41,
+      57,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "090c60c423aa7ce51d2295430577d8cb2d51c77e84068dbbded413fca353f91c"
+  },
+  {
+    "name": "skill_a",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 33,
+    "changedBounds": [
+      28,
+      28,
+      53,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      53,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "74a4bb9b4043d9f12ed46011864914ac918c7ffdc3ab7fcf55f96fd5e40a91f4"
+  },
+  {
+    "name": "skill_b",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 64,
+    "changedBounds": [
+      19,
+      28,
+      49,
+      57
+    ],
+    "inkBounds": [
+      13,
+      9,
+      60,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "ee4f8358c7ee988fc4e002c79f84ff2816d189322174b9d3f4180aa01b7c4eb7"
+  },
+  {
+    "name": "skill_c",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 30,
+    "changedBounds": [
+      28,
+      40,
+      50,
+      57
+    ],
+    "inkBounds": [
+      18,
+      8,
+      60,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "fb15710ccb190ece633c05f4d38d2c8cfcd47f293398f6814c7edaf1f44c6fca"
+  },
+  {
+    "name": "poison_a",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 37,
+    "changedBounds": [
+      28,
+      41,
+      46,
+      57
+    ],
+    "inkBounds": [
+      13,
+      10,
+      50,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "j",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "930fd05aad3270e75abeb4076a8ff23bf65ca8794cd99b39d44d95126550df58"
+  },
+  {
+    "name": "poison_b",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 46,
+    "changedBounds": [
+      27,
+      42,
+      46,
+      57
+    ],
+    "inkBounds": [
+      13,
+      10,
+      51,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "j",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "7067e1df06b8dd39bcc684fc742cc251addfd13bcf7660e630a56c33fdacf019"
+  },
+  {
+    "name": "stun_a",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 40,
+    "changedBounds": [
+      27,
+      43,
+      50,
+      57
+    ],
+    "inkBounds": [
+      20,
+      6,
+      50,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "e49428a4ba322176e0ff7ae09645b44455c3da2bee423089d7bbba32915e6887"
+  },
+  {
+    "name": "stun_b",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 37,
+    "changedBounds": [
+      26,
+      44,
+      50,
+      57
+    ],
+    "inkBounds": [
+      17,
+      7,
+      50,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "107e19293f963a5061f934ee3563a9fff45e1e778ffb9fe5bb85d5c27c01cc11"
+  },
+  {
+    "name": "sleep_a",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 32,
+    "changedBounds": [
+      27,
+      42,
+      47,
+      57
+    ],
+    "inkBounds": [
+      19,
+      8,
+      47,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "d2c9218626021f64c449f9f5535f37f3a62860532263383cc8055d6eec404350"
+  },
+  {
+    "name": "sleep_b",
+    "rows": 64,
+    "rowWidths": [
+      64
+    ],
+    "changedPixels": 37,
+    "changedBounds": [
+      28,
+      44,
+      47,
+      57
+    ],
+    "inkBounds": [
+      20,
+      10,
+      48,
+      60
+    ],
+    "paletteSymbols": [
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "k",
+      "n",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w"
+    ],
+    "sha256": "661c6fb9e3130a4dea2f8423e2bf10f77067063ea3043e48a10b1ed0280a57a1"
+  }
+]

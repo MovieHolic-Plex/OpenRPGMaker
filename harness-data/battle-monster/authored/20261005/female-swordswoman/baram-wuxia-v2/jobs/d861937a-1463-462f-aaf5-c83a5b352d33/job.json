@@ -1,0 +1,43 @@
+{
+  "id": "d861937a-1463-462f-aaf5-c83a5b352d33",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T15:25:21.620560+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-swordswoman/baram-wuxia-v2",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-swordswoman/baram-wuxia-v2/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-swordswoman/baram-wuxia-v2/references/current-v1-suite.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-swordswoman/baram-wuxia-v2/references/official-jobs-study.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/female-swordswoman/baram-wuxia-v2/references/style-suite.png",
+    "-"
+  ],
+  "promptSha256": "78feb673748b9e4eed9b1e7e48c69904e4307338fafd1201b084c134f22d16d4",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "reference.png": "b6276a1cb213fda9fc0b4bff919e00d1fa4b82f7772b405e71964fbf074760df",
+    "references/current-v1-suite.png": "829a3c78142004c49c3d832364ec79db93338284675af671b68f37b085230f3d",
+    "references/official-jobs-study.png": "da681227c8ee4ab16fdaf8b80a96ff4277a7bd2cef805f83cc4d7131ceda3b43",
+    "references/style-suite.png": "478da7737fe077f753133b3ce76fb7a2edd6aa617f80d49e87d1b82fd5699c9f"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T15:35:17.137866+00:00"
+}

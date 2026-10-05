@@ -1,0 +1,43 @@
+{
+  "id": "2cb298b8-a6b5-4d1a-bc56-953d9f1031cd",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T15:13:47.549560+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/black-cloth-assassin/baram-wuxia-v2/jobs/2cb298b8-a6b5-4d1a-bc56-953d9f1031cd",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/black-cloth-assassin/baram-wuxia-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/black-cloth-assassin/baram-wuxia-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/black-cloth-assassin/baram-wuxia-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/black-cloth-assassin/baram-wuxia-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "e7f3fa85beb982691c8fef3b16d86e7857a563c2467fa118991022f307afde7f",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "4ea9e91d50bb341c79db9ce51026d5786891640954613fb29165864fb1d39cc8",
+    "preview/suite/light.png": "0e64ac311071995efe466749da773a07f35c1e0e0ed8ff99a055996a0aaab7d2",
+    "preview/suite/dark.png": "6c33d6e9a2a3d09cda85e5e0b6b2961eac2e2985bee36cb50fd8cbc14f863bd1",
+    "preview/suite/checker.png": "74a89e011e88748bcd15f93bf598f4c6c57ab324a9cd030178bf62cc00110c6a"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T15:16:36.356159+00:00"
+}

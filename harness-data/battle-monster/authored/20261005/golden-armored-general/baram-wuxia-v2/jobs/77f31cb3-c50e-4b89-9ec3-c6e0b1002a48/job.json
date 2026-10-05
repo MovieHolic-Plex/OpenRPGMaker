@@ -1,0 +1,43 @@
+{
+  "id": "77f31cb3-c50e-4b89-9ec3-c6e0b1002a48",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T15:45:18.981298+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/golden-armored-general/baram-wuxia-v2/jobs/77f31cb3-c50e-4b89-9ec3-c6e0b1002a48",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/golden-armored-general/baram-wuxia-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/golden-armored-general/baram-wuxia-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/golden-armored-general/baram-wuxia-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-baram-quality-wave/candidates/golden-armored-general/baram-wuxia-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "77f4b6c1ba8ff9b4a81de38cdadc5d3b06b5c09af5d4e7d9eb0a99f337966203",
+  "toolSha256": "4835b88e49899942381df42e9c5c3e4718086caf08360360236895a45296d8a8",
+  "imageHashes": {
+    "preview/suite/portrait.png": "22f94e519f196fb772f4a288b3b0babc799bdaed8e4b2f6a7a2cba757b282b7f",
+    "preview/suite/light.png": "a05e5cf76134e5fbbefa22fd01a4aff0e7851e302414a9ce6800204bd4aa104e",
+    "preview/suite/dark.png": "5d683a1e03f06440350abb93c6801411887e34f443ad6d986b1dd5803fc31d5b",
+    "preview/suite/checker.png": "e6b6ae0c54b3aabf3137fa97ee47c23a787918da2efcb6853b1331268f68d246"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T15:48:58.555799+00:00"
+}

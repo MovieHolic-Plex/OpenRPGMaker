@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the supplied portrait and all 18 poses at native 1x and nearest 3x, including light, dark and checker backgrounds. The right-facing three-quarter head, bare topknot, white beard, broad muted-green sleeves, red lining and bronze bell staff form a coherent silhouette. Robe highlights and underside shadows give readable volume with broadly consistent upper-left lighting. No obvious unintended interior holes or broken limb outlines are visible; boot silhouettes have weak contrast on the dark background but remain identifiable. Standing feet stay on a consistent ground line, and the fallen body reads as lying down. Idle changes are restrained; gathering, spreading the stance, extending the staff and recovering are distinguishable. The horizontal attack staff looks foreshortened compared with its upright length, but its grip remains readable. Skill preparation visibly gathers a cyan light at the chest; three cyan branches originate at the actual staff bell in skill_b; skill_c returns upright with separated residual fragments. Poison alternates an abdominal clutch and a hand raised toward the mouth, stun adds a swaying posture and overhead stars, and sleep uses closed eyes with a small settling change. These read as distinct states rather than palette tints or unrelated attacks. Sleep motion is subtle at 1x. This is a static pose-preview recommendation, not a user selection or approval: animation timing, in-battle readability, source authorship and model provenance cannot be established from these PNGs.",
+  "issues": [],
+  "binding": "74081b43e5fb7af73ffae3d215d5a75c5f656a35ac6ab40cceb39473a1ef94ca",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "8ec3991f97aaca8eff2123f4138be49dbc9f561cfe3ce56d09b5c2ee58efe81c",
+    "preview/suite/light.png": "7ff235afc5b3a65aba5b676ede64328129ebc59c3902470865c2119dc15dad86",
+    "preview/suite/dark.png": "dd4474cf66c71bbfaf2016a5a4d30c7e5fa2db3a33b11e4009d39dcc71f7000b",
+    "preview/suite/checker.png": "2d4fa77a98e1e64adf8256d9750907e723af5d6ea783ad59589623d7b7619200"
+  },
+  "jobId": "7f119f78-b7eb-4212-a260-be6a2cb22f3a",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T15:21:19.620430+00:00",
+  "userApproved": false
+}

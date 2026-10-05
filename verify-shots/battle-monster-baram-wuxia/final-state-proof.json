@@ -1,0 +1,56 @@
+{
+  "originalDecisionPrefixPreserved": 52,
+  "newActualUserDecisions": 0,
+  "existing8SelectionsUnchanged": true,
+  "pendingLatestCandidates": [
+    "black-cloth-assassin/baram-wuxia-v2",
+    "cult-sorcerer/baram-wuxia-v2",
+    "fallen-taoist/baram-wuxia-v1",
+    "female-assassin/baram-wuxia-v1",
+    "female-shaman/baram-wuxia-v2",
+    "female-swordswoman/baram-wuxia-v2",
+    "female-taoist/baram-wuxia-v1",
+    "golden-armored-general/baram-wuxia-v2",
+    "mountain-bandit/baram-wuxia-v1",
+    "mountain-spearman/baram-wuxia-v1",
+    "wandering-swordsman/eyes-right-v4",
+    "white-robed-sword-immortal/baram-wuxia-v2"
+  ],
+  "reviewSupersededParents": [
+    {
+      "key": "black-cloth-assassin/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "black-cloth-assassin/baram-wuxia-v2"
+    },
+    {
+      "key": "cult-sorcerer/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "cult-sorcerer/baram-wuxia-v2"
+    },
+    {
+      "key": "female-shaman/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "female-shaman/baram-wuxia-v2"
+    },
+    {
+      "key": "female-swordswoman/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "female-swordswoman/baram-wuxia-v2"
+    },
+    {
+      "key": "golden-armored-general/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "golden-armored-general/baram-wuxia-v2"
+    },
+    {
+      "key": "white-robed-sword-immortal/baram-wuxia-v1",
+      "choice": "pending",
+      "reviewSupersededBy": "white-robed-sword-immortal/baram-wuxia-v2"
+    }
+  ],
+  "noHumanChoicesCreated": true,
+  "retired7SwordsmenAbsent": true,
+  "original11SeedContractsAndGlobalStyleUnchanged": true,
+  "newSpecies": 6,
+  "making": 0
+}

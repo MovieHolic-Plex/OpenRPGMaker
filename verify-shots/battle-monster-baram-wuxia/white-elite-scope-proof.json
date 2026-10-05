@@ -1,0 +1,21 @@
+{
+  "changes": [
+    {
+      "frame": "poses/dead.pxgrid",
+      "x": 24,
+      "y": 50,
+      "from": ".",
+      "to": "P"
+    },
+    {
+      "frame": "poses/dead.pxgrid",
+      "x": 25,
+      "y": 50,
+      "from": ".",
+      "to": "B"
+    }
+  ],
+  "other17FramesByteForByteUnchanged": true,
+  "paletteByteForByteUnchanged": true,
+  "userChoiceCreated": false
+}

@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "cult-sorcerer",
+    "name": "사교 술사",
+    "resourceId": "jf-enemy-cult-sorcerer",
+    "cell": 64,
+    "grounded": true,
+    "motion": "shoot",
+    "idleFrameMs": 220,
+    "silhouette": "탁한 녹색 넓은 소매 도포, 붉은 안감, 흰 턱수염, 맨머리 상투, 손에 청동 방울 지팡이. 키 큰 실루엣과 비대칭 팔 자세.",
+    "attack": "지팡이를 세우고 몸을 모음 → 팔을 벌림 → 오른손 방울 지팡이를 내밀어 녹색 기운 분출 → 두 팔을 낮춤.",
+    "skill": "망혼진: 왼손을 가슴에 모아 혼불을 압축, 방울 지팡이 끝에서 세 갈래 청록 혼불이 우측으로 흐름, 혼불이 작은 조각으로 끊어지고 몸을 세움.",
+    "kind": "human",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

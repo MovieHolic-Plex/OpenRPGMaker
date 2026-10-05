@@ -1,0 +1,65 @@
+Four-coordinate repair receipt (zero-based native coordinates).
+palette.json: unchanged bytes
+  before sha256: 2d9331e302d132e1b65c606b004f3b895e9fdbae3c7936bbc08d9c4deb4afec0
+  after  sha256: 2d9331e302d132e1b65c606b004f3b895e9fdbae3c7936bbc08d9c4deb4afec0
+author.py: unchanged bytes
+  before sha256: 1f2b6938595224e9cb9454faef1b0e79bdfed9b3d575a8bab2979e77debd2553
+  after  sha256: 1f2b6938595224e9cb9454faef1b0e79bdfed9b3d575a8bab2979e77debd2553
+poses/attack.pxgrid: unchanged bytes
+  before sha256: 9cd690cacdd0c1b1dfc52d179fcefc061e074cae7fc2e9d86caac1f809240c9c
+  after  sha256: 9cd690cacdd0c1b1dfc52d179fcefc061e074cae7fc2e9d86caac1f809240c9c
+poses/dead.pxgrid: changed
+  before sha256: 481a2ed1f2d8904255e6872a469ad93915fbd8a13b2732a8931b99e13e95860f
+  after  sha256: 6b9c4e879c5b2696a9e192baf3cc8d57bfe8ad826a76b54273f5472a590e117b
+  (27,51) . -> s
+  (28,51) . -> t
+poses/hit.pxgrid: unchanged bytes
+  before sha256: 954973bc321ef1accbc50830b9d5c04e109c3936cb3d13bc4d7f642461855927
+  after  sha256: 954973bc321ef1accbc50830b9d5c04e109c3936cb3d13bc4d7f642461855927
+poses/idle_a.pxgrid: unchanged bytes
+  before sha256: b6fec936121fbcb54ed7f6ee7b4cc218da752fbf7f4b50526f35b341d6ad26e5
+  after  sha256: b6fec936121fbcb54ed7f6ee7b4cc218da752fbf7f4b50526f35b341d6ad26e5
+poses/idle_b.pxgrid: unchanged bytes
+  before sha256: 577c26487b5444f125f7c92e626a541b05914def8cdc5b47e1bd5e3c1e0cd6de
+  after  sha256: 577c26487b5444f125f7c92e626a541b05914def8cdc5b47e1bd5e3c1e0cd6de
+poses/idle_c.pxgrid: unchanged bytes
+  before sha256: a30534fd5a7082f0bbd12c9540f09734b4a08fc38a248cb951e3d9cf29ab6dce
+  after  sha256: a30534fd5a7082f0bbd12c9540f09734b4a08fc38a248cb951e3d9cf29ab6dce
+poses/move.pxgrid: unchanged bytes
+  before sha256: 3c64c9bab2f31fc341e6c36d82d85166c4773aff58fd967020c4207942b642e7
+  after  sha256: 3c64c9bab2f31fc341e6c36d82d85166c4773aff58fd967020c4207942b642e7
+poses/recover.pxgrid: unchanged bytes
+  before sha256: 1da3404d0044ac3f330c685de84e28a7cdfcb7d5313320acf9c2ac40716dbe39
+  after  sha256: 1da3404d0044ac3f330c685de84e28a7cdfcb7d5313320acf9c2ac40716dbe39
+poses/windup.pxgrid: unchanged bytes
+  before sha256: 7d10fb4bdea4e4e9b5333880c5e041c67e9274f11d8cd7427f5a0e8439246b10
+  after  sha256: 7d10fb4bdea4e4e9b5333880c5e041c67e9274f11d8cd7427f5a0e8439246b10
+actions/poison_a.pxgrid: unchanged bytes
+  before sha256: 787a5e46f32759fa2ee0c0e04700f706a5dfc7c506ff39abd68d00d053acd9f9
+  after  sha256: 787a5e46f32759fa2ee0c0e04700f706a5dfc7c506ff39abd68d00d053acd9f9
+actions/poison_b.pxgrid: unchanged bytes
+  before sha256: 581607e6d162584fc41215a548ae5c78900a4e7af995e195ef724fc1289f0ea6
+  after  sha256: 581607e6d162584fc41215a548ae5c78900a4e7af995e195ef724fc1289f0ea6
+actions/skill_a.pxgrid: changed
+  before sha256: 3ff62577e8c7b65d9f6f6427e8ccbf5b3ea850963b92d0a2d4b3c4868d0872ee
+  after  sha256: 70982223f9cd05fe991a20f0486133f70f5cb53593db0a86693160a3605dd1bc
+  (33,42) . -> m
+  (34,42) . -> g
+actions/skill_b.pxgrid: unchanged bytes
+  before sha256: 286f9f01e78b71920c35b11ddea1dee69d512ca8abb304859d178f266e78c44c
+  after  sha256: 286f9f01e78b71920c35b11ddea1dee69d512ca8abb304859d178f266e78c44c
+actions/skill_c.pxgrid: unchanged bytes
+  before sha256: a3240f6f797ae0aa2c0534b8f996bdf7cbd4d8dda7e9a7e2cf3e8d40c285169d
+  after  sha256: a3240f6f797ae0aa2c0534b8f996bdf7cbd4d8dda7e9a7e2cf3e8d40c285169d
+actions/sleep_a.pxgrid: unchanged bytes
+  before sha256: 9229b70f5c2c3042afc98c3ebdb80b5976958869aa6b41c8e64a07eff314d1b4
+  after  sha256: 9229b70f5c2c3042afc98c3ebdb80b5976958869aa6b41c8e64a07eff314d1b4
+actions/sleep_b.pxgrid: unchanged bytes
+  before sha256: 57f026d59588283e2b089d0ab9d40416e5514729b616134e9568f75198458b22
+  after  sha256: 57f026d59588283e2b089d0ab9d40416e5514729b616134e9568f75198458b22
+actions/stun_a.pxgrid: unchanged bytes
+  before sha256: 0aa8246e4c1bc22de4aa9950814b662b76fd9e591a58697505066cb2b8a26dc4
+  after  sha256: 0aa8246e4c1bc22de4aa9950814b662b76fd9e591a58697505066cb2b8a26dc4
+actions/stun_b.pxgrid: unchanged bytes
+  before sha256: a3e08fa36fe9dae939ce84f3bf128cfc01b46887119dd99a69d78e909eee7924
+  after  sha256: a3e08fa36fe9dae939ce84f3bf128cfc01b46887119dd99a69d78e909eee7924

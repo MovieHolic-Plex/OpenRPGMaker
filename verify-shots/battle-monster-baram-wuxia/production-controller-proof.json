@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-10-05T14:24:06.221669+00:00",
+  "state": "done",
+  "phases": [
+    {
+      "phase": "remaining8",
+      "state": "done",
+      "startedAt": "2026-10-05T14:24:06.221900+00:00",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "battle-monster",
+        "wave",
+        "--work",
+        "qa-runs/battle-monster-silhouette-wave",
+        "--candidate",
+        "baram-wuxia-v1",
+        "--workers",
+        "3",
+        "--note-file",
+        "output/baram-wuxia-resume-direction.txt",
+        "female-assassin",
+        "female-taoist",
+        "white-robed-sword-immortal",
+        "black-cloth-assassin",
+        "fallen-taoist",
+        "cult-sorcerer",
+        "mountain-spearman",
+        "mountain-bandit"
+      ],
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T15:25:07.626931+00:00"
+    },
+    {
+      "phase": "bounded-quality3",
+      "state": "done",
+      "startedAt": "2026-10-05T15:25:07.627886+00:00",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "battle-monster",
+        "wave",
+        "--work",
+        "qa-runs/battle-monster-baram-quality-wave",
+        "--candidate",
+        "baram-wuxia-v2",
+        "--workers",
+        "3",
+        "--note-file",
+        "output/baram-wuxia-quality-direction.txt",
+        "female-swordswoman",
+        "female-shaman",
+        "golden-armored-general"
+      ],
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T15:48:59.072121+00:00"
+    }
+  ],
+  "userChoicesCreated": false,
+  "finishedAt": "2026-10-05T15:48:59.072762+00:00"
+}

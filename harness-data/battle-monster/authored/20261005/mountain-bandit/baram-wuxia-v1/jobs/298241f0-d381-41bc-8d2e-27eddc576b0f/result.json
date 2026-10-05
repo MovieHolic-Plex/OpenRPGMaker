@@ -1,0 +1,60 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs: the 64x64 portrait and the native 1x/nearest 3x poses on light, dark and checker backgrounds. The right-facing bandit, red headband/topknot, brown jacket, round wooden shield and bent knees are recognizable. Skin, cloth, wood and pale metal have distinct clusters; upper-left lighting is broadly readable. Standing soles remain at native y=60, and the fallen pose rests on the same ground. No conspicuous accidental interior transparency holes were visible. Windup, forward stride, downward cut, recoil and collapse read as different poses; equipment identity remains consistent. However, the oversized projecting head and slim shoulder mass weaken the requested broad-shouldered anatomy, and most sword poses read as a long narrow saber rather than a short broad iron dao. Lowered sword grips contain split skin clusters with weak wrist continuity. Skill preparation/contact/recovery are recognizable, with the contact trail touching the actual blade tip; the recovery particles are detached residual marks whose relationship to the lowered blade is less clear. Poison includes a slumped hand-to-face pose and green particles, stun uses overhead stars and a lowered stance, and sleep has genuinely closed eyelids and deeper knee bend: these are not merely tints, but the sleep pair and stun body poses remain too close to an armed guard at 1x. This recommendation is visual review only, not a user selection. Static pose previews cannot establish dash timing, foot sliding, actual battle contact, runtime effect attachment or literal-grid authorship/model provenance.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 29,
+      "y": 32,
+      "message": "Broaden the brown shoulder/sleeve mass around x=23..35, y=30..36 and shorten the head-to-neck projection around x=30..40, y=25..31. The head currently dominates a narrow torso; make the requested wide shoulders read without relying on the shield. Carry the anatomy correction consistently through the standing poses."
+    },
+    {
+      "pose": "idle_a",
+      "x": 51,
+      "y": 26,
+      "message": "Redraw the blade around x=43..58, y=19..36 with a shorter reach and a fuller cutting belly. Its nearly constant narrow diagonal width reads as a saber, while the brief calls for a short broad iron dao. Preserve one weapon design across raised, horizontal, lowered and fallen views."
+    },
+    {
+      "pose": "recover",
+      "x": 41,
+      "y": 45,
+      "message": "Rebuild the elbow-to-wrist-to-grip cluster around x=37..46, y=43..47. The skin fragments and black-only transition make the fist appear appended to the sleeve. Give the wrist a continuous skin/shadow bridge into one fist, and seat the hilt directly in that fist."
+    },
+    {
+      "pose": "poison_b",
+      "x": 43,
+      "y": 47,
+      "message": "Unify the lowered sword hand around x=39..47, y=45..48. The forearm skin and small second grip-shaped skin block read as two hands; replace the intervening outline pinch with a clear wrist and one enclosing fist while retaining the separate hand-to-face gesture."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 42,
+      "y": 44,
+      "message": "Repair the split lowered grip around x=36..46, y=43..47: merge the forearm and the small skin block over the hilt into one anatomically continuous wrist/fist, with a relaxed downward wrist angle."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 34,
+      "y": 33,
+      "message": "Keep the closed eyelids at y=26, but redraw the head/neck and shoulder clusters around x=27..42, y=23..38 with a visible forward nod and drooping shoulders. The present upright face and ready equipment still read as an alert guard at native 1x."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 35,
+      "y": 36,
+      "message": "Continue the sleep nod into a lower head and slack arm silhouette around x=28..44, y=26..43, preserving the closed eyelids at y=29 and planted soles at y=60. Also unify the split wrist/grip around x=37..47, y=46..50; use a small breathing change between the two sleeping poses."
+    },
+    {
+      "pose": "stun_b",
+      "x": 34,
+      "y": 35,
+      "message": "Make the dazed body readable independently of the stars: redraw the neck/shoulders around x=27..40, y=28..40 with an off-balance head tilt and slack sword wrist. Keep both boots on y=60. The current lowered guard silhouette is too close to ordinary recovery and sleep."
+    },
+    {
+      "pose": "skill_c",
+      "x": 55,
+      "y": 44,
+      "message": "The red fragments around x=51..59, y=31..46 float above/right of the lowered blade. Fade them more decisively or redraw the last fragment beside the actual blade path/tip around x=46..48, y=55..59, so the recovery reads as the end of this weapon sweep. A static preview cannot prove whether the existing separation works as a timed fading trail."
+    }
+  ]
+}

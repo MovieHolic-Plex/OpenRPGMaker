@@ -1,0 +1,5 @@
+# Bounded repair, not a human choice
+
+Concrete repair of new draft: idle_a/b/c hands need continuous skin wrist through (36..38,39..40) to the hilt, currently only diagonal outline touches. Widen shoulder/chest armor planes toward brief26..30px width, with plate bands and clasp, without changing the face/eye positions or helmet. Make the broad long blade consistent across poses rather than a thin rapier. Attack front boot needs connected broad instep/heel/forward toe at y60. Skill_b blade anchored golden qi must continue in a broad diagonal sweep, with two distinct connected starting fragments; skill_c remnants collapse in that same direction, no unrelated floating decorations. Stun pair should have limp neck/dropped shoulder and arms distinct from poison and sleep, not tint-only. Preserve palette and adult identity/face, red cape/navy lining; no entire-frame transforms.
+
+The original review remains advisory; no human Allow/Modify is created. Do not read/alter ledger or other candidates.

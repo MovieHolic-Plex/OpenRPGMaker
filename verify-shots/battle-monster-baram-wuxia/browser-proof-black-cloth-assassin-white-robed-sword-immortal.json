@@ -1,0 +1,90 @@
+{
+  "items": [
+    {
+      "key": "white-robed-sword-immortal/baram-wuxia-v2",
+      "name": "백의 검선",
+      "phase": "suite",
+      "choice": "pending",
+      "nativeImages": 16,
+      "motionTiles": 8,
+      "pauseResume": true
+    },
+    {
+      "key": "black-cloth-assassin/baram-wuxia-v1",
+      "name": "흑건 자객 · 새 원안",
+      "phase": "suite",
+      "choice": "pending",
+      "nativeImages": 16,
+      "motionTiles": 8,
+      "pauseResume": true
+    }
+  ],
+  "errors": [],
+  "finalSelection": [
+    {
+      "key": "earthen-jar-fiend/motions-v2",
+      "bindings": {
+        "suite": "d40de664fb837984ace7b689332f2ff6bf3f25bbf341182b523f8ecb37b78518",
+        "poses": "f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+        "idle": "f34789c3a1d490bc3f91a43a4d30ca3b04ba00e5acf314cad305f568d1adf84b"
+      }
+    },
+    {
+      "key": "jangseung-spirit/motions-v2",
+      "bindings": {
+        "suite": "8e03bcf8769d3fb92a6f118a2bebf074547ef72ec7dfd575e4d5bca227c47724",
+        "poses": "0d9ca5479e7c7c8f1a3846792c68524e4bef3e10764a9d080a90e2c8cf9aeeb0",
+        "idle": "0d6309adc85b8cb5f0db43c31b8bfc311f4db236367633a736281bf982d6a903"
+      }
+    },
+    {
+      "key": "venom-toad/motions-v2",
+      "bindings": {
+        "suite": "3deb59b70d863292550e186d428b7b8d78f88edde92086e79d9569a708fe81e0",
+        "poses": "7f3c04c65b119df1420dbefea1cfdb02fa8c20f8f545a15082132ca38fa7a329",
+        "idle": "a3ea59ee162b1f00912d7c6fb8aec172b1604b361afb02b4058612de6d6dcc3a"
+      }
+    },
+    {
+      "key": "wild-boar/motions-v2",
+      "bindings": {
+        "suite": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+        "poses": "2b3aa157e2904008dd4e5415169e1bad7ea8117dcded3785a97f17eadd34f61a",
+        "idle": "c851dd41db13db02a0622b41a4c9505079d581b52b9df4d5ed648279c2215fe1"
+      }
+    },
+    {
+      "key": "black-cloth-assassin/motions-v1",
+      "bindings": {
+        "suite": "4a6ae545a7c71df12022fa91f1f7f300a6569735213a4ab179972791670d56f8",
+        "poses": "51ee2e03d29b9ddd1385021a4a010d465a606d191aef0509e41be96d18cf0fff",
+        "idle": "1a7e471eb51e52f17de39d8b05ca9f30347dda50fe5cdde3a2492392a0ea5c2b"
+      }
+    },
+    {
+      "key": "cult-sorcerer/motions-v1",
+      "bindings": {
+        "suite": "1ba5b5eaba4831c550b2666a89fbaaccf85ca5cadbbb89ff131faaf7e0f580f9",
+        "poses": "5c3c29711b246d1929b3b0c35dc2be7f132ae5729e5983572cac6bc520d3d009",
+        "idle": "186bedabb2e63fe2132776033cda264b6c82c0518496bdd66d2f2a2e3157c57c"
+      }
+    },
+    {
+      "key": "fallen-taoist/motions-v1",
+      "bindings": {
+        "suite": "95f0d1ea5cbbfccfb1b0bc22a4a6ecd4e7cfcba283702f3920a24c1fc145e70c",
+        "poses": "27a958829bc99c919216b5583cfa7fbbaad757ccef973b4e438314fdcede5788",
+        "idle": "d6a0904e808e1fa036ac0dc1f1b8f875ebe6118ccc16b1de6219e7569746024b"
+      }
+    },
+    {
+      "key": "mountain-spearman/motions-v1",
+      "bindings": {
+        "suite": "5aec314719268c8d43d2e8387329a98bc1c8fd2996bbc9407956e0fbd4c30d1e",
+        "poses": "90dadc35e3b4dbe18841c668884c134230511540240cfaf81dc7def82af61665",
+        "idle": "8ee5da57294ffa1569676dbcb47c371165b944b55a041503a3e09e41ce14e08c"
+      }
+    }
+  ],
+  "noChoiceButtonsClicked": true
+}

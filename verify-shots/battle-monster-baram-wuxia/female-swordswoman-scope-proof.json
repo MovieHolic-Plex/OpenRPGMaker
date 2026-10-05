@@ -1,0 +1,26 @@
+{
+  "changedFrames": [
+    "poses/windup.pxgrid",
+    "actions/sleep_b.pxgrid",
+    "actions/sleep_a.pxgrid"
+  ],
+  "other15FramesByteForByteUnchanged": [
+    "poses/attack.pxgrid",
+    "poses/dead.pxgrid",
+    "poses/idle_a.pxgrid",
+    "poses/idle_c.pxgrid",
+    "poses/idle_b.pxgrid",
+    "poses/hit.pxgrid",
+    "poses/move.pxgrid",
+    "poses/recover.pxgrid",
+    "actions/stun_b.pxgrid",
+    "actions/poison_b.pxgrid",
+    "actions/skill_a.pxgrid",
+    "actions/skill_b.pxgrid",
+    "actions/poison_a.pxgrid",
+    "actions/skill_c.pxgrid",
+    "actions/stun_a.pxgrid"
+  ],
+  "paletteByteForByteUnchanged": true,
+  "userChoiceCreated": false
+}

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "female-swordswoman",
+    "name": "청운 검희",
+    "role": "warrior",
+    "gender": "female",
+    "age": "young adult",
+    "tier": "regular",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "idleFrameMs": 220,
+    "silhouette": "성인 여성 무협 검희. 검은 긴 머리를 높게 묶은 포니테일과 남청 리본, 밝은 청록색 짧은 저고리/무협 겉옷에 회청색 바지와 긴 옆 옷자락, 붉은 가는 허리띠. 3등신 성인 SD, 머리 전체18~21px, 피부 폭12~14px, 키50~54px, 우향3/4 얼굴에 두 눈/눈썹. 갓 없이 깨끗한 이마와 머리의 풍성한 면, 작은 두 신발. 긴 단날 은색 검과 허리 옆의 짧고 조용한 칼집. 실용적인 복장과 날렵한 소매/어깨; 색만 바꾼 남자 검객이 아니라 새 여성 실루엣.",
+    "attack": "허리의 검을 당겨 준비 → 오른쪽으로 넓게 내딛기 → 허리를 돌려 낮은 사선베기 → 검과 소매 회수. 검을 잡은 손·손잡이·검날은 항상 연결.",
+    "skill": "청풍참: 검을 어깨 뒤로 모아 청록 기를 압축, 실제 칼끝부터 뻗는 얇은 두 갈래 청풍 검기, 검을 낮추며 짧게 끊어진 기운과 리본을 회수.",
+    "resourceId": "jf-enemy-female-swordswoman",
+    "kind": "human",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

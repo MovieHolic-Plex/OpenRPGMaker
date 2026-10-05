@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed all four actual supplied PNGs, including the native 1x cells and nearest 3x panels on light, dark and checker backgrounds. The compact hooded assassin silhouette, mask, wrist wraps and leather belt are readable; cloth planes broadly support upper-left light, and bright steel is distinct from cloth. The face remains rather frontal, but the body and attacks face right. No conspicuous accidental interior transparent holes were visible. Dark scarf tails and boots lose some separation on the dark background. Standing boots meet the displayed baseline, and the fallen pose reads as a curled body on the ground. The main visual defect is the attack bent-leg anatomy; windup does not clearly gather both daggers or lean the torso into the dash. Idle identity and costume remain consistent through the suite. Skill preparation has a visible finger seal with nearby purple energy, and contact branches visibly originate along the raised dagger; these are related authored states rather than an unrelated attack. Recovery withdraws the weapon, although scattered purple flecks weakly convey collapsing shadow. Poison crouches, stun slackens/sways with overhead stars, and sleep closes the eyes and lowers the arms; the pairs visibly change posture rather than merely tinting idle. Static pose previews cannot establish animation timing, foot sliding, actual battle contact, palette/alpha compliance or literal-grid authorship. This recommendation is advisory and does not select or approve the candidate for the user.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 33,
+      "y": 46,
+      "message": "Redraw the bent leg from the pelvis around (32,43) through the thigh to the knee around (35,49). The current raised segment begins around (32,48), with empty space above it, and joins the long leg lower down; at 1x it reads as a short extra leg branching from the other leg rather than a continuous hip-thigh-knee chain. Preserve a clear negative-space wedge between the two legs and the planted boot at y=60."
+    },
+    {
+      "pose": "windup",
+      "x": 33,
+      "y": 40,
+      "message": "Reposition the wrist/hand and dagger clusters around x=27..39, y=39..48 so the two blades visibly gather in front of the abdomen. They currently hang separately, similar to idle. Lean the shoulder/hood silhouette forward a few native pixels while preserving the crouched knees and baseline, making the preparation for the low dash readable at 1x."
+    },
+    {
+      "pose": "skill_c",
+      "x": 38,
+      "y": 42,
+      "message": "Add a small collapsing dark-purple cluster beside the returning dagger/hand around (38,42), tapering toward the existing motes at x=45..53, y=32..47. Keep some detached aftermath particles, but give the shadow collapse a visible local origin; the current sparse flecks alone read as generic floating particles."
+    }
+  ]
+}

@@ -1,0 +1,1209 @@
+from pathlib import Path
+import json
+from PIL import Image, ImageDraw
+ROOT=Path(__file__).parent
+PALETTE={'K':'#1b202b','H':'#2c3447','h':'#4d5c70','N':'#344c78','n':'#668bab','S':'#c78d70','s':'#eeb893','L':'#ffdab1','B':'#805348','W':'#eff5e5','I':'#bbdedc','i':'#7796a4','T':'#347d85','t':'#60a7aa','U':'#92cec6','P':'#455a70','p':'#839eaf','R':'#ad555d'}
+(ROOT/'palette.json').write_text(json.dumps(PALETTE,indent=2)+'\n')
+def author(name,spec,folder='poses'):
+    rows=[list('.'*64) for _ in range(64)]
+    for line in spec.strip().splitlines():
+        y,rest=line.split(':',1); y=int(y)
+        for run in rest.strip().split('|'):
+            x,pixels=run.strip().split(); x=int(x)
+            assert x>=1 and x+len(pixels)<=63,(name,y,x,pixels)
+            for j,c in enumerate(pixels):
+                assert c=='.' or c in PALETTE,(name,c)
+                rows[y][x+j]=c
+    full=[''.join(r) for r in rows]
+    (ROOT/folder/f'{name}.pxgrid').write_text('\n'.join(full)+'\n')
+    return full
+
+def decode(name,folder='poses'):
+    rows=(ROOT/folder/f'{name}.pxgrid').read_text().splitlines()
+    assert len(rows)==64 and all(len(r)==64 for r in rows)
+    im=Image.new('RGBA',(64,64))
+    for y,row in enumerate(rows):
+        for x,c in enumerate(row):
+            if c!='.':
+                h=PALETTE[c][1:]; im.putpixel((x,y),tuple(int(h[i:i+2],16) for i in (0,2,4))+(255,))
+    return im
+
+# Individually chosen native horizontal pixel clusters; no geometric drawing.
+author('idle_a','''
+7: 24 KHHK
+8: 22 KHHhhHK
+9: 21 KHhhhHHK
+10: 21 KHhHHHHHKKKK
+11: 20 KHHHHHhHHhhhHHK
+12: 19 KHHHNNnHHhhhhHHHK
+13: 18 KHhhNNnKHHHHHHHHHHK
+14: 17 KHhhHK.nKHHHssssSSHK
+15: 17 KHhHHK..KHHLssLLLLsHK
+16: 16 KHhhHK..KHHssLLLLLLssK
+17: 16 KHhHHK..KHHssLLLLLLsssK
+18: 16 KHhHHK..KHHssLLBBLLBBsSK
+19: 16 KHhHHK..KHHssLLLLLLsssSK | 60 W
+20: 16 KHhHHK..KHHssLLWKLLWKsSK | 59 WI
+21: 16 KHHHHK..KHHssLLLLLLssLLK | 58 WIi
+22: 17 KHhHHK.KHHHssLLLLLLssSK | 57 WIi
+23: 17 KHhHHK.KHHHssssLLsssSK | 56 WIi
+24: 17 KHHHHK..KHHSSsssLBsSK | 55 WIi
+25: 17 KHHHHK...KHHSSssssSK | 54 WIi
+26: 18 KHHHK.....KSSsssSK | 53 WIi
+27: 18 KHHHK.....KTsLsTK | 52 WIi
+28: 19 KHHK...KttUUsLTtK | 51 WIi
+29: 19 KHHK..KtUUUUUtWTtK | 50 WIi
+30: 20 KHK.KtUUUttttTWtTK | 49 WIi
+31: 20 KK.KtUUtttttTTWtTK | 48 WIi
+32: 22 KtUUtTttttTTTWtTK | 47 WIi
+33: 21 KtUUttTtttTTTTWttK | 46 WIi
+34: 21 KtUUtTTttTTTTTWttTK | 45 WIi
+35: 21 KtttTTKttTTTTTWttTK | 44 WIi
+36: 22 KttTTKttTTTTtUUttTK | 43 WIi
+37: 23 KTTTKttTTTtUsLssTK | 42 WIi
+38: 24 KTTKttTTTTKssLsSKiK
+39: 26 KttTTRRRRRKssSKHHK
+40: 25 KtUtTRRRRKTTTKHK
+41: 25 KtUUttTKPpPKTTKHK
+42: 24 KtUUtTKPpppPKTTKHHK
+43: 24 KtUUttKPppppPKTTKHHK
+44: 23 KtUUttKPpppPPpKTTKHK
+45: 23 KtUUttKPppPPpppKTTKK
+46: 22 KtUUttTKppPKppppKTTK
+47: 22 KtUttTTKppPKppppKTTK
+48: 22 KtttTTTKppPKppppKTTK
+49: 23 KttTTTKppPKPppppKTTK
+50: 23 KTTTTKpppPKPpppPKTK
+51: 24 KTTTKppppPKPpppPKK
+52: 25 KKKPppppPK.PpppPK
+53: 27 KPppppPK..KppppK
+54: 27 KPpppPK...KpppPK
+55: 26 KPpppPK....KpppPK
+56: 26 KPppPK.....KpppPK
+57: 25 KPPPPK.....KPPPPK
+58: 25 KHhhHK.....KHhHHK
+59: 24 KHHHHHK....KHHHHHK
+60: 24 KKKKKKK....KKKKKKK
+''')
+im=decode('idle_a'); im.save(ROOT/'progress/idle.png')
+im.crop((14,6,47,29)).resize((264,184),Image.Resampling.NEAREST).save(ROOT/'progress/face.png')
+im.resize((512,512),Image.Resampling.NEAREST).save(ROOT/'progress/idle-8x.png')
+author('idle_b','''
+7: 24 KHHK
+8: 22 KHHhhHK
+9: 21 KHhhhHHK
+10: 21 KHhHHHHHKKKK
+11: 20 KHHHHHhHHhhhHHK
+12: 19 KHHHNNnHHhhhhHHHK
+13: 18 KHhhNNnKHHHHHHHHHHK
+14: 17 KHhhHK.nKHHHssssSSHK
+15: 17 KHhHHK..KHHLssLLLLsHK
+16: 16 KHhhHK..KHHssLLLLLLssK
+17: 16 KHhHHK..KHHssLLLLLLsssK
+18: 16 KHhHHK..KHHssLLBBLLBBsSK
+19: 16 KHhHHK..KHHssLLLLLLsssSK | 60 W
+20: 16 KHhHHK..KHHssLLWKLLWKsSK | 59 WI
+21: 16 KHHHHK..KHHssLLLLLLssLLK | 58 WIi
+22: 17 KHhHHK.KHHHssLLLLLLssSK | 57 WIi
+23: 17 KHhHHK.KHHHssssLLsssSK | 56 WIi
+24: 17 KHHHHK..KHHSSsssLBsSK | 55 WIi
+25: 17 KHHHHK...KHHSSssssSK | 54 WIi
+26: 18 KHHHK.....KSSsssSK | 53 WIi
+27: 18 KHHHK....KtUsLsTK | 52 WIi
+28: 18 KHHK...KttUUsLTtK | 51 WIi
+29: 19 KHHK.KttUUUUUtWTtK | 50 WIi
+30: 19 KHHKKtUUUUtttTWtTK | 49 WIi
+31: 20 KHKtUUUtttttTTWtTK | 48 WIi
+32: 21 KtUUUtTtttTTTWttTK | 47 WIi
+33: 20 KtUUUttTttTTTTWtttK | 46 WIi
+34: 20 KtUUttTTtTTTTTWtttK | 45 WIi
+35: 21 KtttTTKttTTTTTWttTK | 44 WIi
+36: 22 KttTTKttTTTTtUUttTK | 43 WIi
+37: 23 KTTTKttTTTtUsLssTK | 42 WIi
+38: 24 KTTKttTTTTKssLsSKiK
+39: 26 KttTTRRRRRKssSKHHK
+40: 25 KtUtTRRRRKTTTKHK
+41: 25 KtUUttTKPpPKTTKHK
+42: 24 KtUUttKPpppPKTTKHHK
+43: 23 KtUUUttKPppppPKTTKHHK
+44: 23 KtUUttKPpppPPpKTTKHK
+45: 22 KtUUttTKppPPpppKTTKK
+46: 22 KtUUttTKppPKppppKTTK
+47: 22 KtUUttTKppPKppppKTTK
+48: 23 KtttTTKpppPKppppKTTK
+49: 23 KttTTTKppPKPppppKTTK
+50: 24 KTTTTKppPKPpppPKTK
+51: 24 KTTTKppppPKPpppPKK
+52: 25 KKKPppppPK.PpppPK
+53: 27 KPppppPK..KppppK
+54: 27 KPpppPK...KpppPK
+55: 26 KPpppPK....KpppPK
+56: 26 KPppPK.....KpppPK
+57: 25 KPPPPK.....KPPPPK
+58: 25 KHhhHK.....KHhHHK
+59: 24 KHHHHHK....KHHHHHK
+60: 24 KKKKKKK....KKKKKKK
+''')
+author('idle_c','''
+7: 24 KHHK
+8: 22 KHHhhHK
+9: 21 KHhhhHHK
+10: 21 KHhHHHHHKKKK
+11: 20 KHHHHHhHHhhhHHK
+12: 19 KHHHNNnHHhhhhHHHK
+13: 18 KHhhNNnKHHHHHHHHHHK
+14: 17 KHhhHK.nKHHHssssSSHK
+15: 17 KHhHHK..KHHLssLLLLsHK
+16: 16 KHhhHK..KHHssLLLLLLssK
+17: 16 KHhHHK..KHHssLLLLLLsssK
+18: 16 KHhHHK..KHHssLLBBLLBBsSK
+19: 16 KHhHHK..KHHssLLLLLLsssSK | 60 W
+20: 16 KHhHHK..KHHssLLBKLLBKsSK | 59 WI
+21: 16 KHHHHK..KHHssLLLLLLssLLK | 58 WIi
+22: 17 KHhHHK.KHHHssLLLLLLssSK | 57 WIi
+23: 17 KHhHHK.KHHHssssLLsssSK | 56 WIi
+24: 17 KHHHHK..KHHSSsssBBsSK | 55 WIi
+25: 18 KHHHHK..KHHSSssssSK | 54 WIi
+26: 19 KHHHK....KSSsssSK | 53 WIi
+27: 19 KHHHK....KTsLsTK | 52 WIi
+28: 20 KHHK..KttUUsLTtK | 51 WIi
+29: 20 KHHK.KtUUUUUtWTtK | 50 WIi
+30: 21 KHK.KtUUUttttTWtTK | 49 WIi
+31: 21 KK.KtUUtttttTTWtTK | 48 WIi
+32: 23 KtUUtTttttTTTWtTK | 47 WIi
+33: 22 KtUUttTtttTTTTWttK | 46 WIi
+34: 22 KtUUtTTttTTTTTWttTK | 45 WIi
+35: 22 KtttTTKttTTTTTWttTK | 44 WIi
+36: 23 KttTTKttTTTTtUUttTK | 43 WIi
+37: 24 KTTTKttTTTtUsLssTK | 42 WIi
+38: 24 KTTKttTTTTKssLsSKiK
+39: 26 KttTTRRRRRKssSKHHK
+40: 25 KtUtTRRRRKTTTKHK
+41: 25 KtUUttTKPpPKTTKHK
+42: 24 KtUUttKPpppPKTTKHHK
+43: 24 KtUUttKPppppPKTTKHHK
+44: 23 KtUUttKPpppPPpKTTKHK
+45: 23 KtUUttKPppPPpppKTTKK
+46: 22 KtUUttTKppPKppppKTTK
+47: 22 KtUttTTKppPKppppKTTK
+48: 23 KtttTTKppPKppppKTTK
+49: 23 KttTTTKppPKPppppKTTK
+50: 24 KTTTTKppPKPpppPKTK
+51: 24 KTTTKppppPKPpppPKK
+52: 25 KKKPppppPK.PpppPK
+53: 27 KPppppPK..KppppK
+54: 27 KPpppPK...KpppPK
+55: 26 KPpppPK....KpppPK
+56: 26 KPppPK.....KpppPK
+57: 25 KPPPPK.....KPPPPK
+58: 25 KHhhHK.....KHhHHK
+59: 24 KHHHHHK....KHHHHHK
+60: 24 KKKKKKK....KKKKKKK
+''')
+author('windup','''
+8: 25 KHHK
+9: 23 KHHhhHK
+10: 22 KHhhhHHK
+11: 22 KHhHHHHHKKKK
+12: 21 KHHHHHhHHhhhHHK
+13: 20 KHHHNNnHHhhhhHHHK
+14: 19 KHhhNNnKHHHHHHHHHHK
+15: 18 KHhhHK.nKHHHssssSSHK
+16: 18 KHhHHK..KHHLssLLLLsHK
+17: 17 KHhhHK..KHHssLLLLLLssK
+18: 17 KHhHHK..KHHssLLLLLLsssK
+19: 17 KHhHHK..KHHssLLBBLLBBsSK
+20: 17 KHhHHK..KHHssLLLLLLsssSK
+21: 17 KHhHHK..KHHssLLWKLLWKsSK
+22: 17 KHHHHK..KHHssLLLLLLssLLK
+23: 18 KHhHHK.KHHHssLLLLLLssSK
+24: 18 KHhHHK.KHHHssssLLsssSK
+25: 18 KHHHHK..KHHSSsssBBsSK
+26: 18 KHHHHK...KHHSSssssSK
+27: 19 KHHHK.....KSSsssSK
+28: 19 KHHHK....KtUsLsTK
+29: 20 KHHK..KttUUUsLTtK
+30: 20 KHHK.KtUUUtttTWTtKK
+31: 21 KHK.KtUUttttTTWTtTTK
+32: 21 KK.KtUUttttTTTWTTTTK
+33: 23 KtUUttTtttTTTTWTTTTK
+34: 22 KtUUttTTttTTTWTTTTK | 59 WWI
+35: 22 KtUttTTKttTTTWTTTK | 54 WWWIIi
+36: 23 KttTTTKttTTTTWTTK | 49 WWWIIii
+37: 24 KTTTTKttTTTTTWtK | 44 WWWIIii
+38: 25 KTTTKtUUtTTttUsLKiii
+39: 27 KtUUtTTttUUUsLssKH
+40: 26 KtUttRRRRRssLsSKHHK
+41: 25 KtUUttRRRRTKSSK.KHK
+42: 25 KtUUttTKPppKTTK.KHHK
+43: 24 KtUUttTKPpppKTTK.KHK
+44: 24 KtUUttTKPppPPKTTK.KK
+45: 23 KtUUttTKPppPPpKTTK
+46: 23 KtUttTTKpppPPppKTTK
+47: 22 KtUttTTKpppPKpppKTTK
+48: 22 KttTTTKppppPKpppKTTK
+49: 23 KTTTTKppppPKPppppKTK
+50: 24 KTTTKppppPK.KPpppPK
+51: 25 KTTKppppPK...KPpppK
+52: 26 KKKppppPK....KPpppK
+53: 27 KPppppPK.....KPpppK
+54: 27 KPpppPK......KPppPK
+55: 27 KPppPK.......KPppPK
+56: 26 KPppPK.......KPPPPK
+57: 26 KPPPPK.......KHhhHK
+58: 25 KHhhHK.......KHHHHHK
+59: 24 KHHHHHK......KHHHHHHK
+60: 24 KKKKKKK......KKKKKKKK
+''')
+author('move','''
+9: 27 KHHK
+10: 25 KHHhhHK
+11: 24 KHhhhHHK
+12: 24 KHhHHHHHKKKK
+13: 21 KHHHHHHhHHhhhHHK
+14: 17 KHHhhHHNNnHHhhhhHHK
+15: 13 KHHhhhhHHNNnKHHHHHHHK
+16: 11 KHhhhhHHHK..KHHssssSSHK | 61 WI
+17: 9 KHhhhHHHK...KHHLssLLLLsHK | 60 WIi
+18: 8 KHhhhHHK....KHHssLLLLLLssK | 59 WIi
+19: 8 KHHHHK......KHHssLLLLLLsssK | 58 WIi
+20: 9 KHHHK.......KHHssLLBBLLBBsSK | 57 WIi
+21: 10 KHHK.......KHHssLLLLLLsssSK | 56 WIi
+22: 11 KHK........KHHssLLWKLLWKsSK | 55 WIi
+23: 12 KK.........KHHssLLLLLLssLLK | 54 WIi
+24: 16 NnK.......KHHHssLLLLLLssSK | 53 WIi
+25: 14 NnK.........KHHssssLLsssSK | 52 WIi
+26: 13 NK...........KHHSSsssBBsSK | 51 WIi
+27: 27 KHHSSssssSK | 50 WIi
+28: 28 KSSsssSK | 49 WIi
+29: 26 KtUUsLsTK | 48 WIi
+30: 23 KttUUUsLTtK | 47 WIi
+31: 21 KtUUUttttTWTtK | 46 WIi
+32: 19 KtUUttttTTTWttTK | 45 WIi
+33: 18 KtUUttTTttTTWttTK | 44 WIi
+34: 19 KtttTTKttTTTWtUsLK | 43 WIi
+35: 20 KTTTTKttTTTTWssLsSKii
+36: 22 KTTKttTTTTTTKssSKHK
+37: 23 KtUUttTTTTTRRRRKHK
+38: 22 KtUUtttTRRRRRTTKHK
+39: 20 KtUUttTTTKPppKTTKHHK
+40: 18 KtUUttTTTKPpppKTTKHK
+41: 16 KtUUttTTTKPppPPKTTKK
+42: 14 KtUUttTTTKPppPPpKTTK
+43: 13 KtUUttTTTKpppPPppKTTK
+44: 12 KtUUttTTTKppPPppppKTTK
+45: 12 KtUUttTTKppPPKpppppKTTK
+46: 13 KttTTTTKppPPK.PpppppKTTK
+47: 14 KTTTTTKpppPK..KPpppppKTK
+48: 15 KTTTTKpppPK....KPpppppKK
+49: 16 KTTTKpppPK......KPpppppK
+50: 18 KKppppPK........KPpppppK
+51: 19 KPppppK..........KPppppK
+52: 18 KPpppPK............KPpppK
+53: 17 KPpppPK..............KPpppK
+54: 16 KPpppPK................KPppK
+55: 15 KPpppPK..................KPPK
+56: 15 KPPPPK...................KHhHK
+57: 14 KHhhHK...................KHhhHK
+58: 14 KHHHHK...................KHHHHHK
+59: 13 KHHHHHK..................KHHHHHHK
+60: 13 KKKKKKK..................KKKKKKKK
+''')
+author('attack','''
+11: 28 KHHK
+12: 26 KHHhhHK
+13: 25 KHhhhHHK
+14: 23 KHHhHHHHHKKKK
+15: 19 KHHhhHHHhHHhhhHHK
+16: 15 KHHhhhhNNnHHhhhhHHK
+17: 12 KHhhhHHNNnKHHHHHHHHK
+18: 10 KHhhhHHK.nKHHssssSSHK
+19: 9 KHhhHHK...KHHLssLLLLsHK
+20: 9 KHHHHK....KHHssLLLLLLssK
+21: 10 KHHHK....KHHssLLLLLLsssK
+22: 11 KHHK.....KHHssLLBBLLBBsSK
+23: 12 KHK......KHHssLLLLLLsssSK
+24: 13 KK.......KHHssLLWKLLWKsSK
+25: 16 NnK.....KHHssLLLLLLssLLK
+26: 15 NnK......KHHHssLLLLLLssSK
+27: 14 NK........KHHHssssLLsssSK
+28: 27 KHHSSsssBBsSK
+29: 28 KHHSSssssSK
+30: 29 KSSsssSK
+31: 26 KtUUUsLsTK
+32: 23 KtUUUttTsLTtK
+33: 21 KtUUttttTTWTttTK
+34: 21 KtUttTTttTWtttttK
+35: 22 KttTTKttTTTWtttUUttK
+36: 23 KTTTKttTTTTWttUUUttTK
+37: 25 KtUttTTTTTWttttttUsLK
+38: 24 KtUUttTRRRRtTTTtssLsSK
+39: 23 KtUUttRRRRRTTTTKssLsSKHK
+40: 22 KtUUttTKPppKTTTTKSSiIW
+41: 20 KtUUttTKPpppKTTTTK.HiIW
+42: 18 KtUUttTKPppPPKTTTK..iIW
+43: 16 KtUUttTKPppPPpKTTK...iIW
+44: 14 KtUUttTKPppPPppKTTK...iIW
+45: 13 KtUUttTKpppPPpppKTTK...iIW
+46: 13 KtUttTTKppPPKppppKTTK...iIW
+47: 14 KttTTTKppPPK.PppppKTTK...iIW
+48: 15 KTTTTKpppPK..KPppppKTK....iIW
+49: 16 KTTTKpppPK....KPppppKK.....iIW
+50: 17 KTTKpppPK......KPppppK......iIW
+51: 18 KKppppPK........KPppppK.......IW
+52: 19 KPppppK..........KPppppK.......W
+53: 18 KPpppPK............KPpppK
+54: 17 KPpppPK..............KPpppK
+55: 16 KPpppPK................KPppK
+56: 15 KPPPPPK..................KPPPK
+57: 15 KHhhhHK..................KHhhHK
+58: 14 KHHHHHK..................KHHHHHK
+59: 13 KHHHHHHK.................KHHHHHHK
+60: 13 KKKKKKKK.................KKKKKKKK
+''')
+author('recover','''
+8: 25 KHHK
+9: 23 KHHhhHK
+10: 22 KHhhhHHK
+11: 22 KHhHHHHHKKKK
+12: 21 KHHHHHhHHhhhHHK
+13: 19 KHHHHNNnHHhhhhHHK
+14: 17 KHhhHNNnKHHHHHHHHHK
+15: 16 KHhhHHK.nKHHssssSSHK
+16: 15 KHhhHHK..KHHLssLLLLsHK
+17: 15 KHhhHHK..KHHssLLLLLLssK
+18: 15 KHHHHK...KHHssLLLLLLsssK
+19: 16 KHHHK....KHHssLLBBLLBBsSK
+20: 17 KHHK.....KHHssLLLLLLsssSK
+21: 18 KHK......KHHssLLWKLLWKsSK
+22: 19 KK.......KHHssLLLLLLssLLK
+23: 21 NnK.....KHHHssLLLLLLssSK
+24: 20 NnK......KHHHssssLLsssSK
+25: 19 NK........KHHSSsssLBsSK
+26: 28 KHHSSssssSK
+27: 29 KSSsssSK
+28: 27 KtUUsLsTK
+29: 25 KttUUUsLTtK
+30: 23 KtUUUttttTWTtK
+31: 22 KtUUttttTTTWttTK
+32: 22 KtUUttTTttTTWttTK
+33: 23 KtttTTKttTTTWttTK
+34: 24 KttTTKttTTTTWttTK
+35: 25 KTTTKttTTTTTWttTK
+36: 26 KtUttTTTTTTWttttK
+37: 25 KtUUttTTTTTWttUsLK
+38: 24 KtUUttRRRRRtTTssLsSK
+39: 24 KtUUttRRRRRTTKssSKHK
+40: 23 KtUUttTKPppKTTK..iIW
+41: 22 KtUUttTKPpppKTTK..iIW
+42: 21 KtUUttTKPppPPKTTK..iIW
+43: 20 KtUUttTKPppPPpKTTK..iIW
+44: 20 KtUttTTKpppPPppKTTK..iIW
+45: 20 KttTTTTKppPPppppKTTK..iIW
+46: 21 KTTTTTKppPPKpppppKTK..iIW
+47: 22 KTTTTKpppPK.KPppppKK...iIW
+48: 23 KTTTKpppPK..KPppppK.....iIW
+49: 24 KTTKppppK...KPpppPK......iIW
+50: 25 KKKppppPK...KPpppPK.......iIW
+51: 27 KPppppPK....KPpppPK........iIW
+52: 27 KPpppPK.....KPpppPK.........iIW
+53: 26 KPpppPK......KPppPK..........iIW
+54: 26 KPppPK.......KPppPK...........iIW
+55: 25 KPppPK........KPPPK............IW
+56: 25 KPPPPK........KHhHK.............W
+57: 25 KHhhHK........KHhhHK
+58: 24 KHHHHHK.......KHHHHHK
+59: 23 KHHHHHHK......KHHHHHHK
+60: 23 KKKKKKKK......KKKKKKKK
+''')
+def replace_rows(name,spec,folder='poses'):
+    path=ROOT/folder/f'{name}.pxgrid'
+    rows=path.read_text().splitlines()
+    for line in spec.strip().splitlines():
+        y,rest=line.split(':',1);y=int(y);row=list('.'*64)
+        for run in rest.strip().split('|'):
+            x,pixels=run.strip().split();x=int(x)
+            assert 1<=x and x+len(pixels)<=63
+            row[x:x+len(pixels)]=pixels
+        rows[y]=''.join(row)
+    path.write_text('\n'.join(rows)+'\n')
+replace_rows('move','''
+15: 13 KHHhhhhHHNNnK | 27 KHHHHHHHHHHHHK
+16: 11 KHhhhhHHHK | 27 KHHHssssSSHHK | 61 WI
+17: 9 KHhhhHHHK | 27 KHHLssLLLLsHHK | 60 WIi
+18: 8 KHhhhHHK | 27 KHHssLLLLLLssK | 59 WIi
+19: 8 KHHHHK | 27 KHHssLLLLLLsssK | 58 WIi
+20: 9 KHHHK | 27 KHHssLLBBLLBBsSK | 57 WIi
+21: 10 KHHK | 27 KHHssLLLLLLsssSK | 56 WIi
+22: 11 KHK | 27 KHHssLLWKLLWKsSK | 55 WIi
+23: 12 KK | 27 KHHssLLLLLLssLLK | 54 WIi
+24: 16 NnK | 28 KHHssLLLLLLssSK | 53 WIi
+25: 14 NnK | 28 KHHssssLLsssSK | 52 WIi
+26: 13 NK | 29 KHHSSsssBBsSK | 51 WIi
+27: 30 KHHSSssssSK | 50 WIi
+28: 31 KSSsssSK | 49 WIi
+29: 27 KtUUUsLsTK | 48 WIi
+30: 24 KttUUUsLTtK | 47 WIi
+31: 21 KtUUUttttTWTtK | 46 WIi
+''')
+replace_rows('attack','''
+17: 12 KHhhhHHNNnK | 28 KHHHHHHHHHHHHK
+18: 10 KHhhhHHK | 28 KHHHssssSSHHK
+19: 9 KHhhHHK | 28 KHHLssLLLLsHHK
+20: 9 KHHHHK | 28 KHHssLLLLLLssK
+21: 10 KHHHK | 28 KHHssLLLLLLsssK
+22: 11 KHHK | 28 KHHssLLBBLLBBsSK
+23: 12 KHK | 28 KHHssLLLLLLsssSK
+24: 13 KK | 28 KHHssLLWKLLWKsSK
+25: 16 NnK | 28 KHHssLLLLLLssLLK
+26: 15 NnK | 29 KHHssLLLLLLssSK
+27: 14 NK | 29 KHHssssLLsssSK
+28: 30 KHHSSsssBBsSK
+29: 31 KHHSSssssSK
+30: 32 KSSsssSK
+31: 27 KtUUUsLsTK
+32: 24 KtUUUttTsLTtK
+''')
+replace_rows('recover','''
+14: 17 KHhhHNNnK | 26 KHHHHHHHHHHHHK
+15: 16 KHhhHHK | 26 KHHHssssSSHHK
+16: 15 KHhhHHK | 26 KHHLssLLLLsHHK
+17: 15 KHhhHHK | 26 KHHssLLLLLLssK
+18: 15 KHHHHK | 26 KHHssLLLLLLsssK
+19: 16 KHHHK | 26 KHHssLLBBLLBBsSK
+20: 17 KHHK | 26 KHHssLLLLLLsssSK
+21: 18 KHK | 26 KHHssLLWKLLWKsSK
+22: 19 KK | 26 KHHssLLLLLLssLLK
+23: 21 NnK | 27 KHHssLLLLLLssSK
+24: 20 NnK | 27 KHHssssLLsssSK
+25: 19 NK | 28 KHHSSsssLBsSK
+26: 29 KHHSSssssSK
+27: 30 KSSsssSK
+28: 27 KtUUUsLsTK
+''')
+author('hit','''
+8: 23 KHHK
+9: 21 KHHhhHK
+10: 20 KHhhhHHK
+11: 19 KHHhHHHHHKKK
+12: 18 KHHHHHhHHhhhHHK
+13: 17 KHHHNNnHHhhhhHHK
+14: 16 KHhhNNnKHHHHHHHHK
+15: 15 KHhhHK | 23 KHHHssssSSHK
+16: 15 KHhHHK | 23 KHHLssLLLLsHK
+17: 14 KHhhHK | 23 KHHssLLLLLLssK
+18: 14 KHhHHK | 23 KHHssLBBLLBBssK
+19: 14 KHhHHK | 23 KHHssLLLLLLsssSK
+20: 14 KHhHHK | 23 KHHssLLBKLLBKsSK
+21: 14 KHHHHK | 23 KHHssLLLLLLssLLK
+22: 15 KHhHHK | 23 KHHssLLLLLLssSK
+23: 15 KHhHHK | 24 KHHssssLLsssSK
+24: 15 KHHHHK | 24 KHHSSssLBWsSK
+25: 15 KHHHHK | 25 KHHSSssBBsSK
+26: 16 KHHHK | 26 KSSssssSK
+27: 16 KHHHK | 27 KTsLsTK
+28: 17 KHHK | 24 KtUUUsLTtK
+29: 17 KHHK | 22 KtUUUttWTtK
+30: 18 KHK | 21 KtUUUttTWttK
+31: 19 KK.KtUUttTTtWtttK
+32: 21 KtUUttTTTTWtUUttK
+33: 21 KtUttTTTKTTWtUUttTK
+34: 22 KttTTTTKTTTWttUUttTK
+35: 23 KTTTTTKttTTWtttUsLsK
+36: 24 KTTTTKttTTTWTttssLsSK
+37: 25 KtUttTTTTTRRRTKssSKHK
+38: 25 KtUUttRRRRRTTTK..iIW
+39: 25 KtUUttTKPppKTTK...iIW
+40: 24 KtUUttTKPpppKTTK...iIW
+41: 24 KtUUttTKPppPPKTTK...iIW
+42: 23 KtUUttTKPppPPpKTTK...iIW
+43: 23 KtUttTTKpppPPppKTTK...iIW
+44: 22 KtUttTTKppPPppppKTTK...iIW
+45: 22 KttTTTTKppPPKppppKTTK...iIW
+46: 23 KTTTTTKpppPK.KppppKTK....iIW
+47: 24 KTTTTKpppPK..KPppppKK.....iIW
+48: 25 KTTTKpppPK...KPppppK.......iIW
+49: 26 KTTKpppPK.....KPpppPK.......iIW
+50: 27 KKKppppPK.....KPpppPK........iIW
+51: 29 KPppppK.......KPppppK.........IW
+52: 28 KPppppK........KPpppK..........W
+53: 27 KPpppPK.........KPpppK
+54: 26 KPpppPK..........KPpppK
+55: 25 KPpppPK...........KPppPK
+56: 25 KPPPPK............KPPPPK
+57: 25 KHhhHK............KHhhHK
+58: 24 KHHHHHK...........KHHHHHK
+59: 23 KHHHHHHK..........KHHHHHHK
+60: 23 KKKKKKKK..........KKKKKKKK
+''')
+author('dead','''
+40: 22 KKKKKK
+41: 20 KHHhhhHHKK
+42: 18 KHHhhhhHHHHKK
+43: 17 KHhhhHHHHHHHHK
+44: 16 KHhhHHHssssSSHHK | 47 KPPPK
+45: 15 KHhhHHsLLLLLssHHK | 46 KPpppPK
+46: 14 KHhhHHsLLLLLLssHHK | 45 KPppppPK
+47: 13 KHhhHHsLLBBLLBBssHK | 41 KttKppPPppPK
+48: 12 KHhhHHsLLLLLLLLsssHK | 39 KtUUtKPPpppPK
+49: 12 KHhHHKsLLBBLLBBsssSK | 37 KtUUUttKPpppPK
+50: 12 KHHHHK.ssLLLLLLssLLK | 36 KtUUUttTTKPppPK
+51: 13 KHHHK...sssLLLLsssK | 35 KtUUttTTTTKPppPK
+52: 14 KHHK....KSSssBBsSK | 34 KtUUttTTTTTKPPPK
+53: 15 KHNNnK...KSSssssK | 33 KtUUttTTTTTRRRKHHK
+54: 14 KHHNNnK....KSSsKttUUttTTTTRRRKHHHKHHK
+55: 13 KHHHK.NnK....KtUUUUttTTTTTRRKPppppPPHHK
+56: 12 KHHHK..NK.....KtUUUttTTTTTKPpppppppPPHHK
+57: 11 KHHHHK.........KttttTTTTTKPpppppppPPHHHHK
+58: 11 KHHHHHK........KTTTTTKssLsSKPPPPPPPKKKKK
+59: 12 KKKKKKK.........KKKKKssLsSKHiiIIIIIIIIIIIIWW
+60: 35 KKKKKKiiiiiiiiiiiiiiiiiiI
+''')
+author('skill_a','''
+7: 25 KHHK
+8: 23 KHHhhHK
+9: 22 KHhhhHHK
+10: 22 KHhHHHHHKKKK
+11: 13 Ut | 21 KHHHHHhHHhhhHHK
+12: 12 tIWU | 20 KHHHNNnHHhhhhHHK
+13: 12 UWIIt | 19 KHhhNNnKHHHHHHHHHHK
+14: 13 tIWIi | 18 KHhhHK | 26 KHHHssssSSHK
+15: 14 tIWIi | 18 KHhHHK | 26 KHHLssLLLLsHK
+16: 15 tIWIi | 17 KHhhHK | 26 KHHssLLLLLLssK
+17: 16 IWIi | 26 KHHssLLLLLLsssK
+18: 17 IWIi | 26 KHHssLLBBLLBBsSK
+19: 17 KHWIiK | 26 KHHssLLLLLLsssSK
+20: 17 KHhWIiK | 26 KHHssLLWKLLWKsSK
+21: 17 KHHHWIiK | 26 KHHssLLLLLLssLLK
+22: 18 KHhHWIiK | 26 KHHssLLLLLLssSK
+23: 18 KHhHHWIiK | 27 KHHssssLLsssSK
+24: 18 KHHHHKWIi | 28 KHHSSsssBBsSK
+25: 18 KHHHHK.WIi | 29 KHHSSssssSK
+26: 19 KHHHK..WIi | 30 KSSsssSK
+27: 19 KHHHK...WIi | 28 KtUsLsTK
+28: 20 KHHK....WIiKttUUUsLTtK
+29: 20 KHHK.....WIiKUUUttWTtK
+30: 21 KHK.....KWIiKtUUttTWtTK
+31: 21 KK.....KUsLsSKttttTWttK
+32: 25 KtUUsLsSKHttTTTWttTK
+33: 24 KtUUUssSKHttTTTTWttTK
+34: 24 KtUUttTTKHKTTTTTWttTK
+35: 24 KtUttTTTKHKTTTTTWttTK
+36: 25 KttTTTTKttTTTTTTWttTK
+37: 26 KTTTTTKttTTTTTTTWttTK
+38: 27 KTTTKttTTTTTTTTUsLsK
+39: 28 KttTTRRRRRRRTTKssLsK
+40: 27 KtUtTRRRRRTTTTKSSSK
+41: 26 KtUUttTKPppKTTK.KHK
+42: 25 KtUUttTKPpppKTTK.KHHK
+43: 25 KtUUttTKPppPPKTTK.KHK
+44: 24 KtUUttTKPppPPpKTTK.KK
+45: 24 KtUttTTKpppPPppKTTK
+46: 23 KtUttTTKpppPKpppKTTK
+47: 23 KttTTTKppppPKpppKTTK
+48: 24 KTTTTKppppPKPppppKTK
+49: 25 KTTTKppppPK.KPpppPK
+50: 26 KTTKppppPK..KPpppPK
+51: 27 KKKppppPK...KPpppPK
+52: 28 KPppppPK....KPpppPK
+53: 28 KPpppPK.....KPpppPK
+54: 27 KPpppPK......KPppPK
+55: 27 KPppPK.......KPppPK
+56: 26 KPppPK.......KPPPPK
+57: 26 KPPPPK.......KHhhHK
+58: 25 KHhhHK.......KHHHHHK
+59: 24 KHHHHHK......KHHHHHHK
+60: 24 KKKKKKK......KKKKKKKK
+''','actions')
+author('skill_b','''
+9: 26 KHHK
+10: 24 KHHhhHK
+11: 23 KHhhhHHK
+12: 22 KHHhHHHHHKKKK | 61 t
+13: 19 KHHhhHHHhHHhhhHHK | 61 Ut
+14: 16 KHHhhhhNNnHHhhhhHHK | 60 IWt
+15: 14 KHhhhHHNNnKHHHHHHHHK | 60 WUt
+16: 12 KHhhhHHK | 26 KHHHssssSSHK | 60 Wt
+17: 11 KHhhHHK | 26 KHHLssLLLLsHK | 59 WUt
+18: 11 KHHHHK | 26 KHHssLLLLLLssK | 58 WUt
+19: 12 KHHHK | 26 KHHssLLLLLLsssK | 57 WUt
+20: 13 KHHK | 26 KHHssLLBBLLBBsSK | 56 WUt
+21: 14 KHK | 26 KHHssLLLLLLsssSK | 55 WUt
+22: 15 KK | 26 KHHssLLWKLLWKsSK | 55 WWUt
+23: 18 NnK | 26 KHHssLLLLLLssLLK | 54 WIIUt
+24: 17 NnK | 27 KHHssLLLLLLssSK | 53 WIi.UWt
+25: 16 NK | 27 KHHssssLLsssSK | 52 WIi..UWt
+26: 28 KHHSSsssBBsSK | 51 WIi....UWt
+27: 29 KHHSSssssSK | 50 WIi......UWt
+28: 30 KSSsssSK | 49 WIi........UWt
+29: 27 KtUUUsLsTK | 48 WIi.........UWt
+30: 24 KtUUUttTsLTtK | 47 WIi...........Wt
+31: 22 KtUUttttTTWTttK | 46 WIi............Ut
+32: 21 KtUUttTTttTWttUUttK | 45 WIi..............t
+33: 22 KttTTKttTTTWtUUUttUsLK | 44 WiiK
+34: 23 KTTTKttTTTTWtttttssLsSKii
+35: 24 KtUttTTTTTWtTTTTTKssSKHK
+36: 24 KtUUttTTTTWTTTTTTKSSKHK
+37: 23 KtUUttTRRRRRRTTTTK..KHK
+38: 22 KtUUttRRRRRTTTTTK...KHHK
+39: 21 KtUUttTKPppKTTTTK....KHK
+40: 20 KtUUttTKPpppKTTTK.....KK
+41: 19 KtUUttTKPppPPKTTK
+42: 18 KtUUttTKPppPPpKTTK
+43: 17 KtUUttTKPppPPppKTTK
+44: 17 KtUUttTKpppPPpppKTTK
+45: 18 KtUttTTKppPPKppppKTTK
+46: 19 KttTTTKppPPK.PppppKTTK
+47: 20 KTTTTKpppPK..KPppppKTK
+48: 21 KTTTKpppPK....KPppppKK
+49: 22 KTTKpppPK......KPppppK
+50: 23 KKppppPK........KPppppK
+51: 24 KPppppK..........KPppppK
+52: 23 KPpppPK............KPpppK
+53: 22 KPpppPK..............KPpppK
+54: 21 KPpppPK................KPppK
+55: 20 KPpppPK..................KPPK
+56: 20 KPPPPK...................KHhHK
+57: 19 KHhhHK...................KHhhHK
+58: 19 KHHHHK...................KHHHHHK
+59: 18 KHHHHHK..................KHHHHHHK
+60: 18 KKKKKKK..................KKKKKKKK
+''','actions')
+author('skill_c','''
+8: 25 KHHK
+9: 23 KHHhhHK
+10: 22 KHhhhHHK
+11: 22 KHhHHHHHKKKK
+12: 21 KHHHHHhHHhhhHHK
+13: 19 KHHHHNNnHHhhhhHHK
+14: 17 KHhhHNNnKHHHHHHHHHK
+15: 16 KHhhHHK | 26 KHHHssssSSHK
+16: 15 KHhhHHK | 26 KHHLssLLLLsHK
+17: 15 KHhhHHK | 26 KHHssLLLLLLssK
+18: 15 KHHHHK | 26 KHHssLLLLLLsssK
+19: 16 KHHHK | 26 KHHssLLBBLLBBsSK
+20: 17 KHHK | 26 KHHssLLLLLLsssSK
+21: 18 KHK | 26 KHHssLLWKLLWKsSK
+22: 19 KK | 26 KHHssLLLLLLssLLK
+23: 21 NnK | 27 KHHssLLLLLLssSK
+24: 21 NnK | 27 KHHssssLLsssSK | 57 Ut
+25: 22 NK | 28 KHHSSsssBBsSK | 56 WU
+26: 22 nK | 29 KHHSSssssSK | 55 Ut
+27: 30 KSSsssSK
+28: 27 KtUUUsLsTK | 51 U
+29: 25 KttUUUsLTtK | 50 IWt
+30: 23 KtUUUttttTWTtK | 49 Ut
+31: 22 KtUUttttTTTWttTK
+32: 22 KtUUttTTttTTWttTK | 59 U
+33: 23 KtttTTKttTTTWttTK | 60 Wt
+34: 24 KttTTKttTTTTWttTK | 60 U
+35: 25 KTTTKttTTTTTWttTK
+36: 26 KtUttTTTTTTWttttK
+37: 25 KtUUttTTTTTWtUsLsK
+38: 24 KtUUttRRRRRtTTssLsSK
+39: 24 KtUUttRRRRRTTKssSKHK
+40: 23 KtUUttTKPppKTTK..iIW
+41: 22 KtUUttTKPpppKTTK..iIW
+42: 21 KtUUttTKPppPPKTTK..iIW
+43: 21 KtUUttTKPppPPpKTTK..iIW
+44: 21 KtUttTTKpppPPppKTTK..iIW
+45: 22 KttTTTTKppPPppppKTTK..iIW
+46: 23 KTTTTTKppPPKpppppKTK..iIW
+47: 24 KTTTTKpppPK.KPppppKK...iIW
+48: 25 KTTTKpppPK..KPppppK.....iIW
+49: 26 KTTKppppK...KPpppPK......iIW
+50: 27 KKKppppPK...KPpppPK.......iIW
+51: 29 KPppppPK....KPpppPK........iIW
+52: 29 KPpppPK.....KPpppPK.........iIW
+53: 28 KPpppPK......KPppPK..........iIW
+54: 28 KPppPK.......KPppPK...........iIW
+55: 27 KPppPK........KPPPK............IW
+56: 27 KPPPPK........KHhHK.............W
+57: 27 KHhhHK........KHhhHK
+58: 26 KHHHHHK.......KHHHHHK
+59: 25 KHHHHHHK......KHHHHHHK
+60: 25 KKKKKKKK......KKKKKKKK
+''','actions')
+author('poison_a','''
+10: 25 KHHK
+11: 23 KHHhhHK
+12: 22 KHhhhHHK
+13: 22 KHhHHHHHKKKK
+14: 21 KHHHHHhHHhhhHHK | 53 RR
+15: 20 KHHHNNnHHhhhhHHK | 52 RWUR
+16: 19 KHhhNNnKHHHHHHHHK | 52 RUUR
+17: 18 KHhhHK | 26 KHHHssssSSHK | 53 RR
+18: 18 KHhHHK | 26 KHHLssLLLLsHK
+19: 17 KHhhHK | 26 KHHssLLLLLLssK
+20: 14 RR.KHHHHK | 26 KHHssLLLLLLsssK
+21: 13 RWURKHHHHK | 26 KHHssLBBLLBBssSK
+22: 13 RUURKHHHHK | 26 KHHssLLLssLLssSK
+23: 14 RR.KHHHHK | 26 KHHssLLBKLLBKsSK
+24: 18 KHhHHK | 26 KHHssLLLssLssLLK
+25: 18 KHhHHK | 27 KHHssLLLssLssSK
+26: 18 KHHHHK | 27 KHHssssLLsssSK
+27: 18 KHHHHK | 28 KHHSSsssBBsSK
+28: 19 KHHHK | 29 KHHSSssssSK
+29: 19 KHHHK | 30 KSSsssSK
+30: 20 KHHK | 28 KtUsLsTK
+31: 20 KHHK.KttUUUsLTtK
+32: 21 KHKtUUUUtttTWTtKK
+33: 22 KtUUUttttTTTWttTTK
+34: 22 KtUUttTTttTTTWtttTK
+35: 23 KtUttTTTTttTTWttttTK
+36: 24 KttTTTTTTKttTWttttTK
+37: 25 KTTTTTKttTTTTWtUUttK
+38: 26 KtUUtTKttTTTTWttUUttK
+39: 27 KtUUttTKsLsLssKttttTK
+40: 27 KttttTTKsLsLssKTTtUsLK
+41: 27 KTTTTTTRRSSSKTTTTssLsSK
+42: 26 KtUUttRRRRRTTTTTTKssSKHK
+43: 25 KtUUttTKPppKTTTTK...iIW
+44: 25 KtUUttTKPpppKTTTK....iIW
+45: 24 KtUUttTKPppPPKTTK.....iIW
+46: 24 KtUttTTKpppPPpKTTK.....iIW
+47: 24 KttTTTTKppPPpppKTTK.....iIW
+48: 25 KTTTTTKppPPKppppKTK......iIW
+49: 26 KTTTTKpppPK.KPpppKK.......iIW
+50: 27 KTTTKpppPK..KPpppPK........iIW
+51: 28 KTTKppppK...KPpppPK.........iIW
+52: 29 KKKppppPK...KPpppPK..........iIW
+53: 30 KPppppPK....KPpppPK | 60 iIW
+54: 30 KPpppPK.....KPpppPK | 61 IW
+55: 29 KPpppPK......KPppPK | 62 W
+56: 29 KPppPK.......KPppPK
+57: 28 KPPPPK.......KPPPPK
+58: 28 KHhhHK.......KHhhHK
+59: 27 KHHHHHK......KHHHHHK
+60: 27 KKKKKKK......KKKKKKK
+''','actions')
+author('poison_b','''
+12: 24 KHHK | 13 R
+13: 22 KHHhhHK | 12 RWR
+14: 21 KHhhhHHK | 13 R
+15: 21 KHhHHHHHKKKK
+16: 20 KHHHHHhHHhhhHHK
+17: 19 KHHHNNnHHhhhhHHK
+18: 18 KHhhNNnKHHHHHHHHK
+19: 17 KHhhHK | 25 KHHHssssSSHK
+20: 17 KHhHHK | 25 KHHLssLLLLsHK
+21: 16 KHhhHK | 25 KHHssLLLLLLssK
+22: 16 KHhHHK | 25 KHHssLLLLLLsssK | 54 RR
+23: 16 KHhHHK | 25 KHHssLBBLLBBssSK | 53 RWUR
+24: 16 KHhHHK | 25 KHHssLLLssLLssSK | 53 RUUR
+25: 16 KHHHHK | 25 KHHssLLBKLLBKsSK | 54 RR
+26: 17 KHhHHK | 25 KHHssLLLssLssLLK
+27: 17 KHhHHK | 26 KHHssLLLssLssSK
+28: 17 KHHHHK | 26 KHHssssLLsssSK
+29: 17 KHHHHK | 27 KHHSSsssBWsSK
+30: 18 KHHHK | 28 KHHSSssBBsSK
+31: 18 KHHHK | 29 KSSsssSKsLsK
+32: 19 KHHK | 28 KtUsLsTKsLsSK
+33: 19 KHHK.KttUUUsLTtKssSK
+34: 20 KHKtUUUUtttTWTtKttTK
+35: 21 KtUUUttttTTTWttTKttTK
+36: 21 KtUUttTTttTTTWttTKtTTK
+37: 22 KtUttTTTTttTTWtttKtTTK
+38: 23 KttTTTTTTKttTWtttKTTTK
+39: 24 KTTTTTKttTTTTWtttTTTK
+40: 25 KtUUtTKttTTTTWtttTTK
+41: 26 KtUUttTKttTTTWtttTK
+42: 26 KttttTTRRRRRRTtUsLK
+43: 26 KTTTTTTRRRRTTTssLsSK
+44: 25 KtUUttTKPppKTTKssSKHK
+45: 24 KtUUttTKPpppKTTK..iIW
+46: 23 KtUUttTKPppPPKTTK..iIW
+47: 23 KtUttTTKpppPPpKTTK..iIW
+48: 23 KttTTTTKppPPpppKTTK..iIW
+49: 24 KTTTTTKppPPKppppKTK...iIW
+50: 25 KTTTTKpppPK.KPpppKK....iIW
+51: 26 KTTTKpppPK..KPpppPK.....iIW
+52: 27 KTTKppppK...KPpppPK......iIW
+53: 28 KKKppppPK...KPpppPK.......iIW
+54: 29 KPppppPK....KPpppPK........iIW
+55: 28 KPpppPK.....KPpppPK.........iIW
+56: 27 KPpppPK......KPppPK..........iIW
+57: 26 KPPPPPK......KPPPPK...........iIW
+58: 25 KHhhhHK......KHhhHK............IW
+59: 24 KHHHHHHK.....KHHHHHK............W
+60: 24 KKKKKKKK.....KKKKKKK
+''','actions')
+author('stun_a','''
+4: 46 L
+5: 45 LWL
+6: 44 LWWSL
+7: 45 LWL
+8: 46 S
+9: 24 KHHK
+10: 22 KHHhhHK
+11: 21 KHhhhHHK
+12: 21 KHhHHHHHKKKK
+13: 20 KHHHHHhHHhhhHHK
+14: 19 KHHHNNnHHhhhhHHK | 12 L
+15: 18 KHhhNNnKHHHHHHHHK | 11 LWL
+16: 17 KHhhHK | 25 KHHHssssSSHK | 10 LWWSL
+17: 17 KHhHHK | 25 KHHLssLLLLsHK | 11 LWL
+18: 16 KHhhHK | 25 KHHssLLLLLLssK | 12 S
+19: 16 KHhHHK | 25 KHHssLLLLLLsssK
+20: 16 KHhHHK | 25 KHHssLLBBLLBBsSK
+21: 16 KHhHHK | 25 KHHssLLLLLLsssSK
+22: 16 KHhHHK | 25 KHHssLLWKLLWKsSK
+23: 16 KHHHHK | 25 KHHssLLLLLLssLLK
+24: 17 KHhHHK | 26 KHHssLLLLLLssSK
+25: 17 KHhHHK | 26 KHHssssLBBssSK
+26: 17 KHHHHK | 27 KHHSSssLBWsSK
+27: 17 KHHHHK | 28 KHHSSssBBsSK
+28: 18 KHHHK | 29 KSSsssSK
+29: 18 KHHHK | 27 KtUsLsTK
+30: 19 KHHK | 24 KttUUUsLTtK
+31: 19 KHHK | 22 KtUUUtttTWTtK
+32: 20 KHK.KtUUUttttTTWttK
+33: 21 KKtUUttTTttTTTWtttK
+34: 22 KtUUttTKttTTTTWtttK
+35: 22 KtUttTTKttTTTTWtttK
+36: 22 KtttTTTKttTTTTWtttK
+37: 23 KTTTTTKttTTTTTWtttK
+38: 23 KTTTTKttTTTTTTWtUUtK
+39: 24 KTTTKttTTTTTTTWtUUtK
+40: 24 KtUsLKtTRRRRRRWtttTK
+41: 24 KsLsSKTRRRRRTTTKttTK
+42: 25 KssSKtTKPppKTTK.KUsLK
+43: 26 KSSKttTKPpppKTTKKssLsK
+44: 25 KtUUttTKPppPPKTTKKssSKHK
+45: 24 KtUUttTKPppPPpKTTK.KHiIW
+46: 24 KtUttTTKpppPPppKTTK...iIW
+47: 24 KttTTTTKppPPppppKTTK...iIW
+48: 25 KTTTTTKppPPKpppppKTK....iIW
+49: 26 KTTTTKpppPK.KPppppKK.....iIW
+50: 27 KTTTKpppPK..KPppppK.......iIW
+51: 28 KTTKppppK...KPpppPK........iIW
+52: 29 KKKppppPK...KPpppPK.........iIW
+53: 30 KPppppPK....KPpppPK..........iIW
+54: 30 KPpppPK.....KPpppPK | 60 iIW
+55: 29 KPpppPK......KPppPK............iIW
+56: 29 KPppPK.......KPppPK.............IW
+57: 28 KPPPPK.......KPPPPK..............W
+58: 28 KHhhHK.......KHhhHK
+59: 27 KHHHHHK......KHHHHHK
+60: 27 KKKKKKK......KKKKKKK
+''','actions')
+author('stun_b','''
+3: 19 L
+4: 18 LWL
+5: 17 LWWSL
+6: 18 LWL
+7: 19 S
+8: 22 KHHK
+9: 20 KHHhhHK
+10: 19 KHhhhHHK
+11: 18 KHHhHHHHHKKK
+12: 17 KHHHHHhHHhhhHHK | 49 L
+13: 16 KHHHNNnHHhhhhHHK | 48 LWL
+14: 15 KHhhNNnKHHHHHHHHK | 47 LWWSL
+15: 14 KHhhHK | 23 KHHHssssSSHK | 48 LWL
+16: 14 KHhHHK | 23 KHHLssLLLLsHK | 49 S
+17: 13 KHhhHK | 23 KHHssLLLLLLssK
+18: 13 KHhHHK | 23 KHHssLLLLLLsssK
+19: 13 KHhHHK | 23 KHHssLLBBLLBBsSK
+20: 13 KHhHHK | 23 KHHssLLLLLLsssSK
+21: 13 KHhHHK | 23 KHHssLLWKLLWKsSK
+22: 13 KHHHHK | 23 KHHssLLLLLLssLLK
+23: 14 KHhHHK | 24 KHHssLLLLLLssSK
+24: 14 KHhHHK | 24 KHHssssLBBssSK
+25: 14 KHHHHK | 25 KHHSSssLBWsSK
+26: 14 KHHHHK | 26 KHHSSssBBsSK
+27: 15 KHHHK | 27 KSSsssSK
+28: 15 KHHHK | 25 KtUsLsTK
+29: 16 KHHK | 22 KttUUUsLTtK
+30: 16 KHHK | 20 KtUUUtttTWTtK
+31: 17 KHK.KtUUUttttTTWttK
+32: 18 KKtUUttTTttTTTWtttK
+33: 19 KtUUttTKttTTTTWtttK
+34: 19 KtUttTTKttTTTTWtttK
+35: 19 KtttTTTKttTTTTWtttK
+36: 20 KTTTTTKttTTTTTWtttK
+37: 20 KTTTTKttTTTTTTWtUUtK
+38: 21 KTTTKttTTTTTTTWtUUtK
+39: 21 KtUsLKtTRRRRRRWtttTK
+40: 21 KsLsSKTRRRRRTTTKttTK
+41: 22 KssSKtTKPppKTTK.KUsLK
+42: 23 KSSKttTKPpppKTTKKssLsK
+43: 22 KtUUttTKPppPPKTTKKssSKHK
+44: 22 KtUUttTKPppPPpKTTK.KHiIW
+45: 22 KtUttTTKpppPPppKTTK...iIW
+46: 23 KttTTTTKppPPppppKTTK...iIW
+47: 24 KTTTTTKppPPKpppppKTK....iIW
+48: 25 KTTTTKpppPK.KPppppKK.....iIW
+49: 26 KTTTKpppPK..KPppppK.......iIW
+50: 27 KTTKppppK...KPpppPK........iIW
+51: 28 KKKppppPK...KPpppPK.........iIW
+52: 29 KPppppPK....KPpppPK..........iIW
+53: 29 KPpppPK.....KPpppPK...........iIW
+54: 28 KPpppPK......KPppPK............iIW
+55: 28 KPppPK.......KPppPK | 60 iIW
+56: 27 KPppPK.......KPPPPK..............IW
+57: 27 KPPPPK.......KHhhHK...............W
+58: 27 KHhhHK.......KHHHHHK
+59: 26 KHHHHHK......KHHHHHHK
+60: 26 KKKKKKK......KKKKKKKK
+''','actions')
+author('sleep_a','''
+11: 25 KHHK
+12: 23 KHHhhHK
+13: 22 KHhhhHHK
+14: 22 KHhHHHHHKKKK
+15: 21 KHHHHHhHHhhhHHK
+16: 20 KHHHNNnHHhhhhHHK
+17: 19 KHhhNNnKHHHHHHHHK
+18: 18 KHhhHK | 26 KHHHssssSSHK
+19: 18 KHhHHK | 26 KHHLssLLLLsHK
+20: 17 KHhhHK | 26 KHHssLLLLLLssK
+21: 17 KHhHHK | 26 KHHssLLLLLLsssK
+22: 17 KHhHHK | 26 KHHssLLBBLLBBsSK
+23: 17 KHhHHK | 26 KHHssLLLLLLsssSK
+24: 17 KHhHHK | 26 KHHssLLBBLLBBsSK
+25: 17 KHHHHK | 26 KHHssLLLLLLssLLK
+26: 18 KHhHHK | 27 KHHssLLLLLLssSK
+27: 18 KHhHHK | 27 KHHssssLLsssSK
+28: 18 KHHHHK | 28 KHHSSsssLBsSK
+29: 18 KHHHHK | 29 KHHSSssssSK
+30: 19 KHHHK | 30 KSSsssSK
+31: 19 KHHHK | 28 KtUsLsTK
+32: 20 KHHK | 25 KttUUUsLTtK
+33: 20 KHHK.KtUUUtttTWTtK
+34: 21 KHK.KtUUttttTTWttTK
+35: 22 KK.KtUUttTTttTWtttK
+36: 24 KtUUttTKttTTTTWttTK
+37: 24 KtUttTTKttTTTTWttTK
+38: 24 KtttTTTKttTTTTWtUUtK
+39: 25 KTTTTTKttTTTTTWtUUtK
+40: 26 KtUsLKttTTTTTTWtttTK
+41: 26 KsLsSKTRRRRRRRKtttTK
+42: 27 KssSKTRRRRRTTTKssLsK
+43: 27 KtUttTTKPppKTTKssLsSKHK
+44: 26 KtUUttTKPpppKTTKSSSK | 45 iIW
+45: 26 KtUUttTKPppPPKTTK | 46 iIW
+46: 25 KtUttTTKpppPPpKTTK | 47 iIW
+47: 25 KttTTTTKppPPpppKTTK | 48 iIW
+48: 26 KTTTTTKppPPKppppKTK | 49 iIW
+49: 27 KTTTTKpppPK.KPpppKK | 50 iIW
+50: 28 KTTTKpppPK..KPpppPK | 51 iIW
+51: 29 KTTKppppK...KPpppPK | 52 iIW
+52: 30 KKKppppPK...KPpppPK | 53 iIW
+53: 31 KPppppPK....KPpppPK | 54 iIW
+54: 31 KPpppPK.....KPpppPK | 55 iIW
+55: 30 KPpppPK......KPppPK | 56 iIW
+56: 30 KPppPK.......KPppPK | 57 iIW
+57: 29 KPPPPK.......KPPPPK | 58 iIW
+58: 29 KHhhHK.......KHhhHK | 59 IW
+59: 28 KHHHHHK......KHHHHHK | 60 W
+60: 28 KKKKKKK......KKKKKKK
+''','actions')
+author('sleep_b','''
+12: 26 KHHK
+13: 24 KHHhhHK
+14: 23 KHhhhHHK
+15: 23 KHhHHHHHKKKK
+16: 22 KHHHHHhHHhhhHHK
+17: 21 KHHHNNnHHhhhhHHK
+18: 20 KHhhNNnKHHHHHHHHK
+19: 19 KHhhHK | 27 KHHHssssSSHK
+20: 19 KHhHHK | 27 KHHLssLLLLsHK
+21: 18 KHhhHK | 27 KHHssLLLLLLssK
+22: 18 KHhHHK | 27 KHHssLLLLLLsssK
+23: 18 KHhHHK | 27 KHHssLLBBLLBBsSK
+24: 18 KHhHHK | 27 KHHssLLLLLLsssSK
+25: 18 KHhHHK | 27 KHHssLLBBLLBBsSK
+26: 18 KHHHHK | 27 KHHssLLLLLLssLLK
+27: 19 KHhHHK | 28 KHHssLLLLLLssSK
+28: 19 KHhHHK | 28 KHHssssLLsssSK
+29: 19 KHHHHK | 29 KHHSSsssBBsSK
+30: 19 KHHHHK | 30 KHHSSssssSK
+31: 20 KHHHK | 31 KSSsssSK
+32: 20 KHHHK | 28 KtUUsLsTK
+33: 21 KHHK.KttUUUUsLTtK
+34: 21 KHHKKtUUUUtttTWTtK
+35: 22 KHKtUUUttttTTTWttTK
+36: 23 KtUUUttTTttTTTWtttK
+37: 23 KtUUttTTKttTTTWttTK
+38: 24 KtUttTTTKttTTTWtUUtK
+39: 24 KtttTTTKttTTTTWtUUtK
+40: 25 KTTTTTKttTTTTTWtttTK
+41: 26 KtUsLKTRRRRRRRKtttTK
+42: 26 KsLsSKRRRRRTTTKssLsK
+43: 27 KssSKTTKPppKTTKssLsSKHK
+44: 27 KtUttTTKPpppKTTKSSSK | 45 iIW
+45: 26 KtUUttTKPppPPKTTK | 46 iIW
+46: 26 KtUttTTKpppPPpKTTK | 47 iIW
+47: 26 KttTTTTKppPPpppKTTK | 48 iIW
+48: 27 KTTTTTKppPPKppppKTK | 49 iIW
+49: 28 KTTTTKpppPK.KPpppKK | 50 iIW
+50: 29 KTTTKpppPK..KPpppPK | 51 iIW
+51: 30 KTTKppppK...KPpppPK | 52 iIW
+52: 31 KKKppppPK...KPpppPK | 53 iIW
+53: 32 KPppppPK....KPpppPK | 54 iIW
+54: 32 KPpppPK.....KPpppPK | 55 iIW
+55: 31 KPpppPK......KPppPK | 56 iIW
+56: 31 KPppPK.......KPppPK | 57 iIW
+57: 30 KPPPPK.......KPPPPK | 58 iIW
+58: 30 KHhhHK.......KHhhHK | 59 IW
+59: 29 KHHHHHK......KHHHHHK | 60 W
+60: 29 KKKKKKK......KKKKKKK
+''','actions')
+# Final hand/steel corrections: every run below is independently specified.
+def pixels(name,spec,folder='poses'):
+    path=ROOT/folder/f'{name}.pxgrid';rows=[list(r) for r in path.read_text().splitlines()]
+    for line in spec.strip().splitlines():
+        y,rest=line.split(':',1);y=int(y)
+        for run in rest.strip().split('|'):
+            x,p=run.strip().split();x=int(x);rows[y][x:x+len(p)]=p
+    path.write_text('\n'.join(''.join(r) for r in rows)+'\n')
+pixels('move','''
+35: 39 KHWIi
+36: 39 HK
+''')
+replace_rows('attack','''
+40: 22 KtUUttTKPppKTTTTKSSKHiIW
+41: 20 KtUUttTKPpppKTTTTK | 44 iIW
+42: 18 KtUUttTKPppPPKTTTK | 45 iIW
+43: 16 KtUUttTKPppPPpKTTK | 46 iIW
+44: 14 KtUUttTKPppPPppKTTK | 47 iIW
+45: 13 KtUUttTKpppPPpppKTTK | 48 iIW
+46: 13 KtUttTTKppPPKppppKTTK | 49 iIW
+47: 14 KttTTTKppPPK.PppppKTTK | 50 iIW
+48: 15 KTTTTKpppPK..KPppppKTK | 51 iIW
+49: 16 KTTTKpppPK....KPppppKK | 52 iIW
+50: 17 KTTKpppPK......KPppppK | 53 iIW
+51: 18 KKppppPK........KPppppK | 54 iIW
+52: 19 KPppppK..........KPppppK | 55 iIW
+53: 18 KPpppPK............KPpppK | 56 iIW
+54: 17 KPpppPK..............KPpppK | 57 iIW
+55: 16 KPpppPK................KPppK | 58 IW
+56: 15 KPPPPPK..................KPPPK | 59 W
+''')
+replace_rows('recover','''
+40: 23 KtUUttTKPppKTTK.KHK | 42 iIW
+41: 22 KtUUttTKPpppKTTK | 43 iIW
+42: 21 KtUUttTKPppPPKTTK | 44 iIW
+43: 20 KtUUttTKPppPPpKTTK | 45 iIW
+44: 20 KtUttTTKpppPPppKTTK | 46 iIW
+45: 20 KttTTTTKppPPppppKTTK | 47 iIW
+46: 21 KTTTTTKppPPKpppppKTK | 48 iIW
+47: 22 KTTTTKpppPK.KPppppKK | 49 iIW
+48: 23 KTTTKpppPK..KPppppK | 50 iIW
+49: 24 KTTKppppK...KPpppPK | 51 iIW
+50: 25 KKKppppPK...KPpppPK | 52 iIW
+51: 27 KPppppPK....KPpppPK | 53 iIW
+52: 27 KPpppPK.....KPpppPK | 54 iIW
+53: 26 KPpppPK......KPppPK | 55 iIW
+54: 26 KPppPK.......KPppPK | 56 iIW
+55: 25 KPppPK........KPPPK | 57 iIW
+56: 25 KPPPPK........KHhHK | 58 IW
+57: 25 KHhhHK........KHhhHK | 59 W
+''')
+replace_rows('hit','''
+38: 25 KtUUttRRRRRTTTK | 43 iIW
+39: 25 KtUUttTKPppKTTK | 44 iIW
+40: 24 KtUUttTKPpppKTTK | 45 iIW
+41: 24 KtUUttTKPppPPKTTK | 46 iIW
+42: 23 KtUUttTKPppPPpKTTK | 47 iIW
+43: 23 KtUttTTKpppPPppKTTK | 48 iIW
+44: 22 KtUttTTKppPPppppKTTK | 49 iIW
+45: 22 KttTTTTKppPPKppppKTTK | 50 iIW
+46: 23 KTTTTTKpppPK.KppppKTK | 51 iIW
+47: 24 KTTTTKpppPK..KPppppKK | 52 iIW
+48: 25 KTTTKpppPK...KPppppK | 53 iIW
+49: 26 KTTKpppPK.....KPpppPK | 54 iIW
+50: 27 KKKppppPK.....KPpppPK | 55 iIW
+51: 29 KPppppK.......KPppppK | 56 iIW
+52: 28 KPppppK........KPpppK | 57 iIW
+53: 27 KPpppPK.........KPpppK | 58 iIW
+54: 26 KPpppPK..........KPpppK | 59 iIW
+55: 25 KPpppPK...........KPppPK | 60 IW
+56: 25 KPPPPK............KPPPPK | 61 W
+''')
+replace_rows('skill_c','''
+40: 23 KtUUttTKPppKTTK.KHK | 42 iIW
+41: 22 KtUUttTKPpppKTTK | 43 iIW
+42: 21 KtUUttTKPppPPKTTK | 44 iIW
+43: 21 KtUUttTKPppPPpKTTK | 45 iIW
+44: 21 KtUttTTKpppPPppKTTK | 46 iIW
+45: 22 KttTTTTKppPPppppKTTK | 47 iIW
+46: 23 KTTTTTKppPPKpppppKTK | 48 iIW
+47: 24 KTTTTKpppPK.KPppppKK | 49 iIW
+48: 25 KTTTKpppPK..KPppppK | 50 iIW
+49: 26 KTTKppppK...KPpppPK | 51 iIW
+50: 27 KKKppppPK...KPpppPK | 52 iIW
+51: 29 KPppppPK....KPpppPK | 53 iIW
+52: 29 KPpppPK.....KPpppPK | 54 iIW
+53: 28 KPpppPK......KPppPK | 55 iIW
+54: 28 KPppPK.......KPppPK | 56 iIW
+55: 27 KPppPK........KPPPK | 57 iIW
+56: 27 KPPPPK........KHhHK | 58 IW
+57: 27 KHhhHK........KHhhHK | 59 W
+''','actions')
+replace_rows('poison_a','''
+43: 25 KtUUttTKPppKTTTTK | 47 iIW
+44: 25 KtUUttTKPpppKTTTK | 48 iIW
+45: 24 KtUUttTKPppPPKTTK | 49 iIW
+46: 24 KtUttTTKpppPPpKTTK | 50 iIW
+47: 24 KttTTTTKppPPpppKTTK | 51 iIW
+48: 25 KTTTTTKppPPKppppKTK | 52 iIW
+49: 26 KTTTTKpppPK.KPpppKK | 53 iIW
+50: 27 KTTTKpppPK..KPpppPK | 54 iIW
+51: 28 KTTKppppK...KPpppPK | 55 iIW
+52: 29 KKKppppPK...KPpppPK | 56 iIW
+53: 30 KPppppPK....KPpppPK | 57 iIW
+54: 30 KPpppPK.....KPpppPK | 58 iIW
+55: 29 KPpppPK......KPppPK | 59 iIW
+56: 29 KPppPK.......KPppPK | 60 IW
+57: 28 KPPPPK.......KPPPPK | 61 W
+''','actions')
+replace_rows('poison_b','''
+45: 24 KtUUttTKPpppKTTK | 43 iIW
+46: 23 KtUUttTKPppPPKTTK | 44 iIW
+47: 23 KtUttTTKpppPPpKTTK | 45 iIW
+48: 23 KttTTTTKppPPpppKTTK | 46 iIW
+49: 24 KTTTTTKppPPKppppKTK | 47 iIW
+50: 25 KTTTTKpppPK.KPpppKK | 48 iIW
+51: 26 KTTTKpppPK..KPpppPK | 49 iIW
+52: 27 KTTKppppK...KPpppPK | 50 iIW
+53: 28 KKKppppPK...KPpppPK | 51 iIW
+54: 29 KPppppPK....KPpppPK | 52 iIW
+55: 28 KPpppPK.....KPpppPK | 53 iIW
+56: 27 KPpppPK......KPppPK | 54 iIW
+57: 26 KPPPPPK......KPPPPK | 55 iIW
+58: 25 KHhhhHK......KHhhHK | 56 IW
+59: 24 KHHHHHHK.....KHHHHHK | 57 W
+''','actions')
+replace_rows('stun_a','''
+45: 24 KtUUttTKPppPPpKTTK | 47 iIW
+46: 24 KtUttTTKpppPPppKTTK | 48 iIW
+47: 24 KttTTTTKppPPppppKTTK | 49 iIW
+48: 25 KTTTTTKppPPKpppppKTK | 50 iIW
+49: 26 KTTTTKpppPK.KPppppKK | 51 iIW
+50: 27 KTTTKpppPK..KPppppK | 52 iIW
+51: 28 KTTKppppK...KPpppPK | 53 iIW
+52: 29 KKKppppPK...KPpppPK | 54 iIW
+53: 30 KPppppPK....KPpppPK | 55 iIW
+54: 30 KPpppPK.....KPpppPK | 56 iIW
+55: 29 KPpppPK......KPppPK | 57 iIW
+56: 29 KPppPK.......KPppPK | 58 IW
+57: 28 KPPPPK.......KPPPPK | 59 W
+''','actions')
+replace_rows('stun_b','''
+44: 22 KtUUttTKPppPPpKTTK | 44 iIW
+45: 22 KtUttTTKpppPPppKTTK | 45 iIW
+46: 23 KttTTTTKppPPppppKTTK | 46 iIW
+47: 24 KTTTTTKppPPKpppppKTK | 47 iIW
+48: 25 KTTTTKpppPK.KPppppKK | 48 iIW
+49: 26 KTTTKpppPK..KPppppK | 49 iIW
+50: 27 KTTKppppK...KPpppPK | 50 iIW
+51: 28 KKKppppPK...KPpppPK | 51 iIW
+52: 29 KPppppPK....KPpppPK | 52 iIW
+53: 29 KPpppPK.....KPpppPK | 53 iIW
+54: 28 KPpppPK......KPppPK | 54 iIW
+55: 28 KPppPK.......KPppPK | 55 iIW
+56: 27 KPppPK.......KPPPPK | 56 IW
+57: 27 KPPPPK.......KHhhHK | 57 W
+''','actions')
