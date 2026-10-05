@@ -20,7 +20,7 @@ import review_recovery
 # assembly/probe/publication keep exclusive access until independently isolated.
 PARALLEL_STAGES = frozenset(('plan', 'plan-review', 'survey', 'material-review',
     'art', 'art-layout-review', 'art-context-review', 'art-demo'))
-PARALLEL_KINDS = PARALLEL_STAGES | {'art-native'}
+PARALLEL_KINDS = PARALLEL_STAGES | {'art-native', 'seed-discover'}
 
 
 def admission(concept, jobs, slots, max_jobs):
@@ -80,7 +80,8 @@ def recover(cid):
 
 
 def main(ids):
-    if not ids or any(not store.concept(cid) for cid in ids):
+    keywords = os.environ.get('SUPER_HARNESS_KEYWORDS') == '1'
+    if (not ids and not keywords) or any(not store.concept(cid) for cid in ids):
         raise ValueError('실행할 기존 공간 id를 명시해야 합니다.')
     folder = Path(sh.DATA) / 'monitoring' / os.environ.get('SUPER_HARNESS_RUNNER_ID', 'requested-spaces')
     folder.mkdir(parents=True, exist_ok=True)
@@ -94,6 +95,7 @@ def main(ids):
                 'material-review': sh.start_material_review, 'art': sh.start_art,
                 'art-demo': sh.start_art_demo, 'art-layout-review': sh.start_art_layout_review, 'art-context-review': sh.start_art_context_review,
                 'build': sh.start_build, 'review': sh.start_reviews, 'probe': sh.step_probe, 'bake': sh.start_bake}
+    base_ids = list(ids)
     cursor = 0
     slots = max(1, int(os.environ.get('SUPER_HARNESS_SPACE_PARALLEL', '3')))
     # Bound inner prop pools too: three spaces must not fan out to 96 workers.
@@ -110,10 +112,25 @@ def main(ids):
         while True:
             try:
                 sh.reap()
+                ids = list(dict.fromkeys(base_ids + (sh.keyword_seeds.members() if keywords else [])))
+                # Required/child spaces must run too; do not resume unrelated concepts.
+                known = {c['id']: c for c in store.concepts()}
+                scope = set(ids)
+                while True:
+                    linked = {r for cid in scope for r in known[cid].get('requires', []) if r in known}
+                    linked.update(c['id'] for c in known.values() if c.get('parent') in scope and c['stage'] != 'discarded')
+                    if linked <= scope: break
+                    scope.update(linked)
+                ids += sorted(scope - set(ids))
                 # The main scheduler owns global runs. This service owns only the
                 # named requests while global discovery remains paused.
                 waits = {}
                 if not draining and store.setting('paused') == '1':
+                    if keywords: sh.keyword_seeds.tick(sh, slots)
+                    sh.release_waiting(ids)
+                    for cid in ids:
+                        if store.concept(cid)['stage'] == 'discovered':
+                            store.update_concept(cid, stage='plan', status='queued')
                     start = cursor
                     exclusive = next((c['id'] for c in (store.concept(cid) for cid in ids)
                         if c['stage'] in handlers and c['stage'] not in PARALLEL_STAGES
