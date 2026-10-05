@@ -17,7 +17,7 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ```
 
 `produce`는 작업을 터미널과 독립적으로 시작한다. 화면에서도 개수·선택적인 전체 방향·참고 그림을 넣어 시작할 수 있다.
-검토 대기로 대량 주문이 멈추면 `python3 src/harnesses/charset-actor/continuous.py --run RUN --out /absolute/new-folder --par 2`로 미완성 행만 연속 제작한다. 기존 작업자를 마친 후 같은 봉인 기준의 최대 40종 묶음으로 배분하며 각 묶음은 검토 없이 끝까지 제작한다. 원래 픽셀/선택/manifest를 보존하고 동시 예약은 2명이다. 원래 URL에서도 이어 만든 후보가 보이며 주문 수를 중복 합산하지 않는다. 상세 배분/중단 계약은 실행 지침의 「검토를 기다리지 않는 연속 제작」이다.
+검토 대기로 대량 주문이 멈추면 `python3 src/harnesses/charset-actor/continuous.py --run RUN --out /absolute/new-folder --par 2`로 미완성 행만 연속 제작한다. 기존 작업자를 마친 후 같은 봉인 기준의 최대 40종 묶음으로 배분하며 각 묶음은 검토 없이 끝까지 제작한다. 원래 픽셀/선택/manifest를 보존하고 동시 예약은 2명이다. 원래 URL에서도 여러 번 이어 만든 후보까지 보이며 주문 수를 중복 합산하지 않는다. 순서 대기 묶음은 자동 제작 예정으로 표시하며 사용자가 정지하면 자동 시작하지 않는다. 상세 배분/중단 계약은 실행 지침의 「검토를 기다리지 않는 연속 제작」이다.
 「에디터 전체 원본으로 다양하게」/`--all-sources`는 실제 `charsetCatalog.ts` 공급자 목록을 읽어 Actor/People/Monster1~6/Scarloxy/농장 동물/Template 원본을 고루 섞는다.
 100종은 일반 92종+Animal 전용 8종의 같은 공방 제작 묶음이다. Animal의 몸통/앞·뒷발 정책을 유지한다. 전체 21시트·호환 원본 141칸을 봉인하고 빈 칸/정지 기물/팔레트 상한 초과는 원본 입고에서 제외한다.
 `catalog_sources.py`는 원본 배경 처리만 명시적으로 정규화한다. 크기/불투명 RGB/팔레트는 바꾸지 않고 재읽는다. 원본·카탈로그 사본·라이선스·작업자 지시·입고 제외 사유·도구 해시는 기준과 선택 팩에 보존된다.

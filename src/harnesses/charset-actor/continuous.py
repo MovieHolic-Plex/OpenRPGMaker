@@ -92,7 +92,7 @@ def prepare(folder, runs):
                         next_manifest['characters'].append(candidate)
                     H.write_json_atomic(root / 'manifest.json', next_manifest)
                     H.write_json_atomic(root / 'production.json', dict(par=1, batchSize=1))
-                    H.write_json_atomic(root / 'production-state.json', dict(phase='paused', at=H.now(),
+                    H.write_json_atomic(root / 'production-state.json', dict(phase='queued', at=H.now(),
                                                                            remaining=len(rows), active=0))
                     R.verify_run(root, next_manifest, check_tools=True)
                 allocated = sum(len(json.loads((p / 'manifest.json').read_text())['characters']) for p in prepared)

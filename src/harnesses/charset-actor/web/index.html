@@ -137,7 +137,11 @@ const name=it=>it.desc?.label||it.name;
 let noticeTimer=null;
 function notice(text,error=false){clearTimeout(noticeTimer);$('notice').textContent=text;$('notice').classList.toggle('error',error);if(text&&!error)noticeTimer=setTimeout(()=>{$('notice').textContent=''},3500)}
 async function post(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:path==='/api/decide'?AbortSignal.timeout(12000):undefined});const result=await response.json();if(!response.ok){const error=Error(result.error||'저장 실패');error.status=response.status;throw error}return result}
-function scoped(){return state.items.map(displayed).filter(it=>(run==='all'||it.run===run||state.runs.find(r=>r.run===it.run)?.continuationOf===run)&&(kind==='all'||(kind==='creatures')===isCreature(it)))}
+function scoped(){
+  const parents=new Map(state.runs.map(r=>[r.run,r.continuationOf]));
+  const includes=id=>{if(run==='all')return true;const seen=new Set();while(id&&!seen.has(id)){if(id===run)return true;seen.add(id);id=parents.get(id)}return false};
+  return state.items.map(displayed).filter(it=>includes(it.run)&&(kind==='all'||(kind==='creatures')===isCreature(it)))
+}
 function visible(){return scoped().filter(it=>{if(dismissed.has(imageKey(it)))return false;const decision=it.decision?.decision;if(tab==='todo'&&(decision||it.status!=='done'))return false;if(tab==='accept'&&decision!=='accept')return false;if(tab==='reject'&&decision!=='reject')return false;return [name(it),it.desc?.appearance,it.desc?.role,...(it.desc?.tags||[])].join(' ').toLowerCase().includes(query.toLowerCase())})}
 function move(step){const rows=visible(),idx=rows.findIndex(it=>it.id===current);if(!rows.length)return;current=rows[Math.max(0,Math.min(rows.length-1,idx+step))].id;render()}
 const walkFile=it=>it.alpha_previews_fresh&&reviewBackground!=='lawn'?`views/walk_${reviewBackground}.gif`:'views/walk.gif';
@@ -146,7 +150,7 @@ async function load(){if(loading)return;loading=true;if(pollTimer){clearTimeout(
 function schedulePoll(delay=5000){if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(()=>{pollTimer=null;if(document.visibilityState==='visible'&&!flushing)load();else schedulePoll()},delay)}
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')load()});
 
-const phaseLabels={running:'제작 중', 'waiting-review':'검토 후 이어 제작', pausing:'현재 캐릭터 완성 후 정지', paused:'일시 정지', completed:'완료', continued:'다음 작업으로 이어짐', failed:'제작 오류', interrupted:'중단됨'};
+const phaseLabels={running:'제작 중', 'waiting-review':'검토 후 이어 제작', pausing:'현재 캐릭터 완성 후 정지', paused:'일시 정지', queued:'순서 대기 · 자동 제작 예정', completed:'완료', continued:'다음 작업으로 이어짐', failed:'제작 오류', interrupted:'중단됨'};
 function runLabel(id){
   const r=state.runs.find(r=>r.run===id), prefix=r?.title||(r?.animalPolicy?'동물 몬스터':id.includes('-reference-')?'참고 그림 변주':id.includes('-kept-')?'남긴 캐릭터 변주':id.includes('-free-')?'새로운 인물':'캐릭터 모음');
   const m=id.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/);
@@ -154,7 +158,7 @@ function runLabel(id){
 }
 function productionCards(rows){
   return rows.map(r=>{
-    const active=['running','waiting-review','pausing'].includes(r.phase);
+    const active=['running','waiting-review','pausing','queued'].includes(r.phase);
     return `<section class="production"><h3>${esc(runLabel(r.run))}</h3><p>${esc(phaseLabels[r.phase]||r.phase)} · ${r.ready} / ${r.planned}종 완성</p><div class="progress" role="progressbar" aria-label="${esc(runLabel(r.run))} 완성" aria-valuenow="${r.ready}" aria-valuemin="0" aria-valuemax="${r.planned}"><i style="width:${Math.min(100,r.ready/Math.max(1,r.planned)*100)}%"></i></div><div class="row"><span class="badge">검토 ${r.awaiting} · 남김 ${r.kept} · 폐기 ${r.rejected}${r.blocked?` · 결손 차단 ${r.blocked}`:''}</span>${['completed','continued'].includes(r.phase)?'':`<button data-control="${active?'pause':'resume'}" data-run="${esc(r.run)}" ${r.phase==='pausing'?'disabled':''}>${active?'일시 정지':'이어 만들기'}</button>`}</div>${r.continuedIn?'<p>남은 캐릭터는 새 작업에서 이어 만들고 있습니다.</p>':''}${r.error?`<p class="error">${esc(r.error)}</p>`:''}</section>`;
   }).join('');
 }
