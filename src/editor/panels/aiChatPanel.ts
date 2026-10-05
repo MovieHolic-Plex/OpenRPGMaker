@@ -162,6 +162,7 @@ import {
   applyAiRenderWeight,
   loadAiFontSize,
   loadAiRenderWeight,
+  loadPanelCollapsed,
   saveAiFontSize,
   savePanelCollapsed,
   stepAiFontSize,
@@ -565,8 +566,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // executeTurn/영역 작업 콜백은 패널 크롬을 만들기 전에 정의되므로, 접힘 상태도
   // 같은 초기화 구간에 둔다. 아래 크롬 구간에서 선언하면 자동 복원 sendText가
   // TDZ 상태의 collapsed를 읽어 턴을 시작하기 전에 실패한다.
-  // Floating-panel collapse preferences do not hide the new persistent sidebar.
-  let collapsed = false;
+  // The right conversation dock owns the same explicit folding preference.
+  let collapsed = loadPanelCollapsed();
   let autoCollapseTimer: number | null = null;
   // Pending questions keep the conversation engaged even without promoted reply chips.
   let pendingQuestion = false;
@@ -2738,10 +2739,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 접기 토글 — 상태는 localStorage에 유지되어 새로고침/모드 전환 후에도 기억된다.
   const collapseButton = el("button", {
     class: "ai-chat-collapse ai-composer-menu-btn",
-    attrs: { type: "button", title: "AI 패널 접기", "aria-label": "AI 패널 접기", "aria-expanded": String(!collapsed) },
+    attrs: { type: "button", title: "AI 패널 접기", "aria-label": "AI 패널 접기", "aria-controls": "ai-panel-deck", "aria-expanded": String(!collapsed) },
     dataset: { testid: "ai-collapse" },
   }) as HTMLButtonElement;
   const collapsedRestore = createDirectorRestoreButton();
+  collapsedRestore.setAttribute("aria-controls", "ai-panel-deck");
+  collapsedRestore.setAttribute("aria-label", "AI 패널 펼치기");
   // 접힘 상태에서도 되돌리기가 남아야 한다 — 컴포저 행은 접히면 display:none 이다.
   // 클릭을 컴포저 버튼으로 위임해 동작·배지·말풍선이 한 경로만 지나게 한다.
   const collapsedUndo = createCollapsedUndoButton(() => {
@@ -3345,6 +3348,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamPanel = createTeamPanel(loadAiConfig().piTeam ?? DEFAULT_PI_TEAM, { alwaysVisible: true });
   const deck = el("div", {
     class: "ai-deck",
+    attrs: { id: "ai-panel-deck" },
     dataset: { testid: "ai-deck" },
     children: [rail.root, createActivityToolbar(() => store.getProjectIdentity().id), body, outcomeSlot, commandBar],
   });
@@ -3551,7 +3555,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const syncCollapseButtonChrome = (): void => {
     const shut = collapsed;
     const label = shut ? "AI 패널 펼치기" : "AI 패널 접기";
-    collapseButton.replaceChildren(deckIcon(shut ? "chevron-right" : "chevron-down"));
+    collapseButton.replaceChildren(deckIcon(studio ? "chevron-down" : "chevron-right"));
     collapseButton.setAttribute("title", label);
     collapseButton.setAttribute("aria-label", label);
     collapseButton.setAttribute("aria-expanded", String(!shut));
@@ -3565,6 +3569,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     syncCollapseButtonChrome();
     collapsedRestore.setAttribute("aria-expanded", String(!collapsed));
+    deck.inert = collapsed;
+    toolbar.inert = collapsed;
+    stickyProposalZone.inert = collapsed;
+    panel.dispatchEvent(new Event("oprn:ai-panel-collapse", { bubbles: true }));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
     syncDeckState();
@@ -3589,10 +3597,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false;
   };
   const toggleCollapsed = (): void => {
-    if (!studio) {
-      if (typeof window !== "undefined") window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
-      return;
-    }
     clearAutoCollapseTimer();
     collapsed = !collapsed;
     // 수동으로 접으면 예약 취소. 수동으로 펼치면 다음 AI 턴 전까지는 연 상태 유지.
@@ -3601,11 +3605,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (collapsed && historyOpen) applyHistoryOpen(false);
     savePanelCollapsed(collapsed);
     applyCollapsed();
+    if (collapsed) collapsedRestore.focus({ preventScroll: true });
     // 턴 중에 접혔는지가 「답장이 안 보였다」류 신고의 갈림길이다.
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed, turnBusy, via: "toggle" } });
   };
   const restoreCollapsed = (): void => {
-    if (typeof window !== "undefined") window.dispatchEvent(new Event("oprn:ai-sidebar-show"));
     // 공개 진입점("조수 열기" · openAiAssistantPanel · 브리지 open)이 여기로 온다.
     if (!collapsed) return;
     clearAutoCollapseTimer();
@@ -3613,6 +3617,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false; // 레일 클릭으로 연 직후 타이머에 다시 접히지 않게
     savePanelCollapsed(false);
     applyCollapsed();
+    collapseButton.focus({ preventScroll: true });
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed: false, turnBusy, via: "rail" } });
   };
   collapseButton.addEventListener("click", toggleCollapsed);

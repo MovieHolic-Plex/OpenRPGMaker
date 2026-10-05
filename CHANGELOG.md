@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.132.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — collect feedback on rendered space examples (`a55dc29`)
+- let assistants author map OST and preload gameplay during openings (`7477188`)
+
+### 수정
+
+- **super-harness** — guide chip choices with side-by-side parts (`2843cb1`)
+- capture deferred Phaser keyboard events only once (`f5db3e0`)
+- verify saved audio playback at the actual opening handoff (`2b85edd`)
+
+### 문서
+
+- verify integrated runtime and final SQLite audio revision (`56b160b`)
+- record canonical OST playback and background opening evidence (`fda51ae`)
+
 ## 0.131.0 — 2026-10-05
 
 ### 기능
