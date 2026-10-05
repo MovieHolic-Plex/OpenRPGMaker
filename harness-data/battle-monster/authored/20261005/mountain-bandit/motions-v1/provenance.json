@@ -1,0 +1,76 @@
+{
+  "createdAt": "2026-10-05T03:32:24.916560+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "a8cf59df-ce47-4499-b259-3bce1a862c1a",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:32:24.921061+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-"
+      ],
+      "promptSha256": "fa50f010bb30b6c87ea973588316cf077157c562074509b9624cf968aa2efae3",
+      "toolSha256": "80c1df184f2369d9ef2da183ca9d16c45527388894ab75c5c03a3963771ea0cf",
+      "imageHashes": {},
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T03:46:06.401784+00:00"
+    },
+    {
+      "id": "baac0c93-1849-4641-9c91-832c2b0b1a19",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:46:08.683530+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1/jobs/baac0c93-1849-4641-9c91-832c2b0b1a19",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-bandit/motions-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "519e9dd903d3acd2ef3f29e97b22b08de69c8ceabf4e1bfe93ac8f46ed35ccc1",
+      "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+      "imageHashes": {
+        "preview/suite/portrait.png": "5f24a632c40726f143936008def454942e623c79e40a8bf6e57fa2fbcec8970f",
+        "preview/suite/light.png": "5784c3b0dbd265c7d84663fcd78080011506d59ba9dbd28d9f574697ab375aea",
+        "preview/suite/dark.png": "b67179fa7beb4bd978a5208d0ec19d651274580fe43fee89a2219d5c00f7108f",
+        "preview/suite/checker.png": "9d16503f72b72bb97edf5d55880a55d4c62d2c715fff567ae113cb14c82afa1f"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T03:50:42.771199+00:00"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "968bcb71-a1c1-49c7-b532-20216d62c53b",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T03:45:47.623206+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/wild-boar/motions-v2/jobs/968bcb71-a1c1-49c7-b532-20216d62c53b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/wild-boar/motions-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/wild-boar/motions-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/wild-boar/motions-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/wild-boar/motions-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "f4c4b4805e102f7170756d30ce7bab421317c8c9db1c825465ae9b131b1177c5",
+  "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+  "imageHashes": {
+    "preview/suite/portrait.png": "49e3fe8181260c5c63b069ca0023b585d799d6b3a2f4a12c584f86b20e3c3d4c",
+    "preview/suite/light.png": "acdbe403f0006c8747aee47fce9aa8c1cbcfbdec9e10b0e509cdbf72a1e452c8",
+    "preview/suite/dark.png": "7fdcb76d12b4f6ab177360d06958ddaa4b4d126b182ff09feb84c292ba63c94e",
+    "preview/suite/checker.png": "fdb684251642ee06f6439dabb4ddbef06cfe710aeb330b09b75c731141674cd0"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T03:48:13.544427+00:00"
+}

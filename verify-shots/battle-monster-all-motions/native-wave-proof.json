@@ -1,0 +1,462 @@
+[
+  {
+    "key": "black-cloth-assassin/motions-v1",
+    "name": "흑건 자객",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "4a6ae545a7c71df12022fa91f1f7f300a6569735213a4ab179972791670d56f8",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "cult-sorcerer/motions-v1",
+    "name": "사교 술사",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "1ba5b5eaba4831c550b2666a89fbaaccf85ca5cadbbb89ff131faaf7e0f580f9",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "earthen-jar-fiend/motions-v2",
+    "name": "옹기귀",
+    "kind": "creature",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": true,
+    "binding": "d40de664fb837984ace7b689332f2ff6bf3f25bbf341182b523f8ecb37b78518",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "actions",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "fallen-taoist/motions-v1",
+    "name": "타락 도사",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "95f0d1ea5cbbfccfb1b0bc22a4a6ecd4e7cfcba283702f3920a24c1fc145e70c",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "keep"
+    }
+  },
+  {
+    "key": "jangseung-spirit/motions-v2",
+    "name": "장승귀",
+    "kind": "creature",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": true,
+    "binding": "8e03bcf8769d3fb92a6f118a2bebf074547ef72ec7dfd575e4d5bca227c47724",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "actions",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "mountain-bandit/motions-v1",
+    "name": "산적 칼잡이",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "0c9463541177db14e8cc9b20ea2ae8cefacaab744b11ba1edf1c59d971f51f16",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "mountain-spearman/motions-v1",
+    "name": "산채 창수",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "5aec314719268c8d43d2e8387329a98bc1c8fd2996bbc9407956e0fbd4c30d1e",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "venom-toad/motions-v2",
+    "name": "독두꺼비",
+    "kind": "creature",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": true,
+    "binding": "3deb59b70d863292550e186d428b7b8d78f88edde92086e79d9569a708fe81e0",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "actions",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "wandering-swordsman/motions-v1",
+    "name": "방랑 검객",
+    "kind": "human",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": null,
+    "binding": "9565b4849603a8271dd658d28c9ba3be38209f948b54734929548c84dbfc396c",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "complete",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  },
+  {
+    "key": "wild-boar/motions-v2",
+    "name": "멧돼지",
+    "kind": "creature",
+    "nativeCell": 64,
+    "nativeFrames": 18,
+    "gifCount": 8,
+    "sceneNames": [
+      "대기",
+      "공격",
+      "피격",
+      "쓰러짐",
+      "스킬",
+      "독",
+      "기절",
+      "수면"
+    ],
+    "gifFrames": [
+      4,
+      6,
+      3,
+      3,
+      5,
+      2,
+      2,
+      2
+    ],
+    "gifPixelAndTimingReread": true,
+    "nativePass": true,
+    "currentIndependentReview": true,
+    "corePreserved": true,
+    "binding": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+    "authorJobs": [
+      {
+        "model": "gpt-6.1-sol",
+        "effort": "high",
+        "phase": "actions",
+        "exitCode": 0
+      }
+    ],
+    "review": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "recommendation": "rework"
+    }
+  }
+]

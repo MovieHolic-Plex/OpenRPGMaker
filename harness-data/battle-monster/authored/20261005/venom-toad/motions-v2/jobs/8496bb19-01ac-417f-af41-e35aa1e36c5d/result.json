@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs, including the native 1x and nearest 3x panels on light, dark and checker backgrounds. The low, broad olive body, folded hind thigh, raised eye and right-facing snout read as a toad; the upper-left back highlights give useful volume. Inflation, open mouth, collapse, poison bubbles, stun stars and sleep are distinguishable. The checker panels show no obvious accidental holes through the main body; gaps between toes and limbs appear intentional. The skill_b dart visibly begins at the mouth, and poison-state bubbles are visually separate. Rework is recommended for the airborne move pose in this grounded shooting sequence, insufficient body lift in attack, and weak lower-limb separation on dark backgrounds. This is advisory review, not a user selection or visual approval from geometry checks. Static pose previews cannot establish playback timing, projectile travel, battle placement, runtime state behavior or literal-grid authorship; no actual battle footage was supplied. No hand-held tool connection applies to this creature.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 24,
+      "y": 54,
+      "message": "The lowest rear toe ends at y=54, six native pixels above the y=60 contact line, while both forefeet are also lifted. Between grounded windup and attack this reads as a floating hop rather than a planted shooting transition. Redraw the rear ankle/toe support down to y=60 and adjust the crouched thigh and foreleg reach to carry the lifted chest; do not simply shift the whole pose."
+    },
+    {
+      "pose": "attack",
+      "x": 42,
+      "y": 40,
+      "message": "The eye and upper back retain approximately the idle heights and the torso stays low; the large open jaw supplies almost all the action. For the specified rise-before-spitting action, redraw the chest/neck upward and reshape the shoulder and elbow support while retaining a planted foot at y=60. Make the raised firing stance connect visibly to the inflated windup and the taller skill_b stance."
+    },
+    {
+      "pose": "idle_a",
+      "x": 44,
+      "y": 57,
+      "message": "On the dark panel the near foreleg and toe contour merge into the background, and the far foreleg merges with the underside. Add a narrow existing midtone highlight inside the upper-left edge of the near shin around x=44,y=55..58 and a small distinct far-knee cluster around x=36,y=55..57; preserve the dark outer contour and transparent limb gaps. Carry this leg-volume treatment consistently into idle_b, idle_c and recover."
+    }
+  ]
+}

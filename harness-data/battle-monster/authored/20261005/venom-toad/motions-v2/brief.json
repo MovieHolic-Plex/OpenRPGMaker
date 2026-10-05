@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "venom-toad",
+    "name": "독두꺼비",
+    "resourceId": "jf-enemy-venom-toad",
+    "cell": 64,
+    "grounded": true,
+    "motion": "shoot",
+    "idleFrameMs": 240,
+    "silhouette": "낮고 넓은 올리브색 몸통, 둥근 볼, 쪼그린 네 발.",
+    "attack": "볼을 부풀려 준비 → 몸을 세워 입 벌리기 → 독침 발사 → 볼 가라앉히기.",
+    "skill": "독침뱉기. 발사체는 입에서 출발하며 독 상태와 분리해 검증.",
+    "origin": "content-packs/joseon-folklore/art-direction/wave2/beasts/REVIEW.md"
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

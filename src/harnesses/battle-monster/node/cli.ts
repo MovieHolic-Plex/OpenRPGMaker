@@ -12,9 +12,9 @@ export async function run(argv: string[]): Promise<number> {
     console.error(`모르는 단계: ${stage}`);
     return 2;
   }
-  const script = fileURLToPath(new URL(stage === "serve" ? "./dashboard.py" : "./pipeline.py", import.meta.url));
+  const script = fileURLToPath(new URL(stage === "serve" ? "./dashboard.py" : stage === "wave" ? "./wave.py" : "./pipeline.py", import.meta.url));
   return new Promise((resolve) => {
-    const child = spawn(process.env.PYTHON3 ?? "python3", [script, ...(stage === "serve" ? [] : [stage]), ...args], { stdio: "inherit" });
+    const child = spawn(process.env.PYTHON3 ?? "python3", [script, ...(["serve", "wave"].includes(stage) ? [] : [stage]), ...args], { stdio: "inherit" });
     child.once("error", (error) => { console.error(error.message); resolve(1); });
     child.once("exit", (code) => resolve(code ?? 1));
   });

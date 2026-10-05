@@ -1,0 +1,41 @@
+{
+  "id": "7bd67a90-7abf-463f-983c-dd69028a7a68",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T04:00:08.041197+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/earthen-jar-fiend/motions-v2/jobs/7bd67a90-7abf-463f-983c-dd69028a7a68",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/earthen-jar-fiend/motions-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/earthen-jar-fiend/motions-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/earthen-jar-fiend/motions-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/earthen-jar-fiend/motions-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "3fd2936ffd06eb1794306536f82d9f2b22700644780ded9923d7b80de35ffb66",
+  "toolSha256": "1f5b430aa99485623480bd45cea076ca68c1ff69d051cd3105b55306597c3e3d",
+  "imageHashes": {
+    "preview/suite/portrait.png": "1b783363c2acdbfa4a62b5d6a7fa77abaef933fa917a263fc0aa47c3e114b7da",
+    "preview/suite/light.png": "29d6ac3104e3acd089da2511acdfabc1b9ab76057f90c157e5a43f7059ce04bd",
+    "preview/suite/dark.png": "c687a7f3dd4aa45341244a8665620521982c8156ed6f9e710f9260983b6ea52d",
+    "preview/suite/checker.png": "7edd7ee0c04e448a98eaa1e9f1e3cbf9b4f2f3399d6cfe8dd0e0fa6743c5fc72"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T04:02:44.157786+00:00"
+}

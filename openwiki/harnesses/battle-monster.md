@@ -22,16 +22,46 @@ systemd 제어 그룹에서 관리한다. 서버/작업 파일은 `node/dashboar
 - **Allow:** 보이는 결과의 선택을 즉시 저장하고 다음 후보로 간다. 전체 9자세를 보고 Allow하면
   같은 그림의 기본 자세와 전체 자세를 함께 선택한다. AI는 필요한 독립 검수와 패킹을 뒤에서
   마무리하고, 완료 시 Allow 목록에 「선택한 결과 받기」를 제공한다.
-- **Modify:** 수정 내용을 적으면 원본/이전 선택을 남기고 새 `rev-…` 후보에서 AI가 **9자세 전체**를
+- **Modify:** 수정 내용을 적으면 원본/이전 선택을 남기고 새 `rev-…` 후보에서 AI가 기본·스킬·상태이상의 **18자세 전체**를
   수정한다. 검사·독립 검수 후 새 후보를 검토 대기에 넣는다. 이전/새 그림을 나란히 본다.
   수정본은 다시 사람의 Allow가 필요하다. 수정 원본과 같은 픽셀이면 완료로 내놓지 않는다.
   모델 호출은 성공했지만 격자·접지 같은 형식 검사가 실패하면 원본을 보존하고 최대 두 번
   같은 모델에 기술 오류만 고치도록 요청한다. 미감 평가로 자동 재작업하거나 선택하지 않는다.
 - **Deny:** 검토 목록에서 제외한다. 지난 결과에서 다시 보거나 선택을 바꿀 수 있다.
 
-대기·공격·피격·쓰러짐 재생, 일시 정지, A/M/D 단축키를 지원한다. 대기 재생은 종의 실제
-idleFrameMs를 쓰며 전체 이동/피해가 있는 전투 영상으로 표현하지 않는다. 그림 선택과 수정
-지시는 실제 저장된다. 기본 자세만 들어온 후보를 Allow하면 AI가 나머지 동작을 만든다.
+대기·공격·피격·쓰러짐·스킬·독·기절·수면 **8칸의 실제 GIF**를 동시에 보여 준다.
+`node/motions.py`는 원본 도트 색을 그대로 GIF 팔레트에 넣고 노출 시간을 설정한다.
+각 프레임을 다시 읽어 원본 RGBA와 일치하는지 확인한다. 확대·보간으로 동작을 생성하지 않는다.
+전체 일시 정지는 정지 PNG로 바꾸고 재생은 GIF로 돌아간다. 수정본은 동작별 이전/수정 후를
+나란히 보여 준다. 없는 동작은 명시하고 다른 공격이나 색 변환으로 대신하지 않는다.
+A/M/D 단축키와 작은 화면의 두 열 배치를 유지한다.
+
+### AI 제작 웨이브 · 인간형 적 (2026-10-05)
+
+기본 RM2003 3×3의 9자세 계약은 유지한다. 별도 `source/actions/`에
+`skill_a/b/c`, `poison_a/b`, `stun_a/b`, `sleep_a/b`의 **9개 직접 저작 자세**를 둔다.
+`check/critique --phase suite`는 총 18자세를 검사·검수하며 `author --phase complete`는
+모두 저작한다. `author --phase actions`는 기본 9자세/팔레트를 보존하고 추가 동작만 만든다.
+새 인간형 6종은 산적 칼잡이·산채 창수·흑건 자객·방랑 검객·타락 도사·사교 술사다.
+
+```bash
+npm run harness -- battle-monster wave --work qa-runs/battle-monster-human-wave --workers 3 \
+  mountain-bandit mountain-spearman black-cloth-assassin wandering-swordsman fallen-taoist cult-sorcerer
+npm run harness -- battle-monster wave --work qa-runs/battle-monster-extra-motion-wave --workers 2 \
+  --actions --candidate motions-v2 wild-boar venom-toad jangseung-spirit earthen-jar-fiend
+```
+
+각 작업자는 격리된 후보 폴더만 편집한다. 기존 선택과 정본 프로젝트를 건드리지 않는다.
+웨이브의 durable task 기록과 후보 잠금을 쓰고, 형식 오류는 원본 보존 후 최대 두 번 기술 수정한다.
+검사와 실제 독립 시각 검수, GIF 재읽기가 끝나면 같은 파일시스템에서 후보 폴더를 원자적으로
+대시보드 root로 옮긴다. 제작 중인 절반 결과는 게시하지 않는다. AI 검수 추천은 사람 선택이 아니다.
+기존 Allow 결과의 추가 동작은 새 `motions-v2` 후보로 돌아온다. Deny한 방아토끼는 이번 웨이브에 넣지 않는다.
+완성 후보의 Allow는 suite·poses·idle을 모두 현재 원본에 묶고 팩도 모든 현재 선택/검수를 요구한다.
+팩에 원본·GIF·PNG·시간표와 검수 출처를 포함한다. 기본 `pilot`은 실제 시드 원본이 있는 종만 가져온다.
+완성 격자·팔레트·시간표·독립 검수 출처는 `harness-data/battle-monster/authored/20261005/`에도 보존한다.
+`ingest --phase suite --source .../source/poses --palette .../source/palette.json`은 같은 원본의 추가
+`source/actions`도 함께 가져온다. 복원은 예전 사람 선택을 가져오지 않는다.
+이 단계는 검토 후보를 제작한다. 선택·설치와 실제 전투 스킬/상태 적용은 별도다.
 
 ### 저장·작업 재개 계약
 

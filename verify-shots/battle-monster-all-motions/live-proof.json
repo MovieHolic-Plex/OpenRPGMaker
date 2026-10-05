@@ -1,0 +1,85 @@
+{
+  "proof": [
+    {
+      "key": "black-cloth-assassin/motions-v1",
+      "name": "흑건 자객",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "cult-sorcerer/motions-v1",
+      "name": "사교 술사",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "earthen-jar-fiend/motions-v2",
+      "name": "옹기귀",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 12
+    },
+    {
+      "key": "fallen-taoist/motions-v1",
+      "name": "타락 도사",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "jangseung-spirit/motions-v2",
+      "name": "장승귀",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 12
+    },
+    {
+      "key": "mountain-bandit/motions-v1",
+      "name": "산적 칼잡이",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "mountain-spearman/motions-v1",
+      "name": "산채 창수",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "venom-toad/motions-v2",
+      "name": "독두꺼비",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 12
+    },
+    {
+      "key": "wandering-swordsman/motions-v1",
+      "name": "방랑 검객",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 8
+    },
+    {
+      "key": "wild-boar/motions-v2",
+      "name": "멧돼지",
+      "choice": "pending",
+      "ready": true,
+      "gifs": 8,
+      "images": 12
+    }
+  ],
+  "errors": []
+}

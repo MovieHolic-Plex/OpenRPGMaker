@@ -1,0 +1,41 @@
+{
+  "id": "9a93efc7-28cb-4cfa-a18d-4eeeb1c3613b",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T04:00:00.106373+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/jobs/9a93efc7-28cb-4cfa-a18d-4eeeb1c3613b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "2394021780e02972a6ef5766663d2ec25fe805b8b9aff8d63d9f6d27455fb52f",
+  "toolSha256": "1f5b430aa99485623480bd45cea076ca68c1ff69d051cd3105b55306597c3e3d",
+  "imageHashes": {
+    "preview/suite/portrait.png": "4525629ae31d484fa74ba10ba8c705f5dda43af1038d4b83d7b7e40a83bee608",
+    "preview/suite/light.png": "58be05139d48f25de258a32ed275425981c87f56a6048b462fd658cab93b02eb",
+    "preview/suite/dark.png": "eb499ce6a6be5c6ea2c32d8b6213b8b04a45abb187e1d248aeaa663415141ff5",
+    "preview/suite/checker.png": "3a50d783e7f27dc27b77c48cd6a2be5646d1a3ffc026f40c86fe0eb3406bed21"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T04:02:08.498148+00:00"
+}

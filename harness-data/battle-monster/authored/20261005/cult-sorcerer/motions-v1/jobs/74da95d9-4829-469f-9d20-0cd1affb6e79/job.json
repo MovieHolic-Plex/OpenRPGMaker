@@ -1,0 +1,41 @@
+{
+  "id": "74da95d9-4829-469f-9d20-0cd1affb6e79",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T04:08:23.343334+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/cult-sorcerer/motions-v1/jobs/74da95d9-4829-469f-9d20-0cd1affb6e79",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/cult-sorcerer/motions-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/cult-sorcerer/motions-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/cult-sorcerer/motions-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/cult-sorcerer/motions-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "7ca40e343ec3d3f294f6c5608c867998a78b90c4cd371018ad801358a2ca8771",
+  "toolSha256": "1f5b430aa99485623480bd45cea076ca68c1ff69d051cd3105b55306597c3e3d",
+  "imageHashes": {
+    "preview/suite/portrait.png": "bdc58148cea166e6b878a14e6808f514c2587c487a4af1933359f8ae6ce46213",
+    "preview/suite/light.png": "be33e7cc899a0d1a243c54f1f365bca580bc08fb535f4d333b29afa682e682bd",
+    "preview/suite/dark.png": "ffecd0a195cf0c3f830bc37400de261cb40a2d4c1896ecd451a0cc17413d1ef9",
+    "preview/suite/checker.png": "88c8dd415a21a6ccba5ad19ff843839a8a48f35f7376e6a1a18d2c486aed4e3f"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T04:11:10.856457+00:00"
+}

@@ -21,6 +21,7 @@ from PIL import Image, ImageDraw
 
 REPO = Path(__file__).resolve().parents[4]
 POSES = ('idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead')
+EXTRA_POSES = ('skill_a', 'skill_b', 'skill_c', 'poison_a', 'poison_b', 'stun_a', 'stun_b', 'sleep_a', 'sleep_b')
 MOTIONS = ('dash', 'hop', 'stomp', 'shoot', 'float', 'swoop', 'breath')
 ID = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
 
@@ -137,11 +138,11 @@ class Harness:
             if not isinstance(color, str) or not re.fullmatch(r'#[0-9a-fA-F]{6}', color):
                 raise ValueError(f'RGB hex 색 필요: {color}')
             colors[symbol] = tuple(bytes.fromhex(color[1:])) + (255,)
-        names = POSES if phase == 'poses' else POSES[:1]
+        names = POSES + EXTRA_POSES if phase == 'suite' else POSES if phase == 'poses' else POSES[:1]
         sources = {'brief.json': sha(canonical(brief)), 'source/palette.json': sha(palette_path.read_bytes())}
         frames, geometry, errors = {}, {}, []
         for pose in names:
-            path = directory / 'source/poses' / (pose + '.pxgrid')
+            path = directory / ('source/poses' if pose in POSES else 'source/actions') / (pose + '.pxgrid')
             rows = path.read_text(encoding='ascii').splitlines()
             if len(rows) != size or any(len(row) != size for row in rows):
                 raise ValueError(f'{pose}: {size}×{size} 문자 격자 필요')
@@ -179,8 +180,9 @@ class Harness:
         output = directory / 'preview' / phase
         output.mkdir(parents=True, exist_ok=True)
         size = brief['monster']['cell']
-        sheet = Image.new('RGBA', (size * 3, size * 3))
-        for index, pose in enumerate(POSES):
+        names = POSES + EXTRA_POSES if phase == 'suite' else POSES
+        sheet = Image.new('RGBA', (size * 3, size * (6 if phase == 'suite' else 3)))
+        for index, pose in enumerate(names):
             if pose in frames:
                 image = frames[pose]
                 image.save(output / (pose + '.png'))
@@ -192,15 +194,15 @@ class Harness:
         sheet.save(output / 'sheet.png')
         frames['idle_a'].save(output / 'portrait.png')
         with Image.open(output / 'sheet.png') as decoded:
-            for index, pose in enumerate(POSES):
+            for index, pose in enumerate(names):
                 if pose in frames:
                     x, y = (index % 3) * size, (index // 3) * size
                     if decoded.crop((x, y, x + size, y + size)).tobytes() != frames[pose].tobytes():
                         raise ValueError('시트 재읽기 불일치')
         # Rectangles and text here are diagnostic backgrounds/labels only.
         # Every source-art pixel above is assigned directly from literal grids.
-        columns = 3 if phase == 'poses' else 1
-        rows = 3 if phase == 'poses' else 1
+        columns = 3 if phase in ('poses', 'suite') else 1
+        rows = 6 if phase == 'suite' else 3 if phase == 'poses' else 1
         for background in ('light', 'dark', 'checker'):
             board = Image.new('RGB', ((size * 3 + 24) * columns, (size * 4 + 44) * rows), '#808080')
             draw = ImageDraw.Draw(board)
@@ -287,20 +289,34 @@ class Harness:
                       f'Contract: {json.dumps(brief, ensure_ascii=False)}\n'
                       'Files: source/palette.json (one ASCII symbol -> #RRGGBB; dot is transparent and absent in palette), '
                       'source/poses/<pose>.pxgrid. Every row and canvas must exactly match cell size. '
-                      'All art has 1px transparent border; lowest ink y<=cell-4. '
+                      'All art has 1px transparent border; lowest ink y<=cell-4. For grounded idle_a feet MUST touch exactly y=cell-4. '
                       + ('Create all nine poses and palette as one complete candidate for the user to judge. '
                          'When source grids already exist, revise them according to the user correction. '
                          'Hand-author every changed cluster; keep identity and palette consistent across all nine poses.\n'
-                         if phase == 'full' else 'Create only idle_a and palette. This is the user steering checkpoint.\n' if phase == 'idle' else
+                         if phase in ('full', 'complete') else 'Preserve the existing nine core poses and palette.\n' if phase == 'actions' else 'Create only idle_a and palette. This is the user steering checkpoint.\n' if phase == 'idle' else
                          'Preserve palette.json and idle_a byte-for-byte. Hand-author the other eight poses, '
                          'including distinct windup/move/attack/recover/hit/dead anatomy and a readable death pose.\n')
                       + f'User correction: {correction or "follow the silhouette and action brief"}\n'
                       'Save source/AUTHORING.md describing explicit changes and remaining visual problems. '
                       'Do not claim user approval. Do not run tests/gates or write outside source.')
+            if phase in ('complete', 'actions'):
+                prompt += ('\nAlso hand-author source/actions/<name>.pxgrid: ' + ', '.join(EXTRA_POSES)
+                    + '. Same native cell and palette, full character plus literal effect pixels. '
+                      'skill_a/b/c are distinct preparation, cast/contact and recovery for this species skill; '
+                      'show connected hands/weapons and a characteristic authored effect. '
+                      'poison_a/b show sick posture and changing toxic bubbles; stun_a/b show slumped posture '
+                      'and differently placed authored stars; sleep_a/b show closed eyes, lowered weapon and breathing. '
+                      'No generated letters/text. Statuses must be visually distinct, not palette tints or reused attacks. '
+                      'Every frame must differ; preserve transparent margins and y<=cell-4. '
+                      'All new source is full literal rows; do not synthesize effects or move whole bodies. '
+                      'Save source/TIMING.md describing GIF pose order, holds and skill hand/mouth/weapon anchor.\n')
+                if phase == 'actions':
+                    frozen = self.pixels(directory, 'poses')[2]['binding']
+                    prompt += 'Preserve ALL source/poses and palette.json byte-for-byte; author ONLY source/actions and notes.\n'
             images = []
             if phase == 'poses':
                 images = [directory / 'preview/idle/checker.png']
-            elif phase == 'full' and (directory / 'reference.png').exists():
+            elif phase in ('full', 'complete', 'actions') and (directory / 'reference.png').exists():
                 images = [directory / 'reference.png']
         else:
             report = self.bake(directory, phase)
@@ -313,7 +329,11 @@ class Harness:
                       'Review silhouette/anatomy, volume/material/light, missing outline or transparent holes, '
                       'pose readability and frame continuity, grounded feet, hand/tool connection. '
                       'A geometry PASS is not visual approval. This is a pose preview, not actual battle footage. '
-                      f'Write ONLY {job}/result.json with schema: '
+                      + ('The last nine frames are skill preparation/contact/recovery, poison, stun and sleep pairs. '
+                         'Check these are distinct readable authored states, not tints or unrelated attacks. '
+                         'Check the skill effect is attached to the actual hand, mouth or weapon. '
+                         if phase == 'suite' else '')
+                      + f'Write ONLY {job}/result.json with schema: '
                       '{"recommendation":"keep|rework", "summary":"specific observations", '
                       '"issues":[{"pose":"idle_a", "x":0,"y":0,"message":"specific pixel repair"}]}. '
                       'Coordinates are native pixels. Mention limits honestly. Do not choose for the user.')
@@ -347,9 +367,9 @@ class Harness:
         if process.returncode:
             raise ValueError(f'{stage} 실패. {job}/events.jsonl 확인')
         if stage == 'author':
-            if frozen and self.pixels(directory, 'idle')[2]['binding'] != frozen:
+            if frozen and self.pixels(directory, 'poses' if phase == 'actions' else 'idle')[2]['binding'] != frozen:
                 raise ValueError('동작 저작 중 선택한 기본 자세/팔레트가 변함. 이전 선택은 무효입니다.')
-            return self.bake(directory, 'poses' if phase == 'full' else phase)
+            return self.bake(directory, 'suite' if phase in ('complete', 'actions') else 'poses' if phase == 'full' else phase)
         if self.pixels(directory, phase)[2]['binding'] != frozen:
             raise ValueError('검수 중 원본이 바뀜. 결과는 현재 그림에 적용되지 않습니다.')
         result = load(job / 'result.json')
@@ -395,7 +415,8 @@ class Harness:
 
     def status(self, directory):
         row = {'id': directory.parent.name, 'candidate': directory.name, 'phases': {}}
-        for phase in ('idle', 'poses'):
+        phases = ('idle', 'poses', 'suite') if any((directory / 'source/actions').glob('*.pxgrid')) else ('idle', 'poses')
+        for phase in phases:
             try:
                 report = self.bake(directory, phase)
                 review = self.current_critique(directory, phase, report)
@@ -434,7 +455,8 @@ class Harness:
         return {'candidates': len(data), 'fragment': str(out), 'standalone': str(standalone)}
 
     def pack(self, directory):
-        reports = {phase: self.bake(directory, phase) for phase in ('idle', 'poses')}
+        phases = ('idle', 'poses', 'suite') if all((directory / 'source/actions' / (p + '.pxgrid')).exists() for p in EXTRA_POSES) else ('idle', 'poses')
+        reports = {phase: self.bake(directory, phase) for phase in phases}
         for phase, report in reports.items():
             if not report['pass'] or self.decision(directory, phase, report['binding']) != 'keep':
                 raise ValueError(f'{phase}: 현재 사람 선택/픽셀 검사 없음. 선택되지 않은 후보는 팩에 넣지 않습니다.')
@@ -442,10 +464,16 @@ class Harness:
                 raise ValueError(f'{phase}: 현재 독립 그림 검수 없음')
         brief = self.brief(directory)
         monster = brief['monster']
+        from motions import bake_motions
+        _, frames, _ = self.pixels(directory, 'suite' if 'suite' in reports else 'poses')
+        motions = bake_motions(directory, brief, frames)
         asset_dir = 'assets/harnesses/battle-monster/' + monster['id']
         metadata = {'resourceId': monster['resourceId'], 'path': asset_dir + '/sheet.png',
                     'portraitPath': asset_dir + '/portrait.png', 'cell': monster['cell'],
-                    'motion': monster['motion'], 'idleFrameMs': monster['idleFrameMs']}
+                    'motion': monster['motion'], 'idleFrameMs': monster['idleFrameMs'],
+                    'motions': [{**m, 'gif': asset_dir + '/motions/' + m['id'] + '.gif',
+                                'poster': asset_dir + '/motions/' + m['id'] + '.png'}
+                                for m in motions if m['available']]}
         out = Path(self.args.out).resolve() if self.args.out else self.root / 'packs' / (monster['id'] + '-' + directory.name + '.zip')
         out.parent.mkdir(parents=True, exist_ok=True)
         if out.exists():
@@ -454,10 +482,13 @@ class Harness:
         decisions = [row for row in self.ledger()['decisions'] if row['candidate'] == key]
         with zipfile.ZipFile(out, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(directory.rglob('*')):
-                if path.is_file() and (path.suffix in ('.pxgrid', '.json', '.md', '.png')):
+                if path.is_file() and (path.suffix in ('.pxgrid', '.json', '.md', '.png', '.gif')):
                     archive.write(path, 'provenance/' + str(path.relative_to(directory)))
             archive.write(directory / 'preview/poses/sheet.png', asset_dir + '/sheet.png')
             archive.write(directory / 'preview/poses/portrait.png', asset_dir + '/portrait.png')
+            for path in sorted((directory / 'preview/motions').glob('*')):
+                if path.suffix in ('.gif', '.png', '.json'):
+                    archive.write(path, asset_dir + '/motions/' + path.name)
             archive.writestr('sheets.json', json.dumps([metadata], ensure_ascii=False, indent=2))
             archive.writestr('decisions.json', json.dumps(decisions, ensure_ascii=False, indent=2))
             archive.writestr('README.md', 'Original native-grid monster art. Source provenance and human choices included.\n'
@@ -475,6 +506,8 @@ class Harness:
             results = []
             source = REPO / self.seed['pilotSource']
             for monster in self.specs.values():
+                if not (source / (monster['id'] + '.palette.json')).exists():
+                    continue  # New species are authored by wave, never fabricated as pilot copies.
                 directory = self.root / monster['id'] / 'baseline'
                 if not directory.exists():
                     self.init(directory)
@@ -515,6 +548,15 @@ class Harness:
                     path = source / (pose + '.pxgrid')
                     if path.exists():
                         shutil.copyfile(path, directory / 'source/poses' / path.name)
+                if self.args.phase == 'suite':
+                    (directory / 'source/actions').mkdir(parents=True, exist_ok=True)
+                    for pose in EXTRA_POSES:
+                        shutil.copyfile(source.parent / 'actions' / (pose + '.pxgrid'),
+                                        directory / 'source/actions' / (pose + '.pxgrid'))
+                for name in ('AUTHORING.md', 'TIMING.md'):
+                    note = source.parent / name
+                    if note.is_file():
+                        shutil.copyfile(note, directory / 'source' / name)
                 save(directory / 'provenance.json', {'createdAt': stamp(), 'kind': 'imported-literal-grid',
                                                      'originalSource': str(source), 'userApproved': False, 'jobs': []})
                 return self.bake(directory, self.args.phase)
@@ -538,7 +580,7 @@ def main():
     parser.add_argument('--root', default=str(REPO / 'qa-runs/harnesses/battle-monster'))
     parser.add_argument('--monster')
     parser.add_argument('--candidate', default='baseline')
-    parser.add_argument('--phase', choices=('idle', 'poses', 'full'), default='idle')
+    parser.add_argument('--phase', choices=('idle', 'poses', 'full', 'suite', 'complete', 'actions'), default='idle')
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--source')
     parser.add_argument('--palette')
@@ -548,8 +590,8 @@ def main():
     parser.add_argument('--note')
     parser.add_argument('--out')
     args = parser.parse_args()
-    if args.phase == 'full' and args.stage != 'author':
-        parser.error('--phase full은 author 전용입니다.')
+    if args.phase in ('full', 'complete', 'actions') and args.stage != 'author':
+        parser.error('--phase full/complete/actions는 author 전용입니다.')
     if args.stage == 'decide' and not args.choice:
         parser.error('decide에는 --choice 필요')
     try:

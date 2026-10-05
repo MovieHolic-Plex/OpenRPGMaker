@@ -1,0 +1,107 @@
+{
+  "proof": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "tiles": 8,
+      "gifs": [
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=idle&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=attack&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=hit&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=dead&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "scrollWidth": 1024,
+      "tiles": 8,
+      "gifs": [
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=idle&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=attack&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=hit&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=dead&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 375,
+      "scrollWidth": 375,
+      "tiles": 8,
+      "gifs": [
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=idle&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=attack&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=hit&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=dead&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "tiles": 8,
+      "gifs": [
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=idle&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=attack&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=hit&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        },
+        {
+          "src": "http://127.0.0.1:18348/api/motion?key=earthen-jar-fiend%2Fbaseline&motion=dead&binding=f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+          "width": 64
+        }
+      ],
+      "errors": []
+    },
+    {
+      "paused": true
+    },
+    {
+      "playing": true
+    }
+  ],
+  "errors": []
+}

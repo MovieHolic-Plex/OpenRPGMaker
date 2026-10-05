@@ -1,0 +1,36 @@
+{
+  "proof": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "tiles": 8,
+      "images": 12
+    },
+    {
+      "width": 375,
+      "scrollWidth": 375,
+      "tiles": 8,
+      "images": 12
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "tiles": 8,
+      "images": 12
+    },
+    {
+      "allowStatus": 200,
+      "choice": "allow",
+      "bindings": [
+        "suite",
+        "poses",
+        "idle"
+      ],
+      "motions": 8
+    },
+    {
+      "modifyStatus": 200
+    }
+  ],
+  "errors": []
+}

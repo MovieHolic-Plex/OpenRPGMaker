@@ -1,0 +1,8 @@
+{
+  "moving": true,
+  "still": true,
+  "allowStatus": 200,
+  "choice": "allow",
+  "staleGifStatus": 409,
+  "errors": []
+}

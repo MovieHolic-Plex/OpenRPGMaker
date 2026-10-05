@@ -1,0 +1,82 @@
+{
+  "createdAt": "2026-10-05T03:48:14.031796+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "02c45177-e9c2-4cb2-88db-68f91d68177d",
+      "stage": "author",
+      "phase": "actions",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:48:14.133845+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/reference.png",
+        "-"
+      ],
+      "promptSha256": "5d4090ee81c39a50df6026ecabe0ff1e04dcb8349ebe24c8ae35ce80ca06f403",
+      "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+      "imageHashes": {
+        "reference.png": "d76c02c407b8170f2f9eb26817281ef8d442dc3ebc4f72d43e596aabf7f57ce8"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T03:59:58.293638+00:00"
+    },
+    {
+      "id": "9a93efc7-28cb-4cfa-a18d-4eeeb1c3613b",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T04:00:00.106373+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/jobs/9a93efc7-28cb-4cfa-a18d-4eeeb1c3613b",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/jangseung-spirit/motions-v2/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "2394021780e02972a6ef5766663d2ec25fe805b8b9aff8d63d9f6d27455fb52f",
+      "toolSha256": "1f5b430aa99485623480bd45cea076ca68c1ff69d051cd3105b55306597c3e3d",
+      "imageHashes": {
+        "preview/suite/portrait.png": "4525629ae31d484fa74ba10ba8c705f5dda43af1038d4b83d7b7e40a83bee608",
+        "preview/suite/light.png": "58be05139d48f25de258a32ed275425981c87f56a6048b462fd658cab93b02eb",
+        "preview/suite/dark.png": "eb499ce6a6be5c6ea2c32d8b6213b8b04a45abb187e1d248aeaa663415141ff5",
+        "preview/suite/checker.png": "3a50d783e7f27dc27b77c48cd6a2be5646d1a3ffc026f40c86fe0eb3406bed21"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T04:02:08.498148+00:00"
+    }
+  ],
+  "parent": "jangseung-spirit/baseline",
+  "userCorrection": "스킬·독·기절·수면 동작을 추가. 기본 전투 그림은 유지."
+}

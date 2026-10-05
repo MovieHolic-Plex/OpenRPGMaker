@@ -17,7 +17,9 @@ import uuid
 from contextlib import nullcontext
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
-from pipeline import Harness, REPO, POSES, identifier, load, save, lock, sha, canonical, stamp
+from pipeline import Harness, REPO, POSES, EXTRA_POSES, identifier, load, save, lock, sha, canonical, stamp
+
+from motions import bake_motions
 
 HERE = Path(__file__).resolve().parent
 
@@ -80,19 +82,30 @@ class Dashboard:
         if cached and cached['fingerprint'] == fingerprint:
             return copy.deepcopy(cached['snapshot'])
         with nullcontext() if already_locked else lock(directory / '.lock'):
-            phase = 'poses' if all((directory / 'source/poses' / (pose + '.pxgrid')).exists() for pose in POSES) else 'idle'
+            phase = 'suite' if all((directory / 'source/actions' / (pose + '.pxgrid')).exists() for pose in EXTRA_POSES) else 'poses' if all((directory / 'source/poses' / (pose + '.pxgrid')).exists() for pose in POSES) else 'idle'
             report = self.harness.bake(directory, phase)
             reports = {phase: report}
-            if phase == 'poses':
+            if phase == 'suite':
+                reports['poses'] = self.harness.bake(directory, 'poses')
+            if phase in ('poses', 'suite'):
                 reports['idle'] = self.harness.bake(directory, 'idle')
             brief = self.harness.brief(directory)
             image = directory / 'preview' / phase / 'sheet.png'
             provenance = load(directory / 'provenance.json')
+            _, frames, _ = self.harness.pixels(directory, phase)
+            motions = bake_motions(directory, brief, frames)
+            from urllib.parse import urlencode
+            for motion in motions:
+                if motion['available']:
+                    query = urlencode({'key': key, 'motion': motion['id'], 'binding': report['binding']})
+                    motion.update(gif='/api/motion?' + query, poster='/api/motion?' + query + '&still=1')
             snapshot = {'key': key, 'name': brief['monster']['name'], 'cell': brief['monster']['cell'],
                         'idleFrameMs': brief['monster']['idleFrameMs'], 'phase': phase,
                         'bindings': {p: r['binding'] for p, r in reports.items()},
                         'ready': all(r['pass'] for r in reports.values()),
                         'image': 'data:image/png;base64,' + base64.b64encode(image.read_bytes()).decode(),
+                        'motions': motions, 'skill': brief['monster'].get('skill', '').split(':', 1)[0].split('.', 1)[0],
+                        'kind': brief['monster'].get('kind', 'creature'),
                         'parent': provenance.get('parent'), 'correction': provenance.get('userCorrection', '')}
         self.cache[key] = {'fingerprint': fingerprint, 'snapshot': snapshot}
         return copy.deepcopy(snapshot)
@@ -128,12 +141,18 @@ class Dashboard:
                         parent = self.snapshot(self.directory(item['parent']))
                         item['before'] = parent['image']
                         item['beforePhase'] = parent['phase']
+                        item['beforeMotions'] = parent['motions']
                     items.append(item)
                 except (OSError, ValueError, KeyError):
                     # Incomplete authoring sources are an AI concern. The last
                     # complete parent stays visible while its revision is made.
                     continue
-            return {'items': items, 'working': sum(j['state'] in ('queued', 'running') for j in jobs)}
+            making = 0
+            if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave'):
+                    for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
+                        making += load(task)['state'] in ('queued', 'running')
+            return {'items': items, 'working': sum(j['state'] in ('queued', 'running') for j in jobs), 'making': making}
 
     def record_decision(self, job):
         with lock(self.harness.ledger_path.with_suffix('.lock')):
@@ -192,16 +211,25 @@ class Dashboard:
 
     def author(self, harness, directory, phase, job):
         instruction = harness.args.note
+        protected = [directory / 'source/palette.json'] if phase in ('poses', 'actions') else []
+        protected += [directory / 'source/poses' / (p + '.pxgrid') for p in (POSES if phase == 'actions' else POSES[:1] if phase == 'poses' else ())]
+        original = {path: path.read_bytes() for path in protected}
+        def restore():
+            for path, pixels in original.items():
+                path.write_bytes(pixels)
         for attempt in range(3):
             before = len(load(directory / 'provenance.json')['jobs'])
             try:
                 report = harness.work(directory, 'author', phase)
+                if any(path.read_bytes() != pixels for path, pixels in original.items()):
+                    raise ValueError('이미 선택된 원본/팔레트를 바꾸지 말고 추가 동작만 저작하세요.')
                 if report['pass']:
                     return report
                 problem = '; '.join(report['errors'])
             except ValueError as error:
                 runs = load(directory / 'provenance.json')['jobs']
                 if len(runs) == before or runs[-1].get('exitCode') != 0:
+                    restore()
                     raise  # A failed model invocation is not a pixel repair.
                 problem = str(error)
             archive = directory / 'technical-repairs' / uuid.uuid4().hex
@@ -209,6 +237,7 @@ class Dashboard:
             job.setdefault('technicalRepairs', []).append({'problem': problem, 'at': stamp(),
                                                           'source': str(archive.relative_to(self.root))})
             self.update_job(job)
+            restore()
             if attempt == 2:
                 raise ValueError('기술 오류 재수정 한도 초과: ' + problem)
             harness.args.note = (instruction + '\nTechnical repair: ' + problem
@@ -234,25 +263,27 @@ class Dashboard:
                 save(target / 'provenance.json', provenance)
             with lock(target / '.lock'):
                 if not job.get('authored'):
-                    report = self.author(harness, target, 'full', job)
-                    if report['binding'] == job['bindings'].get('poses'):
+                    report = self.author(harness, target, 'complete', job)
+                    if report['binding'] == job['bindings'].get(job['phase']):
                         raise ValueError('수정 지시가 그림에 반영되지 않았습니다.')
                     job['authored'] = True
                     self.update_job(job)
-                report = harness.bake(target, 'poses')
+                phase = 'suite'
+                report = harness.bake(target, phase)
                 if not report['pass']:
                     raise ValueError('수정 후보 픽셀 검사 실패')
-                if not harness.current_critique(target, 'poses', report):
-                    harness.work(target, 'critique', 'poses')
+                if not harness.current_critique(target, phase, report):
+                    harness.work(target, 'critique', phase)
             return
         # An Allow is the user's choice immediately. The AI finishes its checks
         # and packaging afterwards; a failure cannot silently revoke that choice.
         with lock(directory / '.lock'):
             if job['phase'] == 'idle':
                 self.author(harness, directory, 'poses', job)
-                harness.work(directory, 'critique', 'poses')
+                self.author(harness, directory, 'actions', job)
+                harness.work(directory, 'critique', 'suite')
                 return
-            for phase in ('idle', 'poses'):
+            for phase in job['bindings']:
                 report = harness.bake(directory, phase)
                 if not report['pass']:
                     raise ValueError('선택 결과 픽셀 검사 실패')
@@ -324,6 +355,19 @@ def serve(args):
                     return self.send(200, (HERE / url.path[1:]).read_bytes(), kind + '; charset=utf-8')
                 if url.path == '/api/state':
                     return self.send(200, dashboard.state())
+                if url.path == '/api/motion':
+                    query = parse_qs(url.query)
+                    with dashboard.mutex:
+                        directory = dashboard.directory(query.get('key', [''])[0])
+                        item = dashboard.snapshot(directory)
+                        if query.get('binding', [''])[0] != item['bindings'][item['phase']]:
+                            raise ValueError('현재 결과와 다른 움직임')
+                        motion = query.get('motion', [''])[0]
+                        if not any(m['id'] == motion and m['available'] for m in item['motions']):
+                            raise ValueError('아직 준비되지 않은 움직임')
+                        extension = 'png' if query.get('still') == ['1'] else 'gif'
+                        path = directory / 'preview/motions' / (motion + '.' + extension)
+                        return self.send(200, path.read_bytes(), 'image/' + extension)
                 if url.path == '/api/download':
                     job_id = str(uuid.UUID(parse_qs(url.query).get('id', [''])[0]))
                     with dashboard.mutex:

@@ -1,0 +1,76 @@
+{
+  "createdAt": "2026-10-05T03:48:44.051567+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "dd09c721-3a0f-4dd0-af88-b5c6d6ef8995",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:48:44.052756+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-"
+      ],
+      "promptSha256": "3cf538d33d6f55816d094594a92ea8cbb1739c6ba667cd06940f73f5b859908a",
+      "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+      "imageHashes": {},
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T04:08:32.657894+00:00"
+    },
+    {
+      "id": "63726746-4700-46b0-8855-5d8d1b0c3c85",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T04:08:34.597165+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1/jobs/63726746-4700-46b0-8855-5d8d1b0c3c85",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/fallen-taoist/motions-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "5b4a622814d9cf0f44ab831980f9e5692677ff9b527f1308f6033f65fb3ab862",
+      "toolSha256": "1f5b430aa99485623480bd45cea076ca68c1ff69d051cd3105b55306597c3e3d",
+      "imageHashes": {
+        "preview/suite/portrait.png": "3a5f43c7f8909d9f2fc7e5673f7b0cf8db6d93a5f846281137870fef67413ce7",
+        "preview/suite/light.png": "f63d38b077f747cb66980868aaa50e09a2c79013a8e20c5713caf25c78033e69",
+        "preview/suite/dark.png": "d192f573b6109a7bfac27e0fb3b578d9417141d3391aab11e27445716565f8b8",
+        "preview/suite/checker.png": "de01f143113b75816c281bc92646e2b5298759096f06aa936fa384dea942d23a"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T04:10:42.568614+00:00"
+    }
+  ]
+}

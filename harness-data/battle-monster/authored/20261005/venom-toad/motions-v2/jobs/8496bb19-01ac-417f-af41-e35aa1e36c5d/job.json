@@ -1,0 +1,41 @@
+{
+  "id": "8496bb19-01ac-417f-af41-e35aa1e36c5d",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-05T03:47:34.676547+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/venom-toad/motions-v2/jobs/8496bb19-01ac-417f-af41-e35aa1e36c5d",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/venom-toad/motions-v2/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/venom-toad/motions-v2/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/venom-toad/motions-v2/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-extra-motion-wave/candidates/venom-toad/motions-v2/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "9d81ba8a3ec4e08e7415bf75cc021b23362942f71b93864091fa06fffcc25a7d",
+  "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+  "imageHashes": {
+    "preview/suite/portrait.png": "532edf820c98b1ee4ac7ba052884905f5c938967f72abdf4dc6d3877b2b1c357",
+    "preview/suite/light.png": "91c1f2b984570e4fe511bd0c142e000d6f9c196b7ece11af1f7c71f137f041f1",
+    "preview/suite/dark.png": "3ce0d1d48cd6fba68e60b8b1ee4c732ba934f4cba753d28c38a5d38945bcf9cc",
+    "preview/suite/checker.png": "ee7a714a7991b58a9f20f38814fca7ed8a54e6c6bd4ba76b17ed1fcb07602ed8"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-05T03:49:34.741819+00:00"
+}

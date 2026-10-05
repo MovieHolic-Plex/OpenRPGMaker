@@ -1,0 +1,67 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs, including every labeled native 1x cell and nearest 3x cell on light, dark and checker backgrounds. The red headband, topknot, brown jacket, round shield and bent knees identify the bandit; skin, cloth and steel have distinct color groups, with generally coherent upper-left highlights. Standing soles share a convincing ground line. Windup, advancing stride, downstroke and horizontal skill slash have distinguishable silhouettes. No obvious accidental holes through the main body were visible on the checker preview; the gaps between limbs and the detached status particles appear intentional. Rework is recommended for the long slender idle blade versus the broad raised blade, the hooked attack tip, ambiguous grip and shield material, the unexplained arm-side change in skill_a, weak hit/sleep body language, and a detached black baseline fragment in dead. Coordinates below are zero-based native cell coordinates. Static pose comparisons cannot establish animation timing, interpolation, contact with targets or actual battle readability; these are pose previews, not battle footage. Composite backgrounds cannot establish original alpha values, and PNGs cannot establish literal-grid authorship. No geometry PASS is treated as visual approval. This recommendation is advisory; the user retains selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 43,
+      "y": 27,
+      "message": "The blade from approximately (33,34) to (52,22) reads as a long narrow sword at 1x, while skill_a presents a substantially broader chopping blade. Redraw the idle blade with a shorter, wider continuous steel face and a distinct back edge; carry the same weapon proportions into idle_b and idle_c, preserving the upper-left highlight and dark lower edge."
+    },
+    {
+      "pose": "idle_a",
+      "x": 31,
+      "y": 35,
+      "message": "The fist meets the metal shaft through a very small contact near (31,34); the grip reads as steel laid against the wrist. Redraw the local grip around x29-33/y33-38 with a clear handle segment, a skin finger crossing it, and a small guard separating hand from blade. Preserve the existing connection rather than opening a gap."
+    },
+    {
+      "pose": "idle_a",
+      "x": 18,
+      "y": 36,
+      "message": "The shield face mixes ochre patches with gray central accents and reads more like a metal disk than round wood at 1x. Replace some scattered face highlights in x15-20/y33-43 with two coherent plank or grain clusters; confine gray accents to the rim and identifiable fasteners, retaining the brighter upper-left and darker lower-right wood."
+    },
+    {
+      "pose": "attack",
+      "x": 55,
+      "y": 49,
+      "message": "The downstroke blade narrows into a thin diagonal and ends in an abrupt backward hook around x53-56/y48-51. Redraw that tip as a continuous broad chopping silhouette with one purposeful taper, and keep blade width consistent with windup and skill_a after accounting for its angle. The current hooked end changes the apparent weapon type."
+    },
+    {
+      "pose": "skill_a",
+      "x": 44,
+      "y": 31,
+      "message": "The shield moves from the left side of the torso in idle to the right, while the sword arm moves left; the head continues facing right and the torso does not clearly explain this large change of arm arrangement. Redraw shoulder/forearm overlaps around x33-43/y28-34 to communicate a deliberate torso turn and the shield attachment, or preserve the established shield-arm side. Resolve the transition to skill_b, where the shield is left again."
+    },
+    {
+      "pose": "hit",
+      "x": 25,
+      "y": 28,
+      "message": "The lowered shield and forward/downward blade look like another attack recovery, with limited recoil in the upper body. Redraw the shoulder and head relationship around x20-31/y19-32 to pull the chest back from a right-side impact; retract the sword fist and let the shield sag visibly. Keep the planted soles and avoid changing the entire frame by translation."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 31,
+      "y": 35,
+      "message": "The seated legs and altered eye pixels help, but the upright head and extended gripping arm still suggest an alert seated guard. Redraw the neck/head as a small forward droop and relax the hand at x43-47/y46-50. Strengthen the pale sleep mark near x42-45/y36-38 with an existing darker palette color and a clearer stepped Z so it survives the light background; apply the same resting body language to sleep_b."
+    },
+    {
+      "pose": "dead",
+      "x": 49,
+      "y": 60,
+      "message": "An isolated nine-pixel dark horizontal fragment at x45-53/y60 is separated from the foot/body by a transparent pixel at (44,60). Remove this fragment, or redraw it as a recognizable attached dropped object if intentional. It currently reads as an accidental baseline tail; retain the real body, shield and dropped blade ground contacts."
+    }
+  ],
+  "binding": "0c9463541177db14e8cc9b20ea2ae8cefacaab744b11ba1edf1c59d971f51f16",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "5f24a632c40726f143936008def454942e623c79e40a8bf6e57fa2fbcec8970f",
+    "preview/suite/light.png": "5784c3b0dbd265c7d84663fcd78080011506d59ba9dbd28d9f574697ab375aea",
+    "preview/suite/dark.png": "b67179fa7beb4bd978a5208d0ec19d651274580fe43fee89a2219d5c00f7108f",
+    "preview/suite/checker.png": "9d16503f72b72bb97edf5d55880a55d4c62d2c715fff567ae113cb14c82afa1f"
+  },
+  "jobId": "baac0c93-1849-4641-9c91-832c2b0b1a19",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-05T03:50:42.957311+00:00",
+  "userApproved": false
+}

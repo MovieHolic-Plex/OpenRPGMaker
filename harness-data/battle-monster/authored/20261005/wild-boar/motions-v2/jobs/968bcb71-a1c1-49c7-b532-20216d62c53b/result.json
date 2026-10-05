@@ -1,0 +1,36 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the actual 64px portrait and all 18 poses in the supplied light, dark and checker PNGs at their embedded native 1x and nearest 3x scales. The long muzzle, pale tusks, bristled back, tail and four legs identify a boar; it does not primarily read as a rock or pinecone. Upper-left highlights and the muted coat palette remain consistent, although the broad diagonal flank shading is rather planar. Idle continuity is restrained; running leg separation, crouched sleep and the collapsed dead silhouette are readable. Important repairs remain: enclosed transparent gaps through the muzzle/tusk junction show the background inside the face, and windup lowers the head while leaving the shoulders and rear support too close to idle to clearly show a loaded charge. The darkest lower legs lose definition on the dark background. Standing feet appear close to the intended baseline, with lifted feet in movement; static images cannot establish planted-foot continuity. No hands or tools are present. This recommendation is advisory, not a user selection or visual approval based on geometry. These are pose previews, not battle footage: dash travel, contact timing, playback continuity and runtime grounding remain unverified. PNG appearance cannot establish the required authoring method or author identity.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 46,
+      "y": 39,
+      "message": "Replace the enclosed alpha gap at (46,38), (47,38), and (46,39..41) with connected dark mouth/cheek pixels. Also close the isolated transparent pixel at (46,44). Preserve the pale tusk edge against an opaque mouth shadow; the checker currently shows through the face rather than a drawn mouth cavity. Carry the repair to matching idle muzzle anatomy."
+    },
+    {
+      "pose": "windup",
+      "x": 48,
+      "y": 44,
+      "message": "Draw opaque mouth shadow into the enclosed transparent pocket at (48,43), (49,43), (48,44), and (48,45), retaining the separate ivory tusk cluster. The light/checker background currently cuts a visible notch inside the snout."
+    },
+    {
+      "pose": "attack",
+      "x": 50,
+      "y": 40,
+      "message": "Close the enclosed transparent muzzle pocket at (50,39), (51,39), (50,40), and (50,41), plus the internal gaps at (53,43..44), using existing mouth-shadow tones. Keep an opaque connection between cheek, mouth and tusk root so the contact pose does not look perforated."
+    },
+    {
+      "pose": "windup",
+      "x": 34,
+      "y": 48,
+      "message": "Redraw the shoulder/foreleg junction around x=32..41, y=45..54 into a visibly lower, bent support, and bend the rear hock around x=13..17, y=51..57 while preserving grounded hoof tips. The head drops, but the back stays at the idle height and the near rear leg remains nearly vertical; strengthen the crouch and rear-leg loading before the extended move pose."
+    },
+    {
+      "pose": "idle_a",
+      "x": 39,
+      "y": 54,
+      "message": "Add a short existing midtone coat cluster along the upper-left interior edge of the near foreleg around x=38..40, y=53..56, and a corresponding restrained cluster on the near rear leg around x=13..15, y=53..55. Retain the dark contour and hoof silhouette. On the supplied dark background these lower legs merge with the background and weaken the short four-legged stance; repeat the contrast treatment where that anatomy recurs."
+    }
+  ]
+}

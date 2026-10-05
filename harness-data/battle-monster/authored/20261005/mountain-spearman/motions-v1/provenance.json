@@ -1,0 +1,76 @@
+{
+  "createdAt": "2026-10-05T03:32:24.919662+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "fc656990-c2ef-427e-9188-37157231dab2",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:32:24.925318+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-"
+      ],
+      "promptSha256": "c796341355a5102e54fbfd766afbb03ef72fa43ddb00376d812ae99bc20542a3",
+      "toolSha256": "80c1df184f2369d9ef2da183ca9d16c45527388894ab75c5c03a3963771ea0cf",
+      "imageHashes": {},
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T03:45:38.714753+00:00"
+    },
+    {
+      "id": "deb040fa-2210-4c13-a324-c698818b4f4a",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-05T03:45:41.153719+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1/jobs/deb040fa-2210-4c13-a324-c698818b4f4a",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-human-wave/candidates/mountain-spearman/motions-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "eec60b531d8ed658b4cd7322ecb35184662dc0ec57d4824bc00374a57a8f09c7",
+      "toolSha256": "cc4cdf291cafe433ac8c3b5759a9f11247d3e840fa8852f0563c0ec9ed774d80",
+      "imageHashes": {
+        "preview/suite/portrait.png": "d569d6286c6372528ebf8a9e68b3f130d2b6916d5790213844e10c3849c95c19",
+        "preview/suite/light.png": "91fef53b6269b96799b9fb02aca00bc37f0f214ea432fea00b216f87c88000dd",
+        "preview/suite/dark.png": "48d010e084ecc86eca30f64433f23e274b784a9895b019534b8437ad47a88320",
+        "preview/suite/checker.png": "dde06d96327e1b68c664af838d03f9cda31208b441a87424770cf2d98c606a8b"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T03:48:21.070718+00:00"
+    }
+  ]
+}
