@@ -1031,7 +1031,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   try {
     orchDone = await runAgent(
       { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
-      { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
+      // 팀장 도구는 읽기뿐이다 — 팀원이 발행할 때마다 바뀌는 작업 사본을 읽게 한다.
+      { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools, liveProject: () => working },
     );
   } catch (error) {
     // Keep the parent run's host reservation until all previously launched children stop.

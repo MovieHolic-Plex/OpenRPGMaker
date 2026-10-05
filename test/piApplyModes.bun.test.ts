@@ -231,3 +231,22 @@ test("event_command_assist inside a Pi run asks the run's own provider", async (
     if (previous === undefined) delete process.env.OPRN_OH_MY_PI_TEST_STUB; else process.env.OPRN_OH_MY_PI_TEST_STUB = previous;
   }
 });
+
+// 2026-10-05 스트레스 p-team-delete-declined: 팀장 get_database_records 가 시작 사본만 읽어 끝까지 「maps 1건」 —
+// 팀원이 만든 「작은 숲」을 못 보고 같은 맵을 두 번 더 짓게 배정했다.
+test("liveProject lets a read-only lead see members' published maps", async () => {
+  const base = createBlankProject();
+  const live = structuredClone(base);
+  live.maps.map_forest = { ...structuredClone(base.maps[base.startMapId]!), id: "map_forest", name: "작은 숲" };
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ project: base }), {
+    toolNames: ["get_database_records"],
+    liveProject: () => live,
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream([], [{ name: "get_database_records", args: { collection: "maps" } }]) as never,
+  });
+  const end = events.find(event => event.type === "tool_end" && (event as { name?: string }).name === "get_database_records") as { summary?: string } | undefined;
+  expect(end?.summary).toContain("2건");
+  // 도구가 끝나면 제 사본으로 돌아간다 — 남의 변경을 이 실행의 결과로 내보내지 않는다.
+  expect(done.project.maps.map_forest).toBeUndefined();
+});

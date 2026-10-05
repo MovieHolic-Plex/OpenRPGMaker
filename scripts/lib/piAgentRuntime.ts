@@ -97,6 +97,11 @@ export interface RunPiAgentOptions {
   readonly model?: ReturnType<typeof resolveOhMyPiModel>;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
+  /**
+   * 읽기만 하는 실행이 볼 최신 공유 사본(팀장). 주면 레지스트리 도구를 부를 때마다 ctx.project 를 이것으로 바꾼다 —
+   * 쓰기 도구가 있는 실행에는 주지 않는다(자기 변경을 덮는다).
+   */
+  readonly liveProject?: () => Project;
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
   readonly streamFn?: StreamFn;
   /** Team mailbox notifications, delivered through the core steering queue at a tool boundary. */
@@ -403,7 +408,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  // 팀장처럼 남이 쓰는 공유 사본을 읽기만 하는 실행 — 도구마다 최신 사본으로 갈아 끼운다(시작 사본에 머물면
+  // 팀원이 만든 맵이 안 보여 같은 일을 다시 배정한다. 2026-10-05 스트레스 p-team-delete-declined: 팀장 get_database_records 가
+  // 끝까지 「maps 1건」이라 「작은 숲」을 세 번 짓게 했다).
+  // 도구가 도는 동안만 바꾸고 끝나면 제 사본으로 되돌린다 — 실행 끝의 배치 품질·마을 검사가 남의 변경을 이 실행의 변경으로
+  // 읽고 쓰기 도구도 없는 팀장에게 수리를 시키지 않게. 읽기 도구는 겹쳐 돌 수 있어 마지막 것이 끝날 때 되돌린다.
+  let liveDepth = 0;
+  let ownProject = ctx.project;
+  const wrapTool = (tool: PiToolShape): PiToolShape => {
+    const wrapped = wrapCoreTool(tool);
+    const live = options.liveProject;
+    return live ? { ...wrapped, async execute(id, params, signal) {
+      if (liveDepth++ === 0) ownProject = ctx.project;
+      ctx.project = cloneProjectSharingSharedDictionaries(live());
+      try { return await wrapped.execute(id, params, signal); }
+      finally { if (--liveDepth === 0) ctx.project = ownProject; }
+    } } : wrapped;
+  };
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
