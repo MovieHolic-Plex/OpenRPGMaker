@@ -387,3 +387,30 @@ native 실행 실패가 원인처럼 남지 않게 한다. 기존 이미지/검�
 시설 receipt는 contractPath의 requiredReviewItems를 사용한다. 옛 components 13품목만 요구하면
 7개 시설 조건을 쓰는 새 판 수집이 실패한다. 필수 목록이 비었으면 거부하고 시설 native PASS에도
 facilityVerdict=PASS 및 현재 assemblySha256을 요구한다. 최종 감독 검수의 COMPLETE 판정은 별도다.
+
+### 그림 중심의 Allow / Deny (2026-10-05)
+
+`/spaces`의 기본 상호작용은 `예시 → Allow / Deny → 결과 → 수정 / Allow / Deny`다.
+`web/art-choice.js`는 검수를 통과한 배치 예시를 나란히 보여주고, 열림/닫힘은 함께 표시한다.
+품목 탭, 평가 등급/태그/필수 의견, 재료 재확인·폐기 버튼을 기본 공간 화면에서 제거했다.
+주문서·마크다운·실행/검수 기록은 접힌 상세에 보존한다. 새 제작 단계는 15초 갱신으로 열린 화면에도 반영한다.
+
+- `space_decisions.decide_example`: 후보 fingerprint와 화면의 모든 이미지 해시에 묶인 SQLite
+  `feedback.kind=example-decision`을 저장한다. 복수 Allow를 허용하며 첫 Allow를 기존
+  `art_selections`에 연결한다. 선택한 예시를 Deny하면 다른 Allow로 교체한다.
+- Deny는 예시 거절이며 개념 폐기가 아니다. 필수 사유가 없다. 해당 묶음의 모든 사용 가능 예시를
+  Deny하면 실제 그림을 보존하고 `art-feedback.json`과 기존 native art 큐로 돌려보낸다.
+  누적 수정 상한을 유지하며 한도 소진은 blocked다. 다른 Allow 묶음은 보존 요청에 포함한다.
+- 기존 전체 pause를 클릭으로 풀지 않는다. paused 상태에서 큐 등록과 실제 실행을 구분해서 안내한다.
+  전용 실행기는 기존의 개념 범위/작업 슬롯 정책을 따른다.
+- 공용 설치 자동 연결이 없는 art-review는 Allow 완료 후에도 공용 등록·조립 연결에서 멈춰 있다고
+  명시한다. 추가 사용자 버튼을 요구하지 않으며, 후보 승인만으로 제작 중/정본 완료를 주장하지 않는다.
+- 조수 시험 통과 뒤 `result-review`에서 멈춘다. `result-review.json`은 현재 예제 PNG, 카드,
+  예제 JSON, 검수와 조수 시험 파일에 묶인다. Allow는 bake 큐로, Deny/수정은 피드백을 포함한
+  build 큐로 전이한다. 수정에만 한 줄 의견이 필요하다. 이미 게시된 결과의 Deny/수정도
+  재제작 요청이며 기존 게시물을 즉시 제거하지 않는다.
+- `start_bake`도 현재 결과와 사용자 Allow가 일치하는지 재확인한다. 과거 bake 큐 항목도
+  확인 없이 게시하지 않으며, 기존 재료/시각 관문을 우회하지 않는다.
+- 운영 DB의 기존 선택은 유지했다. 변경 검증은 SQLite 사본과 실제 브라우저로 수행했다.
+  `verify-shots/simple-space-decisions/`의 결과 확인 화면은 이전 감옥 렌더를 이용한 사본의
+  UI 증거이며, 현재 감옥이 기술 검수나 정본 저장을 마쳤다는 증거가 아니다.
