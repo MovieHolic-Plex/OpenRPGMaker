@@ -16,6 +16,28 @@ import store
 import art_feedback
 import review_recovery
 
+# These phases write only concept artifacts or its own art worktree. Shared
+# assembly/probe/publication keep exclusive access until independently isolated.
+PARALLEL_STAGES = frozenset(('plan', 'plan-review', 'survey', 'material-review',
+    'art', 'art-layout-review', 'art-context-review'))
+PARALLEL_KINDS = PARALLEL_STAGES | {'art-native'}
+
+
+def admission(concept, jobs, slots, max_jobs):
+    """Persisted running records reserve slots, including a pending reap."""
+    if any(j['concept'] == concept['id'] for j in jobs):
+        return 'same-concept'
+    if concept['stage'] not in PARALLEL_STAGES:
+        return 'shared-stage' if jobs else None
+    if any(j['kind'] not in PARALLEL_KINDS for j in jobs):
+        return 'shared-stage'
+    if len({j['concept'] for j in jobs}) >= slots:
+        return 'space-capacity'
+    need = 2 if concept['stage'] == 'plan-review' else 1
+    if len(jobs) + need > max_jobs:
+        return 'worker-capacity'
+    return None
+
 
 def recover(cid):
     """Known orchestration faults only; quality failures keep their own budget."""
@@ -60,7 +82,7 @@ def recover(cid):
 def main(ids):
     if not ids or any(not store.concept(cid) for cid in ids):
         raise ValueError('실행할 기존 공간 id를 명시해야 합니다.')
-    folder = Path(sh.DATA) / 'monitoring' / 'requested-spaces'
+    folder = Path(sh.DATA) / 'monitoring' / os.environ.get('SUPER_HARNESS_RUNNER_ID', 'requested-spaces')
     folder.mkdir(parents=True, exist_ok=True)
     lock = (folder / 'run.lock').open('w')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -73,6 +95,14 @@ def main(ids):
                 'art-layout-review': sh.start_art_layout_review, 'art-context-review': sh.start_art_context_review,
                 'build': sh.start_build, 'review': sh.start_reviews, 'probe': sh.step_probe, 'bake': sh.start_bake}
     cursor = 0
+    slots = max(1, int(os.environ.get('SUPER_HARNESS_SPACE_PARALLEL', '3')))
+    # Bound inner prop pools too: three spaces must not fan out to 96 workers.
+    sh.ENV['PROP_HARNESS_PAR'] = os.environ.get('SUPER_HARNESS_SPACE_PROP_PAR', '4')
+    draining = False
+    def drain(*_):
+        nonlocal draining
+        draining = True
+    signal.signal(signal.SIGUSR1, drain)
     def stop(*_): raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
@@ -82,26 +112,38 @@ def main(ids):
                 sh.reap()
                 # The main scheduler owns global runs. This service owns only the
                 # named requests while global discovery remains paused.
-                if store.setting('paused') == '1' and not sh.PROCS:
+                waits = {}
+                if not draining and store.setting('paused') == '1':
+                    start = cursor
+                    exclusive = next((c['id'] for c in (store.concept(cid) for cid in ids)
+                        if c['stage'] in handlers and c['stage'] not in PARALLEL_STAGES
+                        and c['status'] != 'running'), None)
                     for offset in range(len(ids)):
-                        index = (cursor + offset) % len(ids)
+                        index = (start + offset) % len(ids)
                         cid = ids[index]
                         if store.jobs("concept=? AND status='running'", (cid,)): continue
                         recover(cid)
                         c = store.concept(cid)
                         if c['stage'] not in handlers or (c['status'] == 'running' and c['stage'] != 'probe'): continue
-                        # Serial native/preparation work across all supervisors.
-                        if store.jobs("kind IN ('art','art-native','art-layout-review','art-context-review') AND status='running'"):
+                        if exclusive and cid != exclusive:
+                            waits[cid] = 'shared-stage'
+                            continue
+                        reason = admission(c, store.jobs("status='running'"), slots,
+                                           int(store.setting('max_codex')))
+                        if reason:
+                            waits[cid] = reason
                             continue
                         handlers[c['stage']](c)
                         cursor = (index + 1) % len(ids)
-                        break
                 concepts = [store.concept(cid) for cid in ids]
                 sh.write_json(folder / 'latest.json', {'at': store.now(), 'pid': os.getpid(),
                     'concepts': [{k: c.get(k) for k in ('id','title','stage','status','note','art_revision')} for c in concepts],
-                    'scope': '사용자가 요청한 공간만 제작·기술 오류 복구. 사용자 Allow/Deny 대기는 유지.'})
+                    'parallelSpaces': slots, 'waits': waits, 'draining': draining,
+                    'scope': '공간별 준비·검수 병렬. 공용 조립·시험·반영 직렬. 사용자 Allow/Deny 대기는 유지.'})
             except Exception as error:
                 store.log(None, f'지정 공간 운영 오류: {type(error).__name__}: {str(error)[:250]}')
+            if draining and not sh.PROCS and not sh.BAKING.locked():
+                break
             time.sleep(5)
     except KeyboardInterrupt:
         pass
