@@ -592,6 +592,12 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     const sheet = sheetFor(layer);
     if (missing.has(sheet.key)) return;
     const node = fxNode(id);
+    const authored = source.contract?.layers[layer];
+    if (authored?.plane) {
+      world.append(node);
+      node.style.zIndex = authored.plane === "backdrop" ? "4" : "9";
+    }
+    if (authored?.opacity !== undefined) node.style.opacity = String(authored.opacity);
     used.add(id);
     // 칸 폭은 계약의 frame 값 그대로(32·64·128). 64 고정 가정 금지.
     const size = sheet.frame * scale;
@@ -606,6 +612,10 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     node.dataset.cell = String(cell);
     node.dataset.anchor = sheet.anchor;
     node.style.filter = filter ?? "";
+    if (authored?.plane === "backdrop") {
+      Object.assign(node.style, {left:"0px",top:"0px",width:STAGE_W+"px",height:STAGE_H+"px",
+        backgroundImage:'url("'+fxUrl(sheet.key+"-f"+cell)+'")', backgroundSize:"128px 128px", backgroundPosition:"0px 0px", backgroundRepeat:"repeat"});
+    }
   };
 
   function draw(): void {

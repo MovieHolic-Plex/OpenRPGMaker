@@ -1,5 +1,5 @@
-// v9(2026-10-03): 전체 몬스터의 새 native64/96 전투 시트·초상으로 캐시를 갱신한다.
-const CACHE_NAME = "oprn-pwa-v9";
+// v11(2026-10-05): 반려된 주인공 시트의 후속 수정과 히드라 소환 원화를 갱신한다.
+const CACHE_NAME = "oprn-pwa-v11";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

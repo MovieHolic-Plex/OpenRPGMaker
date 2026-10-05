@@ -1,0 +1,122 @@
+[
+  {
+    "key": "hand_impact",
+    "name": "쇄격",
+    "description": "짧은 충격핵이 갈라지며 적 하나를 타격한다."
+  },
+  {
+    "key": "hand_thrust",
+    "name": "섬광 찌르기",
+    "description": "가로로 뻗는 창끝이 적 하나를 관통한다."
+  },
+  {
+    "key": "hand_claw",
+    "name": "삼연 발톱",
+    "description": "세 줄의 발톱 자국으로 적 하나를 할퀸다."
+  },
+  {
+    "key": "hand_axe",
+    "name": "파쇄 도끼",
+    "description": "무거운 도끼 궤적을 내려쳐 적 하나에게 피해를 준다."
+  },
+  {
+    "key": "hand_bomb",
+    "name": "작열 폭탄",
+    "description": "불씨가 팽창하고 불꽃 덩어리가 갈라져 적 하나를 공격한다."
+  },
+  {
+    "key": "hand_stone_spike",
+    "name": "암석 송곳",
+    "description": "면이 드러난 바위 송곳이 솟아 적 하나를 공격한다."
+  },
+  {
+    "key": "hand_dust_quake",
+    "name": "먼지 지진",
+    "description": "지면의 돌과 흙먼지가 튀며 적 전체를 공격한다."
+  },
+  {
+    "key": "hand_wind_cutter",
+    "name": "질풍 칼날",
+    "description": "엇갈린 바람 칼날 두 개가 적 전체를 가른다."
+  },
+  {
+    "key": "hand_whirlpool",
+    "name": "쌍둥이 소용돌이",
+    "description": "거품 테두리가 감기는 물 소용돌이로 적 전체를 공격한다."
+  },
+  {
+    "key": "hand_vine_bind",
+    "name": "덩굴 포박",
+    "description": "잎 달린 덩굴이 적 하나를 묶어 마비시킨다."
+  },
+  {
+    "key": "hand_shadow_fang",
+    "name": "그림자 송곳니",
+    "description": "양쪽에서 맞물리는 어둠의 송곳니가 적 하나를 문다."
+  },
+  {
+    "key": "hand_holy_lance",
+    "name": "성광의 창",
+    "description": "가느다란 빛의 창이 내려와 적 하나를 꿰뚫는다."
+  },
+  {
+    "key": "hand_heal_drop",
+    "name": "치유의 이슬",
+    "description": "맑은 물방울과 튀어 오르는 빛으로 아군 하나의 HP를 회복한다."
+  },
+  {
+    "key": "hand_regen_leaf",
+    "name": "생명의 잎",
+    "description": "잎이 솟아오르며 아군 하나에게 재생 상태를 준다."
+  },
+  {
+    "key": "hand_revive_feather",
+    "name": "소생의 깃털",
+    "description": "빛의 깃털 날개가 쓰러진 아군 하나를 일으킨다."
+  },
+  {
+    "key": "hand_cleanse",
+    "name": "맑은 정화",
+    "description": "아군 전체의 독·맹독·마비·침묵·수면을 씻는다."
+  },
+  {
+    "key": "hand_guard_crystal",
+    "name": "수정 방벽",
+    "description": "굴절면이 빛나는 수정이 아군 하나에게 물리 보호 상태를 준다."
+  },
+  {
+    "key": "hand_mirror",
+    "name": "반사의 거울",
+    "description": "금속 테두리 거울이 반짝이며 아군 하나에게 마법 반사 상태를 준다."
+  },
+  {
+    "key": "hand_haste_wing",
+    "name": "신속의 날개",
+    "description": "짧게 솟구치는 깃털 날개가 아군 하나의 민첩을 올린다."
+  },
+  {
+    "key": "hand_slow_chain",
+    "name": "둔화의 사슬",
+    "description": "쇠사슬 고리가 감기며 적 하나의 민첩을 낮춘다."
+  },
+  {
+    "key": "hand_silence_seal",
+    "name": "침묵의 봉인",
+    "description": "잠금 문장이 닫히며 적 하나에게 침묵 상태를 준다."
+  },
+  {
+    "key": "hand_mana_drain",
+    "name": "마력 흡수",
+    "description": "작은 마력 덩어리가 적에게서 시전자 쪽으로 흘러 MP 피해의 100%를 흡수한다."
+  },
+  {
+    "key": "hand_comet",
+    "name": "혜성 낙하",
+    "description": "비껴 떨어지는 불타는 혜성과 돌 파편이 적 전체를 공격한다."
+  },
+  {
+    "key": "hand_summon_gate",
+    "name": "환영의 문",
+    "description": "세로 소환문에 환영이 나타나 적 하나에게 암흑 피해를 준다."
+  }
+]

@@ -28,6 +28,7 @@ export type RetroTimelineEvent =
   | {
     readonly kind: "fx"; readonly at: number; readonly layer: number; readonly key: string; readonly anchor: Exclude<RetroFxAnchor, "projectile">;
     readonly frame: number; readonly cells: readonly number[]; readonly frameMs: number;
+    readonly frameDurationsMs?: readonly number[];
     /** 그림 배율(프로젝트 연출 레코드의 층 옵션). 없으면 1 — 기본 계약 타임라인에는 붙지 않는다. */
     readonly scale?: number;
     /** CSS filter(층 색 손잡이). 없으면 원본색 — 기본 계약 타임라인에는 붙지 않는다. "none" 은 레코드 전체 색을 이 층만 원본으로 되돌린다. */
@@ -220,10 +221,11 @@ class TimelineBuilder {
     const anchor = layer.anchor === "projectile" ? "target" : layer.anchor;
     const list = cells ?? Array.from({ length: Math.max(1, layer.frames) }, (_, cell) => cell);
     const ms = frameMs ?? RETRO_FX_FRAME_MS[layer.frame] ?? 60;
+    const durations = layer.frameDurationsMs ? list.map(cell => Math.max(16, layer.frameDurationsMs?.[cell] ?? ms)) : undefined;
     const scale = layer.scale !== undefined && layer.scale !== 1 ? { scale: layer.scale } : {};
     const filter = layerFilter(layer);
-    this.events.push({ kind: "fx", at, layer: index, key: layer.key, anchor, frame: layer.frame, cells: list, frameMs: ms, ...scale, ...(filter ? { filter } : {}) });
-    const end = at + list.length * ms;
+    this.events.push({ kind: "fx", at, layer: index, key: layer.key, anchor, frame: layer.frame, cells: list, frameMs: ms, ...(durations ? { frameDurationsMs: durations } : {}), ...scale, ...(filter ? { filter } : {}) });
+    const end = at + (durations ? durations.reduce((sum, duration) => sum + duration, 0) : list.length * ms);
     this.touch(end);
     return end;
   }
@@ -274,11 +276,18 @@ function playImpact(b: TimelineBuilder, start: number, layers: readonly IndexedL
     const layerAt = placed.start;
     const layerEnd = placed.end;
     const length = layerEnd - layerAt;
-    if (b.firstImpactMid < 0) b.firstImpactMid = Math.round(layerAt + length * 0.45);
+    if (layer.ambient) {
+      end = Math.max(end, layerEnd);
+      continue;
+    }
+    const contactLead = layer.contactFrame !== undefined
+      ? Array.from({length: Math.min(layer.frames, Math.max(0, layer.contactFrame))}, (_, cell) => layer.frameDurationsMs?.[cell] ?? RETRO_FX_FRAME_MS[layer.frame] ?? 60).reduce((sum, ms) => sum + ms, 0)
+      : b.side === "enemies" ? Math.round(length * 0.25) : 0;
+    if (b.firstImpactMid < 0) b.firstImpactMid = layer.contactFrame !== undefined ? layerAt + contactLead : Math.round(layerAt + length * 0.45);
     const who = layer.anchor === "target" ? "target" : "allTargets";
-    for (let i = 0; i < hitsPerLayer; i += 1) b.hit(Math.round(layerAt + length * (0.25 + (0.5 * i) / Math.max(1, hitsPerLayer))), who);
+    const hitLead = layer.contactFrame !== undefined ? contactLead : length * 0.25;
+    for (let i = 0; i < hitsPerLayer; i += 1) b.hit(Math.round(layerAt + hitLead + length * (0.5 * i) / Math.max(1, hitsPerLayer)), who);
     // Impact audio belongs to contact, not the quiet opening cells of the layer.
-    const contactLead = b.side === "enemies" ? Math.round(length * 0.25) : 0;
     for (const [turn, turnAt] of placed.starts.entries()) if (turn === 0 || layer.onHit === "each") b.sound(turnAt + contactLead, layer.se ?? retroSoundForLayer(layer.key));
     end = Math.max(end, layerEnd);
     at = Math.round(at + length * OVERLAP);
@@ -460,7 +469,7 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
       // 화면 레이어를 먼저, 대상 레이어를 뒤에 — 계약 목록 순서를 그대로 쓴다.
       const end = playImpact(b, land, impact);
       const firstLength = impact[0] ? impact[0].layer.frames * (RETRO_FX_FRAME_MS[impact[0].layer.frame] ?? 60) : 400;
-      const blow = Math.round(land + firstLength * 0.5);
+      const blow = impact[0]?.layer.ambient && b.firstImpactMid >= 0 ? b.firstImpactMid : Math.round(land + firstLength * 0.5);
       b.screen(blow, 140, "flash"); b.screen(blow, 420, "shake"); b.sound(blow, SOUND.boom);
       b.pose(Math.max(release + 400, end - 120), "idle");
       b.screen(0, Math.max(end + 120, release + 600), "dim");
@@ -768,7 +777,15 @@ export function retroTimelineStateAt(timeline: RetroSkillTimeline, t: number): R
       }
       case "hide": if (t < event.at + event.durationMs) hidden = true; break;
       case "fx": {
-        const step = Math.floor((t - event.at) / Math.max(1, event.frameMs));
+        let step = Math.floor((t - event.at) / Math.max(1, event.frameMs));
+        if (event.frameDurationsMs) {
+          let elapsed = t - event.at;
+          step = 0;
+          while (step < event.cells.length && elapsed >= (event.frameDurationsMs[step] ?? event.frameMs)) {
+            elapsed -= event.frameDurationsMs[step] ?? event.frameMs;
+            step += 1;
+          }
+        }
         if (step < event.cells.length) fx.push({ event: index, layer: event.layer, key: event.key, anchor: event.anchor, frame: event.frame, cell: event.cells[step]!, ...(event.filter && event.filter !== "none" ? { filter: event.filter } : {}) });
         break;
       }

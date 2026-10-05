@@ -1,5 +1,42 @@
 # Asset Attribution
 
+## Hero magic redraw and reused hydra cel (2026-10-05)
+
+The current fire, ice, lightning and Holy effect cels are original OPRN art written
+as explicit palette-symbol rows and pixel placements in `flame_cels.py`,
+`crystal_cels.py`, `lightning_cels.py`, `aether_cels.py`, and `water_band_cels.py`
+under `scripts/asset-gen/pixel-fx/`. `hero_magic_rework.py` selects the active cels;
+`snes_study_redraw.py` packs them and expands `hand-authored/*.study.px.json`.
+Ten layer sheets and four background cel copies live in `generated/pixel-fx/`.
+The backgrounds place authored 128px water bands over repeated flat 32px tiles.
+The summon body reuses the first 96px cel of existing OPRN artwork
+`generated/pixel-enemies/hydra-three.png`, with explicitly selected palette
+substitutions recorded in `hand-authored/summon-hydra-reuse.json`. Pixel positions
+and transparency are retained; it is placed at (16,16) in a 128px cel and held for
+1,400ms. It is not a newly drawn dragon or new attack pose.
+No FF6 sprites or audio were extracted, and no sprite tweening was used.
+SNES FF6 footage and public animation
+analysis informed timing and composition, documented in
+`docs/experiments/ff6-reference-study-20261005/README.md`.
+Repository artwork terms apply. The user approved integration of this revision;
+`review-decision.json` binds that decision to the source and PNG hashes.
+Current scope and reproduction: `docs/experiments/hero-magic-rework-20261005/README.md`.
+
+The 24 hand effect sheets and both hand-authored dragon versions were rejected by
+the user and removed from common defaults. Their original OPRN artwork and source
+snapshots are preserved under `docs/experiments/shared-hand-fx-20261005/`.
+The subsequent `snes-study-redraw-20261005` five-skill study was also rejected by
+the user and archived in that folder's `rejected-release/`. Current magic cels
+and the reused hydra body replace that study; its old silhouettes are not quality references.
+Existing EasyRPG sound assets retain their separate attribution.
+
+`generated/pixel-fx/mage_fire_burst.png`, `mage_blizzard.png`, `mage_chain_bolt.png`
+are original OPRN artwork authored as explicit native
+palette-symbol rows. Editable sources: `scripts/asset-gen/pixel-fx/hand-authored/`.
+Repository code/asset policy applies. FF6/SNES battle effects are the requested
+visual inspiration; these cels contain no extracted FF6 sprites. The sparse
+source expands mechanically to a complete grid, with no shape generation or tweening.
+
 ## Castle tiles for RPGs — OpenGameArt
 
 - File: `opengameart-castle-tiles.png` (512×512 RGBA, original pixels unchanged)

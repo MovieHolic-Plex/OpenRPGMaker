@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 주인공 마법 5종 · 노출 시간과 앞뒤 층 (2026-10-05)
+
+공용 화염/빙결/번개/심판의 빛은 직접 도트 시트, 용권 본체는 기존 히드라 원화 재사용을 사용한다.
+직전 `snes-study-redraw-20261005` 그림은 사용자 반려이며 현재 패킹 원본은 `hero_magic_rework.py`다.
+`retroSkillTimeline`이 셀별 노출 시간을 공유하고 `databaseSkillRetroStage`는 홀리 뒤 구슬을
+world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이다.
+배경 셀 사본 `*-f0/1.png`를 논리 128px로 반복하므로 전장에 늘리면서 도트가 커지지 않는다.
+동일한 합성 규칙은 `createMonsterFxPainter`에도 적용한다.
+이 메타데이터는 공용 시트 정의가 소유하며 복제 프리셋에도 전달한다. 새 프로젝트 스키마 필드는 없다.
+실제 자료집 미리보기 5종의 현재 화면/DOM 근거는 `verify-shots/hero-magic-rework-20261005/editor/`.
+그림 승인과 사용자 프로젝트 정본 저장을 의미하지 않는다. 상세는 [런타임 전투](runtime-battle.md)의 같은 날짜 절.
+
 ## 아이템·장비 카탈로그의 입력과 가상 스크롤 (2026-10-04)
 
 `databaseInventoryCatalog.ts`는 이름·종류/장착 부위·종류 표시·유효 아이콘/이미지 ID·실제 이미지 URL의
@@ -58,6 +70,12 @@ retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있
 - 이미 화면에 있던 것(타격별 배율·피해 공식·상태 변화·우선도·속성·재사용 대기·급소·HP 대가·흡수·입력 커맨드·명중 보정·행동 불가·행동 제한)은 새로 만들지 않았다.
 
 ## 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
+
+2026-10-05 손 도트 24종은 사용자 반려로 기본 연출/시트 색인·기본 스킬·기존 프로젝트 자동 수렴에서
+철회했다. `retroPixelAnimationRecords.ts`의 기본 `anim_px_*`는 기존 17종이다.
+반려 그림/배선/기술 확인 기록은 `docs/experiments/shared-hand-fx-20261005/rejected-release/`와
+`verify-shots/shared-hand-fx-20261005/SUMMARY.md`에 보존한다. 형식 확인을 그림 승인으로 보지 않는다.
+사용자 프로젝트 정본에는 이 묶음을 쓰지 않았다. 저자가 직접 만든 기존 행을 삭제하는 마이그레이션도 없다.
 
 - 탭 `retroChoreographies`(전투 규칙 그룹, 「도트 연출」, `database.ts`). 기본 연출 1130개는 「기본」 배지의 **읽기 전용**이고 「복제해서 고치기」로 `chor_<slug>` 사본을 만든다. 추가·복제·삭제(삭제는 「쓰는 곳」 스킬 수를 경고). 오른쪽 「쓰는 곳」은 그 연출을 부르는 스킬 목록.
 - 편집기 `databaseRetroChoreographyView.ts`: 이름·설명·모션·층 행(시트·앵커·시작 ms·배율·반복·「타마다」)·위/아래/삭제/추가, 시간축 막대(층 시작~끝), 무대 미리보기(`databaseSkillRetroStage.ts` 재사용, 고칠 때마다 다시 재생). 층 행의 숫자칸은 `.db-field` 를 고정폭으로 둬야 한다 — `numberField` 스테퍼가 `width:100%` + `container-type:inline-size` 라 shrink-wrap flex 부모에서 16px 로 접힌다.

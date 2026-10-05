@@ -1,0 +1,185 @@
+{
+  "sourceSha256": "9a1af65dfe56669b562da130565e24af47fc761765598433f0de1e6061644c43",
+  "width": 64,
+  "height": 64,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 60,
+      "opaquePixels": 13,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        27,
+        40,
+        31,
+        44
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "ddc9dcbe4ea54fea79ca8936a5c223d8ef0c44e8183ccab4d8d80642a195b6b8",
+      "changedFromPrevious": null,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "발동"
+    },
+    {
+      "id": "f01",
+      "durationMs": 60,
+      "opaquePixels": 30,
+      "opaqueColors": 4,
+      "boundsInclusive": [
+        24,
+        31,
+        38,
+        46
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "f90e3205e8c5510f256c4ecc13a7a16d7a7013f36f633d5b225a96bf4c316aa3",
+      "changedFromPrevious": 43,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "접근"
+    },
+    {
+      "id": "f02",
+      "durationMs": 60,
+      "opaquePixels": 110,
+      "opaqueColors": 4,
+      "boundsInclusive": [
+        12,
+        18,
+        49,
+        49
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "ff5300c76e44f29a6f37b4ee07c527fe4e05282c562b9ef00c4fa928d4a68926",
+      "changedFromPrevious": 140,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "접촉"
+    },
+    {
+      "id": "f03",
+      "durationMs": 60,
+      "opaquePixels": 55,
+      "opaqueColors": 4,
+      "boundsInclusive": [
+        10,
+        14,
+        51,
+        41
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "63faa95836c0732bfc68f3e2311878655a72cedf6fa83bd595b7956381432831",
+      "changedFromPrevious": 165,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "전개"
+    },
+    {
+      "id": "f04",
+      "durationMs": 60,
+      "opaquePixels": 21,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        9,
+        10,
+        51,
+        34
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "f19fdc7759ecfdbc9bf90dbd2057a187a95716515a739c4e0558812637ff1547",
+      "changedFromPrevious": 76,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "분해"
+    },
+    {
+      "id": "f05",
+      "durationMs": 60,
+      "opaquePixels": 5,
+      "opaqueColors": 2,
+      "boundsInclusive": [
+        10,
+        7,
+        50,
+        28
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "650da139dbb7ddd733e2fb0f4aa97308a123c04105a235a79ebc9232862ee46e",
+      "changedFromPrevious": 26,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "잔상"
+    },
+    {
+      "id": "f06",
+      "durationMs": 60,
+      "opaquePixels": 3,
+      "opaqueColors": 2,
+      "boundsInclusive": [
+        12,
+        5,
+        49,
+        14
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "b3416713f0cd7829dc6b95e61782d0b1550138f706c8198d933004bb2e8cd8d8",
+      "changedFromPrevious": 8,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "소멸"
+    },
+    {
+      "id": "f07",
+      "durationMs": 60,
+      "opaquePixels": 1,
+      "opaqueColors": 1,
+      "boundsInclusive": [
+        31,
+        3,
+        31,
+        3
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "c5b472d98cd1163931708ec3cf19712a841a325c77c6d7e17840a71ad2e2a7dc",
+      "changedFromPrevious": 4,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "끝"
+    }
+  ],
+  "opaqueColors": 6,
+  "alpha": [
+    0,
+    255
+  ],
+  "totalDurationMs": 480,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "9dba9e2476e463eef6cca484c5a3c39eace7ef1a8189dbf470156313eb7f185f",
+    "contact-grid-00.png": "9c79df1adc5488f1fc5112bc48b33e317fb6e8fb9f0204f266f1496fa569b7bd",
+    "contact-native-00.png": "9010ae63f1e7c1358057250afa214fde707afacf8eea831e363551323d5f5c17",
+    "dark.gif": "54b87daa7e19955d98c78fa1885746e2487377a934c324b22d167ffb9b35e346",
+    "light.gif": "8557bf5adf23fb8fc61b52d1ac52c542511bd67ed6e98c945cf6df7143e0c244",
+    "sheet.png": "e80f059445028f89abc18f395ac018d70c14e82e5f4a026d9f744a5319931f07"
+  }
+}

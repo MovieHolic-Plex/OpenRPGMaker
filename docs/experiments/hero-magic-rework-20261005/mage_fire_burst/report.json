@@ -1,0 +1,180 @@
+{
+  "sourceSha256": "e417da69f826ff40192ac63ea3712109f80e039f5156045957aab0e0146d391b",
+  "width": 64,
+  "height": 64,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 40,
+      "opaquePixels": 206,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        10,
+        43,
+        36,
+        56
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "37b44265ed38215cd04a1492daf06364c1a0e48a9cc99bd5f3c58e24b713f82e",
+      "changedFromPrevious": null,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "점화"
+    },
+    {
+      "id": "f01",
+      "durationMs": 60,
+      "opaquePixels": 501,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        15,
+        20,
+        39,
+        54
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "0bdfe7be48b761068c20524566ac2c112424566b8dbd64f85e742cbae90c4f71",
+      "changedFromPrevious": 567,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "화염 기둥 상승"
+    },
+    {
+      "id": "f02",
+      "durationMs": 100,
+      "opaquePixels": 1158,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        8,
+        1,
+        42,
+        56
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "85255de26e093e00e555e78652b2bdda4d6e06e6effef52bee4d56ad8ed91b54",
+      "changedFromPrevious": 1065,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "백열"
+    },
+    {
+      "id": "f03",
+      "durationMs": 70,
+      "opaquePixels": 779,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        7,
+        1,
+        38,
+        54
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "2631aaa20e2fa21a59fb2c4691bf719bdfed668cf1ad5c80f6004241836702c3",
+      "changedFromPrevious": 1064,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "갈라지는 화염"
+    },
+    {
+      "id": "f04",
+      "durationMs": 60,
+      "opaquePixels": 428,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        9,
+        10,
+        41,
+        55
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "0206ed39e6e7b1d6263d7c0719b3c9ea26b7737051ce8bf72a50cf6c8e15401a",
+      "changedFromPrevious": 806,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "찢긴 화염"
+    },
+    {
+      "id": "f05",
+      "durationMs": 60,
+      "opaquePixels": 214,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        12,
+        22,
+        40,
+        54
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "c5e41a04319cdcc4aee3a045598c2dc405f4de866cfd78d653f646411f2d9fa1",
+      "changedFromPrevious": 438,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "내리는 잔불"
+    },
+    {
+      "id": "f06",
+      "durationMs": 100,
+      "opaquePixels": 41,
+      "opaqueColors": 6,
+      "boundsInclusive": [
+        14,
+        38,
+        40,
+        55
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "d07595212ede8adc2b647d248cfd63701a37b19151602d2bcb725b661e16a40d",
+      "changedFromPrevious": 226,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "재와 잔광"
+    },
+    {
+      "id": "f07",
+      "durationMs": 50,
+      "opaquePixels": 0,
+      "opaqueColors": 0,
+      "boundsInclusive": null,
+      "touchesEdges": [],
+      "rgbaSha256": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "changedFromPrevious": 41,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "소멸"
+    }
+  ],
+  "opaqueColors": 7,
+  "alpha": [
+    0,
+    255
+  ],
+  "totalDurationMs": 540,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "6dbb92340add17c9b92273b006eba00242392058c92667640c35482afe8039c5",
+    "contact-grid-00.png": "95dc1d21b9da3075ee34431fd12ba97e68e89cdb6ba6e9b5b0bb16362753c6d3",
+    "contact-native-00.png": "fd9675b8416b8d7ffba0cf3d243dfb6ef07849bced47dd098c041e782ca96875",
+    "dark.gif": "1bc67cfebb5bd458f82f66b9ed4231dd79bdeff749a0729dc8b7a5fb67dad211",
+    "light.gif": "ed3b6a6d7ed2dedffc58155999b3e19340f175f13f31939a8e5f40e9493586d3",
+    "sheet.png": "2d0bdec70efe4cd990ea4ba3820883def1b28f6ff49ea6d600fe2f889c3ead38"
+  }
+}

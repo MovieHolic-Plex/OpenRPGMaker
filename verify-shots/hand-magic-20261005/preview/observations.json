@@ -1,0 +1,45 @@
+{
+  "observations": [
+    {
+      "id": "fire",
+      "firstLabel": "3 / 10 · 백열",
+      "colors": 8,
+      "steppingChangedImage": true
+    },
+    {
+      "id": "ice",
+      "firstLabel": "4 / 10 · 결정의 최고점",
+      "colors": 7,
+      "steppingChangedImage": true
+    },
+    {
+      "id": "thunder",
+      "firstLabel": "3 / 8 · 낙뢰",
+      "colors": 5,
+      "steppingChangedImage": true
+    },
+    {
+      "id": "summon",
+      "firstLabel": "5 / 12 · 날갯짓",
+      "colors": 13,
+      "steppingChangedImage": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 736,
+      "client": 704,
+      "scroll": 704,
+      "root": 704
+    },
+    {
+      "width": 320,
+      "client": 288,
+      "scroll": 288,
+      "root": 288
+    }
+  ],
+  "oneShot": true,
+  "repeat": true,
+  "errors": []
+}

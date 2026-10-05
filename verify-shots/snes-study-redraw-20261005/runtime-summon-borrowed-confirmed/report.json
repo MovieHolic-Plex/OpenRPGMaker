@@ -1,0 +1,33 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": true,
+  "variant": "normal",
+  "clips": [],
+  "errors": [
+    "[group 0] page.waitForSelector: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"title-screen\"]') to be visible\u001b[22m\n\n    at recordGroup (/home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:283:24)\n    at async file:///home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:115:55"
+  ],
+  "evidence": [],
+  "custom": {
+    "file": "docs/experiments/snes-study-redraw-20261005/summon-runtime-fixture.json",
+    "contract": [
+      {
+        "id": "skill_hand_summon_review",
+        "actorId": "actor_hero",
+        "motion": "finisher",
+        "level": 1,
+        "layers": [
+          "monk_dragon_aura",
+          "monk_dragon_wave",
+          "monk_dragon_hit"
+        ]
+      }
+    ],
+    "log": [
+      "Runtime fixture: hero borrows the current common skill_monk_dragon_fist contract. This does not verify original monk party startup or save project content."
+    ]
+  },
+  "passed": false
+}

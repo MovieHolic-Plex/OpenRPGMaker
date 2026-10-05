@@ -1,0 +1,74 @@
+{
+  "sourceSha256": "36afb338fefbbf064c35a45007cec9fb14c54d8b996fd6dd94096fc687de17b9",
+  "width": 128,
+  "height": 128,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "576e607ab88232c8d1eea1ea4c43eab4e6c8ee3c462a13a0f95de3842e054c42",
+      "changedFromPrevious": null,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "긴 물결 전면"
+    },
+    {
+      "id": "f01",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "eb5f8bc87d80ce9f413e723bee3a56af010dedf4f1fdcdbb51ddb42ab4f74664",
+      "changedFromPrevious": 5014,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "긴 물결 이면"
+    }
+  ],
+  "opaqueColors": 3,
+  "alpha": [
+    255
+  ],
+  "totalDurationMs": 320,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "b52b7c7375914d83573a5107a9f0a248261bd183e33a8d1fec7d73159ddde0b6",
+    "contact-grid-00.png": "53dfc48f99607eae1e0f7e4d5739e016ff59172ef1817a8748918b724ae9df76",
+    "contact-native-00.png": "000b5eaad2557d43f92929ab1b653ec611c13281f23f7038f9beeb65361af0a8",
+    "dark.gif": "6386e7c30779856477cc0394c6bfe950c54276eb05780d5a4ab8dc25f3a76662",
+    "light.gif": "4921d300cd5a7afd70cf49a124b9ecf527acd5225b0073b6d160a145c1d0be3f",
+    "sheet.png": "9bdc148c98399cd71c1fff38078dd228e34e72e4ea117e238029f349e4aa59d3"
+  }
+}

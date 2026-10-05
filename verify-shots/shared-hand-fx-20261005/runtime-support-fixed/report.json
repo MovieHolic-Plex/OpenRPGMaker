@@ -1,0 +1,65 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": false,
+  "variant": "normal",
+  "clips": [],
+  "errors": [
+    "[group 0] page.waitForFunction: Timeout 120000ms exceeded.\n    at recordGroup (/home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:285:16)\n    at async file:///home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:115:55"
+  ],
+  "evidence": [],
+  "custom": {
+    "file": "docs/experiments/shared-hand-fx-20261005/runtime-fixture.json",
+    "contract": [
+      {
+        "id": "skill_fx_impact",
+        "actorId": "actor_hero",
+        "motion": "dash-strike",
+        "layers": [
+          "hand_impact"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_heal_drop",
+        "actorId": "actor_hero",
+        "motion": "cast",
+        "layers": [
+          "hand_heal_drop"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_guard_crystal",
+        "actorId": "actor_hero",
+        "motion": "buff",
+        "layers": [
+          "hand_guard_crystal"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_comet",
+        "actorId": "actor_hero",
+        "motion": "cast",
+        "layers": [
+          "hand_comet"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_hand_summon_review",
+        "actorId": "actor_hero",
+        "motion": "finisher",
+        "layers": [
+          "monk_dragon_aura",
+          "monk_dragon_hit"
+        ],
+        "level": 1
+      }
+    ]
+  },
+  "passed": false
+}

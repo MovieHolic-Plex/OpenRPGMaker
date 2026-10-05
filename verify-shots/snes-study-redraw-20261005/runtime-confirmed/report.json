@@ -1,0 +1,5228 @@
+{
+  "set": "class",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": true,
+  "variant": "normal",
+  "clips": [
+    {
+      "skill": "skill_mage_fireball",
+      "start": 30.8,
+      "duration": 2.88,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/snes-study-redraw-20261005/runtime-confirmed/skill-skill_mage_fireball.gif",
+      "bytes": 1230707
+    },
+    {
+      "skill": "skill_mage_blizzard",
+      "start": 36.76,
+      "duration": 3.2,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/snes-study-redraw-20261005/runtime-confirmed/skill-skill_mage_blizzard.gif",
+      "bytes": 1635183
+    },
+    {
+      "skill": "skill_mage_chain_lightning",
+      "start": 43.24,
+      "duration": 4.44,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/snes-study-redraw-20261005/runtime-confirmed/skill-skill_mage_chain_lightning.gif",
+      "bytes": 2157955
+    },
+    {
+      "skill": "skill_cleric_holy_smite",
+      "start": 148.2,
+      "duration": 3.88,
+      "group": 1,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/snes-study-redraw-20261005/runtime-confirmed/skill-skill_cleric_holy_smite.gif",
+      "bytes": 2093614
+    }
+  ],
+  "errors": [
+    "[group 2] page.waitForSelector: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"title-screen\"]') to be visible\u001b[22m\n\n    at recordGroup (/home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:283:24)\n    at async file:///home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:115:55"
+  ],
+  "evidence": [
+    {
+      "skill": "skill_mage_fireball",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 31924,
+          "fx": "mage_fireball_orb",
+          "anchor": "projectile",
+          "size": "32",
+          "box": "64",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            0,
+            1,
+            2
+          ],
+          "positions": [
+            "0px 0px",
+            "-64px 0px",
+            "-128px 0px",
+            "-192px 0px",
+            "0px 0px",
+            "-64px 0px",
+            "-128px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "256px 64px",
+          "filter": "none",
+          "width": "64px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 32220,
+          "fx": "mage_fire_burst",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1024px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 31512,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 31980,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 32250,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 32341,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 32636,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 31396.100000023842,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 22.100000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31450.299999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 42.799999952316284,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31512.600000023842,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 143.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31549.899999976158,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 148.70000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31592.600000023842,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 185.70000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31628.5,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 229.79999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31668.799999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 265.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31708.199999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 309.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31742.399999976158,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 344.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31782.299999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 378.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31808.699999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 417.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31842.199999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 444.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31881.699999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 502.49999999999994,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31938,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 569.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 49.39999997615814,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31980.199999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 611.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 91.39999997615814,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32010.799999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 632.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 112.20000004768372,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32044.299999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 647.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 127.39999997615814,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32090,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:2"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 691.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 171.89999997615814,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32176.799999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:3"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 808.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 288.2999999523163,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32264.100000023842,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:1",
+            "mage_fire_burst:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 884.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 364.2999999523163,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32311.699999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fireball_orb:2",
+            "mage_fire_burst:1"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 932.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            },
+            {
+              "state": "paused",
+              "time": 412.39999997615814,
+              "type": "Animation",
+              "target": "retro-skill-fx retro-class-fx retro-class-fx-projectile"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32429.399999976158,
+          "held": true,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1016.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 32478.100000023842,
+          "held": true,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1016.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 32498.199999928474,
+          "held": true,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1016.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 32550.899999976158,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1016.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32637.699999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:3"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1126.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32675.699999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 1,
+          "fx": [
+            "mage_fire_burst:4"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1166.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32743,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fire_burst:5"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1220.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32787.5,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fire_burst:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1272.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32820.89999997616,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fire_burst:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1300.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32857.799999952316,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [
+            "mage_fire_burst:7"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1348.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32917.39999997616,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1392,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32962.199999928474,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1417.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 32994.10000002384,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1457.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 33030.60000002384,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1504.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 33102.10000002384,
+          "held": false,
+          "skill": "skill_mage_fireball",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1527,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 30744.600000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 30833.100000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 30918.799999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 31053.299999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 31230.600000023842,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 31870.299999952316,
+          "duration": 1.5213605442176872,
+          "rate": 1
+        },
+        {
+          "at": 31937.100000023842,
+          "duration": 0.5862131519274376,
+          "rate": 1
+        },
+        {
+          "at": 32342.299999952316,
+          "duration": 1.5213605442176872,
+          "rate": 1
+        },
+        {
+          "at": 32365.799999952316,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 32411,
+          "target": "enemy-1",
+          "text": "-111",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 32411,
+          "on": true
+        },
+        {
+          "at": 32529,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">마도사가 파이어볼을 사용했다!",
+        ">마도사가 파이어볼을 사용했다!슬라임 1에게 111 피해!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_fireball_orb",
+        "mage_fire_burst"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_mage_blizzard",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 37876,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1024px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 37877,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1024px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 37877,
+          "fx": "mage_blizzard",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1024px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 37392,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 37727,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 38028,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 38113,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 38414,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 37326.89999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 57.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37357.5,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 84.29999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37393.10000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 138.59999990463257,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37423.60000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 142.79999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37456.39999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 173.69999992847443,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37511.89999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 206.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37552.39999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 262.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37641.299999952316,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 313.09999990463257,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37696.199999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 394.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37745.199999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 469.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37782.39999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 495.89999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37832.199999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 546.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37877.89999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:0",
+            "mage_blizzard:0",
+            "mage_blizzard:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 597.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37914.699999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:0",
+            "mage_blizzard:0",
+            "mage_blizzard:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 660,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37947.10000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:1",
+            "mage_blizzard:0",
+            "mage_blizzard:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 692,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 37996.699999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:1",
+            "mage_blizzard:1",
+            "mage_blizzard:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 739.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38047.10000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:2",
+            "mage_blizzard:2",
+            "mage_blizzard:2"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 793.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38081.299999952316,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:2",
+            "mage_blizzard:2",
+            "mage_blizzard:2"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 825.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38114.10000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [
+            "mage_blizzard:2",
+            "mage_blizzard:2",
+            "mage_blizzard:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 860,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38163.799999952316,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:3",
+            "mage_blizzard:3",
+            "mage_blizzard:3"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 891.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38210.799999952316,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:3",
+            "mage_blizzard:3",
+            "mage_blizzard:3"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 891.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38263.89999997616,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:3",
+            "mage_blizzard:3",
+            "mage_blizzard:3"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 891.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38327.299999952316,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:3",
+            "mage_blizzard:3",
+            "mage_blizzard:3"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 911.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38421.299999952316,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:5",
+            "mage_blizzard:5",
+            "mage_blizzard:5"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1013.8999999761583,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38556.89999997616,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:6",
+            "mage_blizzard:6",
+            "mage_blizzard:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1124.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-2",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38611.699999928474,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:6",
+            "mage_blizzard:6",
+            "mage_blizzard:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1124.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-2",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38675.199999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:6",
+            "mage_blizzard:6",
+            "mage_blizzard:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1124.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38749.10000002384,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [
+            "mage_blizzard:7",
+            "mage_blizzard:7",
+            "mage_blizzard:7"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1203.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38819.89999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1237.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 38919.699999928474,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1351.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 38971.10000002384,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1351.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 39021.89999997616,
+          "held": true,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1351.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 39111.39999997616,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1399.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 39222.699999928474,
+          "held": false,
+          "skill": "skill_mage_blizzard",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1450.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 36818.10000002384,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 36909.299999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 36986.299999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 37064.10000002384,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 37325.60000002384,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 37799.60000002384,
+          "duration": 2.3677097505668936,
+          "rate": 1
+        },
+        {
+          "at": 38113,
+          "duration": 2.3677097505668936,
+          "rate": 1
+        },
+        {
+          "at": 38142.5,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        },
+        {
+          "at": 38524.10000002384,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        },
+        {
+          "at": 38890.89999997616,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 38163,
+          "target": "enemy-1",
+          "text": "-108",
+          "heal": false
+        },
+        {
+          "at": 38556,
+          "target": "enemy-2",
+          "text": "-104",
+          "heal": false
+        },
+        {
+          "at": 38919,
+          "target": "enemy-3",
+          "text": "-107",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 38163,
+          "on": true
+        },
+        {
+          "at": 38299,
+          "on": false
+        },
+        {
+          "at": 38556,
+          "on": true
+        },
+        {
+          "at": 38670,
+          "on": false
+        },
+        {
+          "at": 38919,
+          "on": true
+        },
+        {
+          "at": 39051,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">마도사가 블리자드를 사용했다!",
+        ">마도사가 블리자드를 사용했다!슬라임 1에게 108 피해!",
+        ">마도사가 블리자드를 사용했다!동굴 박쥐가 104 피해를 입었다!",
+        ">마도사가 블리자드를 사용했다!슬라임 2가 107 피해를 입었다!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_blizzard"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_mage_chain_lightning",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 43949,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "896px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 43949,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "896px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 43949,
+          "fx": "mage_chain_bolt",
+          "anchor": "allTargets",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "896px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 43463,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 43571,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 43900,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 43974,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 44256,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 43408.10000002384,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 16.600000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43447.10000002384,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 39.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43478,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 87.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43508.799999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 105.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43544.199999928474,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 140.69999992847443,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43578.5,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 194.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43615.39999997616,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 209.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43649.299999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 242.79999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43693.60000002384,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 277.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43756.299999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 328.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43799.39999997616,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 384.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43845.199999928474,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 426.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43882.89999997616,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 497,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43914,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 523.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43949.799999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [
+            "mage_chain_bolt:0",
+            "mage_chain_bolt:0",
+            "mage_chain_bolt:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 558.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 43980.5,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [
+            "mage_chain_bolt:0",
+            "mage_chain_bolt:0",
+            "mage_chain_bolt:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 601.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44058.299999952316,
+          "held": true,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:1"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 655.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 44109.299999952316,
+          "held": true,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:1"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 655.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 44203.699999928474,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:2",
+            "mage_chain_bolt:2"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 693.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44283.5,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:4",
+            "mage_chain_bolt:3",
+            "mage_chain_bolt:3"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 765.4999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44349.299999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [
+            "mage_chain_bolt:5",
+            "mage_chain_bolt:5",
+            "mage_chain_bolt:5"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 836.4999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44443.199999928474,
+          "held": true,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 908.3999998569489,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-2",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 44476.699999928474,
+          "held": true,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 908.3999998569489,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-2",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 44532.799999952316,
+          "held": true,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 908.3999998569489,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-2",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 44626,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6",
+            "mage_chain_bolt:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 941.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44697.60000002384,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 1,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 989.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44755.199999928474,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1071.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44823.699999928474,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1089.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44911.89999997616,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1219.9999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44951.299999952316,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1247.4999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 44996.89999997616,
+          "held": false,
+          "skill": "skill_mage_chain_lightning",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1278.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 45681.60000002384,
+          "held": true,
+          "burst": 1,
+          "fx": [],
+          "poses": [],
+          "css": [
+            "paused"
+          ],
+          "moves": [],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 45733.39999997616,
+          "held": true,
+          "burst": 1,
+          "fx": [],
+          "poses": [],
+          "css": [
+            "paused"
+          ],
+          "moves": [],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 45774.299999952316,
+          "held": true,
+          "burst": 1,
+          "fx": [],
+          "poses": [],
+          "css": [
+            "paused"
+          ],
+          "moves": [],
+          "reactions": [
+            {
+              "target": "enemy-3",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 43258.799999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 43407,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 43872.699999928474,
+          "duration": 2.889795918367347,
+          "rate": 1
+        },
+        {
+          "at": 43975.299999952316,
+          "duration": 2.889795918367347,
+          "rate": 1
+        },
+        {
+          "at": 44028.699999928474,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        },
+        {
+          "at": 44415.799999952316,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        },
+        {
+          "at": 45645.699999928474,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 44055,
+          "target": "enemy-1",
+          "text": "-87",
+          "heal": false
+        },
+        {
+          "at": 44442,
+          "target": "enemy-2",
+          "text": "-109",
+          "heal": false
+        },
+        {
+          "at": 44822,
+          "target": "enemy-2",
+          "text": "마비",
+          "heal": false
+        },
+        {
+          "at": 45667,
+          "target": "enemy-3",
+          "text": "-83",
+          "heal": false
+        },
+        {
+          "at": 46240,
+          "target": "enemy-3",
+          "text": "마비",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 44055,
+          "on": true
+        },
+        {
+          "at": 44170,
+          "on": false
+        },
+        {
+          "at": 44442,
+          "on": true
+        },
+        {
+          "at": 44590,
+          "on": false
+        },
+        {
+          "at": 45667,
+          "on": true
+        },
+        {
+          "at": 45809,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">마도사는 무엇을 할까?",
+        ">마도사가 연쇄 번개를 사용했다!",
+        ">마도사가 연쇄 번개를 사용했다!슬라임 1에게 87 피해!",
+        ">마도사가 연쇄 번개를 사용했다!동굴 박쥐가 109 피해를 입었다!",
+        ">동굴 박쥐는 마비에 걸렸다!",
+        ">마도사가 연쇄 번개를 사용했다!슬라임 2가 83 피해를 입었다!",
+        ">슬라임 2는 마비에 걸렸다!",
+        ">정찰병은 무엇을 할까?"
+      ],
+      "statuses": [
+        "enemy-2-paralysis:마비",
+        "enemy-3-paralysis:마비"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_chain_bolt"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_cleric_holy_smite",
+      "group": 1,
+      "completed": true,
+      "effects": [
+        {
+          "at": 27741,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 27824,
+          "fx": "cleric_holy_orbs_back",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px",
+            "-1280px 0px",
+            "-1408px 0px"
+          ],
+          "plane": "behind",
+          "fieldWidth": 640,
+          "backgroundSize": "1536px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 27834,
+          "fx": "cleric_holy_orbs_front",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px",
+            "-1280px 0px",
+            "-1408px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1536px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 28034,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 28346,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 28681,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 28899,
+          "fx": "cleric_holy_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "768px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 29008,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 27323,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 28535,
+          "actor": "actor_cleric",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 28859,
+          "actor": "actor_cleric",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 28962,
+          "actor": "actor_cleric",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 29197,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 27222.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 29.100000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27272.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 46.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27323.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 135.89999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27367.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 142.39999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27436,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 184.20000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27477.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 261.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27522.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 302,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27545.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 338.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27583.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 361.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27614.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 401.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27642.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 435,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27666.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 464.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27691.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 484.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27747.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 543.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27781.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 565.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27840.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0",
+            "cleric_holy_orbs_back:0",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 640.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27863,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0",
+            "cleric_holy_orbs_back:0",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 676,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27916.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 728.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 27964.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 775.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28002.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 814.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28040.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:2",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 849.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28068.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:2",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 878,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28098.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 910.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28120.599999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 932.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28152,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 959.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28179.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 990.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28205.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:4",
+            "cleric_holy_orbs_front:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1016.3000000715257,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28255.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:4",
+            "cleric_holy_orbs_front:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1022.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28287,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:5",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1097.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28324.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:5",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1138.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28350.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:5",
+            "cleric_holy_field:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1161.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28381,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1188,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28409,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1223,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28433.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1246.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28472.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1286.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28491.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:7",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1305.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28523.599999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:7",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1337.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28544.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:7",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1358.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28566.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1375.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28590.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1400,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28634.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1422.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28691.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:9",
+            "cleric_holy_orbs_front:9",
+            "cleric_holy_field:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1487.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28792.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:10",
+            "cleric_holy_orbs_front:10",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1606.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28827.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:10",
+            "cleric_holy_orbs_front:10",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1641.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28919,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:11",
+            "cleric_holy_orbs_front:11",
+            "cleric_holy_field:1",
+            "cleric_holy_hit:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1731.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29026.299999952316,
+          "held": true,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1800.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 29070.199999928474,
+          "held": true,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1800.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 29127.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1800.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29200,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1880.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29227.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1904.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29258.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1937.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29294.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:3",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1975.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29328.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2009.6000000238416,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29378.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2060.100000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29391.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2063.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29428.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:5",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2084.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29465,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:5"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2146.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29522.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2200.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29588.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2220.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29611.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2275.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29622.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2303.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29643.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2308.600000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29668.099999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2328.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29689.599999904633,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2352.899999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 26337.899999976158,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 26469.799999952316,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 26591.5,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 26713,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 26866.199999928474,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 27041.799999952316,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 27728.599999904633,
+          "duration": 2.0742403628117914,
+          "rate": 1
+        },
+        {
+          "at": 28965.399999976158,
+          "duration": 0.63718820861678,
+          "rate": 1
+        },
+        {
+          "at": 28977.299999952316,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 29008,
+          "target": "enemy-1",
+          "text": "-107",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 29008,
+          "on": true
+        },
+        {
+          "at": 29126,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">성직자는 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">성직자가 심판의 빛을 사용했다!",
+        ">성직자가 심판의 빛을 사용했다!슬라임 1에게 107 피해!",
+        ">궁수는 무엇을 할까?"
+      ],
+      "statuses": [
+        "actor_hero-death:전투불능",
+        "actor_hero-death:전투불능"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "cleric_holy_field",
+        "cleric_holy_orbs_back",
+        "cleric_holy_orbs_front",
+        "cleric_holy_hit"
+      ],
+      "problems": []
+    }
+  ],
+  "passed": false
+}

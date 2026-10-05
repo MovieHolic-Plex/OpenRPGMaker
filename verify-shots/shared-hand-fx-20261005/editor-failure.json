@@ -1,0 +1,6 @@
+{
+  "message": "page.goto: Target page, context or browser has been closed",
+  "errors": [],
+  "url": "http://127.0.0.1:9877/?freshProject=1",
+  "body": ""
+}

@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "key": "hand_slow_chain",
+  "width": 64,
+  "height": 64,
+  "anchor": "target",
+  "frameMs": 60,
+  "palette": {
+    "A": "#25314d",
+    "B": "#4e7098",
+    "C": "#7fafd1",
+    "D": "#bce8ef",
+    "E": "#fff7cf",
+    "F": "#e2aa52",
+    "G": "#bb6538"
+  },
+  "frames": [
+    {
+      "phase": "발동",
+      "pieces": [
+        {
+          "x": 26,
+          "y": 40,
+          "rows": [
+            "..AAA",
+            ".ABCBA",
+            "ABC.CBA",
+            ".ABCBA",
+            "..AAA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접근",
+      "pieces": [
+        {
+          "x": 18,
+          "y": 35,
+          "rows": [
+            "..AAA......AAA",
+            ".ABCBA....ABCBA",
+            "ABC.CBA..ABC.CBA",
+            ".ABCBA....ABCBA",
+            "..AAA......AAA"
+          ]
+        },
+        {
+          "x": 29,
+          "y": 28,
+          "rows": [
+            "..AA",
+            ".ACDA",
+            "AC.DA",
+            ".ACDA",
+            "..AA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접촉",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 25,
+          "rows": [
+            "..AAA......AAA......AAA......AAA",
+            ".ABCBA....ABCBA....ABCBA....ABCBA",
+            "ABC.CBA..ABC.CBA..ABC.CBA..ABC.CBA",
+            ".ABCBA....ABCBA....ABCBA....ABCBA",
+            "..AAADDDDDDAAADDDDDDAAADDDDDDAAA"
+          ]
+        },
+        {
+          "x": 29,
+          "y": 17,
+          "rows": [
+            "..AAA",
+            ".ABCDA",
+            "ABC.DA",
+            ".ABCDA",
+            "..AAAD",
+            ".....DD",
+            "..AAA.D",
+            ".ABCDA",
+            "ABC.DA",
+            ".ABCDA",
+            "..AAA"
+          ]
+        },
+        {
+          "x": 18,
+          "y": 38,
+          "rows": [
+            "..AAA......AAA......AAA",
+            ".ABCBA....ABCBA....ABCBA",
+            "ABC.CBA..ABC.CBA..ABC.CBA",
+            ".ABCBA....ABCBA....ABCBA",
+            "..AAADDDDDDAAADDDDDDAAA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "전개",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 27,
+          "rows": [
+            "..AAA......AAA......AAA......AAA",
+            ".ABCBA....ABCBA....ABCBA....ABCBA",
+            "ABC.CBA..ABC.CBA..ABC.CBA..ABC.CBA",
+            ".ABCBA....ABCBA....ABCBA....ABCBA",
+            "..AAACCCCCCAAACCCCCCAAACCCCCCAAA"
+          ]
+        },
+        {
+          "x": 29,
+          "y": 19,
+          "rows": [
+            "..AAA",
+            ".ABCDA",
+            "ABC.DA",
+            ".ABCDA",
+            "..AAAC",
+            ".....CC",
+            "..AAA.C",
+            ".ABCDA",
+            "ABC.DA",
+            ".ABCDA",
+            "..AAA"
+          ]
+        },
+        {
+          "x": 18,
+          "y": 40,
+          "rows": [
+            "..AAA......AAA......AAA",
+            ".ABCBA....ABCBA....ABCBA",
+            "ABC.CBA..ABC.CBA..ABC.CBA",
+            ".ABCBA....ABCBA....ABCBA",
+            "..AAACCCCCCAAACCCCCCAAA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "분해",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 30,
+          "rows": [
+            "..AAA.......AA......AAA.......AA",
+            ".ABCBA.....ABA.....ABCBA.....ABA",
+            "ABC.CBA....A.A....ABC.CBA....A.A",
+            ".ABCBA......A......ABCBA......A",
+            "..AAA...............AAA"
+          ]
+        },
+        {
+          "x": 22,
+          "y": 45,
+          "rows": [
+            "..AAA.......AAA",
+            ".ABCBA.....ABCBA",
+            ".AB.BA.....AB.BA",
+            "..AAA.......AAA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "잔상",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 35,
+          "rows": [
+            "..AA...............AAA",
+            ".ABA..............ABBA",
+            "..AA...............AA"
+          ]
+        },
+        {
+          "x": 42,
+          "y": 40,
+          "rows": [
+            "AAA",
+            "ABA",
+            "AAA"
+          ]
+        },
+        {
+          "x": 23,
+          "y": 48,
+          "rows": [
+            "AAA",
+            "ABA",
+            "AAA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "소멸",
+      "pieces": [
+        {
+          "x": 13,
+          "y": 42,
+          "rows": [
+            "AB",
+            ".A"
+          ]
+        },
+        {
+          "x": 33,
+          "y": 43,
+          "rows": [
+            "AB",
+            ".A"
+          ]
+        },
+        {
+          "x": 46,
+          "y": 47,
+          "rows": [
+            "AB"
+          ]
+        },
+        {
+          "x": 24,
+          "y": 52,
+          "rows": [
+            "AA"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "끝",
+      "pieces": [
+        {
+          "x": 15,
+          "y": 49,
+          "rows": [
+            "A"
+          ]
+        },
+        {
+          "x": 35,
+          "y": 50,
+          "rows": [
+            "A"
+          ]
+        }
+      ]
+    }
+  ]
+}

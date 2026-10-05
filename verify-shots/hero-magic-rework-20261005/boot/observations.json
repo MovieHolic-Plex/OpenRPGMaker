@@ -1,0 +1,11 @@
+{
+  "ready": true,
+  "pending": [
+    "http://127.0.0.1:44025/src/player/PlayScene.ts",
+    "http://127.0.0.1:44025/assets/easyrpg/charset/Actor4.png",
+    "http://127.0.0.1:44025/assets/easyrpg/charset/Animal.png"
+  ],
+  "failures": [],
+  "messages": [],
+  "body": "안개 항구\n등대 조사 시작\n이어 하기\n크레딧\n그만두기\nA NEW ADVENTURE\n이야기가 시작되는 곳"
+}

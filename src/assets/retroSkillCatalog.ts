@@ -79,7 +79,14 @@ function recordLayers(layers: readonly SkillChoreographyLayer[]): RetroFxLayer[]
   return layers.flatMap((layer) => {
     const meta = retroFxSheetMeta(layer.sheet);
     if (!meta) return [];
-    const out: MutableLayer = { key: layer.sheet, anchor: layer.anchor, frame: meta.frame, frames: meta.frames };
+    const authored = FX_SHEET_META.get(layer.sheet);
+    const out: MutableLayer = { key: layer.sheet, anchor: layer.anchor, frame: meta.frame, frames: meta.frames,
+      ...(authored?.frameDurationsMs ? { frameDurationsMs: authored.frameDurationsMs } : {}),
+      ...(authored?.plane ? { plane: authored.plane } : {}),
+      ...(authored?.opacity !== undefined ? { opacity: authored.opacity } : {}),
+      ...(authored?.ambient ? { ambient: true } : {}),
+      ...(authored?.contactFrame !== undefined ? { contactFrame: authored.contactFrame } : {}),
+    };
     if (layer.startMs !== undefined) out.startMs = layer.startMs;
     if (layer.scale !== undefined) out.scale = layer.scale;
     if (layer.repeat !== undefined) out.repeat = layer.repeat;

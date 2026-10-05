@@ -1,5 +1,79 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 주인공 연출 5종 · 사용자 재반려 후 수정 (2026-10-05)
+
+직전 `snes-study-redraw-20261005` 판도 사용자에게 반려됐다. 현재 공용 그림은
+`hero_magic_rework.py`와 `flame_cels.py`·`crystal_cels.py`·`lightning_cels.py`·
+`aether_cels.py`·`water_band_cels.py`의 원본을 중앙 `snes_study_redraw.py --install`로 패킹한다.
+화염의 긴 갈래/찢김, 결정 조각의 면, 굵은 낙뢰/바닥 방전, 큰 빛의 팽창/갈라짐을 다시 찍었다.
+배경은 128px 폭 물결 띠와 단색 바탕으로 바꿨다. PWA 이미지 캐시는 v11이다.
+
+용권 본체는 **기존 `pixel-enemies/hydra-three.png` 첫 96px 셀 재사용**이다.
+명시 팔레트 치환만 적용하고 (16,16)에 배치한 128px 셀을 1,400ms 유지한다.
+머리 셋/감긴 꼬리의 기존 실루엣을 사용하며 새 용 원화·날개·공격 자세를 그린 것으로 보고하지 않는다.
+기존 ID/효과 규칙/앞뒤 층/셀별 시간 처리는 유지하며 화염 노출 시간과 설명을 갱신했다.
+
+재현/출처/반려 보존: `docs/experiments/hero-magic-rework-20261005/README.md`.
+확인 범위: `verify-shots/hero-magic-rework-20261005/SUMMARY.md`.
+마법 네 개와 히드라 연출의 실제 전투 표시 및 자료집 다섯 미리보기를 확인했다.
+소환은 전사에게 공용 연출을 연결한 임시 사본이며 원래 무도가 파티 시작 문제 해결은 아니다.
+녹화 하네스 `--browser-graphics default`는 Chromium 기본 인자를 사용하고 기존 기본값은 `software`다.
+시작/동적 모듈 로드 실패 기록은 따로 남겼다. 성공한 다른 설정을 원인 규명으로 보고하지 않는다.
+공용 코드/자산 변경이며 사용자 정본 SQLite는 수정하지 않았다.
+사용자가 이 판의 반영·커밋·PR 머지를 승인했고 `review-decision.json`에 원본/PNG 해시를 묶었다.
+
+## FF6 조사 후 주인공 연출 5종 재저작 · 직전 반려 판 기록 (2026-10-05)
+
+`skill_mage_fireball`, `skill_mage_blizzard`, `skill_mage_chain_lightning`,
+`skill_cleric_holy_smite`, `skill_monk_dragon_fist`의 기존 공용 프리셋을 새 직접 도트로 바꿨다.
+원본은 `scripts/asset-gen/pixel-fx/snes_study_redraw.py`의 문자 행/명시 좌표이며,
+완전한 격자는 `hand-authored/*.study.px.json`이다. 기존 `*.hand.json`은 첫 판의 역사다.
+재현: `python3 scripts/asset-gen/pixel-fx/snes_study_redraw.py --install`.
+10장/64칸 중 소환체는 128px 원화 한 장을 1,400ms 유지한다. 64칸을 모두 다른 그림으로 세지 않는다.
+배경은 직접 찍은 32px 물결 타일을 명시한 위치에 반복 조립한 128px 두 칸이다.
+
+화염 8칸은 상승/갈래/찢김/잔불, 빙결 8칸은 성장/균열/파편, 번개 7칸은 두 낙뢰/잔전류다.
+홀리는 배경/뒤 구슬/앞 구슬/착탄을, 용권은 소환체/푸른 배경 파동/착탄을 따로 그린다.
+용권은 실제 소환 개체 생성이 아닌 기존 필살기의 그림 연출이며 단일 적 피해 범위를 유지한다.
+FF6의 원형으로 확장하는 바하무트 파동이나 입에서 출발하는 브레스까지 구현한 판은 아니다.
+
+`RetroFxLayer`의 공용 메타데이터 `frameDurationsMs`, `plane`, `opacity`, `ambient`, `contactFrame`을
+타임라인·플레이어·자료집 미리보기가 읽는다. 프로젝트 저장 스키마 필드를 추가하지 않는다.
+`retroSkillCatalog.recordLayers`는 공용 시트의 메타데이터를 복제 연출에도 전달한다.
+ambient 층은 표시 수명만 늘리고 명중/피해 접촉을 만들지 않는다. 새 착탄 소리는 contactFrame에 맞춘다.
+캐릭터 손잡이의 기존 고정 간격 압축/종료 계산은 직접 정한 노출 시간을 보존한다.
+뒤 구슬은 배틀러 뒤, 배경은 전장 뒤에서 고정 도트 크기로 반복한다. `*-f0/1.png`는 배경 전용 셀 사본이다.
+PWA 자산 캐시 v10을 사용한다.
+
+당시 근거/확인 범위: `docs/experiments/snes-study-redraw-20261005/README.md`,
+`verify-shots/snes-study-redraw-20261005/SUMMARY.md`. 그림은 후속 평가로 반려됐다.
+공용 코드/자산 변경이며 사용자 정본 SQLite는 수정하지 않았다.
+
+## 주인공 마법 첫 판 및 공용 24종 철회 기록 (2026-10-05)
+
+후속 공용 효과 24종과 소환 v2도 사용자에게 반려됐다. 새 24종의 기본 DB·공용 카탈로그·
+기본 효과 대체 배선을 철회했다. 기본 `anim_px_*`는 기존 17종이며 `skill_fx_*` 예제를 자동 설치하지 않는다.
+철회 당시 소환 PNG/생성 진입점은 작업 전 HEAD로 복원했다. 위의 후속 재저작이 현재 공용이다.
+반려된 v1은 `docs/experiments/shared-hand-fx-20261005/rejected-summon/`,
+v2와 24종의 PNG/원본/배선 사본은 같은 디렉터리의 `rejected-release/`에 보존한다.
+일반 support 스킬의 대상 층이 지워지던 원인은 캐릭터 모션의 `preparing`이었다.
+`buildPlan`의 준비 판정은 `battleGimmick`이 있는 support 준비 동작에만 적용한다.
+일반 보호·반사·재생·봉인은 대상 층을 유지한다.
+최신 재현/근거: `docs/experiments/shared-hand-fx-20261005/README.md`,
+`verify-shots/shared-hand-fx-20261005/SUMMARY.md`.
+
+직접 격자 저작은 [도트 저작 스킬](pixel-dot-authoring.md)을 따른다.
+첫 판 `scripts/asset-gen/pixel-fx/hand-authored/`의 `*.hand.json` 4개가 픽셀 원본이며,
+`hand_pixels.py`는 행과 명시된 좌표를 읽고 `*.px.json`으로 펼친다. 생성기 진입점도 이 원본을 읽는다.
+첫 판의 `mage_fire_burst`(64×10), `mage_blizzard`(64×10), `mage_chain_bolt`(64×8)는
+직접 격자 시트로 교체했다. 64px은 60ms다. 소환의 직접 격자 v1/v2는 모두 반려 기록이다.
+소환의 보조 검토 GIF만 70ms로 양자화했다. 스킬·층·앵커 계약은 기존 공용 카탈로그를 사용한다.
+파이어볼 투사체·블리자드 눈·용권의 별도 착탄 층은 기존 연결이다.
+
+검토판과 재현 명령은 `docs/experiments/hand-magic-20261005/README.md`.
+런타임 기록은 `verify-shots/hand-magic-20261005/SUMMARY.md`를 먼저 읽는다.
+공용 코드/에셋 변경이며 사용자 프로젝트 SQLite 콘텐츠는 수정하지 않는다.
+
 ## 전체 몬스터 후속 재저작 · 140종 9포즈 (2026-10-03)
 
 후속 소리 포함 전투 녹화는 `scripts/qa/runtime/monster-battle-av.mjs`다.

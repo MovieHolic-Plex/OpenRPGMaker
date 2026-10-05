@@ -97,6 +97,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
    - 세계 지도 지형 편집 (조수가 대륙·해협·섬·산맥·강·숲·바닥을 ops 로 다시 그림, 월드맵 키트 빌드 경로·저장 형태): `openwiki/worldmap-terrain-editing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
+   - 픽셀을 직접 찍는 자산·전투 효과 저작: `openwiki/pixel-dot-authoring.md` → `assistant-skills/pixel-dot-authoring/SKILL.md` · `assistant-skills/pixel-fx-animation/SKILL.md` (전용 하네스가 있으면 그 경로 우선, 반려된 도형 시안을 기준작으로 쓰지 않는다).
    - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
    - Runtime action combat: `openwiki/runtime-action-combat.md`
    - Runtime sessions & state: `openwiki/runtime-sessions.md`

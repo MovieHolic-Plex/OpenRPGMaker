@@ -421,7 +421,10 @@ function buildPlan(skill: PlayableSkill, record: SkillRecord, group: readonly Ba
   const counterContact=record.battleGimmick&&["cover","counter"].includes(record.battleGimmick.pattern)&&group.some(e=>e.kind==="damage");
   const handles=counterContact&&originalHandles?.movement?{...originalHandles,movement:{...originalHandles.movement,pattern:"counter" as const}}:originalHandles;
   const condition=group.find(e=>e.gimmick)?.gimmick;
-  const timeline = applyChoreographyHandles(base, handles,{character,casting:characterCasting(skill.motion,character?.style),contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing:record.effect.kind==="support"&&group.every(e=>e.kind!=="damage")});
+  // Only a battle gimmick's setup action is preparation. Ordinary support spells
+  // (protect, reflect, regen, silence) must keep their target effect layers.
+  const preparing = Boolean(record.battleGimmick) && record.effect.kind === "support" && group.every(e => e.kind !== "damage");
+  const timeline = applyChoreographyHandles(base, handles,{character,casting:characterCasting(skill.motion,character?.style),contactHits:group.map(e=>e.hit!==false),primaryContacts:group.filter(e=>e.targetId===group[0]?.targetId).length,hit:group[0]?.hit!==false,triggered:condition?.triggered,ally:condition?.allyId!==undefined,preparing});
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
@@ -772,6 +775,12 @@ function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: numb
 }
 /** 칸 이동: 화면 상자 한 변 × index(보통 칸 × 2: 32px → 64, 64px → 128, 128px → 256 · 128px 대상 층은 128). */
 function classFrame(node: HTMLElement, index: number): void {
+  if (node.dataset.fxBackdropFrames) {
+    node.dataset.fxFrame = String(index);
+    node.style.backgroundImage = `url("${classSheetUrl(`${node.dataset.retroSkillFx}-f${index}`)}")`;
+    node.style.backgroundPosition = "0px 0px";
+    return;
+  }
   const box = Number(node.dataset.fxBox) || Number(node.dataset.fxSize || 64) * 2;
   node.dataset.fxFrame = String(index);
   node.style.backgroundPosition = index === 0 ? "0px 0px" : `-${box * index}px 0px`;
@@ -787,11 +796,24 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
       : event.anchor === "allAllies" ? casterSideNodes(field, player, "allies")
         : event.anchor === "allTargets" ? casterSideNodes(field, player, player.plan.side)
           : [targetNode(field, player.primaryId) ?? player.user];
-  const frameMs = Math.max(16, event.frameMs * player.clock);
   const layer = player.plan.skill.layers[event.layer];
+  const durations = event.cells.map((_, index) => Math.max(16, (event.frameDurationsMs?.[index] ?? event.frameMs) * player.clock));
+  const length = durations.reduce((sum, duration) => sum + duration, 0);
   for (const host of hosts) {
     const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined, event.scale ?? 1, event.filter);
+    if (layer?.plane) node.dataset.retroFxPlane = layer.plane;
+    if (layer?.plane === "behind") node.classList.add("retro-class-fx-behind");
+    if (layer?.opacity !== undefined) node.style.opacity = String(layer.opacity);
+    if (layer?.plane === "backdrop") {
+      node.classList.add("retro-class-fx-backdrop");
+      node.dataset.fxBackdropFrames = String(layer.frames);
+      node.style.width = `${field.offsetWidth}px`;
+      node.style.height = `${field.offsetHeight}px`;
+      node.style.backgroundSize = `${event.frame * 2}px ${event.frame * 2}px`;
+      node.style.backgroundRepeat = "repeat";
+    }
     const place = () => {
+      if (layer?.plane === "backdrop") { node.style.left = "0px"; node.style.top = "0px"; return; }
       if (!host) {
         const center = stageCenter(field);
         node.classList.add("retro-class-fx-screen");
@@ -802,17 +824,21 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
     place();
     if (still !== undefined) { classFrame(node, still); continue; }
     classFrame(node, event.cells[0] ?? 0);
-    event.cells.slice(1).forEach((cell, i) => player.playback.schedule(() => {
-      if (!node.isConnected) return;
-      if (host) place();
-      classFrame(node, cell);
-    }, Math.round(frameMs * (i + 1))));
+    let celAt = 0;
+    event.cells.slice(1).forEach((cell, i) => {
+      celAt += durations[i]!;
+      player.playback.schedule(() => {
+        if (!node.isConnected) return;
+        if (host) place();
+        classFrame(node, cell);
+      }, Math.round(celAt));
+    });
     // Track moving bodies between texture changes, on the same pauseable clock as actor motion.
     if (host && player.plan.timeline.actors) {
-      for(let ms=16;ms<frameMs*event.cells.length;ms+=16)
+      for(let ms=16;ms<length;ms+=16)
         player.playback.schedule(()=>{if(node.isConnected)place();},ms);
     }
-    player.playback.schedule(() => { node.remove(); player.nodes.delete(node); }, Math.round(frameMs * event.cells.length));
+    player.playback.schedule(() => { node.remove(); player.nodes.delete(node); }, Math.round(length));
   }
 }
 
@@ -1321,5 +1347,8 @@ export function preloadRetroClassSkillFx(): void {
   for (const skill of RETRO_MONSTER_SKILLS) for (const id of retroTimelineSounds(retroMonsterSkillTimeline(skill))) sounds.add(id);
   preloadBattleSamples([...sounds]);
   for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
+  for (const layer of RETRO_ALL_FX_SHEETS.filter(row => row.plane === "backdrop")) {
+    for (let frame = 0; frame < layer.frames; frame += 1) { const img = new Image(); img.src = classSheetUrl(`${layer.key}-f${frame}`); }
+  }
 }
 
