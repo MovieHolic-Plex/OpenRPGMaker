@@ -344,7 +344,8 @@ class Harness:
                       'Coordinates are native pixels. Mention limits honestly. Do not choose for the user.')
         (job / 'prompt.md').write_text(prompt)
         model = brief['style']['authorModel' if stage == 'author' else 'reviewerModel']
-        command = ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '-C', str(directory),
+        command = ['codex', 'exec', '--skip-git-repo-check', '--ephemeral',
+                   '--sandbox', 'workspace-write', '-C', str(directory),
                    '-m', model, '-c', 'model_reasoning_effort="high"', '--json']
         # Separate reviewer workspace/session; never resume the author's turn.
         if stage == 'critique':

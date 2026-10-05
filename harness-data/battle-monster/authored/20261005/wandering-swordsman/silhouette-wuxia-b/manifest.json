@@ -1,0 +1,20 @@
+{
+  "monster": "wandering-swordsman",
+  "candidate": "silhouette-wuxia-b",
+  "displayName": "무협 장포 검객",
+  "nativeCell": 64,
+  "phase": "idle",
+  "frames": 1,
+  "motionGifs": 1,
+  "idleBinding": "9a846b71eb7cfc1d8390d0f443ffb81a9c9a737dfc79caa35c4d0fb43388ea94",
+  "userChoiceRequired": true,
+  "referencesAreStudyOnly": true,
+  "independentReviewRecommendation": "rework",
+  "authorInvocationCompleted": false,
+  "sourceRecoveredAfterInterruptedAuthor": true,
+  "sourceHashes": {
+    "source/AUTHORING.md": "de4f03809b0c3ed7910bb3ae99d8cdf85928761221f1b7ea1b520021ce188b7c",
+    "source/palette.json": "8cd5c7e3a3a098dc84e6d6e5a4914e946b2a2db300d4eae32feaf19ec39aed8b",
+    "source/poses/idle_a.pxgrid": "83ff442104598190d4adff13037fdd31a8a798c90d8d1ae00dfb3379dec94181"
+  }
+}

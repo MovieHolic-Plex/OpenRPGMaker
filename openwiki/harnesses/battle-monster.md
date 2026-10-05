@@ -139,6 +139,11 @@ npm run harness -- battle-monster review
 참고가 필요하면 후보의 `reference.png`와 `references/*.png`를 실제로 보고 저작하도록 첨부한다.
 idle에도 첨부할 수 있다. `references/`는 연구용이며 팩에 포함하지 않는다. 원저자 URL·관찰 내용·
 이미지 해시는 별도 `reference-study.json`에 남기고, 참고 이미지를 추출/트레이싱하지 않는다.
+후보 `provenance.displayName`은 선택 화면에서 아트 방향 이름을 표시하며 child 수정/동작 확장에도
+이어진다. 제작 brief/resourceId나 이미 저장된 그림 선택의 binding을 바꾸지 않는 표시 정보다.
+기본 자세(phase idle)는 대기 그림만 보여 주고, Allow를 「이 그림으로 동작 만들기」로 안내한다.
+아직 저작하지 않은 공격/스킬 GIF를 빈 칸 일곱 개로 늘어놓지 않는다.
+
 64×64라는 캔버스 계약만으로 사람 체형이 좋아지지 않는다. 인간형 새 스타일은 대표 한 명의
 실제 얼굴·어깨·팔꿈치·손·무기·접지를 확인한 뒤 확장한다. 기존 Allow/Deny를 새 후보에 이관하지 않는다.
 `author idle`은 기본 자세만 만든다. `author poses`는 현재 기본 자세의 사용자 keep가
@@ -165,6 +170,9 @@ npm run harness -- battle-monster decide --monster wild-boar --candidate revisio
 
 검수자는 현재 1×/3×·밝은/어두운/체커 PNG를 별도 세션에서 보고 실루엣·해부·명암·결손·
 동작·손/도구 연결에 자세/좌표별 의견을 낸다. `recommendation`은 참고 의견이다.
+모델 CLI의 sandbox는 `workspace-write`로 명시한다. Git 밖의 후보/검수 폴더에서도
+저작자는 해당 후보의 source만, 검수자는 자기 job의 result.json만 쓰도록 지시한다.
+검수 CLI가 exit 0이어도 실제 result.json이 없으면 유효한 검수로 기록하지 않는다.
 미감 점수/자동 선택 관문으로 쓰지 않는다. 현재 독립 검수와 기술 검사 이후 사람이 선택하며,
 검수의 rework 의견도 읽고 남길 수 있다. 다음 `author`는 최근 사용자 rework 원문을
 자동으로 전달하며 `--note`로 이번 교정 지시를 지정할 수 있다.

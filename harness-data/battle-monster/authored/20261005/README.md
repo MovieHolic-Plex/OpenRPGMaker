@@ -19,3 +19,14 @@ npm run harness -- battle-monster ingest --monster mountain-bandit --candidate r
 
 복원은 원본을 굽고 검사한다. 예전 사용자 선택은 가져오지 않으며 새 검토 후보가 된다.
 GIF는 `motions.py`가 프레임 원본과 실제 속도로 다시 굽는다.
+
+## 검객 기본 자세 재검토
+
+`wandering-swordsman/silhouette-sd-a`와 `silhouette-wuxia-b`는 각각 **idle_a 한 장만 있는**
+체형 방향 후보다. 아직 18자세 완성 후보가 아니다. manifest의 phase/frames를 먼저 확인한다.
+장포 후보는 실제 모델 저작이 429로 중단된 뒤 남은 완전한 격자를 회수했고, 별도 실제 high
+검수를 완료했다. 중단 기록을 성공으로 바꾸지 않는다. 두 검수의 rework는 참고 의견이며
+사용자의 선택을 대신하지 않는다. 원본 연구용 외부 PNG는 배포하지 않는다.
+
+이 후보를 새 체크아웃에 복원할 때는 `ingest --phase idle`을 사용하고 새 독립 검수를 받는다.
+과거 작업 폴더 경로를 가진 보존 job 기록은 저작/검수 출처이며 현재 사용자의 승인 기록이 아니다.

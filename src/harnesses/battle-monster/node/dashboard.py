@@ -105,7 +105,7 @@ class Dashboard:
                 if motion['available']:
                     query = urlencode({'key': key, 'motion': motion['id'], 'binding': report['binding']})
                     motion.update(gif='/api/motion?' + query, poster='/api/motion?' + query + '&still=1')
-            snapshot = {'key': key, 'name': brief['monster']['name'], 'cell': brief['monster']['cell'],
+            snapshot = {'key': key, 'name': provenance.get('displayName') or brief['monster']['name'], 'cell': brief['monster']['cell'],
                         'idleFrameMs': brief['monster']['idleFrameMs'], 'phase': phase,
                         'bindings': {p: r['binding'] for p, r in reports.items()},
                         'ready': all(r['pass'] for r in reports.values()),
@@ -156,7 +156,7 @@ class Dashboard:
                     continue
             making = 0
             if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
-                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave'):
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave'):
                     for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
                         making += load(task)['state'] in ('queued', 'running')
             selected = {}
@@ -302,6 +302,7 @@ class Dashboard:
                 shutil.copyfile(reference, target / 'reference.png')
                 provenance = load(target / 'provenance.json')
                 provenance.update({'parent': job['key'], 'requestId': job['id'],
+                                   'displayName': load(directory / 'provenance.json').get('displayName'),
                                    'userCorrection': '선택한 기본 자세에 동작 추가' if expanding else job['note']})
                 save(target / 'provenance.json', provenance)
             with lock(target / '.lock'):

@@ -1,0 +1,30 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs: the 64x64 transparent portrait at native 1x and the supplied light, dark, and checker panels at native 1x and nearest 3x. The pale long robe, teal sash, long dark hair, and raised sword produce a readable standing swordsman silhouette. Both boot soles reach native y=60 and the stance appears grounded. Hair highlights and the robe broadly suggest upper-left light, but the small face and thin blade provide limited volume. The left sleeve loses definition against the light panel; the sword reads as a narrow luminous rod, and the lowered hand does not clearly wrap the sheath. No obvious unintended enclosed transparent hole was visible; the lower robe openings appear to separate the hem and legs. Hair mass is visible, but the half-tied fastening is not clearly distinguishable. This is an idle_a pose preview, not battle footage: idle_b/idle_c, action poses, frame continuity, dash motion, sword draw, horizontal slash, recovery, and moonlight effects cannot be assessed. The PNGs do not establish literal pxgrid authorship. Geometry observations are not visual approval; this recommendation is advisory and leaves selection to the user.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 18,
+      "y": 34,
+      "message": "At x=18, y=30-38 the outer sleeve uses pale fill with almost no separating edge, so its contour fades into the light background. Add a short existing blue-gray contour cluster along the lower portion of this edge, retaining a lighter upper-left shoulder highlight; distinguish the hanging sleeve from the background at 1x."
+    },
+    {
+      "pose": "idle_a",
+      "x": 44,
+      "y": 31,
+      "message": "From the hilt near (43,32) toward (61,14), the blade is almost uniformly a two-pixel silver staircase and lacks a distinguishable back, cutting edge, and taper. Explicitly reshape a few blade-base/mid-blade clusters using the existing darker metal color and a bright cutting edge, tapering to the tip, so the long single-edged sword reads as a blade at 1x."
+    },
+    {
+      "pose": "idle_a",
+      "x": 22,
+      "y": 42,
+      "message": "The lowered hand occupies x=22-23, y=40-42, while the visible sheath top lies near (19,42); robe/cuff pixels intervene around x=20-21. The skin block reads as a hand resting against the robe. Bring an explicit thumb/finger cluster onto the sheath mouth and expose a small dark sheath rim immediately beneath it so the grasp is visibly connected."
+    },
+    {
+      "pose": "idle_a",
+      "x": 30,
+      "y": 18,
+      "message": "The two equally dark eye pixels at (30,18) and (32,18), with little nose separation, make the face read nearly frontal despite the rightward weapon pose. Reduce the far-eye emphasis at (30,18) and define a short right-facing nose/cheek cluster around x=34-35, y=18-20 using existing skin shades; preserve an adult, beardless face and the 3/4 turn."
+    }
+  ]
+}

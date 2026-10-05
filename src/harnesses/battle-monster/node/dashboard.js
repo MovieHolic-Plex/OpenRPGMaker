@@ -28,7 +28,9 @@ function motionImage(scene, alt) {
 }
 function renderMotions(item) {
   const gallery=$('motion-gallery');gallery.replaceChildren();
+  gallery.classList.toggle('style-pilot',item.phase==='idle');
   for(const scene of item.motions??[]) {
+    if(item.phase==='idle'&&!scene.available)continue;
     const tile=document.createElement('figure');tile.className='motion-tile';
     const title=document.createElement('figcaption');title.textContent=scene.label;tile.append(title);
     const pictures=document.createElement('div');pictures.className='motion-pictures';
@@ -71,20 +73,21 @@ async function render(){
     const canvas=document.createElement('canvas');canvas.width=64;canvas.height=64;canvas.setAttribute('aria-hidden','true');
     const text=document.createElement('span');const name=document.createElement('span');name.className='card-name';name.textContent=item.name;
     const status=document.createElement('span');status.className='card-status';status.textContent=stateText(item);text.append(name,status);
-    if(item.working||item.failed){const task=document.createElement('span');task.className='card-task';task.textContent=item.failed?'파일 준비 실패':item.choice==='modify'?'AI 수정 중':'받을 파일 준비 중';text.append(task);}
+    if(item.working||item.failed){const task=document.createElement('span');task.className='card-task';task.textContent=item.failed?'작업 실패':item.phase==='idle'?'동작 제작 중':item.choice==='modify'?'AI 수정 중':'받을 파일 준비 중';text.append(task);}
     button.append(canvas,text);
     button.addEventListener('click',()=>{selected=item.key;render();});$('list').append(button);
     loadImage(item.image).then(im=>draw(canvas,im,0,item.cell,1)).catch(()=>{});
   }
   const item=row();$('empty-view').hidden=!!item;$('result-view').hidden=!item;
   if(!item)return;
-  $('name').textContent=item.name;$('edition').textContent=item.parent?'수정된 결과':item.phase==='idle'?'새 그림':'새 결과';$('choice').textContent=stateText(item);$('choice').dataset.choice=item.choice;
+  $('name').textContent=item.name;$('edition').textContent=item.phase==='idle'?'대기 자세 후보':item.parent?'수정된 결과':'새 결과';$('choice').textContent=stateText(item);$('choice').dataset.choice=item.choice;
+  document.querySelector('.motion-tools p').textContent=item.phase==='idle'?'기본 그림을 먼저 골라주세요':'모든 동작을 함께 보기';
   renderMotions(item);$('skill').textContent=item.skill?'스킬 · '+item.skill:'';
   $('note').hidden=!item.note||['allow','deny'].includes(item.note);$('note').textContent=item.note?'수정 요청 · '+item.note:'';
   $('progress').hidden=!item.working&&!item.failed;
-  $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':'Allow 선택은 반영됐습니다. 받을 파일을 준비 중이며, Modify·Deny로 선택을 바꿀 수 있습니다.';
+  $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':item.phase==='idle'?'Allow 선택은 반영됐습니다. 이 그림으로 동작을 만들고 있습니다. 완성된 후보는 검토 대기에 표시됩니다.':'Allow 선택은 반영됐습니다. 받을 파일을 준비 중이며, Modify·Deny로 선택을 바꿀 수 있습니다.';
   for(const id of ['allow','modify','deny'])$(id).disabled=busy||(id==='allow'&&(!item.ready||(item.choice==='allow'&&item.active!==false&&!item.failed)))||(id==='deny'&&item.choice==='deny');
-  $('allow').querySelector('span').textContent=item.choice==='allow'&&item.active!==false&&!item.failed?'선택 반영됨':'이 결과 선택';
+  $('allow').querySelector('span').textContent=item.choice==='allow'&&item.active!==false&&!item.failed?'선택 반영됨':item.phase==='idle'?'이 그림으로 동작 만들기':'이 결과 선택';
   $('download').hidden=!item.download;$('download').href=item.download||'';$('download').download=item.name+'.zip';
   $('play').textContent=playing?'일시 정지':'움직임 재생';$('play').setAttribute('aria-pressed',String(playing));
 }

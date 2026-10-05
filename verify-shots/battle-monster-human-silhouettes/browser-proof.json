@@ -1,0 +1,19 @@
+{
+  "proof": [
+    {
+      "key": "silhouette-sd-a",
+      "title": "조선 SD 검객",
+      "shownMotions": 1,
+      "beforeAfter": true,
+      "allow": "이 그림으로 동작 만들기"
+    },
+    {
+      "key": "silhouette-wuxia-b",
+      "title": "무협 장포 검객",
+      "shownMotions": 1,
+      "beforeAfter": true,
+      "allow": "이 그림으로 동작 만들기"
+    }
+  ],
+  "errors": []
+}
