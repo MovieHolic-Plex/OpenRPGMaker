@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **147쪽 / 5121KB / 약 1,492,783 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **147쪽 / 5125KB / 약 1,494,002 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
-| `openwiki/charset-actor-harness.md` | 67KB | 7KB | 486 | ~21,125 |
+| `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,067 |
 | `openwiki/editor-ai-panel.md` | 636KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4052 | ~186,195 |
 | `openwiki/editor-ai-tools.md` | 343KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 2805 | ~99,293 |
 | `openwiki/editor-database.md` | 414KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2475 | ~121,519 |
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
-| `openwiki/charset-actor-harness.md` | 40 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
+| `openwiki/charset-actor-harness.md` | 42 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `novelty-transfers.json`, `novelty.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/delayed-tooltip.md` | 1 | `src/styles/editor/delayed-tooltip.css` |
 | `openwiki/editor-ai-panel.md` | 83 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `07-wide-compact.png`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `DRAFT_20260706_auth_rls.sql`, `after/measure.json`, `ai-tool-usage-YYYY-MM-DD.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiTemperatureMenu.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-activity-levels/06-wide.png`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-menu/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/ai-team-budget.mjs`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `stampPlace.ts`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiActivityLiveRow.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/mode-switch-camera-stability.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `verify-shots/ai-parallel-live/timeline.json`, `verify-shots/ai-team-agent-centered/SUMMARY.md`, `verify-shots/feature16-ai/01-library.png`, `verify-shots/first-core-opening/SUMMARY.md`, `verify-shots/preset-first-team-e2e/SUMMARY.json`, `writer-wire.json` |
@@ -82,7 +82,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-fields.md` | 27 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/legacy-db-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json`, `scripts/author-emerald-fields.mts`, `scripts/author-emerald-wide.mts`, `scripts/refine-emerald-reference.mts`, `scripts/refine-emerald-wide.mts`, `scripts/register-emerald-region.mts`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
-| `openwiki/harnesses/charset-actor.md` | 4 | `delivery.json`, `model-frames.json`, `pixel-edits.json`, `visual-inputs.json` |
+| `openwiki/harnesses/charset-actor.md` | 5 | `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 1 | `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 1 | `.png` |
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
@@ -392,36 +392,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` 그림의 접촉점
 - `L50` 저장과 증거
 
-### `openwiki/charset-actor-harness.md` — 67KB · 486줄 · ~21,125 토큰 · 통째읽기 잘림
+### `openwiki/charset-actor-harness.md` — 70KB · 501줄 · ~22,067 토큰 · 통째읽기 잘림
 
 - `L3` GIF 공방: AI 자유 저작과 사람 선택 (2026-10-04)
   - `L22` 검토 화면과 제작 관리 (2026-10-05)
   - `L30` 에디터 전체 원본을 섞은 100종 (2026-10-05)
   - `L42` 비슷한 개체의 반복과 서로 다른 원본 배정 (2026-10-06)
-  - `L49` 대량 주문의 검토 대기 병목과 연속 제작 (2026-10-05)
-  - `L57` 남긴 픽셀을 기준으로 한 반복 생산 (2026-10-04)
-  - `L82` 기본 제작을 원본 격자 변형으로 복귀 (2026-10-04 사용자 피드백)
-  - `L90` 좌표 부분 수정 비교 실험 (2026-10-04)
-  - `L112` 픽셀 참고 이미지 첨부 실험 (2026-10-04)
-  - `L124` 모델이 걷기까지 전부 저작 (2026-10-04 사용자 변경 지시)
-  - `L144` 버튼 반응과 저장 (2026-10-04)
-  - `L160` 선택 응답과 공용 등록 분리 (2026-10-05)
-  - `L175` 한 캐릭터 검토 화면 (2026-10-04)
-  - `L183` 적대적 alpha QA와 검사 정책 2 (2026-10-04)
-  - `L201` 이전 걷기 전파 v2: 새 면의 픽셀 전달 (2026-10-04)
-  - `L220` 남김 → 공용 캐릭터와 설명 (2026-10-04)
-- `L233` 진입점과 저장 대상
-- `L248` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
-- `L272` 묶음 저작과 에디터용 내보내기
-  - `L274` 2026-10-04 신뢰성 감사와 v3
-- `L327` 이전 걸음 전파 계약 (2026-10-03)
-- `L345` 재개 당시 근거
-- `L353` GPT high 원샷 비교 (2026-10-03 사용자 요청)
-- `L371` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
-- `L394` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
-- `L422` 몸통 고정과 걷기 검사 정책 1 (2026-10-04)
-- `L437` 동물 기반 필드 몬스터 (2026-10-05)
-- `L454` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
+  - `L49` 반복 몬스터 폐기와 새 몸 구조 주문 (2026-10-06)
+  - `L64` 대량 주문의 검토 대기 병목과 연속 제작 (2026-10-05)
+  - `L72` 남긴 픽셀을 기준으로 한 반복 생산 (2026-10-04)
+  - `L97` 기본 제작을 원본 격자 변형으로 복귀 (2026-10-04 사용자 피드백)
+  - `L105` 좌표 부분 수정 비교 실험 (2026-10-04)
+  - `L127` 픽셀 참고 이미지 첨부 실험 (2026-10-04)
+  - `L139` 모델이 걷기까지 전부 저작 (2026-10-04 사용자 변경 지시)
+  - `L159` 버튼 반응과 저장 (2026-10-04)
+  - `L175` 선택 응답과 공용 등록 분리 (2026-10-05)
+  - `L190` 한 캐릭터 검토 화면 (2026-10-04)
+  - `L198` 적대적 alpha QA와 검사 정책 2 (2026-10-04)
+  - `L216` 이전 걷기 전파 v2: 새 면의 픽셀 전달 (2026-10-04)
+  - `L235` 남김 → 공용 캐릭터와 설명 (2026-10-04)
+- `L248` 진입점과 저장 대상
+- `L263` 픽셀 결손 폐기 게이트 v2 (2026-10-03 사용자 지적)
+- `L287` 묶음 저작과 에디터용 내보내기
+  - `L289` 2026-10-04 신뢰성 감사와 v3
+- `L342` 이전 걸음 전파 계약 (2026-10-03)
+- `L360` 재개 당시 근거
+- `L368` GPT high 원샷 비교 (2026-10-03 사용자 요청)
+- `L386` 첨부 그림 3명 원샷 비교 (2026-10-03 사용자 요청)
+- `L409` 같은 첨부 그림의 조선시대 변형 (2026-10-03 사용자 요청)
+- `L437` 몸통 고정과 걷기 검사 정책 1 (2026-10-04)
+- `L452` 동물 기반 필드 몬스터 (2026-10-05)
+- `L469` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
 
 ### `openwiki/community-site.md` — 20KB · 178줄 · ~5,235 토큰
 
@@ -1179,7 +1180,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L88` 수정 확인 — 2026-10-05
 - `L92` 월드맵 생성 MP4 증거
 
-### `openwiki/harnesses/charset-actor.md` — 9KB · 61줄 · ~2,966 토큰
+### `openwiki/harnesses/charset-actor.md` — 10KB · 68줄 · ~3,243 토큰
 
 절 제목 없음 (평면 목록 페이지).
 

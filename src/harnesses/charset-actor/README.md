@@ -3,6 +3,27 @@
 AI는 자유롭게 도트를 만들고 사용자는 걷는 GIF를 보며 **남기기 / 폐기**만 결정한다.
 화면: http://mdc-server:18314/ · 기본 모델 **GPT 6.1 sol high**가 **정지 4장·걷기 8장 모두 직접 저작**한다.
 
+### 새 몸 구조의 반복 외형 입고 검사
+
+`noveltyPolicy`를 명시한 봉인 주문은 원본/이전 결과/먼저 공개한 새 몸과 픽셀을 비교한다.
+`novelty.py`의 전체 12프레임 alpha/팔레트 독립 구조 비교에 더해 `body_diversity.py`가
+네 방향 정지 외곽을 위치만 맞춰 비교한다. 같은 몸에 색·작은 장식만 바꾼 결과는 검토 목록에 올리지 않는다.
+`novelty.json`은 현재 격자/비교 기준 해시와 입고 정책 버전에 묶이며 남기기에도 같은 영수증이 필요하다.
+사람의 남김/폐기 선택을 자동 생성하지 않는다. 이 검사는 의미상의 모든 종 구분이나 미감을 보장하지 않는다.
+
+```bash
+python3 src/harnesses/charset-actor/novelty.py check OUT.chr.txt --root ORDER
+python3 src/harnesses/charset-actor/original_monsters.py --order ORDER --evidence /absolute/evidence-folder
+```
+
+`ORDER`에는 `planSlot`이 다른 개별 몸/이동 지시, `noveltyPolicy`, 봉인한 `recipe/novelty-references.json`과
+SHA256, native producer로 나눈 후속 묶음이 있어야 한다. 새 기준의 도구 목록에 `novelty.py` 해시를 넣는다.
+감독자는 전체 최대 6명의 native 작업자를 쓰며 반복/기술 실패를 같은 slot의 새 후보로 최대 두 번 재저작한다.
+이동 기록 `novelty-transfers.json`을 원래 계획에서 빼므로 주문 수를 중복 합산하지 않는다.
+실제 납품과 현재 `bodyAdmissionVersion: 1` 영수증을 가진 고유 slot만 완료로 센다.
+상태는 지정한 증거 폴더의 `supervisor-state.json`에 남기며 모두 재시도한 실패는 `needs-attention`이다.
+이 경로는 서로 다른 몸을 명시한 주문용이다. 기존 변주 주문은 기존 봉인 기준을 유지한다.
+
 ### 에디터 전체 원본 100종 변주
 
 ```bash

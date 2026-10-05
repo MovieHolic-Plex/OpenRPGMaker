@@ -91,7 +91,11 @@ class ReviewState:
                 revision = item_revision()
                 if revision != previous:
                     items = studio.annotate_catalog_items(H._items())
+                    import body_diversity
+                    items, duplicates = body_diversity.filter_items(items)
                     blocked = {r['run']: r['blocked'] for r in studio.runs(items)}
+                    for run, count in duplicates.items():
+                        blocked[run] = blocked.get(run, 0) + count
                     with self.lock:
                         self.items, self.blocked_by_run, self.error = items, blocked, None
                     previous = revision
@@ -202,6 +206,18 @@ class ReviewState:
                     return 409, dict(error='그림이 변경되었습니다. 새 GIF를 확인해 주세요.')
                 if d['decision'] == 'accept' and not H.quality(w, 'accept', gate)['eligible']:
                     return 409, dict(error='결손/검사 실패 결과는 받을 수 없습니다', fails=gate['fails'])
+                manifest_file = w.parent / 'manifest.json'
+                manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
+                if d['decision'] == 'accept' and manifest.get('noveltyPolicy'):
+                    report_file = w / 'novelty.json'
+                    try:
+                        report = json.loads(report_file.read_text())
+                    except (OSError, ValueError):
+                        report = {}
+                    if (not report.get('eligible') or report.get('sourceSha256') != gate['sourceSha256']
+                            or report.get('referencesSha256') != manifest['noveltyPolicy']['referencesSha256']
+                            or report.get('bodyAdmissionVersion') != 1):
+                        return 409, dict(error='중복 외형 검사를 통과한 현재 그림만 남길 수 있습니다')
                 receipt = dict(id=d['id'], decision=d['decision'], mutationId=d.get('mutationId'),
                                inspected=H.binding(gate), reasons=d.get('reasons') or [], note=d.get('note') or '',
                                client='web', at=H.now())
