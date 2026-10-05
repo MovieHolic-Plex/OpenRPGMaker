@@ -55,6 +55,8 @@ try {
   }
   report.paths.push({target,steps});
   if(allPublished&&target==='romance--palace--choice--secret--perspectives')await page.screenshot({path:out+'/all-published-palace-perspectives.png'});
+  if(allPublished&&target==='romance--town--choice--warm--routes')await page.screenshot({path:out+'/all-published-town-choice-routes.png'});
+  if(allPublished&&target==='monster--wild--collect--bright--route')await page.screenshot({path:out+'/all-published-monster-collection-route.png'});
   if(!allPublished&&(target==='romance--campus--talk--secret--routes'||target==='romance--campus--memory--bittersweet--routes'))await page.screenshot({path:out+'/structure-'+target+'.png'});
   await page.getByTestId('project-interview-cancel').click();
  }

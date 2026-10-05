@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 223,
-  "remaining": 1234,
+  "published": 347,
+  "remaining": 1110,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -116,63 +116,48 @@
     "adventure--mission--explore--warm--quests--episode",
     "adventure--mission--explore--warm--quests--scene",
     "adventure--mission--explore--warm--quests--short",
-    "adventure--reunion--battle--bright--chapters",
     "adventure--reunion--battle--bright--chapters--episode",
     "adventure--reunion--battle--bright--chapters--scene",
     "adventure--reunion--battle--bright--chapters--short",
-    "adventure--reunion--battle--bright--journey",
     "adventure--reunion--battle--bright--journey--episode",
     "adventure--reunion--battle--bright--journey--scene",
     "adventure--reunion--battle--bright--journey--short",
-    "adventure--reunion--battle--bright--quests",
     "adventure--reunion--battle--bright--quests--episode",
     "adventure--reunion--battle--bright--quests--scene",
     "adventure--reunion--battle--bright--quests--short",
-    "adventure--reunion--battle--mystic--chapters",
     "adventure--reunion--battle--mystic--chapters--episode",
     "adventure--reunion--battle--mystic--chapters--scene",
     "adventure--reunion--battle--mystic--chapters--short",
-    "adventure--reunion--battle--mystic--journey",
     "adventure--reunion--battle--mystic--journey--episode",
     "adventure--reunion--battle--mystic--journey--scene",
     "adventure--reunion--battle--mystic--journey--short",
-    "adventure--reunion--battle--mystic--quests",
     "adventure--reunion--battle--mystic--quests--episode",
     "adventure--reunion--battle--mystic--quests--scene",
     "adventure--reunion--battle--mystic--quests--short",
-    "adventure--reunion--battle--warm--chapters",
     "adventure--reunion--battle--warm--chapters--episode",
     "adventure--reunion--battle--warm--chapters--scene",
     "adventure--reunion--battle--warm--chapters--short",
-    "adventure--reunion--battle--warm--journey",
     "adventure--reunion--battle--warm--journey--episode",
     "adventure--reunion--battle--warm--journey--scene",
     "adventure--reunion--battle--warm--journey--short",
-    "adventure--reunion--battle--warm--quests",
     "adventure--reunion--battle--warm--quests--episode",
     "adventure--reunion--battle--warm--quests--scene",
     "adventure--reunion--battle--warm--quests--short",
-    "adventure--reunion--companions--bright--chapters",
     "adventure--reunion--companions--bright--chapters--episode",
     "adventure--reunion--companions--bright--chapters--scene",
     "adventure--reunion--companions--bright--chapters--short",
-    "adventure--reunion--companions--bright--journey",
     "adventure--reunion--companions--bright--journey--episode",
     "adventure--reunion--companions--bright--journey--scene",
     "adventure--reunion--companions--bright--journey--short",
-    "adventure--reunion--companions--bright--quests",
     "adventure--reunion--companions--bright--quests--episode",
     "adventure--reunion--companions--bright--quests--scene",
     "adventure--reunion--companions--bright--quests--short",
-    "adventure--reunion--companions--mystic--chapters",
     "adventure--reunion--companions--mystic--chapters--episode",
     "adventure--reunion--companions--mystic--chapters--scene",
     "adventure--reunion--companions--mystic--chapters--short",
-    "adventure--reunion--companions--mystic--journey",
     "adventure--reunion--companions--mystic--journey--episode",
     "adventure--reunion--companions--mystic--journey--scene",
     "adventure--reunion--companions--mystic--journey--short",
-    "adventure--reunion--companions--mystic--quests",
     "adventure--reunion--companions--mystic--quests--episode",
     "adventure--reunion--companions--mystic--quests--scene",
     "adventure--reunion--companions--mystic--quests--short",
@@ -188,39 +173,30 @@
     "adventure--reunion--companions--warm--quests--episode",
     "adventure--reunion--companions--warm--quests--scene",
     "adventure--reunion--companions--warm--quests--short",
-    "adventure--reunion--explore--bright--chapters",
     "adventure--reunion--explore--bright--chapters--episode",
     "adventure--reunion--explore--bright--chapters--scene",
     "adventure--reunion--explore--bright--chapters--short",
-    "adventure--reunion--explore--bright--journey",
     "adventure--reunion--explore--bright--journey--episode",
     "adventure--reunion--explore--bright--journey--scene",
     "adventure--reunion--explore--bright--journey--short",
-    "adventure--reunion--explore--bright--quests",
     "adventure--reunion--explore--bright--quests--episode",
     "adventure--reunion--explore--bright--quests--scene",
     "adventure--reunion--explore--bright--quests--short",
-    "adventure--reunion--explore--mystic--chapters",
     "adventure--reunion--explore--mystic--chapters--episode",
     "adventure--reunion--explore--mystic--chapters--scene",
     "adventure--reunion--explore--mystic--chapters--short",
-    "adventure--reunion--explore--mystic--journey",
     "adventure--reunion--explore--mystic--journey--episode",
     "adventure--reunion--explore--mystic--journey--scene",
     "adventure--reunion--explore--mystic--journey--short",
-    "adventure--reunion--explore--mystic--quests",
     "adventure--reunion--explore--mystic--quests--episode",
     "adventure--reunion--explore--mystic--quests--scene",
     "adventure--reunion--explore--mystic--quests--short",
-    "adventure--reunion--explore--warm--chapters",
     "adventure--reunion--explore--warm--chapters--episode",
     "adventure--reunion--explore--warm--chapters--scene",
     "adventure--reunion--explore--warm--chapters--short",
-    "adventure--reunion--explore--warm--journey",
     "adventure--reunion--explore--warm--journey--episode",
     "adventure--reunion--explore--warm--journey--scene",
     "adventure--reunion--explore--warm--journey--short",
-    "adventure--reunion--explore--warm--quests",
     "adventure--reunion--explore--warm--quests--episode",
     "adventure--reunion--explore--warm--quests--scene",
     "adventure--reunion--explore--warm--quests--short",
@@ -332,327 +308,246 @@
     "adventure--unknown--explore--warm--quests--episode",
     "adventure--unknown--explore--warm--quests--scene",
     "adventure--unknown--explore--warm--quests--short",
-    "monster--bond--collect--bright--case",
     "monster--bond--collect--bright--case--episode",
     "monster--bond--collect--bright--case--scene",
     "monster--bond--collect--bright--case--short",
-    "monster--bond--collect--bright--habitat",
     "monster--bond--collect--bright--habitat--episode",
     "monster--bond--collect--bright--habitat--scene",
     "monster--bond--collect--bright--habitat--short",
-    "monster--bond--collect--bright--route",
     "monster--bond--collect--bright--route--episode",
     "monster--bond--collect--bright--route--scene",
     "monster--bond--collect--bright--route--short",
-    "monster--bond--collect--secret--case",
     "monster--bond--collect--secret--case--episode",
     "monster--bond--collect--secret--case--scene",
     "monster--bond--collect--secret--case--short",
-    "monster--bond--collect--secret--habitat",
     "monster--bond--collect--secret--habitat--episode",
     "monster--bond--collect--secret--habitat--scene",
     "monster--bond--collect--secret--habitat--short",
-    "monster--bond--collect--secret--route",
     "monster--bond--collect--secret--route--episode",
     "monster--bond--collect--secret--route--scene",
     "monster--bond--collect--secret--route--short",
-    "monster--bond--collect--warm--case",
     "monster--bond--collect--warm--case--episode",
     "monster--bond--collect--warm--case--scene",
     "monster--bond--collect--warm--case--short",
-    "monster--bond--collect--warm--habitat",
     "monster--bond--collect--warm--habitat--episode",
     "monster--bond--collect--warm--habitat--scene",
     "monster--bond--collect--warm--habitat--short",
-    "monster--bond--collect--warm--route",
     "monster--bond--collect--warm--route--episode",
     "monster--bond--collect--warm--route--scene",
     "monster--bond--collect--warm--route--short",
-    "monster--bond--partner--bright--case",
     "monster--bond--partner--bright--case--episode",
     "monster--bond--partner--bright--case--scene",
     "monster--bond--partner--bright--case--short",
-    "monster--bond--partner--bright--habitat",
     "monster--bond--partner--bright--habitat--episode",
     "monster--bond--partner--bright--habitat--scene",
     "monster--bond--partner--bright--habitat--short",
-    "monster--bond--partner--bright--route",
     "monster--bond--partner--bright--route--episode",
     "monster--bond--partner--bright--route--scene",
     "monster--bond--partner--bright--route--short",
-    "monster--bond--partner--secret--case",
     "monster--bond--partner--secret--case--episode",
     "monster--bond--partner--secret--case--scene",
     "monster--bond--partner--secret--case--short",
-    "monster--bond--partner--secret--habitat",
     "monster--bond--partner--secret--habitat--episode",
     "monster--bond--partner--secret--habitat--scene",
     "monster--bond--partner--secret--habitat--short",
-    "monster--bond--partner--secret--route",
     "monster--bond--partner--secret--route--episode",
     "monster--bond--partner--secret--route--scene",
     "monster--bond--partner--secret--route--short",
-    "monster--bond--partner--warm--case",
     "monster--bond--partner--warm--case--episode",
     "monster--bond--partner--warm--case--scene",
     "monster--bond--partner--warm--case--short",
-    "monster--bond--partner--warm--habitat",
     "monster--bond--partner--warm--habitat--episode",
     "monster--bond--partner--warm--habitat--scene",
     "monster--bond--partner--warm--habitat--short",
-    "monster--bond--partner--warm--route",
     "monster--bond--partner--warm--route--episode",
     "monster--bond--partner--warm--route--scene",
     "monster--bond--partner--warm--route--short",
-    "monster--bond--team--bright--case",
     "monster--bond--team--bright--case--episode",
     "monster--bond--team--bright--case--scene",
     "monster--bond--team--bright--case--short",
-    "monster--bond--team--bright--habitat",
     "monster--bond--team--bright--habitat--episode",
     "monster--bond--team--bright--habitat--scene",
     "monster--bond--team--bright--habitat--short",
-    "monster--bond--team--bright--route",
     "monster--bond--team--bright--route--episode",
     "monster--bond--team--bright--route--scene",
     "monster--bond--team--bright--route--short",
-    "monster--bond--team--secret--case",
     "monster--bond--team--secret--case--episode",
     "monster--bond--team--secret--case--scene",
     "monster--bond--team--secret--case--short",
-    "monster--bond--team--secret--habitat",
     "monster--bond--team--secret--habitat--episode",
     "monster--bond--team--secret--habitat--scene",
     "monster--bond--team--secret--habitat--short",
-    "monster--bond--team--secret--route",
     "monster--bond--team--secret--route--episode",
     "monster--bond--team--secret--route--scene",
     "monster--bond--team--secret--route--short",
-    "monster--bond--team--warm--case",
     "monster--bond--team--warm--case--episode",
     "monster--bond--team--warm--case--scene",
     "monster--bond--team--warm--case--short",
-    "monster--bond--team--warm--habitat",
     "monster--bond--team--warm--habitat--episode",
     "monster--bond--team--warm--habitat--scene",
     "monster--bond--team--warm--habitat--short",
-    "monster--bond--team--warm--route",
     "monster--bond--team--warm--route--episode",
     "monster--bond--team--warm--route--scene",
     "monster--bond--team--warm--route--short",
-    "monster--hatch--collect--bright--case",
     "monster--hatch--collect--bright--case--episode",
     "monster--hatch--collect--bright--case--scene",
     "monster--hatch--collect--bright--case--short",
-    "monster--hatch--collect--bright--habitat",
     "monster--hatch--collect--bright--habitat--episode",
     "monster--hatch--collect--bright--habitat--scene",
     "monster--hatch--collect--bright--habitat--short",
-    "monster--hatch--collect--bright--route",
     "monster--hatch--collect--bright--route--episode",
     "monster--hatch--collect--bright--route--scene",
     "monster--hatch--collect--bright--route--short",
-    "monster--hatch--collect--secret--case",
     "monster--hatch--collect--secret--case--episode",
     "monster--hatch--collect--secret--case--scene",
     "monster--hatch--collect--secret--case--short",
-    "monster--hatch--collect--secret--habitat",
     "monster--hatch--collect--secret--habitat--episode",
     "monster--hatch--collect--secret--habitat--scene",
     "monster--hatch--collect--secret--habitat--short",
-    "monster--hatch--collect--secret--route",
     "monster--hatch--collect--secret--route--episode",
     "monster--hatch--collect--secret--route--scene",
     "monster--hatch--collect--secret--route--short",
-    "monster--hatch--collect--warm--case",
     "monster--hatch--collect--warm--case--episode",
     "monster--hatch--collect--warm--case--scene",
     "monster--hatch--collect--warm--case--short",
-    "monster--hatch--collect--warm--habitat",
     "monster--hatch--collect--warm--habitat--episode",
     "monster--hatch--collect--warm--habitat--scene",
     "monster--hatch--collect--warm--habitat--short",
-    "monster--hatch--collect--warm--route",
     "monster--hatch--collect--warm--route--episode",
     "monster--hatch--collect--warm--route--scene",
     "monster--hatch--collect--warm--route--short",
-    "monster--hatch--partner--bright--case",
     "monster--hatch--partner--bright--case--episode",
     "monster--hatch--partner--bright--case--scene",
     "monster--hatch--partner--bright--case--short",
-    "monster--hatch--partner--bright--habitat",
     "monster--hatch--partner--bright--habitat--episode",
     "monster--hatch--partner--bright--habitat--scene",
     "monster--hatch--partner--bright--habitat--short",
-    "monster--hatch--partner--bright--route",
     "monster--hatch--partner--bright--route--episode",
     "monster--hatch--partner--bright--route--scene",
     "monster--hatch--partner--bright--route--short",
-    "monster--hatch--partner--secret--case",
     "monster--hatch--partner--secret--case--episode",
     "monster--hatch--partner--secret--case--scene",
     "monster--hatch--partner--secret--case--short",
-    "monster--hatch--partner--secret--habitat",
     "monster--hatch--partner--secret--habitat--episode",
     "monster--hatch--partner--secret--habitat--scene",
     "monster--hatch--partner--secret--habitat--short",
-    "monster--hatch--partner--secret--route",
     "monster--hatch--partner--secret--route--episode",
     "monster--hatch--partner--secret--route--scene",
     "monster--hatch--partner--secret--route--short",
-    "monster--hatch--partner--warm--case",
     "monster--hatch--partner--warm--case--episode",
     "monster--hatch--partner--warm--case--scene",
     "monster--hatch--partner--warm--case--short",
-    "monster--hatch--partner--warm--habitat",
     "monster--hatch--partner--warm--habitat--episode",
     "monster--hatch--partner--warm--habitat--scene",
     "monster--hatch--partner--warm--habitat--short",
-    "monster--hatch--partner--warm--route",
     "monster--hatch--partner--warm--route--episode",
     "monster--hatch--partner--warm--route--scene",
     "monster--hatch--partner--warm--route--short",
-    "monster--hatch--team--bright--case",
     "monster--hatch--team--bright--case--episode",
     "monster--hatch--team--bright--case--scene",
     "monster--hatch--team--bright--case--short",
-    "monster--hatch--team--bright--habitat",
     "monster--hatch--team--bright--habitat--episode",
     "monster--hatch--team--bright--habitat--scene",
     "monster--hatch--team--bright--habitat--short",
-    "monster--hatch--team--bright--route",
     "monster--hatch--team--bright--route--episode",
     "monster--hatch--team--bright--route--scene",
     "monster--hatch--team--bright--route--short",
-    "monster--hatch--team--secret--case",
     "monster--hatch--team--secret--case--episode",
     "monster--hatch--team--secret--case--scene",
     "monster--hatch--team--secret--case--short",
-    "monster--hatch--team--secret--habitat",
     "monster--hatch--team--secret--habitat--episode",
     "monster--hatch--team--secret--habitat--scene",
     "monster--hatch--team--secret--habitat--short",
-    "monster--hatch--team--secret--route",
     "monster--hatch--team--secret--route--episode",
     "monster--hatch--team--secret--route--scene",
     "monster--hatch--team--secret--route--short",
-    "monster--hatch--team--warm--case",
     "monster--hatch--team--warm--case--episode",
     "monster--hatch--team--warm--case--scene",
     "monster--hatch--team--warm--case--short",
-    "monster--hatch--team--warm--habitat",
     "monster--hatch--team--warm--habitat--episode",
     "monster--hatch--team--warm--habitat--scene",
     "monster--hatch--team--warm--habitat--short",
-    "monster--hatch--team--warm--route",
     "monster--hatch--team--warm--route--episode",
     "monster--hatch--team--warm--route--scene",
     "monster--hatch--team--warm--route--short",
-    "monster--wild--collect--bright--case",
     "monster--wild--collect--bright--case--episode",
     "monster--wild--collect--bright--case--scene",
     "monster--wild--collect--bright--case--short",
-    "monster--wild--collect--bright--habitat",
     "monster--wild--collect--bright--habitat--episode",
     "monster--wild--collect--bright--habitat--scene",
     "monster--wild--collect--bright--habitat--short",
-    "monster--wild--collect--bright--route",
     "monster--wild--collect--bright--route--episode",
     "monster--wild--collect--bright--route--scene",
     "monster--wild--collect--bright--route--short",
-    "monster--wild--collect--secret--case",
     "monster--wild--collect--secret--case--episode",
     "monster--wild--collect--secret--case--scene",
     "monster--wild--collect--secret--case--short",
-    "monster--wild--collect--secret--habitat",
     "monster--wild--collect--secret--habitat--episode",
     "monster--wild--collect--secret--habitat--scene",
     "monster--wild--collect--secret--habitat--short",
-    "monster--wild--collect--secret--route",
     "monster--wild--collect--secret--route--episode",
     "monster--wild--collect--secret--route--scene",
     "monster--wild--collect--secret--route--short",
-    "monster--wild--collect--warm--case",
     "monster--wild--collect--warm--case--episode",
     "monster--wild--collect--warm--case--scene",
     "monster--wild--collect--warm--case--short",
-    "monster--wild--collect--warm--habitat",
     "monster--wild--collect--warm--habitat--episode",
     "monster--wild--collect--warm--habitat--scene",
     "monster--wild--collect--warm--habitat--short",
-    "monster--wild--collect--warm--route",
     "monster--wild--collect--warm--route--episode",
     "monster--wild--collect--warm--route--scene",
     "monster--wild--collect--warm--route--short",
-    "monster--wild--partner--bright--case",
     "monster--wild--partner--bright--case--episode",
     "monster--wild--partner--bright--case--scene",
     "monster--wild--partner--bright--case--short",
-    "monster--wild--partner--bright--habitat",
     "monster--wild--partner--bright--habitat--episode",
     "monster--wild--partner--bright--habitat--scene",
     "monster--wild--partner--bright--habitat--short",
-    "monster--wild--partner--bright--route",
     "monster--wild--partner--bright--route--episode",
     "monster--wild--partner--bright--route--scene",
     "monster--wild--partner--bright--route--short",
-    "monster--wild--partner--secret--case",
     "monster--wild--partner--secret--case--episode",
     "monster--wild--partner--secret--case--scene",
     "monster--wild--partner--secret--case--short",
-    "monster--wild--partner--secret--habitat",
     "monster--wild--partner--secret--habitat--episode",
     "monster--wild--partner--secret--habitat--scene",
     "monster--wild--partner--secret--habitat--short",
-    "monster--wild--partner--secret--route",
     "monster--wild--partner--secret--route--episode",
     "monster--wild--partner--secret--route--scene",
     "monster--wild--partner--secret--route--short",
-    "monster--wild--partner--warm--case",
     "monster--wild--partner--warm--case--episode",
     "monster--wild--partner--warm--case--scene",
     "monster--wild--partner--warm--case--short",
-    "monster--wild--partner--warm--habitat",
     "monster--wild--partner--warm--habitat--episode",
     "monster--wild--partner--warm--habitat--scene",
     "monster--wild--partner--warm--habitat--short",
-    "monster--wild--partner--warm--route",
     "monster--wild--partner--warm--route--episode",
     "monster--wild--partner--warm--route--scene",
     "monster--wild--partner--warm--route--short",
-    "monster--wild--team--bright--case",
     "monster--wild--team--bright--case--episode",
     "monster--wild--team--bright--case--scene",
     "monster--wild--team--bright--case--short",
-    "monster--wild--team--bright--habitat",
     "monster--wild--team--bright--habitat--episode",
     "monster--wild--team--bright--habitat--scene",
     "monster--wild--team--bright--habitat--short",
-    "monster--wild--team--bright--route",
     "monster--wild--team--bright--route--episode",
     "monster--wild--team--bright--route--scene",
     "monster--wild--team--bright--route--short",
-    "monster--wild--team--secret--case",
     "monster--wild--team--secret--case--episode",
     "monster--wild--team--secret--case--scene",
     "monster--wild--team--secret--case--short",
-    "monster--wild--team--secret--habitat",
     "monster--wild--team--secret--habitat--episode",
     "monster--wild--team--secret--habitat--scene",
     "monster--wild--team--secret--habitat--short",
-    "monster--wild--team--secret--route",
     "monster--wild--team--secret--route--episode",
     "monster--wild--team--secret--route--scene",
     "monster--wild--team--secret--route--short",
-    "monster--wild--team--warm--case",
     "monster--wild--team--warm--case--episode",
     "monster--wild--team--warm--case--scene",
     "monster--wild--team--warm--case--short",
-    "monster--wild--team--warm--habitat",
     "monster--wild--team--warm--habitat--episode",
     "monster--wild--team--warm--habitat--scene",
     "monster--wild--team--warm--habitat--short",
-    "monster--wild--team--warm--route",
     "monster--wild--team--warm--route--episode",
     "monster--wild--team--warm--route--scene",
     "monster--wild--team--warm--route--short",
@@ -1142,75 +1037,57 @@
     "romance--palace--talk--warm--single--episode",
     "romance--palace--talk--warm--single--scene",
     "romance--palace--talk--warm--single--short",
-    "romance--town--choice--bittersweet--perspectives",
     "romance--town--choice--bittersweet--perspectives--episode",
     "romance--town--choice--bittersweet--perspectives--scene",
     "romance--town--choice--bittersweet--perspectives--short",
-    "romance--town--choice--bittersweet--routes",
     "romance--town--choice--bittersweet--routes--episode",
     "romance--town--choice--bittersweet--routes--scene",
     "romance--town--choice--bittersweet--routes--short",
-    "romance--town--choice--bittersweet--single",
     "romance--town--choice--bittersweet--single--episode",
     "romance--town--choice--bittersweet--single--scene",
     "romance--town--choice--bittersweet--single--short",
-    "romance--town--choice--secret--perspectives",
     "romance--town--choice--secret--perspectives--episode",
     "romance--town--choice--secret--perspectives--scene",
     "romance--town--choice--secret--perspectives--short",
-    "romance--town--choice--secret--routes",
     "romance--town--choice--secret--routes--episode",
     "romance--town--choice--secret--routes--scene",
     "romance--town--choice--secret--routes--short",
-    "romance--town--choice--secret--single",
     "romance--town--choice--secret--single--episode",
     "romance--town--choice--secret--single--scene",
     "romance--town--choice--secret--single--short",
-    "romance--town--choice--warm--perspectives",
     "romance--town--choice--warm--perspectives--episode",
     "romance--town--choice--warm--perspectives--scene",
     "romance--town--choice--warm--perspectives--short",
-    "romance--town--choice--warm--routes",
     "romance--town--choice--warm--routes--episode",
     "romance--town--choice--warm--routes--scene",
     "romance--town--choice--warm--routes--short",
-    "romance--town--choice--warm--single",
     "romance--town--choice--warm--single--episode",
     "romance--town--choice--warm--single--scene",
     "romance--town--choice--warm--single--short",
-    "romance--town--memory--bittersweet--perspectives",
     "romance--town--memory--bittersweet--perspectives--episode",
     "romance--town--memory--bittersweet--perspectives--scene",
     "romance--town--memory--bittersweet--perspectives--short",
-    "romance--town--memory--bittersweet--routes",
     "romance--town--memory--bittersweet--routes--episode",
     "romance--town--memory--bittersweet--routes--scene",
     "romance--town--memory--bittersweet--routes--short",
-    "romance--town--memory--bittersweet--single",
     "romance--town--memory--bittersweet--single--episode",
     "romance--town--memory--bittersweet--single--scene",
     "romance--town--memory--bittersweet--single--short",
-    "romance--town--memory--secret--perspectives",
     "romance--town--memory--secret--perspectives--episode",
     "romance--town--memory--secret--perspectives--scene",
     "romance--town--memory--secret--perspectives--short",
-    "romance--town--memory--secret--routes",
     "romance--town--memory--secret--routes--episode",
     "romance--town--memory--secret--routes--scene",
     "romance--town--memory--secret--routes--short",
-    "romance--town--memory--secret--single",
     "romance--town--memory--secret--single--episode",
     "romance--town--memory--secret--single--scene",
     "romance--town--memory--secret--single--short",
-    "romance--town--memory--warm--perspectives",
     "romance--town--memory--warm--perspectives--episode",
     "romance--town--memory--warm--perspectives--scene",
     "romance--town--memory--warm--perspectives--short",
-    "romance--town--memory--warm--routes",
     "romance--town--memory--warm--routes--episode",
     "romance--town--memory--warm--routes--scene",
     "romance--town--memory--warm--routes--short",
-    "romance--town--memory--warm--single",
     "romance--town--memory--warm--single--episode",
     "romance--town--memory--warm--single--scene",
     "romance--town--memory--warm--single--short",
@@ -1238,7 +1115,6 @@
     "romance--town--talk--warm--routes--episode",
     "romance--town--talk--warm--routes--scene",
     "romance--town--talk--warm--routes--short",
-    "romance--town--talk--warm--single",
     "romance--town--talk--warm--single--episode",
     "romance--town--talk--warm--single--scene",
     "romance--town--talk--warm--single--short"
@@ -1840,6 +1716,13 @@
       "height": 941
     },
     {
+      "key": "romance--town--talk--warm--single",
+      "sha256": "1c209755a8b2399ee7443a215f59a4a29d3dadecf59f9406c12bf92a06482833",
+      "generationPromptSha256": "d07a17aef735550ae46f4f376779d196531f68756c2a222886c8a65d278c3445",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--talk--warm--routes",
       "sha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
       "generationPromptSha256": "ca2b0503b8ecec892877d8d7939a309ac7728ff1092c282c0a08b79cdb103714",
@@ -1924,9 +1807,51 @@
       "height": 941
     },
     {
+      "key": "romance--town--memory--warm--single",
+      "sha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
+      "generationPromptSha256": "3110b3871c14aa93929606e12c2df9c7fbe08138d790d9feff57935b04bc3533",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--warm--routes",
+      "sha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
+      "generationPromptSha256": "71a42360ba8742b96c50d2fa33f57dd234a3c2a3dd4ff909dddd302392427060",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--warm--perspectives",
+      "sha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
+      "generationPromptSha256": "f43f5acc2c04cf5cfd1fd4197b0b74ae80a68701476bfae2e33b7f69af61699f",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--memory--secret",
-      "sha256": "407a41e058dbdae47552c29c45401eb0473fb6cab111b6fc4d7c5ddfb9a19ca6",
-      "generationPromptSha256": "6167a1a7b970129ba273fc931300e9004a3b53a78b3acd573f16f4ccfc56a3dd",
+      "sha256": "0d4099e3221dc19b2caaca351cd51d858959645345c5d754d72027b89bf032f0",
+      "generationPromptSha256": "9ac38f27852ef4fa4a5d909e3f4eb73cb7b7d11ed524032298caf45e47905d7e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--secret--single",
+      "sha256": "07fff475145cf68eac4e5deae57f167b5e61261fbbb0e4ed15b0cbc6683bd177",
+      "generationPromptSha256": "4b0678253fdc92adddfe0c196705794048a02c4e30873d4bb46d0ac05e1f0066",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--secret--routes",
+      "sha256": "bbccd9e782217e4fa8acce4acec1d70c1bd3f7dc9ca5efbd6a4e6cd991c8f09d",
+      "generationPromptSha256": "f3e01f497d59e4ed8fb30e83d8566e91308799f7c07d48e0a4040595c6056e21",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--secret--perspectives",
+      "sha256": "b7c178c3ce2be1bd7238bc19d9d7c82c5d167f896d528449ee544f99dac3b1ed",
+      "generationPromptSha256": "c88549edb960dcc5a655999177cca86817f9c4cb3fb6b58ea9762156f2cd152f",
       "width": 1672,
       "height": 941
     },
@@ -1934,6 +1859,27 @@
       "key": "romance--town--memory--bittersweet",
       "sha256": "8fbe180590e66871f26bc13958b41fd6f7c8b00644ad001e0f9bda2c564958f4",
       "generationPromptSha256": "34f679d5eb2f2b2584d953e491a914055883f7ac69330094d48b9bdd50c61075",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--bittersweet--single",
+      "sha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
+      "generationPromptSha256": "423fececb71b0d336350c69b2ba7d22f39f99f1ea7d1d7eb43f66db55bdec627",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--bittersweet--routes",
+      "sha256": "bae05b15a376ce152fc2517f8eaa68d19c164afa5a3b62f29e346b211feb9608",
+      "generationPromptSha256": "b4432acd89a193afd9ca2a96cfbad7fc5c7f07e4160a98e044e00bb4111d784e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--memory--bittersweet--perspectives",
+      "sha256": "71cfb56ad673e35f3d7f216234998e259cc478e9dc9c4e3585606a6bf5bf01c5",
+      "generationPromptSha256": "9d985da46f28cb404ba130899cb06af7019f430c8dd80141a52980b3a0fa69da",
       "width": 1672,
       "height": 941
     },
@@ -1952,6 +1898,27 @@
       "height": 941
     },
     {
+      "key": "romance--town--choice--warm--single",
+      "sha256": "4bb5dfbc86c815035b2314084ccd0b8dc42331d42e8bb619daabb0dbf9ca7456",
+      "generationPromptSha256": "722799f87a8b3da7e0dcc9283206330b73ffe48e812a149c95603c28541a4126",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--warm--routes",
+      "sha256": "9bb293cafe092c6601d2f5af34b2bcf24ddea13173344f189dafec6caa60dcf3",
+      "generationPromptSha256": "607dcd35c7cfb628290259be6652236fbc056a271e0cf19a86c7e368952c708e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--warm--perspectives",
+      "sha256": "6f6182ff7b7de7fb756eae4ce52d65e1e8d8608eda9630c27367e93575c69c0c",
+      "generationPromptSha256": "e626e2e3fe162e7d0061a3e7f112d01e7e8a54adf5a01000bbca06e67c8d7703",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--choice--secret",
       "sha256": "e7013d5500ef6901e58bcb889aa47567cc4c06d562a1543c595362e58fc1df1a",
       "generationPromptSha256": "b5e1bc9053a9832bee2f86de0744a2a2085d983b4fe2c87fa1a06c743f1cc681",
@@ -1959,9 +1926,51 @@
       "height": 941
     },
     {
+      "key": "romance--town--choice--secret--single",
+      "sha256": "04dbdb41cc787adf10765b92967b65fe7780ffaa52e1b7d0d089161da79a0a8d",
+      "generationPromptSha256": "0db2f9e6aa9baf45bf27fc8403dde50d6ef07f1aa3dfaaa6016567538ee36d8a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--secret--routes",
+      "sha256": "aec4d3e859d930c5a264913d71ac24ac73ada5c8191105236c34550f36ab32ef",
+      "generationPromptSha256": "3ed9e11a88f1141900aa6dbfe8801201e332699bc528658d5a6ff6d234357caa",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--secret--perspectives",
+      "sha256": "d57cec4ecc5debdb8393a7156783157068b26323472ec352fc0fc5561eea37cc",
+      "generationPromptSha256": "41d388c9b825815841cfb85157204fb7c347e6c7bd1023e79cb55c0f0249eb95",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "romance--town--choice--bittersweet",
       "sha256": "ddc6c81c5691c0e15e6096a4396c03174de8b8d96da0c452df3a7b4658364132",
       "generationPromptSha256": "f90222a50c64261827b02c8c64386bc67b968e26cde9ac67da3f98fcdd8fe263",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--bittersweet--single",
+      "sha256": "4348033776770ee57d9f44eb41118c11eba3b776d7a4bec86d73dc8c6bded131",
+      "generationPromptSha256": "83cf1c6444f7a5e77ec4facf0d7aa11e0e99dbaf300e5ebccbe6e9ce0cf15dac",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--bittersweet--routes",
+      "sha256": "8e6cb3f25c2d607c7ccfd9e933e1b2ed08b8cbaed868e68cd994b387ba99add6",
+      "generationPromptSha256": "769f308e78676c0631abcdbe64fdea9a3f34d7c21c00fc5c62f19930c169ae94",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "romance--town--choice--bittersweet--perspectives",
+      "sha256": "37471d73ef2d3c6300e17a713753a8ee44cd875e1f7cb37f22ffcd8c476303c9",
+      "generationPromptSha256": "68495b10a9af61a095abd3f5fa983b44b7e8d7cc965b252f08f1e01fda2e39bb",
       "width": 1672,
       "height": 941
     },
@@ -1988,8 +1997,29 @@
     },
     {
       "key": "monster--wild--collect--bright",
-      "sha256": "7940c2bc0d9fce85a48a7937739af93e8643194e00da0233c8e6bf86737c8c82",
-      "generationPromptSha256": "d0bdb481e4dddc38515025574b6bb6583c639a3f28920c8b2d2f391742eace45",
+      "sha256": "7d94d17c0c3d11c7da21b45c654fa089f8378df64aeb6e1cea1c321cd559c570",
+      "generationPromptSha256": "89b1acf4bc56e6ea782c6143783943434fbdd3618d31166dd67b4c462c05ada3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--bright--route",
+      "sha256": "44f8ea0248f8a763afdb1ce809d20539d37a4f6e2ac8c81c9db235f0e63a236e",
+      "generationPromptSha256": "52a33c78d3cd531b08289e1091498a760c337cefac901efd08d599078aa9f43d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--bright--habitat",
+      "sha256": "c211de199d550ae51058225f0bfba59743852b3fe915fae90bab55168f45c360",
+      "generationPromptSha256": "c898705dd4984fc09c3408416f3ab8f1b42bc71cdcc2ed90dff289f24159fecf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--bright--case",
+      "sha256": "b811e3aa0908a242dff5d2fda34ed633646b5e90f438b52c8a1a9a65e94064e1",
+      "generationPromptSha256": "e0aac794ca1612e2e86fa2f473746e99ba8d3ac09731196f7a09b22ce00776da",
       "width": 1672,
       "height": 941
     },
@@ -2001,9 +2031,51 @@
       "height": 941
     },
     {
+      "key": "monster--wild--collect--secret--route",
+      "sha256": "5188bb951c0623dfe9ddc73652cb75b7f928eb9696905d0289576a159a16b278",
+      "generationPromptSha256": "2190475efd95aa1d69bdc09fd5c229f2b84e90e1cef7de89ed3d0c2adb6454ec",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "sha256": "c97412420628c8e6da77db011459cde0c6079f741aba9e37b5ab4fdf5b44529e",
+      "generationPromptSha256": "53d093eb898065f10ab352f658a055c44f382cabe7af771e908ce4c4ca56dec6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--secret--case",
+      "sha256": "92df8f13bbd29e5217e89174fd8a24c95f0058214a7722e3f00a95ccf4c3df27",
+      "generationPromptSha256": "5104cf6e8680ae0cf73ef82a2b6e9d768b7e056b9d55207681b02394914fd9d1",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--wild--collect--warm",
-      "sha256": "106153df07b3b65fd0c6cdc13907cea72dfbbcc0ab8db090e92eec6a99ef903e",
-      "generationPromptSha256": "04a5cace85eb589c203846aaddf7b5a017857b340417ded4201d674202d2f5ee",
+      "sha256": "349b4cfcc95dc87e683c16a0d6c025730d5dd0e1546645015baad97787d296c7",
+      "generationPromptSha256": "eaf0f1d0eca74bcbe364884128f73a59bfa3890fe4a72da31864a754235ac2f6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--warm--route",
+      "sha256": "d0be7604d72dccefed885dfb6d83599af5c445ae799c807d6eba3bad80dbe00c",
+      "generationPromptSha256": "5fe4fba9a2d8b18cd5721707d4f0db82e084a73cadc20fdb1955d1952c76d8c2",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat",
+      "sha256": "7904e2a64be16143e4ec719adc26af71ea6858353c6e82116ec834006476d122",
+      "generationPromptSha256": "c9939fa776064f4e29fa0a5e652d1b56d18e92b8ce98b0522c64101b9d75cfe6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--collect--warm--case",
+      "sha256": "eb9cc4fb792041f2657e5b56945ccea67907b459234a5e3a07a298295df57b4e",
+      "generationPromptSha256": "6ad7f3d537eca8f785fa98dd70d84911a34d30e944c228dfac13413523be9660",
       "width": 1672,
       "height": 941
     },
@@ -2016,22 +2088,85 @@
     },
     {
       "key": "monster--wild--team--bright",
-      "sha256": "d27c9a1291d3dbf6787880ca9e9329adfe1bc18b64b2c36c6c18f12d646d8dce",
-      "generationPromptSha256": "17adf69e767a538c7cbfd38dbbc41f91c81f27952287c3cdf2da0a0f80116784",
+      "sha256": "009ff899f0b11103a0bd1095ae6b7a097bde1737e2933d1dc5ebb7735975cd11",
+      "generationPromptSha256": "ac9f72d7e1d633060cf4ed579af4fa1047ae4b79836d9251f330754e64ba641b",
+      "width": 1672,
+      "height": 940
+    },
+    {
+      "key": "monster--wild--team--bright--route",
+      "sha256": "3d53c1b875b96897bac8f7b357b386163ba6215229e88cc4b81169042e58c6b9",
+      "generationPromptSha256": "c409948a0186bebae127fa61e289024cf6a65345ad6f93db9aa91d56449ef87d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--bright--habitat",
+      "sha256": "918df2e190edbc44bfffbb8cb378b5a0e45363f1e64d2ae5809b2ceddd0a566b",
+      "generationPromptSha256": "0b31e7e1d792b2ebc04c4dedc6626cbdb75f73d81ab6e086127a6cc913332b86",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--bright--case",
+      "sha256": "9a85d5ab738bc363eeaa6b24249e521908260e286dbbc20806b5b64c0173f340",
+      "generationPromptSha256": "8a4f81fe9db69c702cd002f0195d49f11e5f917e8b99725bc82d5a543afb2380",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--team--secret",
-      "sha256": "b334bb721d8b1479df9900e5dcb66efa04eb79a74e3e740e2e2bc96eaefdb848",
-      "generationPromptSha256": "9d8771934f3d35dd383273c567cd4ba0049f4bf9e6f8207acc1d97a744840e46",
+      "sha256": "8d911727dea9dd5925abedd3bb9c3f8077814b310e1c312358c4e2d3921930aa",
+      "generationPromptSha256": "6ea93b2ab9bc272609f65c15badb979d37a65736ba6c72a89cea66720f3d8f56",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--secret--route",
+      "sha256": "040c07b0a10cf0bb17cd8d76ccda7502110d4cf1137004822fc69891be4376aa",
+      "generationPromptSha256": "63ff32b7c910e03c1b9878e2c6b8e0f82d9171376716747611b37a4df428a60d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--secret--habitat",
+      "sha256": "13b6ec21de3abb29cba58fa27a3a6d052060c0cbd83e8c86293ffdc90a276051",
+      "generationPromptSha256": "72f3d197ba6dda81e51a797b5e3043d790099a00a73ceccf9de0eccf65326972",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--secret--case",
+      "sha256": "6ebe3bcc6441f15766ea724ece9514563371e2022a8e1d30b96428f05ff74942",
+      "generationPromptSha256": "ae728bbc5d2025b3938e45dd372ba3305159dc829c97bb1c4b57149e170a597c",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--team--warm",
-      "sha256": "b5b8f20c95096f77c1c864180d5c1a9881883425b3ee0693ebb0c3ab676bdaba",
-      "generationPromptSha256": "fc30bc0de9cca2443fd0830e2fb9d8fba4768af2be78d3c91a53f971cf430805",
+      "sha256": "458980bfdb1c21bb0103d4bc4172cae24b7e9fef84d42a8b9331c1d07639adb2",
+      "generationPromptSha256": "86c24dffee6f089050e81823a6ee347ba2a5af7acd6a0707a3d8994edab78ce5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--warm--route",
+      "sha256": "2e93fa4868cf9c5e01afc9a93707cc72e0ed13790dac7c0346633bda361b6435",
+      "generationPromptSha256": "c3631849ebee3078f110627752690fe446f8b6d1c12a27f2cf16291ba0fdfb61",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--warm--habitat",
+      "sha256": "e2016ad69a1c561ff4373be5544cf2d7a46cf8c1e0a5a6249925c5f0a683c6e3",
+      "generationPromptSha256": "117deea3cfc91a85c43e9cabdf3cc27ba4ea9eb43b74af012c5b84b279400f0e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--team--warm--case",
+      "sha256": "c619ad0986d40b296d10ca4e6d24da4949e926d9b7f1d7f9066062762845af4c",
+      "generationPromptSha256": "8a0969accc3c9e7435c0b3165f31d72aaa5f03de86d5ea708a2704a53cf4043c",
       "width": 1672,
       "height": 941
     },
@@ -2050,6 +2185,27 @@
       "height": 941
     },
     {
+      "key": "monster--wild--partner--bright--route",
+      "sha256": "020655179d11e1a62cb769f94331d356e1874400b9498d82ae8b0f07398297d9",
+      "generationPromptSha256": "77a4edd2cbc495b4f4ff3a561bf9d3514949fd9c8ba76abebb043120318daefd",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat",
+      "sha256": "df6751935b574ebe7162deca8c5bb5e724cc500b93eb590e0fd2875388371291",
+      "generationPromptSha256": "9af91dd2712168596743826f973058e8ff1821ed38b0438004bd3edb134d1d20",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--bright--case",
+      "sha256": "d3c5e1b643e54752a0b9d7647f8ef8b3edf4a9b2b021c27fa2ab7ea5dc4bb38d",
+      "generationPromptSha256": "4ffebe6e93b9e1c75336609e614647d3e47472152004418b1cec17b129fd9d68",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--wild--partner--secret",
       "sha256": "f9f9dfce3bcbd5a9cb73c6042fcc6664476e27a8b24c2a339ebbb2b740157f3b",
       "generationPromptSha256": "8b9721c101426394bb3ce521a1fce0940164f56863dc23ff66fd98a491cec115",
@@ -2057,9 +2213,51 @@
       "height": 941
     },
     {
+      "key": "monster--wild--partner--secret--route",
+      "sha256": "fadf25017630acc29e3f13ec0f56588df35520396dfef5ed8a3a43ca274bc383",
+      "generationPromptSha256": "fdabaeb2fc79776e7d4af1640499daab7ad342f0f86fee53712f8ccc3ba81242",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--secret--habitat",
+      "sha256": "817523bceb1a61748093bd03eff4d3c8f960d26719c489231e9934c55b70401a",
+      "generationPromptSha256": "bc41120e59c670eed2632de56772b9942c448d3d3d4394fe124f7ed0e9eacb58",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--secret--case",
+      "sha256": "33b70047501021ce16e7581e89892299b1bc23292cc4c602cd50acbda3511f83",
+      "generationPromptSha256": "813b6b80221ce23212a049da4cc469eee103f8c46ce4c544a11d380d7b461eb1",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--wild--partner--warm",
       "sha256": "6d53357b6d5985d19f5ef5010a1d4f209b794c4a7318dd88eb6ab3d61c7f8ddd",
       "generationPromptSha256": "60dcb5ac73d8fafaef804baa15e953182aa51a4a1f091d414b4f9452c15469f6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--warm--route",
+      "sha256": "5d2f1f10c1e6dd2c41336b90236d38959d701c0bf2e460b1968ff6bf3a8f901c",
+      "generationPromptSha256": "72c4a7864df35abea19dce25e2cba22ddb4e15437f77c99be7a13716d19d87f1",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--warm--habitat",
+      "sha256": "d5fdd81de453c9e4bd2ff31a7be40515d14aac73ffb32fe397f116c4b2436187",
+      "generationPromptSha256": "efe00d7fcc9e7fbc2198e6a535a3d1c8acf84b02c246de2b4289e1105e68a13b",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--warm--case",
+      "sha256": "6465fc89293f9a8a9609da243974fb691682ca9d249b7f21cc4bc4b6ad688e8e",
+      "generationPromptSha256": "38224f9fcc0086b5563dec1f00c20098c7120020e688c17af838ac735bf4549c",
       "width": 1672,
       "height": 941
     },
@@ -2085,6 +2283,27 @@
       "height": 941
     },
     {
+      "key": "monster--bond--collect--bright--route",
+      "sha256": "00569344676f178f990b7084e01cc4aa04c4dd9ce80e2c86868a64d329ea8bef",
+      "generationPromptSha256": "68436e164e87783a68d07ffe087d843f163ee221e0173109cefe88e56483e8bc",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat",
+      "sha256": "bce7a23551704e9805c57984dbc23be00f966179a447099d2e9a669231e6c3c5",
+      "generationPromptSha256": "902462b7620fe8e6e24b252582e614cc9a53816fd4d9f99007169420376dd3ae",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--bright--case",
+      "sha256": "a80113a4f22ed87a8b9f4bff3031ae51c23d1373fb37e0a1c621aaf12608f924",
+      "generationPromptSha256": "729f22362a18e0d2707eb48c5662cec05b78228f2abd32719c76a85e8a1e0631",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--bond--collect--secret",
       "sha256": "9981f8181b820fffd19139b5e45dc447d7f4fa2f9712396db0ca21cb584b0240",
       "generationPromptSha256": "b398928f4eed181932a8109324b97f19c3cfc4477bd39e56f4fd6dcb50a0f232",
@@ -2092,9 +2311,51 @@
       "height": 941
     },
     {
+      "key": "monster--bond--collect--secret--route",
+      "sha256": "7ccf084d372c2c0dafd7d63304012c26f1f9046bd11dbee720a43e26b2a77d79",
+      "generationPromptSha256": "7dd8e4924612ac7299f7a177db69b881435dac0133be2caf89110a787eb3d48e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat",
+      "sha256": "6085d0c2caa6005f649d5cfb8c29c86dd74e33688e7f4fc8e4d3d674a886ca82",
+      "generationPromptSha256": "51940575429ffdcd2843b42cba9b6ac534c8bb932fb26b804ec7938794ec9b5e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--secret--case",
+      "sha256": "f7ca80f68390b5ebfc8f1bc934b75e6d3ca424f899f0d90605efcabb7ad7695c",
+      "generationPromptSha256": "96762e036aceb715d5fcaaa4272474f421be94d185cf779884c64b4bd99d0a98",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--bond--collect--warm",
       "sha256": "0336c98d46916c3c805799bf3ef0d1702c5abb5c20f57e1f60f539f34d652ca1",
       "generationPromptSha256": "2b75799c14bd1bb1bd549ab65ef8b2339af7f7c822646d908bf36d30885ad733",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--warm--route",
+      "sha256": "a2a5c7444d4cc2a42c77457d8602f5dabea1e772e64221950383cfc82a283b87",
+      "generationPromptSha256": "6a246c63ea90202e88471a1b368f7c0c390a6da0dffe96d51d1982fd6657b21a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat",
+      "sha256": "99c43c385b9eeb87bffaffe71eb93472cfc25a24f75f6a635068d3c28ff56bf1",
+      "generationPromptSha256": "697d573c9894bf28177ac82532ca6102207d151082e75f3e6621f535ebb5ef6c",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--collect--warm--case",
+      "sha256": "1fcb392d755fa2cd99f073825b03d6510631462c621cb06c2b755c35ef753483",
+      "generationPromptSha256": "b372ca3cd1196c43683ff2cdfda3969ef35357c43a4d0f1a3b12b2e8a0c489ef",
       "width": 1672,
       "height": 941
     },
@@ -2113,9 +2374,51 @@
       "height": 941
     },
     {
+      "key": "monster--bond--team--bright--route",
+      "sha256": "a4e80e4630a7b543b236baec822212d147301e83fec2e2e83b3e861874a9c60f",
+      "generationPromptSha256": "ca355edf94e0c1b73377d218da6c7dd099360b252970fff4fcc8a997161d9f1c",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--bright--habitat",
+      "sha256": "2c389d2f096b547b86b170759541fb73b47f20f2cc6b1f70c5d3c15fb91ad46d",
+      "generationPromptSha256": "5e52a3284f7c11706bb0bf915feb2106d65a24d023ba857ce68a7d15eb61e38f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--bright--case",
+      "sha256": "57bfb48c4232bd9e8c15498af606355a3240294a7d0041b0ee872882fd10d30b",
+      "generationPromptSha256": "e675547deef9e8cf7617120365c9c107a920c320fd13856d0655645defa613a0",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--bond--team--secret",
-      "sha256": "a31161ccd9e461529db5f8b6da921b2ef922355adefe902ad2d98669244eedca",
-      "generationPromptSha256": "8c8fe09a912fbc08435e4ba8f12c7de7399b4676f714ae48fc8f69fbc1f327c0",
+      "sha256": "d76ee085a0f4b162badb672e60c6533835a273545e7334bcfaff1df2712298ac",
+      "generationPromptSha256": "a7c87a8907735ff1f984aae0f4281c2b5fada308702b6032395e46eebd8ba70e",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--secret--route",
+      "sha256": "d72a0dedfb9d2af2722dc1bac7498efcfc03a96a4382715cc7f1b17e130f82b0",
+      "generationPromptSha256": "4c7788b9a35c06fe3190bdc1f30b7ee7c0131442b05885388169bd1354fbfb5b",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--secret--habitat",
+      "sha256": "43ce50179651e4f4aec257496735bc773461931390238827ffeb18db641a34c3",
+      "generationPromptSha256": "58d43606f4e6512bcd7a6d5f6f22754cd66e8a2562d1a1100a90324477c97380",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--secret--case",
+      "sha256": "723f61f6a1e58c88775d9d706b3581c1e51130999c77294aaf1bbc0cd6ff0326",
+      "generationPromptSha256": "d07a18058994a9549bbcd0ccf385fa63dbd992aa7b7c51035cc0ec883cdcefef",
       "width": 1672,
       "height": 941
     },
@@ -2123,6 +2426,27 @@
       "key": "monster--bond--team--warm",
       "sha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
       "generationPromptSha256": "a0991f22c56552601ed4fab0e87394ea116bef9abc25fd7cce600a489e65a56a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--warm--route",
+      "sha256": "2f3ae40e40815dc191cf8a7e1d2676948b42193611080d69505d3d9b3b6c3fc2",
+      "generationPromptSha256": "90ae218fe742882272f69a6453aa52ca61cc972d6d6282f38bb24c9dae5a92ac",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--warm--habitat",
+      "sha256": "35a62f926faf669a8bd3ae116daa52fb3ab0c17c698f02924b17df5f217a8696",
+      "generationPromptSha256": "5de7f16b6a30eac83d199e334da17d75a286fc4c414b877921670c9402ae05dd",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--team--warm--case",
+      "sha256": "fa7f7de4a8fb242485382a05cf9f4c0cef33fb3116a4c50f5fc0797e61f02972",
+      "generationPromptSha256": "b334913a3bee9ebd7f30b47cfe01411a10da76b6a92b615e52371c7160592d27",
       "width": 1672,
       "height": 941
     },
@@ -2141,6 +2465,27 @@
       "height": 941
     },
     {
+      "key": "monster--bond--partner--bright--route",
+      "sha256": "45cbedd74fa5b4b2764c9a549200b82883d16c67d48f79ea086001891dc2caeb",
+      "generationPromptSha256": "179baf676f9e4cc545451340256799c335fc2f2f5a6e6c0dd1e948c8fcb2c1a8",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat",
+      "sha256": "beaaf06d9a9b10e7ac3176ef39c99b709610bf8441c711ee4323ee6e59c162bd",
+      "generationPromptSha256": "c6285a00df7221a2211283adaea4a1ec2301ff98ab79fe0b9890da34e70188b4",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--bright--case",
+      "sha256": "9141623c48a69c2385b555761dff93d727dd3de173b2647fab5f1bbdc317a532",
+      "generationPromptSha256": "8ed34cb17609dc47da4456c36705a37b62456a89bfb293296c6b7f262b7a7e3d",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--bond--partner--secret",
       "sha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
       "generationPromptSha256": "bcbed78aa8c0645a4a4367c5bbcff350725e6e674e17c5e8ba0bf6ab5411c6dd",
@@ -2148,9 +2493,51 @@
       "height": 941
     },
     {
+      "key": "monster--bond--partner--secret--route",
+      "sha256": "0d4450cbc2cacbb4f3b4b134753904148456161d9001ab1496bb2c0cec23ab10",
+      "generationPromptSha256": "efcc561e2ece63aff5c9632786fffe2203668fbcd7f1156292a6d1de9be71c6b",
+      "width": 1672,
+      "height": 940
+    },
+    {
+      "key": "monster--bond--partner--secret--habitat",
+      "sha256": "3d33d2fc5204f298b898c68ea579355ef7891fd48ee4a4ee2a3d0a6bfa429bb1",
+      "generationPromptSha256": "e3d911562eea019e7d8aff2e27b9f0cc09d9e49c98a53919822bb6944f768f45",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--secret--case",
+      "sha256": "496d2c55765093dff7c778e6261a0fc17113edf7649b4cbec40c1e303c3adb4c",
+      "generationPromptSha256": "fc25526ce9d8106faa4d4b65dc60d6e9485b54ea09c4f10ac3b0cf39243bcdb9",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--bond--partner--warm",
-      "sha256": "73d416e0f190fefff8aee5fc6d37511e6a295da14a005c471b61fb0a40b67646",
-      "generationPromptSha256": "f27d1ea81f239a2912a254dbe19b324220a55d2dec106908ba1c3be4ca3cff7c",
+      "sha256": "a7d117912529c540202594258d2b7a32ebe16d28a5c37f1659d69ce6046f1949",
+      "generationPromptSha256": "f0ce052926c1539f8b92bf0a5957b2b6e047832fb53afbaa071321ec084d6cb5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--warm--route",
+      "sha256": "8413ce84a57a42a77c8639f2bf984a63da1bb791e6718d2486a280fc8284ec18",
+      "generationPromptSha256": "2e485ec9ab8d63de449a1c8d0fe4234b33fa45c058bdbbfd6cd3c04d7d5a4069",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--warm--habitat",
+      "sha256": "12d2e8fd69c9b4bd65f5b35e3a99c4b6791be7e8a4fddc328a15eb89401dd804",
+      "generationPromptSha256": "fce24facb24120d9f2ec124197d2329fce367b897c7c990de36b4e252f7def8f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--bond--partner--warm--case",
+      "sha256": "6332f5ef9c604cd785ac38d20f61f40c441050f42b501751292c658c48300dda",
+      "generationPromptSha256": "2905a89f3944011a9edc8654253c5337283445e1288c817ef9c4d56507cf2b57",
       "width": 1672,
       "height": 941
     },
@@ -2176,6 +2563,27 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--collect--bright--route",
+      "sha256": "942404180aca5a8b9205218848a501eb8c90169a4f1138b8ddae738c385d8f1d",
+      "generationPromptSha256": "22cc52b64a26efd87a8ea25e904517f1fdcef47403e659f622913c28afcf610a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat",
+      "sha256": "90adecc1e284d5bcfc67a1839ea94ba0cf07fc97a8cc2c3ef421c9133097b953",
+      "generationPromptSha256": "2559103b834379b8767c298bd40204590598f3d544cd27b82ca346dae1846ab1",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--bright--case",
+      "sha256": "b4f33d00ac3c9c8ab5632d1a4216b7c0b5ecc7898e4ef98851e6042b358fe12e",
+      "generationPromptSha256": "e50abaaf9b1c93beb190e10f2eb611242a5ed3856073708587f192be49596b27",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--collect--secret",
       "sha256": "a25d737f360ef01cd9216656579b8f16b2660a256bb9fb55ea983289833272ef",
       "generationPromptSha256": "9d743f56989c8e659e3051206d7713deb31c47477f1436d3bbcd57f139d2f6b6",
@@ -2183,9 +2591,51 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--collect--secret--route",
+      "sha256": "66b629c55a5cf15816415abd11fabfa3253d166de95434f6dab69dbd8ffb83f1",
+      "generationPromptSha256": "24d268b42260f41af83befd72eebb52ce1c672fb2ffdffd1a88e0976589711a6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--secret--habitat",
+      "sha256": "c1f4180ac0d377ce4291f0ca76a41e1ba2b45f941ed62005bb1d4ca998dc645a",
+      "generationPromptSha256": "ae6e367caf3c039aeae9bc14f25813f4244d819b6816c17e603ced3e96255421",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--secret--case",
+      "sha256": "10bb61c478f0866e05c79944be3ecf29e038a30ee75594d5ccbeb2294301352b",
+      "generationPromptSha256": "2b8a711b447b65fa08452764ecabfbbbbcc8993ae292d63ca3b7c098400bad8f",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--collect--warm",
       "sha256": "42d557ff8c9942f7e8e352fd57cab41d13cb33a1b9659f3de411139953bc95e5",
       "generationPromptSha256": "85ea7274d83c32a617f064764e0c995d478e8b4a185e83b8671da0ae10eaa83f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--warm--route",
+      "sha256": "32b28fd59eff611bfe3dee8f539d0b024cae3d8b7bd5e0ab04f4d88297b1c575",
+      "generationPromptSha256": "865220cb275df72adf5e8667fdef5ef1eb35435cce6029da3d638b196e78ec9d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--warm--habitat",
+      "sha256": "47c78ad7b0c661717e4b9ef6eecbca9a3add901b64d7d220b897ff8b5fb5b6c6",
+      "generationPromptSha256": "5f66e32906afd84f7d156b733a7dfd0902d63ba0494a58bbc4d1d991df8e0f56",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--collect--warm--case",
+      "sha256": "033ab7a799f2bfb9d2d6030c98b4d78c435580ed12fdab4c445c1da5bc49c6c6",
+      "generationPromptSha256": "ee4d6fcc63dc7c7b87ad3181e17e5c7f3ef981e52f7c434d6dea44e1fad316f9",
       "width": 1672,
       "height": 941
     },
@@ -2204,6 +2654,27 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--team--bright--route",
+      "sha256": "c1501290a62c2162a5eedc3e6723147f32fc35cb3c1dc22a6def70a4f791bbf8",
+      "generationPromptSha256": "ebd70a47e3de43e5350207382e2d1ea44bd73714581ac4dbf9cbc581f602f605",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--bright--habitat",
+      "sha256": "f898768801152862cf1bb93f28d174160c168356775126c63aa57acbb5a1deb9",
+      "generationPromptSha256": "959702d1c7b565d698c84ff29fbe6cd6fd222573014f884979e0452da56aafee",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--bright--case",
+      "sha256": "e8aa6fd4aaed87232c176c18d2645b65cef5a4c1e2cd4895d179f3d2fd8bca5d",
+      "generationPromptSha256": "1bf8bf9d2ba484f0df4266d3a6f3204a6ca4d8d3601b8b111424ac1cf650fafe",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--team--secret",
       "sha256": "f064b87dfa993c37f9ce1acf889d0931f39ac1f7a61dca8318adff71a5cd6583",
       "generationPromptSha256": "7343be345fc7b288f7d78c43138d93bf6ae37aada467372b64d2814d6275c211",
@@ -2211,9 +2682,51 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--team--secret--route",
+      "sha256": "dc25f59f7711ba613182cfbf147d456845ecf939ccecebba6adfeef2f9428478",
+      "generationPromptSha256": "d1f099ad42be23ba2abfed43f018d78ee3e56a37b76d539ef6781f1480571fac",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--secret--habitat",
+      "sha256": "3c942d89e9405fe26c3999d2a5aa32f68777ca00ff303b5eb1226477d766a03b",
+      "generationPromptSha256": "594f89ceffe2b1e24f3f23fb85fac8dc7e67e4a44b20b480f7f9c456af47cc3f",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--secret--case",
+      "sha256": "fca34be85324f442ff68d8c30a0ac85a7f984300bcc2070d5f19e20a5c1cf696",
+      "generationPromptSha256": "e2db9027f78d6698da3ccca026c036ed901cd915278608afe665458eeecbe118",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--team--warm",
       "sha256": "a3f5ea69b6ebb6cd4f64463e0b58b108ac9014a02ed64012e0bb97afdf558f6d",
       "generationPromptSha256": "dca91c1d2a2197bb0d33d68229921e9c875fdc778a63805b53558a23eb294ac2",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--warm--route",
+      "sha256": "4471f6aa14f35058e4f50b19da442733b40c45f334a2b03636f18e0ce470a0b6",
+      "generationPromptSha256": "2dd5026d1d71bae44bc397118fd635239434e94a6e73ee7e32d6eca75f4d3571",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat",
+      "sha256": "bd25c816136ef04e5da6f4b7213ff6213764b42b68568aca1296f9a62eb6cc31",
+      "generationPromptSha256": "b4b55d1c87300e0c8b9ae16ea22eb34bc72fe20ee300623a5600181a67f487b1",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--team--warm--case",
+      "sha256": "2e8950d423bc1229d7f18e4256c3471f409f3b8bb937a39128f88c09e89129fa",
+      "generationPromptSha256": "41c41c3243757821ab62579fcb13c79aee0f6b4ab5fbc78c164fe21db4bd69bc",
       "width": 1672,
       "height": 941
     },
@@ -2232,6 +2745,27 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--partner--bright--route",
+      "sha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+      "generationPromptSha256": "6ca268223fecfedd0e5af684edeaa45639b5b29d2c86a05a681c1798013013cf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat",
+      "sha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+      "generationPromptSha256": "14730d7f027bef459a5c4950dd6d9e126001cf280d773cd07b9f58d764e634b8",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--bright--case",
+      "sha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+      "generationPromptSha256": "7a9e433c28e94d81fb43492e61e392f1a6e2f8c1f71432425dbab044f269b91e",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--partner--secret",
       "sha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
       "generationPromptSha256": "2adffc3e485b2f7bf106992349bf881f267f91c144da1ca9643302833bf40e78",
@@ -2239,9 +2773,51 @@
       "height": 941
     },
     {
+      "key": "monster--hatch--partner--secret--route",
+      "sha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+      "generationPromptSha256": "add5f7151c9da94c51507e6e8f7ba22f42a9316c847ff27b6ad5856ea4d065aa",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat",
+      "sha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+      "generationPromptSha256": "9a767c9ab9201658bdc2538c79f3d3575ae4dfc2319c503e26b27125e9223208",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--secret--case",
+      "sha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+      "generationPromptSha256": "465f3510d28b88572e49541214d29cbc6a410e797fec7f3b5f84644f042a5878",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "monster--hatch--partner--warm",
-      "sha256": "38a4a684c22858a3c999aa2c2313c5fc7de7913fdd459a8ebea3677acee2c20f",
-      "generationPromptSha256": "befd6f67fc07538ffb259706a246ce2f4a38afaeca5b2175579bea0c96f3489c",
+      "sha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+      "generationPromptSha256": "3c86e507f0c4e490d8c42381b47a1ab459a1948f1a57f68c611dfe83f38d3c30",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--warm--route",
+      "sha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+      "generationPromptSha256": "dc731dc0487f1177beae0aef4b9cac948e45f27c7b261c516dc0fdc98f094eaf",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--warm--habitat",
+      "sha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+      "generationPromptSha256": "5a3bfbf43e0cb531590d3664765d1df5ef91f22b5d8ffbb3332ebc40a4423223",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--hatch--partner--warm--case",
+      "sha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+      "generationPromptSha256": "8daafa187da551d58ac0df994bdbfba0152fe43291d9f1b3fc60bded70a4fcfa",
       "width": 1672,
       "height": 941
     },
@@ -2274,6 +2850,27 @@
       "height": 941
     },
     {
+      "key": "adventure--reunion--explore--bright--journey",
+      "sha256": "1e8efde5daccf20f87b584635a0e752c6794b25e378bbb364a91a294dd522b5a",
+      "generationPromptSha256": "211904ddbd45a7468f8d5c974f41472dae5e5cdee851144b4b50f1ce30b4c15b",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--bright--quests",
+      "sha256": "c99a9c344105165d4b6156897e817b6da05e8a979a560c41b47ea6f4799ebb75",
+      "generationPromptSha256": "fd09d929d2c3b1929349ff974722433a1518eb1fa7d537e7c4ac08a1da324b43",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--bright--chapters",
+      "sha256": "b4fba7b843fa2bc01be76722b49fadaeb09c1944a18e51f337388d7ea4349f72",
+      "generationPromptSha256": "ea288f94d71be15cab8bd8082c931f685256920de617dcc65ce2f25580e3665b",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "adventure--reunion--explore--mystic",
       "sha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
       "generationPromptSha256": "dc74d1f7d676c4ef1a6e9fb7724b6178f692b8a8c8aa2cfcca94b57309b228ee",
@@ -2281,9 +2878,51 @@
       "height": 941
     },
     {
+      "key": "adventure--reunion--explore--mystic--journey",
+      "sha256": "71f65c6791f191bfb12ea94a0a721514b07c69ba2e6cd69e5ce498dc889ad5e5",
+      "generationPromptSha256": "b069945737bf552a9134c8e440042c9d8233089ff757db469ff7cba19c81a01a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--quests",
+      "sha256": "1cc1cf150fa109bd92a25c0071ae26d259095b3f6e5715f44767dbf786643d28",
+      "generationPromptSha256": "16a39dc1287c9c82bce0f0fc5c724c760c3d507ee807b7ceda44a0e976b74016",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--chapters",
+      "sha256": "3765b5bfbd10b4412b75fdab0f42b167425a63f9cae5c924cd6ebde9caaec91d",
+      "generationPromptSha256": "e239115e9c484c644c9db1ddbb04316c6fa2b4fddb5e104cbd7fb7fdd719fe70",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "adventure--reunion--explore--warm",
       "sha256": "3b628c7f63f46291dd3af6c4f04086e0fa0ed52b85ad96b1a037bcf66b81cdd8",
       "generationPromptSha256": "141e8c6aec050487fa4efa805fc051fb8374a5a249381ccd85fa72a8df18f4a8",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--warm--journey",
+      "sha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+      "generationPromptSha256": "4dcc29922d34eee9507183a5113a12b2cb3a5ef3e7f4325c8f528fe997acc8f3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--warm--quests",
+      "sha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+      "generationPromptSha256": "96b549ce3cda4ff06bb82af19bb51b6413840dcd79eb1800fa738ddfb913ee2c",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--explore--warm--chapters",
+      "sha256": "a3838503ff8ff31fc88197ec50b45521063c70bba4ab1367b89c619be26b1e6c",
+      "generationPromptSha256": "9042d3b786b2b9cf74703e962c959dca2131392b83f04d0372832da4a5c48ebb",
       "width": 1672,
       "height": 941
     },
@@ -2296,15 +2935,57 @@
     },
     {
       "key": "adventure--reunion--battle--bright",
-      "sha256": "69f4ccce4a09641a2773ac518741a46a342baad2bfbef138a5b62be5aadd71c2",
-      "generationPromptSha256": "1043f27debc4caa8622e54924a7d9ac13d80cf6eefdf006bcc48ab0a82209850",
+      "sha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+      "generationPromptSha256": "2a1b1cfc5cbabaa42dc372103fad490877c4504e1c9ab5c452616f8d8903559d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--bright--journey",
+      "sha256": "c4cf27dfc218fc81265aca9439914bdd9ac5ea356c0f20c6652cf56e3e74c4dc",
+      "generationPromptSha256": "a49f69aea01de6a2a25d67c1b3dde4b2fd737d4a7719db67f81d2b7a543c62cb",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--bright--quests",
+      "sha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+      "generationPromptSha256": "008efa0721de56ea223162187f31199ccc7e8b338863738d7857dacdb28865b8",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--bright--chapters",
+      "sha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+      "generationPromptSha256": "5f2117b2055e32ec53e0ade5a12c3d878add8321fb001a184461593d8ac9472c",
       "width": 1672,
       "height": 941
     },
     {
       "key": "adventure--reunion--battle--mystic",
-      "sha256": "f714413c557b8d094734614e90e37f86d007121f57d6203f62df1d120cd948aa",
-      "generationPromptSha256": "6509e5c7aafc574b38a9c0d7e653b75be794f99821a9961bbaf3c56f2533b4e5",
+      "sha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+      "generationPromptSha256": "0b8eeae90d70e1b9aaeb09ff49e11fd507c7d7c76b1fdd77da32159a8fbed180",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--journey",
+      "sha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+      "generationPromptSha256": "cdeaebe2f7830f8d28e174b924d58c91bf17259c0547749e77b25ebff85676cb",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--quests",
+      "sha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+      "generationPromptSha256": "ab8c2973868d3b26f69ff2afc5a6054c1007722202d63116ee7da4ce34e08e2d",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--chapters",
+      "sha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+      "generationPromptSha256": "4011dcf4262b6149daa83282ee710a645d7587d81ed92ad5f2b14ca71a21b54e",
       "width": 1672,
       "height": 941
     },
@@ -2312,6 +2993,27 @@
       "key": "adventure--reunion--battle--warm",
       "sha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
       "generationPromptSha256": "3443322c9660b9561b1594c2d014d91afa64c2f4d1452fca8151f82e60a2a20a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--warm--journey",
+      "sha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+      "generationPromptSha256": "c75937721862f6fc919d562ff81758fb1d6c81cdb63203024c238fc0879ebe1a",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--warm--quests",
+      "sha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+      "generationPromptSha256": "4945804d383a0b3dafe1f00257d496737e56f2c16b2468c8499cf26c4f31e7a5",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--battle--warm--chapters",
+      "sha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+      "generationPromptSha256": "86ecb10e9b9d5b3ebdaeb585b62f27d22ee01cae1446af8809b1bd12b80ce9b0",
       "width": 1672,
       "height": 941
     },
@@ -2330,9 +3032,51 @@
       "height": 941
     },
     {
+      "key": "adventure--reunion--companions--bright--journey",
+      "sha256": "f6dd3d8daa686befafde37934819b322f26c49f9a79f722b4373498e29d509db",
+      "generationPromptSha256": "ad6c9d2ede038c60fe3ceaa2ab22b5dfe185c7df24042ba890b8ca88617203f3",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--companions--bright--quests",
+      "sha256": "7758696825a1d3b3d0bd5680248a85328866e58e728180538755bc8776832bf8",
+      "generationPromptSha256": "1716951d7bca1dca015111e42789911fb57b9b3a12e43d03747015a03a20dbde",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters",
+      "sha256": "de52b5713e073cf3e4309e04dc8291450d9425f75cca8a6fa4a32e114b0661ed",
+      "generationPromptSha256": "a068d9e2885d82417847aef71baaed82233ea75588334bda1c9ad01d00f2deb1",
+      "width": 1672,
+      "height": 941
+    },
+    {
       "key": "adventure--reunion--companions--mystic",
-      "sha256": "118ec809304b936f3777cd2d4c2067e5f632f5247767bcdb11240f962ed2c94e",
-      "generationPromptSha256": "b2277229f23ac3774eef9363b878c38cd5bda119fc56c23ddb54fa20af011c83",
+      "sha256": "e58e5198560a51ca9fb3dfea9eb91c9a66ca8381c25fafe0940cba4b598f9346",
+      "generationPromptSha256": "6dc24eabc111e7c2cec58c3ff338531f5c58db3d7876eb2c6fceaea1a58557fa",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--journey",
+      "sha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+      "generationPromptSha256": "f334dfcbb2d338c5931fc33191702f57fdffcd15393d6e60bb8d8f9fca1b0c87",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--quests",
+      "sha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+      "generationPromptSha256": "edd5b8b7de8583f31a5ef4ef659b8ce667fd89dc171eacb741e2114454bbbea4",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--chapters",
+      "sha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+      "generationPromptSha256": "87ec303fd563917c879affcf41d50956896377c6cdbac77b17f2b0dda129f4ab",
       "width": 1672,
       "height": 941
     },
