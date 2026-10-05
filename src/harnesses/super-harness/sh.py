@@ -1478,6 +1478,7 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
+        if choices.get('installationProgress'): return '공용 등록·맵 저장 완료 · 플레이 확인 남음'
         if choices.get('demo') and choices['complete']: return '공간 데모 Allow 저장 완료'
         return '공용 등록 연결 필요 · 실행 예약 없음' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':

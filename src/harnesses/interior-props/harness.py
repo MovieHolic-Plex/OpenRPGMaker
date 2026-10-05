@@ -434,6 +434,37 @@ def _finish(r, code):
     store.update_run(r['id'], status='queued', phase='review', pid=None)
 
 
+def recheck_format_errors(rounds_, queue_only=False):
+    """After a parser fix, recheck unchanged source and resume real review only."""
+    import hashlib
+    if pool_alive(): raise ValueError('먼저 해당 풀의 실행이 끝나야 합니다.')
+    n = 0
+    for rid in rounds_:
+        for r in store.runs(rid):
+            if r['status'] != 'done' or r.get('ok') or r.get('phase') != 'draw' or 'pxgrid 오류:' not in (r.get('error') or ''):
+                continue
+            path = os.path.join(_folder(r, absolute=True), _out(r) + '.pxg')
+            before = hashlib.sha256(open(path, 'rb').read()).hexdigest()
+            history = _hist(r) + [dict(stage='format-recheck', attempt=r.get('attempt') or 1,
+                                     error=r.get('error'), sourceSha256=before)]
+            store.update_run(r['id'], history=json.dumps(history, ensure_ascii=False))
+            # Do not consume another drawing attempt if parsing still fails.
+            global MAX_ATTEMPTS
+            old_limit = MAX_ATTEMPTS
+            try:
+                MAX_ATTEMPTS = r.get('attempt') or 1
+                _finish(dict(r, history=json.dumps(history, ensure_ascii=False)), 0)
+            finally:
+                MAX_ATTEMPTS = old_limit
+            if hashlib.sha256(open(path, 'rb').read()).hexdigest() != before:
+                raise ValueError('재검사 중 원본이 변경되었습니다.')
+            now = next(row for row in store.runs(rid) if row['id'] == r['id'])
+            if now['status'] == 'queued' and now['phase'] == 'review': n += 1
+    print(f'원본 유지 · 독립 검수 대기열 {n}장', flush=True)
+    if n and not queue_only: ensure_pool()
+    return n
+
+
 def review(rounds_):
     """이미 그려진 후보를 검수 대기열에 올린다(이 기능 전에 그린 판, 또는 다시 보고 싶을 때)."""
     n = 0
@@ -651,10 +682,12 @@ def main():
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
     rr = sp.add_parser('retry-review-errors'); rr.add_argument('rounds', nargs='+', type=int); rr.add_argument('--queue-only', action='store_true')
+    rc = sp.add_parser('recheck-format-errors'); rc.add_argument('rounds', nargs='+', type=int); rc.add_argument('--queue-only', action='store_true')
     sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
     rd = sp.add_parser('redo'); rd.add_argument('items', nargs='*'); rd.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
+    if a.cmd == 'recheck-format-errors': return recheck_format_errors(a.rounds, a.queue_only)
     if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
     elif a.cmd == 'review': review(a.rounds)

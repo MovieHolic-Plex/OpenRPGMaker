@@ -56,6 +56,9 @@ def rle(body, path='', line=0):
     같은 색이 길게 이어지는 줄을 세기 쉽게 적는 표기일 뿐이다(색을 계산하지 않는다)."""
     out = []
     for tok in body.split():
+        # Explicit separator removes ambiguity for numeric palette symbols: 2:3 = 33.
+        if ':' in tok and tok[:-2].isdigit() and tok[-2]==':':
+            out.append(tok[-1] * int(tok[:-2])); continue
         k = 0
         while k < len(tok) - 1 and tok[k].isdigit():
             k += 1

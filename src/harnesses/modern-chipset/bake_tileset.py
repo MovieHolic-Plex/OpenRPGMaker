@@ -25,6 +25,7 @@ import compose_city as CC        # noqa: E402
 import compose_town as CT        # noqa: E402
 import town_lib as TL            # noqa: E402
 import parking_bundle            # noqa: E402
+import parking_facility_bundle   # noqa: E402
 
 BAKE_SEED = 1                    # 옥상 설비·간판 배치 시드(고정). 같은 입력 → 같은 그림.
 ROOF_ROOM = 16                   # 옥상 설비가 건물 그림 위로 솟아도 되는 높이(px) — 위쪽 패딩 칸 수를 억제
@@ -488,7 +489,7 @@ def bake(out_root, dry=False, budget=BUDGET, inject=False, quiet=False):
     gcells = ground_cells(w); ovs = overlay_cells(w); shs = shadow_cells()
     roads = road_items(w, ovs)
     props = prop_items(w)
-    parking = parking_bundle.load(ROOT, make_item)
+    parking = parking_bundle.load(ROOT, make_item) + parking_facility_bundle.load(ROOT, make_item)
     # 필수 키 집합(계획용): 땅·표시·그림자·도로 키트·소품·차량 기본
     base_keys = set()
     for g in gcells: base_keys.add(BL.Sheet.key_of(BL.norm(g['cell']), g['pc']))

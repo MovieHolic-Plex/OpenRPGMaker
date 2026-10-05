@@ -216,8 +216,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', default=str(Path.home()/'.local/share/oprn/super-harness'))
     parser.add_argument('--concept', default='underground-parking-garage')
+    parser.add_argument('--facility', action='store_true')
     args = parser.parse_args()
-    stage(Path(args.data), args.concept)
+    if args.facility:
+        import parking_facility_bundle
+        parking_facility_bundle.stage(ROOT, Path(args.data), args.concept)
+    else:
+        stage(Path(args.data), args.concept)
     import bake_tileset
     planned = bake_tileset.bake(str(ROOT), dry=True)
     if planned['report']['reassembly']['mismatched_pixels'] or planned['report']['definition_checks']['violations']:
@@ -225,5 +230,7 @@ if __name__ == '__main__':
     baked = bake_tileset.bake(str(ROOT))
     refs = read(ROOT / 'src/assets/modernCityReferences.json')
     refs = [r for r in refs if r['id'] != 'mc-parking'] + [references(ROOT)]
+    if args.facility:
+        refs=[r for r in refs if r['id']!='mc-parking-facility']+[parking_facility_bundle.references(ROOT)]
     write(ROOT / 'src/assets/modernCityReferences.json', refs)
-    print(json.dumps({'kit':KIT,'tiles':baked['count'],'reassembly':baked['report']['reassembly']},ensure_ascii=False))
+    print(json.dumps({'kit':parking_facility_bundle.KIT if args.facility else KIT,'tiles':baked['count'],'reassembly':baked['report']['reassembly']},ensure_ascii=False))

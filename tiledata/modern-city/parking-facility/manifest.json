@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "concept": "underground-parking-garage",
+  "kit": "mc-parking-facility",
+  "sources": {
+    "scene.png": {
+      "path": "tiledata/modern-city/parking-facility/scene.png",
+      "sha256": "7c7050c8352838ecf927389eeb390b60827c8f0f3403a28df1a246c6999a2dd8"
+    },
+    "environment.png": {
+      "path": "tiledata/modern-city/parking-facility/environment.png",
+      "sha256": "d3e7f51ac5cab35d5847b810170a345ce08c49653697b235d3c3e129545ea401"
+    },
+    "contract.json": {
+      "path": "tiledata/modern-city/parking-facility/contract.json",
+      "sha256": "3e4e87aa9a291435dcd5cb1c1fc17ad5928e87dcc676d3d31e86e40c9701c757"
+    },
+    "receipt.json": {
+      "path": "tiledata/modern-city/parking-facility/receipt.json",
+      "sha256": "96498e921b6187cda9728355b76ac91357009df422decdd9e7a15afbf4ea60c2"
+    },
+    "acceptance.json": {
+      "path": "tiledata/modern-city/parking-facility/acceptance.json",
+      "sha256": "db0a24c5da4c5a33537c22a31c77064c802099fa7cd731057e965e25915059f7"
+    },
+    "upper.png": {
+      "path": "tiledata/modern-city/parking-facility/upper.png",
+      "sha256": "168ed1b6d77e98fd573d7040265481ac05174e80edbbd647eaeb43f8ec7b9702"
+    },
+    "selection.json": {
+      "path": "tiledata/modern-city/parking-facility/selection.json",
+      "sha256": "bb9c58b614f85a3aa9352a75541bd2049842de8e8f865dcced89345495f31727"
+    }
+  }
+}

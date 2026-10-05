@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 10037,
+  "count": 10179,
   "tilesPerRow": 48,
-  "rows": 210,
+  "rows": 213,
   "sheet": [
    768,
-   3360
+   3408
   ],
-  "used": 10037,
+  "used": 10179,
   "legacy": 0,
   "height_ok": true
  },
  "kits": {
-  "total": 576,
+  "total": 577,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -21,7 +21,7 @@
    "building": 259,
    "prop": 117,
    "vehicle": 191,
-   "scene": 1
+   "scene": 2
   },
   "buildings": 259,
   "props": 117,
@@ -45,12 +45,12 @@
   "prop": 372,
   "vehicle": 822,
   "vehicle-color": 1398,
-  "parking": 39
+  "parking": 181
  },
  "dedupe": {
-  "kit_cells_total": 16827,
-  "unique_cells": 9967,
-  "saved": 6860,
+  "kit_cells_total": 17331,
+  "unique_cells": 10053,
+  "saved": 7278,
   "note": "칸 해시(내용+통행 종류)가 같은 칸은 한 번만 싣는다(건물 변형끼리·소품 거울/색 변형이 벽·바닥 칸을 나눠 쓴다)"
  },
  "tall_props": [
@@ -88,6 +88,12 @@
    "pixels": 426996,
    "cells_total": 3709
   },
+  "parking": {
+   "cells_with_off_palette": 39,
+   "distinct_colors": 13,
+   "pixels": 3266,
+   "cells_total": 181
+  },
   "vehicle-color": {
    "cells_with_off_palette": 1398,
    "distinct_colors": 42,
@@ -96,13 +102,13 @@
   }
  },
  "palette_total": {
-  "cells_with_off_palette": 5107,
+  "cells_with_off_palette": 5146,
   "distinct_colors": 102,
-  "new_cells": 10037
+  "new_cells": 10179
  },
  "palette_note": "팔레트(modern4 = harness-data/modern-chipset/palette.pal) 밖 색의 출처: 땅·녹지 시트(원본 색), 도로 표시 코드(노란 선 YEL·정지선 STOP·화살표), 차 색 변형(CAR_RAMPS 램프), 벽색·지붕색 변형(compose_town WALL_VARIANTS/town_lib ROOF_VARIANTS)",
  "reassembly": {
-  "kits_checked": 576,
+  "kits_checked": 577,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -111,7 +117,7 @@
    "building": 259,
    "prop": 117,
    "vehicle": 191,
-   "scene": 1
+   "scene": 2
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -121,9 +127,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10037,
-  "kits_checked": 576,
-  "groups_checked": 62
+  "tiles_checked": 10179,
+  "kits_checked": 577,
+  "groups_checked": 63
  },
  "autotile_check": {
   "mc-intersection-12x12": {
@@ -141,16 +147,16 @@
  },
  "pass_classes": {
   "blank": 1,
-  "floor": 51,
-  "solidfloor": 23,
+  "floor": 94,
+  "solidfloor": 66,
   "flat": 52,
-  "solid": 9841,
-  "star": 69
+  "solid": 9862,
+  "star": 104
  },
- "sheet_hash": "5572256f4b1177f3bd0afd176be9162249883159",
+ "sheet_hash": "4bd203f1d5e05b3d970e3d2e5e167fb16839c872",
  "budget": {
   "limit": 10000,
-  "mandatory_cells": 4930,
+  "mandatory_cells": 5082,
   "kept_from_previous_bake": {
    "building_variants": 182,
    "car_colors": [
@@ -163,7 +169,7 @@
    ]
   },
   "skipped_candidates": 310,
-  "total_planned_cells": 10037,
+  "total_planned_cells": 10179,
   "car_colors": [
    "black",
    "navy",
@@ -177,52 +183,52 @@
   {
    "round": 0,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 1,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 2,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 3,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 4,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 5,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 6,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 7,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 8,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   },
   {
    "round": 9,
    "building_variants_added": 0,
-   "cells_after": 10037
+   "cells_after": 10179
   }
  ],
  "baked_variants": {
@@ -429,9 +435,9 @@
   "roof_room_px": 16,
   "padding": "건물 그림 위쪽에 투명 패딩(밑변 = 발, 폭은 16 배수 그대로). 소품·차량은 알파 bbox 로 잘라 밑변 정렬·좌우 가운데로 16 배수 캔버스에(오프셋은 kit-index 의 pad/image)."
  },
- "elapsed_sec": 19.6,
+ "elapsed_sec": 23.9,
  "reassembly_from_files": {
-  "kits_checked": 576,
+  "kits_checked": 577,
   "by_kind": {
    "road": 2,
    "street": 2,
@@ -440,7 +446,7 @@
    "building": 259,
    "prop": 117,
    "vehicle": 191,
-   "scene": 1
+   "scene": 2
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
