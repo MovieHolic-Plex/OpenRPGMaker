@@ -1,0 +1,30 @@
+{
+  "hashes": {
+    "super.html": "c567be6a31e9be92d8215736e86242e0e17deeb1a58d0419c3a2458d2e2ea50a",
+    "index.html": "65af44730b4e9c904fc327ee7467179d66041aab651637acfbd86481c6a65685"
+  },
+  "layout": {
+    "headerHeight": 36,
+    "image": {
+      "x": 214,
+      "y": 156.03125,
+      "width": 377,
+      "height": 340
+    },
+    "title": {
+      "x": 202,
+      "y": 46,
+      "width": 133.203125,
+      "height": 34.796875
+    },
+    "actionBar": {
+      "x": 190,
+      "y": 717.609375,
+      "width": 834,
+      "height": 50.390625
+    }
+  },
+  "shared": "선택한 기물이 공용 DB에 반영됐어요\n675\n반영된 선택\n813\n공용 기물·킷\n저장됨\n공용 DB\n마지막 공용 게시 2026. 10. 5. 오후 12:15:07",
+  "errors": [],
+  "writes": []
+}
