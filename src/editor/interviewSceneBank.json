@@ -29,15 +29,60 @@
       "sha256": "f5b051422b9cca4fb02f37baba7f88e47ae64576271441af9d4439609c4b1114",
       "promptSha256": "9e59891c2a1e0099c4b73dd8fe80bab302732d074f1a4eaa4689dfb1f00d1f13"
     },
+    "romance--campus--talk--warm--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--single-cadbc187a479.png",
+      "sha256": "cadbc187a479f5346f4d875a71347a2ffcfde0d87cc000ea0f482611cd918230",
+      "promptSha256": "62f3d5f0c477ce471d0db722fd43d42a63e4e839e457eda4847ade5cd643fd23"
+    },
+    "romance--campus--talk--warm--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--routes-3e6e95cfce13.png",
+      "sha256": "3e6e95cfce1337039b8ec784ea561b2f2fcc9be9dc74a610949f11edcfc9caae",
+      "promptSha256": "7d118eba3bbf913f91a996249d8d8205cd6f260234a0eabf0371aa2a040b80e3"
+    },
+    "romance--campus--talk--warm--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--perspectives-0a9f1def9c92.png",
+      "sha256": "0a9f1def9c92dcc1bf3e70ae27b8be0e7e760bebc7b01cca0d1adc648a325ee0",
+      "promptSha256": "f9a618e9386c98a621b554fb09e6962f5e004be905568a28a2264ab809b9fb6d"
+    },
     "romance--campus--talk--secret": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--secret-cc5137d7173b.png",
       "sha256": "cc5137d7173bf113c50fcbbde7c841defe623685dd47841a4567d2902a66d956",
       "promptSha256": "0d63ce219d368db9ebcc8c00ff2bff4dc74e4543db2e6924532d2f48516b849a"
     },
+    "romance--campus--talk--secret--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--single-a5f9d1afe4ce.png",
+      "sha256": "a5f9d1afe4cef61b99a58c5171f022d449d126d4a9e22af606b3d4dfe842d656",
+      "promptSha256": "2a5f44991f804b2e765a7a5f92c2e9ae753cb32ecc27ffea66274e505153a2c1"
+    },
+    "romance--campus--talk--secret--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--routes-11806aff8c77.png",
+      "sha256": "11806aff8c7761e979aa4e45aa061ebe85f96dd21c64b9a845343c8ec3bcb10c",
+      "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee"
+    },
+    "romance--campus--talk--secret--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--perspectives-2d4adbb7abc8.png",
+      "sha256": "2d4adbb7abc84633ea5879420c2045fe223ac99f57dd88a36a0ffc606683a822",
+      "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd"
+    },
     "romance--campus--talk--bittersweet": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-8dd8d759e98c.png",
       "sha256": "8dd8d759e98c56862a5b20e4931c53dbb7f145bdff65e6382eb3d7767fc267d9",
       "promptSha256": "467bdadf3ba6e2359271ffd464f90ed444b53a7520a22cbeba7f9793f736a015"
+    },
+    "romance--campus--talk--bittersweet--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--single-8339af70a05c.png",
+      "sha256": "8339af70a05c53e69ccf75877f89498feb662762b6149e7ac23390c72078a731",
+      "promptSha256": "0583de4ea60d1021e1f9a99e5aef09d960e2bbaea3e8bbba37b493c65e64888e"
+    },
+    "romance--campus--talk--bittersweet--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--routes-3f2918e5f6d4.png",
+      "sha256": "3f2918e5f6d4f4ec83921792501d5d5bd9605aafcec19bf09533c78c20168549",
+      "promptSha256": "f440cbd2acad6e6569b173426e95373e9809da400e2aafc8a5c8ab251754e493"
+    },
+    "romance--campus--talk--bittersweet--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--perspectives-4457ca2bebc8.png",
+      "sha256": "4457ca2bebc8d266597e253d9d10880d7e985a2c86d2a55b62028615c1d5f110",
+      "promptSha256": "a0806e4f1c85159acefb64f9b8109579758a106267f607e38a64cb31f675ddbd"
     },
     "romance--campus--memory": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png",
@@ -49,15 +94,60 @@
       "sha256": "2bf91c7969a87bb25e85093ad445616ea0d12f229d8f73bded51d89e1ae2a3c2",
       "promptSha256": "a89523561066e25e534f60d463029a4cb65a5fdacf4c270522d833497633d4fc"
     },
+    "romance--campus--memory--warm--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--single-fad6f79b6b8f.png",
+      "sha256": "fad6f79b6b8f5dc3cfb414fe5dd5fd31b1bcd3d4e49e7421c29d9595913986c3",
+      "promptSha256": "cd0a0526e262b7b17ef28921a977b0cfb0e96a43d6946b6f2ad325d288d3b6da"
+    },
+    "romance--campus--memory--warm--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--routes-c3ceeb66208b.png",
+      "sha256": "c3ceeb66208b6225bb8b536eff2066a607e8d1cff724472bffe7eda9ddbc2d22",
+      "promptSha256": "1cd02b780c1fef97a2414d510379cde8ef023c2fe62427bd005acf9f9549defd"
+    },
+    "romance--campus--memory--warm--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--perspectives-dfbfeb57f806.png",
+      "sha256": "dfbfeb57f80615819d9951751d9385a4ec0c090f2353a8389b7401c943b62cb0",
+      "promptSha256": "6601f911e608fe6eedff6aebaf4edd30c467047aa85cd917205526dffd26aa76"
+    },
     "romance--campus--memory--secret": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--secret-856454617dc1.png",
       "sha256": "856454617dc12ad9a59bed1cd506e5b60ed6803dcfc65bf788cc33a9efd0bd30",
       "promptSha256": "ba6525168549f450d7a339a303cfd67b1333ae183d3729205ec812b54dc7b0f2"
     },
+    "romance--campus--memory--secret--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--single-dd21c10c2d7e.png",
+      "sha256": "dd21c10c2d7e997e840b6014449af2937b0ca0a894ec144d7ffc0ba95bd605ad",
+      "promptSha256": "edc6788210e80eb9faaa199f45146d7f379805abbf3670629cbd155d26eb4c3a"
+    },
+    "romance--campus--memory--secret--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--routes-b4122dc29538.png",
+      "sha256": "b4122dc29538efc851233ba8c5948ce40d0ca91102e94ae410fc81d9692ec836",
+      "promptSha256": "3cdbb34cfa44276b3fa05bfe22975fb9af7939790fc119d290dd2d7cb96d15c4"
+    },
+    "romance--campus--memory--secret--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--perspectives-372f748806d3.png",
+      "sha256": "372f748806d3a0dacd9c46b5ca6b74bfecb6f0b780c4cd9ae79f79ba0827e928",
+      "promptSha256": "5cdc927608d5da1a900105ee7eb7f4811bcdf689b0e830c92a1e5100c80d94fb"
+    },
     "romance--campus--memory--bittersweet": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet-099f547a87a7.png",
       "sha256": "099f547a87a7dcfea63d5d012cfb80693fc4143fa9611d01f96d7de07190900c",
       "promptSha256": "8763ad8122e69d10c996f9699394467010ad0a0d9d42b6471f0932e7a92b04a6"
+    },
+    "romance--campus--memory--bittersweet--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--single-d1e889091f99.png",
+      "sha256": "d1e889091f991c6fe1d759b2a73ce1b13fcd6ea3eec15a5f658430b8cc493303",
+      "promptSha256": "86468f9e1dc705a3132d751237142eca1ad81e45aa6214faa0a1a7078a1b3e9c"
+    },
+    "romance--campus--memory--bittersweet--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--routes-f835b49fe28a.png",
+      "sha256": "f835b49fe28a80eca0645deaa568b70e41bcfbc6024d45147b58a4b715af03a0",
+      "promptSha256": "14fea8f4c3a2866d395cc5ea1a3f71574a271a25fd2eef2b6a8c8da6bcf4be4e"
+    },
+    "romance--campus--memory--bittersweet--perspectives": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--perspectives-46131c33d66e.png",
+      "sha256": "46131c33d66ea1c24ada06781169dbded43bb720282a69db0b75934acb1b1186",
+      "promptSha256": "fabc44d32b5bd9215022b4aa52eff09cf553d4e8be949ac7f8c9726c894ef5b8"
     },
     "romance--campus--choice": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice-be064a7036cb.png",
@@ -69,10 +159,20 @@
       "sha256": "17cd541fc712297a6c2de4c7fd77512e59ffbbcd43cbad5e3795e70eecf7ff4f",
       "promptSha256": "bca2c0974e0078e1a6b7ee008ecf6b3a1311a13ac3b7803ad7d343e3a2754e24"
     },
+    "romance--campus--choice--warm--single": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--warm--single-ea45ea192ead.png",
+      "sha256": "ea45ea192eada699451c6ef069c49f146f0a946e731a67f487cc0e4f33e3e3be",
+      "promptSha256": "988b13aabc5aaa5ebce8c046aa146d48a60115b65412957bdafa3760f7100f16"
+    },
     "romance--campus--choice--secret": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--secret-4a9d54369c20.png",
       "sha256": "4a9d54369c205da3b74002b6b7be60bce4953f19fa362394e7fe762525a51b18",
       "promptSha256": "1c685ecc256c1a4107951906f6df07ccdf5c3795e8672008100111116870095e"
+    },
+    "romance--campus--choice--secret--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--secret--routes-9225684eda0b.png",
+      "sha256": "9225684eda0b43a8371980202da30de4b21d9c3ee3f74bd707ed22d0fd763da4",
+      "promptSha256": "a1196652d7c18342e63aa5922bf95130250a8a7ad3388b865cdae4055e548fc2"
     },
     "romance--campus--choice--bittersweet": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet-55d302f9664e.png",
@@ -784,6 +884,11 @@
       "sha256": "9903c4de1e44cca0e74d87c05e42a5ff91149c9e5f2194eb296a21424fd2b472",
       "promptSha256": "2dc08c547ec1db54306934695fbfe217ce29249299870e32a33bae6715562135"
     },
+    "mystery--place--testimony--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--testimony--danger-a8f7bbcbc180.png",
+      "sha256": "a8f7bbcbc180403a3838161b37db00d01525a2ac28599356a7622f3e9e21f028",
+      "promptSha256": "44316174e71953e0150a468b3f29c1a2f4642706e9de66c5c0d4454a58b30954"
+    },
     "mystery--place--evidence": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence-7d4384744aa3.png",
       "sha256": "7d4384744aa39b606976ff81340cc248a54def1ed4446edd4612bfa155ce7562",
@@ -798,6 +903,11 @@
       "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence--tension-297dd7bc3fab.png",
       "sha256": "297dd7bc3fab1720cc0c5016c83b8fa04139cf6603f41cfc81433ce44cc30eb7",
       "promptSha256": "5cacc93b0e88b05bbe9b8cc8b83814dd3ebb069be661b28a9ae1bd9ed9d2c026"
+    },
+    "mystery--place--evidence--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--place--evidence--danger-22572be86306.png",
+      "sha256": "22572be863061c41ace622110de8b2f0c45884e8a7cc6a87153689a0bce3af58",
+      "promptSha256": "f54f07d60387cbec07009f7b2ad255895e6b8fd39915f65bd63259484b5c7183"
     }
   }
 }

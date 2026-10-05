@@ -7364,6 +7364,36 @@
           "colors": 191881,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony--danger-2-a8f7bbcbc180.png",
+        "sha256": "a8f7bbcbc180403a3838161b37db00d01525a2ac28599356a7622f3e9e21f028",
+        "promptSha256": "44316174e71953e0150a468b3f29c1a2f4642706e9de66c5c0d4454a58b30954",
+        "generationPromptSha256": "f752ef662419ae4f889d5881f1698dea1e6146af99a6820cb9b044fa22ff04d8",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a8f7bbcbc180403a3838161b37db00d01525a2ac28599356a7622f3e9e21f028",
+          "promptSha256": "44316174e71953e0150a468b3f29c1a2f4642706e9de66c5c0d4454a58b30954",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: three contrasting EMPTY chairs with mug, closed books and unmarked locked keepsake box/keys stand near partly slid bookcase and stairs. Foreground severed floor/falling masonry over enormous void clearly expresses danger. Fresh wide threshold viewpoint, no writing/identity/flags, coarse hard pixel shading."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 220530,
+          "findings": []
+        }
       }
     ],
     "mystery--place--evidence--wonder": [
@@ -7462,6 +7492,36 @@
           "colors": 157203,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence--danger-2-22572be86306.png",
+        "sha256": "22572be863061c41ace622110de8b2f0c45884e8a7cc6a87153689a0bce3af58",
+        "promptSha256": "f54f07d60387cbec07009f7b2ad255895e6b8fd39915f65bd63259484b5c7183",
+        "generationPromptSha256": "e6f5b1fc774fbd880cdf11a8fefd688c56b8d9298b404586b72be4139b64834c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "22572be863061c41ace622110de8b2f0c45884e8a7cc6a87153689a0bce3af58",
+          "promptSha256": "f54f07d60387cbec07009f7b2ad255895e6b8fd39915f65bd63259484b5c7183",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: two complementary jagged ceramic vessel halves compared on near surviving stone ledge beside brass clue key; opened bookcase rear and severed descending staircase over deep void with falling masonry express hidden space and obvious danger. New interior cliff-side viewpoint replaces prior study desk framing. Deliberate square pixel clusters, no text/body/insignia."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179078,
+          "findings": []
+        }
       }
     ],
     "romance--campus--talk--warm--single": [
@@ -7494,6 +7554,1226 @@
           "width": 1672,
           "height": 941,
           "colors": 516407,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--single-2-cadbc187a479.png",
+        "sha256": "cadbc187a479f5346f4d875a71347a2ffcfde0d87cc000ea0f482611cd918230",
+        "promptSha256": "62f3d5f0c477ce471d0db722fd43d42a63e4e839e457eda4847ade5cd643fd23",
+        "generationPromptSha256": "537480ea16dfbab3f3dc2443a53f6fca96058c0b6bb917073f1cd52fb2e72ea3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "cadbc187a479f5346f4d875a71347a2ffcfde0d87cc000ea0f482611cd918230",
+          "promptSha256": "62f3d5f0c477ce471d0db722fd43d42a63e4e839e457eda4847ade5cd643fd23",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native original: ONE pair of empty facing seats with two plain closed books and shared flowers, modern brick university vestibule looking toward garden balcony, continuous intimate enclosed passage. Warm welcome and paired preparations; fresh sheltered near-corner viewpoint differs from actual parent's exposed campus-avenue/clocktower foreground table. Coarse pixel clusters, no text/person."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 427245,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--routes-1-041b7e8149b3.png",
+        "sha256": "041b7e8149b3173cc4f0290c8e42e0492363f9f41aa2057009f0b0a7e0f6f1a3",
+        "promptSha256": "7d118eba3bbf913f91a996249d8d8205cd6f260234a0eabf0371aa2a040b80e3",
+        "generationPromptSha256": "3cde38650f5cc626bcdb4289733cce417937aa56385726fcf2405862fc21f106",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "041b7e8149b3173cc4f0290c8e42e0492363f9f41aa2057009f0b0a7e0f6f1a3",
+          "promptSha256": "7d118eba3bbf913f91a996249d8d8205cd6f260234a0eabf0371aa2a040b80e3",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME to an ELEVATED near-overhead university garden walkway fork, a continuous real place. THREE spatially separate EMPTY meeting nooks must each have a PAIR of facing vacant seats and its own small table: foreground left two CLOSED plain reunion books and flowers, middle nook an ordinary plain keepsake box, far nook an unmarked mug and folded cloth. Three clearly visible stone WALKWAY BRANCHES link these distinct nooks; generic lone benches are insufficient. Modern brick university, welcoming daylight and fresh flowers, coarse square pixel clusters. No distant tower/long campus avenue or foreground round table against tower camera repeated from parent. No people, writing/labels, open papers/books, clocks, flags or collage; quieter drawn right."
+          ],
+          "notes": "Direct native original: plain closed books, empty facing seats, flowers and bright brick university fit earlier answers; rear ordinary benches do not establish distinct paired meeting nooks with keepsakes and branching relationship routes. Camera repeats parent foreground round table/pair plus distant tower and campus avenue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 654287,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--routes-2-3e6e95cfce13.png",
+        "sha256": "3e6e95cfce1337039b8ec784ea561b2f2fcc9be9dc74a610949f11edcfc9caae",
+        "promptSha256": "7d118eba3bbf913f91a996249d8d8205cd6f260234a0eabf0371aa2a040b80e3",
+        "generationPromptSha256": "9ae165d73cab949b5e30fcdd28284e80f117372a2d4aa88da2989a3ef49c7b9e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "3e6e95cfce1337039b8ec784ea561b2f2fcc9be9dc74a610949f11edcfc9caae",
+          "promptSha256": "7d118eba3bbf913f91a996249d8d8205cd6f260234a0eabf0371aa2a040b80e3",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: elevated brick university garden fork has clearly separate paired vacant meeting places with books, box and cup/cloth keepsakes. Real branching paths replace the parent close table/tower shot; welcoming flowers/daylight, crisp pixel clusters, no people or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 697544,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--perspectives-1-82ffa566d4fb.png",
+        "sha256": "82ffa566d4fb0b99af5d191bfa34bb393f41db0206c35a6013f90dc4329be496",
+        "promptSha256": "f9a618e9386c98a621b554fb09e6962f5e004be905568a28a2264ab809b9fb6d",
+        "generationPromptSha256": "413dcaee2a3529ad5071138f3d187c836bfe7983a76d25ed7417d34decaa0e7e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "82ffa566d4fb0b99af5d191bfa34bb393f41db0206c35a6013f90dc4329be496",
+          "promptSha256": "f9a618e9386c98a621b554fb09e6962f5e004be905568a28a2264ab809b9fb6d",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME: CAMERA looks obliquely DOWN from a modern brick university enclosed study alcove onto ONE central plain keepsake box shared between TWO opposed EMPTY facing seats. TWO closed plain reunion books sit on the side shelf. One real LEFT rectangular library window and one real RIGHT narrow garden doorway provide distinctly different views around the SAME centrally placed keepsake in one continuous physical room. Welcoming daylight/fresh flowers for warmth. Do not draw two separate keepsakes/events, collage or split screen. No distant clocktower/long campus avenue or previous large foreground tabletop camera. Strong square pixel clusters and hard stepped shading, quiet drawn right; no people, portraits, writing, open sheets/books, clocks or banners."
+          ],
+          "notes": "Direct native original: paired empty seats and closed books with flowers in warm campus setting, but ordinary front tabletop against one distant tower does not show contrasting frames of SAME keepsake/event. Camera remains parent table-left/large right chair plus campus courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 528319,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm--perspectives-2-0a9f1def9c92.png",
+        "sha256": "0a9f1def9c92dcc1bf3e70ae27b8be0e7e760bebc7b01cca0d1adc648a325ee0",
+        "promptSha256": "f9a618e9386c98a621b554fb09e6962f5e004be905568a28a2264ab809b9fb6d",
+        "generationPromptSha256": "8547d0c2b7df2da970ca576a6c7834d81d1447e12e231302491870f9dd0927db",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "0a9f1def9c92dcc1bf3e70ae27b8be0e7e760bebc7b01cca0d1adc648a325ee0",
+          "promptSha256": "f9a618e9386c98a621b554fb09e6962f5e004be905568a28a2264ab809b9fb6d",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: sheltered brick library alcove has one central closed plain box between opposed empty green chairs, nearby closed books, rectangular window and garden doorway framing the same shared object differently. Fresh continuous interior shot, inviting light, no identity or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 428726,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--single-1-38eb5e39a4e8.png",
+        "sha256": "38eb5e39a4e803df9132516f6407e95381191d430448f308e9fb2b0545c25d58",
+        "promptSha256": "2a5f44991f804b2e765a7a5f92c2e9ae753cb32ecc27ffea66274e505153a2c1",
+        "generationPromptSha256": "e17efd12714110a0576397563e8007a8a1d7a621320a8a1038bd12496f8c2752",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "38eb5e39a4e803df9132516f6407e95381191d430448f308e9fb2b0545c25d58",
+          "promptSha256": "2a5f44991f804b2e765a7a5f92c2e9ae753cb32ecc27ffea66274e505153a2c1",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Redraw ONE deep relationship in a sheltered EMPTY modern brick university reading-room corridor AT NIGHT. One intimate pair of facing vacant seats at LEFT surrounds a single plain CLOSED keepsake box partly concealed behind two CLOSED reunion books. A narrow locked-looking unmarked interior threshold and continuous private passage recede behind the pair; hard moonlight shade bands make tension and secrecy clear. NO cheerful open sunset vista, warm flower celebration, distant clocktower or long campus avenue. New side-on interior threshold viewpoint with strong coarse square pixel clusters, quiet drawn right. No people, faces, portraits, writing, open books/sheets, clocks, flags or split panels."
+          ],
+          "notes": "Direct native original: empty paired seat/table and closed books in brick campus pass identity/style, but open cheerful sunset garden with exposed books has no concealed keepsake or tension. Framing repeats parent's near table/paired chairs and distant campus tower."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 407772,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--single-2-a5f9d1afe4ce.png",
+        "sha256": "a5f9d1afe4cef61b99a58c5171f022d449d126d4a9e22af606b3d4dfe842d656",
+        "promptSha256": "2a5f44991f804b2e765a7a5f92c2e9ae753cb32ecc27ffea66274e505153a2c1",
+        "generationPromptSha256": "7d32b026ba051b9d2a2004daef921a2d09c12bccb99e9ed38e6e7092dc075c87",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a5f9d1afe4cef61b99a58c5171f022d449d126d4a9e22af606b3d4dfe842d656",
+          "promptSha256": "2a5f44991f804b2e765a7a5f92c2e9ae753cb32ecc27ffea66274e505153a2c1",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: night brick library corridor contains one private pair of vacant red seats, closed keepsake partly hidden behind closed books and moon-shadow bands toward a closed threshold. Secrecy and single continuous intimate passage replace parent open wet garden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 169777,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--routes-1-ed7bda2645c8.png",
+        "sha256": "ed7bda2645c816210d8503a3a1e73666eec096064179e93d78f3c35e7bbe6fee",
+        "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+        "generationPromptSha256": "7090e04f8dfba1b476277d7eb8ced4d03480510584b1d0f89b23e1cf2a2ec5ae",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ed7bda2645c816210d8503a3a1e73666eec096064179e93d78f3c35e7bbe6fee",
+          "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw THREE spatially separate EMPTY paired-seat meeting nooks in a modern brick university's CONFINED indoor arcade AT NIGHT. Each has differently arranged ordinary closed keepsake box/books/mugs partly concealed beside a seat; three continuous narrow stone walkway branches connect them through differently framed closed thresholds. Foreground left two CLOSED plain reunion books and facing vacant seats express old friends/dialogue. Hard-edged moon-shadow bands, dim discrete lamp pools and private enclosed doorways express SECRECY, not cheerful open sunset. Change to elevated interior gallery camera; no tower/long open avenue, people, text, open books/papers, clocks, flags or collage. Coarse square pixel clusters; quieter drawn right."
+          ],
+          "notes": "Direct native original: multiple spatially separate paired meeting tables joined by branching walkway express routes, but all locations are warmly lit exposed sunset garden; secret/private tense mood absent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 523233,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--routes-2-b03d3fd4b06f.png",
+        "sha256": "b03d3fd4b06f79b2aa15718031e847e42d9af41a69d9a06d38def3073d0be112",
+        "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+        "generationPromptSha256": "8d8c280be53e52d6d79862efa815c747d0c7a6b8bce7f3cddd100d5db412771f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b03d3fd4b06f79b2aa15718031e847e42d9af41a69d9a06d38def3073d0be112",
+          "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW AS A FRESH NATIVE PIXEL SCENE: modern brick university library gallery AT NIGHT, two plain CLOSED books signify old friends reunion, dialogue expressed by EMPTY facing seats. Elevated oblique view of an actual three-way continuous gallery/path fork connecting THREE clearly separate meeting nooks, EACH with a PAIR of vacant seats and a different closed plain keepsake/books/plain mugs arrangement. Narrow thresholds, partly concealed unmarked keepsakes and discrete hard moonlight shadow bands communicate secrecy. NO bright sunset or cheerful open garden. Completely BARE BRICK walls: REMOVE ALL hanging cloth panels, ANY flags, banners, tapestries, pennants or insignia including plain blue ones. No people, silhouettes, faces, portraits, text, pseudo-writing, posters, notices, clocks, numbers, open books, blur, diagrams or collage. Coarse square pixel clusters and stepped contours; new inside-gallery camera, not old foreground-table/distant-tower composition. Fully drawn quiet right side."
+          ],
+          "notes": "Direct native inspection: night branching library arcade correctly stages several paired vacant meeting nooks, but two blue hanging banners/tapestries introduce unselected decorative insignia. Reject these actual visible hanging cloth panels."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 253191,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--routes-3-11806aff8c77.png",
+        "sha256": "11806aff8c7761e979aa4e45aa061ebe85f96dd21c64b9a845343c8ec3bcb10c",
+        "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+        "generationPromptSha256": "5d141c4853961bbf9bbf70e321cb7bbd503a7fe9ce5ebb1f79b69e4b3cd6eba6",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "11806aff8c7761e979aa4e45aa061ebe85f96dd21c64b9a845343c8ec3bcb10c",
+          "promptSha256": "28dc28d452aa9fa8f861c9db7ad164ec61f6dcbe2deb7cb4890b526154d209ee",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: night brick university library gallery has three distinct paired vacant meeting nooks with two books, mugs and different closed plain books/keepsakes. Real elevated walkway branches connect them; bare brick has no former hanging blue banners. Confined moonlight, no people/text, a fresh gallery view instead of parent open garden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 289888,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--perspectives-1-9ae9bc387d28.png",
+        "sha256": "9ae9bc387d2838abd54ad92745deb4ea616fd33e53830260a9b49a6974b98da5",
+        "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+        "generationPromptSha256": "b2e244e2f630ebbbd9c79d38f6155830ab0338f0f3215a64a6fb663c59b060f7",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9ae9bc387d2838abd54ad92745deb4ea616fd33e53830260a9b49a6974b98da5",
+          "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Redraw an enclosed modern brick university alcove AT NIGHT with ONE central plain CLOSED keepsake box partly concealed by two CLOSED unlabeled reunion books, shared between TWO opposed EMPTY seats. One narrow side window and one partly closed interior doorway frame DIFFERENT views around the SAME shared object/event in one continuous room. Hard discrete moonlight bands, deep stepped shade and constrained private threshold express SECRECY; no bright sunset vista or flowers. Near-overhead oblique camera, no generic large table-left/campus-tower-right composition. No photograph, humans, writing, open books/papers, clocks, flags, split-screen or duplicate keepsakes. Coarse square pixel clusters and quiet drawn right."
+          ],
+          "notes": "Direct native original: opposed EMPTY seats and common landscape keepsake photograph in campus alcove with differently framed window/arch; no identity/writing, native pixel craft. Bright sunset and exposed photograph fail selected tension/secrecy."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 397209,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--perspectives-2-fc723e2764cb.png",
+        "sha256": "fc723e2764cb9a6ee0de13a924f48a947cf974ea001a86396e89dabc172e1b02",
+        "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+        "generationPromptSha256": "a4bd997d0dd79bfcb49e62b4f1e70950f172f7e79af1fb1cc8b06f1dd1645d01",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "fc723e2764cb9a6ee0de13a924f48a947cf974ea001a86396e89dabc172e1b02",
+          "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW AS A FRESH NATIVE PIXEL SCENE: modern brick university private alcove AT NIGHT; two CLOSED PLAIN books signify old friends reunion. ONE common closed plain keepsake between TWO opposed EMPTY facing seats expresses dialogue and different understandings of the SAME event. Near-overhead oblique interior camera, an actual side window and differently framed partly closed doorway provide contrasting views around that SAME shared keepsake in one continuous room. Narrow threshold, partly concealed object, hard moon-shadow bands communicate secrecy; NO bright cheerful sunset. REMOVE THE ENTIRE CORKBOARD and ALL papers, posters, noticeboards, documents, sheets and wall panels; use completely BARE BRICK walls instead. No text or pseudo-writing anywhere, no clocks or numerals, no people/silhouettes/portraits, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Native coarse pixel clusters, stepped contours. Fresh confined interior composition, not previous exposed garden/table/tower camera. Quiet fully drawn right."
+          ],
+          "notes": "Direct native inspection: continuous moonlit alcove with common closed box/books, two opposed vacant seats and contrasting window/door frames is appropriate, but a rear corkboard has numerous paper sheets containing rows of pseudo-writing. No-text check fails."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 153635,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret--perspectives-3-2d4adbb7abc8.png",
+        "sha256": "2d4adbb7abc84633ea5879420c2045fe223ac99f57dd88a36a0ffc606683a822",
+        "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+        "generationPromptSha256": "99c7439b5c90e3db12722676e0ee0da18e1b260dc5a0b9c4a5ea010b2ce91028",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "2d4adbb7abc84633ea5879420c2045fe223ac99f57dd88a36a0ffc606683a822",
+          "promptSha256": "45eed8f438677ffc3a1f05c6b0890fc89739588a908d99c6c1e0c0f346fccebd",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: near-overhead confined night alcove has one closed box between two opposed vacant green chairs with separated closed plain books, a side window and foreground partly closed wooden door frame. Bare brick replaces previous pseudo-written corkboard; same shared object with contrasting openings, fresh shot and no identities."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179168,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--single-1-039ee7f3c81a.png",
+        "sha256": "039ee7f3c81a670ad3e494f7216a3702b6f1d33812b402a73dd70fb45a179703",
+        "promptSha256": "0583de4ea60d1021e1f9a99e5aef09d960e2bbaea3e8bbba37b493c65e64888e",
+        "generationPromptSha256": "fcffadfc8bbc6f0b2cb3298a56b6a4bc9dce2fd1cfc6743ba1d3be13ce216c97",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "039ee7f3c81a670ad3e494f7216a3702b6f1d33812b402a73dd70fb45a179703",
+          "promptSha256": "0583de4ea60d1021e1f9a99e5aef09d960e2bbaea3e8bbba37b493c65e64888e",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME ONE deeply followed relationship: view from INSIDE a small modern brick university vestibule down a continuous secluded garden passage after autumn rain. ONE pair of empty facing seats and shared tabletop plain keepsake box is near LEFT; TWO CLOSED unlabeled reunion books, fallen brown leaves and spent flowers imply lingering departure and dialogue. Paired place is sheltered, quiet, intimately linked by the passage, no multiple nooks. Camera side-on doorway close-up, no distant clocktower, wide campus avenue or previous near-table/large-right-chair shot. Coarse square pixel clusters, hard stepped shade, quiet drawn right; no people, portraits, text, open sheets/books, clocks or banners."
+          ],
+          "notes": "Direct native original: one vacant paired-seat place, plain books, autumn leaves and rain-cleared university express earlier facts, but near-left table, large right chair and distant courtyard tower repeat parent's composition; progression adds no distinct place/frame."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 401762,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--single-2-8339af70a05c.png",
+        "sha256": "8339af70a05c53e69ccf75877f89498feb662762b6149e7ac23390c72078a731",
+        "promptSha256": "0583de4ea60d1021e1f9a99e5aef09d960e2bbaea3e8bbba37b493c65e64888e",
+        "generationPromptSha256": "664405d283e68b7bd856aa80b9a17ee628e58f6ba315ca369b32adeb1f8a43f0",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8339af70a05c53e69ccf75877f89498feb662762b6149e7ac23390c72078a731",
+          "promptSha256": "0583de4ea60d1021e1f9a99e5aef09d960e2bbaea3e8bbba37b493c65e64888e",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: sheltered brick vestibule shows one paired vacant place, plain closed books/box, spent bouquet, brown leaves and scarf on an empty seat, with a secluded continuous passage after rain. New sheltered composition compared with parent exposed wet table and tower."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 450670,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--routes-1-7f3a33a566a5.png",
+        "sha256": "7f3a33a566a57f55245814ed2111a8abfc182a2df429251227b57bce81251e6e",
+        "promptSha256": "f440cbd2acad6e6569b173426e95373e9809da400e2aafc8a5c8ab251754e493",
+        "generationPromptSha256": "522abe825d2e6ac07ae2eba147e41ef0d9bdc3314f28a49b191cbb731afcfb06",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7f3a33a566a57f55245814ed2111a8abfc182a2df429251227b57bce81251e6e",
+          "promptSha256": "f440cbd2acad6e6569b173426e95373e9809da400e2aafc8a5c8ab251754e493",
+          "reviewer": "Codex direct original visual inspection: v2-production-021",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Completely REFRAME to ELEVATED near-overhead oblique view of an autumn university garden WALKWAY FORK after rain. THREE clearly separated EMPTY meeting nooks each contain a PAIR of facing vacant seats and distinct plain shared keepsake: near LEFT two CLOSED reunion books, middle a plain closed box, far a folded unmarked cloth and mug. Three tangible stone branches join these paired places in one continuous modern brick university setting. Brown fallen leaves, spent petals and quiet cleared-rain hard shadows express BITTERSWEET lingering departure; no spring flower celebration. No generic lone benches or previous large near-left table/right chair/distant tower framing. No people, portraits, writing/labels, open papers/books, clocks, flags or collage. Coarse square pixel clusters; quieter drawn right."
+          ],
+          "notes": "Direct native original: autumn rain-cleared campus, one paired table/books and scattered single rear benches. Separate paired meeting nooks/keepsakes are absent, and parent table/paired-chair/distant campus avenue framing repeats."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 532880,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--routes-2-3f2918e5f6d4.png",
+        "sha256": "3f2918e5f6d4f4ec83921792501d5d5bd9605aafcec19bf09533c78c20168549",
+        "promptSha256": "f440cbd2acad6e6569b173426e95373e9809da400e2aafc8a5c8ab251754e493",
+        "generationPromptSha256": "82162b5c99d176a661cdd2c82287cb3b05d69ab94b87f5819f72057d35fb3626",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "3f2918e5f6d4f4ec83921792501d5d5bd9605aafcec19bf09533c78c20168549",
+          "promptSha256": "f440cbd2acad6e6569b173426e95373e9809da400e2aafc8a5c8ab251754e493",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: elevated continuous fork links distinct paired vacant meeting nooks with differing book/box/mug keepsakes. Rain-cleared autumn leaves and quiet emptied places express lingering departure, and branching spatial staging differs from parent table camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 555958,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--perspectives-1-4457ca2bebc8.png",
+        "sha256": "4457ca2bebc8d266597e253d9d10880d7e985a2c86d2a55b62028615c1d5f110",
+        "promptSha256": "a0806e4f1c85159acefb64f9b8109579758a106267f607e38a64cb31f675ddbd",
+        "generationPromptSha256": "3c54d8d0abebb851a82f3687fcc358fa41b77cc0d29f00fa8c7e24c8dfc54ccd",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4457ca2bebc8d266597e253d9d10880d7e985a2c86d2a55b62028615c1d5f110",
+          "promptSha256": "a0806e4f1c85159acefb64f9b8109579758a106267f607e38a64cb31f675ddbd",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection: sheltered brick alcove has opposed vacant seats around one common closed-book keepsake arrangement, spent plant and autumn leaves, with rectangular window and arched doorway contrasting views of the same place. Continuous indoor shot differs from exposed parent table."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 372551,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--warm--single-1-fad6f79b6b8f.png",
+        "sha256": "fad6f79b6b8f5dc3cfb414fe5dd5fd31b1bcd3d4e49e7421c29d9595913986c3",
+        "promptSha256": "cd0a0526e262b7b17ef28921a977b0cfb0e96a43d6946b6f2ad325d288d3b6da",
+        "generationPromptSha256": "984b693bb3888c27bc02d8976d89ad5f496a2dc207b3ce446d4dd373e15d4537",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "fad6f79b6b8f5dc3cfb414fe5dd5fd31b1bcd3d4e49e7421c29d9595913986c3",
+          "promptSha256": "cd0a0526e262b7b17ef28921a977b0cfb0e96a43d6946b6f2ad325d288d3b6da",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection and parent comparison: foreground two plain closed books sit between one pair of empty chairs inside a sheltered university arcade; a long intimate covered passage is visible to the right. Warm flowers/light, crisp native pixels, no writing/identity. Covered side-on arcade replaces parent exposed book ledge overlooking fountain courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 454382,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--warm--routes-1-c3ceeb66208b.png",
+        "sha256": "c3ceeb66208b6225bb8b536eff2066a607e8d1cff724472bffe7eda9ddbc2d22",
+        "promptSha256": "1cd02b780c1fef97a2414d510379cde8ef023c2fe62427bd005acf9f9549defd",
+        "generationPromptSha256": "3c5741b5ad1c148a2f2855fafafe72d8de9d813cafcfd51c5a14bb486e87b60f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c3ceeb66208b6225bb8b536eff2066a607e8d1cff724472bffe7eda9ddbc2d22",
+          "promptSha256": "1cd02b780c1fef97a2414d510379cde8ef023c2fe62427bd005acf9f9549defd",
+          "reviewer": "Codex direct original visual inspection: v2-production-022",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native inspection and parent comparison: raised campus garden view shows a real walkway fork connecting distinct paired vacant meeting nooks, each with closed books or plain cups. Shared keepsakes and revisitable paths preserve memory/reunion; flowers and light preserve warmth. Branched paired places replace parent exposed book ledge/fountain composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 617311,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--warm--perspectives-1-dfbfeb57f806.png",
+        "sha256": "dfbfeb57f80615819d9951751d9385a4ec0c090f2353a8389b7401c943b62cb0",
+        "promptSha256": "6601f911e608fe6eedff6aebaf4edd30c467047aa85cd917205526dffd26aa76",
+        "generationPromptSha256": "e7d3cd0dd8b36fac04586181f110ddd6d8def4ccfef6e1b30872a7f004fe8078",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "dfbfeb57f80615819d9951751d9385a4ec0c090f2353a8389b7401c943b62cb0",
+          "promptSha256": "6601f911e608fe6eedff6aebaf4edd30c467047aa85cd917205526dffd26aa76",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original and parent inspection: interior university library table has a shared two-closed-book keepsake arrangement between opposed vacant chairs; rectangular window and arch door frame contrasting campus views around same event. Welcoming flowers/light and native coarse pixels. New sheltered interior versus parent exposed ledge/fountain."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 439196,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--single-1-48cf0601d6cc.png",
+        "sha256": "48cf0601d6ccbd81834ad367546ef101acff5743d32eee9080c6ddeee200f586",
+        "promptSha256": "edc6788210e80eb9faaa199f45146d7f379805abbf3670629cbd155d26eb4c3a",
+        "generationPromptSha256": "fdb9fd64de5a1a549a56de3cab72894adceb03692e0b772a479ffe59f5be0c80",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "48cf0601d6ccbd81834ad367546ef101acff5743d32eee9080c6ddeee200f586",
+          "promptSha256": "edc6788210e80eb9faaa199f45146d7f379805abbf3670629cbd155d26eb4c3a",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW from INSIDE a modern brick UNIVERSITY library vestibule. Old friends reunion: TWO CLOSED PLAIN books nearby. MEMORY gameplay: ONE prominent closed plain shared keepsake box at a revisitable personal place. AT NIGHT inside a confined private library alcove, partly concealed plain keepsake and narrow closed threshold, hard moonlight/shadow bands; NO cheerful sunset or exposed garden. SINGLE relationship MUST be unmistakable: exactly TWO separate EMPTY CHAIRS on OPPOSITE SIDES of a small shared table, BOTH CHAIR BACKS AND FULL SEATS ENTIRELY VISIBLE; one central shared closed plain keepsake between them. Show ONE continuous private passage behind these two seats. CAMERA side-on INSIDE this two-seat alcove; NO foreground book ledge hiding the seats, no isolated bench/backpack substituting for a pair, no distant tower focal shot. No people, silhouettes, portraits, text/pseudo-writing, ANY paper sheets/posters/noticeboards/corkboards, clocks/numbers, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse native square pixel clusters/stepped contours; quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: night covered brick arcade has closed plain books and a receding private corridor, but no clearly visible PAIR of vacant personal places; only partial chair/backpack appears. Latest single relationship staging is unproven. Do not accept books alone as paired seats."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 200366,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--single-2-dd21c10c2d7e.png",
+        "sha256": "dd21c10c2d7e997e840b6014449af2937b0ca0a894ec144d7ffc0ba95bd605ad",
+        "promptSha256": "edc6788210e80eb9faaa199f45146d7f379805abbf3670629cbd155d26eb4c3a",
+        "generationPromptSha256": "8b375b483b6e98be2fa3f2a5fb073d6016b8e8a31be7e85b1d9279a8b0cb43cc",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "dd21c10c2d7e997e840b6014449af2937b0ca0a894ec144d7ffc0ba95bd605ad",
+          "promptSha256": "edc6788210e80eb9faaa199f45146d7f379805abbf3670629cbd155d26eb4c3a",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: confined moonlit university library interior now contains exactly two fully visible opposed vacant chairs around one plain closed keepsake box, with closed plain books and one private receding passage. Native coarse pixels, no identity/writing. Pair-of-places failure repaired; fresh interior compared to parent exposed garden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 214626,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--routes-1-72a680438f90.png",
+        "sha256": "72a680438f905e36f8c571e7510cfe3c844f4e9f6d3f0e201f98b51851ca9433",
+        "promptSha256": "3cdbb34cfa44276b3fa05bfe22975fb9af7939790fc119d290dd2d7cb96d15c4",
+        "generationPromptSha256": "d8dabde67d643462e0e5d89e7f4f61151f5790ba26e7d0d741c02627a42bf1af",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "72a680438f905e36f8c571e7510cfe3c844f4e9f6d3f0e201f98b51851ca9433",
+          "promptSha256": "3cdbb34cfa44276b3fa05bfe22975fb9af7939790fc119d290dd2d7cb96d15c4",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a NEW elevated oblique view INSIDE a CONFINED MODERN BRICK UNIVERSITY LIBRARY AT NIGHT. Closed plain books signify old friends reunion; ONE prominent unmarked CLOSED keepsake box foreground communicates discovering memories. Three actual continuous interior gallery branches connect THREE distinct private meeting alcoves, EACH with exactly TWO fully visible opposed EMPTY chairs and a different ordinary closed shared keepsake/books/mugs arrangement. NO exposed leafy garden, no cheerful flower preparations or sunset. Half-closed narrow thresholds, partly concealed keepsakes and hard discrete moonlight bands create actual secrecy/tension, not a friendly campus garden recolored blue. Completely bare brick walls. No people/silhouettes/portraits, text/pseudo-writing, ALL paper sheets/notices/boards/documents, clocks/numerals, ANY flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Independent crisp coarse pixel clusters, fresh confined branching-gallery camera, quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: multiple paired vacant nooks are linked by garden paths at night, but composition remains an exposed pleasantly lit leafy campus garden rather than a confined private, tense secret space. Selected secrecy and requested concealed keepsake are weak; reject this mood implementation."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 303308,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--routes-2-b4122dc29538.png",
+        "sha256": "b4122dc29538efc851233ba8c5948ce40d0ca91102e94ae410fc81d9692ec836",
+        "promptSha256": "3cdbb34cfa44276b3fa05bfe22975fb9af7939790fc119d290dd2d7cb96d15c4",
+        "generationPromptSha256": "ddbb625886b2bae75c73401d3ca40ea829d1f17111f41810bbf10a45be2ca937",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b4122dc29538efc851233ba8c5948ce40d0ca91102e94ae410fc81d9692ec836",
+          "promptSha256": "3cdbb34cfa44276b3fa05bfe22975fb9af7939790fc119d290dd2d7cb96d15c4",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: night brick library gallery has three separate paired vacant meeting alcoves containing books, cups and a closed plain box, connected by actual elevated gallery branches and partly closed door thresholds. Foreground shared closed box/books makes memory clear. Confined moonlight repairs previous exposed cheerful garden; no people/text/banners."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 189964,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--secret--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--perspectives-1-947431dcfc82.png",
+        "sha256": "947431dcfc82569ccf3b3b60c42df4978bc3d96a4edf060dd0c5d1d6d5998821",
+        "promptSha256": "5cdc927608d5da1a900105ee7eb7f4811bcdf689b0e830c92a1e5100c80d94fb",
+        "generationPromptSha256": "7bb02689b6203610de41cf1a271c6141ad9bc8d79b1ec0c7839a81e0d03b9698",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "947431dcfc82569ccf3b3b60c42df4978bc3d96a4edf060dd0c5d1d6d5998821",
+          "promptSha256": "5cdc927608d5da1a900105ee7eb7f4811bcdf689b0e830c92a1e5100c80d94fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW modern brick UNIVERSITY sheltered library alcove, two separated CLOSED PLAIN books signify old friends reunion. MEMORY gameplay: ONE prominent closed unmarked common keepsake box revisitable at this place. AT NIGHT, confined private alcove, partly concealed keepsake, narrow half-closed threshold and hard moon-shadow bands; no bright sunset or cheerful exposed garden. DIFFERENT UNDERSTANDINGS OF SAME EVENT: one shared keepsake sits between TWO opposed EMPTY chairs, both fully visible; actual side window and differently framed doorway provide contrasting views around that SAME object in ONE continuous room. Fresh near-overhead oblique inside-alkove camera, not front book ledge/distant tower. REMOVE ENTIRE CORKBOARD/NOTICEBOARD AND ALL papers, sheets, posters, notices, documents and wall panels. Completely BARE BRICK walls, no boards even blank. No text/pseudo-writing anywhere, no clocks/numerals, people/silhouettes/portraits, flags/banners/tapestries/insignia, open books, blur or collage. Crisp coarse native pixel clusters; quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: night interior has opposed empty chairs and common closed books framed by window/door; however rear corkboard paper sheets visibly contain pseudo-written rows. No-text check fails."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 233741,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret--perspectives-2-372f748806d3.png",
+        "sha256": "372f748806d3a0dacd9c46b5ca6b74bfecb6f0b780c4cd9ae79f79ba0827e928",
+        "promptSha256": "5cdc927608d5da1a900105ee7eb7f4811bcdf689b0e830c92a1e5100c80d94fb",
+        "generationPromptSha256": "619c8373adeb523a34601842aeeb58c869fef7756569d22c54b542b928771941",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "372f748806d3a0dacd9c46b5ca6b74bfecb6f0b780c4cd9ae79f79ba0827e928",
+          "promptSha256": "5cdc927608d5da1a900105ee7eb7f4811bcdf689b0e830c92a1e5100c80d94fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: one shared plain closed box sits between fully visible opposed vacant chairs; two closed plain books, real side window and differently framed partly closed door give contrasting views of one continuous moonlit brick university alcove. Bare walls remove previous pseudo-written corkboard; fresh interior view differs from parent exposed garden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 226370,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--bittersweet--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--single-1-dee0b7e048ce.png",
+        "sha256": "dee0b7e048cecb95f1c88afec4bcc654c5fa240591d7689c88f0f84bc84a63f7",
+        "promptSha256": "86468f9e1dc705a3132d751237142eca1ad81e45aa6214faa0a1a7078a1b3e9c",
+        "generationPromptSha256": "3b0693325d90ab5d46d85f3f7f85107f7fe1554f238c6b6590b4897f82411db6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "dee0b7e048cecb95f1c88afec4bcc654c5fa240591d7689c88f0f84bc84a63f7",
+          "promptSha256": "86468f9e1dc705a3132d751237142eca1ad81e45aa6214faa0a1a7078a1b3e9c",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW from INSIDE a modern brick UNIVERSITY library vestibule. Old friends reunion: TWO CLOSED PLAIN books nearby. MEMORY gameplay: ONE prominent closed plain shared keepsake box at a revisitable personal place. quiet rain-cleared autumn with spent petals, brown leaves and a vacated threshold, lingering departure; no cheerful spring celebration. SINGLE relationship MUST be unmistakable: exactly TWO separate EMPTY CHAIRS on OPPOSITE SIDES of a small shared table, BOTH CHAIR BACKS AND FULL SEATS ENTIRELY VISIBLE; one central shared closed plain keepsake between them. Show ONE continuous private passage behind these two seats. CAMERA side-on INSIDE this two-seat alcove; NO foreground book ledge hiding the seats, no isolated bench/backpack substituting for a pair, no distant tower focal shot. No people, silhouettes, portraits, text/pseudo-writing, ANY paper sheets/posters/noticeboards/corkboards, clocks/numbers, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Coarse native square pixel clusters/stepped contours; quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: autumn wet covered arcade/books/backpack successfully gives lingering departure, but the required single PAIR of vacant places is absent: book ledge and backpack do not show two actual personal seats. Latest choice fails."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 322222,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--single-2-d1e889091f99.png",
+        "sha256": "d1e889091f991c6fe1d759b2a73ce1b13fcd6ea3eec15a5f658430b8cc493303",
+        "promptSha256": "86468f9e1dc705a3132d751237142eca1ad81e45aa6214faa0a1a7078a1b3e9c",
+        "generationPromptSha256": "e675076abb6198c50b8d44d8f6ca3984ac7c06c219a66206c32c2fca254f16f0",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d1e889091f991c6fe1d759b2a73ce1b13fcd6ea3eec15a5f658430b8cc493303",
+          "promptSha256": "86468f9e1dc705a3132d751237142eca1ad81e45aa6214faa0a1a7078a1b3e9c",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: two fully visible opposed vacant chairs flank one central closed plain keepsake box/books inside sheltered brick university library. One receding private corridor, wet autumn view, brown fallen leaves and empty places convey lingering departure. Missing pair repaired, independent indoor shot versus parent exposed bench/courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 323678,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--bittersweet--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--routes-1-f835b49fe28a.png",
+        "sha256": "f835b49fe28a80eca0645deaa568b70e41bcfbc6024d45147b58a4b715af03a0",
+        "promptSha256": "14fea8f4c3a2866d395cc5ea1a3f71574a271a25fd2eef2b6a8c8da6bcf4be4e",
+        "generationPromptSha256": "6c24223f5a11ba3e989ebe210a9b5578be1a34da9bc5357db005c953c12ee4b8",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f835b49fe28a80eca0645deaa568b70e41bcfbc6024d45147b58a4b715af03a0",
+          "promptSha256": "14fea8f4c3a2866d395cc5ea1a3f71574a271a25fd2eef2b6a8c8da6bcf4be4e",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original and parent comparison: three distinct paired vacant meeting nooks with closed box, mugs and books are connected by actual branching paths/stairs. Rain-cleared autumn brown leaves and quiet emptied seats preserve bittersweet memory; elevated branching composition differs materially from parent exposed bench/courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 489151,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--bittersweet--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--perspectives-1-c1d377dc0dab.png",
+        "sha256": "c1d377dc0dab033076af9769b11f18c302a214d6e7e6f8cdb91aaa7c110e2951",
+        "promptSha256": "fabc44d32b5bd9215022b4aa52eff09cf553d4e8be949ac7f8c9726c894ef5b8",
+        "generationPromptSha256": "b436c9fa734c6afe002f6b0aea1004f01b70d889e7f65c4ba5f6808337f47410",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c1d377dc0dab033076af9769b11f18c302a214d6e7e6f8cdb91aaa7c110e2951",
+          "promptSha256": "fabc44d32b5bd9215022b4aa52eff09cf553d4e8be949ac7f8c9726c894ef5b8",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW modern brick UNIVERSITY sheltered library alcove, two separated CLOSED PLAIN books signify old friends reunion. MEMORY gameplay: ONE prominent closed unmarked common keepsake box revisitable at this place. rain-cleared quiet autumn, spent petals/brown leaves, vacated threshold and lingering departure; no cheerful spring sunset. DIFFERENT UNDERSTANDINGS OF SAME EVENT: one shared keepsake sits between TWO opposed EMPTY chairs, both fully visible; actual side window and differently framed doorway provide contrasting views around that SAME object in ONE continuous room. Fresh near-overhead oblique inside-alkove camera, not front book ledge/distant tower. REMOVE ENTIRE CORKBOARD/NOTICEBOARD AND ALL papers, sheets, posters, notices, documents and wall panels. Completely BARE BRICK walls, no boards even blank. No text/pseudo-writing anywhere, no clocks/numerals, people/silhouettes/portraits, flags/banners/tapestries/insignia, open books, blur or collage. Crisp coarse native pixel clusters; quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: opposed empty chairs around common closed books and left window/right arched door correctly stage shared memory and differing perspectives in autumn, but wall noticeboard has three paper sheets with many explicit pseudo-written lines. Reject."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 349305,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--perspectives-2-46131c33d66e.png",
+        "sha256": "46131c33d66ea1c24ada06781169dbded43bb720282a69db0b75934acb1b1186",
+        "promptSha256": "fabc44d32b5bd9215022b4aa52eff09cf553d4e8be949ac7f8c9726c894ef5b8",
+        "generationPromptSha256": "82a62fe0f88269495775bdcbee219d902b588b0583bf17cd36e7202cedf57893",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "46131c33d66ea1c24ada06781169dbded43bb720282a69db0b75934acb1b1186",
+          "promptSha256": "fabc44d32b5bd9215022b4aa52eff09cf553d4e8be949ac7f8c9726c894ef5b8",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: common closed plain keepsake box between opposed vacant chairs, two plain closed books, side window and open arched door give contrasting views of same shared place. Rain-cleared autumn leaves, bare brick walls and quiet vacant places preserve mood. Entire pseudo-written noticeboard removed. Independent interior versus parent outdoor bench/courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 352367,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--warm--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--single-1-e8883d152888.png",
+        "sha256": "e8883d15288808188fcc00884beec3a7b7043916e540cd86e1f9c0e1a549c7c9",
+        "promptSha256": "988b13aabc5aaa5ebce8c046aa146d48a60115b65412957bdafa3760f7100f16",
+        "generationPromptSha256": "50fae1db671ac6ea204ff62b883fb1da4cfa384df411909812f73cc2c970f98e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e8883d15288808188fcc00884beec3a7b7043916e540cd86e1f9c0e1a549c7c9",
+          "promptSha256": "988b13aabc5aaa5ebce8c046aa146d48a60115b65412957bdafa3760f7100f16",
+          "reviewer": "Codex direct original visual inspection: v2-production-023",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh side-on view INSIDE a modern BRICK UNIVERSITY vestibule with TWO separate CLOSED PLAIN books signifying old friends reunion. Warm welcome: fresh small flowers and inviting daylight. SINGLE relationship: exactly TWO SEPARATE EMPTY CHAIRS face each other across ONE common plain keepsake table; BOTH chair backs and full seats must be clearly visible. A single private continuous passage continues behind this pair. CHOSEN CONSEQUENTIAL TRUST DECISIONS must also remain visible: passage reaches TWO distinctly opposed meaningful nearby doorways, with one closed plain keepsake box beside one and one folded ordinary scarf beside the other; their competing physical alternatives are part of the SAME private route and single relationship. No additional paired meeting nooks, no lone long bench as substitute for two chairs, no generic book ledge alone. NO clocks, watch faces, numbers, paper sheets, noticeboards, writing/pseudo-writing, people/silhouettes/portraits, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Crisp native coarse pixel clusters and stepped contours; fresh interior camera, quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: sheltered brick arcade shows one long vacant bench, two closed books and bouquet, but no actual opposing/conflicting meaningful thresholds for chosen trust decisions and no clearly distinct PAIR of vacant personal places. Clock face also violates the requested clock exclusion. Reject rather than treating two books as all choices."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 370526,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--single-2-ea45ea192ead.png",
+        "sha256": "ea45ea192eada699451c6ef069c49f146f0a946e731a67f487cc0e4f33e3e3be",
+        "promptSha256": "988b13aabc5aaa5ebce8c046aa146d48a60115b65412957bdafa3760f7100f16",
+        "generationPromptSha256": "9d9615480d8015844b0488190dc8bf552209dd8faa95f257917d383d066173a6",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ea45ea192eada699451c6ef069c49f146f0a946e731a67f487cc0e4f33e3e3be",
+          "promptSha256": "988b13aabc5aaa5ebce8c046aa146d48a60115b65412957bdafa3760f7100f16",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original inspection: two fully visible facing EMPTY green chairs with common book/keepsake table and warm flowers, one continuous private corridor, opposed blue/red door thresholds with closed box versus scarf provide meaningful competing trust alternatives without adding people. Brick university setting, closed plain books and welcoming daylight; no clock/writing. Fresh interior versus parent open courtyard ledge."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 538039,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--warm--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--routes-1-33b9947ebc4c.png",
+        "sha256": "33b9947ebc4c31815360a34937a0889c93ac4ee75bab3421eb195d87c9487c5a",
+        "promptSha256": "18894d89eb2ab0fd64c09e9532c3809e04dfc480f63f0c10142416b7e2d06659",
+        "generationPromptSha256": "31752511c73b5ea296015d544722df34fb1ec5d669dfa7b60085a5c4aa8b4dbb",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "33b9947ebc4c31815360a34937a0889c93ac4ee75bab3421eb195d87c9487c5a",
+          "promptSha256": "18894d89eb2ab0fd64c09e9532c3809e04dfc480f63f0c10142416b7e2d06659",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a fresh elevated oblique MODERN BRICK UNIVERSITY enclosed courtyard/walkway fork in warm welcoming daylight with small fresh flowers. Two plain CLOSED books signify old friends reunion. MULTIPLE RELATIONSHIP ROUTES: three actual continuous branches lead to THREE separate paired meeting nooks, EACH with TWO clearly visible opposed EMPTY seats and distinct ordinary shared keepsakes. CHOSEN CONSEQUENTIAL TRUST DECISIONS: two near opposing actual door thresholds beside the fork must visibly present competing closed plain keepsake BOX versus folded plain SCARF alternatives, while belonging to this same continuous world. Not merely random benches/books with no meaningful alternatives. Remove ALL clocks/watch faces/dials/numerals including far tower clock; distant architecture has plain windows only. No people/silhouettes/portraits, text/pseudo-writing, paper sheets/posters/notices/boards/documents/photos/postcards, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Native crisp coarse square pixel clusters and stepped contours; fully drawn quiet right."
+          ],
+          "notes": "Direct original inspection: garden fork links paired meeting nooks with distinct books/cups, preserving warm campus atmosphere, but upper-right tower contains a small numeral-like clock dial whose text-free status is uncertain. Consequential trust alternatives also read as generic garden seating rather than opposing meaningful thresholds/objects. Reject pending explicit stronger staging."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 723847,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--warm--perspectives": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm--perspectives-1-8d684756bcad.png",
+        "sha256": "8d684756bcad0ca2e231f111eb76eb077ec47fd5a8f1133b71521a0300b366b5",
+        "promptSha256": "862af5eefda92d6641e836ee4259e728b9b047589dfc7bdc026e8ff97e4e7a97",
+        "generationPromptSha256": "22110b8277222677d9e9b14187dc29a8510deab5c9861dbf70573a80c48f2b8e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8d684756bcad0ca2e231f111eb76eb077ec47fd5a8f1133b71521a0300b366b5",
+          "promptSha256": "862af5eefda92d6641e836ee4259e728b9b047589dfc7bdc026e8ff97e4e7a97",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW a modern BRICK UNIVERSITY sheltered alcove in welcoming warm daylight with small sharply pixellated fresh flowers. Two CLOSED PLAIN books signify old friends reunion. DIFFERENT UNDERSTANDINGS OF SAME EVENT: ONE central common closed plain keepsake BOX between TWO opposed fully visible EMPTY chairs, a side window and differently framed doorway give contrasting views around SAME object in one continuous room. CHOSEN CONSEQUENTIAL TRUST DECISIONS remain visible through TWO opposed meaningful near private door thresholds, one beside closed plain keepsake box and other beside a folded plain scarf. Keep same relation/event, no added people. REMOVE ALL postcards, photographs, printed images and caption cards; remove ALL notices/papers/posters/boards/documents. No writing/pseudo-writing, clocks/numbers, people/silhouettes/portraits, flags/banners/tapestries/insignia, open books, diagrams/collage. EVERY foreground flower/leaf and object must be SHARPLY authored from coarse native square pixel clusters: NO defocus, depth-of-field, soft blobs, bloom or blur. Fresh near-overhead interior composition, quiet fully drawn right."
+          ],
+          "notes": "Direct original inspection: opposed vacant seats and differing window/door frames around common postcard/books are present, but postcard lower caption has pseudo-written marks, foreground flowers are visibly defocused, and conflicting trust alternatives are not staged clearly. Reject no-text/pixel-style/all-choices checks."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 407060,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--secret--single": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret--single-1-094c2c084212.png",
+        "sha256": "094c2c0842124a7d0afcaeb2ee3d8e3f200b70f9aa600fa0ce229c515c217a9e",
+        "promptSha256": "3995cf0d68c8e460708d8a9ad2a6d992a7f1827b18308e1b89dcde461c6267c7",
+        "generationPromptSha256": "92c3dacd8488ba8e03e168ee60261a64a8aeed560fe860e25dee51d5d5f5cb38",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "094c2c0842124a7d0afcaeb2ee3d8e3f200b70f9aa600fa0ce229c515c217a9e",
+          "promptSha256": "3995cf0d68c8e460708d8a9ad2a6d992a7f1827b18308e1b89dcde461c6267c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "REDRAW INSIDE a CONFINED modern BRICK UNIVERSITY library vestibule AT NIGHT. Two plain CLOSED books imply old friends reunion. SINGLE relationship: exactly TWO SEPARATE EMPTY CHAIRS face each other across ONE shared table/closed plain keepsake; BOTH chair backs AND full seats ENTIRELY VISIBLE. NO lone bench/backpack/book ledge as substitute. One continuous private passage behind this pair contains TWO OPPOSING meaningful nearby closed door thresholds with a closed plain keepsake BOX beside one and folded plain SCARF beside other, expressing CONSEQUENTIAL TRUST DECISIONS in same relationship. Partly concealed unmarked keepsake, half-closed narrow threshold and hard discrete moonlight-shadow bands create secrecy; no friendly sunset/open garden. Fresh side-on INSIDE-ALCOVE camera, not bench/distant tower camera. No people/silhouettes/portraits, writing/pseudo-writing, paper sheets/posters/notices/boards/documents/photos/postcards, clocks/numerals, flags/banners/tapestries/insignia, open books, blur, diagrams or collage. Native coarse square pixel clusters/stepped contours; fully drawn quiet right."
+          ],
+          "notes": "Direct original inspection: night covered arcade contains one long bench/books/backpack rather than two distinct opposed vacant personal places. Only one obvious doorway is visible and the conflicting trust alternatives are absent. Reject latest single relationship staging and selected choice play."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 189369,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--secret--routes": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret--routes-1-9225684eda0b.png",
+        "sha256": "9225684eda0b43a8371980202da30de4b21d9c3ee3f74bd707ed22d0fd763da4",
+        "promptSha256": "a1196652d7c18342e63aa5922bf95130250a8a7ad3388b865cdae4055e548fc2",
+        "generationPromptSha256": "ce634aa7bc8f05da6d36d28a1cb2fc5a52f8dbe084f24bc5004b924db77276bb",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9225684eda0b43a8371980202da30de4b21d9c3ee3f74bd707ed22d0fd763da4",
+          "promptSha256": "a1196652d7c18342e63aa5922bf95130250a8a7ad3388b865cdae4055e548fc2",
+          "reviewer": "Codex direct original visual inspection: v2-production-024",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct original and parent comparison: confined night brick gallery fork leads to distinct arched private meeting thresholds with paired empty seats and different ordinary shared keepsake arrangements (closed box versus books/cup versus flower). Their competing branch destinations express the chosen trust alternatives and multiple relationship routes. Coarse pixels, moon-shadow bands, no identity/text. Fresh interior gallery replaces parent open wet courtyard."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 312103,
           "findings": []
         }
       }

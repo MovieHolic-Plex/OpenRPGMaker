@@ -1,0 +1,631 @@
+{
+  "scope": "Every currently published fourth fixed-answer background clicked through actual production dialog in isolated container; not full app boot or generated-game completion",
+  "published": 181,
+  "targets": [
+    "romance--campus--talk--warm--single",
+    "romance--campus--talk--warm--routes",
+    "romance--campus--talk--warm--perspectives",
+    "romance--campus--talk--secret--single",
+    "romance--campus--talk--secret--routes",
+    "romance--campus--talk--secret--perspectives",
+    "romance--campus--talk--bittersweet--single",
+    "romance--campus--talk--bittersweet--routes",
+    "romance--campus--talk--bittersweet--perspectives",
+    "romance--campus--memory--warm--single",
+    "romance--campus--memory--warm--routes",
+    "romance--campus--memory--warm--perspectives",
+    "romance--campus--memory--secret--single",
+    "romance--campus--memory--secret--routes",
+    "romance--campus--memory--secret--perspectives",
+    "romance--campus--memory--bittersweet--single",
+    "romance--campus--memory--bittersweet--routes",
+    "romance--campus--memory--bittersweet--perspectives",
+    "romance--campus--choice--warm--single",
+    "romance--campus--choice--secret--routes"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "romance--campus--talk--warm--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 25.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 9.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 7.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--warm",
+          "ms": 8.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm-f5b051422b9c.png"
+        },
+        {
+          "key": "romance--campus--talk--warm--single",
+          "ms": 6.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--single-cadbc187a479.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--warm--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 7.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--warm",
+          "ms": 9.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm-f5b051422b9c.png"
+        },
+        {
+          "key": "romance--campus--talk--warm--routes",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--routes-3e6e95cfce13.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--warm--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 9.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--warm",
+          "ms": 8.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm-f5b051422b9c.png"
+        },
+        {
+          "key": "romance--campus--talk--warm--perspectives",
+          "ms": 6.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--perspectives-0a9f1def9c92.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--secret--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 12,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 8,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 41.60000002384186,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--secret",
+          "ms": 10.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret-cc5137d7173b.png"
+        },
+        {
+          "key": "romance--campus--talk--secret--single",
+          "ms": 17.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--single-a5f9d1afe4ce.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--secret--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 8,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 9.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--secret",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret-cc5137d7173b.png"
+        },
+        {
+          "key": "romance--campus--talk--secret--routes",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--routes-11806aff8c77.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--secret--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 13.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 13,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--secret",
+          "ms": 7.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret-cc5137d7173b.png"
+        },
+        {
+          "key": "romance--campus--talk--secret--perspectives",
+          "ms": 7,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--secret--perspectives-2d4adbb7abc8.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--bittersweet--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 18.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 12.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 32.39999997615814,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet",
+          "ms": 10.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-8dd8d759e98c.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet--single",
+          "ms": 5.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--single-8339af70a05c.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--bittersweet--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 9.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet",
+          "ms": 13.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-8dd8d759e98c.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet--routes",
+          "ms": 3.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--routes-3f2918e5f6d4.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--talk--bittersweet--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 10.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 3.5999999046325684,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-8dd8d759e98c.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet--perspectives",
+          "ms": 9.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet--perspectives-4457ca2bebc8.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--warm--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 8.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 15.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--warm",
+          "ms": 61.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm-2bf91c7969a8.png"
+        },
+        {
+          "key": "romance--campus--memory--warm--single",
+          "ms": 32.59999990463257,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--single-fad6f79b6b8f.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--warm--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 11.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 26.09999990463257,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 17.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--warm",
+          "ms": 9.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm-2bf91c7969a8.png"
+        },
+        {
+          "key": "romance--campus--memory--warm--routes",
+          "ms": 14.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--routes-c3ceeb66208b.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--warm--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--warm",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm-2bf91c7969a8.png"
+        },
+        {
+          "key": "romance--campus--memory--warm--perspectives",
+          "ms": 4.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--warm--perspectives-dfbfeb57f806.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--secret--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 9.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--secret",
+          "ms": 6.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret-856454617dc1.png"
+        },
+        {
+          "key": "romance--campus--memory--secret--single",
+          "ms": 6.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--single-dd21c10c2d7e.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--secret--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 4.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--secret",
+          "ms": 4,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret-856454617dc1.png"
+        },
+        {
+          "key": "romance--campus--memory--secret--routes",
+          "ms": 8.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--routes-b4122dc29538.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--secret--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 11.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 7.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--secret",
+          "ms": 8.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret-856454617dc1.png"
+        },
+        {
+          "key": "romance--campus--memory--secret--perspectives",
+          "ms": 14.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--secret--perspectives-372f748806d3.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--bittersweet--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 15.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 9.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 10.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet",
+          "ms": 11,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet-099f547a87a7.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet--single",
+          "ms": 7.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--single-d1e889091f99.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--bittersweet--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 11.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 8.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 29.09999990463257,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet",
+          "ms": 10.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet-099f547a87a7.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet--routes",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--routes-f835b49fe28a.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--memory--bittersweet--perspectives",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 12.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 13.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--memory",
+          "ms": 8.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory-955f37aa386a.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet-099f547a87a7.png"
+        },
+        {
+          "key": "romance--campus--memory--bittersweet--perspectives",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--memory--bittersweet--perspectives-46131c33d66e.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--choice--warm--single",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 10.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--choice",
+          "ms": 14.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice-be064a7036cb.png"
+        },
+        {
+          "key": "romance--campus--choice--warm",
+          "ms": 10.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--warm-17cd541fc712.png"
+        },
+        {
+          "key": "romance--campus--choice--warm--single",
+          "ms": 4.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--warm--single-ea45ea192ead.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--choice--secret--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 17.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--choice",
+          "ms": 12.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice-be064a7036cb.png"
+        },
+        {
+          "key": "romance--campus--choice--secret",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--secret-4a9d54369c20.png"
+        },
+        {
+          "key": "romance--campus--choice--secret--routes",
+          "ms": 6,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--secret--routes-9225684eda0b.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

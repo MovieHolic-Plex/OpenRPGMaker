@@ -1,0 +1,34 @@
+{
+  "scope": "Actual production interview dialog mounted in an isolated start-screen container, through fourth fixed answer; not full app boot or generated-game completion",
+  "published": 162,
+  "generatedRequests": 0,
+  "steps": [
+    {
+      "key": "romance",
+      "ms": 11.900000095367432,
+      "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+    },
+    {
+      "key": "romance--campus",
+      "ms": 6.600000023841858,
+      "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+    },
+    {
+      "key": "romance--campus--talk",
+      "ms": 8.199999928474426,
+      "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+    },
+    {
+      "key": "romance--campus--talk--warm",
+      "ms": 6,
+      "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm-f5b051422b9c.png"
+    },
+    {
+      "key": "romance--campus--talk--warm--single",
+      "ms": 8,
+      "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--warm--single-cadbc187a479.png"
+    }
+  ],
+  "errors": [],
+  "passed": true
+}
