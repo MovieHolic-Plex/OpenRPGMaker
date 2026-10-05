@@ -3,7 +3,7 @@ import type { Project } from './types';
 export const WORLD_ATLAS_STRUCTURES = ['region-routes', 'scaled-world', 'field-overview', 'stage-nodes', 'room-network', 'run-path'] as const;
 export type WorldAtlasStructure = typeof WORLD_ATLAS_STRUCTURES[number];
 export const WORLD_ATLAS_CATALOG = [
-  { id: 'region-routes', name: '지역 · 마을과 도로', inspiration: 'Pokémon', description: '지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다.' },
+  { id: 'region-routes', name: '포켓몬풍 · 마을과 도로', inspiration: 'Pokémon', description: '지역 지도와 실제 마을·도로를 분리하고 출입구로 왕복합니다.' },
   { id: 'scaled-world', name: '축척 월드 · 대륙 걷기', inspiration: 'Final Fantasy VI', description: '작게 그린 대륙을 직접 걷고 거점의 실제 맵으로 들어갑니다.' },
   { id: 'field-overview', name: '필드 · 지형과 능력', inspiration: 'Zelda', description: '연속된 필드의 지형을 지도에 그대로 표시하고 능력으로 새 길을 엽니다.' },
   { id: 'stage-nodes', name: '스테이지 · 클리어와 비밀길', inspiration: 'Super Mario World', description: '코스를 클리어하면 다음 코스, 비밀 출구를 찾으면 지름길을 엽니다.' },

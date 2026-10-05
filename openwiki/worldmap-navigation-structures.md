@@ -24,7 +24,14 @@
 
 ## 편집기와 조수
 
-「새 맵 → 세계 지도 만들기」에서 방식·이름·배치 번호를 고른다.
+「새 맵 → 세계 지도 만들기」의 첫 항목은 **기본 · 기존 대륙 월드맵**이다.
+일반 프로젝트는 이 항목을, `system.genre:"monster-collect"` 프로젝트는 **포켓몬풍 · 마을과 도로**를 초기 선택한다.
+기본은 기존 `edit_world_terrain({newMapId,name,theme,ops:[]})` 생성기를 그대로 사용하며 세계관 17종을 고른다.
+추가 여섯 방식은 `author_worldmap_structure`로 만들고 배치 번호를 고른다. `default`는 UI 선택 값이며 `WorldAtlas.structure`에 저장하지 않는다.
+카탈로그/조수 노트는 일반 기본과 포켓몬풍 예외를 함께 안내하며, 명시한 방식과 기존 지도 수정은 그 선택/원본을 우선한다.
+소유 파일은 `src/project/worldmapModes.ts`, `src/ai/worldmapChoiceNote.ts`; 월드맵 조수 첫 목록에 기존 `read_world_terrain`/`edit_world_terrain`도 함께 노출한다.
+이번 선택 변경의 근거는 `verify-shots/worldmap-default-choice/SUMMARY.md`이다. 실제 생성 창 7옵션/17테마,
+일반 기본 및 몬스터 장르 초기 선택/수동 전환/포켓몬풍 생성과 두 방식의 SQLite 저장·닫기·재로드를 확인했다.
 `worldAtlasCreateDialog.ts`는 준비 후 같은 `applyToolToStore` 트랜잭션으로 추가하고 새 맵을 선택한다.
 기존 시작 맵/좌표는 유지한다. 중복 id는 거부하며 기존 맵을 덮어쓰지 않는다.
 

@@ -2,6 +2,7 @@ import { inspectWorldAtlas } from '@/project/worldAtlasAudit';
 import { authorWorldAtlas } from '@/editor/worldmap/atlasAuthoring';
 import atlasExamples from '@/assets/worldAtlasExamples.json';
 import { WORLD_ATLAS_CATALOG, WORLD_ATLAS_STRUCTURES } from '@/project/worldAtlas';
+import { WORLD_MAP_MODES, preferredWorldmapMode } from '@/project/worldmapModes';
 import { resolveReferenceImageDataUrl } from '@/project/bundledReferenceImages';
 import { ToolError, type ToolDefinition } from './types';
 
@@ -21,9 +22,12 @@ export async function worldAtlasReferenceImages(data: unknown) {
 
 export const WORLD_ATLAS_TOOLS: readonly ToolDefinition[]=[{
   name:'list_worldmap_structures',mode:'read',domains:['map','world'],
-  description:'월드맵 이동 구조 6종을 조회한다. 포켓몬 지역/도로, FF 축척 대륙, 젤다 필드, 마리오 스테이지, 할로우 나이트 방 발견, 슬레이 더 스파이어 일방향 런. 세계관 테마와 이동 구조는 서로 다른 선택이다.',
+  description:'기본 월드맵과 추가 이동 구조 6종을 조회한다. 일반 요청의 기본은 기존 대륙 월드맵(edit_world_terrain), 몬스터 수집·포켓몬풍은 region-routes 마을/도로. 다른 이동 방식을 명시하면 그 선택을 따른다. 세계관 테마와 이동 구조는 서로 다른 선택이다.',
   parameters:{type:'object',properties:{},additionalProperties:false},
-  run(){return {summary:'플레이 가능한 월드맵 구조 6종',data:{structures:WORLD_ATLAS_CATALOG,authorTool:'author_worldmap_structure',inspectTool:'inspect_worldmap_structure',referenceTool:'read_worldmap_structure_reference',examples:atlasExamples.map(e=>({id:e.id,name:e.name,preview:e.preview,sourceProjectId:e.sourceProjectId,authorArgs:e.authorArgs,mapCount:e.example.nodes.length+(e.example.overviewMapId?1:0)}))}};},
+  run(project){return {summary:'기본 월드맵 + 추가 이동 구조 6종',data:{defaultMode:'default',preferredMode:preferredWorldmapMode(project),modes:WORLD_MAP_MODES,
+    defaultAuthoring:{tool:'edit_world_terrain',args:{ops:[],theme:'fantasy'},readTool:'read_world_terrain',themeTool:'list_worldmap_themes'},
+    selectionRule:'일반 새 월드맵은 기존 대륙 월드맵을 기본으로 사용한다. 몬스터 수집·포켓몬풍은 region-routes. 명시한 이동 방식은 우선하며, 기존 지도 수정은 해당 지도 원본과 도구를 유지한다.',
+    structures:WORLD_ATLAS_CATALOG,authorTool:'author_worldmap_structure',inspectTool:'inspect_worldmap_structure',referenceTool:'read_worldmap_structure_reference',examples:atlasExamples.map(e=>({id:e.id,name:e.name,preview:e.preview,sourceProjectId:e.sourceProjectId,authorArgs:e.authorArgs,mapCount:e.example.nodes.length+(e.example.overviewMapId?1:0)}))}};},
 },{
   name:'read_worldmap_structure_reference',mode:'read',domains:['map','world'],
   description:'공용 월드맵 이동 방식의 정본 PNG·실행 지침·전체 장소/연결/해금 정의를 읽는다. 특정 게임 이름의 분위기와 실제 이동 구조를 구분한다.',
@@ -31,7 +35,7 @@ export const WORLD_ATLAS_TOOLS: readonly ToolDefinition[]=[{
   run(_project,args){const example=atlasExamples.find(e=>e.id===args.structure);if(!example)throw new ToolError('월드맵 구조가 없습니다.');return {summary:example.name+' · 정본 참고문서',data:example};},
 },{
   name:'author_worldmap_structure',mode:'write',domains:['map','world'],preservesAuthoredRaster:true,
-  description:'월드맵 구조를 실제 맵·문·해금 스위치·관문 이벤트와 함께 저작한다. region-routes=포켓몬 마을/도로, scaled-world=FF 걸을 대륙, field-overview=젤다 필드/열쇠, stage-nodes=마리오 클리어/비밀길, room-network=할로우 나이트 횡스크롤 방/발견/핀, run-path=슬레이 더 스파이어 일방향 선택. all은 여섯 구조를 함께 만든다. 기존 맵을 덮지 않는다. 지형은 새32px 공용 atlas_cartography를 쓰고 거점은 사람 승인 아이콘만 재사용한다. 필드는 이어지는 강·호수·절벽, 방은 서로 다른 실제 윤곽, 스테이지는 횡스크롤 코스로 만든다. 생성 후 inspect_worldmap_structure와 실제 화면을 확인한다.',
+  description:'추가 월드맵 이동 구조를 실제 맵·문·해금 스위치·관문 이벤트와 함께 저작한다. 일반 기본 월드맵은 이 도구가 아니라 기존 edit_world_terrain으로 만든다. region-routes=포켓몬 마을/도로, scaled-world=FF 걸을 대륙, field-overview=젤다 필드/열쇠, stage-nodes=마리오 클리어/비밀길, room-network=할로우 나이트 횡스크롤 방/발견/핀, run-path=슬레이 더 스파이어 일방향 선택. all은 여섯 구조를 함께 만든다. 기존 맵을 덮지 않는다. 지형은 새32px 공용 atlas_cartography를 쓰고 거점은 사람 승인 아이콘만 재사용한다. 필드는 이어지는 강·호수·절벽, 방은 서로 다른 실제 윤곽, 스테이지는 횡스크롤 코스로 만든다. 생성 후 inspect_worldmap_structure와 실제 화면을 확인한다.',
   parameters:{type:'object',properties:{id:{type:'string',description:'새 지도 묶음의 영문 소문자 id'},name:{type:'string'},structure:{type:'string',enum:[...WORLD_ATLAS_STRUCTURES,'all']},seed:{type:'integer'},setStart:{type:'boolean',description:'true이면 생성된 시작 맵을 게임 시작으로 지정(기본 false)'}},required:['id','structure'],additionalProperties:false},
   async prepare(args,project){
     const entries=ids(args);if(project?.worldAtlases?.some(a=>entries.some(e=>e.id===a.id))||project&&Object.keys(project.maps).some(id=>entries.some(e=>id.startsWith(e.id+'_'))))throw new ToolError('이미 있는 지도 id입니다. 새 id를 사용하세요.');
