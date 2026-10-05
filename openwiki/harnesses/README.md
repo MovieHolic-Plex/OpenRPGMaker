@@ -19,7 +19,8 @@
 실행은 하나로 통일한다.
 
 ```bash
-npm run harness -- list                 # src/harnesses/INDEX.md 다시 쓰기 (--check 로 낡았는지 검사)
+npm run harness -- list                 # INDEX.md + catalog.json 재생성 (--check 로 두 파일 확인)
+npm run harness -- catalog              # registry의 같은 목록을 JSON으로 출력; 작업 실행 없음
 npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts 로 넘긴다
 ```
 
@@ -46,3 +47,14 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트
 - [jp-city](jp-city.md) — 일본 도시 칩셋(jp_city · modern3) 주택가·역·공원·신사 그림 후보
 - [joseon-baram](joseon-baram.md) — 조선(바람의나라풍) 칩셋 joseon_baram 조각 관문·판정·지도 관문·재굽기·16구역 적대 검수 (기존 도구를 한 입구로)
+
+
+## 다른 실행기와 공유하는 하네스 목록
+
+`_core/catalog.ts`는 registry에 등록된 매니페스트에서 `catalog.json`을 만든다.
+Python 슈퍼하네스의 기획·재료 조사·그림 준비 작업도 이 목록을 읽는다.
+장르 scope, 시드, 문서, 단계, native 진입점과 실제 workshop 로더 존재 여부를 보존하고
+실행 함수나 정규화 코드를 JSON에 직렬화하지 않는다. 별도 수동 목록을 만들지 않는다.
+`entrypoints.cli=true`는 감독 실행·사용자 결정·공용 등록·프로젝트 설치 어댑터가 모두 있다는 뜻이 아니다.
+전체 제작의 연결 계약과 현재 구현 범위는
+`docs/superpowers/specs/2026-10-05-unified-harness-production.md`를 따른다.

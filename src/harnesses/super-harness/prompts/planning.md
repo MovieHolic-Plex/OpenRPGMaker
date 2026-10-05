@@ -90,3 +90,17 @@ side=north/south/west/east. offset은 그 변의 왼쪽 또는 위에서 센 시
 기획 파일 저장 후 다음 명령으로 스스로 기계 확인한다. 오류만 수정하고 파일을 저장한 뒤 종료한다:
 `python3 {{ROOT}}/src/harnesses/super-harness/gates.py planning {{CDIR}} --draft`
 상세 도면의 독립 검수는 하네스가 다음 단계로 실행한다. 다른 검수자를 직접 부르지 않는다.
+
+
+## 다른 하네스와의 제작 연결
+
+에디터와 같은 정본 목록 `{{ROOT}}/src/harnesses/catalog.json`을 읽는다.
+산출물 종류와 시대·장르에 맞는 항목을 찾은 다음 그 항목의 doc/seed/진입 경로를 확인한다.
+하네스 id를 기억이나 임의 목록으로 지어내지 않는다. 목록이 없으면 그 사실을 기록하고
+정본 registry.ts와 해당 manifest를 확인한다. CLI/editorUi 존재는 감독 실행 어댑터 지원을 뜻하지 않는다.
+monster-collect-species는 monster-collect 게임 전용이며 일반 생물/적 캐릭터 제작에 배정하지 않는다.
+캐릭터·월드맵·타일·장면은 서로 다른 산출물이다. 다른 종류의 검사 합격으로 대신하지 않는다.
+다른 하네스가 이미 공용으로 등록한 현재 승인 결과가 있으면 새 제작 전에 재사용 가능성을 조사한다.
+기존 선택 원본·공용 판본·참고문서와 실제 그림을 확인한다. 사용자의 결정이나 native 판정을 대신 쓰지 않는다.
+부족한 연결은 어느 단계(실행/결과 수집/사용자 결정/공용 등록/프로젝트 설치)인지 기록한다.
+통합 설계: `{{ROOT}}/docs/superpowers/specs/2026-10-05-unified-harness-production.md`.

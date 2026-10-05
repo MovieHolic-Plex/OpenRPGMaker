@@ -1,0 +1,267 @@
+[
+  {
+    "query": "king",
+    "npc": [
+      {
+        "id": "charset:tex_easyrpg_charset_people3:0",
+        "label": "왕"
+      }
+    ],
+    "resources": []
+  },
+  {
+    "query": "golem",
+    "npc": [
+      {
+        "id": "charset:tex_easyrpg_charset_monster4:5",
+        "label": "이끼 골렘"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_monster2:4",
+        "label": "스톤 골렘"
+      }
+    ],
+    "resources": [
+      {
+        "id": "charset:tex_easyrpg_charset_monster4:5",
+        "label": "이끼 골렘"
+      }
+    ]
+  },
+  {
+    "query": "골렘",
+    "npc": [
+      {
+        "id": "charset:tex_easyrpg_charset_monster2:4",
+        "label": "스톤 골렘"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_monster4:5",
+        "label": "이끼 골렘"
+      }
+    ],
+    "resources": [
+      {
+        "id": "charset:tex_easyrpg_charset_monster2:4",
+        "label": "스톤 골렘"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_monster4:5",
+        "label": "이끼 골렘"
+      }
+    ]
+  },
+  {
+    "query": "animal",
+    "npc": [
+      {
+        "id": "charset:tex_easyrpg_charset_animal:0",
+        "label": "주황 고양이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:1",
+        "label": "검은 고양이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:2",
+        "label": "닭"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:3",
+        "label": "양"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:4",
+        "label": "소"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:5",
+        "label": "말"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:6",
+        "label": "호랑이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:7",
+        "label": "사자"
+      },
+      {
+        "id": "charset:tex_farming_charset_chicken:0",
+        "label": "농장 닭"
+      },
+      {
+        "id": "charset:tex_farming_charset_cow:0",
+        "label": "농장 젖소"
+      }
+    ],
+    "resources": [
+      {
+        "id": "charset:tex_easyrpg_charset_animal:0",
+        "label": "주황 고양이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:1",
+        "label": "검은 고양이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:2",
+        "label": "닭"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:3",
+        "label": "양"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:4",
+        "label": "소"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:5",
+        "label": "말"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:6",
+        "label": "호랑이"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_animal:7",
+        "label": "사자"
+      }
+    ]
+  },
+  {
+    "query": "흑발 여성 마법사",
+    "npc": [],
+    "resources": [
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:5",
+        "label": "젊은 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:7",
+        "label": "파란 옷 젊은 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor4:3",
+        "label": "파란 머리 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor4:4",
+        "label": "분홍 머리 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor4:6",
+        "label": "보라 머리 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor4:7",
+        "label": "고깔모자 여성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:1",
+        "label": "빨간 로브 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_monster3:6",
+        "label": "붉은 변신 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people1:3",
+        "label": "젊은 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people1:5",
+        "label": "중년 여성 주민(흑인)"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people2:3",
+        "label": "이국적인 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people2:5",
+        "label": "토끼 귀 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people4:3",
+        "label": "머리 장식 이국 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people5:3",
+        "label": "전통 의상 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:4",
+        "label": "젊은 남성 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:6",
+        "label": "파란 로브 마법사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor2:1",
+        "label": "하늘색 재킷 젊은 여성"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor2:5",
+        "label": "젊은 여성 도적"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor2:6",
+        "label": "젊은 여성 엘프"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor3:7",
+        "label": "여성 음유시인"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people1:7",
+        "label": "노파"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people2:1",
+        "label": "수녀"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people2:6",
+        "label": "화려한 여왕"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people3:1",
+        "label": "여왕"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people3:3",
+        "label": "공주"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people3:5",
+        "label": "여자 메이드"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people4:7",
+        "label": "터번 노파"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_people5:5",
+        "label": "하녀"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor1:3",
+        "label": "붉은 갑옷 여전사"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor2:0",
+        "label": "검은 머리 도적"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor3:3",
+        "label": "여자 닌자"
+      },
+      {
+        "id": "charset:tex_easyrpg_charset_actor3:4",
+        "label": "빨간 모자 녹색 코트 여인"
+      }
+    ]
+  }
+]
