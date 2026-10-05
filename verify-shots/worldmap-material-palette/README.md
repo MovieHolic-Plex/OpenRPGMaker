@@ -10,6 +10,7 @@ The legacy worldmap used one image cell per map coordinate and displayed the con
 - `common-references.json`: material references present on fresh and existing tilesets; second ensure call unchanged. Source MD/actual images are shipped by the worldmap_selected bundle and shared through referenceSourceTilesetId.
 - `native-conversion-r4.json`: real browser button, 34 lower materials / 36 whole approved icons. Conversion reached the actual canonical project at revision 10. The UI save indicator exceeded 120 seconds; this attempt is retained as incomplete browser save evidence.
 - `canonical.json`: independently reopened the actual UI-saved SQLite target, verified passage and other maps, refreshed bundled reference pagination through the same local store API while the host was stopped, saved revision 11 and closed/reopened successfully.
+- `reopened-ui.json` / `lower-palette.png` / `upper-palette.png`: fresh browser loaded the exact canonical maps and database, showed 34 terrain materials and 36 whole icons, with no page errors. Saved maps remain identical after boot (revision 12; metadata changed the document SHA).
 - Native failures r2 (host kit path) and r3 (network failure) are retained. No model was called for conversion; earlier live model videos describe the historical generation, not this patch.
 
 Canonical project ID: `65d2e492-1fbf-43ef-8895-9c82427ed6ea`.
