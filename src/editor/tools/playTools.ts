@@ -3,6 +3,7 @@
 
 import { isSceneTestInput, runSceneTest, sceneTestInputProblem } from "@/testing/sceneTestRunner";
 import { runWalkthrough } from "@/testing/walkthroughRunner";
+import type { Project } from "@/project/types";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { ToolError } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -120,6 +121,36 @@ export function splitInteractWalkSteps(args: unknown): { input: unknown; split: 
 }
 
 /**
+ * 걷기에만 있는 adjacent 를 다른 스텝에 붙인 두 모양을 편다(2026-10-05 스트레스: 한 실행에서 다섯 번 거부·재시도).
+ * - `{kind:"move", to, adjacent}` → `{kind:"walk", to, adjacent}` — move 에 dir 이 없으면 뜻이 하나다.
+ * - `{kind:"interact", eventId, adjacent:true}` → 그 이벤트 칸으로 walk(adjacent) + interact. 이벤트가 시작 맵에 하나뿐일 때만.
+ * 다른 틀린 필드가 섞이면 그대로 두고 원래 오류를 낸다.
+ */
+export function normalizeAdjacentSteps(project: Project, args: unknown): { input: unknown; normalized: number[] } {
+  if (!args || typeof args !== "object" || !Array.isArray((args as { steps?: unknown }).steps)) return { input: args, normalized: [] };
+  const mapId = (args as { mapId?: unknown }).mapId;
+  const events = typeof mapId === "string" ? project.maps[mapId]?.events ?? [] : [];
+  const normalized: number[] = [];
+  const steps = ((args as { steps: unknown[] }).steps).flatMap((step, index) => {
+    if (!step || typeof step !== "object") return [step];
+    const { adjacent, ...rest } = step as Record<string, unknown>;
+    if (typeof adjacent !== "boolean") return [step];
+    if (rest.kind === "move" && rest.to && typeof rest.to === "object" && Object.keys(rest).every(key => key === "kind" || key === "to")) {
+      normalized.push(index);
+      return [{ kind: "walk", to: rest.to, adjacent }];
+    }
+    if (rest.kind === "interact" && adjacent && typeof rest.eventId === "string" && Object.keys(rest).every(key => key === "kind" || key === "eventId")) {
+      const matches = events.filter(event => event.id === rest.eventId);
+      if (matches.length !== 1) return [step];
+      normalized.push(index);
+      return [{ kind: "walk", to: { x: matches[0]!.x, y: matches[0]!.y }, adjacent: true }, rest];
+    }
+    return [step];
+  });
+  return normalized.length > 0 ? { input: { ...(args as object), steps }, normalized } : { input: args, normalized };
+}
+
+/**
  * `{kind:"move", dir:"up", count:3}` 을 한 칸 이동 세 번으로 편다. 스키마가 count(구매 수량)를 스텝 공통 필드로
  * 보여 주므로 모델이 이동 반복에도 쓴다(2026-10-05 스트레스: ashen-manor-chase 가 그대로 거부돼 재시도했다).
  * 뜻이 하나뿐일 때만(dir 있는 move 에 count 만 더해진 경우) 편다. to·다른 필드가 섞이면 원래 오류를 낸다.
@@ -198,14 +229,16 @@ const runSceneTestTool: ToolDefinition = {
   run(project, rawArgs): ToolExecResult {
     const { input: flatArgs, flattened } = flattenNestedExpectSteps(rawArgs);
     const { input: splitArgs, split } = splitInteractWalkSteps(flatArgs);
-    const { input: args, expanded } = expandRepeatedMoveSteps(splitArgs);
+    const { input: adjacentArgs, normalized } = normalizeAdjacentSteps(project, splitArgs);
+    const { input: args, expanded } = expandRepeatedMoveSteps(adjacentArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
-      ...(flattened.length + split.length + expanded.length > 0 ? { warnings: [
+      ...(flattened.length + split.length + normalized.length + expanded.length > 0 ? { warnings: [
         ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
         ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
+        ...(normalized.length > 0 ? [`스텝 ${normalized.join(", ")} 의 adjacent 를 walk 스텝으로 옮겨 실행했다 — adjacent 는 {kind:"walk",to,adjacent:true} 에만 있다(interact 는 앞에 walk 가 붙어 스텝 번호가 밀린다).`] : []),
         ...(expanded.length > 0 ? [`move 스텝 ${expanded.join(", ")} 의 count 를 한 칸 이동 반복으로 펴서 실행했다 — 스텝 번호가 그만큼 밀린다. 좌표까지 걷기는 {kind:"move",to:{x,y}} 가 짧다.`] : []),
       ] } : {}),
       summary: result.ok

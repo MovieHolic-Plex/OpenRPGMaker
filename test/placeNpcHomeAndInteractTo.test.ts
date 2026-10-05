@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { runTool } from "@/editor/tools";
-import { splitInteractWalkSteps } from "@/editor/tools/playTools";
+import { normalizeAdjacentSteps, splitInteractWalkSteps } from "@/editor/tools/playTools";
 
 // 2026-09-24 JRPG 도그푸딩 ember-4: 상점 NPC 넷이 make_villager 모양(home:{x,y})으로 place_npc 를 불러 전부
 // 「x,y is required」로 거부됐고, 합류·엔딩 검증 run_scene_test 셋이 interact 스텝에 to/adjacent 를 써 거부됐다.
@@ -52,5 +52,28 @@ describe("place_npc home:{x,y} · run_scene_test interact to", () => {
     });
     expect(result.ok, result.summary).toBe(true);
     expect(result.warnings?.join(" ")).toMatch(/walk/u);
+  });
+
+  // 2026-10-05 스트레스 g-ashen-chase: interact {eventId, adjacent} · move {to, adjacent} 가 한 실행에서 다섯 번 거부됐다.
+  it("adjacent 를 붙인 move·interact 를 walk 스텝으로 편다", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    project.maps[mapId]!.events.push({ id: "ev_safe", x: 8, y: 6, trigger: { kind: "action" }, commands: [] } as never);
+    const { input, normalized } = normalizeAdjacentSteps(project, {
+      mapId, start: { x: 1, y: 1 },
+      steps: [{ kind: "move", to: { x: 3, y: 3 }, adjacent: true }, { kind: "interact", eventId: "ev_safe", adjacent: true }],
+    });
+    expect(normalized).toEqual([0, 1]);
+    expect((input as { steps: unknown[] }).steps).toEqual([
+      { kind: "walk", to: { x: 3, y: 3 }, adjacent: true },
+      { kind: "walk", to: { x: 8, y: 6 }, adjacent: true },
+      { kind: "interact", eventId: "ev_safe" },
+    ]);
+  });
+
+  it("이벤트를 못 찾거나 다른 필드가 섞이면 그대로 둔다", () => {
+    const project = createBlankProject();
+    const steps = [{ kind: "interact", eventId: "ev_none", adjacent: true }, { kind: "move", dir: "up", to: { x: 1, y: 1 }, adjacent: true }];
+    expect(normalizeAdjacentSteps(project, { mapId: project.startMapId, start: { x: 1, y: 1 }, steps }).normalized).toEqual([]);
   });
 });
