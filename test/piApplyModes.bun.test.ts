@@ -208,3 +208,26 @@ test("a declined map-loss checkpoint reverts only that write and the run continu
   expect(failed?.summary).toContain("거절해 되돌렸습니다");
   expect(failed?.summary).not.toContain(PI_MAP_LOSS_DECLINED_PREFIX);
 });
+
+// 2026-10-05 스트레스 r4 p-inn·r7 g-ashen-chase: 워커의 event_command_assist 가 편집기 기본 주소(상대 /v1)로 LLM 을 불러
+// 매번 「fetch() URL is invalid」 네트워크 오류로 끝났다. 이제 이 실행의 제공자로 부른다(스텁 응답은 JSON 이 아니라 검증 실패).
+test("event_command_assist inside a Pi run asks the run's own provider", async () => {
+  const previous = process.env.OPRN_OH_MY_PI_TEST_STUB;
+  process.env.OPRN_OH_MY_PI_TEST_STUB = "1";
+  try {
+    const project = createBlankProject();
+    project.maps[project.startMapId]!.events.push({ id: "ev_t", x: 2, y: 2, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }] } as never);
+    const events: PiAgentEvent[] = [];
+    await runPiAgent(request({ project, toolDomains: ["core", "event"] }), {
+      onEvent: event => events.push(event),
+      streamFn: scriptedStream([], [
+        { name: "event_command_assist", args: { mapId: project.startMapId, eventId: "ev_t", pageId: "p1", prompt: "인사 한 줄" } },
+      ]) as never,
+    });
+    const end = events.find(event => event.type === "tool_end" && (event as { name?: string }).name === "event_command_assist") as { summary?: string } | undefined;
+    expect(end?.summary ?? "").not.toContain("네트워크 오류");
+  } finally {
+    if (previous === undefined) delete process.env.OPRN_OH_MY_PI_TEST_STUB; else process.env.OPRN_OH_MY_PI_TEST_STUB = previous;
+  }
+});

@@ -26,6 +26,7 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import type { chatCompletion } from "@/ai/llmClient";
 import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
@@ -92,6 +93,11 @@ export interface CreatePiToolsetOptions {
    * 「Tool … not found」로 턴을 태운다(2026-10-05 스트레스 g-ember-mine: 빌더가 set_map_properties 를 찾고 연속 실패).
    */
   readonly findToolsCallable?: (name: string) => boolean;
+  /**
+   * event_command_assist 의 LLM 호출. 워커(Bun)에는 편집기 동반 서비스 주소가 없어 기본 경로(상대 `/v1`)가
+   * 「fetch() URL is invalid」로 매번 실패했다(2026-10-05 스트레스 r4 p-inn·r7 g-ashen-chase). 워커가 자기 제공자로 채운다.
+   */
+  readonly eventAssistChat?: typeof chatCompletion;
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
@@ -184,6 +190,7 @@ export interface ResolvePiToolOptions {
   readonly scopeMapIds?: readonly string[];
   readonly scopeAllowsSystem?: boolean;
   readonly findToolsCallable?: (name: string) => boolean;
+  readonly eventAssistChat?: typeof chatCompletion;
 }
 
 /**
@@ -229,6 +236,7 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     scopeMapIds: options.scopeMapIds,
     scopeAllowsSystem: options.scopeAllowsSystem,
     findToolsCallable: options.findToolsCallable,
+    eventAssistChat: options.eventAssistChat,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
   }).find(tool => tool.name === name);
 }
@@ -282,7 +290,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       let constructionLogs: readonly ConstructionLog[] = [];
       const writeStarted = Date.now();
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
-        ? await runToolAsync(ctx, tool.name, args, { signal })
+        ? await runToolAsync(ctx, tool.name, args, { signal, ...(options.eventAssistChat ? { chat: options.eventAssistChat } : {}) })
         : tool.mode === "write"
           ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
           : runTool(ctx, tool.name, args));

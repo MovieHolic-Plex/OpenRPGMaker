@@ -262,6 +262,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
   const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
   const findToolsCallable = (name: string): boolean => allowedNames.has(name);
+  // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
+  const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
+    const key = (options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? options.apiKey;
+    const result = await completeProvider(request.provider, {
+      model: String((model as { id?: string }).id ?? request.model ?? ""), max_tokens: 8192, messages: chat.messages,
+    }, { ...(key ? { apiKey: key } : {}), ...(chat.signal ? { signal: chat.signal } : {}) });
+    const choice = result.completion.choices[0];
+    return { message: { role: "assistant" as const, content: typeof choice?.message.content === "string" ? choice.message.content : "" }, finishReason: choice?.finish_reason ?? null };
+  };
   const shapeFor = (name: string): PiToolShape | undefined => {
     if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
       if (request.readOnly || options.readOnlyTools) return undefined;
@@ -289,6 +298,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       charsetGate,
       modernTilesetPolicy,
       findToolsCallable,
+      eventAssistChat: eventAssistChat as never,
       ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
@@ -472,6 +482,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     charsetGate,
     modernTilesetPolicy,
     findToolsCallable,
+    eventAssistChat: eventAssistChat as never,
     ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
