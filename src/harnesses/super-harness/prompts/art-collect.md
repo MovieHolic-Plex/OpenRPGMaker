@@ -36,3 +36,8 @@ art-context-review.json(identity/scale/attachments/circulation/style)을 준비 
 작은 주차장 표본의 receipt.candidates[].contextImages(path/sha256/label)는 실제 native 조립 PNG를,
 contextSources는 같은 장면의 기준 자동차 등 출처 파일을 가리킨다. 해당 파일을 새로 그리거나 결과를 위조하지 않는다.
 감독이 조립 예시를 별도 독립 작업자에게 검수시키며 실패하면 그 지적으로 다시 제작한다. 수집 작업자는 조립 PASS를 만들지 않는다.
+
+
+수집 뒤 필수 art-demo 단계가 모든 품목을 함께 사용한 공간 전체를 조립한다.
+부품 선택에서 멈추거나 사용자에게 등록·조립을 떠넘기지 않는다. 수집자는 원본 receipt와 PNG를
+보존하여 데모 조립에 넘긴다. 데모는 그림의 품질 불합격을 숨기지 않고 독립 검수·기존 자동 수정 경로로 이어진다.

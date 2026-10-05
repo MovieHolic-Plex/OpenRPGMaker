@@ -19,7 +19,7 @@ import review_recovery
 # These phases write only concept artifacts or its own art worktree. Shared
 # assembly/probe/publication keep exclusive access until independently isolated.
 PARALLEL_STAGES = frozenset(('plan', 'plan-review', 'survey', 'material-review',
-    'art', 'art-layout-review', 'art-context-review'))
+    'art', 'art-layout-review', 'art-context-review', 'art-demo'))
 PARALLEL_KINDS = PARALLEL_STAGES | {'art-native'}
 
 
@@ -92,7 +92,7 @@ def main(ids):
         sh.ENV['SUPER_HARNESS_CODEX_BIN'] = sh.CODEX
     handlers = {'plan': sh.start_plan, 'plan-review': sh.start_plan_reviews, 'survey': sh.start_survey,
                 'material-review': sh.start_material_review, 'art': sh.start_art,
-                'art-layout-review': sh.start_art_layout_review, 'art-context-review': sh.start_art_context_review,
+                'art-demo': sh.start_art_demo, 'art-layout-review': sh.start_art_layout_review, 'art-context-review': sh.start_art_context_review,
                 'build': sh.start_build, 'review': sh.start_reviews, 'probe': sh.step_probe, 'bake': sh.start_bake}
     cursor = 0
     slots = max(1, int(os.environ.get('SUPER_HARNESS_SPACE_PARALLEL', '3')))
@@ -124,6 +124,9 @@ def main(ids):
                         if store.jobs("concept=? AND status='running'", (cid,)): continue
                         recover(cid)
                         c = store.concept(cid)
+                        if c['stage'] in ('art-review', 'art-context-review') and sh.art_demo.required(sh.DATA, cid):
+                            sh.advance_art_review(cid)
+                            c = store.concept(cid)
                         if c['stage'] not in handlers or (c['status'] == 'running' and c['stage'] != 'probe'): continue
                         if exclusive and cid != exclusive:
                             waits[cid] = 'shared-stage'
