@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.139.0 — 2026-10-05
+
+### 기능
+
+- **ai** — 조수 「턴 사이 기록」 — 각 턴 밖 프론트 액션만 읽는 표면과 버튼 (`07a68a1`)
+
+### 수정
+
+- **modern-chipset** — isolate Claude worker context as well as Codex (`2c8dfdd`)
+- **super-harness** — persist provider retries and recover approved art inputs (`c1a7f7a`)
+- **ai** — 턴 사이 기록을 툴바 행 밖으로 — 좁은 도크에서 한 글자 폭으로 눌리던 것 (`02903c2`)
+
+### 문서
+
+- **ai** — 턴 사이 기록 위키를 배치·검증 실측에 맞춤 + 화면 증거 추가 (`ac2e847`)
+
+### 테스트
+
+- **ai** — 복사 스텁에 인자 타입을 붙여 tsc void/string 불일치를 없앤다 (`19a7591`)
+
 ## 0.138.0 — 2026-10-05
 
 ### 기능
