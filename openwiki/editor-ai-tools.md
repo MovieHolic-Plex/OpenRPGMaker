@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 월드맵 자동 붓 자연어 경로 (2026-10-05)
+
+직접 저작 연결 붓 지도(worldmap_authoring, worldmapSource 없음)의 강/길/숲/산/거점 요청은
+`worldmapChoiceNote`가 생성 키트 조회와 현재 지도 편집을 구분하고, `sessionToolExposure`가
+fill_region·lay_path·거점·참고문서·시각/통행 검사 도구를 처음부터 노출한다.
+`fill_region(material:"길",path:[...],width:1)`은 초원/사막/설원과 강 횡단 다리를 칸마다 맞춘다.
+숲·산은 layer 생략 시 upper, 명시한 바탕 재료 이름은 지정 바탕을 쓴다.
+연결 붓의 원/경로 채우기는 요청 마스크 밖으로 확장하지 않는다.
+참고문서 용도 조회/읽기에 tilesetId를 생략하고 categoryId를 주면 현재 맵의 칩셋으로 찾는다
+(`fillsCurrentMapId`, 명시 mapId도 지원). 전체 타일셋 목록 조회는 기존과 같다.
+그림·재로드·실제 모델 호출 근거와 제한은 [월드맵 지형 편집](worldmap-terrain-editing.md)의 자동 붓 UX 절.
+
 ## 캐릭터 칩 선택의 실제 이미지와 적용 관문 (2026-10-05)
 
 Pi의 `list_npc_graphics` 및 `list_resources(kind:"charset")`는 응답 후보 순서의 번호를 붙인 실제 아래방향 정지 칩 이미지를 모델에 전달한다. 텍스트에는 시트·칸·외형과 `selectionId`/`nativeGraphic`을 유지한다. 고수준 `graphic:{selectionId,query?}`는 슬롯→프레임 계산을 도구가 맡으며, query를 함께 주면 해당 외형의 후보인지 검사한다. 저수준 페이지는 `nativeGraphic`을 그대로 쓴다.

@@ -1,4 +1,5 @@
 import { store, type ProjectChangeCell } from "@/project/store";
+import { worldmapAutoTile, worldmapBrushMaterial, worldmapEraseTile } from '@/project/worldmapAutoBrush';
 import { brushRelief, type ReliefBrushMode } from "@/project/relief/edit";
 import { commitReliefEdit } from "@/editor/reliefActions";
 import { TILE } from "@/project/defaults";
@@ -43,6 +44,7 @@ type RoadPoint = { readonly x: number; readonly y: number };
 export type TileLayer = "lower" | "upper";
 export type TilePaintOptions = {
   readonly autoConnect?: boolean;
+  readonly worldmapAutoBackground?: boolean;
   /** Source stamps keep authored cells without terrain shaping or tree-pair repair. */
   readonly preservePattern?: boolean;
   /** false면 hard 클러스터 동반 타일 확장을 건너뛴다 — 스탬프처럼 "고른 그대로" 찍는 도구용. */
@@ -116,7 +118,9 @@ export function paintTilesBulk(
 
   const planned: PlannedTileEdit[] = [];
   let rejection: TilePaintRejection | null = null;
-  for (const stroke of strokes) {
+  for (const source of strokes) {
+    const stroke = options.worldmapAutoBackground && tileset && !exactPlacement && !options.preservePattern
+      ? { ...source, tile: worldmapAutoTile(currentMap, tileset, source.tile, source.x, source.y, strokes) } : source;
     const targetLayer = effectiveLayer(tileset, stroke.layer, stroke.tile);
     const plan = exactPlacement
       ? planExactPlacement(current, currentMap, targetLayer, stroke.x, stroke.y, stroke.tile)
@@ -389,7 +393,9 @@ function planEraseWrites(
       layer: stroke.layer,
       x: stroke.x,
       y: stroke.y,
-      tile: restoreGround
+      tile: stroke.layer === 'lower' && previous !== undefined && worldmapEraseTile(tileset, previous) !== undefined
+        ? worldmapEraseTile(tileset, previous)!
+        : restoreGround
         ? groundTileNear(map, tileset, stroke.x, stroke.y, erasingLower) ?? TILE.GRASS
         : TILE.EMPTY,
     };
@@ -560,6 +566,10 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
   const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  if (options.worldmapAutoBackground && tileset && currentMap && worldmapBrushMaterial(tileset, newTile)) {
+    paintTilesBulk(mapId, fillPlan.points.map(p => ({ ...p, layer: fillPlan.layer, tile: newTile })), options);
+    return;
+  }
   const autoConnect = options.autoConnect ?? true;
   const prevAtStart =
     currentMap && fillPlan.points[0]

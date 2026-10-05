@@ -1,0 +1,441 @@
+{
+  "realModelCalls": 3,
+  "model": "gemini-3.8-flash",
+  "realRun": true,
+  "reloadEqual": true,
+  "projectId": "d73b111f-1dd9-4cea-ae1b-9105704010c0",
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-brush-ux-20261005/automatic/project",
+  "revision": 7,
+  "route": [
+    {
+      "x": 4,
+      "tile": 1474,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 5,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 6,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 7,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 8,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 9,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 10,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 11,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 12,
+      "tile": 3541,
+      "kind": "bridge-horizontal",
+      "background": "water",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 13,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 14,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 15,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 16,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 17,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 18,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 19,
+      "tile": 1482,
+      "kind": "road",
+      "background": "grass",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 20,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 21,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 22,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 23,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 24,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 25,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 26,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 27,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 28,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 29,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 30,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 31,
+      "tile": 3886,
+      "kind": "bridge-horizontal",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 32,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 33,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 34,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 35,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 36,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 37,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 38,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 39,
+      "tile": 2297,
+      "kind": "road",
+      "background": "sand",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 40,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 41,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 42,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 43,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 44,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 45,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 46,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 47,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 48,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 49,
+      "tile": 3933,
+      "kind": "bridge-horizontal",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 50,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 51,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 52,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 53,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 54,
+      "tile": 3112,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    },
+    {
+      "x": 55,
+      "tile": 3110,
+      "kind": "road",
+      "background": "snow",
+      "correct": true,
+      "passable": true
+    }
+  ],
+  "routeOK": true,
+  "groundOutsideRoutePreserved": true,
+  "upperKinds": {
+    "forest": 40,
+    "snowforest": 32,
+    "mountain": 32,
+    "fantasy": 8
+  },
+  "toolsBefore": 86,
+  "toolsAfter": 40,
+  "placementCallsBefore": 16,
+  "placementCallsAfter": 7,
+  "elapsedSecondsAfter": 237.807,
+  "elapsedSecondsBefore": 390.234
+}

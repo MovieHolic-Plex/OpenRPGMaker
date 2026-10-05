@@ -13,6 +13,7 @@
 
 import type { PassFlag, Project, TileGroupMetadata, TilesetDef } from "./types";
 import { roleCapabilities } from "./tileRoles";
+import { worldmapMaterialGroup } from './worldmapAutoBrush';
 import { bagMaterialRejectMessage, isBagGroup, isBagMaterialQuery } from "./materialPolicy";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
@@ -392,6 +393,10 @@ export function resolveMaterialByLabel(
       suggestions: suggestMaterialsByLabel(tileset, "소품", 5).filter((s) => !isBagMaterialQuery(s.label)),
     };
   }
+  const worldmapGroup = worldmapMaterialGroup(tileset, raw);
+  if (worldmapGroup) return materialAccessForGroup(tileset, worldmapGroup, {
+    tileId: worldmapGroup.tileIds[0]!, label: worldmapGroup.name, description: worldmapGroup.description ?? '',
+  });
   // 그룹 display name 완전 일치 우선(라벨 동의어 오염 방지 — "키큰 풀" ≠ "잔디").
   const exactGroup = findExactGroupByName(tileset, raw);
   if (exactGroup) {

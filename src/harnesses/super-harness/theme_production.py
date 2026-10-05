@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import time
 import store
+import theme_concepts
 
 FAMILIES = ['architecture','surfaces','furniture','nature','characters','creatures','vehicles','effects']
 CHECKS = ['identity','coverage','consistency','production']
@@ -59,9 +60,11 @@ def context(cid):
                and cid in {s['concept'] for s in brief.get('spaces',[])}
                and review.get('briefSha256')==sha(base/'brief.json') and review.get('verdict')=='PASS'
                and all(review.get('checks',{}).get(k,{}).get('verdict')=='PASS' for k in CHECKS))
-    return dict(policy=p,policyHash=token(p),briefPath=str(base/'brief.json'),ready=valid,
+    concept=theme_concepts.snapshot(p['seed'])
+    valid=valid and concept['approved']
+    return dict(conceptArt=concept,policy=p,policyHash=token(p),briefPath=str(base/'brief.json'),ready=valid,
                 briefSha256=sha(base/'brief.json') if valid else None,
-                label='전용 세트 공통 미술 기획·검수 중' if not valid else '전용 세트 제작 · 기존 그림 자동 대체 금지')
+                label=concept.get('label','전용 세트 공통 미술 기획·검수 중') if not valid else '전용 세트 제작 · 기존 그림 자동 대체 금지')
 
 
 def ensure(c):
@@ -104,7 +107,7 @@ def instructions(cid):
     ctx=context(cid)
     if not ctx:return ''
     feedback=read(Path(store.DATA)/'concepts'/cid/'theme-material-feedback.json',{})
-    return '\n이전 전용 재료 보완 지시: '+json.dumps(feedback,ensure_ascii=False)+'\n\n## 테마 전용 세트 계약(현재 사용자 지시)\n'+json.dumps(ctx,ensure_ascii=False)+'\n공통 briefPath를 읽어 같은 팔레트·재질·건축 문법을 쓴다. 기존 그림/팔레트 자동 차용은 금지한다.\n결과 JSON.theme={policyHash,briefSha256}은 위 현재 값과 같아야 한다. 이전 산출물은 승인 근거가 아니다.\n기획 variants[].themeIdentityAssets는 brief.spaces 중 이 공간의 identityAssets 문구를 키로,\n해당 변형의 requirements id 배열을 값으로 모두 연결한다. 바닥·벽·가구뿐 아니라 핵심 생물·탈것도 빠뜨리지 않는다.\n재료 조사 variants[].tilesetId는 policy.packId다. 아직 없는 전용 팩은 available:false로 보고한다.\n기존 시대별 native 타일 목록은 기술 분류이며 이 테마의 기존 그림 사용 승인이 아니다.\n제작은 각 전문 하네스로 한다. 미지원 품목은 구현 필요로 명시하며 기존 그림으로 대체하거나 누락하지 않는다.\nart-result.json.themeCoverage는 planning.json의 모든 requirements id를 키로 실제 제작한 native 후보 PNG\n{path,sha256} 배열을 값으로 연결한다. PNG는 후보 receipt의 sheet/candidateImages와 일치해야 한다.\n전체 장면 PNG·참고 그림·기존 stock PNG를 새로 제작한 원본 칩이라고 쓰지 않는다.\n부족하면 정확한 누락 목록과 재제작 지시를 남긴다. 조립 단계는 이 coverage가 완전해야 실행된다.\n기획/재료/시각 검수자는 이름만 대응시킨 가짜 연결과 핵심 품목 누락을 반려한다.\n'
+    return '\n이전 전용 재료 보완 지시: '+json.dumps(feedback,ensure_ascii=False)+'\n\n## 테마 전용 세트 계약(현재 사용자 지시)\n'+json.dumps(ctx,ensure_ascii=False)+'\n승인된 conceptArt.image가 있으면 반드시 실제 그림을 열어 미술 방향을 따른다. 이 그림을 잘라 게임 타일로 쓰지 않는다.\n공통 briefPath를 읽어 같은 팔레트·재질·건축 문법을 쓴다. 기존 그림/팔레트 자동 차용은 금지한다.\n결과 JSON.theme={policyHash,briefSha256}은 위 현재 값과 같아야 한다. 이전 산출물은 승인 근거가 아니다.\n기획 variants[].themeIdentityAssets는 brief.spaces 중 이 공간의 identityAssets 문구를 키로,\n해당 변형의 requirements id 배열을 값으로 모두 연결한다. 바닥·벽·가구뿐 아니라 핵심 생물·탈것도 빠뜨리지 않는다.\n재료 조사 variants[].tilesetId는 policy.packId다. 아직 없는 전용 팩은 available:false로 보고한다.\n기존 시대별 native 타일 목록은 기술 분류이며 이 테마의 기존 그림 사용 승인이 아니다.\n제작은 각 전문 하네스로 한다. 미지원 품목은 구현 필요로 명시하며 기존 그림으로 대체하거나 누락하지 않는다.\nart-result.json.themeCoverage는 planning.json의 모든 requirements id를 키로 실제 제작한 native 후보 PNG\n{path,sha256} 배열을 값으로 연결한다. PNG는 후보 receipt의 sheet/candidateImages와 일치해야 한다.\n전체 장면 PNG·참고 그림·기존 stock PNG를 새로 제작한 원본 칩이라고 쓰지 않는다.\n부족하면 정확한 누락 목록과 재제작 지시를 남긴다. 조립 단계는 이 coverage가 완전해야 실행된다.\n기획/재료/시각 검수자는 이름만 대응시킨 가짜 연결과 핵심 품목 누락을 반려한다.\n'
 
 
 def current(cid, meta):
@@ -114,18 +117,20 @@ def current(cid, meta):
 
 def tick(sh, ids, slots):
     policies={p['seed']:p for cid in ids if (p:=policy(cid))}
-    for sid,p in policies.items():
+    for sid,p in sorted(policies.items(),key=lambda item:item[0]!=store.setting('production_priority_seed')):
         children=[store.concept(cid) for cid in ids if (policy(cid) or {}).get('seed')==sid and store.concept(cid)['stage']!='discarded']
         if not children or all(context(c['id'])['ready'] for c in children):continue
         jobs=store.jobs("status='running'")
         if len(jobs)>=int(store.setting('max_codex')):return
-        if any(j['kind'] not in ('theme-plan','theme-review','plan','plan-review','survey','material-review','art','art-native','art-demo','art-layout-review','art-context-review','seed-discover') for j in jobs):return
+        if any(j['kind'] not in ('theme-plan','theme-review','theme-concept-review','plan','plan-review','survey','material-review','art','art-native','art-demo','art-layout-review','art-context-review','seed-discover') for j in jobs):return
         if any(j['kind'] in ('theme-plan','theme-review') and j['tag']==sid for j in jobs):continue
         if any(m.get('themeSeed')==sid for m in sh.provider_retry.pending_meta()):continue
         base=folder(sid);state=read(base/'state.json',{})
         if state.get('retryAt',0)>time.time() or state.get('attempt',0)>=int(store.setting('max_art_revisions') or 10):continue
         brief=read(base/'brief.json');review=read(base/'review.json',{})
         plan_needed=not brief or brief.get('policyHash')!=token(p) or review.get('verdict')=='FAIL' or not {c['id'] for c in children}<={x['concept'] for x in (brief or {}).get('spaces',[])}
+        if not plan_needed and review.get('verdict')=='PASS' and state.get('stage')=='ready':
+            theme_concepts.tick(sh,sid);continue
         kind='theme-plan' if plan_needed else 'theme-review';out=base/('brief.json' if plan_needed else 'review.json')
         prompt=f'''테마 전용 공용 아트 팩의 {'미술 기획' if plan_needed else '독립 적대적 검수'}다. 코드·그림·프로젝트를 만들지 않는다.
 정책: {json.dumps(p,ensure_ascii=False)}

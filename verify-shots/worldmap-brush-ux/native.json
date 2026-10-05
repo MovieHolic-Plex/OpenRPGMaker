@@ -1,0 +1,41 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "name": "조수를 펼친 채 배율 선택",
+      "ok": true
+    },
+    {
+      "name": "세 바탕 길·세 다리 자동 배치",
+      "ok": true
+    },
+    {
+      "name": "숲 선택 시 층 전환·바닥 보존",
+      "ok": true
+    },
+    {
+      "name": "거점 탭에서 전체 아이콘 선택",
+      "ok": true
+    },
+    {
+      "name": "다리 지우면 사막 강 복원",
+      "ok": true
+    },
+    {
+      "name": "되돌리기 후 다리 복원",
+      "ok": true
+    },
+    {
+      "name": "직접 바탕 지정 유지",
+      "ok": true
+    },
+    {
+      "name": "SQLite 저장 후 새 브라우저 재로드",
+      "ok": true
+    }
+  ],
+  "projectId": "e92cdb03-69df-4c0f-9ce1-47c51554bb23",
+  "revision": 9,
+  "sha256": "2b9e9ba826506472270df65d09c1a9b2c7bbaef5a2261fbe0202a4099c620589",
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-brush-ux-20261005/native-fixed/project"
+}

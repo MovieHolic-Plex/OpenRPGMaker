@@ -37,6 +37,8 @@ import art_execution  # noqa: E402
 import art_demo
 import keyword_seeds
 import theme_production
+import production_strategy
+import finish_priority
 import provider_retry
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
@@ -131,7 +133,7 @@ def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=Non
 
 
 def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=None):
-    if cid:prompt+=theme_production.instructions(cid)
+    if cid:prompt+=production_strategy.instructions(cid)+theme_production.instructions(cid)
     # Separate scratch/output roots even for simultaneous A/B reviewers.
     work = os.path.join(WORK, cid or '_discovery', kind + '-' + tag)
     os.makedirs(work, exist_ok=True)
@@ -430,7 +432,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'theme-plan': theme_production.on_result, 'theme-review': theme_production.on_result, 'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'theme-concept-review': theme_production.theme_concepts.on_result, 'theme-plan': theme_production.on_result, 'theme-review': theme_production.on_result, 'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -1282,7 +1284,7 @@ def tick():
     max_codex = int(store.setting('max_codex'))
     keyword_seeds.tick(sys.modules[__name__])
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['theme-plan', 'theme-review', 'seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'], include_waiting=False)) + need <= max_codex
+    codex_free = lambda need=1: len(running(['theme-plan', 'theme-review', 'theme-concept-review', 'seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'], include_waiting=False)) + need <= max_codex
 
     release_waiting()
     active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','art-demo','build','review','probe','bake','unbake')")
@@ -1300,7 +1302,7 @@ def tick():
         start_discover()
 
     for c in store.concepts("stage='art' AND status='queued'"):
-        if provider_retry.pending(c['id']): continue
+        if finish_priority.reason(c) or provider_retry.pending(c['id']): continue
         if len(running(['art', 'art-native'], include_waiting=False)) >= int(store.setting('max_art')) or not codex_free():
             break
         start_art(c)
@@ -1308,9 +1310,9 @@ def tick():
     # Revalidation can queue many concepts at once; admit at most max_active, retaining running work.
     publishing = [c for c in active if c['stage'] in ('bake', 'unbake')]
     candidates = sorted((c for c in active if c['stage'] not in ('bake', 'unbake')),
-                        key=lambda c: (c['status'] != 'running', -(c['priority'] or 0)))
+                        key=lambda c: (c['status'] != 'running',c['id'] not in finish_priority.preferred(), -(c['priority'] or 0)))
     for c in publishing + candidates[:int(store.setting('max_active'))]:
-        if provider_retry.pending(c['id']): continue
+        if finish_priority.reason(c) or provider_retry.pending(c['id']): continue
         if c['status'] != 'running' and any(m['concept'] == c['id'] for m in running()):
             continue
         if c['status'] == 'running' and c['stage'] != 'probe':
@@ -1396,6 +1398,9 @@ def action(body):
         store.set_setting('paused', '1' if kind == 'pause' else '0')
         store.log(None, '사람: 전체 멈춤' if kind == 'pause' else '사람: 다시 돌림')
         return {'ok': True}
+    if kind == 'theme-concept-decision':
+        try:return theme_production.theme_concepts.action(body)
+        except (KeyError,ValueError,OSError) as error:return {'ok':False,'error':str(error)}
     if kind in ('start-seed', 'pause-seed', 'resume-seed'):
         try:
             return keyword_seeds.action(body)

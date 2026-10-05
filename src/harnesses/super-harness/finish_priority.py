@@ -18,7 +18,16 @@ def waiting():
                    and c['status']=='queued'),key=lambda c:(RANK[c['stage']],c['updated']))
 
 
+def preferred():
+    sid=store.setting('production_priority_seed')
+    if not sid:return []
+    return [c['id'] for c in store.concepts() if c.get('source')=='keyword:'+sid
+            and c['status']=='queued' and c['stage'] in (*store.ACTIVE,'art')]
+
+
 def reason(c):
+    favored=preferred()
+    if favored:return None if c['id'] in favored else 'theme-priority'
     ahead=waiting()
     if not ahead: return None
     # Only the next ready finishing stage may reserve the next empty slot.
@@ -28,7 +37,8 @@ def reason(c):
 
 def order(ids):
     ranks={c['id']:i for i,c in enumerate(waiting())}
-    return sorted(ids,key=lambda cid:ranks.get(cid,len(ranks)))
+    favored=set(preferred())
+    return sorted(ids,key=lambda cid:(cid not in favored,ranks.get(cid,len(ranks))))
 
 
 from contextlib import contextmanager

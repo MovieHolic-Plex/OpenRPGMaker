@@ -15782,5 +15782,10 @@
 "만들고 싶은 장면: ":"Scene I want to create: ",
 "표시·실행 기록":"Display and run history",
 "빠른 배치":"Quick placement",
-"계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.":"Place directly without planning or approval. Enable when needed."
-}
+"계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.":"Place directly without planning or approval. Enable when needed.",
+"고른 바탕으로 칠합니다. 지형·강·길은 이웃에 맞춰 연결됩니다.":"Paint on the selected ground. Terrain, rivers and roads connect to nearby tiles.",
+"다른 지형":"More terrain",
+"바탕 설정":"Background settings",
+"붓을 고르고 그리세요. 바탕과 층은 자동으로 맞춥니다. 길로 강을 건너면 다리가 놓입니다.":"Choose a brush and draw. Ground and layers adjust automatically. Roads crossing rivers become bridges.",
+"아이콘을 고르고 지도에 놓으세요. 전체 모양이 함께 배치됩니다.":"Choose an icon and place it on the map. Its complete shape is placed together.",
+"자동 · 칠하는 자리의 바탕 유지":"Automatic · Keep the ground under the brush"}

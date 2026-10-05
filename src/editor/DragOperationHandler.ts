@@ -9,6 +9,7 @@ import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
+import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { store } from "@/project/store";
@@ -30,6 +31,7 @@ type DragOperation =
     readonly start: TilePoint;
     readonly tile: number;
     readonly autoConnect: boolean;
+    readonly worldmapAutoBackground: boolean;
   }
   | {
     readonly kind: "eventMove";
@@ -114,6 +116,7 @@ export class DragOperationHandler {
         start: point,
         tile: state.selectedTile,
         autoConnect: state.autoConnectMode,
+        worldmapAutoBackground: state.worldmapAutoBackground,
       };
       this.dragOperation = operation;
       this.renderShapeDragPreview(operation, point);
@@ -208,7 +211,7 @@ export class DragOperationHandler {
           y: cell.y,
           tile: operation.tile,
         })),
-        { autoConnect: operation.autoConnect },
+        { autoConnect: operation.autoConnect, worldmapAutoBackground: operation.worldmapAutoBackground },
       );
     });
   }
@@ -247,7 +250,8 @@ export class DragOperationHandler {
     if (!tileset) return;
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     for (const cell of cells) {
-      const preview = createChipsetTileObject(this.scene, map, tileset, cell.x, cell.y, operation.tile);
+      const tile = operation.worldmapAutoBackground ? worldmapAutoTile(map, tileset, operation.tile, cell.x, cell.y, cells) : operation.tile;
+      const preview = createChipsetTileObject(this.scene, map, tileset, cell.x, cell.y, tile);
       preview.setAlpha(0.62);
       layer.add(preview);
       const marker = this.scene.add.rectangle(cell.x * editorMapTileSize(operation.mapId), cell.y * editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), editorMapTileSize(operation.mapId), 0x3bc9db, 0.18);

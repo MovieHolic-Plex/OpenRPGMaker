@@ -16,6 +16,7 @@ import provider_retry
 STEPS = ["공간 기획", "기획 검수", "재료 조사·검수", "칩 제작·검수", "공간 조립", "시각 검수", "조수 시험", "공용 등록"]
 STAGE = {
     "theme-wait": (0, "전용 세트 공통 미술 기획·검수"),
+    "theme-concept-review": (0, "컨셉아트 독립 시각 검수"),
     "theme-plan": (0, "테마 전체 미술 기획"), "theme-review": (0, "테마 미술 기획 독립 검수"),
     "discovered": (0, "기획 차례 대기"), "plan": (0, "공간 기획·텍스트 도면 작성"),
     "plan-review": (1, "기획·도면 독립 검수"), "survey": (2, "사용 가능한 칩 조사"),
@@ -153,7 +154,11 @@ def snapshot(cid=None):
         elif c["stage"] == "theme-wait":
             wait_kind="theme-production"
             reason="공간들이 함께 사용할 전용 세트의 팔레트·건축·재료 목록을 먼저 기획하고 검수합니다."
-            action="사용자 선택은 필요 없습니다. 공통 기획 검수 후 공간별 제작이 이어집니다."
+            import theme_production
+            theme=theme_production.context(c['id']) or {}
+            concept=theme.get('conceptArt',{})
+            label=theme.get('label',label)
+            action="상단 키워드의 컨셉아트를 보고 Allow / Deny로 방향을 정합니다." if concept.get('canAllow') else "공통 미술 기획과 실제 컨셉아트 검수를 먼저 진행합니다."
         elif c["stage"] == "blocked":
             wait_kind = "operator-attention"
             reason = c.get("note") or "검수 또는 결과 처리에서 멈췄습니다."
@@ -194,6 +199,7 @@ def snapshot(cid=None):
             if runner and runner.get('parallelSpaces', 1) > 1:
                 wait_kind = runner.get('waits', {}).get(c['id'], 'scheduling')
                 reason = {
+                    'theme-priority': '사용자가 우선 요청한 세계관의 제작을 먼저 배정합니다.',
                     'completion-priority': '먼저 만든 공간의 데모·검수·등록을 마무리하고 새 제작을 배정합니다.',
                     'space-capacity': f"공간 {runner['parallelSpaces']}개가 동시에 작업 중입니다. 빈 슬롯에 배정합니다.",
                     'worker-capacity': '검수 작업자를 포함한 동시 실행 한도에 도달했습니다.',
@@ -224,7 +230,11 @@ def snapshot(cid=None):
         elif c["stage"] == "theme-wait":
             wait_kind="theme-production"
             reason="공간들이 함께 사용할 전용 세트의 팔레트·건축·재료 목록을 먼저 기획하고 검수합니다."
-            action="사용자 선택은 필요 없습니다. 공통 기획 검수 후 공간별 제작이 이어집니다."
+            import theme_production
+            theme=theme_production.context(c['id']) or {}
+            concept=theme.get('conceptArt',{})
+            label=theme.get('label',label)
+            action="상단 키워드의 컨셉아트를 보고 Allow / Deny로 방향을 정합니다." if concept.get('canAllow') else "공통 미술 기획과 실제 컨셉아트 검수를 먼저 진행합니다."
         elif c["stage"] == "blocked":
             next_step = "막힘 원인 교정 → 해당 단계 재실행"
         elif c["stage"] in ("done", "discarded"):

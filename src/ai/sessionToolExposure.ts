@@ -99,6 +99,10 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
   appendUnique(tools, seen, core);
   appendUnique(tools, seen, toolSchemasForNames(DISCOVERY_CONTROL_TOOL_NAMES) as OpenAiTool[]);
   appendUnique(tools, seen, schemasForIntent(input.intent));
+  if (/지도|월드맵|초원|사막|설원|산맥|다리|강.*(?:길|숲)|world.?map|overworld/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(['fill_region', 'lay_path', 'tile_erase', 'list_tileset_references',
+      'read_tileset_reference', 'list_worldmap_icons', 'stamp_worldmap_icon', 'inspect_worldmap_icon', 'show_map_region', 'check_reachability']) as OpenAiTool[]);
+  }
   if (/(월드맵|세계\s*지도|지역\s*지도|포켓몬.*(?:도로|지도)|마리오.*(?:맵|지도)|할로우.*지도|스파이어.*지도|world\s*map|overworld)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain']) as OpenAiTool[]);
   }
