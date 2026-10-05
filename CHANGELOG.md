@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.138.0 — 2026-10-05
+
+### 기능
+
+- **harnesses** — share the canonical catalog for unified production planning (#2174) (`c2d1fac`)
+- 월드맵 팔레트에 연결 지형 붓과 빈 지도 저작 추가 (`49572a2`)
+
+### 수정
+
+- 월드맵 경사로 폭·빈 칸 채우기·아이콘 설명을 타입에 맞춘다 (`90a8f26`)
+- unify audited charset references with full tool evidence (#2175) (`2171170`)
+- 월드맵 고개 폭을 맞추고 팔레트 저작 정본 증거 기록 (`ac6c3bf`)
+
 ## 0.137.0 — 2026-10-05
 
 ### 기능
