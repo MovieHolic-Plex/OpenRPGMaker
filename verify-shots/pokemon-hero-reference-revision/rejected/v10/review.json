@@ -1,0 +1,114 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "41b6c512dc4827b68ca419312efe7ce300fb7c831444ba1b60eca815dc1070e0",
+  "gifSha256": "baa1aa8115562e0f2f534dc71cd7a6d9aef93ef59b63cebaee8152bef5b25b35",
+  "observationPackageSha256": "773cf1d07d320e574d08215cf5d8e02feff6d7546f23aa211a878f26fde0b6b7",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-reference-revision/v10/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 16,
+      "reason": "Deeper cap, face at18..22, shoulder/torso23..27 and compact dressed hips now give a convincing reference-scale compact hero. Rear silhouette still contains a large near-rectangular dark hair plane below the cap; small shoe ends and stiff sleeve contours limit finished expression."
+    },
+    "anatomy": {
+      "score": 16,
+      "reason": "Front ear/cheek shading, eye placement and shorter lower face substantially improve reference-relative anatomy. Profile nose/chin remains connected and limbs have no false attachment. Side face and shoulder/forearm still describe fairly flat planes rather than reference cheek/ear/cloth overlap; one frontal eye diagonally steps while the other is vertical, leaving minor facial craft ambiguity."
+    },
+    "walking": {
+      "score": 15,
+      "reason": "Planted/swing support and opposite attached arms remain genuine in all directions. Compact dressed hips are better proportioned, but side idle trouser/foot mass merges into one uniform lower block and tiny shoe ends provide weak toe/heel rolling cues. Arms move as stiff light/dark bands with limited cloth/hand depth compared with reference step pairs."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Measured placement and cheek clusters help, but broad dark rear hair with rectangular Epatches, low differentiation between contour/brown shoes and flat side shirt/arm clusters remain schematic. Actual reference sprites use contour/value ramps and overlap to separate cap/hair/face/cloth/foot masses; matching Ypositions does not finish these clusters."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Original red cap, blue vest and gold-red bag stay consistent and readable. Cap now has stronger crown volume. Vest/undershirt and bag light/shadow/pocket planes are still simple bands with limited shaped accessory depth, reducing finished character design."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Heading and costume stay coherent; wider/deeper cap and compact body turn consistently. Rear hair depth and flatter side face/body still do not have the same sculpted volume as frontal cheeks."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All4decoded140ms frames repeat with identical idle and coherent bob;16nativepose comparisons match and gutters are transparent. Rootbrowserrecord describes14samples each1x/4x,3poses,noerrors. No unexplained sequence seam found; articulation weaknesses are scored under walking."
+    }
+  },
+  "criticalFailures": [],
+  "total": 81,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v10/quality/native-contact.png",
+      "sha256": "a480af1bbe7eab5d8ceae543cf2677d99479e22b6302d6dcf867f0fc3ed28f3b"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v10/quality/decoded-gif-contact.png",
+      "sha256": "f108aff587e148c835bc4217a9cd4cb19b512689229768fb771ad34a9f0b313d"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/idle-comparison-v10.png",
+      "sha256": "2ab78c98ebd17c7bc389d18fad0b8329f70b4acc97e1aca3342cd8488628c4d7"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/firered-reference-contact.png",
+      "sha256": "3896ba5fde7e9181d0e5a09b9e16a3ccc17895a5ae3b66abcc18bd80460c1791"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v10/browser-gif/record.json",
+      "sha256": "22c56d16719cf2df78e7f8223c87a61bd98b73a8d9ebf4f6c2a3d3e5b7b7a1ab"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "browserRecordInspected": true,
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "rgbaSha256": "9f343da8f2c497be65ac42bf429cfac7796c4cb57ab42f596379a29188b1e424"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "rgbaSha256": "f44e70d9b4a78b92378fd842fe32f6f3795d54d29b2793e7544e2ffb5af5216d"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "rgbaSha256": "1ba88b5ebc231d89b255e9200a640c4f9ba291c6350e7dfa890e761f642c2b61"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "rgbaSha256": "f44e70d9b4a78b92378fd842fe32f6f3795d54d29b2793e7544e2ffb5af5216d"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no decorrelated-model independence claim.",
+  "requiredCorrections": [
+    "Taper rear hair/nape and merge the Ehighlight into one intentional plane instead of multiple rectangular steps below a large dark wall. Preserve cap/face/shoulder placement.",
+    "Separate shoe/contour value and toe/heel planes so compact feet read as footwear; avoid one flat side-idle trouser/sole block while allowing legitimate profile overlap.",
+    "Sculpt side shoulder/sleeve/skin hand and front vest/undershirt overlaps into connected cloth/limb planes, rather than mostly horizontal bands.",
+    "Keep face/ear shading; consider making both frontal eye clusters intentionally consistent or the asymmetric gaze deliberate. Do not add eye-white rails."
+  ],
+  "decisionReason": "81below unchanged85threshold; all axis minima met, zero critical failures. Better measured proportion is real but residual plane/foot/arm craft remains visible against actual reference images.",
+  "scope": "Read-only source/art/store inspection plus requested reports. V9was not reviewed."
+}

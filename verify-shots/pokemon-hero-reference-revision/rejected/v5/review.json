@@ -1,0 +1,154 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "2b335fef74f63941822817bad78081ccc97263fc0fdeb6c0ebe1065579e2da54",
+  "gifSha256": "74543f3293d22e9f460c88a1eaaf438f048f6a2fe4e50070bf068cead848603e",
+  "observationPackageSha256": "8dd44abb0f028691d67e8f9160dc1d9e2377d85c2b9c563cc16ec95266f9a9de",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-reference-revision/v5/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 14,
+      "reason": "Compact shorts/shoe bands and wider dense face correct the v4 thin-stilt proportions. Against Brendan/May/Red the back hair remains a heavy rectangular wall, the vest a box, and profiles retain a long tapered face/neck wedge. A recognizable serviceable human, not a finished expressive silhouette."
+    },
+    "anatomy": {
+      "score": 13,
+      "reason": "The short lower body and connected forearms are credible. However front eyes repeat pale outer columns(x4/x10) with dark inner pupils(x5/x9) on two rows, creating bright convergent stripes rather than the references compact dark eyes. Profile nose/cheek/jaw/neck is a stretched tapered skin wedge, with little separate cheek/chin mass or shoulder integration."
+    },
+    "walking": {
+      "score": 14,
+      "reason": "All directions have genuine alternating support/swing feet and opposite arm action; connected compact limbs improve native readability. Shoes still read as rectangular blocks rather than coherent rolling toe/heel clusters, and side idle merges the lower mass into a uniform sole. Profile occlusion is permitted; the problem is missing near/far shoe shape and clothing overlap, not the mere absence of an alpha gap."
+    },
+    "pixelCraft": {
+      "score": 10,
+      "reason": "Darker contours and improved value spread help. Yet large flat chest, repeated eye strips, a nearly uniform back hair wall and horizontal pack stripes give schematic blocks. Reference pixels describe connected planes through selective outline breaks, warm facial shadow/cheek clusters, and cloth/shoe overlap; matching total opacity does not supply those relationships."
+    },
+    "identity": {
+      "score": 12,
+      "reason": "Cap, vest and gold-red pack stay coherent. Front vest lacks a readable opening/collar/hem design, while side pack is a narrow gold mass near the elbow and back pack a striped plaque; it does not yet convey the reference-level shaped attached accessory volume. Costume colors are present but character design is underresolved."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "The same hero and costume turn consistently, with clear front/back/profile heading. Profile neck and pack width still make the turn feel flatter and narrower than the front/back volume."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All four140ms frames decode, all16native pose comparisons match, gutters remain transparent, idle1/3 repeat and no file-level seam or unexplained root jump appears in the full decoded sequence. This continuity score does not approve the weaker pose and cluster craft."
+    }
+  },
+  "criticalFailures": [],
+  "total": 72,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v5/quality/native-contact.png",
+      "sha256": "60aa622e715a3a9e807cb8f130f1ad451bc22fc6cf5368f2577cc439b6721266"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v5/quality/decoded-gif-contact.png",
+      "sha256": "9a7881e64673b505fa36dd7979587eb8032597b67be60bab8bd398d6b85e7634"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/idle-comparison.png",
+      "sha256": "10803b1332dc2589c3605e84624190110a1cc4d323f486dae3ad1d2de436fe42"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no different-model/decorrelated quality judgment is claimed.",
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        11,
+        65,
+        31
+      ],
+      "rgbaSha256": "f0e81551ece27a9c4f3aa6ff5274ee194f6486b19c56c6ba3223f80d4af5b709"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        10,
+        65,
+        31
+      ],
+      "rgbaSha256": "b321b9e3e82c8f9931e6ebe95a9d24e195e1baddff3f76c4eba20b1ed4daa2bb"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        11,
+        65,
+        31
+      ],
+      "rgbaSha256": "d3f937d5d43d07b456aa0228f37ab1d5323a09c5369fec4d3913f33ac6ee54fb"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        10,
+        65,
+        31
+      ],
+      "rgbaSha256": "b321b9e3e82c8f9931e6ebe95a9d24e195e1baddff3f76c4eba20b1ed4daa2bb"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "referenceEvidence": "All36Emerald reference poses at1x/4x plus Brendan/May/Red/v4/v5 idle comparison at1x/5x. Nintendo references are external inspection material only.",
+  "frontIdleMeasurements": {
+    "bbox": [
+      1,
+      10,
+      14,
+      31
+    ],
+    "opaquePixels": 218,
+    "lastFiveRowsInkCounts": [
+      11,
+      6,
+      6,
+      6,
+      6
+    ],
+    "lastFiveRowsOpaquePixels": 35,
+    "comparison": {
+      "v4LastFiveRows": 22,
+      "brendanLastFiveRows": 48,
+      "mayLastFiveRows": 40,
+      "v5LastFiveRows": 35
+    },
+    "interpretation": "Lower mass is materially improved. These diagnostics are not added numerical gates: v5total218opaque pixels versus214Brendan/May shows equal area can still have weaker clusters."
+  },
+  "requiredCorrections": [
+    "Rebuild the frontal eyes as compact dark eye/upper-lid clusters with restrained highlights; remove the repeated outer-white/inner-pupil stripes that imply a convergent bright gaze. Shape forehead/cheek/chin around the eyes rather than treating extra white as detail.",
+    "Shorten and round the profile lower face/neck transition; integrate chin and collar/shoulder so the head does not taper into a long pointed wedge.",
+    "Shape back hair with a tapered nape and a few coherent value planes/edge breaks; avoid the tall near-uniform rectangular dark wall.",
+    "Redesign vest collar/opening/hem and near/far arm overlap as connected clothing forms. Widen/deepen side pack enough to match its back-view mass; place attachment behind the shoulder/elbow instead of reading as a gold block against the arm.",
+    "Redraw planted/swing shoe toe/heel forms and side near/far overlap using one stable footwear design. Preserve genuine alternation and compact legs; do not add obligatory alpha gaps or exact copied reference pixels."
+  ],
+  "scope": "Read-only source/art/store inspection plus requested review reports. No code, artwork, historical approval or canonical data changed."
+}

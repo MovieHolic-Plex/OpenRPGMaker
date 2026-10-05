@@ -18,3 +18,5 @@ Direct native authorship: `python3 scripts/asset-gen/pokemon-characters/build.py
 ### Hostile quality gate for the directly authored hero
 
 Native structural checks do not judge anatomy or walking quality. `node/quality_gate.py` adds a frozen85-point art rubric, source-exact decoded GIF checks, current prepared contacts, two recorded judgments, and root browser GIF evidence. The Python hero producer's shared registration requires it. `scripts/qa/runtime/pokemon-hero-quality-controls.py` exercises focused rejection controls; fixtures never approve artwork. See `openwiki/harnesses/pokemon-character-motion.md` for commands, evidence schema and limitations.
+
+Before art approval compare the actual Emerald/FireRed character sheets at native and integer enlargement. The previous v4 approval was withdrawn after reference comparison; preserve its historical record and reassessment. Do not grade only relative improvement over a failed candidate. Current reference revision, canonical save and actual player proof: `verify-shots/pokemon-hero-reference-revision/SUMMARY.md`.

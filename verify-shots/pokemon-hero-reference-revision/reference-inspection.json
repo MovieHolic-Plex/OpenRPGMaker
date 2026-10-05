@@ -1,0 +1,68 @@
+{
+  "referenceOnly": true,
+  "originalImagesNotCommittedOrShipped": true,
+  "references": [
+    {
+      "game": "Emerald",
+      "name": "brendan",
+      "inspectionFile": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/brendan.png",
+      "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+      "url": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "Emerald",
+      "name": "may",
+      "inspectionFile": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/may.png",
+      "sha256": "7f185cda9854f7812545c306795b454dc750be440e582974518ba8a63c9b7e87",
+      "url": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/may/walking.png",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "Emerald",
+      "name": "professor",
+      "inspectionFile": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/professor.png",
+      "sha256": "6618f1249880bd3672c453512351f63b173cb655fb136ceea84fdb2c9cd76c15",
+      "url": "See emerald-native-reference-contract.json",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "Emerald",
+      "name": "woman",
+      "inspectionFile": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/woman.png",
+      "sha256": "b8953e355faa1ede48ee7c57e432b73fb792fbdbfb2900e5b21d8452023ebdf7",
+      "url": "See emerald-native-reference-contract.json",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "FireRed",
+      "name": "woman_1",
+      "inspectionFile": "/tmp/pokemon-hero-reference-revision/firered/woman_1.png",
+      "sha256": "cc6508fdb301902362bf094b11270acdb5fc98e99150503c96a81e0038ced77a",
+      "url": "https://github.com/pret/pokefirered/blob/master/graphics/object_events/pics/people/woman_1.png",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "FireRed",
+      "name": "red_normal",
+      "inspectionFile": "/tmp/pokemon-hero-reference-revision/firered/red_normal.png",
+      "sha256": "94eb37499a8bd663f47a0767c34b93569cf0c222a9906852943016e3a771054d",
+      "url": "https://github.com/pret/pokefirered/blob/master/graphics/object_events/pics/people/red_normal.png",
+      "shippingPixelsCopied": false
+    },
+    {
+      "game": "FireRed",
+      "name": "green_normal",
+      "inspectionFile": "/tmp/pokemon-hero-reference-revision/firered/green_normal.png",
+      "sha256": "1229935843ebeb349176fe0c0dad579fdb855c5b89ecad8a22cbb9096581e1df",
+      "url": "https://github.com/pret/pokefirered/blob/master/graphics/object_events/pics/people/green_normal.png",
+      "shippingPixelsCopied": false
+    }
+  ],
+  "findings": [
+    "Original16x32 frames do not imply thin adult proportions. Dense connected cap/cheek/shoulder/hip/shoe clusters define child-scale characters.",
+    "Face eyes normally near19..21; shoulders near24. Earlier16..19face/22shoulders misallocated pixel budget and left a longer torso.",
+    "Row counts diagnose area but do not prove aesthetic quality.",
+    "Prior v4artPASS withdrawn61under same rubric; structural/hash approvals do not imply visual craft."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "decodedFrames": 4,
+  "displayScale": 4,
+  "nearestNativePixelsExact": true,
+  "opaqueColors": 15,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "sourceSha256": "b88f1ce94a24e1e3fff18e3865746294796c6a62c5d324a23b2eec2004009caa",
+  "outputSha256": "29e6190b420fd82dbf3694f82c0d20dee04e600238c35cd7475b90a089d27374",
+  "note": "Explicit indexed palette preserves native RGB; display enlargement is not an authored game sprite."
+}
