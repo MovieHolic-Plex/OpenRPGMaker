@@ -134,29 +134,41 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 
 .example-option .choice-scene{width:100%;max-height:none;image-rendering:pixelated}.example-option .scene-open{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.example-option .scene-open img{height:100%;object-fit:contain}
 .example-option .choose-candidate{margin:8px 0 14px}.example-caption{font-size:12px;color:#b1becd;margin:8px 0;line-height:1.6}.example-guide{color:#e0e7ef!important;font-size:15px;line-height:1.8}.example-evaluation{border-top:1px solid #36414e;padding-top:14px;margin-top:10px}.example-evaluation fieldset{border:0;padding:0;margin:0;min-width:0}.example-evaluation legend{font-weight:600;margin-bottom:10px}.example-ratings,.example-tags{display:flex;flex-wrap:wrap;gap:7px}.example-ratings label,.example-tags label{padding:7px 8px;border:1px solid #42536a;border-radius:7px;cursor:pointer;font-size:13px}.example-ratings label:has(:checked),.example-tags label:has(:checked){background:#284a65;border-color:#8ac8f7}.example-ratings input,.example-tags input{margin:0 5px 0 0;accent-color:#82c7ff}.example-text{display:block;margin:12px 0 8px;font-size:13px}.example-text textarea{margin-top:6px;min-height:80px}.example-evaluation small{display:block;margin:8px 0;color:#aebdce}.save-evaluation{padding:9px 15px}.example-source{border-top:1px solid #36414e;margin-top:16px;padding-top:10px;font-size:12px;color:#aebdce}.example-source summary{cursor:pointer;padding:6px 0}.example-source .choice-part{margin:10px 0}.example-storage-note{color:#aebdce;font-size:13px;margin-top:16px}
+.decision-intro{font-size:18px;line-height:1.7;margin:16px 0;color:#d8e4f1}
+.binary-actions{display:flex;gap:10px;margin-top:14px}.binary-actions button{flex:1;padding:14px 10px;font-size:18px;font-weight:700;min-height:60px}.binary-actions small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:#c6d3df}.binary-actions [data-decision=allow]{background:#204d3a;border-color:#4e916e}.binary-actions [data-decision=deny]{background:#40303a;border-color:#926577}.binary-actions [aria-pressed=true]{outline:2px solid #e2eaf3;outline-offset:2px}.binary-actions button:disabled{opacity:.55;cursor:default}
+.example-pictures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.example-pictures figure{margin:0;min-width:0}.example-pictures figcaption{font-size:12px;color:var(--dim);margin-top:5px}.choice-option.denied{border-style:dashed}.decided-examples>summary{cursor:pointer;padding:14px 0;font-size:16px}.choice-panel form{margin-top:20px}.choice-panel form button{padding:12px 20px}.choice-panel .choice-lead{color:#aec3d8}
+@media(max-width:600px){.example-pictures{grid-template-columns:1fr}.binary-actions button{font-size:16px}}
+.user-inbox{padding:24px 20px 4px}.user-inbox h2{margin:0 0 8px;font-size:24px}.user-inbox p{color:#b7cadd;font-size:16px}#operations{margin:14px 20px;border:1px solid var(--line);border-radius:10px;padding:12px}#operations>summary,.operator-controls>summary{cursor:pointer;color:var(--dim)}.operator-controls{margin-left:auto}.operator-controls[open]{display:flex;gap:8px}.s.stop{color:var(--dim)}
+
+#live-board{padding:22px 20px 8px;max-width:1600px;margin:auto}#live-board>h2{font-size:22px;margin:0 0 5px}#live-board>.live-caption{color:#aab8c9;margin:0 0 18px;font-size:13px}.live-space-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:16px}.live-space{border:1px solid #40526a;background:#19222e;border-radius:14px;padding:18px;min-width:0}.live-space header{padding:0;background:none;border:0;display:flex;gap:8px;align-items:start;flex-wrap:wrap}.live-space h3{font-size:21px;margin:0}.live-space .live-phase{color:#b5d3ff;font-size:13px;background:#283f58;border-radius:6px;padding:5px 8px;margin-left:auto}.live-space h4{font-size:14px;margin:18px 0 7px}.live-space p{line-height:1.65;overflow-wrap:anywhere}.live-space .doing{font-size:15px;margin:12px 0}.live-space .subtle{font-size:12px;color:#adc0d3}.live-space progress{width:100%;height:9px;accent-color:#7bbcfe}.live-meter{display:flex;justify-content:space-between;font-size:13px;gap:8px}.live-checks{display:grid;grid-template-columns:1fr 1fr;list-style:none;padding:0;gap:5px;margin:10px 0;color:#8fa3b8;font-size:12px}.live-checks .complete{color:#9ad5b5}.live-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-image{min-width:0;padding:0;overflow:hidden;background:#101721;text-align:left}.live-image img{width:100%;height:165px;object-fit:contain;image-rendering:pixelated;display:block}.live-image:only-child{grid-column:1/-1}.live-image span{display:block;padding:7px;font-size:12px}.live-no-image{padding:16px;border:1px dashed #4e627c;border-radius:8px;color:#c1ccda;font-size:13px;line-height:1.7}.live-no-image b{display:block;color:#e3eaf2}.live-tags{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}.live-tags span{background:#283646;border-radius:5px;padding:5px 7px}.live-event{font-size:12px;color:#b0c0d2;margin:5px 0}.live-space details summary{cursor:pointer;font-size:13px;color:#d3e1f0}.live-space details li{font-size:13px;line-height:1.6;margin:7px 0;overflow-wrap:anywhere}.live-next{border-left:3px solid #79b2ed;padding-left:10px;font-size:13px}.live-open{width:100%;margin-top:12px;padding:10px}.live-problem{color:#f5c09d}.live-space .progress-job{padding:9px;margin:6px 0}.live-space .progress-job b{font-size:12px}.live-space .progress-job p{margin:3px 0;font-size:12px}.live-space .progress-timing{font-size:12px}.live-offline{padding:12px;border:1px solid #d8a666;color:#ffd197;border-radius:8px;margin:8px 0}
+@media(max-width:600px){#live-board{padding:16px 12px 0}.live-space{padding:14px}.live-image img{height:130px}}
+
 </style>
 </head>
 <body>
 <header>
   <h1>슈퍼하네스</h1>
   <span id="line">불러오는 중…</span>
-  <a class="header-link" id="orders-link" href="/orders">그림 주문서</a>
-  <span class="muted">하루 상한 없음</span>
-  <button id="pause"></button>
+<details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
 </header>
-<section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section>
+<section id="live-board" aria-label="공간별 제작 진행"><h2>공간별 진행을 확인하고 있습니다…</h2></section>
+<section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
+<details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
 <div class="tabs" id="tabs"></div>
 <main id="grid"></main>
 <div id="modal"><div class="box" id="box"></div></div>
 <div id="big"><img></div>
 <script type="module">
 import { renderMarkdown } from "/markdown.js";
-import { renderChoices } from "/art-choice.js";
+import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
-let requestId = 0;
+let requestId = 0, modalStage = null;
 let activityState = null, activityFetched = 0, activityBusy = false;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '예시 평가·선택'], ['wait', '작업 대기'], ['stop', '막힘'], ['discarded', '폐기']];
-let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
+let outputState = null, outputFetched = 0, outputBusy = false, outputError = '';
+const liveCards = new Map();
+const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','진행 현황']];
+const OPERATOR_TABS = [['all','전체 기록'],['wait','단계 배정 대기'],['stop','운영 점검'],['discarded','폐기 기록']];
+let L = null, tab = 'pick', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
@@ -167,15 +179,17 @@ function cardHtml(it) {
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
-function matchesTab(i,g) { return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
+function matchesTab(i,g) { if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
 function render() {
   const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('operator-tabs').innerHTML=OPERATOR_TABS.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('inbox-summary').textContent=n('pick')?`확인할 그림 ${n('pick')}개 · 예시는 Allow / Deny, 결과는 수정 / Allow / Deny로 결정하세요.`:'지금 선택하실 그림은 없습니다. 새 예시나 결과가 준비되면 여기에 표시됩니다.';
   const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
   const list = L.items.filter((i) => matchesTab(i,tab))
     .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
   const grid = $('grid');
-  if (!list.length) { grid.innerHTML = '<p class="empty">없다</p>'; cards.clear(); return; }
+  if (!list.length) { grid.innerHTML = '<p class="empty">'+(tab==='pick'?'지금 하실 일은 없습니다.':'이 목록에 표시할 공간이 없습니다.')+'</p>'; cards.clear(); return; }
   if (grid.querySelector('.empty')) grid.innerHTML = '';
   const keep = new Set(list.map((i) => i.id));
   for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
@@ -188,7 +202,7 @@ function render() {
   });
 }
 
-function setTab(k) { tab = k; localStorage.setItem('sh-tab', k); render(); }
+function setTab(k) { tab = k; render(); }
 
 async function refresh() {
   if (document.hidden) return;
@@ -198,6 +212,10 @@ async function refresh() {
   $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
   if (!ordersPage) { render(); paintProgress(); }
+  const opened=L.items.find(i=>i.id===openId);
+  if(opened && modalStage && opened.stage!==modalStage && !$('box').querySelector('[data-busy=true]') && !$('box').querySelector('textarea')?.value.trim()) {
+    modalStage=opened.stage; await openConcept(openId);
+  }
 }
 
 
@@ -205,20 +223,88 @@ const duration = value => value == null ? '확인 불가' : value < 60 ? `${valu
 function jobHtml(job) {
   const quiet = job.outputAgeSeconds != null && job.outputAgeSeconds >= 180;
   return `<div class="progress-job"><b>${job.alive ? '● 실행 중' : '실행 확인 필요'} · ${esc(job.label)}${job.reviewer ? ` · 검수자 ${esc(job.reviewer)}` : ''}</b>
-    <div class="progress-timing"><span>시작 후 ${duration(job.elapsedSeconds)}</span><span>마지막 출력 ${job.outputAgeSeconds == null ? '없음' : duration(job.outputAgeSeconds)+' 전'}</span></div>
+    <div class="progress-timing"><span>시작 후 ${duration(job.elapsedSeconds)}</span><span>${esc(job.outputLabel || '마지막 출력')} ${job.outputAgeSeconds == null ? '없음' : duration(job.outputAgeSeconds)+' 전'}</span></div>
     ${job.model ? `<p>모델 ${esc(job.model)}${job.effort ? ` · ${esc(job.effort)}` : ''}</p>` : ''}
     ${quiet ? '<p class="progress-stale">최근 3분 이상 새 출력이 없습니다. 프로세스 존재만으로 정상 진행을 보장할 수 없습니다.</p>' : ''}</div>`;
+}
+function outputHtml(item, out) {
+  if (!out || out.error) return `<p class="subtle">${esc(out?.error || '현재 산출물을 확인하고 있습니다…')}</p>`;
+  const count = out.imageCounts;
+  const stale = Date.now()/1000-out.updated > 35;
+  const images = [...out.images].sort((a,b)=>(a.kind==='기획도')-(b.kind==='기획도')).slice(0,4);
+  return `${stale?'<p class="live-offline">산출물 확인이 지연되었습니다. 아래는 마지막 확인 결과입니다.</p>':''}
+    <div class="live-meter"><span>산출물·검수 확인 ${out.completed}/${out.total}</span><b>${out.percent}%</b></div>
+    <progress max="100" value="${out.percent}" aria-label="산출물·검수 확인률"></progress>
+    <ul class="live-checks">${out.milestones.map(m=>`<li class="${m.done?'complete':''}">${m.done?'✓':'○'} ${esc(m.label)}</li>`).join('')}</ul>
+    <p class="subtle">시간 기준 진행률은 아닙니다. 현재 근거가 확인된 공정 수이며 재수정 시 낮아질 수 있습니다.</p>
+    <h4>지금까지 나온 그림</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
+    ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
+    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)}</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
+    ${out.nativeAvailable?`<p class="subtle">최근 준비된 후보 큐 · ${Object.entries(out.native).map(([k,n])=>esc(({queued:'대기',running:'제작 중',drawing:'제작 중',reviewing:'검수 중',done:'처리 완료',failed:'실행 실패'})[k]||k)+' '+n).join(' · ')}<br>후보 처리 완료는 품질 합격과 다릅니다.</p>`:''}
+    ${out.missingCount?`<details data-live-section="materials"><summary>부족한 재료 ${out.missingCount}종</summary><ul>${out.missing.map(m=>`<li>${esc(m)}</li>`).join('')}</ul></details>`:''}`;
+}
+function paintLiveBoard() {
+  const board=$('live-board');
+  if(ordersPage) {board.hidden=true;return;}
+  if(!activityState)return;
+  const list=activityState.items.filter(i=>(i.managed||i.jobs.length)&&!['done','discarded','art-review','result-review'].includes(i.stage));
+  if(!board.querySelector('.live-space-grid'))board.innerHTML='<h2>지금 만들고 있는 공간</h2><p class="live-caption"></p><div class="live-space-grid"></div><p class="live-board-health"></p>';
+  board.querySelector('.live-caption').textContent=`${list.length}개 공간 · 실행 상태 5초 / 산출물 약 10초마다 확인 · 이미지를 누르면 확대됩니다.`;
+  const health=board.querySelector('.live-board-health');
+  health.className='live-board-health '+(outputError?'live-offline':'subtle');
+  health.textContent=outputError || (outputState?`산출물 마지막 확인 ${new Date(outputState.at*1000).toLocaleTimeString('ko-KR')}`:'산출물 읽는 중…');
+  const grid=board.querySelector('.live-space-grid');
+  const ids=new Set(list.map(i=>i.id));
+  for(const [id,el]of liveCards)if(!ids.has(id)){el.remove();liveCards.delete(id);}
+  for(const item of list){
+    let el=liveCards.get(item.id);
+    if(!el){el=document.createElement('article');el.className='live-space';el.dataset.concept=item.id;liveCards.set(item.id,el);grid.append(el);}
+    const expanded=[...el.querySelectorAll('details[open]')].map(d=>d.dataset.liveSection);
+    const out=outputState?.items.find(o=>o.id===item.id);
+    const events=out?.events?.slice(0,3)||[];
+    el.innerHTML=`<header><h3>${esc(item.title)}</h3><span class="live-phase">${esc(item.label)}</span></header>
+      <p class="doing">${esc(out?.task||item.note||item.label)}</p>
+      ${item.jobs.map(j=>jobHtml(j.kind==='art-native' && out?.nativeOutputAgeSeconds!=null?{...j,outputAgeSeconds:Math.min(j.outputAgeSeconds??Infinity,out.nativeOutputAgeSeconds),outputLabel:'하위 제작 포함 마지막 출력'}:j)).join('')}
+      ${!item.jobs.length?`<p class="live-problem">${esc(item.reason||item.note)}</p>`:''}
+      ${outputHtml(item,out)}
+      ${out?.layoutVerdict?`<p class="subtle">최근 제작 전 도면 검수: ${out.layoutVerdict==='PASS'?'통과':out.layoutVerdict==='FAIL'?'반려 · 수정 필요':esc(out.layoutVerdict)}</p>`:''}
+      ${item.reasons.length?`<p class="live-problem">최근 반려 기록: ${esc(item.reasons[0].slice(0,150))}${item.reasons[0].length>150?'…':''}</p><details data-live-section="reasons"><summary>반려 근거 ${item.reasons.length}건 보기</summary><ul>${item.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>`:''}
+      <h4>최근 바뀐 점</h4>${events.length?events.map(e=>`<p class="live-event">${esc(e.at.slice(11))} · ${esc(e.text)}</p>`).join(''):'<p class="subtle">처리 기록 확인 중…</p>'}
+      <p class="live-next"><b>다음에 나올 것</b><br>${esc(out?.deliverable||item.next)}</p>
+      <button class="live-open" data-live-open="${esc(item.id)}">그림·기획서·검수 기록 자세히 보기</button>`;
+    for(const d of el.querySelectorAll('details'))d.open=expanded.includes(d.dataset.liveSection);
+    el.querySelector('[data-live-open]').onclick=()=>openConcept(item.id);
+    for(const b of el.querySelectorAll('[data-live-image]'))b.onclick=()=>{const img=$('big').querySelector('img');img.style.width='';img.src=b.dataset.liveImage;$('big').classList.add('on');};
+  }
+  if(!list.length)health.textContent=outputError||'현재 제작 중인 공간은 없습니다. 아래에서 준비된 예시나 결과를 확인하세요.';
+}
+async function refreshOutputs(){
+  if(ordersPage||document.hidden||outputBusy)return;
+  outputBusy=true;
+  try{
+    const r=await fetch('/data/monitoring/space-progress/latest.json',{cache:'no-store',signal:AbortSignal.timeout(8000)});
+    if(!r.ok)throw Error('확인 실패');
+    const value=await r.json();
+    if(!Array.isArray(value.items)||!Number.isFinite(value.at))throw Error('형식 오류');
+    outputState=value;outputFetched=Date.now();
+    outputError=Date.now()/1000-value.at>35?'산출물 관측이 지연되고 있습니다. 마지막 확인 결과를 표시합니다.':'';
+  }catch{outputError='산출물 갱신 실패 · '+(outputFetched?'마지막 확인 결과를 유지합니다.':'현재 이미지 출력 여부를 확인하지 못했습니다.')+' 자동으로 다시 확인합니다.';}
+  finally{outputBusy=false;paintLiveBoard();}
 }
 function paintProgress() {
   const overview = $('activity-overview');
   if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
+  paintLiveBoard();
   const alive = activityState.jobs.filter(j => j.alive);
-  $('line').textContent = `${activityState.paused ? '전체 자동 큐 멈춤' : '전체 자동 큐 실행'} · 실제 실행 ${alive.length}개`;
+  $('line').textContent = `워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개`;
+  const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
+  $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
   const queued = activityState.items.filter(i => i.managed && !i.jobs.length && i.state === 'queued');
-  overview.innerHTML = `<h2>현재 실행 ${alive.length}개 · 지정 공간 대기 ${queued.length}개</h2>
+  overview.innerHTML = `<h2>워커 ${alive.length}개 실행 · 실제 칩 제작 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
     <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
     <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
-    ${queued.length ? `<div>순서 대기: ${queued.map(i => esc(i.title)).join(' · ')}</div>` : ''}
+    ${queued.length ? `<div class="queue-reasons">${queued.map(i => `<p><b>${esc(i.title)}</b> · ${esc(i.label)} 대기<br><small>${esc(i.reason)}</small></p>`).join('')}</div>` : ''}
+    ${activityState.items.filter(i=>i.waitKind==='integration-missing').map(i=>`<p class="progress-warning"><b>${esc(i.title)}</b> · 실행 예약 없음<br>${esc(i.reason)}</p>`).join('')}
     <div class="progress-footer">5초마다 상태 확인 · 마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 단계별 소요 시간은 달라 남은 시간은 확정할 수 없습니다.</div>`;
   overview.querySelectorAll('[data-open-concept]').forEach(b => b.onclick = () => b.dataset.openConcept && openConcept(b.dataset.openConcept));
   for (const el of document.querySelectorAll('[data-progress-id]')) {
@@ -226,14 +312,14 @@ function paintProgress() {
     if (!item) continue;
     const job = item.jobs.find(j => j.alive);
     const status = el.parentElement.querySelector('.s');
-    if (status && (job || item.managed || item.jobs.length)) status.textContent = job ? '실행 중' : item.jobs.length ? '실행 확인 필요' : item.state === 'queued' ? '지정 실행기 · 순서 대기' : item.label;
+    if (status && (job || item.managed || item.jobs.length)) status.textContent = job ? job.label : item.jobs.length ? '실행 확인 필요' : item.state === 'queued' ? '지정 실행기 · 순서 대기' : item.label;
     el.textContent = job ? `${job.label} · ${duration(job.elapsedSeconds)} 경과` : item.reason || item.label;
   }
   const panel = $('concept-progress');
   const item = activityState.items.find(i => i.id === openId);
   if (!panel || !item) return;
   const detail = activityState.detail?.id === openId ? activityState.detail : item;
-  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '막힘' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
+  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '운영 점검' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
   const expanded = [...panel.querySelectorAll('details[open]')].map(d => d.dataset.section);
   const focused = document.activeElement?.parentElement?.dataset.section;
   panel.innerHTML = `<div class="progress-kicker">${esc(item.title)} · 실시간 진행</div><h2>${status} — ${esc(item.label)}</h2>
@@ -258,6 +344,8 @@ async function refreshActivity() {
     activityState = results[0]; activityState.detail = results[1]?.items[0]; activityFetched = Date.now();
     paintProgress();
   } catch {
+    $('live-board').querySelector('.live-board-health')?.classList.add('live-offline');
+    if ($('live-board').querySelector('.live-board-health')) $('live-board').querySelector('.live-board-health').textContent='작업 상태 갱신 실패 · 마지막 확인 결과입니다. 자동으로 다시 확인합니다.';
     const message = `상태 갱신 실패 · ${activityFetched ? new Date(activityFetched).toLocaleTimeString('ko-KR')+' 이후의 진행은 확인되지 않았습니다.' : '현재 진행 상태를 확인할 수 없습니다.'} 5초 후 다시 확인합니다.`;
     for (const target of [$('activity-overview'), $('concept-progress')]) {
       if (!target) continue;
@@ -324,30 +412,26 @@ async function documentView(target, path, { modal = false } = {}) {
       target.insertBefore(progress, target.querySelector('.doc-tools'));
       paintProgress();
       refreshActivity();
-      const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
-      const choice = response.ok ? await response.json() : null;
+      const [choiceResponse, detailResponse] = await Promise.all([
+        fetch('/api/art-choices?id=' + encodeURIComponent(cid)), fetch('/api/concept?id=' + encodeURIComponent(cid))]);
+      const choice = choiceResponse.ok ? await choiceResponse.json() : null;
+      const detail = detailResponse.ok ? await detailResponse.json() : null;
       if (current !== requestId) return;
-      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
-        const panel = document.createElement('section'); panel.className = 'choice-panel';
-        const docs = document.createElement('details'); docs.className = 'choice-docs';
-        const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
-        docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
-        if (choice.stage === 'art-review') {
-          const statusDetails=document.createElement('details');statusDetails.id='choice-status';
-          const statusLabel=document.createElement('summary');statusLabel.textContent='제작 단계·실행 기록 보기';
-          statusDetails.append(statusLabel,progress);target.insertBefore(statusDetails,docs);
-        }
-        renderChoices(panel, choice, refresh, url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); }, group => {
-          const field=target.querySelector('#fix');if(!field)return;
-          field.closest('details').open=true;
-          if(!field.value.trim())field.value=`${group.title} 후보 수정 요청: `;
-          field.scrollIntoView({block:'center'});field.focus();
-        });
+      modalStage = detail?.stage || choice?.stage;
+      const docs = document.createElement('details'); docs.className='choice-docs';
+      const summary=document.createElement('summary');summary.textContent='제작 과정·주문서·검수 기록';
+      docs.append(summary, target.querySelector('.doc-tools'), article);target.append(docs);
+      const panel=document.createElement('section');panel.className='choice-panel';target.insertBefore(panel,progress);
+      const enlarge = url => { const img=$('big').querySelector('img');img.onload=()=>{img.style.width=(img.naturalWidth<300?img.naturalWidth*6:img.naturalWidth)+'px';};img.src=url; $('big').classList.add('on'); };
+      if(detail?.resultReview) {
+        renderResult(panel, detail.resultReview, refresh, enlarge);
+      } else if (['art-review','art-layout-review','art-context-review','art','blocked'].includes(choice?.stage) && choice.groups.length) {
+        renderChoices(panel, choice, refresh, enlarge);
+      } else {
+        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${detail?.stage==='blocked'?'제작 중 문제가 있어 운영 점검이 필요합니다.':esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 하실 일은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p><button data-back-inbox>확인할 그림 목록으로</button>`;
+        panel.querySelector('[data-back-inbox]').onclick=()=>{closeModal();setTab('pick');};
       }
-      const actions = document.createElement('section');
-      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
-      const correction = document.createElement('details'); correction.className='choice-docs';
-      const label=document.createElement('summary');label.textContent='교정 지시·재료 재확인·폐기';correction.append(label,actions);target.append(correction);
+
     }
   } catch (error) {
     if (current !== requestId) return;
@@ -364,7 +448,7 @@ async function openConcept(id) {
   await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
 }
 
-function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; }
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; modalStage = null; }
 $('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
 document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
 function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }
@@ -384,6 +468,7 @@ async function post(body) {
 
 Object.assign(window, { setTab, closeModal, act });
 if (ordersPage) {
+  $('live-board').hidden=true;
   $('orders-link').textContent = '← 개념 갤러리'; $('orders-link').href = '/';
   $('activity-overview').hidden = true;
   $('tabs').hidden = true; $('grid').className = 'orders';
@@ -398,6 +483,7 @@ refreshActivity();
 setInterval(refreshActivity, 5000);
 document.addEventListener('visibilitychange', refreshActivity);
 document.addEventListener('visibilitychange', refresh);
+if (!ordersPage) { refreshOutputs(); setInterval(refreshOutputs, 10000); }
 </script>
 </body>
 </html>

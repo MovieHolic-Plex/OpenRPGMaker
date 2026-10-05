@@ -5,6 +5,71 @@
 
 <!-- releases -->
 
+## 0.135.0 — 2026-10-05
+
+### 기능
+
+- show live space milestones and actual image outputs (`f433025`)
+- **editor** — unify AI workspace and simplify scoped log exports (`132c363`)
+
+### 수정
+
+- **editor** — 쓰이지 않는 measuredWidth를 지운다 (`13fe21f`)
+- parallelize isolated space work and bound layout review scope (`299d9ec`)
+- 실제 칩 이미지와 선택 ID로 조수 캐릭터 선택 검증 (#2157) (`b242ee4`)
+
+### 문서
+
+- capture AI workspace and log export UI evidence (`8957a4a`)
+
+### 기타
+
+- record workspace interactions and report dev reload limitation (`cccffa2`)
+
+## 0.134.0 — 2026-10-05
+
+### 기능
+
+- add larger smaller and custom-size prop redraw actions (`beaaa10`)
+
+### 수정
+
+- put prop images first and confirm with double-click (`f669c35`)
+- **ai** — 저장된 설정의 옛 공장 기본 모델(gemini-3.7-flash)을 3.8 로 소급 승격 (`3e88796`)
+- **super-harness** — distinguish queue waits from missing execution links (`a710cab`)
+- simplify prop selection and clarify shared database publication (`f1d2b90`)
+
+## 0.133.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — simplify example and result decisions to allow or deny (`817a1a2`)
+- **worldmap** — record live editor assistant and canonical reload (`44b5af5`)
+- **worldmap** — implement six playable navigation structures (`5762ad8`)
+
+### 수정
+
+- **super-harness** — size all spaces from content and shared circulation (`223fac9`)
+- **super-harness** — recover orchestration faults without user intervention (`b1e305f`)
+- **worldmap** — allow dedicated tilesets for newly authored atlas maps (`9f9723d`)
+- 데스크톱 앱 상단바 전체화면 버튼이 창을 축소하지 못하던 문제 (`2c080c0`)
+- **worldmap** — wait for the native assistant composer when recording (`608ce6e`)
+- **worldmap** — retain browser startup diagnostics for live recording (`847079f`)
+- **super-harness** — recover malformed review responses without losing verdicts (`5f8c3ef`)
+- **assistant** — AI 조수가 깐 NPC 의 기본 이동을 정지에서 배회로 (`21509da`)
+- **ai** — allow collapsing the conversation dock (`11c7a95`)
+- **worldmap** — keep existing continent map as default (`48e0245`)
+- **worldmap** — replace placeholder maps with distinct shared cartography (`a21c6bc`)
+
+### 문서
+
+- **ai** — record conversation collapse UI evidence (`682d622`)
+- refresh wiki index after main integration (`7717497`)
+
+### 테스트
+
+- **qa** — NPC 이동 기본값 재현·충돌판정·런타임 배회 증거 스크립트 (`005ffb5`)
+
 ## 0.132.0 — 2026-10-05
 
 ### 기능

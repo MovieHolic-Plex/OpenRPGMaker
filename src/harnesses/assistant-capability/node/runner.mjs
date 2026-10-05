@@ -113,6 +113,12 @@ async function selfCheck() {
     if(!['inspect','plan'].includes(entry.check))checks.push({id:`${entry.id}:no-op-rejected`,ok:!evaluateAll(before)});
     const lost=structuredClone(good);delete lost.maps.map_mist_forest;
     checks.push({id:`${entry.id}:other-map-loss-rejected`,ok:!evaluateAll(lost)});
+    if(entry.check==='graphic') {
+      const wrongChip=structuredClone(good);wrongChip.maps[MAP].events.find(e=>e.id==='ev_ember_child').pages[0].graphic.sprite.id=entry.textureKey==='tex_easyrpg_charset_monster2'?'tex_easyrpg_charset_people3':'tex_easyrpg_charset_monster2';
+      checks.push({id:`${entry.id}:wrong-sheet-rejected`,ok:!evaluateAll(wrongChip)});
+      const wrongFrame=structuredClone(good);wrongFrame.maps[MAP].events.find(e=>e.id==='ev_ember_child').pages[0].graphic.pattern=entry.frame===73?4:1;
+      checks.push({id:`${entry.id}:slot-as-frame-rejected`,ok:!evaluateAll(wrongFrame)});
+    }
     if(entry.check==='choice') {
       const separate=structuredClone(good),first=separate.maps[MAP].events.find(e=>e.id==='ev_ember_child').pages[0];
       delete first.commands[0].prompt;first.commands.unshift({kind:'text',body:'어디로 갈까?',speaker:'꼬마 미루'});
@@ -151,7 +157,7 @@ async function runCases() {
     if(args.includes('--skip-completed')&&existsSync(resolve(dir,'result.json')))continue;
     if(existsSync(resolve(dir,'result.json')))throw Error(`기존 시도 덮어쓰기 거부: ${entry.id}. 새 --out 사용`);
     const release=lockCase(dir);
-    const result={schemaVersion:1,caseId:entry.id,title:entry.title,seedDigest:digest(readFileSync(seedPath)),
+    const result={schemaVersion:1,caseId:entry.id,title:entry.title,inputMode:args.includes('--direct-pi')?'pi-command':'natural',seedDigest:digest(readFileSync(seedPath)),
       codeCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
       harnessDigest,
       startedAt:new Date().toISOString(),gates:Object.fromEntries(['execution','requirements','adversarial','runtime','persistence','visual'].map(k=>[k,{status:'pending'}]))};
@@ -159,7 +165,8 @@ async function runCases() {
     try {
       const timeout=Number(option('timeout-ms',seed.timeoutMs));
       if(!Number.isFinite(timeout)||timeout<=0)throw Error('양수 timeout-ms 필요');
-      const run=await execute(entry,dir,timeout,{});
+      const submitted = args.includes('--direct-pi') ? { ...entry, prompt: `/pi ${entry.prompt}` } : entry;
+      const run=await execute(submitted,dir,timeout,{});
       result.gates.execution=gate([{id:'native-pi-run',ok:run.realRun,detail:'입력창 POST와 실제 Pi done 영수증'},
         {id:'no-editor-errors',ok:!run.errors.length,detail:run.errors.join('; ')},
         {id:'no-model-errors',ok:!run.events.some(e=>e.type==='error'||e.type==='stream_error'),detail:run.events.filter(e=>['error','stream_error'].includes(e.type)).map(e=>e.message).join('; ')}]);
@@ -167,6 +174,7 @@ async function runCases() {
         result.gates.execution={status:'blocked',detail:'실제 모델 인증·서비스 오류. trace.json 참조'};
       }
       const checks=evaluate(entry,run.before,run.after,run.answer);
+      if(entry.check==='graphic') checks.required.push({id:'actual-candidate-image-received',ok:run.events.some(e=>e.type==='execution_status'&&e.name==='charset.image.received'&&e.ok&&e.data?.selectionIds?.includes(`charset:${entry.textureKey}:${entry.frame===73?4:0}`)),detail:'실제 제공자 입력의 검색 결과와 후보 PNG를 포함한 모델 응답 완료 영수증'});
       result.gates.requirements=gate(checks.required);result.gates.adversarial=gate(checks.adversarial);
       result.gates.persistence=persistenceGate(run.receipt);
       result.elapsedMs=run.elapsedMs;result.models=run.requests;result.projectId=run.receipt.projectId;result.projectDir=run.receipt.projectDir;
@@ -195,7 +203,7 @@ async function runtimeSelfCheck() {
     try { outcome=await verifyRuntime(entry,dir,initial); }
     catch(error){outcome={status:'fail',detail:error.message};}
     checks.push({caseId:entry.id,...outcome});console.log(`runtime checker ${entry.id}: ${outcome.status}`);
-    save(file,{kind:'runtime-checker-calibration',harnessDigest,pass:seed.cases.filter(e=>e.runtime!=='none').every(e=>checks.some(c=>c.caseId===e.id&&c.status==='pass')),checks});
+    save(file,{kind:'runtime-checker-calibration',harnessDigest,caseIds:entries.map(e=>e.id),pass:entries.filter(e=>e.runtime!=='none').every(e=>checks.some(c=>c.caseId===e.id&&c.status==='pass')),checks});
   }
   return checks.length&&checks.every(c=>c.status==='pass')?0:1;
 }
@@ -223,6 +231,7 @@ async function recheckSaved() {
     if(applied.meta.bootNormalization?.lib!==saved.project.meta.bootNormalization?.lib)receipt={...receipt,libraryRevisionChange:{before:applied.meta.bootNormalization?.lib,after:saved.project.meta.bootNormalization?.lib,gameContentEqual:true}};
   }
   const checks=evaluate(entry,before,applied,trace.events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n'));
+  if(entry.check==='graphic') checks.required.push({id:'actual-candidate-image-received',ok:trace.events.some(e=>e.type==='execution_status'&&e.name==='charset.image.received'&&e.ok&&e.data?.selectionIds?.includes(`charset:${entry.textureKey}:${entry.frame===73?4:0}`)),detail:'원본 실행의 실제 제공자 입력과 후보 PNG 응답 완료 영수증'});
   const result={...previous,gates:{
     execution:gate([{id:'native-pi-run',ok:true,detail:'원본 trace.json의 실제 입력과 done'},
       {id:'no-editor-errors',ok:!trace.errors.length,detail:trace.errors.join('; ')},

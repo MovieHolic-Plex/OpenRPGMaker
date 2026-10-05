@@ -63,6 +63,7 @@ import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, typ
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
+import { createAiWorkspace } from "./aiWorkspace";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
@@ -567,7 +568,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 같은 초기화 구간에 둔다. 아래 크롬 구간에서 선언하면 자동 복원 sendText가
   // TDZ 상태의 collapsed를 읽어 턴을 시작하기 전에 실패한다.
   // The right conversation dock owns the same explicit folding preference.
-  let collapsed = loadPanelCollapsed();
+  let collapsed = loadPanelCollapsed(true);
   let autoCollapseTimer: number | null = null;
   // Pending questions keep the conversation engaged even without promoted reply chips.
   let pendingQuestion = false;
@@ -1178,6 +1179,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * (adoptConversationForCurrentProject 참조) — 의식하지 않은 리셋이 곧 "새 세션 강요" 로 보인다.
    */
   const startNewConversation = (reason: "manual"): void => {
+    workspace.showChat();
     resetConversationState(reason);
     toast("새 대화를 시작했습니다. 이전 대화는 기록에 저장됐습니다.", "ok");
   };
@@ -3224,6 +3226,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dismissedSelectionKey = null;
     selectionTaskActive = true;
     refreshContextChips();
+    workspace.showChat();
     restoreCollapsed();
     const text = detail.instruction?.trim() ?? "";
     const stamp = detail.stamp ?? stampPlaceOn;
@@ -3368,7 +3371,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onOpenSettings: () => openAiSettingsModal(),
     onLockChange: (locked) => { panel?.classList.toggle("is-ai-locked", locked); },
   });
-  deck.append(lockScrim.element);
+  body.append(lockScrim.element);
 
   const panel = el("aside", {
     class: "ai-chat-panel is-left-sidebar",
@@ -3384,8 +3387,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   teamPanel.onToggle((open) => panel.classList.toggle("is-team-open", open));
   panelRoot = panel;
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
-  // The editor mounts this sibling in the right rail; this panel owns its lifetime.
+  // The workspace owns the live team surface; wide mode temporarily moves it.
   panel.append(teamSidebar.root);
+  const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar,
+    requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
@@ -3394,7 +3399,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   wideButton.classList.add("ai-deck-wide-open");
   wideButton.replaceChildren(deckIcon("expand"));
   deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);
-  const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember());
+  const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember(), on => workspace.setWide(on));
   // 느낌표 버튼도 같은 관례다 — 패널이 수명을 소유하고, 배치는 editor.ts 가 캔버스 영역으로 옮긴다.
   panel.append(peek.root);
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
@@ -3585,6 +3590,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 자동 경로 — 사용자의 저장된 접힘 선택(savePanelCollapsed)은 건드리지 않는다.
   expandForAiWork = (): void => {
     clearAutoCollapseTimer();
+    workspace.showChat();
     if (!collapsed) return;
     collapsed = false;
     if (studio) applyStudio(false);
@@ -3671,6 +3677,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 스튜디오 모드: 타일 에디터를 덮는 장면|모니터|채팅+덱 셸. 기본 입력줄 캡슐은 그대로 둔다.
   applyStudio = (next: boolean): void => {
     studio = next;
+    workspace.setStudio(next);
     if (typeof localStorage !== "undefined") localStorage.setItem(STUDIO_MODE_KEY, studio ? "1" : "0");
     if (studio) {
       clearAutoCollapseTimer();
@@ -4109,6 +4116,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.dispose();
     studioShell = null;
     wideAssistant.dispose();
+    workspace.dispose();
     teamSidebar.dispose();
     suggestions.dispose();
     peek.dispose();

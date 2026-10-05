@@ -555,13 +555,33 @@ function renderFullscreenButton(): HTMLElement {
       },
     },
   });
-  const onChange = (): void => button.setAttribute("aria-pressed", document.fullscreenElement ? "true" : "false");
+  const paint = (fullscreen: boolean): void => button.setAttribute("aria-pressed", String(fullscreen));
+  const onChange = (): void => paint(Boolean(document.fullscreenElement));
   document.addEventListener("fullscreenchange", onChange);
-  disposeFullscreenButton = () => document.removeEventListener("fullscreenchange", onChange);
+  // 데스크톱 창의 네이티브 전체화면은 fullscreenchange 를 일으키지 않는다 — 상태를 따로 구독한다.
+  const nativeSubscribe = typeof window === "undefined" ? undefined : window.oprn?.onWindowFullscreen;
+  const disposeNative = nativeSubscribe ? nativeSubscribe(paint) : null;
+  const nativeQuery = typeof window === "undefined" ? undefined : window.oprn?.windowFullscreen;
+  if (nativeQuery) void nativeQuery().then(paint).catch(() => {});
+  disposeFullscreenButton = () => {
+    document.removeEventListener("fullscreenchange", onChange);
+    disposeNative?.();
+  };
   return button;
 }
 
 async function toggleFullscreen(): Promise<void> {
+  // 이 창은 네이티브 전체화면(fullscreen: true)으로 뜬다. 그 창에서 브라우저 Fullscreen API 는
+  // DOM 만 바꾸고 창 크기는 그대로여서 「축소」가 안 됐다 — 데스크톱 브릿지가 있으면
+  // 시작 화면 「화면 전환」 과 같은 창 컨트롤로 토글한다. 브라우저·팀 페이지에는 브릿지가 없다.
+  const nativeControl = typeof window === "undefined" ? undefined : window.oprn?.windowControl;
+  if (nativeControl) {
+    try {
+      if (await nativeControl("toggle-fullscreen")) return;
+    } catch {
+      // 브릿지 호출이 실패하면 아래 브라우저 경로로 내려간다.
+    }
+  }
   try {
     if (document.fullscreenElement) {
       if (typeof document.exitFullscreen !== "function") {

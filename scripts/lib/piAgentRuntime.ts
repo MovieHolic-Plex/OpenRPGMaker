@@ -4,6 +4,8 @@ import type { InteriorRequirements } from '../../src/project/interiorPlacementAu
 import { randomUUID } from "node:crypto";
 import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
+import { PiCharsetSelectionGate } from '../../src/ai/piAgent/charsetSelectionGate.ts';
+import { charsetPreviewCandidates } from '../../src/ai/charsetPreview.ts';
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
 import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
@@ -60,7 +62,7 @@ import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
-import type { ToolContext } from "../../src/editor/tools/types.ts";
+import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
 setWorldmapBuilder(buildWorldmap);
@@ -220,6 +222,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
+  const charsetGate = new PiCharsetSelectionGate();
   const model = options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
@@ -263,7 +266,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (!definition) return undefined;
       return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall,
         apply: async (toolName, args, signal) => {
-          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, modernTilesetPolicy, ...scopeGuard });
+          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, charsetGate, modernTilesetPolicy, ...scopeGuard });
           if (!write) throw new Error(`그림 등록/연결 도구가 없습니다: ${toolName}`);
           return write.execute(`${name}:apply`, args, signal);
         },
@@ -280,6 +283,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolNames: options.toolNames,
       onCall: recordCall,
       referenceGate,
+      charsetGate,
       modernTilesetPolicy,
       ...scopeGuard,
     });
@@ -379,7 +383,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" && tool.name !== 'show_title_opening' ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -413,6 +417,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
           ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
       }
+      const charsetResult = result.details as ToolResult;
+      const candidates = charsetPreviewCandidates(tool.name, charsetResult?.data);
+      if (candidates.length) {
+        if (!options.renderToolImage) throw new Error('캐릭터 칩 이미지 전달 경로가 없습니다. 텍스트만으로 외형 선택을 승인할 수 없습니다.');
+        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { charsetCandidates: candidates }, signal ?? options.signal);
+        if (!png) throw new Error('캐릭터 칩 미리보기 이미지가 비었습니다.');
+        // Gemini joins all text blocks in a function response. Keep one complete
+        // JSON envelope so both the model and the delivery gate can read it.
+        const textIndex = result.content.findIndex(part => part.type === 'text');
+        const textPart = result.content[textIndex];
+        if (!textPart || textPart.type !== 'text') throw new Error('캐릭터 검색 결과 텍스트가 없습니다.');
+        result.content[textIndex] = { type: 'text', text: JSON.stringify({ ...JSON.parse(textPart.text),
+          imageLegend: `실제 칩 그림의 번호는 왼쪽 위부터 행 순서입니다. ${candidates.map((row, i) => `${i + 1}: ${row.label} (${row.selectionId})`).join(' / ')}` }) };
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        charsetGate.offer(tool.name, charsetResult, png);
+        emit({ type: 'execution_status', name: 'charset.image.delivered', ok: true, summary: '검색 후보의 실제 캐릭터 칩 이미지를 모델 입력에 포함했습니다.', data: { toolCallId: id, selectionIds: candidates.map(row => row.selectionId), base64Length: png.length } });
+      }
       if (tool.name === 'show_title_opening') {
         const ids = presentationArtImages(ctx.project).map(image => image.resourceId);
         // Count the image parts actually returned, not metadata or an authored success claim.
@@ -438,6 +459,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : options.toolNames,
     onCall: recordCall,
     referenceGate,
+    charsetGate,
     modernTilesetPolicy,
     ...scopeGuard,
   });
@@ -541,6 +563,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
         : payload;
       referenceGate.payload(outgoing);
+      charsetGate.payload(outgoing);
       // Observe the actual provider payload after normalization, not a rebuilt prompt.
       try {
         emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
@@ -660,6 +683,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
       referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
+      const receivedCharsets = charsetGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
+      if (receivedCharsets.length) emit({ type: 'execution_status', name: 'charset.image.received', ok: true,
+        summary: '실제 제공자 입력에 검색 결과와 칩 이미지가 포함된 뒤 모델 응답이 완료됐습니다.', data: { selectionIds: receivedCharsets } });
       const text = (message.content ?? [])
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)

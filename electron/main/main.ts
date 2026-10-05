@@ -80,6 +80,12 @@ function createWindow(): BrowserWindow {
   });
 
   window.once("ready-to-show", () => window.show());
+  // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
+  const broadcastFullscreen = (fullscreen: boolean): void => {
+    if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowFullscreen, fullscreen);
+  };
+  window.on("enter-full-screen", () => broadcastFullscreen(true));
+  window.on("leave-full-screen", () => broadcastFullscreen(false));
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -321,6 +327,12 @@ app.whenReady().then(async () => {
     if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
     if (action === "close") { window.close(); return true; }
     return false;
+  });
+  // 창의 진짜 전체화면 상태는 네이티브 쪽에만 있다 — 브라우저 Fullscreen API 는 이 창과 무관하다.
+  ipcMain.handle(OPRN_CHANNELS.windowFullscreen, (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    return window.isFullScreen();
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>

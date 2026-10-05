@@ -1,0 +1,133 @@
+{
+  "database": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "library": "oprn-hand-interior-harness",
+  "tileset": "shared_hand_interior_harness",
+  "revision": "425a2d112557c6fe99dd6050aa7827c4d257bea4b8336e10a9b2d56e2c6acd1d",
+  "payloadHashVerified": true,
+  "updated": "2026-10-05T02:45:45.698Z",
+  "projectDefaults": true,
+  "kits": 811,
+  "selected": 673,
+  "recentSelections": [
+    {
+      "id": "pawn counter",
+      "choice": "h530-B",
+      "selectedAt": "2026-10-05T11:41:01+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        28
+      ]
+    },
+    {
+      "id": "pawn shop shelf",
+      "choice": "h529-A",
+      "selectedAt": "2026-10-05T11:40:45+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "book display table",
+      "choice": "h528-A",
+      "selectedAt": "2026-10-05T11:40:13+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        26
+      ]
+    },
+    {
+      "id": "bank teller window",
+      "choice": "h527-A",
+      "selectedAt": "2026-10-05T11:40:12+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        48
+      ]
+    },
+    {
+      "id": "parcel pile",
+      "choice": "h526-B",
+      "selectedAt": "2026-10-05T11:39:51+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "mail sorting shelf",
+      "choice": "h525-B",
+      "selectedAt": "2026-10-05T11:39:48+09:00",
+      "pixelsMatch": true,
+      "size": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "rune anvil",
+      "choice": "h524-A.sel",
+      "selectedAt": "2026-10-05T11:39:43+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": "dwarf ale keg",
+      "choice": "h523-B",
+      "selectedAt": "2026-10-05T11:39:40+09:00",
+      "pixelsMatch": true,
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "id": "mushroom stool",
+      "choice": "h520-B",
+      "selectedAt": "2026-10-05T11:39:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        12,
+        10
+      ]
+    },
+    {
+      "id": "vine chair",
+      "choice": "h521-B",
+      "selectedAt": "2026-10-05T11:39:37+09:00",
+      "pixelsMatch": true,
+      "size": [
+        15,
+        30
+      ]
+    },
+    {
+      "id": "glowing flower pot",
+      "choice": "h522-B",
+      "selectedAt": "2026-10-05T11:39:36+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        30
+      ]
+    },
+    {
+      "id": "mushroom table",
+      "choice": "h519-B",
+      "selectedAt": "2026-10-05T11:39:22+09:00",
+      "pixelsMatch": true,
+      "size": [
+        16,
+        22
+      ]
+    }
+  ]
+}

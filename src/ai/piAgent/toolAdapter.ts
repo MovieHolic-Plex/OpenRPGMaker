@@ -1,4 +1,5 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import type { PiCharsetSelectionGate } from './charsetSelectionGate';
 import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
@@ -61,6 +62,7 @@ export interface PiToolCallRecord {
 }
 
 export interface CreatePiToolsetOptions {
+  readonly charsetGate?: PiCharsetSelectionGate;
   readonly modernTilesetPolicy?: ModernTilesetPolicy;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
@@ -163,6 +165,7 @@ export function harvestFindToolsNames(result: ToolResult): string[] {
 }
 
 export interface ResolvePiToolOptions {
+  readonly charsetGate?: PiCharsetSelectionGate;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
   readonly readOnly?: boolean;
@@ -183,6 +186,7 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
   if (options.toolNames && !options.toolNames.includes(name) && !(TILESET_REFERENCE_READ_TOOLS.some(n => n === name) && options.toolNames.some(n => TILESET_REFERENCE_WRITERS.has(n)))) return undefined;
   return createPiToolset(ctx, {
     toolNames: [name],
+    charsetGate: options.charsetGate,
     referenceGate: options.referenceGate,
     readOnly: options.readOnly,
     onCall: options.onCall,
@@ -249,6 +253,10 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
       }
+      if (tool.mode === 'write' && result.ok && options.charsetGate) {
+        const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
+        if (violation) { ctx.project = beforeProject; result = violation; }
+      }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
         const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true);
@@ -268,7 +276,8 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
         ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, ['read_tileset_reference','read_worldmap_structure_reference'].includes(tool.name) ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
+      const expandedRead = ['read_tileset_reference', 'read_worldmap_structure_reference', 'list_npc_graphics'].includes(tool.name) || tool.name === 'list_resources' && args.kind === 'charset';
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, expandedRead ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");

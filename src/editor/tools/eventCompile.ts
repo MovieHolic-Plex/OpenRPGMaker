@@ -7,7 +7,7 @@ import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/shar
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
-import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
+import { npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
@@ -17,6 +17,10 @@ import { ToolError } from "./types";
 import type { SimplePage, SimplePageChoice } from "./types";
 
 const PASSIVE_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
+// movement 를 안 준 페이지의 기본. 정지가 아니라 배회다 — AI 조수가 흔한 이름으로 NPC 를 깔았을 때
+// 예전에는 전부 제자리에 얼어붙었다(2026-10-05 실측: place_npc 9개 중 7개 fixed).
+// 제자리 이벤트가 필요하면 호출자가 movement:PASSIVE_MOVEMENT 를 명시한다.
+const DEFAULT_NPC_MOVEMENT: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
 const CONDITION_KIND_SET: ReadonlySet<string> = new Set(CONDITION_KINDS);
 const SIMPLE_PAGE_EXAMPLE = `{"pages":[{"lines":["안녕하세요"],"conditions":[],"commands":[{"kind":"text","body":"안녕하세요"}]}]}`;
 
@@ -66,6 +70,7 @@ type EventCompileOptions = {
 type RecordValue = Record<string, unknown>;
 
 export type GraphicSpec =
+  | { readonly selectionId: string; readonly query?: string }
   | { readonly query: string }
   | { readonly textureKey: string; readonly characterIndex?: number }
   | { readonly transparent: true };
@@ -191,6 +196,14 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
 export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   if (!spec) return { transparent: true };
   if ("transparent" in spec) return { transparent: true };
+  if ('selectionId' in spec) {
+    const selected = parseCharsetSearchId(spec.selectionId);
+    if (!selected || selected.characterIndex < 0 || selected.characterIndex > 7) throw new ToolError('selectionId는 칩 검색 결과의 charset:<시트>:<칸>이어야 합니다.', { code: 'graphic-not-found' });
+    if (spec.query && !queryNpcGraphics(spec.query, 100, pick?.overrides).some(match => match.entry.textureKey === selected.textureKey && match.entry.characterIndex === selected.characterIndex)) {
+      throw new ToolError(`selectionId ${spec.selectionId}는 요청한 외형 '${spec.query}'의 후보가 아닙니다. 같은 검색 결과의 selectionId를 쓰세요.`, { code: 'graphic-selection-mismatch' });
+    }
+    return charsetGraphic(selected.textureKey, selected.characterIndex);
+  }
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
   return charsetGraphic(spec.textureKey, spec.characterIndex);
 }
@@ -554,7 +567,7 @@ export function compileSimplePage(
     trigger: { kind: "action" },
     priority,
     overlapForbidden: priority === "same",
-    movement: options.movement ?? PASSIVE_MOVEMENT,
+    movement: options.movement ?? DEFAULT_NPC_MOVEMENT,
     commands,
   };
 }
@@ -632,4 +645,4 @@ function faceFromArg(raw: unknown): FaceGraphic | null {
   return null;
 }
 
-export { PASSIVE_MOVEMENT };
+export { PASSIVE_MOVEMENT, DEFAULT_NPC_MOVEMENT };

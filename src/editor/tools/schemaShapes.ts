@@ -148,11 +148,12 @@ export const COMMAND_SCHEMA: JsonSchema = {
   },
 };
 
-/** `GraphicSpec` (eventCompile.ts): `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
+/** `GraphicSpec` (eventCompile.ts): `{selectionId,query?}` | `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
 export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
   type: "object",
-  description: "{query} | {textureKey,characterIndex} | {transparent:true}",
+  description: "검색의 실제 칩 이미지를 확인한 뒤 {selectionId,query?}로 같은 후보를 선택한다. {query} | {textureKey,characterIndex} | {transparent:true}도 지원한다.",
   properties: {
+    selectionId: { type: 'string', description: 'list_npc_graphics/list_resources의 charset:<시트>:<칸>을 그대로 복사. 프레임 계산은 도구가 한다. query를 함께 주면 원하는 외형과 일치하는지도 검사한다.' },
     query: { type: "string", description: "별칭 또는 자유 질의(예: '할머니', 'old woman')" },
     textureKey: { type: "string", description: "charset textureKey 직접 지정" },
     characterIndex: { type: "integer", description: "charset 내 캐릭터 인덱스(기본 0)" },

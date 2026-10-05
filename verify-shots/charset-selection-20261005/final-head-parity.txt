@@ -1,0 +1,56 @@
+> oprn@0.133.0 test:parity
+> node scripts/run-vitest.mjs run test/parity --configLoader bundle --maxWorkers=2 --minWorkers=1 --pool=threads
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/parity/parityMatrix.test.ts (5 tests) 136ms
+ ✓ test/parity/dataIntegrityRoundTrip.test.ts (4 tests) 25473ms
+   ✓ editor->player data-integrity round-trip > mutations across every collection persist losslessly with zero reference issues  11995ms
+   ✓ editor->player data-integrity round-trip > round-trip is idempotent (no data added or lost on repeated save/load)  6085ms
+   ✓ editor->player data-integrity round-trip > a referenced record cannot be deleted and survives the round-trip  3096ms
+   ✓ editor->player data-integrity round-trip > serialized project keeps the canonical shape and leaks no runtime-only root fields  4293ms
+ ✓ test/parity/mapEventSceneParity.test.ts (4 tests) 17388ms
+   ✓ editor->player map/event/scene parity > an authored setSwitch event flips the switch in play  5446ms
+   ✓ editor->player map/event/scene parity > an authored setVariable event writes the variable in play  3587ms
+   ✓ editor->player map/event/scene parity > an authored changeItem event grants the item in play  3836ms
+   ✓ editor->player map/event/scene parity > an authored transfer event moves the player to the destination tile  4515ms
+ ✓ test/parity/dbBattleParity.test.ts (7 tests) 63763ms
+   ✓ database behavioral parity - battle records > skills: authored power scales the skill's battle damage  12080ms
+   ✓ database behavioral parity - battle records > skills: the default attack skill draws power from the attacker, not its authored power  7665ms
+   ✓ database behavioral parity - battle records > enemies: authored maxHp scales how many turns the battle lasts  7735ms
+   ✓ database behavioral parity - battle records > equipment: authored statBonuses.attack scales the hero's battle damage  8046ms
+   ✓ database behavioral parity - battle records > items: a 'special' item invokes its authored skill in battle (power scales the effect)  9459ms
+   ✓ database behavioral parity - battle records > states: a skill's authored stateEffects inflict the state and accelerate the kill  11410ms
+   ✓ database behavioral parity - battle records > troops: more authored members make the battle last longer  7358ms
+ ✓ test/parity/goldenProjectParity.test.ts (5 tests) 18913ms
+   ✓ golden project headless playthrough > is reference-valid and exercises every database collection  5116ms
+   ✓ golden project headless playthrough > preserves authored titleScreen effect fields through the editor round-trip  3497ms
+   ✓ golden project headless playthrough > plays a scripted battle to a deterministic result  3833ms
+   ✓ golden project headless playthrough > fires the authored switch event in the scene  3240ms
+   ✓ golden project headless playthrough > runs the authored transfer event in the scene  3224ms
+ ✓ test/parity/t6ActorParity.test.ts (4 tests) 4294ms
+   ✓ T6 actor parity — name/nickname/faceset session overrides > changeActorName propagates to status menu row name  1080ms
+   ✓ T6 actor parity — name/nickname/faceset session overrides > changeActorFaceset propagates to status menu row faceResourceId  1027ms
+   ✓ T6 actor parity — name/nickname/faceset session overrides > resolveActorNickname returns session override when set  1003ms
+   ✓ T6 actor parity — name/nickname/faceset session overrides > resolveActorFaceResourceId returns session override when set  1182ms
+ ✓ test/parity/dbActorClassParity.test.ts (5 tests) 25248ms
+   ✓ database behavioral parity - actors & classes > classes: authored battleCommands are consumed in authored order  5363ms
+   ✓ database behavioral parity - actors & classes > classes: a class with no usable battle command falls back to the default command set  3201ms
+   ✓ database behavioral parity - actors & classes > actors: an authored learnedSkill becomes available to the battle battler  6350ms
+   ✓ database behavioral parity - actors & classes > classes: an authored class learnedSkill flows to the actor's battle skills  7205ms
+   ✓ database behavioral parity - actors & classes > actors: the authored learn level gates when a skill becomes available  3126ms
+ ✓ test/parity/playerBootValidation.test.ts (4 tests) 9321ms
+   ✓ player-boot validation > reports zero issues for every shipped project (no false positives)  1378ms
+   ✓ player-boot validation > flags an injected dangling skill animation reference  2340ms
+   ✓ player-boot validation > boot-validation gate: every shipped + golden project is reference-clean (CI gate)  5581ms
+ ✓ test/parity/parityRig.test.ts (4 tests) 15147ms
+   ✓ parity rig > drives a real editor mutation through a serialize/deserialize round-trip  5345ms
+   ✓ parity rig > runs a seeded battle deterministically (two runs identical)  4071ms
+   ✓ parity rig > propagates mutator errors instead of returning a stale project  2280ms
+   ✓ parity rig > exposes the headless scene harness on the blank start map  3446ms
+
+ Test Files  9 passed (9)
+      Tests  42 passed (42)
+   Start at  12:50:51
+   Duration  134.59s (transform 15.47s, setup 0ms, collect 60.58s, tests 179.68s, environment 3ms, prepare 1.51s)

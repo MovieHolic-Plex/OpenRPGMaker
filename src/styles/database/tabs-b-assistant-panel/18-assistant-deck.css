@@ -600,7 +600,7 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 
    입력 자체를 disabled 로 만들지는 않는다: 로그인 후 이어 쓰는 흐름을 끊지 않고,
    무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다. */
-.ai-deck > .ai-lock-scrim {
+.ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim {
   position: absolute;
   inset: 0;
   z-index: 6;
@@ -621,7 +621,8 @@ html:is(:not([data-ai-render]), [data-ai-render="light"], [data-ai-render="off"]
   .ai-work-card,
   .ai-ghost-phase-chip,
   .selection-action-chips,
-  .ai-deck > .ai-lock-scrim
+  .ai-deck > .ai-lock-scrim,
+  .ai-chat-body > .ai-lock-scrim
 ) {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -630,7 +631,7 @@ html[data-ai-render="off"] {
   --ai-deck-glass: var(--bg-raised);
 }
 
-.ai-deck > .ai-lock-scrim[hidden] {
+.ai-deck > .ai-lock-scrim[hidden], .ai-chat-body > .ai-lock-scrim[hidden] {
   display: none;
 }
 

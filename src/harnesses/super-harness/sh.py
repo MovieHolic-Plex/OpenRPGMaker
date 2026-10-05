@@ -40,6 +40,7 @@ import art_repair  # noqa: E402
 import art_layout  # noqa: E402
 import art_acceptance  # noqa: E402
 import activity  # noqa: E402
+import space_decisions  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -113,7 +114,9 @@ def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=Non
 
 
 def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=None):
-    os.makedirs(WORK, exist_ok=True)
+    # Separate scratch/output roots even for simultaneous A/B reviewers.
+    work = os.path.join(WORK, cid or '_discovery', kind + '-' + tag)
+    os.makedirs(work, exist_ok=True)
     stamp = time.strftime('%m%d-%H%M%S')
     log_path = (cdir(cid, 'logs') if cid else os.path.join(DATA, 'logs')) + f'/{kind}-{tag}-{stamp}.log'
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
@@ -121,11 +124,13 @@ def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=N
     with open(prompt_path, 'w', encoding='utf-8') as f:
         f.write(prompt)
     cmd = [CODEX, 'exec', '-m', MODEL, '-c', f'model_reasoning_effort="{EFFORT}"', '--skip-git-repo-check',
-           '-s', 'workspace-write', '--add-dir', write_root or ROOT, '--add-dir', DATA]
+           '-s', 'workspace-write', '--add-dir', cdir(cid) if cid else DATA]
+    if write_root or kind in ('build', 'review', 'judge', 'discover'):
+        cmd += ['--add-dir', write_root or ROOT]
     for d in extra_dirs:
         cmd += ['--add-dir', d]
-    cmd += ['-C', WORK, '-']
-    return start_proc(cid, kind, tag, cmd, WORK, log_path, CODEX_TIMEOUT, {'result': result_path}, stdin_path=prompt_path)
+    cmd += ['-C', work, '-']
+    return start_proc(cid, kind, tag, cmd, work, log_path, CODEX_TIMEOUT, {'result': result_path}, stdin_path=prompt_path)
 
 
 def running(kinds=None):
@@ -386,8 +391,13 @@ def on_judge(meta, code, result):
     if reasons:
         reject(cid, reasons[:12], '조수 시험')
     else:
-        store.update_concept(cid, stage='bake', status='queued', reasons=[])
-        store.log(cid, f'조수 시험 통과 → 굽기: {(result or {}).get("summary", "")[:200]}')
+        snapshot = space_decisions.result_view(DATA, c, example_images(cid))
+        if not snapshot['images']:
+            reject(cid, ['사용자가 확인할 결과 이미지가 없다'], '결과 확인 준비')
+            return
+        write_json(cdir(cid, 'result-review.json'), snapshot)
+        store.update_concept(cid, stage='result-review', status='idle', reasons=[], note='결과를 확인해 주세요')
+        store.log(cid, '조수 시험 통과 → 사용자 결과 Allow / Deny 대기')
 
 
 def on_bake(meta, code, result):
@@ -626,6 +636,7 @@ def start_art(c):
             os.replace(previous, cdir(cid, 'art-result.previous.json'))
         else:
             os.remove(previous)
+    art_feedback.ensure_layout_feedback(DATA, cid)
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     prior_layout = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
     template = 'art-layout-repair.md' if prior_layout.get('verdict') == 'FAIL' or feedback.get('policy') else 'art.md'
@@ -901,14 +912,16 @@ def on_art_layout_review(meta, code, result):
             history = read_json(cdir(cid, 'art-layout-rejections.json'), [])
             history.append(result)
             write_json(cdir(cid, 'art-layout-rejections.json'), history)
-            # Two preparation corrections per art revision, then stop. No drawing attempt spent.
+            art_feedback.ensure_layout_feedback(DATA, cid)
+            # Bound preparation repairs separately; never reset a drawing revision.
             revision = store.concept(cid).get('art_revision', 0)
             count = sum(r.get('revision') == revision for r in history[:-1]) + 1
             history[-1]['revision'] = revision
             write_json(cdir(cid, 'art-layout-rejections.json'), history)
-            store.update_concept(cid, stage='art' if count < 3 else 'blocked', status='queued' if count < 3 else 'idle',
-                note='도면 반려 — 배치 명세부터 수정' if count < 3 else '도면 3회 반려 — 확인 필요', reasons=result.get('reasons', []))
-            store.log(cid, '도면 반려 → 배치 명세 수정 대기' if count < 3 else '도면 수정 반복 한도 도달 — 확인 필요')
+            limit = art_feedback.limits(DATA, cid)['maxRevisions']
+            store.update_concept(cid, stage='art' if count < limit else 'blocked', status='queued' if count < limit else 'idle',
+                note='도면 반려 — 배치 명세부터 수정' if count < limit else f'도면 수정 {limit}회 소진 — 운영 복구 필요', reasons=result.get('reasons', []))
+            store.log(cid, '도면 반려 → 배치 명세 수정 대기' if count < limit else '도면 수정 반복 한도 도달 — 운영 복구 필요')
             return
         request['layoutApproval'] = cdir(cid, 'art-layout-review.json')
         write_json(cdir(cid, 'art-execution.json'), request)
@@ -930,7 +943,7 @@ def on_art_native(meta, code, result):
     wt = os.path.join(DATA, 'art-worktrees', cid)
     if code != 0 or not isinstance(result, dict) or result.get('exitCode') != 0:
         store.update_concept(cid, stage='blocked', status='idle', note='그림 하네스 실행 실패',
-                             reasons=[f'실행 종료 {code}; logs/art-native.log 확인'])
+                             reasons=(result.get('nativeErrors') if isinstance(result, dict) else None) or [f'실행 종료 {code}; logs/art-native.log 확인'])
         return
     prompt = fill(prompt_template('art-collect.md'), ROOT=wt, CDIR=cdir(cid))
     start_codex(cid, 'art', 'collect', prompt, cdir(cid, 'art-result.json'), write_root=wt)
@@ -1035,6 +1048,13 @@ def require_visual(c):
 def start_bake(c, remove=False):
     if not remove and not require_visual(c):
         return
+    if not remove:
+        snapshot = space_decisions.result_view(DATA, c, example_images(c['id']))
+        allowed = next((e for e in reversed(c.get('feedback', [])) if e.get('kind') == 'result-decision'), {})
+        if not snapshot['images'] or allowed.get('decision') != 'allow' or allowed.get('fingerprint') != snapshot['fingerprint']:
+            write_json(cdir(c['id'], 'result-review.json'), snapshot)
+            store.update_concept(c['id'], stage='result-review', status='idle', note='결과 확인 필요')
+            return
     if not BAKING.acquire(blocking=False):
         return
     cid = c['id']
@@ -1279,6 +1299,13 @@ def action(body):
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
+    if kind in ('decide-example', 'decide-result'):
+        try:
+            if kind == 'decide-example':
+                return {'ok': True, 'choices': space_decisions.decide_example(DATA, cid, body)}
+            return space_decisions.decide_result(DATA, cid, body, example_images(cid))
+        except (ValueError, KeyError, OSError, TypeError) as error:
+            return {'ok': False, 'error': str(error)}
     if kind == 'evaluate-art':
         try:
             return {'ok': True, 'choices': art_choices.evaluate(DATA, cid, body)}
@@ -1328,7 +1355,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'result-review': 'pick', 'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1340,6 +1367,8 @@ def first_sentence(text, limit=90):
 
 def plain_status(c):
     stage, n = c['stage'], c['attempt'] or 1
+    if stage == 'result-review':
+        return '완성된 결과 확인 · Allow / Deny'
     if stage == 'discovered':
         return '차례 기다림'
     if stage == 'waiting':
@@ -1364,16 +1393,18 @@ def plain_status(c):
             return '선택 자료 확인 필요'
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         if choices.get('installation'): return '선택 구역 완성 · 공용 등록·맵 저장 완료'
-        return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
+        return '공용 등록 연결 필요 · 실행 예약 없음' if choices['complete'] else f'예시 확인 필요 · {choices["selectedCount"]}/{choices["total"]} 채택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
-        if c.get('art_revision'):
-            return f'피드백 반영 재생성 {c["art_revision"]}차 ' + ('진행 중' if c['status'] == 'running' else '대기 · 전체 멈춤' if store.setting('paused') == '1' else '대기')
-        orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
-        return '칩 후보 제작 중' if c['status'] == 'running' else f'부족분 {len(orders)}건 — 칩 제작 대기'
+        if c['status'] == 'running':
+            active = store.jobs("concept=? AND status='running'", (c['id'],))
+            if any(j['kind'] == 'art-native' and activity.process_alive(j) for j in active):
+                return '실제 칩 제작·검수 중'
+            return '그림 주문서·제작 입력 준비 중'
+        return '도면 반려 · 배치 명세 수정 차례 대기' if c.get('note', '').startswith('도면 반려') else '그림 주문서·제작 입력 준비 차례 대기'
     if stage == 'build':
         return f'고치는 중 ({n}번째)' if c['reasons'] or n > 1 else '만드는 중'
     return {'review': '검수 중', 'probe': '조수에게 시켜 보는 중', 'bake': '에디터에 넣는 중', 'unbake': '에디터에서 빼는 중',
-            'done': '완성 · 에디터에 들어감', 'blocked': '막힘 — 봐 주세요', 'discarded': '폐기'}.get(stage, stage)
+            'done': '완성 · 에디터에 들어감', 'blocked': '운영 점검 필요 · 사용자 입력 없음', 'discarded': '폐기'}.get(stage, stage)
 
 
 def example_images(cid):
@@ -1445,8 +1476,22 @@ def gallery_list():
         else:
             imgs = example_images(c['id'])
         status = plain_status(c)
-        group = 'stop' if status.startswith('후보 수정 필요') else 'wait' if c['stage'] == 'art-review' and status.startswith('선택 완료') else GROUP.get(c['stage'], 'work')
-        items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': group,
+        group = 'stop' if status.startswith('후보 수정 필요') else 'stop' if c['stage'] == 'art-review' and status.startswith('공용 등록 연결 필요') else GROUP.get(c['stage'], 'work')
+        needs_user, choices = False, {}
+        if c['stage'] in ('art-review', 'result-review'):
+            try:
+                if c['stage'] == 'art-review':
+                    choices = art_choices.view(DATA, c['id'])
+                    needs_user = not choices['complete'] and any(
+                        any(v['eligible'] and v.get('decision') != 'deny' for v in g['candidates'])
+                        and not any(v['selected'] for v in g['candidates']) for g in choices['groups'])
+                else:
+                    needs_user = space_decisions.result_view(DATA, c, imgs)['canDecide']
+            except (ValueError, KeyError, OSError, TypeError):
+                status = '그림 자료 운영 점검 · 사용자 입력 없음'
+        operator = c['stage'] == 'blocked' or (c['stage'] in ('art-review', 'result-review') and not choices.get('installation'))
+        owner = 'user' if needs_user else 'operator' if operator else 'harness'
+        items.append({'needsUser': needs_user, 'owner': owner, 'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': group,
                       'running': c['status'] == 'running', 'status': status,
                       'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
                       'thumb': imgs[0] if imgs else None, 'pr': c['pr'], 'parent': c.get('parent')})
@@ -1474,6 +1519,7 @@ def gallery_detail(cid):
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
     kids = [{'id': k['id'], 'title': k['title']} for k in store.concepts('parent=?', (cid,))]
     return {'id': cid, 'title': c['title'], 'status': plain_status(c), 'stage': c['stage'],
+            'resultReview': space_decisions.result_view(DATA, c, imgs) if c['stage'] in ('result-review', 'done') else None,
             'about': concept_about(c, card), 'variants': variants, 'images': imgs[:8], 'tried': tried[:4],
             'why': [re.sub(r'^\[[AB]\]\s*', '', r) for r in (c['reasons'] or [])][:3],
             'orders': [{'ko': o.get('ko') or o.get('id'), 'size': f'{o["w"]}×{o["h"]}칸' if o.get('w') and o.get('h') else '', 'desc': first_sentence(o.get('desc'), 120)} for o in orders][:20],
