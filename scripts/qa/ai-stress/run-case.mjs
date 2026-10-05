@@ -172,7 +172,8 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   const status = () => crashed ? Promise.reject(new Error('page crashed')) : timed(page.evaluate(() => ({ s: window.__oprnAiBridge?.status?.(), requests: window.__stress.requests.length,
     events: window.__stress.events.length })));
   const modalText = () => page.evaluate(() => {
-    const el = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], .modal, .confirm-dialog')]
+    // 조수 창 안의 「답변 필요」 카드(맵 소실 확인·칩셋 변경 질문)도 사람이 답해야 하는 창이다 — 안 보면 실행이 끝없이 기다린다.
+    const el = [...document.querySelectorAll('[role="dialog"], [role="alertdialog"], .modal, .confirm-dialog, [data-testid="ai-decision-prompt"]')]
       .find(n => n instanceof HTMLElement && n.offsetParent !== null && n.innerText.trim());
     return el ? el.innerText.trim().slice(0, 800) : null;
   });
@@ -292,7 +293,10 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
         modalSince ||= Date.now();
         // 사람이 답해야 하는 창. 파괴 과제는 그대로 두고 기록만, 다른 과제는 3분 뒤 취소로 닫는다.
         if (spec.id !== 'p-destructive' && Date.now() - modalSince > 180_000) {
-          await page.keyboard.press('Escape').catch(() => {}); result.modals.at(-1).dismissed = true; modalSince = 0;
+          const cancel = page.locator('[data-testid="ai-decision-cancel"]').first();
+          if (await cancel.isVisible().catch(() => false)) await cancel.click({ timeout: 5000 }).catch(() => {});
+          else await page.keyboard.press('Escape').catch(() => {});
+          result.modals.at(-1).dismissed = true; modalSince = 0;
         }
       } else modalSince = 0;
       if (st.requests > 0 && st.s && !st.s.turnBusy && !modal) { if (++idle >= 2) break; } else idle = 0;
