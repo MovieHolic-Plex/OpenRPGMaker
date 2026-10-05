@@ -1,0 +1,622 @@
+> oprn@0.133.0 build:app
+> vite build --configLoader runner
+
+(node:1714996) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+vite v6.4.3 building for production...
+transforming...
+../../../../z-project/rpg-zzu/node_modules/zod/v4/core/util.js (330:0): A comment
+
+"// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `Number`, so the bare object literal survived into every bundle."
+
+in "../../../../z-project/rpg-zzu/node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+../../../../z-project/rpg-zzu/node_modules/zod/v4/core/regexes.js (70:0): A comment
+
+"/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+ * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+ * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+
+in "../../../../z-project/rpg-zzu/node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ 3813 modules transformed.
+Export "openRecordPickerPanel" of module "src/editor/panels/eventEditor/recordPickerPanel.ts" was reexported through module "src/editor/panels/eventEditor/recordPickerDialog.ts" while both modules are dependencies of each other and will end up in different chunks by current Rollup settings. This scenario is not well supported at the moment as it will produce a circular dependency between chunks and will likely lead to broken execution order.
+Either change the import in "src/editor/panels/databaseEnemyActionDialog.ts" to point directly to the exporting module or reconfigure "output.manualChunks" to ensure these modules end up in the same chunk.
+rendering chunks...
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/saveActions.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/persistenceRecoveryUi.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/EditScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/commandRegistry.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/menu.ts, dynamic import will not move module into another chunk.
+
+[esbuild css minify]
+▲ [WARNING] Unexpected "19-adversarial-review-3" [css-syntax-error]
+
+    <stdin>:4616:51:
+      4616 │ ...�지 않는다 — 19-adversarial-review-3.css:70 이 같은 ...
+           ╵             ~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Unexpected "`" [css-syntax-error]
+
+    <stdin>:5124:3:
+      5124 │    `display: grid` 는 주지 않는다 — 호스트를 그리�...
+           ╵    ^
+
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/ai/toolImageRenderer.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/ai/assistantSession.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/ai/piAgent/client.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiChatPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/regionTask/runRegionTask.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseModal.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapLocationLayer.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapLocationLayer.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/database.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseModalLazy.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/regionMapView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/spatialUsage.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structurePlacementContextMenu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/walkEncounterModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/worldEntries.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseTroopRecordView.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/devProjectPersistence.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/editor.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/store.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/defaults/defaultProject.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/content/skyStairGame.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/devShowcaseProjects.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/menu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/tools/emptyProject.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/util/toast.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/DragOperationHandler.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/EditScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/TilePaintEngine.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/actions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/clusterAssistRecovery.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/editorReferenceNavigation.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/eventAiQueue/eventAiQueueView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/eventDeletion.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/hotkeys.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/locationDrawCta.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapClipboard.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapEditLocks.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapLocationLayer.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapPlanningActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapSelection.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mvPackImport.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiChatPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiImageGenerateField.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiInstructionsModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiPreferenceMemorySettings.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiProposalCard.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiSettingsModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiTurnRunner.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiUsageLogDownload.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/assetSourceBrowser.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/assistantErrorDetail.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/audioDescriptionEditor.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/buildPalette.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/canvasAiWorkbench.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseAiBar.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseAnimationPreview.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseCharacterView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseClassCurveEditors.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseClassExperienceCurveEditor.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseCommonEventViews.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseCropView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseDailyWeatherView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseElementsClassic.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseEnemyRecordView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseFactionView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseFarmAnimalsView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseFarmSpatialView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseLifeCollectionsView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseLifeCraftingView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseModalPersistence.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseMonsterSpeciesView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseRecordViews.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseRetroChoreographyView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseTroopRecordView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseUtilityViews.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseVillageView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseWorldCanonFields.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseWorldGenView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/editActivityPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/editorZoomToolbar.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/characterIdPickerDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/content.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/eventIdReadout.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/fieldMonsterTemplateDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/modal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/pageProps.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/pageTabContextMenu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/pageTabDragDrop.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/validationActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapCreateDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapHistoryPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapList.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapLocationAdoptionPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapProps.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mediaImportPersistence.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/menu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/regionTaskModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/resourceManager.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/resourceManagerAudioDelete.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/resourceManagerMediaImport.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/resourceModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/scratchConceptTab.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/spatialObjectMutations.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structureKitDbTab.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structureKitEditorDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structureKitImportDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structureKitInspector.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/structurePlacementContextMenu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/terrainEvolutionPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/testPlayModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/tileHistoryMenu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/tilePalette.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/walkEncounterModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/worldAtlasCreateDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/worldManager.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/persistenceRecoveryUi.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/projectInterviewStartup.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/saveActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/selectionActionChips.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/selectionChipHint.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/sharedDemoIntro.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/teamWorkflowUi.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/terrainDesignActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/tileActions.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/audio/index.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseSystemView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/commandBodyAdvanced.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/testPlayModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/PlayScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/battleAudio.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/battleJuice.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/characterHopRuntime.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/mapBgm.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneActionCombat.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneAtmosphere.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneBattle.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneDialogueHooks.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneInterpreter.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneMapAnimations.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneSchedulers.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneWeather.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/player.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playerOptionsDetail.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/runtimeJuice.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/terminalScene.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/regionReferences/castle-town.json is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/regionReferenceSnapshots.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/defaults/referenceHouseFormCatalog.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/regionReferences/walled-settlement.json is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/regionReferenceSnapshots.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/defaults/referenceHouseFormCatalog.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/defaults/spatial/reviewedPlaceCatalog.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/placePresetActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/spatialPlaceCommands.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/spatialPlacePreview.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/regionReferenceImport.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/project/sharedContent.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/spatialPlaceInspector.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/tools/interiorPresetExamples.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/tools/spatialReferenceTools.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapSelection.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/menu.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/saveActions.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/agentFocus.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/assistantViewSwitch.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/commandRegistry.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/editorReferenceNavigation.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/editorToolHook.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/mapUrlSync.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiAuthoring/dialogue.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiStudioShell.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseCharacterView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseCropView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseFactionPreview.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/databaseMonsterSpeciesView.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/editor.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/modal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/firstRunGuide.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/leftLinksPane.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapCreateDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapEventSearchModal.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapList.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/mapPropertiesDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/worldAtlasCreateDialog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/worldManager.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/startScreenHandoff.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/welcomeGenreSystemPresetAction.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneInterpreter.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/PlayScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/PlayScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/troopAfterBattleRunner.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/PlayScene.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/npcDetectionEncounter.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playSceneMapRuntime.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/playerStatusMenuController.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/player/player.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/testPlayModal.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiChatPanelHelpers.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/aiStudioMode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiChatPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiConversationLog.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiLockScrim.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiProposalCard.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiTurnRunner.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/aiAssist.ts, dynamic import will not move module into another chunk.
+
+[plugin vite:reporter]
+(!) /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/aiBootIntent.ts is dynamically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/app/mode.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/menu.ts but also statically imported by /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/aiChatPanel.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/editor.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/panels/eventEditor/validationActions.ts, /home/main/.codex/worktrees/99e0/rpg-zzu/src/editor/projectInterviewStartup.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/benchmark.html                                          0.77 kB │ gzip:     0.46 kB
+dist/start-screen.html                                       0.92 kB │ gzip:     0.52 kB
+dist/assets/drill_core_hit-s-cHQMkk.png                      4.10 kB
+dist/assets/sailor_rum-4SJcJJig.png                          4.12 kB
+dist/assets/dark_knight_slash-CLNy5jxF.png                   4.14 kB
+dist/assets/mon_smoke_cloud-WvStocdP.png                     4.15 kB
+dist/assets/flower_girl_wreath-BYtq9dsA.png                  4.15 kB
+dist/assets/druid_swarm-C5gZA1xy.png                         4.16 kB
+dist/assets/living_armor_hollow-BcE6ZO8o.png                 4.16 kB
+dist/assets/ranger_scope-C9lAoYgc.png                        4.20 kB
+dist/assets/witch_poison_hit-DB7Guu9z.png                    4.20 kB
+dist/assets/galleon_grapple-CIbX7y-C.png                     4.20 kB
+dist/assets/tiger_claw-vnTr3YXW.png                          4.21 kB
+dist/assets/witch_nightmare_hit-CJUSFg7a.png                 4.22 kB
+dist/assets/gambler_allin-D8cn1QSx.png                       4.24 kB
+dist/assets/druid_moonbeam-n3IKfMDh.png                      4.24 kB
+dist/assets/bard_notes_red-Bic1PbU0.png                      4.25 kB
+dist/assets/dark_lord_ward-BZnSXY9d.png                      4.28 kB
+dist/assets/ranger_storm_charge-CpNehoO1.png                 4.30 kB
+dist/assets/ninja_log_puff-F83jKkO4.png                      4.32 kB
+dist/assets/sailor_kraken_hit-CxUBMOn-.png                   4.32 kB
+dist/assets/noblewoman_parasol-F4dq25-E.png                  4.33 kB
+dist/assets/dragonewt_flame_hit-IrWPa7EH.png                 4.33 kB
+dist/assets/monk_elder_incense-rXlrbIXL.png                  4.35 kB
+dist/assets/fairy_grove_hit-CZXNYgIK.png                     4.36 kB
+dist/assets/paladin_shield-DkDcSSLH.png                      4.36 kB
+dist/assets/ranger_storm_hit-UAJPD7vw.png                    4.37 kB
+dist/assets/skiff_net-uZ4Bxx7Q.png                           4.37 kB
+dist/assets/samurai_wind_hit-CWbHpmdi.png                    4.38 kB
+dist/assets/balloon_sandbag_hit-DaKR2fI6.png                 4.41 kB
+dist/assets/dog_bark_hit-CmNFG1hN.png                        4.41 kB
+dist/assets/beast_tamer_wolf-CcjI7rCX.png                    4.42 kB
+dist/assets/nomad_mirage-ntULtZiV.png                        4.42 kB
+dist/assets/airship_roar-BowqaVE3.png                        4.42 kB
+dist/assets/mon_spore_cloud-BEkHiBdf.png                     4.43 kB
+dist/assets/beast_tamer_snake-CRZsnufG.png                   4.43 kB
+dist/assets/demon_knight_x-D0tkT7vQ.png                      4.44 kB
+dist/assets/drill_bore-CxsMghXM.png                          4.44 kB
+dist/assets/merchant_bomb_hit-BlIdG2N3.png                   4.45 kB
+dist/assets/oni_warrior_whirl-CrnvyQ9e.png                   4.46 kB
+dist/assets/skiff_whirlpool-CO8a5JV0.png                     4.46 kB
+dist/assets/chronomancer_slow-CB7TIh-p.png                   4.47 kB
+dist/assets/monk_elder_vajra-C6afLBwS.png                    4.48 kB
+dist/assets/golem_pal_pillars-BFk2oIKW.png                   4.50 kB
+dist/assets/airship_dragon_hit-eT0wvU7M.png                  4.50 kB
+dist/assets/cow_milk-CSJ8mVmN.png                            4.51 kB
+dist/assets/sdance_moon-BZlPq9eM.png                         4.52 kB
+dist/assets/mon_dark_burn-Cfz1JEl4.png                       4.53 kB
+dist/assets/hero_whirl-DHW_n2n6.png                          4.54 kB
+dist/assets/mon_bandage_wrap-Cr9c839a.png                    4.54 kB
+dist/assets/jester_balloons-Dh8FOp_e.png                     4.54 kB
+dist/assets/gunboat_depth-CkIlKEx3.png                       4.55 kB
+dist/assets/ufo_ray_hit-3kW4DPxz.png                         4.55 kB
+dist/assets/samurai_moon-CXPlpWEp.png                        4.58 kB
+dist/assets/druid_bear_spirit-Bdy5MjQg.png                   4.60 kB
+dist/assets/dark_lord_chains-D8PJogLu.png                    4.61 kB
+dist/assets/merfolk_tide_wave-C2ZRfFTL.png                   4.63 kB
+dist/assets/martial_artist_crescent_kick-TTVBmYQF.png        4.64 kB
+dist/assets/bard_notes_blue-CpXZrfJB.png                     4.64 kB
+dist/assets/red_mage_fleche-B0OhCWxb.png                     4.64 kB
+dist/assets/mon_dark_crater-BwtKwmk4.png                     4.65 kB
+dist/assets/galleon_oil_fire-Bntzukzo.png                    4.68 kB
+dist/assets/balloon_confetti-DXF9uBxw.png                    4.69 kB
+dist/assets/desert_warrior_sunfire-BnjfNT7G.png              4.71 kB
+dist/assets/summoner_thunderbird-D3Nod92C.png                4.72 kB
+dist/assets/monk_iron_body-amWkrM4n.png                      4.72 kB
+dist/assets/mon_scythe_x-Co-RNnYl.png                        4.73 kB
+dist/assets/drill_tunnel-CVURtRIz.png                        4.73 kB
+dist/assets/ninja_splash-BBlwlKgJ.png                        4.74 kB
+dist/assets/cleric_blessing-BMGY6oT_.png                     4.75 kB
+dist/assets/dark_knight_flame-B6MXRkTP.png                   4.75 kB
+dist/assets/paladin_holy_slash-DUGMalWx.png                  4.76 kB
+dist/assets/dark_knight_chain-hlE7H-WG.png                   4.77 kB
+dist/assets/guard_holy_shield-s22D1LbX.png                   4.78 kB
+dist/assets/mon_hex_flame-D9LoA6ay.png                       4.78 kB
+dist/assets/druid_claw-rznY5ZDa.png                          4.79 kB
+dist/assets/gargoyle_pal_wingwall-DwEdl692.png               4.80 kB
+dist/assets/guard_charge-C24uoAfk.png                        4.81 kB
+dist/assets/flower_girl_sunflower-h66J9Gv8.png               4.83 kB
+dist/assets/bard_hymn-GnCNkism.png                           4.87 kB
+dist/assets/nomad_dust_devil-DqDGbyYv.png                    4.87 kB
+dist/assets/gargoyle_pal_rockfall-C1otnx0N.png               4.87 kB
+dist/assets/berserker_smash-wIo4ah2D.png                     4.88 kB
+dist/assets/mage_blizzard-DlMu4ZEd.png                       4.88 kB
+dist/assets/scout_flurry-DsjJsnsJ.png                        4.90 kB
+dist/assets/dark_lord_meteor-CjlO6VNr.png                    4.90 kB
+dist/assets/mon_rot_cloud-D7LX3vwC.png                       4.90 kB
+dist/assets/fairy_bloom-DfY-6A2j.png                         4.92 kB
+dist/assets/gypsy_fate_hit-CBpfIhnp.png                      4.93 kB
+dist/assets/monk_elder_lotus-BEipsWjZ.png                    4.95 kB
+dist/assets/hero_flame_slash-DI8htpGB.png                    4.95 kB
+dist/assets/galleon_chain_hit-D-ejI4x1.png                   4.96 kB
+dist/assets/berserker_whirl-DRw2icXd.png                     4.97 kB
+dist/assets/golem_pal_quake-BTO4Zhk3.png                     4.97 kB
+dist/assets/drill_emerge-BipOSiBR.png                        4.97 kB
+dist/assets/mage_mana_shield-9VtlVoIl.png                    4.98 kB
+dist/assets/bard_tempo-CEsaZqK2.png                          4.99 kB
+dist/assets/dark_knight_gravity-BImAmA13.png                 5.00 kB
+dist/assets/ranger_leaves-CLw5VGlx.png                       5.00 kB
+dist/assets/summoner_golem-CbrojrQ1.png                      5.06 kB
+dist/assets/paladin_whirl-wbxwq1wv.png                       5.07 kB
+dist/assets/hero_cross-c-Fz-zSI.png                          5.07 kB
+dist/assets/monk_whirl_kick-CAEw_UcH.png                     5.07 kB
+dist/assets/monk_elder_roar-6ETRTIqX.png                     5.08 kB
+dist/assets/ufo_meteor-BuR9Didy.png                          5.08 kB
+dist/assets/red_mage_double_cast-D8f9h8G2.png                5.09 kB
+dist/assets/valkyrie_feather-D87n2-Rl.png                    5.11 kB
+dist/assets/mon_roar_ring-BU6zBGoR.png                       5.12 kB
+dist/assets/dragonewt_inferno_hit-CHnZEl2B.png               5.12 kB
+dist/assets/djinn_sandstorm-BGIVECKQ.png                     5.13 kB
+dist/assets/gunboat_ram-CZGbYl9m.png                         5.13 kB
+dist/assets/drill_shock-t9gRm7oT.png                         5.15 kB
+dist/assets/drill_magma-fxzftlCq.png                         5.18 kB
+dist/assets/nomad_wrath_spears-CtJgRPRt.png                  5.19 kB
+dist/assets/sdance_ribbon-BPA3NI8T.png                       5.21 kB
+dist/assets/chronomancer_arrow_hit-C3ToQUWT.png              5.23 kB
+dist/assets/harpy_pal_cyclone-Dsqld0sP.png                   5.24 kB
+dist/assets/harpy_pal_featherfall-CVvegy9-.png               5.26 kB
+dist/assets/gunner_grenade_blast-DgyTqOUV.png                5.26 kB
+dist/assets/samurai_final_slash-CvFC0uQe.png                 5.28 kB
+dist/assets/valkyrie_thrust-J283hbVv.png                     5.29 kB
+dist/assets/mon_hellfire_bite-CfLO_-Vn.png                   5.29 kB
+dist/assets/cat_nine_lives-DMxXUSOh.png                      5.30 kB
+dist/assets/seraph_heal-aoL_7K8t.png                         5.31 kB
+dist/assets/noblewoman_waltz-CbIdiS6l.png                    5.31 kB
+dist/assets/mage_gravity-BvAZ53-L.png                        5.32 kB
+dist/assets/tank_shell_hit-jgDRbS1E.png                      5.34 kB
+dist/assets/mon_flame_pillar-DV9zo9Fw.png                    5.36 kB
+dist/assets/bard_sonic_hit-CUrrJI-l.png                      5.36 kB
+dist/assets/paladin_excalibur_hit-BgfKZ-QJ.png               5.37 kB
+dist/assets/monk_fist_flurry-Dq8LQ_e2.png                    5.37 kB
+dist/assets/mage_meteor_blast-i75nNqc1.png                   5.38 kB
+dist/assets/paladin_smite-BMVkfq2b.png                       5.38 kB
+dist/assets/galleon_grape-DpC_3Jse.png                       5.39 kB
+dist/assets/berserker_frenzy-BXuzalGO.png                    5.42 kB
+dist/assets/flower_girl_aroma-s6Km_cFB.png                   5.42 kB
+dist/assets/beast_tamer_hawk-ES-zpGzn.png                    5.42 kB
+dist/assets/berserker_crash-B6EK13Mo.png                     5.43 kB
+dist/assets/drill_temper-DHAhRTcA.png                        5.48 kB
+dist/assets/rooster_dawn-DTXzWUP-.png                        5.48 kB
+dist/assets/drill_spin-DcV9-JxZ.png                          5.49 kB
+dist/assets/fairy_vines-CWzSWXzV.png                         5.52 kB
+dist/assets/gunboat_shell_hit-Z9wARqAS.png                   5.54 kB
+dist/assets/scout_smoke-DR66_GJL.png                         5.57 kB
+dist/assets/airship_flame-TMPPJZSd.png                       5.58 kB
+dist/assets/valkyrie_valhalla_hit-DIpOGvDT.png               5.65 kB
+dist/assets/noblewoman_perfume-ClhUbnEn.png                  5.66 kB
+dist/assets/paladin_hands-DJrOmEMW.png                       5.67 kB
+dist/assets/monk_elder_zen-BY1HMu9J.png                      5.68 kB
+dist/assets/vampire_mist-CYk8zJpS.png                        5.71 kB
+dist/assets/witch_bat_swarm-DqU9FO2L.png                     5.72 kB
+dist/assets/mothman_hallucination-kZRwo_6t.png               5.74 kB
+dist/assets/kappa_flood_sky-BUEeR2Y2.png                     5.77 kB
+dist/assets/dark_knight_blood-BT9dGjpb.png                   5.78 kB
+dist/assets/chronomancer_hands-Bc1-2v-7.png                  5.79 kB
+dist/assets/thief_smoke-BFW-KIRm.png                         5.81 kB
+dist/assets/maid_bubbles-Tl7v0kYN.png                        5.82 kB
+dist/assets/seraph_revive-BQqnw7Ch.png                       5.83 kB
+dist/assets/hermit_mist-BY2L-318.png                         5.89 kB
+dist/assets/golem_pal_sandwall-BT07-hbh.png                  5.91 kB
+dist/assets/mon_devour_jaws-CdLqYyAT.png                     5.91 kB
+dist/assets/rooster_flame_crow-CQkrcXOa.png                  5.96 kB
+dist/assets/red_mage_flare_blade-BfNdFPMb.png                5.97 kB
+dist/assets/demon_knight_release_hit-BTPPdxAn.png            5.99 kB
+dist/assets/witch_mirror-uCbc3GCF.png                        5.99 kB
+dist/assets/monk_chi_burst-CCmoXhg5.png                      5.99 kB
+dist/assets/chronomancer_rewind-OggSqv6K.png                 5.99 kB
+dist/assets/sorceress_curse_mark-CpynCArc.png                6.01 kB
+dist/assets/thief_fan-D5g2omC4.png                           6.01 kB
+dist/assets/witch_frog_puff-B7OOPxph.png                     6.02 kB
+dist/assets/witch_hex-DYaaFgxo.png                           6.03 kB
+dist/assets/tank_mega_hit-DWr3s5SL.png                       6.04 kB
+dist/assets/ninja_fire_breath-dwEb9oyQ.png                   6.07 kB
+dist/assets/monk_elder_nirvana_light-BLAEWIkt.png            6.08 kB
+dist/assets/druid_regrowth-CFknIOhJ.png                      6.09 kB
+dist/assets/berserker_doom_hit-CcpwBW4t.png                  6.09 kB
+dist/assets/summoner_sylph-Bee3zCQx.png                      6.09 kB
+dist/assets/alchemist_bomb_blast-DVEyCkXf.png                6.10 kB
+dist/assets/dark_knight_doom_hit-BrTRlVc6.png                6.12 kB
+dist/assets/alchemist_toxic-Bclmksgs.png                     6.16 kB
+dist/assets/flower_girl_storm-CoLAR6pY.png                   6.17 kB
+dist/assets/galleon_blast-LbYEZuRe.png                       6.19 kB
+dist/assets/valkyrie_javelin_hit-DxSSU7fa.png                6.21 kB
+dist/assets/witch_sabbath_hit-BFH8_27Q.png                   6.22 kB
+dist/assets/summoner_ward-Dzt_njGG.png                       6.22 kB
+dist/assets/demon_knight_flamespin-Cz5MsdTr.png              6.23 kB
+dist/assets/valkyrie_gale-DpnIMnMO.png                       6.23 kB
+dist/assets/nomad_oasis-VSglVK7A.png                         6.24 kB
+dist/assets/red_mage_convert-Qv9FI0t4.png                    6.25 kB
+dist/assets/samurai_cherry-D_DUYGCJ.png                      6.26 kB
+dist/assets/chimera_triple_breath-Bq2wKYRK.png               6.27 kB
+dist/assets/dancer_wardance-CzuXp6IU.png                     6.28 kB
+dist/assets/bard_discord-CR2O2CZ9.png                        6.32 kB
+dist/assets/ufo_mind-kfUwHfqe.png                            6.34 kB
+dist/assets/mage_fire_burst-DJqmhcES.png                     6.37 kB
+dist/assets/druid_tree_hit-CgTZBmok.png                      6.39 kB
+dist/assets/druid_bark-6QhkavTv.png                          6.40 kB
+dist/assets/balloon_flare-CLZZqJbJ.png                       6.46 kB
+dist/assets/sheep_wool-CT8pIFzF.png                          6.49 kB
+dist/assets/gypsy_wheel-BgyGPmHP.png                         6.52 kB
+dist/assets/rooster_gust-CvW9CXwd.png                        6.54 kB
+dist/assets/drill_rockfall-D1cNAgRS.png                      6.58 kB
+dist/assets/chronomancer_skip-HMFDRMEy.png                   6.58 kB
+dist/assets/ninja_clone_hit-CBdid7vG.png                     6.59 kB
+dist/assets/beast_tamer_mend-CLCQ0BxC.png                    6.59 kB
+dist/assets/cleric_revive-BaPE79_f.png                       6.60 kB
+dist/assets/balloon_carpet-CinJ0l3k.png                      6.72 kB
+dist/assets/tank_rocket_hit-rnw3SiAk.png                     6.74 kB
+dist/assets/swordsman_grand_hit-C-we6s-d.png                 6.80 kB
+dist/assets/gunboat_broadside-CCPBhl_i.png                   6.82 kB
+dist/assets/paladin_aegis-CZfjElHE.png                       6.87 kB
+dist/assets/balloon_bomb-CwVYWB9U.png                        6.87 kB
+dist/assets/gunslinger_noon-BcXI5c9F.png                     6.99 kB
+dist/assets/gunboat_smokescreen-DsRznQIv.png                 7.04 kB
+dist/assets/beast_tamer_claw-D2Cvi07C.png                    7.07 kB
+dist/assets/guard_quake_ring-CCygdJ6E.png                    7.07 kB
+dist/assets/red_mage_twin_bolt-7JFBGTyN.png                  7.07 kB
+dist/assets/gunner_flare-bn3I06DN.png                        7.12 kB
+dist/assets/mage_snow-DWmpTA0G.png                           7.17 kB
+dist/assets/balloon_crash_hit-BYsIpbUQ.png                   7.21 kB
+dist/assets/mon_gale_screen-24r3GYFX.png                     7.24 kB
+dist/assets/gunboat_fortress_hit-M09ErUZt.png                7.25 kB
+dist/assets/druid_thorn-DOIrlX1d.png                         7.30 kB
+dist/assets/bard_finale_hit-CD_pGsy2.png                     7.39 kB
+dist/assets/gypsy_cardstorm-B3ed4XBM.png                     7.40 kB
+dist/assets/beast_tamer_roar-BV8MphGe.png                    7.44 kB
+dist/assets/druid_roots-BhJlZRbV.png                         7.71 kB
+dist/assets/thief_ambush-MAxj4XrF.png                        7.78 kB
+dist/assets/ninja_thousand_hit-BfUN0m3Q.png                  7.86 kB
+dist/assets/dancer_pirouette-HuG-H8X6.png                    7.87 kB
+dist/assets/samurai_thunder_line-ff30QdPW.png                7.88 kB
+dist/assets/tank_barrage-Bj7a96jN.png                        7.92 kB
+dist/assets/skiff_wind-Cj69LyUC.png                          7.94 kB
+dist/assets/beast_tamer_king_hit-DHSVxkX2.png                7.96 kB
+dist/assets/fortune_teller_meteor_sky-DP1riJVs.png           8.07 kB
+dist/assets/mon_demon_aura-Cx6RUkF9.png                      8.16 kB
+dist/assets/elder_oath-BE819-VX.png                          8.30 kB
+dist/assets/chronomancer_stop_hit-TlqK_5sF.png               8.31 kB
+dist/assets/butler_final-DbGErIx8.png                        8.51 kB
+dist/assets/dragonewt_venom-smVtgXeE.png                     8.57 kB
+dist/assets/noble_duel_sky-C4qkrwE7.png                      8.82 kB
+dist/assets/witch_cauldron-Cn7Ljt-U.png                      8.90 kB
+dist/index.html                                              8.92 kB │ gzip:     3.43 kB
+dist/assets/mercenary_warlord_sky-DCkfeyit.png               8.94 kB
+dist/assets/noblewoman_rose_thorn-B3w3NTCT.png               8.98 kB
+dist/assets/mushroom_ring_sky-Cporw4Ij.png                   9.05 kB
+dist/assets/mon_wail_sky-DDELvL7_.png                        9.21 kB
+dist/assets/balloon_updraft-CewN9aNC.png                     9.40 kB
+dist/assets/thief_heist_hit-BZTS2n9S.png                     9.46 kB
+dist/assets/hero_warcry-DrtNi7dd.png                         9.53 kB
+dist/assets/grandma_feast-Bl8sXBHX.png                       9.55 kB
+dist/assets/squire_knighting-Dgj0734z.png                    9.56 kB
+dist/assets/mon_gaze_screen-BtPsii_B.png                     9.58 kB
+dist/assets/mon_wave_screen-B1tUe0_q.png                     9.59 kB
+dist/assets/skiff_leviathan-DFGz0bTB.png                     9.62 kB
+dist/assets/galleon_fog-ByAFMylK.png                         9.65 kB
+dist/assets/mon_blizzard_sky-BH_nBzcY.png                    9.65 kB
+dist/assets/hero_brave_burst-vk60Sxn_.png                    9.66 kB
+dist/assets/ronin_last_sky-DGL6BzEG.png                      9.77 kB
+dist/assets/hero_meteor_impact-CZl4mDKg.png                  9.85 kB
+dist/assets/windowskin-warm-CcYC0PVf.png                    10.02 kB
+dist/assets/cleric_halo-D4vPQtAu.png                        10.19 kB
+dist/assets/heavy_knight_bulwark_sky-CgCSaNe6.png           10.36 kB
+dist/assets/red_mage_catastrophe_hit-CJPxZEI-.png           10.39 kB
+dist/assets/mon_fire_breath-CxZyXsKV.png                    10.59 kB
+dist/assets/monk_earth_palm-B2urJF8v.png                    10.61 kB
+dist/assets/valkyrie_wings-DPEzzu-0.png                     10.67 kB
+dist/assets/clockwork_parade_sky-C42Pq381.png               10.92 kB
+dist/assets/pirate_broadside-tlfYs9UJ.png                   11.06 kB
+dist/assets/sheep_dream_sky-DVPCD0Fk.png                    11.27 kB
+dist/assets/old_warrior_ironwall_sky-B-MurzHd.png           11.32 kB
+dist/assets/shrine_maiden_torii_sky-BW7vtUIV.png            11.46 kB
+dist/assets/zombie_pal_horde_sky-CwdBsIdy.png               11.48 kB
+dist/assets/bard_requiem_sky-BEg4FvVZ.png                   11.50 kB
+dist/assets/mon_rampage_screen-DEVCCZqT.png                 11.79 kB
+dist/assets/priest_monk_lotus-DfXUYZ0i.png                  11.81 kB
+dist/assets/basilisk_gorgon_sky-BowVK7DV.png                11.85 kB
+dist/assets/airship_dragon-Da9pBhfb.png                     11.93 kB
+dist/assets/jester_carnival_sky-8_qao0nN.png                11.98 kB
+dist/assets/guard_fortress_wall-CXkta8pT.png                12.12 kB
+dist/assets/candle_imp_meltdown_sky-DeJ3ttAP.png            12.15 kB
+dist/assets/living_armor_legion_sky-D_9GzkJE.png            12.27 kB
+dist/assets/gunner_volley-BWy1u69V.png                      12.29 kB
+dist/assets/hermit_mountain_sky-C68X-fi6.png                12.45 kB
+dist/assets/dragoon_dragon_sky-DFPLpwHI.png                 12.55 kB
+dist/assets/villager_mob_sky-9ubVTa7M.png                   12.70 kB
+dist/assets/lamia_serpent_sky-CBxbLUeM.png                  12.77 kB
+dist/assets/ogre_kid_giant_sky-Bhnk8bvt.png                 12.80 kB
+dist/assets/miner_blast-2ipNjogO.png                        12.84 kB
+dist/assets/djinn_genie_sky-CfqglCxb.png                    12.95 kB
+dist/assets/ranger_storm_bolt-DkUawPTH.png                  13.05 kB
+dist/assets/mon_dark_flame-DiQeJxQv.png                     13.17 kB
+dist/assets/golem_moss_landslide_sky-BM1i7B0O.png           13.31 kB
+dist/assets/paladin_consecrate-HZ1gcPbY.png                 13.34 kB
+dist/assets/skeleton_pal_legion_sky-E_3SNSKG.png            13.43 kB
+dist/assets/reaper_doom_sky-ChutOGJw.png                    13.53 kB
+dist/assets/ufo_mothership-DEFGoRHD.png                     13.56 kB
+dist/assets/chimera_rampage_sky-VehlwzUb.png                13.65 kB
+dist/assets/demon_general_doom_sky-BxP7MG6Z.png             13.70 kB
+dist/assets/merchant_vault_sky-D8gR_hj-.png                 13.70 kB
+dist/assets/minotaur_pal_labyrinth_sky-BU2AGEwj.png         13.72 kB
+dist/assets/oni_warrior_roar-D9gdTU7W.png                   13.73 kB
+dist/assets/girl_alchemist_mecha_sky-DKoPPg-4.png           13.73 kB
+dist/assets/princess_hymn_sky-DYJDDHJB.png                  13.83 kB
+dist/assets/mound_maw_sky-x0cTu52m.png                      13.83 kB
+dist/assets/maid_clean_sky-BhmJ9MKg.png                     13.93 kB
+dist/assets/book_demon_grimoire_sky-CngRRF6l.png            14.18 kB
+dist/assets/cyclops_titan_sky-CrADgZtj.png                  14.24 kB
+dist/assets/galleon_armada-BfdNArsC.png                     14.28 kB
+dist/assets/slime_pal_king_sky-DIG-SpQ9.png                 14.29 kB
+dist/assets/witch_nightmare_sky-MPz1KoRy.png                14.31 kB
+dist/assets/kitsune_ninefire_sky-DtoAp503.png               14.34 kB
+dist/assets/doll_theater_sky-Cyq5k1z4.png                   14.37 kB
+dist/assets/tribal_spirit_sky-CQ1oJZlG.png                  14.44 kB
+dist/assets/farmer_wheat-B1-fY5Du.png                       14.56 kB
+dist/assets/ninja_water_dragon-NuqtFb8m.png                 14.73 kB
+dist/assets/king_realm_sky-CvdkXm-g.png                     14.75 kB
+dist/assets/mon_judgment_sky-CcBxd_LT.png                   14.86 kB
+dist/assets/tank_mega-BfG106f2.png                          14.92 kB
+dist/assets/summoner_dragon-B6r2qa2Q.png                    14.99 kB
+dist/assets/hero_brave_sword-BfZ6Hqj8.png                   15.01 kB
+dist/assets/scarecrow_moon_sky-YT1w5m-k.png                 15.11 kB
+dist/assets/gypsy_fate_sky-Z_OI3247.png                     15.13 kB
+dist/assets/valkyrie_dive-CN4iygwB.png                      15.19 kB
+dist/assets/demon_inferno_sky-D04Ysn7E.png                  15.30 kB
+dist/assets/monk_elder_nirvana_sky-CGen5ust.png             15.43 kB
+dist/assets/samurai_blood_moon-C8znhIR0.png                 15.60 kB
+dist/assets/cow_stampede_sky-RbVgwzNM.png                   15.63 kB
+dist/assets/red_dragon_pal_awaken_sky-C0S7pZJ3.png          15.95 kB
+dist/assets/cleric_judgment_cross-DTRUm5VY.png              16.09 kB
+dist/assets/samurai_petals-Dqunifg0.png                     16.12 kB
+dist/assets/tanuki_transform_sky-B_Mrr1wc.png               16.18 kB
+dist/assets/thief_heist_sky-DAU0TlE9.png                    16.28 kB
+dist/assets/berserker_doom-D_6NrS_7.png                     16.38 kB
+dist/assets/desert_warrior_blades_sky-BrU7w7JD.png          16.44 kB
+dist/assets/gambler_jackpot_sky-CJrZLyaa.png                16.45 kB
+dist/assets/swordsman_grand-CM_XSQBo.png                    16.52 kB
+dist/assets/mimic_pal_maw_sky-ClJZlgkX.png                  16.58 kB
+dist/assets/treant_forest_sky-Dhe37K_R.png                  16.61 kB
+dist/assets/scholar_library-CwuqJJEY.png                    16.63 kB
+dist/assets/prince_royal_light-z_QZNOIp.png                 16.64 kB
+dist/assets/alchemist_stone-CjhB0ia5.png                    16.67 kB
+dist/assets/mothman_moonwing_sky-CZiF9zFp.png               16.72 kB
+dist/assets/drill_core-zFiSunIZ.png                         16.74 kB
+dist/assets/nun_miracle_sky-BfHVEFMk.png                    17.11 kB
+dist/assets/sdance_petal_sky-B-9HHgnH.png                   17.14 kB
+dist/assets/mandrake_wail_sky-D5kw5EW2.png                  17.15 kB
+dist/assets/archmage_elements_sky-DdYUgtHS.png              17.22 kB
+dist/assets/dog_howl_sky-CW-hj18I.png                       17.23 kB
+dist/assets/samurai_final_sky-D63FBSEp.png                  17.29 kB
+dist/assets/dark_angel_judgment_sky-BuC9i2xS.png            17.35 kB
+dist/assets/wraith_mage_harvest_sky-BDcEa3gP.png            17.50 kB
+dist/assets/flower_girl_bloom-Di3e1FFT.png                  17.51 kB
+dist/assets/vampire_bloodmoon-10SlwR-R.png                  17.69 kB
+dist/assets/chronomancer_stop_sky-DGh-dGo1.png              17.70 kB
+dist/assets/horse_pegasus_sky-BCtq6VcY.png                  17.81 kB
+dist/assets/monk_dragon_hit-8mUt_mgA.png                    17.82 kB
+dist/assets/gunboat_fortress-Xb40otSq.png                   18.00 kB
+dist/assets/nomad_wrath_sky-DBD0IhZs.png                    18.38 kB
+dist/assets/dancer_curtain-C7GFQz5l.png                     18.41 kB
+dist/assets/mage_starfall_sky-CT5hDQHd.png                  18.57 kB
+dist/assets/dragonewt_inferno-CSnsTBZY.png                  18.73 kB
+dist/assets/sprite_ice_zero_sky-B_iKBt_u.png                18.87 kB
+dist/assets/yeti_avalanche_sky-BzNSwE_y.png                 19.18 kB
+dist/assets/scout_assassin_cut-CkfEzLh4.png                 19.30 kB
+dist/assets/balloon_crash-jeVFBQTh.png                      19.40 kB
+dist/assets/sailor_kraken_sky-DuE-ZKG5.png                  19.80 kB
+dist/assets/demon_knight_release-OUrH8pSP.png               20.09 kB
+dist/assets/valkyrie_valhalla_sky-DPsjBv-r.png              20.19 kB
+dist/assets/bard_finale_stage-CjznzWBQ.png                  20.28 kB
+dist/assets/monk_dragon_aura-COWzSgR3.png                   20.55 kB
+dist/assets/gargoyle_pal_cathedral-CoChRG11.png             20.89 kB
+dist/assets/tiger_king_sky-o9hLgJKw.png                     21.01 kB
+dist/assets/valkyrie_lance_rain-DGpEN5Uj.png                21.16 kB
+dist/assets/siren_aria_sky-BnYumWId.png                     21.17 kB
+dist/assets/cat_frenzy_sky-DC-Vvc5k.png                     21.27 kB
+dist/assets/red_mage_catastrophe_sky-BtmLTeJK.png           21.55 kB
+dist/assets/lantern_ghost_parade_sky-DKKdiiWY.png           21.58 kB
+dist/assets/oni_warrior_parade-CX8w-WaS.png                 21.85 kB
+dist/assets/seraph_judgment_sky-DjI3Qwek.png                21.97 kB
+dist/assets/ghost_pal_parade_sky-e5NwgHSO.png               22.15 kB
+dist/assets/noblewoman_rose_sky-BMKFRbfr.png                24.56 kB
+dist/assets/golem_pal_avalanche-DD6-KhBt.png                24.57 kB
+dist/assets/fairy_grove_sky-b8sh5O5o.png                    24.74 kB
+dist/assets/flame_spirit_nova_sky-CqeGISkK.png              24.90 kB
+dist/assets/witch_sabbath_sky-hX2iToS_.png                  25.07 kB
+dist/assets/dark_knight_doom_sky-_8ud_9bR.png               25.11 kB
+dist/assets/druid_world_tree-fEw-1dcy.png                   26.15 kB
+dist/assets/merfolk_maelstrom_sky-BdIBr1am.png              26.77 kB
+dist/assets/dark_lord_eclipse-CRVsdDzT.png                  27.58 kB
+dist/assets/paladin_excalibur_sky-Bpn4ZlYx.png              29.78 kB
+dist/assets/ninja_thousand_sky-VyvjkONG.png                 30.08 kB
+dist/assets/beast_tamer_king_sky-Dam8qYPf.png               31.23 kB
+dist/assets/harpy_pal_storm-CSrkprEN.png                    31.80 kB
+dist/assets/lion_king_sky-FI_wXFlz.png                      34.38 kB
+dist/assets/rooster_sunrise_sky-4ELL7PVe.png                35.79 kB
+dist/assets/neodgm-CYAlbkIQ.woff2                           44.35 kB
+dist/assets/Galmuri11-Bold-QdFGsJ3v.woff2                  166.63 kB
+dist/assets/Galmuri9-B9HMP827.woff2                        429.61 kB
+dist/assets/Galmuri11-DfQIlyDK.woff2                       504.74 kB
+dist/assets/phaser.min-CwlHMuXa.js                       1,196.12 kB
+dist/assets/startIntent-CAAEyqOi.css                         0.66 kB │ gzip:     0.35 kB
+dist/assets/PlayScene-CJ7kbzrz.css                           1.57 kB │ gzip:     0.62 kB
+dist/assets/menu-xPE6lG-s.css                                3.18 kB │ gzip:     0.98 kB
+dist/assets/legacyProjectInterviewDialog--DdoKR1v.css        5.74 kB │ gzip:     1.53 kB
+dist/assets/aiConnectGate-DKu2yyeD.css                       6.36 kB │ gzip:     1.50 kB
+dist/assets/benchmark-DftQehRX.css                           6.59 kB │ gzip:     2.17 kB
+dist/assets/databaseModal-D-tTfdoK.css                       7.80 kB │ gzip:     1.96 kB
+dist/assets/projectInterviewDialog-DQhYhrre.css             13.65 kB │ gzip:     2.97 kB
+dist/assets/startScreen-CsagC4wQ.css                        34.55 kB │ gzip:     8.11 kB
+dist/assets/editor-CEFdvL-G.css                             35.24 kB │ gzip:     6.81 kB
+dist/assets/runtimeStylesheet-CgoRmOOQ.css                 624.24 kB │ gzip:    89.91 kB
+dist/assets/main-CulzKS5l.css                            2,070.77 kB │ gzip:   290.31 kB
+dist/assets/aiSettingsEvents-BPXPwIKY.js                     0.05 kB │ gzip:     0.07 kB
+dist/assets/pwa-CRridmjp.js                                  0.25 kB │ gzip:     0.20 kB
+dist/assets/modulepreload-polyfill-B5Qt9EMX.js               0.71 kB │ gzip:     0.40 kB
+dist/assets/startInterview-BVIw1_oi.js                       0.75 kB │ gzip:     0.44 kB
+dist/assets/projectStart-DEOrscRM.js                         0.91 kB │ gzip:     0.61 kB
+dist/assets/welcomeGenrePresetApply-CJ85gMt-.js              1.02 kB │ gzip:     0.63 kB
+dist/assets/tileShapeTools-Bprsy3EE.js                       1.06 kB │ gzip:     0.50 kB
+dist/assets/start-BtHEXmo0.js                                1.09 kB │ gzip:     0.56 kB
+dist/assets/beodeulStarterMap-BqpMI40Y.js                    1.15 kB │ gzip:     0.77 kB
+dist/assets/projectCover-Df580R4m.js                         1.27 kB │ gzip:     0.84 kB
+dist/assets/imageAssetGeneration-UXSb6NT2.js                 1.29 kB │ gzip:     0.76 kB
+dist/assets/mapUrlSync-CD0Ctq8K.js                           1.39 kB │ gzip:     0.74 kB
+dist/assets/projectInterviewAnswers-CnddQMCA.js              1.60 kB │ gzip:     0.92 kB
+dist/assets/startCover-MmxpiG1v.js                           1.71 kB │ gzip:     0.84 kB
+dist/assets/titleDepthGeneration-B0OJEjj-.js                 2.02 kB │ gzip:     1.19 kB
+dist/assets/projectStartSeed-CaEW5RVd.js                     2.11 kB │ gzip:     1.05 kB
+dist/assets/worldEntries-D5h8nHEy.js                         2.32 kB │ gzip:     1.18 kB
+dist/assets/sharedDemoIntro-DZrQ0imf.js                      2.38 kB │ gzip:     1.18 kB
+dist/assets/welcomeGenreSystemPresetAction-BPnpUeDC.js       2.43 kB │ gzip:     1.25 kB
+dist/assets/projectInterviewStartup-o45mi_BH.js              2.57 kB │ gzip:     1.33 kB
+dist/assets/databaseRecordViewSession-BtaEAb4N.js            2.79 kB │ gzip:     1.06 kB
+dist/assets/workspaceStore-ByJfQrhk.js                       3.24 kB │ gzip:     1.44 kB
+dist/assets/titleLogoGeneration-DHafDLvv.js                  3.27 kB │ gzip:     1.90 kB
+dist/assets/startScreenHandoff-DLfYV2Db.js                   3.48 kB │ gzip:     1.67 kB
+dist/assets/defaults-BWtHnq8Q.js                             3.58 kB │ gzip:     1.77 kB
+dist/assets/battleScenery-DKjxp7Bx.js                        3.97 kB │ gzip:     1.98 kB
+dist/assets/aiConnectGate-B-mZMQYo.js                        4.14 kB │ gzip:     1.99 kB
+dist/assets/openingImageGeneration-B0oBn68E.js               4.48 kB │ gzip:     2.31 kB
+dist/assets/aiDeckIcons-KgLTzDJz.js                          4.59 kB │ gzip:     1.97 kB
+dist/assets/projectFolderActions-hBnPEJdA.js                 4.63 kB │ gzip:     1.97 kB
+dist/assets/runner-DepRAn7d.js                               5.44 kB │ gzip:     2.77 kB
+dist/assets/playSceneMapBackground-C6fR8Y4I.js               6.22 kB │ gzip:     2.37 kB
+dist/assets/benchmark-BrkDJRQA.js                            7.03 kB │ gzip:     2.47 kB
+dist/assets/structureKitActions-BZ7h6oK5.js                  7.67 kB │ gzip:     3.29 kB
+dist/assets/titleArtGeneration-3OdMzguw.js                   7.70 kB │ gzip:     3.60 kB
+dist/assets/characterAppearanceGeneration-VSZBhNDr.js        9.48 kB │ gzip:     4.31 kB
+dist/assets/fieldHud-BxOh9UqV.js                             9.55 kB │ gzip:     3.82 kB
+dist/assets/teamWorkflowUi-_Fjauj24.js                       9.93 kB │ gzip:     3.56 kB
+dist/assets/mapEventSearchModal-DypkfLs9.js                 10.48 kB │ gzip:     3.89 kB
+dist/assets/playSceneBattle-CMPsMfJR.js                     11.04 kB │ gzip:     4.34 kB
+dist/assets/actionCombatRuntimeProbe-CVnc4u5-.js            11.97 kB │ gzip:     5.10 kB
+dist/assets/startIntent-CmkrWFOY.js                         12.97 kB │ gzip:     5.84 kB
+dist/assets/helpModal-Cym6VuyD.js                           15.01 kB │ gzip:     5.91 kB
+dist/assets/assistantEndpoint-61_930kK.js                   15.08 kB │ gzip:     5.53 kB
+dist/assets/markdown-DOZ42xFp.js                            16.29 kB │ gzip:     6.54 kB
+dist/assets/databaseAiGenerateDialog-bTIsvSs5.js            16.66 kB │ gzip:     7.36 kB
+dist/assets/prompts-CVnIF8Ot.js                             21.93 kB │ gzip:     9.62 kB
+dist/assets/modalStack-DXGrq_j_.js                          23.09 kB │ gzip:     9.29 kB
+dist/assets/legacyProjectInterviewDialog-B2aiscSA.js        25.58 kB │ gzip:     9.80 kB
+dist/assets/startScreen-C2Rqb1B_.js                         27.91 kB │ gzip:     8.87 kB
+dist/assets/aiStudioMode-BNpm18Sb.js                        29.85 kB │ gzip:    11.08 kB
+dist/assets/conversationStore-DnDMI4Sy.js                   33.04 kB │ gzip:    10.90 kB
+dist/assets/structureKitEditorDialog-DyMjGU9w.js            38.19 kB │ gzip:    13.13 kB
+dist/assets/saveActions-CJoKNS6d.js                         53.40 kB │ gzip:    18.84 kB
+dist/assets/aiSettingsModal-BzEk2Rmb.js                     76.44 kB │ gzip:    26.67 kB
+dist/assets/PlayScene-DTJrq3HH.js                           79.43 kB │ gzip:    29.25 kB
+dist/assets/playableSegment-BW2HEl9J.js                     89.70 kB │ gzip:    31.27 kB
+dist/assets/resourceModal-BzraQnJz.js                       93.45 kB │ gzip:    32.94 kB
+dist/assets/menu-C4HeidG4.js                               116.56 kB │ gzip:    40.76 kB
+dist/assets/lake-village-DxsG_PqU.js                       130.03 kB │ gzip:    10.28 kB
+dist/assets/emerald-basin-C8am3eNB.js                      157.14 kB │ gzip:     5.59 kB
+dist/assets/EditScene-Cv9VvIti.js                          173.88 kB │ gzip:    54.34 kB
+dist/assets/rebuilt-forest-cave-DSEg1a9w.js                183.40 kB │ gzip:    21.52 kB
+dist/assets/hill-forest-cave-Bzq9PxNY.js                   183.41 kB │ gzip:    21.52 kB
+dist/assets/projectInterviewDialog-D8u86dJ2.js             218.55 kB │ gzip:    65.70 kB
+dist/assets/elf-treetop-BhgHMcQW.js                        223.21 kB │ gzip:     4.61 kB
+dist/assets/jp-city-shopstreet-Cv9kRW69.js                 243.09 kB │ gzip:     3.37 kB
+dist/assets/tilePalette-CXhEEvha.js                        261.17 kB │ gzip:    84.61 kB
+dist/assets/rpg-interiors-BO9kJsuf.js                      311.98 kB │ gzip:    14.83 kB
+dist/assets/fantasy-places-HKG7_Zrm.js                     377.80 kB │ gzip:     8.18 kB
+dist/assets/hill-forest-village-C53jmaV8.js                383.77 kB │ gzip:    34.95 kB
+dist/assets/eventAiQueueView-Bci37Rr9.js                   608.90 kB │ gzip:   213.94 kB
+dist/assets/ships-Dx2crSZ5.js                              637.71 kB │ gzip:   101.44 kB
+dist/assets/modern-city-BdtZIYEy.js                        673.55 kB │ gzip:     8.87 kB
+dist/assets/editor-BFg8RJzN.js                             686.87 kB │ gzip:   234.56 kB
+dist/assets/rebuilt-forest-village-DYcnDLKh.js             709.89 kB │ gzip:    44.27 kB
+dist/assets/forest-cabin-KnWBAk1g.js                       718.50 kB │ gzip:    42.30 kB
+dist/assets/harmony-hill-village-9Uyh1HPi.js               719.11 kB │ gzip:    46.16 kB
+dist/assets/forest-star-BkBar4pQ.js                        739.23 kB │ gzip:    42.59 kB
+dist/assets/peaceful-forest-ien7Tifa.js                    759.30 kB │ gzip:    44.78 kB
+dist/assets/river-forest-village-g6-fzOVX.js               760.27 kB │ gzip:    46.38 kB
+dist/assets/gubisup-FpnWskQ1.js                            765.71 kB │ gzip:    44.73 kB
+dist/assets/small-forest-village-FTkJgYY7.js               768.43 kB │ gzip:    45.89 kB
+dist/assets/forest-cliff-village-woDvGMKx.js               781.82 kB │ gzip:    48.10 kB
+dist/assets/rpg-dungeons-CYI_SiUt.js                       781.98 kB │ gzip:    36.15 kB
+dist/assets/cliff-forest-bridge-D3N3I1Ms.js                782.26 kB │ gzip:    47.01 kB
+dist/assets/high-cliff-village-CPvo-6FB.js                 791.52 kB │ gzip:    48.12 kB
+dist/assets/great-falls-wDqiftyk.js                        807.39 kB │ gzip:    47.31 kB
+dist/assets/chapel-hill-parish-CwH6s_Tl.js                 823.01 kB │ gzip:    56.05 kB
+dist/assets/pine-hamlets-BEjxG9T1.js                       828.10 kB │ gzip:    57.11 kB
+dist/assets/mistpond-hollow-BY6qXT1s.js                    830.35 kB │ gzip:    56.44 kB
+dist/assets/reed-bay-village-DkKbCuXa.js                   831.61 kB │ gzip:    57.18 kB
+dist/assets/twin-falls-river-village-CDIYlB1w.js           832.68 kB │ gzip:    56.85 kB
+dist/assets/terrace-cliff-village-CK9N7Lc9.js              833.45 kB │ gzip:    57.42 kB
+dist/assets/nuleolmok-harbor-town-C_FCFM-8.js              835.49 kB │ gzip:    57.13 kB
+dist/assets/ford-castle-town-D7E4QcW1.js                   863.65 kB │ gzip:    58.88 kB
+dist/assets/castle-small-harbor-D3NfDPj1.js              1,026.90 kB │ gzip:    25.31 kB
+dist/assets/castle-stone-lodge-B04KEgIW.js               1,029.09 kB │ gzip:    25.34 kB
+dist/assets/castle-courtyard-ERcll_on.js                 1,039.64 kB │ gzip:    26.99 kB
+dist/assets/climate-villages-Bfc7vBPQ.js                 1,160.91 kB │ gzip:    34.11 kB
+dist/assets/zh-C0ZJAkZt.js                               1,182.11 kB │ gzip:   443.19 kB
+dist/assets/river-fortress-B9AUMypl.js                   1,199.58 kB │ gzip:    35.68 kB
+dist/assets/en-B0o6PsJ-.js                               1,230.53 kB │ gzip:   442.34 kB
+dist/assets/ja-CUG1mUFJ.js                               1,389.01 kB │ gzip:   468.69 kB
+dist/assets/mapTileDrawCore-Di8T2W2C.js                  1,624.24 kB │ gzip:   291.32 kB
+dist/assets/joseon-village-BSJZxNc6.js                   1,719.51 kB │ gzip:   133.67 kB
+dist/assets/databaseModal-BN-rKllg.js                    1,834.88 kB │ gzip:   558.92 kB
+dist/assets/forest-fantasy-town-BJRVrt4s.js              2,059.84 kB │ gzip:    98.70 kB
+dist/assets/field-routes-BtCwEl6C.js                     2,209.43 kB │ gzip:   101.63 kB
+dist/assets/organic-fork-stream-CnfH7jGk.js              3,509.48 kB │ gzip: 2,031.53 kB
+dist/assets/organic-terrace-gardens-DbmBdyDG.js          3,510.12 kB │ gzip: 2,031.49 kB
+dist/assets/organic-fishing-cove-BU27GAZg.js             3,510.18 kB │ gzip: 2,031.36 kB
+dist/assets/organic-crescent-lake-NDwhcSal.js            3,510.84 kB │ gzip: 2,031.26 kB
+dist/assets/organic-orchard-court-D_Qvnf-0.js            3,510.85 kB │ gzip: 2,030.97 kB
+dist/assets/organic-five-groves-D0cytLua.js              3,512.20 kB │ gzip: 2,031.36 kB
+dist/assets/organic-woodland-lane-BOTZVzq0.js            3,512.54 kB │ gzip: 2,031.22 kB
+dist/assets/main-fJcIoDIM.js                            10,507.77 kB │ gzip: 3,894.94 kB
+dist/assets/bundled-data-Lvq_vXDD.js                    61,197.48 kB │ gzip: 5,994.19 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2m 23s

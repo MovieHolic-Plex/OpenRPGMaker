@@ -1,0 +1,200 @@
+{
+  "caseId": "npc-line",
+  "projectId": "cb0524ba-5662-4eec-8ccd-74f492bb1173",
+  "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-line/project",
+  "codeCommit": "ed89479aedb3a8c2a58af8de06028d5eff8c5f5d",
+  "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+  "harnessDigest": "53bca005de087a4c4c2a67193444d93dc562c0b7b88afbc8724cbb428e4030b9",
+  "models": [
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "73557a0b-f3c4-4d16-b88f-f7f27f159360",
+      "at": 1791170711385
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "73557a0b-f3c4-4d16-b88f-f7f27f159360",
+      "at": 1791170715712
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "b52e4727-a32d-4e5c-bed0-8f2e08fa557e",
+      "at": 1791170744371
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791170777116
+    }
+  ],
+  "inputMode": "pi-command",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-first-line",
+          "ok": true,
+          "detail": "동일 이벤트 첫 페이지 첫 문장 정확히 교체"
+        },
+        {
+          "id": "old-line-removed",
+          "ok": true,
+          "detail": "옛 문장 잔존 없음"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": true,
+          "detail": "허용 필드 이외의 프로젝트 전체 보존"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "requiredVisualEvidence": [],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"cb0524ba-5662-4eec-8ccd-74f492bb1173\",\"projectDir\":\"/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-line/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"3a6d7332645c66b903bc08d35943aca9a7c8e3404094fd2faa193dfcf9026c96\",\"reloadedSha256\":\"3a6d7332645c66b903bc08d35943aca9a7c8e3404094fd2faa193dfcf9026c96\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-image-review",
+      "notes": "첫 대화와 재대화에 정확히 동문에서 만나자가 표시된다. 원래 금발·파란 옷 꼬마 그림과 다른 두 NPC를 시작/대화/재대화에서 확인했다. 변경 화면·새 context 재로드 화면 및 동일 전체 문서 SHA 영수증을 읽었고 대사 외 전체 보존 게이트도 통과했다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/05-repeat.png"
+      ]
+    }
+  },
+  "status": "pass",
+  "persistence": {
+    "projectId": "cb0524ba-5662-4eec-8ccd-74f492bb1173",
+    "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-charset-r5/npc-line/project",
+    "beforeRevision": 3,
+    "afterRevision": 4,
+    "afterSha256": "3a6d7332645c66b903bc08d35943aca9a7c8e3404094fd2faa193dfcf9026c96",
+    "reloadedSha256": "3a6d7332645c66b903bc08d35943aca9a7c8e3404094fd2faa193dfcf9026c96",
+    "sameTarget": true,
+    "sameStoredDocument": true,
+    "reloadEqual": true,
+    "flush": {
+      "kind": "saved",
+      "dirty": false
+    },
+    "indexedDb": {
+      "exists": true,
+      "conversations": 0,
+      "userEntries": 0
+    }
+  },
+  "visualReview": {
+    "schemaVersion": 1,
+    "status": "pass",
+    "reviewer": "codex-image-review",
+    "notes": "첫 대화와 재대화에 정확히 동문에서 만나자가 표시된다. 원래 금발·파란 옷 꼬마 그림과 다른 두 NPC를 시작/대화/재대화에서 확인했다. 변경 화면·새 context 재로드 화면 및 동일 전체 문서 SHA 영수증을 읽었고 대사 외 전체 보존 게이트도 통과했다.",
+    "images": [
+      {
+        "file": "after.png",
+        "sha256": "8201482fd9fc06ae3c1b68e37ccfc687fa5f9073cef3b2f72abc8656a33e152d"
+      },
+      {
+        "file": "reloaded.png",
+        "sha256": "9b809e87a16f37911f7789f44d6e7dc8919e9d61f72d56181457f27fe4d25fb1"
+      },
+      {
+        "file": "runtime/02-start.png",
+        "sha256": "3201ea97634baa1d9a0047eb533dcfec7a787366046748788d3036c933a53b2a"
+      },
+      {
+        "file": "runtime/03-first-line.png",
+        "sha256": "43762a3c6e02f07bd3ad347e5753cdd7c2f8feea7ac72dfe479a6f283d79726e"
+      },
+      {
+        "file": "runtime/05-repeat.png",
+        "sha256": "43762a3c6e02f07bd3ad347e5753cdd7c2f8feea7ac72dfe479a6f283d79726e"
+      }
+    ],
+    "resultDigest": "4834da71891d2eb68dd59d3f0bbb897c660f4c1ffd4f7838fe01ebd4de607d80",
+    "reviewedAt": "2026-10-05T03:30:38.280Z"
+  }
+}

@@ -415,11 +415,12 @@ function applyEventLevelGraphic(draft: Project, map: GameMap, event: GameEvent, 
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return;
   let graphic: EventPageGraphic;
   try {
-    graphic = "query" in raw || "textureKey" in raw
+    graphic = "query" in raw || "textureKey" in raw || 'selectionId' in raw
       ? resolveGraphic(raw as GraphicSpec, { avoidKeys: usedCharsetGraphicKeysOnMap(map), seed: `${map.id}:${event.id}`, overrides: draft.charsetLabels })
       : structuredClone(raw) as EventPageGraphic;
   } catch (error) {
     if (!(error instanceof ToolError)) throw error;
+    if ('selectionId' in raw) throw error;
     warnings.push(`event.graphic 을 해석하지 못해 버렸습니다: ${error.message}`);
     return;
   }
@@ -1321,7 +1322,7 @@ const placeNpc: ToolDefinition = {
     const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
     const specQuery = "query" in graphicSpec ? graphicSpec.query : undefined;
-    const recurring = specQuery !== undefined ? recurringCharacterLook(draft, map.id, name) : undefined;
+    const recurring = specQuery !== undefined && !('selectionId' in graphicSpec) ? recurringCharacterLook(draft, map.id, name) : undefined;
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),

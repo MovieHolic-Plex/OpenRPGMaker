@@ -1,5 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { backup, DatabaseSync } from 'node:sqlite';
+import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
 import { createEmberQuestProject } from '../../../project/defaults/emberQuestGame';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { COMBINED_TOWN_TILESET_ID } from '../../../project/defaults/constants';
@@ -71,6 +73,14 @@ export async function prepare(root: string, selected?: string): Promise<void> {
     project.session.gold = 100;
     // Existing unrelated maps and database records are retained as sentinels.
     mkdirSync(dir, { recursive: true });
+    // Pin the real library edition for this case: publishing a new shared
+    // character during reload must not alter the strict persistence comparison.
+    const sharedSource = sharedContentFile();
+    if (existsSync(sharedSource)) {
+      const source = new DatabaseSync(sharedSource, { readOnly: true });
+      try { await backup(source, resolve(dir, 'shared-content.sqlite')); }
+      finally { source.close(); }
+    }
     const store = await initLocalProjectStore({ projectDir });
     try {
       await store.saveProject(project);

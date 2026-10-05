@@ -9,6 +9,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
+import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
+import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
 import { sunlightField } from "../../src/project/sunlight.ts";
@@ -249,6 +251,21 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
  * 긴 변이 maxSide 를 넘으면 정수 배로 줄인다(브라우저도 전맵 요청은 축소 렌더한다).
  */
 export function renderToolRegionPngBase64(project: Project, data: unknown, maxSide = 1024): string {
+  const candidates = (data as { charsetCandidates?: readonly CharsetPreviewCandidate[] } | undefined)?.charsetCandidates;
+  if (candidates?.length) {
+    const sheets = new Map<string, { width: number; height: number; data: Uint8ClampedArray }>();
+    for (const id of new Set(candidates.map(row => row.textureKey))) {
+      const url = resolveAssetResourceUrl(id, { project });
+      const bytes = url?.startsWith('data:image/png;base64,') ? Buffer.from(url.slice(url.indexOf(',') + 1), 'base64')
+        : url && /^\/?assets\//u.test(url) ? fs.readFileSync(path.join('public', url.replace(/^\//u, ''))) : null;
+      if (!bytes) throw new Error(`캐릭터 칩 원본을 읽을 수 없습니다: ${id}`);
+      const png = PNG.sync.read(bytes);
+      sheets.set(id, { width: png.width, height: png.height, data: new Uint8ClampedArray(png.data) });
+    }
+    const raster = drawCharsetPreview(candidates, id => sheets.get(id)!);
+    const png = new PNG({ width: raster.width, height: raster.height }); png.data.set(raster.data);
+    return PNG.sync.write(png).toString('base64');
+  }
   const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
   const map = typeof region.mapId === "string" ? project.maps[region.mapId] : undefined;
   if (!map) throw new Error(`show_map_region 이미지: 맵을 찾을 수 없습니다(${String(region.mapId)})`);

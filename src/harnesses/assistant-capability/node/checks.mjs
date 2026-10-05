@@ -33,6 +33,10 @@ export function evaluate(entry, before, after, answer = '') {
   const checks = [];
   const unchanged = () => equal(before, after);
   switch (entry.check) {
+    case 'graphic': {
+      const graphic = current?.pages?.[0]?.graphic;
+      checks.push(check('exact-character-cell', graphic?.sprite?.id === entry.textureKey && graphic?.pattern === entry.frame && graphic?.transparent !== true, `요청한 실제 칩 ${entry.textureKey} frame ${entry.frame}`)); break;
+    }
     case 'inspect':
       checks.push(check('answer-grounded', ['미루', '마사', '15', '8', '7', '12'].every(v => answer.includes(v)) && answer.includes('반짝이는 풀'), 'NPC 이름·위치·첫 대사·15G를 원문 답에서 확인'));
       checks.push(check('read-only', unchanged(), '조회 후 게임 콘텐츠 전체 불변')); break;
@@ -73,6 +77,7 @@ export function evaluate(entry, before, after, answer = '') {
   // graphics, database records and start/session changes, even when the target passes.
   const projected = structuredClone(after);
   const e = eventOf(projected);
+  if (entry.check === 'graphic' && e?.pages?.[0]) e.pages[0].graphic = structuredClone(original.pages[0].graphic);
   if (entry.check === 'line' && e?.pages?.[0]?.commands?.[0]) e.pages[0].commands[0] = structuredClone(original.pages[0].commands[0]);
   if (entry.check === 'move' && e) { e.x = original.x; e.y = original.y; }
   if (entry.check === 'delete' && !e) {
@@ -118,6 +123,7 @@ export function knownGood(entry, before) {
   const after = structuredClone(before), e = eventOf(after), p = e.pages[0];
   const text = body => ({ kind: 'text', body, speaker: '꼬마 미루' });
   switch (entry.check) {
+    case 'graphic': p.graphic = { sprite: { type: 'bundled', id: entry.textureKey }, direction: 'down', pattern: entry.frame }; break;
     case 'line': p.commands[0].body = '동문에서 만나자.'; break;
     case 'move': e.x = 9; e.y = 7; break;
     case 'delete': after.maps[MAP].events = after.maps[MAP].events.filter(e => e.id !== CHILD); break;

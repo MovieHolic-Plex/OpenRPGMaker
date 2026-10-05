@@ -461,7 +461,7 @@ function faceForNpcGraphic(textureKey: string, characterIndex: number): { readon
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 그래픽 후보와 검토된 짝 얼굴(face)을 조회한다. portraitOptions는 그 얼굴과 같은 공용 표정 세트의 얼굴·흉상·전신 선택지이며, 큰 초상이 없으면 얼굴만 반환한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다.",
+  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 같은 인물의 초상 선택지다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -472,6 +472,7 @@ const listNpcGraphics: ToolDefinition = {
   run(project, args): ToolExecResult {
     const query = typeof args.query === "string" ? args.query : undefined;
     const matches = queryNpcGraphics(query, 20, project.charsetLabels).map((match) => ({
+      selectionId: `charset:${match.entry.textureKey}:${match.entry.characterIndex}`,
       textureKey: match.entry.textureKey,
       characterIndex: match.entry.characterIndex,
       label: match.entry.label,
@@ -567,6 +568,21 @@ const listResources: ToolDefinition = {
         audioProject: project,
         monsterProject: project,
       });
+      if (kind === 'charset') {
+        // Uploaded sheets have no authored semantic labels. Let the assistant
+        // browse their real eight slots by file name/id and use nativeGraphic.
+        const needle = args.query.trim().toLocaleLowerCase();
+        const browse = ['', '*', 'all', '전체'].includes(needle);
+        const knownSheets = new Set(searchResources('charset', '*').map(row => row.nativeGraphic?.sprite?.id));
+        all.push(...Object.values(project.assets.uploaded)
+          .filter(asset => asset.kind === 'charset' && !knownSheets.has(asset.id)
+            && (browse || asset.name.toLocaleLowerCase().includes(needle) || asset.id.toLocaleLowerCase().includes(needle)))
+          .flatMap(asset => Array.from({ length: 8 }, (_, characterIndex) => ({
+            id: `charset:${asset.id}:${characterIndex}`, label: `${asset.name} / 칸 ${characterIndex}`,
+            nativeGraphic: { sprite: { type: 'uploaded' as const, id: asset.id }, direction: 'down' as const,
+              pattern: charsetFrameIndex({ characterIndex, direction: 'down', pattern: 1 }) },
+          }))));
+      }
     }
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined

@@ -7,7 +7,7 @@ import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/shar
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
-import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
+import { npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
@@ -70,6 +70,7 @@ type EventCompileOptions = {
 type RecordValue = Record<string, unknown>;
 
 export type GraphicSpec =
+  | { readonly selectionId: string; readonly query?: string }
   | { readonly query: string }
   | { readonly textureKey: string; readonly characterIndex?: number }
   | { readonly transparent: true };
@@ -195,6 +196,14 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
 export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   if (!spec) return { transparent: true };
   if ("transparent" in spec) return { transparent: true };
+  if ('selectionId' in spec) {
+    const selected = parseCharsetSearchId(spec.selectionId);
+    if (!selected || selected.characterIndex < 0 || selected.characterIndex > 7) throw new ToolError('selectionId는 칩 검색 결과의 charset:<시트>:<칸>이어야 합니다.', { code: 'graphic-not-found' });
+    if (spec.query && !queryNpcGraphics(spec.query, 100, pick?.overrides).some(match => match.entry.textureKey === selected.textureKey && match.entry.characterIndex === selected.characterIndex)) {
+      throw new ToolError(`selectionId ${spec.selectionId}는 요청한 외형 '${spec.query}'의 후보가 아닙니다. 같은 검색 결과의 selectionId를 쓰세요.`, { code: 'graphic-selection-mismatch' });
+    }
+    return charsetGraphic(selected.textureKey, selected.characterIndex);
+  }
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
   return charsetGraphic(spec.textureKey, spec.characterIndex);
 }
