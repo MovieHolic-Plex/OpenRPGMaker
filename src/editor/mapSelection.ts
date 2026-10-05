@@ -7,6 +7,8 @@ import { toast } from "@/util/toast";
 
 export interface SelectEditorMapOptions {
   readonly clearEventSelection?: boolean;
+  /** Viewing a member's map must not turn a shared/read-only project into an editing copy. */
+  readonly checkoutForEditing?: boolean;
 }
 
 /**
@@ -43,7 +45,7 @@ export function selectEditorMap(mapId: MapId, options: SelectEditorMapOptions = 
   }
   if (Object.keys(patch).length > 0) editorState.set(patch);
 
-  void checkoutMapForEditing(mapId, map.name || mapId);
+  if (options.checkoutForEditing !== false) void checkoutMapForEditing(mapId, map.name || mapId);
   return true;
 }
 

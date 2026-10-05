@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "id": "activity-1791172236093-3n5tjv1w3i4",
+  "projectId": "82d2131d-8667-44b5-b01b-ee80610aef32",
+  "title": "UI 확인용 재생 · 작업 현황과 로그 추출",
+  "startedAt": 1791172236093,
+  "updatedAt": 1791172236097,
+  "phase": "준비",
+  "entries": [
+    {
+      "id": "activity-1791172236093-3n5tjv1w3i4:0",
+      "at": 1791172236094,
+      "actor": "workspace-builder",
+      "kind": "agent_spawn",
+      "name": "agent_spawn",
+      "status": "info",
+      "summary": "작업 배정",
+      "output": {
+        "type": "agent_spawn",
+        "agentId": "workspace-builder",
+        "role": "builder",
+        "label": "시공 조수",
+        "memberId": "builder",
+        "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+        "mapName": "시장 마을",
+        "task": "지도 구성 확인"
+      }
+    },
+    {
+      "id": "workspace-builder:workspace-builder-read:1",
+      "at": 1791172236095,
+      "actor": "workspace-builder",
+      "kind": "tool",
+      "name": "inspect_map",
+      "status": "ok",
+      "summary": "지도 구성 확인 완료",
+      "input": {
+        "callId": "workspace-builder-read",
+        "args": {
+          "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+          "apiKey": "[인증 정보 가림]",
+          "evidence": "UI replay only"
+        }
+      },
+      "endedAt": 1791172236096,
+      "durationMs": 1,
+      "output": {
+        "nodes": 3
+      }
+    },
+    {
+      "id": "activity-1791172236093-3n5tjv1w3i4:3",
+      "at": 1791172236097,
+      "actor": "workspace-reviewer",
+      "kind": "agent_spawn",
+      "name": "agent_spawn",
+      "status": "info",
+      "summary": "작업 배정",
+      "output": {
+        "type": "agent_spawn",
+        "agentId": "workspace-reviewer",
+        "role": "reviewer",
+        "label": "검수 조수",
+        "memberId": "reviewer",
+        "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+        "mapName": "시장 마을",
+        "task": "지도 연결 검사"
+      }
+    },
+    {
+      "id": "workspace-reviewer:workspace-reviewer-read:4",
+      "at": 1791172236097,
+      "actor": "workspace-reviewer",
+      "kind": "tool",
+      "name": "inspect_map",
+      "status": "ok",
+      "summary": "지도 연결 검사 완료",
+      "input": {
+        "callId": "workspace-reviewer-read",
+        "args": {
+          "mapId": "map_1b6117c5-0909-4be7-bd08-ecead52a00d3",
+          "apiKey": "[인증 정보 가림]",
+          "evidence": "UI replay only"
+        }
+      },
+      "endedAt": 1791172236097,
+      "durationMs": 0,
+      "output": {
+        "nodes": 3
+      }
+    }
+  ],
+  "actors": {
+    "workspace-builder": "시공 조수",
+    "workspace-reviewer": "검수 조수"
+  },
+  "dropped": 0,
+  "bytes": 1525,
+  "serial": 6
+}
