@@ -1,0 +1,85 @@
+{
+  "candidateId": "explorer-1c9395185ff2b26e",
+  "pass": true,
+  "checks": [
+    {
+      "name": "repreparing reference collection preserves new authored candidate",
+      "pass": true
+    },
+    {
+      "name": "reference preparation keeps old variants withdrawn",
+      "pass": true
+    },
+    {
+      "name": "producer activation records no user decisions",
+      "pass": true
+    },
+    {
+      "name": "direct link selects Naru",
+      "pass": true
+    },
+    {
+      "name": "seven current candidates displayed",
+      "pass": true
+    },
+    {
+      "name": "actual GIF dimensions are native",
+      "pass": true
+    },
+    {
+      "name": "authored provenance visible",
+      "pass": true
+    },
+    {
+      "name": "five review observations retained",
+      "pass": true
+    },
+    {
+      "name": "Allow disabled without human review",
+      "pass": true
+    },
+    {
+      "name": "phase 0 displays current atlas frame",
+      "pass": true
+    },
+    {
+      "name": "phase 1 displays current atlas frame",
+      "pass": true
+    },
+    {
+      "name": "phase 2 displays current atlas frame",
+      "pass": true
+    },
+    {
+      "name": "phase 3 displays current atlas frame",
+      "pass": true
+    },
+    {
+      "name": "reload preserves selected candidate",
+      "pass": true
+    },
+    {
+      "name": "unapproved download blocked",
+      "pass": true
+    },
+    {
+      "name": "mobile page does not overflow",
+      "pass": true
+    },
+    {
+      "name": "no browser or resource errors",
+      "pass": true
+    },
+    {
+      "name": "production decisions untouched",
+      "pass": true
+    },
+    {
+      "name": "new candidate still pending after readback",
+      "pass": true
+    }
+  ],
+  "productionDecisionsBefore": 1,
+  "productionDecisionsAfter": 1,
+  "productionVotesWritten": 0
+}

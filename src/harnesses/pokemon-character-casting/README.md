@@ -16,3 +16,5 @@ The old six shared-Brendan-body variants were withdrawn after user feedback, wit
 [Workflow and shipping contract](../../../openwiki/harnesses/pokemon-character-casting.md). Focused isolated verification: `node node/verify.mjs --out /absolute/evidence` from this directory, or use the repo-relative path from the repo root. No agent may record real user votes.
 
 Distinct-body UI verification: `node src/harnesses/pokemon-character-casting/node/verify-distinct.mjs --out /absolute/evidence` from the repository root, with the review server running on port 18316. It uses copied storage for rejected approval attempts and only views the production page. Evidence: `verify-shots/pokemon-character-casting-distinct/SUMMARY.md`.
+
+New grid-authored example: `harness-data/pokemon-character-casting/authored/naru-v1/` (Naru). Run `node/render-authored.py --source <naru.px.json> --candidate <candidate.json> --out <bundle>` with Python, then `queue --bundle <bundle>`. Full source rows and provenance travel inside the immutable recipe. Existing reference preparation preserves independently authored collections. Link a specific candidate with `/?candidate=<id>`.
