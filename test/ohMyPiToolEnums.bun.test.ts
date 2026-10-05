@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { complete } from "@oh-my-pi/pi-ai";
 import { getBundledModel } from "@oh-my-pi/pi-catalog";
 import { buildRequest } from "@oh-my-pi/pi-ai/providers/google-gemini-cli";
-import { antigravityToolEnumPayload, ToolSchemaTransportError } from "../scripts/lib/ohMyPiToolEnums.ts";
+import { antigravityToolEnumPayload, stripEmptyEnumMembers, ToolSchemaTransportError } from "../scripts/lib/ohMyPiToolEnums.ts";
 import { completeProvider } from "../scripts/lib/ohMyPiPiAiRuntime.ts";
 import { allTools } from "../src/editor/tools/toolRegistry.ts";
 import { offlineFetch } from "./helpers/offlineFetch.ts";
@@ -136,5 +136,24 @@ describe("post-normalization CCA enum preservation", () => {
     ) });
     expect(result.content).toEqual([]);
     expect(fetches).toBe(0);
+  });
+});
+
+// 2026-10-05: set_project_settings.fonts 의 enum[0]="" 하나로 CCA 가 요청 전체를 400 으로 거부했다.
+describe("CCA empty enum member guard", () => {
+  test("drops only empty string members on the real SDK wire and keeps identity when clean", () => {
+    const fontTools = [{ name: "fonts", description: "fonts", parameters: { type: "object", properties: {
+      ui: { type: "string", enum: ["", "neodgm", "galmuri9"] }, none: { type: "string", enum: [""] },
+      list: { type: "array", items: { type: "string", enum: ["", "a"] } },
+    } } }];
+    const wire = buildRequest(bundled("gemini-3.7-flash"), { ...context(), tools: fontTools }, "offline-project", {}, true);
+    const before = JSON.stringify(wire);
+    const fixed = antigravityToolEnumPayload("gemini-3.7-flash", fontTools)(wire) as Payload;
+    const props = fixed.request.tools[0].functionDeclarations[0].parameters!.properties!;
+    expect(props.ui.enum).toEqual(["neodgm", "galmuri9"]);
+    expect(props.none).not.toHaveProperty("enum");
+    expect(props.list.items!.enum).toEqual(["a"]);
+    expect(JSON.stringify(wire)).toBe(before);
+    expect(stripEmptyEnumMembers(fixed)).toBe(fixed);
   });
 });
