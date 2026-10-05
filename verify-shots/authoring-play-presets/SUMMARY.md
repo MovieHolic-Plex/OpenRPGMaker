@@ -50,3 +50,5 @@ module-loading-errors.json에 보존했다. 해당 모듈 응답을 확인하고
 - Firefox 브라우저를 다시 열어 96종과 편집기 화면을 재확인했다. `proof.json`: **passed:true**, 오류 0건.
 - 변경 전 커밋의 별도 소스 사본에서 카탈로그 예산 검사를 실행해 같은 오프닝 기대 목록 실패(2개 통과·1개 실패)를 재현했다. `test-baseline-comparison.json` 참조.
 - 최종 `NODE_OPTIONS=--max-old-space-size=10240 npm run typecheck:app`: **exit 0**, 앱 타입 오류 0건. 최신 main의 기존 수정이 포함된 결과다.
+
+- 최신 스키마 수정(main `29e6f22ab7`) 통합 뒤 추가 검사: 프리셋 7개 통과, 전역 스키마 호환 119개 중 116개 통과·기존 실패 3개. 새 enum 검사는 통과했다. main 별도 사본과 실패 3개의 이름·진단 전체가 동일함을 확인했다(`provider-baseline-comparison.json`).

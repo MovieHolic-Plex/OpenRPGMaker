@@ -18,9 +18,20 @@
   },
   "knownBaselineFailures": [
     "opening-family expectation missing show_title_opening",
-    "CSS gates"
+    "CSS gates",
+    "three provider schema failures reproduced identically on main"
   ],
   "liveModelExecution": false,
   "allPresetGameplayVerified": false,
-  "canonicalContentChanged": false
+  "canonicalContentChanged": false,
+  "additionalSchemaRun": {
+    "files": 2,
+    "passed": 123,
+    "failed": 3,
+    "providerPassed": 116,
+    "providerFailed": 3,
+    "presetPassed": 7,
+    "enumCompatibilityPassed": true
+  },
+  "latestIntegrationCommit": "615344044716c3bafa8cf616dcd3e36881768c48"
 }
