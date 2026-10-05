@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.137.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — grow keyword seeds into continuous space demos (#2173) (`db5a6f7`)
+- **ai** — simplify the first request with progressive disclosure (`4bf51c9`)
+- add 300 town props and prioritize selected shared assets (#2170) (`5973e61`)
+
+### 수정
+
+- 캐릭터 칩 이름·태그 전수 조사 및 검색 누락 교정 (#2168) (`6367f81`)
+- isolate native drawing worker session context (#2169) (`dbe4304`)
+
+### 문서
+
+- **qa** — record first-request UI and export evidence (`b39b1d1`)
+
 ## 0.136.0 — 2026-10-05
 
 ### 기능
