@@ -5,7 +5,7 @@
 
 <--- Last few GCs --->
 
-[537001:0x1de70000]    85689 ms: Scavenge (interleaved) 4084.8 (4092.5) -> 4084.4 (4103.0) MB, pooled: 0 MB, 19.70 / 0.00 ms  (average mu = 0.189, current mu = 0.120) allocation failure; 
+[537001:0x1de70000]    85689 ms: Scavenge (interleaved) 4084.8 (4092.5) -> 4084.4 (4103.0) MB, pooled: 0 MB, 19.70 / 0.00 ms  (average mu = 0.189, current mu = 0.120) allocation failure;
 [537001:0x1de70000]    88789 ms: Mark-Compact (reduce) 4084.9 (4103.0) -> 4084.9 (4089.7) MB, pooled: 0 MB, 2936.22 / 0.00 ms  (+ 25.9 ms in 7 steps since start of marking, biggest step 5.1 ms, walltime since start of marking 2987 ms) (average mu = 0.132,
 FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
 ----- Native stack trace -----
