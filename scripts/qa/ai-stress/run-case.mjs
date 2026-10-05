@@ -329,6 +329,18 @@ for (const name of await list400()) {
   } catch { /* 쓰는 중 */ }
 }
 
+// 호스트를 닫은 뒤 저장소 API 로 정본 전체(타일셋·에셋 포함)를 다시 읽어 검사 입력으로 쓴다 — 표 행만 이어 붙이면 로더가 거부한다.
+try {
+  await withTsModule(resolve('electron/local-store/store.ts'), `stress-reload-${process.pid}.mjs`, async ({ initLocalProjectStore }) => {
+    const store = await initLocalProjectStore({ projectDir });
+    try {
+      const snapshot = store.loadSnapshot();
+      await writeFile(out + '/project.json', S.serialize(snapshot.project));
+      result.canonicalReload = { sha256: snapshot.sha256, revision: store.info().revision };
+    } finally { store.close(); }
+  });
+} catch (error) { result.canonicalReloadError = String(error?.message ?? error).slice(0, 500); }
+
 // ── 5. 오프라인 검사 ──
 try {
   await stat(out + '/project.json');
