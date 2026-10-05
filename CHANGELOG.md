@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.140.0 — 2026-10-05
+
+### 기능
+
+- 통합 GIF 공방과 에디터 전체 원본 캐릭터 제작 (#2130) (`d40e451`)
+
+### 수정
+
+- **super-harness** — resume classroom demos from current native receipts (#2184) (`08d8436`)
+- **super-harness** — prioritize finishing spaces and publish approved parking facility (#2183) (`f9d95e7`)
+
 ## 0.139.0 — 2026-10-05
 
 ### 기능
