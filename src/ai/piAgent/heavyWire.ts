@@ -49,16 +49,41 @@ async function sha256Hex(text: string): Promise<string> {
  *
  * 해시만 기억하고 글은 쥐지 않는다. 글(새 프로젝트 기본 자료 타일셋·자산 약 48M자, 두 바이트 문자열이라 약 96MB)은 호스트가
  * 그 해시를 모른다고 할 때(409)만 필요한데, 쥐고 있으면 조수를 한 번 부른 뒤로 렌더러 힙에 계속 남았다
- * (2026-10-05 스트레스 실측: 턴 시작 뒤 렌더러 1GB+ 중 이 기억이 약 210MB — hashMemo·lastByKey 가 같은 글을 둘 다 쥐는 순간 포함).
+ * (2026-10-05 스트레스 실측: 턴 시작 뒤 렌더러 1GB+ 중 이 기억이 약 210MB — 당시 hashMemo·lastByKey 가 같은 글을 둘 다 쥐는 순간 포함).
  * 409 때 다시 만드는 글은 항목 글 기억으로 조립돼 싸다(sharedDictionaryJson).
  */
 const hashMemo = new WeakMap<object, string>();
 /**
- * 키마다 마지막 해시와 그 내용 요약. 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도,
+ * 키마다 최근 해시와 그 내용 요약(작은 LRU). 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도,
  * 내용 요약(`jsonContentDigest`: 노드 기억 — 공유 항목은 대조도 건너뛴다)이 같으면 해시를 다시 만들지 않는다.
  * 요약이 같다 ⇔ 키 순서만 다를 수 있는 같은 내용이다. 순서가 달라 글의 해시가 달라졌으면 보낼 때 알아채 새 해시로 보낸다(withHeavyBlobs).
+ * 한 칸만 두면 내용이 두 판 사이를 오갈 때(되돌리기·체크포인트 거절) 매번 전체 글을 다시 만들었다 — 몇 판을 기억한다.
  */
-const lastByKey = new Map<PiHeavyProjectKey, { readonly digest: string; readonly hash: string }>();
+const RECENT_PER_KEY = 4;
+const recentByKey = new Map<PiHeavyProjectKey, Map<string, string>>();
+
+function recallHash(key: PiHeavyProjectKey, digest: string): string | undefined {
+  const recent = recentByKey.get(key);
+  const hash = recent?.get(digest);
+  if (recent && hash !== undefined) { recent.delete(digest); recent.set(digest, hash); }
+  return hash;
+}
+
+function rememberHash(key: PiHeavyProjectKey, digest: string, hash: string): void {
+  const recent = recentByKey.get(key) ?? new Map<string, string>();
+  recent.delete(digest);
+  recent.set(digest, hash);
+  while (recent.size > RECENT_PER_KEY) recent.delete(recent.keys().next().value as string);
+  recentByKey.set(key, recent);
+}
+
+/**
+ * 키마다 해시 계산을 한 줄로 세운다. 한가할 때 미리 하기(warmHeavyWire)와 턴 전송(planHeavyWire)이 같은 키를 겹쳐 돌면
+ * 전체 글(약 96MB)과 그 바이트가 동시에 몇 벌씩 살아 있었다 — 2026-10-05 스트레스 실측(p-multi-settings): 설정·배우만 고치는 턴에서
+ * 렌더러 힙 1.1→3.5GB 로 크래시, 표본 2GB 중 이 해시의 글 조립 435MB·요약 149MB. 줄을 세우면 뒤 호출은 앞 결과를 기억에서 그대로 받는다.
+ */
+const queueByKey = new Map<PiHeavyProjectKey, Promise<unknown>>();
+const inflightByValue = new WeakMap<object, Promise<string | null>>();
 
 /**
  * 무거운 키의 JSON. 타일셋·업로드 자산은 항목 글을 기억해 조립한다 — 글자까지 `JSON.stringify` 와 같다(sharedDictionaryJson).
@@ -70,7 +95,24 @@ function heavyJson(key: PiHeavyProjectKey, value: object): string {
   return JSON.stringify(value);
 }
 
-async function heavyHash(key: PiHeavyProjectKey, value: object): Promise<string | null> {
+function heavyHash(key: PiHeavyProjectKey, value: object): Promise<string | null> {
+  const inflight = inflightByValue.get(value);
+  if (inflight) return inflight;
+  const run = (queueByKey.get(key) ?? Promise.resolve()).then(() => {
+    const memo = hashMemo.get(value);
+    return memo ?? computeHeavyHash(key, value);
+  });
+  const settled = run.catch(() => undefined);
+  queueByKey.set(key, settled);
+  inflightByValue.set(value, run);
+  void settled.then(() => {
+    inflightByValue.delete(value);
+    if (queueByKey.get(key) === settled) queueByKey.delete(key);
+  });
+  return run;
+}
+
+async function computeHeavyHash(key: PiHeavyProjectKey, value: object): Promise<string | null> {
   // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 공유 항목을 믿고 요약한다.
   const digest = withTrustedSharedEntries(() => {
     const token = jsonContentDigest(value);
@@ -78,12 +120,14 @@ async function heavyHash(key: PiHeavyProjectKey, value: object): Promise<string 
     if (key === "assets") trustSharedProjectEntries({ assets: value });
     return token;
   });
-  const last = lastByKey.get(key);
-  if (digest !== undefined && last && last.digest === digest) return last.hash;
+  if (digest !== undefined) {
+    const known = recallHash(key, digest);
+    if (known !== undefined) return known;
+  }
   const json = heavyJson(key, value);
   if (json.length < MIN_HEAVY_BYTES) return null;
   const hash = await sha256Hex(json);
-  if (digest !== undefined) lastByKey.set(key, { digest, hash });
+  if (digest !== undefined) rememberHash(key, digest, hash);
   return hash;
 }
 
@@ -113,7 +157,7 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
 /**
  * 한가할 때 무거운 키의 글·해시를 미리 만든다. 첫 조수 턴이 이 일을 메인 스레드에서 하면(2026-09-28 실측, 새 프로젝트 기본 자료
  * 149MB) 전송 직후 약 3s 멈췄다 — 타일셋·자산은 턴 사이에 거의 바뀌지 않으므로 미리 만든 결과를 그 턴이 그대로 쓴다.
- * 키마다 따로 예약해 한가한 조각 하나가 키 하나만 맡는다. 결과는 위 기억(hashMemo·lastByKey)에만 남고, 그 사이 내용이 바뀌면
+ * 키마다 따로 예약해 한가한 조각 하나가 키 하나만 맡는다. 결과는 위 기억(hashMemo·recentByKey)에만 남고, 그 사이 내용이 바뀌면
  * 턴이 요약 대조로 알아채 다시 만든다 — 미리 만든 값이 틀린 해시로 쓰일 수 없다.
  */
 export function warmHeavyWire(getProject: () => Project, schedule: (run: () => void) => void): void {
@@ -146,7 +190,7 @@ export async function withHeavyBlobs(plan: HeavyWirePlan, origin: string, force?
     if (actual !== hash) {
       heavy = { ...heavy, [source.key]: actual };
       hashMemo.set(source.value, actual);
-      lastByKey.delete(source.key);
+      recentByKey.delete(source.key);
     }
     heavyBlobs[actual] = json;
   }
@@ -171,5 +215,6 @@ export function forgetHeavySent(origin: string, hashes: readonly string[]): void
 /** 테스트 전용. */
 export function resetHeavyWireForTests(): void {
   sentByOrigin.clear();
-  lastByKey.clear();
+  recentByKey.clear();
+  queueByKey.clear();
 }
