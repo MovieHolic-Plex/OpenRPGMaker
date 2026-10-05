@@ -144,6 +144,8 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 #live-board{padding:22px 20px 8px;max-width:1600px;margin:auto}#live-board>h2{font-size:22px;margin:0 0 5px}#live-board>.live-caption{color:#aab8c9;margin:0 0 18px;font-size:13px}.live-space-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:16px}.live-space{border:1px solid #40526a;background:#19222e;border-radius:14px;padding:18px;min-width:0}.live-space header{padding:0;background:none;border:0;display:flex;gap:8px;align-items:start;flex-wrap:wrap}.live-space h3{font-size:21px;margin:0}.live-space .live-phase{color:#b5d3ff;font-size:13px;background:#283f58;border-radius:6px;padding:5px 8px;margin-left:auto}.live-space h4{font-size:14px;margin:18px 0 7px}.live-space p{line-height:1.65;overflow-wrap:anywhere}.live-space .doing{font-size:15px;margin:12px 0}.live-space .subtle{font-size:12px;color:#adc0d3}.live-space progress{width:100%;height:9px;accent-color:#7bbcfe}.live-meter{display:flex;justify-content:space-between;font-size:13px;gap:8px}.live-checks{display:grid;grid-template-columns:1fr 1fr;list-style:none;padding:0;gap:5px;margin:10px 0;color:#8fa3b8;font-size:12px}.live-checks .complete{color:#9ad5b5}.live-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-image{min-width:0;padding:0;overflow:hidden;background:#101721;text-align:left}.live-image img{width:100%;height:165px;object-fit:contain;image-rendering:pixelated;display:block}.live-image:only-child{grid-column:1/-1}.live-image span{display:block;padding:7px;font-size:12px}.live-no-image{padding:16px;border:1px dashed #4e627c;border-radius:8px;color:#c1ccda;font-size:13px;line-height:1.7}.live-no-image b{display:block;color:#e3eaf2}.live-tags{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}.live-tags span{background:#283646;border-radius:5px;padding:5px 7px}.live-event{font-size:12px;color:#b0c0d2;margin:5px 0}.live-space details summary{cursor:pointer;font-size:13px;color:#d3e1f0}.live-space details li{font-size:13px;line-height:1.6;margin:7px 0;overflow-wrap:anywhere}.live-next{border-left:3px solid #79b2ed;padding-left:10px;font-size:13px}.live-open{width:100%;margin-top:12px;padding:10px}.live-problem{color:#f5c09d}.live-space .progress-job{padding:9px;margin:6px 0}.live-space .progress-job b{font-size:12px}.live-space .progress-job p{margin:3px 0;font-size:12px}.live-space .progress-timing{font-size:12px}.live-offline{padding:12px;border:1px solid #d8a666;color:#ffd197;border-radius:8px;margin:8px 0}
 @media(max-width:600px){#live-board{padding:16px 12px 0}.live-space{padding:14px}.live-image img{height:130px}}
 
+
+#keyword-seeds{margin:20px;padding:24px;border:1px solid #587698;background:#1b2b3b;border-radius:14px}#keyword-seeds h2{margin:0 0 10px;font-size:24px}#keyword-seeds p{color:#bdcee0;line-height:1.6}#keyword-seeds label{display:block;font-weight:600;margin:18px 0 8px}.seed-input{display:flex;gap:10px}.seed-input input{flex:1;min-width:0;background:#111c27;border:1px solid #6787a9;border-radius:8px;color:#eef6ff;padding:14px;font-size:17px}.seed-input button{padding:14px 20px;background:#315f93;font-weight:bold}.seed-streams{display:grid;gap:12px;margin:12px 0}.seed-streams article{border-top:1px solid #465b71;padding-top:14px}.seed-title{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.seed-title button:first-child{font-weight:bold}.seed-streams [aria-pressed=true]{outline:2px solid #8ac6ff}.seed-streams p{margin:8px 0}#keyword-seeds small{color:#9bb5cb;line-height:1.6}.seed-error{color:#ffc394!important}.seed-origin{display:block;color:#9dccf3;font-size:12px;margin-bottom:6px}.seed-filter-label{margin:10px 20px;color:#b9dcff}@media(max-width:600px){#keyword-seeds{margin:12px;padding:16px}.seed-input{flex-direction:column}#keyword-seeds h2{font-size:20px}}
 </style>
 </head>
 <body>
@@ -152,6 +154,8 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
   <span id="line">불러오는 중…</span>
 <details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
 </header>
+<section id="keyword-seeds" aria-label="키워드로 공간 만들기"></section>
+<p id="seed-filter-label" class="seed-filter-label" hidden></p>
 <section id="live-board" aria-label="공간별 제작 진행"><h2>공간별 진행을 확인하고 있습니다…</h2></section>
 <section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
 <details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
@@ -160,6 +164,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 <div id="modal"><div class="box" id="box"></div></div>
 <div id="big"><img></div>
 <script type="module">
+import { mountKeywordSeeds } from "/keyword-seeds.js";
 import { renderMarkdown } from "/markdown.js";
 import { renderChoices, renderResult } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
@@ -174,13 +179,25 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
 const cards = new Map();
+let seedFilter = null, seedOrigins = new Map(), selectedSeed = '';
+if (ordersPage) $('keyword-seeds').hidden=true;
+else mountKeywordSeeds($('keyword-seeds'), (seeds, selected, clicked) => {
+  const chosen=seeds.find(s=>s.id===selected);
+  seedFilter=chosen?new Set(chosen.concepts.map(c=>c.id)):null;
+  seedOrigins=new Map(seeds.flatMap(s=>s.concepts.map(c=>[c.id,s.keyword])));
+  $('seed-filter-label').hidden=!chosen;
+  $('seed-filter-label').textContent=chosen?`「${chosen.keyword}」에서 나온 공간 · ${chosen.concepts.length}개`:'';
+  if(clicked || selected!==selectedSeed) tab=chosen?'all':'pick';
+  selectedSeed=selected;
+  if(L)render();
+});
 
 function cardHtml(it) {
   return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
-    <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
+    <div class="t">${seedOrigins.has(it.id)?`<span class="seed-origin">${esc(seedOrigins.get(it.id))}</span>`:''}<b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
 }
 
-function matchesTab(i,g) { if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
+function matchesTab(i,g) { if(seedFilter&&!seedFilter.has(i.id))return false;if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
 function render() {
   const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
@@ -195,7 +212,7 @@ function render() {
   const keep = new Set(list.map((i) => i.id));
   for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
   list.forEach((it, idx) => {
-    const key = JSON.stringify([it.title, it.status, it.about, it.running, it.thumb?.v, it.group]);
+    const key = JSON.stringify([seedOrigins.get(it.id), it.title, it.status, it.about, it.running, it.thumb?.v, it.group]);
     let el = cards.get(it.id);
     if (!el) { el = document.createElement('div'); el.className = 'c'; el.onclick = () => openConcept(it.id); cards.set(it.id, el); }
     if (el.dataset.k !== key) { el.innerHTML = cardHtml(it); el.dataset.k = key; }

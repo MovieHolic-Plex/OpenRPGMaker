@@ -50,3 +50,19 @@
 .ai-team-member-report p { white-space: pre-wrap; line-height: 1.7; }
 .ai-team-sidebar.is-embedded .ai-team-member-composer { margin: 8px 12px; }
 .ai-team-sidebar.is-embedded .ai-team-outcome { font-size: 12px; padding: 8px 12px; }
+
+/* The first request has one starting point; detailed controls stay available on demand. */
+.ai-chat-panel.is-workspace.has-workspace-starter:not(.is-history-open) .ai-deck > .ai-chat-body:not([hidden]) { display: flex; }
+.ai-workspace-starter { flex: 0 0 auto; padding: 24px 16px 18px; font: 13px/1.6 var(--font-ui); }
+.ai-workspace-starter[hidden] { display: none; }
+.ai-workspace-starter h3 { margin: 0 0 8px; color: var(--text-1); font-size: 18px; }
+.ai-workspace-starter p { margin: 0 0 16px; color: var(--text-2); }
+.ai-workspace-starter button { display: block; width: 100%; margin-top: 8px; padding: 10px 12px; text-align: left; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); font: inherit; cursor: pointer; }
+.ai-workspace-starter button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-muted); }
+.ai-workspace-starter button:disabled { opacity: .5; cursor: default; }
+.ai-workspace-starter button:focus-visible { outline: var(--focus-outline); }
+.ai-workspace-view-options { flex: 0 0 auto; border-bottom: 1px solid var(--border-subtle); font: 12px var(--font-ui); }
+.ai-workspace-view-options > summary { padding: 8px 12px; color: var(--text-3); cursor: pointer; }
+.ai-chat-panel.is-assistant-idle .ai-workspace-view-options { display: none; }
+.ai-team-member-records > summary { padding: 8px 0; color: var(--text-2); cursor: pointer; font: 12px var(--font-ui); }
+.ai-team-member-records > summary:focus-visible, .ai-workspace-view-options > summary:focus-visible { outline: var(--focus-outline); }

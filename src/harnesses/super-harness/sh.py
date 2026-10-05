@@ -35,6 +35,7 @@ import gates  # noqa: E402
 import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_demo
+import keyword_seeds
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
 import art_repair  # noqa: E402
@@ -280,8 +281,9 @@ def hold_for_requirements(cid):
     return False
 
 
-def release_waiting():
+def release_waiting(ids=None):
     for c in store.concepts("stage='waiting'"):
+        if ids is not None and c['id'] not in ids: continue
         reqs = [store.concept(r) for r in c['requires']]
         if any(r and r['stage'] not in ('done', 'discarded', 'blocked') for r in reqs):
             continue
@@ -405,7 +407,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -1228,8 +1230,9 @@ def tick():
     if store.setting('paused') == '1':
         return
     max_codex = int(store.setting('max_codex'))
+    keyword_seeds.tick(sys.modules[__name__])
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
     active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','art-demo','build','review','probe','bake','unbake')")
@@ -1341,6 +1344,11 @@ def action(body):
         store.set_setting('paused', '1' if kind == 'pause' else '0')
         store.log(None, '사람: 전체 멈춤' if kind == 'pause' else '사람: 다시 돌림')
         return {'ok': True}
+    if kind in ('start-seed', 'pause-seed', 'resume-seed'):
+        try:
+            return keyword_seeds.action(body)
+        except (ValueError, TypeError) as error:
+            return {'ok': False, 'error': str(error)}
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
@@ -1763,8 +1771,8 @@ class Handler(BaseHTTPRequestHandler):
             page = 'gallery.html' if url.path != '/detail' else 'index.html'
             with open(os.path.join(HERE, 'web', page), 'rb') as f:
                 return self.send(200, f.read(), 'text/html; charset=utf-8')
-        if url.path == '/art-choice.js':
-            with open(os.path.join(HERE, 'web', 'art-choice.js'), 'rb') as f:
+        if url.path in ('/art-choice.js', '/keyword-seeds.js'):
+            with open(os.path.join(HERE, 'web', url.path[1:]), 'rb') as f:
                 return self.send(200, f.read(), 'text/javascript; charset=utf-8')
         if url.path == '/markdown.js':
             try:
@@ -1774,6 +1782,8 @@ class Handler(BaseHTTPRequestHandler):
         q = parse_qs(url.query)
         if url.path == '/api/activity':
             return self.send(200, activity.snapshot(q.get('id', [None])[0]))
+        if url.path == '/api/seeds':
+            return self.send(200, keyword_seeds.snapshot())
         if url.path == '/api/list':
             return self.send(200, gallery_list())
         if url.path == '/api/art-choices':
