@@ -10,7 +10,7 @@ Pi의 `list_npc_graphics` 및 `list_resources(kind:"charset")`는 응답 후보 
 
 ### 칩 이름·태그 전수 조사 (2026-10-05)
 
-`verify-shots/charset-mapping-audit-20261005/SUMMARY.md`는 번들 24시트와 고정한 공용 판본 155시트의 실제 322칸, 접근 가능한 프로젝트 44개와 프로젝트 전용 17칸을 대조한 근거다. 이름/태그/외형 설명 오류 17칸을 교정하고 Monster3의 6칸·자체 Monster4~6의 24칸·농장 동물 2칸을 등록했다. Template의 3칸은 저작용 원형으로 남긴다. Monster3#6은 일반 걷기가 아니라 마법진→불꽃→마법사 변신 연출임을 설명한다.
+`verify-shots/charset-mapping-audit-20261005/SUMMARY.md`는 번들 24시트와 고정한 공용 판본 155시트의 실제 322칸, 접근 가능한 프로젝트 44개와 프로젝트 전용 17칸을 대조한 근거다. 이름/태그/외형 설명 오류 18칸을 교정하고 Monster3의 6칸·자체 Monster4~6의 24칸·농장 동물 2칸을 등록했다. Template의 3칸은 저작용 원형으로 남긴다. Monster3#6은 일반 걷기가 아니라 마법진→불꽃→마법사 변신 연출임을 설명한다.
 
 Scarloxy 주민은 `people`, 농장 동물은 `animal`로 분류한다. `animal`은 범주 조회이며 RTP Animal.png 한 시트 조회는 전체 textureKey로 한다. 공용 저작 캐릭터의 `attributes.kind`가 긴 몬스터/마수 설명이면 검색용 `몬스터` 태그를 보충한다. 동물형 짐승은 kind와 저작 역할을 함께 확인하며 인간 사냥꾼의 역할/옷/장소에서 종을 추측하지 않는다. 영문 king/golem 별칭도 해당 한글 이름표로 검색한다.
 

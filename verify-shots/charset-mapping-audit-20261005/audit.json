@@ -26,7 +26,7 @@
     },
     {
       "path": "src/assets/charsetAppearances.ts",
-      "sha256": "76fdc04c23f3dbf95d899d8de375faf466356e4a759e4932e01075f612b56ecc"
+      "sha256": "08e429b03d0ccc1fc50539a26f82380d7ded09989a73543d2db51bafcb0a1b5c"
     },
     {
       "path": "src/assets/charsetQuery.ts",
@@ -2820,7 +2820,7 @@
           "주민",
           "scarloxy"
         ],
-        "appearance": "갈색 양갈래에 빨간 리본, 노란 웃옷, 파란 배낭, 빨간 바지."
+        "appearance": "갈색 양갈래에 빨간 리본, 노란 웃옷, 파란 배낭, 빨간 신발."
       }
     },
     {
@@ -3360,6 +3360,36 @@
           "dark angel"
         ],
         "appearance": "흰 얼굴, 금색 머리 장식, 검보라 몸과 크게 접힌 검은 날개."
+      }
+    },
+    {
+      "key": "tex_easyrpg_charset_object2#5",
+      "observation": "원본의 갈색 바위를 회색이라고 묘사한 외형 문장을 교정했다.",
+      "before": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 5,
+        "label": "바위",
+        "gender": "none",
+        "tags": [
+          "바위",
+          "바위",
+          "돌",
+          "장애물"
+        ],
+        "appearance": "둥근 회색 바위."
+      },
+      "after": {
+        "textureKey": "tex_easyrpg_charset_object2",
+        "characterIndex": 5,
+        "label": "바위",
+        "gender": "none",
+        "tags": [
+          "바위",
+          "바위",
+          "돌",
+          "장애물"
+        ],
+        "appearance": "둥근 갈색 바위."
       }
     }
   ],
@@ -5854,7 +5884,7 @@
       "key": "tex_easyrpg_charset_object2#5",
       "frame": 76,
       "rgbaSha256": "7b00585ef97fbc61e25150ade6adb1e355bb72227ced62a2eedcfec00f6fe157",
-      "status": "observed-no-obvious-identity-swap",
+      "status": "corrected-literal-metadata",
       "before": {
         "textureKey": "tex_easyrpg_charset_object2",
         "characterIndex": 5,
@@ -5879,7 +5909,7 @@
           "돌",
           "장애물"
         ],
-        "appearance": "둥근 회색 바위."
+        "appearance": "둥근 갈색 바위."
       }
     },
     {
@@ -7786,7 +7816,7 @@
           "주민",
           "scarloxy"
         ],
-        "appearance": "갈색 양갈래에 빨간 리본, 노란 웃옷, 파란 배낭, 빨간 바지."
+        "appearance": "갈색 양갈래에 빨간 리본, 노란 웃옷, 파란 배낭, 빨간 신발."
       }
     },
     {
