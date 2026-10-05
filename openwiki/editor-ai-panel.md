@@ -1035,6 +1035,10 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
     builder-1 의 빈 맵 삭제를 거절하자 builder-2~8 이 확인 창 없이 첫 쓰기마다 같은 거절로 죽었다. 계약: `test/piApplyModes.bun.test.ts`.
     팀장은 `wait_agents`·`check_agents` 결과의 `userDeclined` 로 거절을 안다 — 모르면 「요청 일부가 안 됐다」고 보고 같은 요청을 다시 배정했다
     (p-team-delete-declined: 「작은 숲」 맵을 한 벌 더 짓고 35분 시간 초과). 계약: `test/piAgentTeamRuntime.test.ts`.
+  - **팀장은 살아 있는 작업 사본을 읽는다(`liveProject`).** 팀장 읽기 도구(`get_map_region`·`get_database_records`·`run_lint`)는
+    예전엔 시작 사본만 봤다 — 팀원이 맵을 만들어도 「maps 1건」·「맵을 찾을 수 없습니다」라서 같은 일을 다시 배정했다(2026-10-05 r8: 「작은 숲」 세 벌).
+    `runPiAgent({ liveProject })` 는 도구가 도는 동안만 최신 사본 복제본으로 바꾸고 끝나면 제 사본으로 되돌린다 — 실행 끝 배치 품질·마을 검사가
+    팀원 변경을 팀장 변경으로 읽지 않게. 쓰기 도구가 있는 실행에는 주지 않는다.
   - **워커 안의 `event_command_assist`.** 이 도구는 안에서 LLM 을 한 번 더 부른다. 워커(Bun)에는 편집기 동반 서비스 주소가 없어
     기본 주소(상대 `/v1`)로 매번 「fetch() URL is invalid」였다. `piAgentRuntime` 이 실행의 제공자·키로 부르는 `eventAssistChat` 을 넘긴다.
   `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
