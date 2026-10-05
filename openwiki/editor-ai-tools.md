@@ -20,6 +20,9 @@
   같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
 
 `set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+도구 스키마는 string과 허용 ID 설명을 사용한다. 빈 문자열을 enum에 넣으면 Gemini가
+도구를 사용하기 전 요청 전체를 HTTP 400으로 거부한다(2026-10-05 실제 팀 조수 실행).
+실행 경계의 역할별 ID 검사와 빈 문자열 초기화는 그대로 유지한다.
 역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
 `battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
 대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.

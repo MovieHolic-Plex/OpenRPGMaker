@@ -1,0 +1,47 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "width": 736,
+      "id": "parallel",
+      "lanes": 3,
+      "result": "동시 실행 13.0초 · 지시 초안 유지 · SQLite 재로드 일치",
+      "overflow": false
+    },
+    {
+      "width": 736,
+      "id": "translation",
+      "lanes": 6,
+      "result": "최신 원문 오판 → 올바른 번역 덮어씀 · 상한 중단 · SQLite 재로드 일치",
+      "overflow": false
+    },
+    {
+      "width": 736,
+      "id": "sequence",
+      "lanes": 3,
+      "result": "앞 작업 완료 뒤 다음 배정 · 최신 대사 저장 · SQLite 재로드 일치",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "id": "parallel",
+      "lanes": 3,
+      "result": "동시 실행 13.0초 · 지시 초안 유지 · SQLite 재로드 일치",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "id": "translation",
+      "lanes": 6,
+      "result": "최신 원문 오판 → 올바른 번역 덮어씀 · 상한 중단 · SQLite 재로드 일치",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "id": "sequence",
+      "lanes": 3,
+      "result": "앞 작업 완료 뒤 다음 배정 · 최신 대사 저장 · SQLite 재로드 일치",
+      "overflow": false
+    }
+  ]
+}

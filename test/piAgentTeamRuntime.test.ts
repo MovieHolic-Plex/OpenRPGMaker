@@ -223,6 +223,21 @@ describe("팀 런타임 — 시작/확인 분리", () => {
     expect(errors).toHaveLength(1);
   });
 
+  it("finish 보고는 프로젝트 작업뿐 아니라 실패한 맵 배정도 포함한다", async () => {
+    const events: PiAgentEvent[] = [];
+    const req = { ...request(seeded()), task: "맵 조회", team: { ...TEAM, reviewAfterWork: false } };
+    await runPiTeam(req, { onEvent: event => events.push(event), runAgent: async (child, options) => {
+      const tools = options?.extraTools ?? [];
+      if (!tools.some(tool => tool.name === "assign_map_agent")) throw new Error("도구 정의 거부: 안내판 조회 미완료");
+      await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "조회", member: "builder" });
+      await callTool(tools, "wait_agents", {});
+      await callTool(tools, "finish", { report: "프로젝트는 그대로입니다." });
+      return doneWith(child.project);
+    } });
+    expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("실패한 배정 기록 1건") }));
+    expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("안내판 조회 미완료") }));
+  });
+
   // 깨질 것: 팀장이 턴 상한에 걸려 wait 없이 끝나면 진행 중이던 시공 결과가 통째로 사라진다.
   it("팀장이 기다리지 않고 끝나도 진행 중인 배정을 거두어 병합한다", async () => {
     const test = harness(async (tools) => {

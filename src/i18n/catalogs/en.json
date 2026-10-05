@@ -15691,4 +15691,5 @@
 "배정한 조수의 완료를 기다리는 중":"Waiting for assigned assistants to finish",
 "조수들의 진행 상황을 확인하는 중":"Checking assistant progress",
 "맵 검수를 맡기는 중":"Assigning map review",
-"팀 결과를 정리하는 중":"Summarizing team results"}
+"팀 결과를 정리하는 중":"Summarizing team results",
+"작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요.":"The work could not be completed. The project was not changed."}
