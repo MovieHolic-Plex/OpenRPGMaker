@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.134.0 — 2026-10-05
+
+### 기능
+
+- add larger smaller and custom-size prop redraw actions (`beaaa10`)
+
+### 수정
+
+- put prop images first and confirm with double-click (`f669c35`)
+- **ai** — 저장된 설정의 옛 공장 기본 모델(gemini-3.7-flash)을 3.8 로 소급 승격 (`3e88796`)
+- **super-harness** — distinguish queue waits from missing execution links (`a710cab`)
+- simplify prop selection and clarify shared database publication (`f1d2b90`)
+
 ## 0.133.0 — 2026-10-05
 
 ### 기능

@@ -35,12 +35,13 @@ const GLYPH = {
 } as const;
 
 /** Move the live surfaces together; never create a second session or duplicate controls. */
-export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void): { open(): void; close(): void; dispose(): void } {
+export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void, onModeChange?: (wide: boolean) => void): { open(): void; close(): void; dispose(): void } {
   let close: (() => void) | undefined;
   let teamPercent = 60;
   const open = () => {
     if (close || !panel.isConnected || !team.isConnected) return;
     const origin = document.activeElement as HTMLElement | null;
+    onModeChange?.(true);
     const scrollNodes = () => [...panel.querySelectorAll<HTMLElement>(".ai-chat-log, .ai-activity-entries"), ...team.querySelectorAll<HTMLElement>(".ai-team-member-content")].map(node => ({ node, top: node.scrollTop }));
     const scroll = scrollNodes();
     const panelSlot = document.createComment("assistant panel slot");
@@ -106,6 +107,7 @@ export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigg
       const currentScroll = scrollNodes();
       for (const { node, slot } of moved) slot.replaceWith(node);
       panelSlot.replaceWith(panel); teamSlot.replaceWith(team);
+      onModeChange?.(false);
       backdrop.remove(); close = undefined;
       for (const { node, top } of currentScroll) node.scrollTop = top;
       trigger.setAttribute("aria-expanded", "false");

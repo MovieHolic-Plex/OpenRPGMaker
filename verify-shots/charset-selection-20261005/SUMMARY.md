@@ -37,3 +37,5 @@
 ## main 통합 확인
 
 기능 커밋 b4fc270c5c 뒤 origin/main을 d61aa6b625로 통합했다. main의 월드맵 참고 이미지/응답 예산과 하네스 captureOptions·ai-input 준비 조건, 기존 NPC 이동 기본 변경을 보존했다. 통합 뒤 관련 4파일 57케이스 exit 0, 앱 타입 게이트 errors 0 / exit 0 / 기준선 대비 회귀 없음이다. integration-tests.txt, integration-typecheck.txt와 verified-source-integrated.json에 같은 코드의 근거를 남겼다. PR CI는 별도로 확인한다.
+
+최종 검증 커밋 5871ed6530에서 CI와 같은 배럴·self-hosted·캐릭터 하네스 270건·타입 게이트(errors 0)·parity 9파일 42건·앱 빌드가 모두 exit 0이었다. final-head-*.txt에 로그를 보존했다. 이어 main의 위키 INDEX 충돌만 정리하며 기능/하네스 SHA-256은 verified-source-integrated.json과 동일함을 확인했다. GitHub 러너 대기는 로컬 검증 성공과 구분한다.
