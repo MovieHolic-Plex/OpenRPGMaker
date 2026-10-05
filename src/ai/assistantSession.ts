@@ -712,6 +712,7 @@ export class AssistantSession {
         return id && this.project.maps[id] ? id : undefined;
       },
       get approvedTilesetFamilies() { return options().getApprovedTilesetFamilies?.(); },
+      assistantRun: true,
     };
   }
   private readonly messages: ChatMessage[] = [];

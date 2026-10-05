@@ -1,5 +1,26 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## EasyRPG 계열 칩셋 차단 — 대체품이 생기기 전까지 (2026-10-06)
+
+사용자 결정: 「대체품이 생기기 전까지 막고」, 등록 장소는 「조수 추천 목록에 넣어놔라」.
+
+- **판정** `src/project/retiredEasyRpgTilesets.ts::isRetiredEasyRpgTileset` — `easyrpg_chipset_*`, `forest_harmony*`(설원·화산·사막·가을),
+  `atlas_biome_*`(0~2729 가 숲마을 재칠, `atlas_biome_dungeon` 은 EasyRPG 배·던전 재묶음), `oprn_dungeon_*`, 그 밖에 `tilesetFamily==="easyrpg"`(Tibo·탈것 시트).
+  사본 타일셋은 `referenceSourceTilesetId` 를 따라간다. 예외: 월드맵 셋(`easyrpg_chipset_world`·`easyrpg_chipset_retro_world`·`atlas_biome_world`)과 손 도트 실내 `atlas_biome_interior`.
+- **집행** `toolRunner.rejectRetiredEasyRpgMaps` — 쓰기 도구가 끝난 뒤 **새 맵**이나 **칩셋이 바뀐 맵**이 폐기 칩셋이면 `retired-easyrpg-tileset` 으로 거부하고
+  프로젝트를 되돌린다. `ToolContext.assistantRun` 이 켜진 실행(Pi 런타임 `piAgentRuntime`, `AssistantSession.toolContext`)에서만 돈다 —
+  편집기 UI·명령 팔레트·콘텐츠 스크립트는 그대로다. 이미 깐 맵은 사람·조수 모두 계속 고친다.
+  `import_region_reference`(`LIBRARY_IMPORT_TOOLS`)는 면제 — 숲마을·던전 등록 장소는 그대로 추천·가져오기 대상이다. 공용 오브젝트 찍기, `build_concept_example` 도 막지 않는다.
+- **숨김** `run_dungeon_room_pipeline`·`start_dungeon_room_session`·`advance_dungeon_room_build`·`evaluate_dungeon_room`·`list_dungeon_room_themes`·`generate_map` 은
+  `deprecated` + `supersededBy: import_region_reference`(`toolRegistry.retireEasyRpgGenerator`). 실행은 남는다(옛 테스트·스크립트).
+  `author_village` 숲마을 모드와 `author_house` 연결 실내(EasyRPG 실내)는 숨기지 않았고 실행기가 막는다.
+- **안내 문구** 모험 보완(`adventureCompletion.ts`)·맥락(`contextBuilder.ts`)·몬스터 장르 체육관(`welcomeGenrePresets.ts`, `qa/gameCheck/monster.ts`)·월드맵 마을 힌트(`worldTerrainTools.townArtHint`)는
+  던전=등록 장소 가져오기, 체육관·등대 꼭대기 방=`build_hand_interior_room`, 맞는 장소가 없으면 「아직 만들 수 없다」 보고로 바꿨다.
+- **기본 칩셋** `defaultOutdoorTilesetId` 는 버들항이 있으면 버들항이다. 버들항 맵이 하나도 없고 EasyRPG 계열 맵만 있는 옛 프로젝트만 숲마을을 유지한다.
+  예전엔 버들항 아닌 맵(실내 v5·세계 지도) 하나만 있어도 숲마을로 새었다. `build_world` 의 모든 역할(던전·실내 포함) 자리 맵도 이 기본값을 쓰고, 채움 칸은 `blankFillTileFor` 다(합본 마을 잔디 번호를 버들항에 깔던 결함).
+- 계약: `test/retiredEasyRpgTilesets.test.ts`. 스키마 계약 테스트 두 개(`generateMap`·`connectedDungeonGeneration`)는 숨김을 풀어 확인한다.
+  남은 일: 몬스터 체육관·던전용 비 EasyRPG 생성 칩셋(대체품)이 생기면 이 차단을 그 계열로 풀거나 생성기를 옮긴다.
+
 ## 월드맵 자동 붓 자연어 경로 (2026-10-05)
 
 직접 저작 연결 붓 지도(worldmap_authoring, worldmapSource 없음)의 강/길/숲/산/거점 요청은

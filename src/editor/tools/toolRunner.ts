@@ -11,6 +11,7 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
+import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
@@ -95,6 +96,20 @@ const FAMILY_CANDIDATE_LIMIT = 8;
  * 사용자가 이 대화에서 승인한 계열(ctx.approvedTilesetFamilies)은 통과한다. currentMapId 가 없으면 검사하지 않는다.
  * 같은 계열 후보를 알려 주고, 없으면 ask_tileset_change 로 견본을 보여 묻고 턴을 끝내라고 지시한다.
  */
+/**
+ * 조수 실행이 폐기된 EasyRPG 계열 칩셋으로 새 맵을 만들거나 맵 칩셋을 그 칩셋으로 바꾸면 거부한다(2026-10-06 「대체품이 생기기 전까지 막고」).
+ * 이미 그 칩셋인 맵을 고치는 것과 등록 장소 가져오기(LIBRARY_IMPORT_TOOLS)는 통과한다. 계열 검사보다 먼저 돌아 폐기 사유를 말한다.
+ */
+function rejectRetiredEasyRpgMaps(ctx: ToolContext, before: Project, draft: Project, name: string): void {
+  if (!ctx.assistantRun || LIBRARY_IMPORT_TOOLS.has(name)) return;
+  for (const [id, next] of Object.entries(draft.maps)) {
+    const previous = before.maps[id];
+    if (previous && previous.tilesetId === next.tilesetId) continue;
+    if (!isRetiredEasyRpgTileset(draft, next.tilesetId)) continue;
+    throw new ToolError(retiredEasyRpgMessage(next.tilesetId, name), { code: "retired-easyrpg-tileset", mapId: id });
+  }
+}
+
 function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Project, name: string): void {
   const viewed = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
   if (!viewed) return;
@@ -300,6 +315,7 @@ export function runToolDefinition(
     compactTouchedMapLayers(before, draft);
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
+      rejectRetiredEasyRpgMaps(ctx, before, draft, name);
       rejectTilesetFamilyChange(ctx, before, draft, name);
     }
   } catch (cause) {

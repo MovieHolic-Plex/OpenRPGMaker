@@ -65,7 +65,6 @@ export const FREQUENT_TOOL_NAMES = [
   "fill_region",
   "place_props",
   "place_door",
-  "generate_map",
   "tile_query",
 ] as const;
 

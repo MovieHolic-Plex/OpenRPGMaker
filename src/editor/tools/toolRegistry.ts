@@ -192,6 +192,14 @@ function retireOldInteriorTool(tool: ToolDefinition): ToolDefinition {
   return { ...tool, deprecated: true, supersededBy: "build_hand_interior_room" };
 }
 
+/**
+ * EasyRPG 칩셋 번호를 깔고 그 칩셋 맵을 만드는 생성기(던전 방 파이프라인·generate_map) — 대체 생성 칩셋이 생기기 전까지 조수에게 숨긴다
+ * (2026-10-06 사용자 결정, retiredEasyRpgTilesets.ts). 던전·숲·들판은 등록 장소를 import_region_reference 로 가져온다. 편집기 실행 호환은 남긴다.
+ */
+function retireEasyRpgGenerator(tool: ToolDefinition): ToolDefinition {
+  return { ...tool, deprecated: true, supersededBy: "import_region_reference" };
+}
+
 function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): readonly ToolDefinition[] {
   return tools.map((tool) => ({
     ...tool,
@@ -230,7 +238,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
-  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
+  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile").map(retireEasyRpgGenerator),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
@@ -243,7 +251,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TERRAIN_TOOLS, "map"),
   ...withDomain(MAP_LOCATION_TOOLS, "map"),
   ...withDomain(ACTION_TOOLS, "map"),
-  ...withDomain(MAP_GEN_TOOLS, "map"),
+  ...withDomain(MAP_GEN_TOOLS, "map").map(retireEasyRpgGenerator),
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),

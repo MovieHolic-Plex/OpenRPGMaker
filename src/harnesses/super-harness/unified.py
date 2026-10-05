@@ -36,7 +36,8 @@ def components():
     # into their subprocesses, including the currently developing spatial executor.
     for key in ('PROP_HARNESS_CONTENT_ROOT', 'PROP_HARNESS_DATA', 'HIP_DATA', 'HIP_DB', 'HIP_PICK'):
         sh.ENV.pop(key, None)
-    pick = load('oprn_prop_picker', ROOT / 'scripts/content/hand-interior-pick/pick_server.py')
+    # Spawned preview workers must be able to import their callable's module.
+    pick = load('pick_server', ROOT / 'scripts/content/hand-interior-pick/pick_server.py')
     if pick.HAPI is None:
         raise RuntimeError('기물 파생 API가 없습니다.')
     if pick.HAPI.store is sh.store:

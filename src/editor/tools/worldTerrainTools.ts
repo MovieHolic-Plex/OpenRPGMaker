@@ -18,6 +18,7 @@ import { PLACE_REFERENCES } from "@/project/regionReferences";
 import themeCatalog from "@/assets/worldmapThemeCatalog.json";
 import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID } from "@/project/defaults/worldmapSelected";
 import { makeWorldmapTilemap } from "@/editor/worldmap/worldmapTilemap";
+import { isRetiredEasyRpgTileset } from "@/project/retiredEasyRpgTilesets";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const WORLDMAP_THEMES = [
@@ -222,12 +223,15 @@ const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
 function townArtHint(theme: string): string {
   const tilesets = THEME_TOWN_TILESETS[theme] ?? [];
   const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
-  const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.";
+  const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 던전·동굴은 등록 장소를 import_region_reference 로 가져온다(EasyRPG 계열 칩셋으로 새 맵을 만드는 것은 막혀 있다).";
   if (theme === "starmap" || theme === "alien") return `테마 ${theme} 전용 정거장·외계 거점 칩셋과 완성 지역은 현재 없다. 지형 생성과 거점 저작의 준비 상태를 구분해서 보고하라. 기본 로마풍 마을을 우주정거장으로 대신 깔지 마라. 월드맵 후보 아이콘은 사람이 하네스에서 선택한 것만 사용할 수 있다. ${interior}`;
   if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
   return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
-    + `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
+    + (isRetiredEasyRpgTileset({ tilesets: {} }, tilesets[0]!)
+      ? `${tilesets[0]} 은 폐기된 EasyRPG 계열이라 새 맵을 만들 수 없다 — 완성 마을을 가져오거나, 없으면 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. `
+      : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
+    + `세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }
 
 function slug(text: string, i: number): string {

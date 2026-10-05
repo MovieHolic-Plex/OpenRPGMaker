@@ -7,7 +7,9 @@ import { snapFlushToWall } from "./wallFlush";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
-import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { normalizeWorldGraph } from "@/project/worldGraph";
 import {
@@ -341,14 +343,18 @@ function createRoleMap(project: Project, id: string, name: string, width: number
   // 호출자가 생겨도 셀 배열 할당 전에 막히도록 여기서도 상한을 지킨다.
   assertWorldNodeSize(id, width, height);
   const size = width * height;
-  const lowerTile = roleBaseTile(role);
+  // 모든 역할이 야외 기본 칩셋(버들항)의 빈 판으로 시작한다. 예전엔 던전·실내를 합본 마을(EasyRPG)에 두었고, 버들항 마을·들판도
+  // 합본 마을 잔디 번호로 채워 엉뚱한 그림이 깔렸다. 던전·실내 내용은 등록 장소·손 도트 실내로 따로 짓는다(retiredEasyRpgTilesets.ts).
+  const tilesetId = defaultOutdoorTilesetId(project);
+  const tileset = project.tilesets[tilesetId];
+  const lowerTile = blankFillTileFor(tilesetId, tileset && isCombinedTownCompatibleTileset(tileset) ? roleBaseTile(role) : TILE.EMPTY);
   const map: GameMap = {
     id,
     name,
     width,
     height,
-    tilesetId: role === "town" || role === "field" ? defaultOutdoorTilesetId(project) : COMBINED_TOWN_TILESET_ID,
-    tileSize: DEFAULT_TILE_SIZE,
+    tilesetId,
+    tileSize: tileset?.tileSize ?? DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(lowerTile),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
     events: [],

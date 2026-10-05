@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.144.0 — 2026-10-06
+
+### 기능
+
+- **assistant** — EasyRPG 계열 칩셋으로 조수가 새 맵을 만들지 못하게 막는다 (`ca6ece6`)
+
+### 수정
+
+- **super-harness** — continue reviewed theme drafts without fabricating user approval (#2202) (`308b73b`)
+- 다양한 캐릭터 주문의 원본 반복 배정 방지 (#2201) (`ddaeee1`)
+
 ## 0.143.0 — 2026-10-05
 
 ### 기능

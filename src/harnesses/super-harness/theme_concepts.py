@@ -62,7 +62,7 @@ def submit(sid,image,prompt):
 
 def snapshot(sid):
     root=base(sid)
-    if not read(root/'concept-required.json',{}).get('required'):return {'required':False,'approved':True}
+    if not read(root/'concept-required.json',{}).get('required'):return {'required':False,'approved':True,'canProduce':True}
     c=read(root/'concept-current.json',{});path=Path(store.DATA)/c.get('path','missing')
     valid=bool(c and root.resolve() in path.resolve().parents and path.is_file() and sha(path)==c['sha256']
                and (root/'brief.json').is_file() and c.get('briefSha256')==sha(root/'brief.json'))
@@ -71,13 +71,25 @@ def snapshot(sid):
     passed=reviewed and r.get('verdict')=='PASS' and all(r.get('checks',{}).get(k,{}).get('verdict')=='PASS' for k in CHECKS)
     choice=decision.get('decision') if valid and decision.get('sha256')==c['sha256'] and decision.get('briefSha256')==c['briefSha256'] else None
     approved=bool(passed and choice=='allow')
+    authorization=read(root/'concept-draft-authorization.json',{})
+    draft=bool(passed and choice!='deny' and authorization.get('scope')=='draft-production'
+               and all(authorization.get(k)==c[k] for k in ('sha256','briefSha256')))
     reviewing=bool(store.jobs("kind='theme-concept-review' AND tag=? AND status='running'",(sid,)))
-    label=('컨셉아트 승인 · 전용 칩 제작' if approved else '컨셉아트 수정 요청 전달됨' if choice=='deny' else
+    label=('컨셉아트 승인 · 전용 칩 제작' if approved else '검수 통과 · 전용 칩과 데모 초안 제작 진행' if draft else '컨셉아트 수정 요청 전달됨' if choice=='deny' else
            '컨셉아트 검수 반려 · 수정 필요' if reviewed and not passed else '컨셉아트 확인 · Allow / Deny' if passed else
            ('컨셉아트 독립 시각 검수 중' if reviewing else '컨셉아트 독립 시각 검수 대기') if valid else '컨셉아트 생성 요청 · 그림 도착 대기')
-    return dict(required=True,approved=approved,label=label,canAllow=bool(passed),decision=choice,
+    return dict(required=True,approved=approved,canProduce=bool(approved or draft),draftAuthorized=draft,label=label,canAllow=bool(passed),decision=choice,
                 image={k:c[k] for k in ('path','sha256','briefSha256')} if valid else None,
                 reasons=r.get('reasons',[]) if reviewed else [],reviewed=reviewed)
+
+
+def authorize_draft(sid,reason):
+    state=snapshot(sid)
+    if not state.get('canAllow') or state.get('decision')=='deny':raise ValueError('현재 독립 검수 합격 시안만 초안 제작할 수 있습니다.')
+    value=dict(state['image'],scope='draft-production',actor='operator',reason=reason,at=store.now())
+    write(base(sid)/'concept-draft-authorization.json',value)
+    store.log(None,'운영자 초안 제작 승인 · 사용자 Allow/Deny 기록은 유지: '+sid)
+    return value
 
 
 def action(body):

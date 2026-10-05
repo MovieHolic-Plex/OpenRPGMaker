@@ -802,3 +802,20 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 `super-harness-priority-spaces.service`이며 이전 실행기는 drain한다. 전체 paused=1 유지.
 브라우저에서 실제 그림과 원본 확대 다이얼로그를 확인했고 390px 가로 넘침 및 pageerror는 0이었다.
 근거: `verify-shots/theme-concepts/`. Python/JS 문법 확인만 수행했으며 gates/vitest는 실행하지 않았다.
+
+
+## 승인 대기와 초안 제작 분리 (2026-10-06)
+
+컨셉 Allow 미입력을 12개 공간 전체 정지로 연결하여 실제 실행 작업이 0개가 된 문제를 수정했다.
+`theme_concepts.authorize_draft(seed, reason)`는 독립 시각 검수 PASS인 현재 PNG/기획 SHA에만
+운영자의 초안 제작 권한을 기록한다. 사용자 Allow 기록을 만들지 않으며 Deny는 초안 권한보다 우선한다.
+현재 이미지/기획이 바뀌면 권한도 만료한다. UI는 선택 없이도 초안을 제작한다는 사실을 표시한다.
+대기 이유는 매번 현재 상태로 갱신한다. 재개 시 기존 기획이 실제 승인 관문을 통과했다면 survey부터
+이어가고 그렇지 않으면 plan으로 돌아간다. 그림/기획 수정 횟수를 초기화하지 않는다.
+전용 테마의 기획 수정도 사용자 지정 max_art_revisions 한도를 따르며, 최종 결과/타일 선택과
+공용 설치·정본 저장·재로드 조건은 그대로 유지한다.
+
+운영 확인: 해리포터 현재 시안에 초안 권한을 적용한 뒤 실행 작업 0개에서 공간 6개가 병렬 진행으로
+돌아왔다. 마법약 교실은 새 기획 A/B 모두 PASS 후 survey가 실제 실행됐다. 사용자 컨셉 decision
+파일은 생성하지 않았다. 실제 /spaces에서 초안 자동 진행 문구와 pageerror 0을 확인했다
+(`verify-shots/theme-draft/desktop.png`). Python/JS 문법 확인만 수행했으며 gates/vitest는 실행하지 않았다.

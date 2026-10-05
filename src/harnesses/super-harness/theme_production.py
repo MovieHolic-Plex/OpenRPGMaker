@@ -61,7 +61,7 @@ def context(cid):
                and review.get('briefSha256')==sha(base/'brief.json') and review.get('verdict')=='PASS'
                and all(review.get('checks',{}).get(k,{}).get('verdict')=='PASS' for k in CHECKS))
     concept=theme_concepts.snapshot(p['seed'])
-    valid=valid and concept['approved']
+    valid=valid and concept['canProduce']
     return dict(conceptArt=concept,policy=p,policyHash=token(p),briefPath=str(base/'brief.json'),ready=valid,
                 briefSha256=sha(base/'brief.json') if valid else None,
                 label=concept.get('label','전용 세트 공통 미술 기획·검수 중') if not valid else '전용 세트 제작 · 기존 그림 자동 대체 금지')
@@ -73,13 +73,16 @@ def ensure(c):
     if store.jobs("concept=? AND status='running'",(c['id'],)):return False
     marker=Path(store.DATA)/'concepts'/c['id']/'theme-applied.json'
     if not ctx['ready']:
-        if c['stage']!='theme-wait':store.update_concept(c['id'],stage='theme-wait',status='queued',note=ctx['label'])
+        if c['stage']!='theme-wait' or c.get('note')!=ctx['label']:store.update_concept(c['id'],stage='theme-wait',status='queued',note=ctx['label'])
         return False
     binding={k:ctx[k] for k in ('policyHash','briefSha256')}
     if read(marker)!=binding or c['stage']=='theme-wait':
         write(marker,binding)
         # Old images, decisions and quality revision counts remain as history.
-        store.update_concept(c['id'],stage='plan',status='queued',note='공통 미술 기준 승인 · 전용 세트 기준으로 공간 재기획',reasons=[])
+        import gates
+        approved_plan=gates.planning_report(marker.parent)['ok']
+        store.update_concept(c['id'],stage='survey' if approved_plan else 'plan',status='queued',
+                             note='기존 승인 기획 유지 · 전용 재료 조사 재개' if approved_plan else '공통 미술 기준 승인 · 전용 세트 기준으로 공간 재기획',reasons=[])
     return True
 
 
