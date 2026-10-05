@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.131.0 — 2026-10-05
+
+### 기능
+
+- **start** — default new projects to 480x270 (16:9) play resolution (`6167df5`)
+- **ai** — let users collapse and restore the right team sidebar (`2adbe66`)
+- **assistant** — AI 조수용 플레이 프리셋 96종 추가 (#2132) (`21754df`)
+
+### 수정
+
+- **super-harness** — show live worker progress and queue reasons (`fe653fe`)
+- separate preparation role from facility review output (#2133) (`d516777`)
+- **assistant** — forbid empty/duplicate enum members across all tool schemas (`9aa3b07`)
+
 ## 0.130.0 — 2026-10-05
 
 ### 기능
