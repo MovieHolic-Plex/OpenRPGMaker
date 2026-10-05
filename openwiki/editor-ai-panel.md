@@ -1028,6 +1028,11 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
     15분보다 긴 실행(팀 첫 생성은 흔하다)은 중간에 pi-ai 의 「OAuth token expired before request」로 에이전트가 죽었다.
     이제 호스트(`ohMyPiPiAi.mjs` `keepWorkerKeysFresh`)가 실행 중 5분마다 키를 다시 풀어 워커 `POST /agent/keys` 로 밀고,
     `piAgentRuntime` 의 `getApiKey` 는 요청마다 `providerApiKeys` 를 다시 읽는다. 워커에는 여전히 인증이 없다.
+  - **체크포인트 거절 중 실행을 잇는 것 — 두 가지뿐.** 적용 검증 거부(`적용 실패(commit-rejected)`)와 맵 소실 확인의 「그만두기」
+    (`PI_MAP_LOSS_DECLINED_PREFIX`)는 그 쓰기만 되돌리고 도구 실패로 모델에게 돌려준다. 같은 맵 소실은 두 번 묻지 않는다(`aiPiPublication`).
+    권위·기준선·단계 중단은 그대로 실행을 멈춘다. 워커가 거절을 받아 넘기고 `done` 을 보냈으면 `client.ts` 는 첫 거절로 실행을 실패 처리하지 않는다.
+    팀 발행 줄(`piTeamRuntime` `publication`)은 거부된 발행 뒤에도 다음 팀원을 받는다 — 2026-10-05 스트레스 g-ashen-chase 에서는
+    builder-1 의 빈 맵 삭제를 거절하자 builder-2~8 이 확인 창 없이 첫 쓰기마다 같은 거절로 죽었다. 계약: `test/piApplyModes.bun.test.ts`.
   `heartbeat` 는 보드 앞에서 버려진다(`aiPiAgentCommand` 의 `wrap` · Ultrabrain 계획 핸들러) — 5초마다 행 전체를
   다시 그릴 이유가 없다. 커버리지: `test/piAgentStreamLiveness.test.ts`(델타 합침·순서·상한, heartbeat 흐름,
   워치독 두 방향, 보드의 delta/heartbeat 처리). 대조 실측: heartbeat 를 빼면 그 테스트가 15초 타임아웃으로,
