@@ -7,6 +7,7 @@ import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
+import { getPlayerPreferences } from './playerPreferences';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -272,8 +273,12 @@ export function playCinematicSequence(options: {
       media.push(item);
       item.addEventListener("error", () => fail("error"), { signal: lifetime.signal });
       if (!url) { fail("error"); return; }
-      item.src = url;
-      play(item);
+      item.volume = getPlayerPreferences().se;
+      void assets.prepareAudio(url).then(prepared => {
+        if (!alive || !mediaActive || signal.aborted) return;
+        item.src = prepared;
+        play(item);
+      }, () => { if (alive && mediaActive) fail('error'); });
     };
     canContinueVideo = scene.kind === "video";
     const ready = (visual?: HTMLElement): void => {

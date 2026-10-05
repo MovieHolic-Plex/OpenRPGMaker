@@ -39,7 +39,9 @@ assert.deepEqual(project.endings, canonical.document.endings, 'The actual author
 const presentationAssets = [];
 const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
   ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').flatMap(scene => [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]),
-  project.system.opening?.musicResourceId].filter(Boolean))];
+  project.system.opening?.musicResourceId, ...Object.values(project.system.titleScreen?.sounds ?? {}),
+  ...Object.values(project.maps).map(map => map.bgm?.resourceId),
+  ...(project.system.opening?.scenes ?? []).map(scene => scene.direction?.soundResourceId)].filter(Boolean))];
 for (const id of artIds) {
   const saved = canonical.document.assets.uploaded[id];
   if (!saved) continue; // Legacy fixtures can use bundled artwork.

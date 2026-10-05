@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4874KB / 약 1,416,235 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4885KB / 약 1,419,768 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -17,8 +17,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 |---|---|---|---|---|
 | `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
 | `openwiki/charset-actor-harness.md` | 52KB | 7KB | 419 | ~16,431 |
-| `openwiki/editor-ai-panel.md` | 618KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3880 | ~180,406 |
-| `openwiki/editor-ai-tools.md` | 325KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2690 | ~93,846 |
+| `openwiki/editor-ai-panel.md` | 619KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3886 | ~180,749 |
+| `openwiki/editor-ai-tools.md` | 326KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2694 | ~94,010 |
 | `openwiki/editor-database.md` | 413KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2457 | ~120,993 |
 | `openwiki/editor-event-authoring.md` | 178KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1072 | ~52,055 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -61,7 +61,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/atlas-biome-interior.md` | 3 | `.loop.json`, `.loop.png`, `interior-merged-palette.html` |
 | `openwiki/battle-impact-contact.md` | 1 | `verify-shots/battle-impact/README.md` |
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
-| `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
+| `openwiki/bgm-catalog.md` | 5 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json`, `project/mapMusic.ts` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
 | `openwiki/charset-actor-harness.md` | 40 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
@@ -86,8 +86,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/interior-prop-derivations.md` | 1 | `.png` |
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
+| `openwiki/harnesses/modern-chipset.md` | 1 | `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness.md` | 13 | `B.json`, `art-context-review.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `supervisor-authorization.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness.md` | 15 | `B.json`, `art-context-review.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `supervisor-authorization.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -331,7 +332,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L342` 남은 것
 - `L347` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
 
-### `openwiki/bgm-catalog.md` — 24KB · 345줄 · ~6,148 토큰
+### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,787 토큰
 
 - `L8` Why this exists
 - `L19` Facts an agent needs
@@ -347,6 +348,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L264` Shared AI analysis drafts (2026-09-08)
 - `L305` Traps
 - `L339` 후보가 없는 오프닝의 원곡 (2026-10-04)
+- `L346` 맵 OST·키 입력 효과음의 직접 저작 (2026-10-05)
 
 ### `openwiki/castle-map.md` — 21KB · 348줄 · ~5,401 토큰
 
@@ -435,7 +437,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 설치 지점
 - `L66` 테스트
 
-### `openwiki/editor-ai-panel.md` — 618KB · 3880줄 · ~180,406 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/editor-ai-panel.md` — 619KB · 3886줄 · ~180,749 토큰 · 통째읽기 잘림 · 깨진 줄 26
 
 - `L5` UX 추가 조사 2 — 공간 체크포인트·사람 칸 비교 (2026-10-04)
 - `L24` UX 추가 조사 2 — 활동 그림 캡처·그림판·보관 정리 (2026-10-04)
@@ -555,8 +557,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3834` 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
   - `L3859` 조수창
   - `L3868` 재현·증거
+- `L3881` 완료 음원 결과와 연결 재개 (2026-10-05)
 
-### `openwiki/editor-ai-tools.md` — 325KB · 2690줄 · ~93,846 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 326KB · 2694줄 · ~94,010 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L32` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -667,6 +670,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2665` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
 - `L2673` 글자·장면 오프닝 연출 (2026-10-04)
 - `L2683` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+- `L2691` OST·효과음 직접 작곡 (2026-10-05)
 
 ### `openwiki/editor-database.md` — 413KB · 2457줄 · ~120,993 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1194,7 +1198,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` pick 절차 (사람)
 - `L76` 복제에서 바꾼 점 (modern-chipset 대비)
 
-### `openwiki/harnesses/modern-chipset.md` — 5KB · 53줄 · ~1,615 토큰
+### `openwiki/harnesses/modern-chipset.md` — 7KB · 75줄 · ~2,228 토큰
 
 - `L8` 왜 만들었나 (2026-10-01)
 - `L14` 흐름
@@ -1202,6 +1206,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L34` 함정
 - `L39` 도시 조립 (2026-10-03)
 - `L47` 굽기 `bake` → 번들 타일셋 modern_city (2026-10-03)
+- `L54` 승인 주차장 두 면 공용 등록 (2026-10-05)
 
 ### `openwiki/harnesses/monster-collect-species.md` — 17KB · 152줄 · ~5,055 토큰
 
@@ -1234,7 +1239,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 공간 제작에서의 공용 재료 사용
 - `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 36KB · 341줄 · ~11,341 토큰
+### `openwiki/harnesses/super-harness.md` — 39KB · 368줄 · ~12,129 토큰
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1254,6 +1259,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L271` 표본 도면과 공간 전체의 품질 관문 v2
   - `L300` 반복 실패 재설계·시점 표본·전후 비교 v3 (2026-10-04)
   - `L333` 시점 표본 합격 후 저장 오류 복구 (2026-10-04)
+  - `L342` 고정 합격 기준·권고 분리·판정 충돌 재검수 (2026-10-05)
+  - `L361` 선택 구역의 설치 완료 근거
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -1381,7 +1388,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L105` 남은 일 (B/D)
 - `L119` 검증 좌표
 
-### `openwiki/modern-city.md` — 8KB · 59줄 · ~2,300 토큰
+### `openwiki/modern-city.md` — 9KB · 72줄 · ~2,629 토큰
 
 - `L5` 식별자
 - `L15` 파일
@@ -1391,6 +1398,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L42` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항)
 - `L51` 자동 검사 (구조·통행만)
 - `L56` 번들 장소
+- `L60` 승인된 작은 지하 주차장 (2026-10-05)
 
 ### `openwiki/monster-resource-editor.md` — 4KB · 75줄 · ~1,199 토큰
 
@@ -2460,7 +2468,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L537` 수관 잎 채움 (2026-09-24)
 - `L548` 번들 참고 이미지는 정적 경로다 (2026-09-25)
 
-### `openwiki/title-opening-effects.md` — 35KB · 347줄 · ~10,837 토큰
+### `openwiki/title-opening-effects.md` — 38KB · 357줄 · ~11,494 토큰
 
 - `L6` 데이터
 - `L18` 프리셋
@@ -2476,6 +2484,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L250` 글자·장면 오프닝 연출 (2026-10-04)
 - `L287` 스토리보드·독립 그림 모션·원곡 BGM (2026-10-04 후속)
   - `L338` 참고한 연출 계약
+- `L348` 실제 첫 맵을 오프닝 뒤에서 준비 (2026-10-05)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 
