@@ -170,7 +170,7 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
   };
   const t0 = Date.now();
   try {
-    await page.goto(hostUrl.href, { waitUntil: 'domcontentloaded' });
+    await page.goto(hostUrl.href, { waitUntil: 'domcontentloaded', timeout: 180000 });
     if (await page.locator('input[name=token]').isVisible().catch(() => false)) {
       await page.locator('input[name=token]').fill(host.ownerAccessCode);
       await page.getByRole('button', { name: '작업실 들어가기' }).click();
@@ -195,11 +195,35 @@ await withTsModule(resolve('electron/serve/runtime.ts'), `stress-host-${process.
     } else {
       // 부팅 자동 전송을 기다린다.
       const until = Date.now() + 6 * 60_000;
-      while (Date.now() < until && (await status()).requests === 0) await page.waitForTimeout(2000);
-      if ((await status()).requests === 0) { result.autoSendStarted = false; throw new Error('장르 첫 생성이 6분 안에 자동 전송되지 않았다'); }
+      // 첫 생성 준비(자산·저장)가 주 스레드를 오래 잡는다 — 관측 시한 초과는 기다림으로 본다.
+      const requestsNow = () => status().then(st => st.requests, error => { if (crashed) throw error; return 0; });
+      while (Date.now() < until && await requestsNow() === 0) await page.waitForTimeout(2000);
+      if (await requestsNow() === 0) { result.autoSendStarted = false; throw new Error('장르 첫 생성이 6분 안에 자동 전송되지 않았다'); }
       result.autoSendStarted = true;
     }
     result.sentAt = Date.now();
+    // 턴 시작 뒤 살아 있는 할당을 호출 스택별로 본다(heap-sampling.json). 렌더러 힙이 턴 시작에 1GB+ 뛰는 원인 추적용.
+    const heapSampleSeconds = Number(process.env.STRESS_HEAP_SAMPLE_S ?? 90);
+    if (heapSampleSeconds > 0) {
+      await cdp.send('HeapProfiler.enable').catch(() => {});
+      await cdp.send('HeapProfiler.startSampling', { samplingInterval: 256 * 1024 }).catch(() => {});
+      setTimeout(async () => {
+        try {
+          const { profile } = await cdp.send('HeapProfiler.getSamplingProfile');
+          await cdp.send('HeapProfiler.stopSampling').catch(() => {});
+          await writeFile(out + '/heap-sampling.json', JSON.stringify(profile)); log('heap sampling saved');
+        } catch (error) { log('heap sampling failed', error?.message); }
+      }, heapSampleSeconds * 1000);
+    }
+    // STRESS_PROFILE_S=<초>: 보낸 뒤 그 시간 동안 렌더러 CPU 프로필을 떠서 멈춤 원인을 본다(cpu.cpuprofile).
+    const profileSeconds = Number(process.env.STRESS_PROFILE_S ?? 0);
+    if (profileSeconds > 0) {
+      await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 2000 }); await cdp.send('Profiler.start');
+      setTimeout(async () => {
+        try { const { profile } = await cdp.send('Profiler.stop'); await writeFile(out + '/cpu.cpuprofile', JSON.stringify(profile)); log('profile saved'); }
+        catch (error) { log('profile failed', error?.message); }
+      }, profileSeconds * 1000);
+    }
 
     // ── 3. 턴 종료 대기 ──
     let idle = 0, modalSince = 0;
