@@ -699,7 +699,7 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 `finish_priority.py`로 먼저 배정한다. `space_supervisor.py`는 다음 빈 공간 슬롯을 이 순서로
 배정하고, `keyword_seeds.py`는 해당 대기열이 있을 때 새 키워드 제안을 보류한다.
 이미 실행 중인 작업은 끊지 않는다. 반려·사용자 판단 대기·429 대기는 영구 독점하지 않는다.
-현재 기존 5개 운영은 `super-harness-completion-spaces.service`이고 이전 requested 서비스는 drain한다.
+현재 기존 5개 운영은 `super-harness-spaces.service`이고 이전 requested/completion 서비스는 drain 후 종료한다.
 
 `art_choices.installationProgress`는 현재 선택 해시와 공용 등록·정본 저장·재로드 증거가
 맞을 때만 노출한다. 플레이 확인이 남았으면 **맵 저장 완료 · 플레이 확인 남음**으로 표시하고
@@ -712,3 +712,9 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 재개한다. 격리 콘텐츠 루트는 승인된 `tiledata/hand-interior/new/items.json`에서 찾는다.
 공간 슬롯 확인과 실행 예약은 공통 `space-admission.lock`으로 직렬화한다.
 여러 supervisor가 동시에 마지막 슬롯을 보고 작업을 중복 입장시키지 않도록 한다.
+
+교실 `scope:classroom`은 `classroom_choices.py`가 전용 영수증을 읽는다. `contractSha256`이 있다는
+이유만으로 주차장 `candidate/machine/independent` 구조로 읽지 않는다. native 실행 직후
+`art_receipts.py`가 원래 교실 어댑터의 receipt 함수를 호출하여 현재 state/check/verdict와 문 상태
+그림을 묶는다. 오래된 실패 영수증 때문에 PNG 생성 이후에도 멈추던 현상을 방지한다.
+실제 품목/assembly FAIL은 유지하며 전체 데모 → 독립 검수 → 피드백 수정으로 보낸다.

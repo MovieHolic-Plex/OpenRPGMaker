@@ -193,6 +193,9 @@ def main():
             'acceptance': approved.get('acceptance'),
         }, ensure_ascii=False)
     code = subprocess.call(command, cwd=root, env=env)
+    if code == 0:
+        import art_receipts
+        art_receipts.refresh(root,request)
     errors = native_errors(root, request)
     code = code or (1 if errors else 0)
     result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code, 'nativeErrors': errors}, ensure_ascii=False))
