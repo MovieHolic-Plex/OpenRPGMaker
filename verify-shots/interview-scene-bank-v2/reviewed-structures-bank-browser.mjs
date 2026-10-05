@@ -4,11 +4,15 @@ const out='verify-shots/interview-scene-bank-v2';
 const manifest=JSON.parse(fs.readFileSync('src/editor/interviewSceneBank.json','utf8'));
 const catalog=JSON.parse(fs.readFileSync('src/editor/projectInterviewScenes.json','utf8'));
 const allPublished=process.argv.includes('--all-published');
-const targets=Object.keys(manifest.scenes).filter(key=>allPublished?key!=='opening':key.split('--').length===5);
+const screenshotsOnly=process.argv.includes('--screenshots-only');
+const screenshotTargets=['romance--palace--choice--secret--perspectives','romance--town--choice--warm--routes','monster--wild--collect--bright--route'];
+if(screenshotsOnly&&!allPublished)throw Error('Screenshot subset requires --all-published');
+const targets=Object.keys(manifest.scenes).filter(key=>screenshotsOnly?screenshotTargets.includes(key):allPublished?key!=='opening':key.split('--').length===5);
 if(!targets.length)throw Error('No reviewed fixed-answer background to inspect');
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:900}});
 const report={scope:allPublished?'Every currently published fixed-choice prefix through actual production dialog, plus opening image; isolated container, not full app boot or generated-game completion':'Every currently published fourth fixed-answer background clicked through actual production dialog in isolated container; not full app boot or generated-game completion',published:Object.keys(manifest.scenes).length,targets,generatedRequests:0,paths:[],errors:[]};
+if(screenshotsOnly)report.scope='Three published screenshot paths after the real backdrop crossfade settles; isolated production dialog, not an all-published path audit';
 page.on('pageerror',e=>report.errors.push(e.message));
 await page.route('**/auth/status**',r=>r.fulfill({contentType:'application/json',body:'{"connected":false}'}));
 await page.route('**/v1/images/generations',r=>{report.generatedRequests++;return r.fulfill({status:503,contentType:'application/json',body:'{"error":"Reviewed fixed choice must use native bank"}'});});
@@ -54,13 +58,19 @@ try {
    key+='--'+id;await click('project-interview-option-'+optionIndex);
   }
   report.paths.push({target,steps});
+  if(allPublished&&screenshotTargets.includes(target)){
+   await page.waitForFunction(()=>{
+    const images=[...document.querySelectorAll('.ci-backdrop img')];
+    return images.some(i=>i.classList.contains('is-visible')&&i.complete&&i.naturalWidth>0)&&images.every(i=>Math.abs(Number(getComputedStyle(i).opacity)-(i.classList.contains('is-visible')?1:0))<0.001);
+   });
+  }
   if(allPublished&&target==='romance--palace--choice--secret--perspectives')await page.screenshot({path:out+'/all-published-palace-perspectives.png'});
   if(allPublished&&target==='romance--town--choice--warm--routes')await page.screenshot({path:out+'/all-published-town-choice-routes.png'});
   if(allPublished&&target==='monster--wild--collect--bright--route')await page.screenshot({path:out+'/all-published-monster-collection-route.png'});
   if(!allPublished&&(target==='romance--campus--talk--secret--routes'||target==='romance--campus--memory--bittersweet--routes'))await page.screenshot({path:out+'/structure-'+target+'.png'});
   await page.getByTestId('project-interview-cancel').click();
  }
- report.passed=report.generatedRequests===0&&report.errors.length===0&&report.paths.length===targets.length&&(!allPublished||(report.opening&&targets.length+1===report.published));
+ report.passed=report.generatedRequests===0&&report.errors.length===0&&report.paths.length===targets.length&&(screenshotsOnly?targets.length===screenshotTargets.length:!allPublished||(report.opening&&targets.length+1===report.published));
  if(!report.passed)throw Error('Unexpected generation request, incomplete path or browser error');
-}finally{fs.writeFileSync(out+(allPublished?'/all-published-click-proof.json':'/reviewed-structures-click-proof.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
+}finally{fs.writeFileSync(out+(screenshotsOnly?'/settled-screenshots-click-proof.json':allPublished?'/all-published-click-proof.json':'/reviewed-structures-click-proof.json'),JSON.stringify(report,null,2)+'\n');await browser.close();}
 console.log(JSON.stringify({published:report.published,targets:targets.length,clicks:report.paths.reduce((sum,p)=>sum+p.steps.length,0),generatedRequests:report.generatedRequests,errors:report.errors,passed:report.passed}));
