@@ -9,6 +9,7 @@ import unicodedata
 import store
 import provider_retry
 import finish_priority
+import theme_production
 
 BATCH = 6
 BACKLOG = 12
@@ -87,6 +88,12 @@ def snapshot():
                           '공간 제안 재시도 대기' if s['retry_after'] > time.time() else
                           '제작·확인 중인 공간 12개 · 처리되면 계속 추가' if pending >= BACKLOG else
                           '다음 공간 제안 대기 · 작업 자리가 나면 자동 시작')
+            p=theme_production.read(theme_production.folder(s['id'])/'policy.json')
+            if p:
+                state=theme_production.read(theme_production.folder(s['id'])/'state.json',{})
+                labels={'theme-plan':'테마 전체 미술 기획 중','theme-review':'공통 미술 기획 독립 검수 중','ready':'전용 세트 기준으로 공간별 제작','error':'공통 기획 수정·재시도 대기'}
+                s['theme']={'label':labels.get(state.get('stage'),'전용 세트 공통 기획 대기'),'error':state.get('error',''),'attempt':state.get('attempt',0),'limit':int(store.setting('max_art_revisions') or 10)}
+                if s['theme']['attempt']>=s['theme']['limit']:s['theme']['label']='공통 기획 수정 한도 도달 · 운영 점검 필요'
             items.append(s)
     return {'items': items, 'batch': BATCH, 'backlog': BACKLOG,
             'schedulerOnline': time.time()-float(store.setting('keyword_scheduler_tick') or 0) < 30}

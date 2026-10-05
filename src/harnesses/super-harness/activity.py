@@ -15,6 +15,8 @@ import provider_retry
 
 STEPS = ["공간 기획", "기획 검수", "재료 조사·검수", "칩 제작·검수", "공간 조립", "시각 검수", "조수 시험", "공용 등록"]
 STAGE = {
+    "theme-wait": (0, "전용 세트 공통 미술 기획·검수"),
+    "theme-plan": (0, "테마 전체 미술 기획"), "theme-review": (0, "테마 미술 기획 독립 검수"),
     "discovered": (0, "기획 차례 대기"), "plan": (0, "공간 기획·텍스트 도면 작성"),
     "plan-review": (1, "기획·도면 독립 검수"), "survey": (2, "사용 가능한 칩 조사"),
     "material-review": (2, "필수 재료 독립 검수"), "art": (3, "부족한 칩 제작"),
@@ -148,6 +150,10 @@ def snapshot(cid=None):
             cause={'rate-limit':'모델 요청 한도(429)', 'context-overflow':'모델 문맥 초과', 'provider-unavailable':'모델 공급자 일시 오류'}.get(nearest['reason'], '일시 오류')
             reason=cause + ' · ' + (time.strftime('%H:%M:%S',time.localtime(nearest['due'])) + ' 자동 재시도' if nearest['due']>now else '재시도 시각 도달 · 작업 자리가 나면 자동 재개')
             action='누를 버튼은 없습니다. 기존 그림·선택·품질 수정 횟수를 유지하고 자동 재개합니다.'
+        elif c["stage"] == "theme-wait":
+            wait_kind="theme-production"
+            reason="공간들이 함께 사용할 전용 세트의 팔레트·건축·재료 목록을 먼저 기획하고 검수합니다."
+            action="사용자 선택은 필요 없습니다. 공통 기획 검수 후 공간별 제작이 이어집니다."
         elif c["stage"] == "blocked":
             wait_kind = "operator-attention"
             reason = c.get("note") or "검수 또는 결과 처리에서 멈췄습니다."
@@ -215,6 +221,10 @@ def snapshot(cid=None):
             next_step = '예정 시각/작업 자리 확인 → 같은 단계 자동 재개'
         elif live:
             next_step = "현재 결과 검수 → 통과하면 다음 단계, 반려면 피드백을 반영해 재시도"
+        elif c["stage"] == "theme-wait":
+            wait_kind="theme-production"
+            reason="공간들이 함께 사용할 전용 세트의 팔레트·건축·재료 목록을 먼저 기획하고 검수합니다."
+            action="사용자 선택은 필요 없습니다. 공통 기획 검수 후 공간별 제작이 이어집니다."
         elif c["stage"] == "blocked":
             next_step = "막힘 원인 교정 → 해당 단계 재실행"
         elif c["stage"] in ("done", "discarded"):

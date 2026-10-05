@@ -36,6 +36,7 @@ import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_demo
 import keyword_seeds
+import theme_production
 import provider_retry
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
@@ -109,6 +110,8 @@ def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=Non
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
     jid = store.add_job(cid, kind, tag, log_path)
     saved = dict(meta, kind=kind, tag=tag, concept=cid, invocation={'cmd':cmd,'cwd':str(cwd),'log':str(log_path),'timeout':timeout,'stdin':str(stdin_path) if stdin_path else None})
+    if cid and (theme:=theme_production.context(cid)):
+        saved.update(themePolicyHash=theme['policyHash'],themeBriefSha256=theme['briefSha256'])
     write_json(os.path.join(DATA, 'job-invocations', str(jid)+'.json'), saved)
     try:
         with open(log_path, 'w') as output:
@@ -128,6 +131,7 @@ def start_proc(cid, kind, tag, cmd, cwd, log_path, timeout, meta, stdin_path=Non
 
 
 def start_codex(cid, kind, tag, prompt, result_path, extra_dirs=(), write_root=None):
+    if cid:prompt+=theme_production.instructions(cid)
     # Separate scratch/output roots even for simultaneous A/B reviewers.
     work = os.path.join(WORK, cid or '_discovery', kind + '-' + tag)
     os.makedirs(work, exist_ok=True)
@@ -174,6 +178,11 @@ def reap():
         store.update_job(jid, status='done' if code == 0 else f'exit {code}', ended=store.now(),
                          result=result if result is not None else {'exit': code})
         try:
+            if meta.get('concept') and not theme_production.current(meta['concept'],meta):
+                provider_retry.cancel(meta['concept'])
+                theme_production.ensure(store.concept(meta['concept']))
+                store.log(meta['concept'],'이전 테마 정책의 결과는 기록으로 보존 · 새 전용 세트 기준 적용')
+                continue
             if not meta.get('superseded'):
                 if provider_retry.capture(sys.modules[__name__], jid, meta, code): continue
                 provider_retry.finished(meta)
@@ -421,7 +430,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'theme-plan': theme_production.on_result, 'theme-review': theme_production.on_result, 'seed-discover': keyword_seeds.on_result, 'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-demo': lambda *a: on_art_demo(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -433,7 +442,9 @@ def probe_scores(cid, attempt):
 # ───────────────────────── 작업 시작 ─────────────────────────
 
 def concept_context(c):
-    return {k: c.get(k) for k in ('id', 'title', 'aliases', 'why', 'source', 'attempt', 'parent')}
+    result={k: c.get(k) for k in ('id', 'title', 'aliases', 'why', 'source', 'attempt', 'parent')}
+    result['themeProduction']=theme_production.context(c['id'])
+    return result
 
 
 def start_discover():
@@ -788,7 +799,17 @@ def start_art_demo(c):
         start_codex(cid, 'art-demo', 'assemble', prompt, output, write_root=inputs['root'])
         store.update_concept(cid, status='running', note='실제 타일로 공간 전체 데모 조립 중')
     except (ValueError, OSError, KeyError, TypeError) as error:
-        store.update_concept(cid, stage='blocked', status='idle', note='데모 입력 준비 오류', reasons=[str(error)])
+        if theme_production.policy(cid):
+            # Missing theme material returns to production with the actual failure;
+            # never relax coverage or reset the user's repair limit.
+            count=c.get('art_revision',0)+1
+            exhausted=count>art_feedback.limits(DATA,cid)['maxRevisions']
+            write_json(cdir(cid,'theme-material-feedback.json'),dict(error=str(error),revision=count))
+            store.update_concept(cid,stage='blocked' if exhausted else 'art',status='idle' if exhausted else 'queued',
+                                 art_revision=c.get('art_revision',0) if exhausted else count,
+                                 note='전용 재료 수정 한도 도달' if exhausted else '전용 세트 누락 재료 보완 · 조립 전 제작으로 복귀',reasons=[str(error)])
+        else:
+            store.update_concept(cid, stage='blocked', status='idle', note='데모 입력 준비 오류', reasons=[str(error)])
 
 
 def on_art_demo(meta, code, result):
@@ -1255,11 +1276,13 @@ def tick():
     reap()
     if store.setting('paused') == '1':
         return
+    theme_production.tick(sys.modules[__name__],[c['id'] for c in store.concepts()],int(store.setting('max_active')))
+    for c in store.concepts():theme_production.ensure(c)
     provider_retry.tick(sys.modules[__name__])
     max_codex = int(store.setting('max_codex'))
     keyword_seeds.tick(sys.modules[__name__])
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'], include_waiting=False)) + need <= max_codex
+    codex_free = lambda need=1: len(running(['theme-plan', 'theme-review', 'seed-discover', 'discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'art-demo', 'build', 'review', 'judge'], include_waiting=False)) + need <= max_codex
 
     release_waiting()
     active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','art-demo','build','review','probe','bake','unbake')")
@@ -1450,6 +1473,8 @@ def first_sentence(text, limit=90):
 def plain_status(c):
     if c.get('status') == 'retry-wait': return c.get('note') or '공급자 오류 · 자동 재시도 대기'
     stage, n = c['stage'], c['attempt'] or 1
+    if stage == 'theme-wait':
+        return '전용 세트 공통 기획·검수 중'
     if stage == 'result-review':
         return '완성된 결과 확인 · Allow / Deny'
     if stage == 'discovered':

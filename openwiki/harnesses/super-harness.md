@@ -736,3 +736,37 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 원본 새 창, 명시적인 닫기를 지원한다. Esc는 확대창만 닫아 뒤의 상세창을 유지한다.
 관찰 근거: `verify-shots/harness-image-viewer/`의 주차장 desktop/mobile 그림. 390px 화면에서
 대화상자 너비366px, 드래그 후 스크롤 x+150/y+100, 브라우저 pageerror 0을 확인했다.
+
+
+## 고유 테마 전용 세트 관문 (2026-10-05)
+
+`theme_production.configure(seed_id, reason)`는 **기존 키워드**를 전용 팩 제작 정책으로 전환한다.
+해리포터처럼 전체 시각 언어가 중요한 명시 요청에 사용한다. 모든 키워드를 임의로 같은 정책으로
+분류하지 않는다. 정책/기획/검수는 `DATA/keyword-seeds/<id>/theme/`에 저장한다.
+
+- 공간별 작업 전에 `theme-plan` → 별도 `theme-review` 모델 작업으로 공통 팔레트, 시점,
+  사람 대비 크기, 재질/건축 문법과 8개 재료군(건축·표면·가구·식생·인물·생물·탈것·효과)을 정한다.
+  각 공간의 `identityAssets`와 실제 제작 경로를 빠짐없이 적는다. 기획 합격은 그림 합격이 아니다.
+- 모든 공간은 `theme-wait`에서 공통 검수를 기다린 뒤 새 기획으로 이동한다. 기존 그림·선택·수정
+  횟수는 보존한다. 과거 정책의 작업 결과/예약을 현재 테마의 승인으로 채택하지 않는다.
+- `planning.json.theme`는 현재 정책/기획 해시에 묶는다. 각 변형의 `themeIdentityAssets`는 공통
+  정체성 품목 전체를 실제 requirements ID로 연결한다. 재료 조사의 목적 tilesetId는 정책 packId다.
+- 후보 수집의 `art-result.json.themeCoverage`는 모든 요구 재료를 receipt의 native 후보 PNG
+  경로/해시에 연결한다. 데모 입력과 제출 시 모두 확인한다. 전용 테마에서는 git에 추적된 기존
+  PNG라는 이유만으로 stock 바닥·숲·Actor1을 끼워 넣던 fallback을 허용하지 않는다.
+  운영자가 정책 reuseExceptions에 기록한 개별 경로/해시만 예외다. 장면 미리보기는 원본 칩이 아니다.
+- 미제작 재료는 원인을 기록하여 art로 복귀하고 기존 자동 수정 한도를 소모한다. 한도를 지워서
+  무한 재생성하지 않는다. 공통 기획도 max_art_revisions 한도 내에서 반려 피드백을 반영한다.
+- 키워드 UI는 전용 세트 모드와 공통 기획/독립 검수/제작 단계 및 오류를 표시한다. theme 작업도
+  기존 슬롯, 공급자 재시도, job-invocations 기록을 사용한다. 공통 기획 확장은 승인 미술 기준을 유지한다.
+
+이 계약 자체가 새 타일 팩이나 생물 제작 어댑터를 제공하지는 않는다. 해당 제작 경로는 실제
+native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 팩의 번들 배포와 정본 저장/재로드는
+기존 완료 조건을 그대로 적용한다. 정책 전환을 그림 완성/사용자 Allow로 표시하지 않는다.
+
+운영 적용: 해리포터 시드 `3e7ac64c5cf1d943e08a`의 12공간에 전용 정책을 저장했고
+공통 theme-plan 작업을 시작했다. 현재 범위 실행기는 `super-harness-theme-spaces.service`이며
+이전 production-spaces는 새 입장을 중지하고 실행 중 결과를 보존하며 drain한다.
+전체 paused=1은 유지한다. `/api/seeds`의 실제 정책 상태와 데스크톱/390px 모바일 화면을
+확인했다(`verify-shots/dedicated-theme/`). Python/JS 문법 확인만 수행했고 gates/vitest는 실행하지 않았다.
+아직 새 전용 그림·데모의 완성이나 검수 PASS를 뜻하지 않는다.
