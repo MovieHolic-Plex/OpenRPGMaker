@@ -224,6 +224,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     project: cloneProjectSharingSharedDictionaries(base),
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
+    assistantRun: true,
   };
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();

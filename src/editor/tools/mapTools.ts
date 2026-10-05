@@ -288,7 +288,7 @@ const createMap: ToolDefinition = {
     adoptStartIfNeeded(draft, map);
     const warnings = blankNamesake
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
-        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(run_dungeon_room_pipeline 등 방 파이프라인은 빈 맵을 그대로 이어받습니다).`]
+        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
@@ -1995,7 +1995,7 @@ const setMapProperties: ToolDefinition = {
       // — 침대·나무 바닥 그대로, 입구는 마을 집 문, 진짜 던전 맵은 빈 채 미연결로 남았다.
       const namesake = Object.values(draft.maps).find(other => other.id !== map.id && other.name.trim() === nextName);
       if (namesake && map.name.trim() !== nextName) {
-        const empty = namesake.events.length === 0 ? " 그 맵은 아직 이벤트가 없습니다 — 그 맵을 시공·연결하세요(던전은 run_dungeon_room_pipeline mapId:" + JSON.stringify(namesake.id) + ")." : "";
+        const empty = namesake.events.length === 0 ? " 그 맵은 아직 이벤트가 없습니다 — 그 맵을 시공·연결하세요(" + JSON.stringify(namesake.id) + " 에 등록 장소를 붙이려면 import_region_reference mapId)." : "";
         throw new ToolError(
           `'${nextName}' 은 이미 맵 ${namesake.id}(${namesake.width}×${namesake.height})의 이름입니다. 다른 맵(${map.id} '${map.name}')의 이름을 바꿔 같은 장소로 쓰지 마세요.${empty}`,
           { code: "map-name-taken", mapId: map.id },

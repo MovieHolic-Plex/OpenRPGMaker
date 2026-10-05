@@ -148,7 +148,7 @@ Harness contract:
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
 6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. Use direct only for genuinely atomic work, and do not invent extra scope or filler tasks merely to make the list longer.
-   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_village / author_house / run_dungeon_room_pipeline 은 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 인자는 전부 **선택**이라 비우면 법적 최소치만 나온다 — 주민은 대사 없이 놓이고(residents.lines), 집은 주인·용도가 없고(housePlans.ownerName/program), 인구(npcCount)·실내(interior)·배치(settlementLayout)·테마(theme)·숲(forestDensity)은 기본값이 된다. 사후 검사는 **집 수와 NPC 수만** 센다 — 대사·상점·실내·연결은 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
+   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_village / author_house / import_region_reference 는 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 인자는 전부 **선택**이라 비우면 법적 최소치만 나온다 — 주민은 대사 없이 놓이고(residents.lines), 집은 주인·용도가 없고(housePlans.ownerName/program), 인구(npcCount)·실내(interior)·배치(settlementLayout)·테마(theme)·숲(forestDensity)은 기본값이 된다. 사후 검사는 **집 수와 NPC 수만** 센다 — 대사·상점·실내·연결은 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
    그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내 가구·연결(furnish_interior_space, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
 7. Every item needs:
    - title (identifies the independent result)
