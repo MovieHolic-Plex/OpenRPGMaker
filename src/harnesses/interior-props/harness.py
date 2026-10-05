@@ -82,9 +82,17 @@ def ensure_pool():
     cmd = [sys.executable, os.path.abspath(__file__), 'pool']
     # 고르는 서버(systemd 서비스) 안에서 띄우면 서버를 다시 켤 때 일꾼까지 같이 죽는다(2026-10-03) → 되면 따로 된 user 서비스로
     if shutil.which('systemd-run') and os.environ.get('XDG_RUNTIME_DIR'):
+        # A transient service inherits the user manager environment, not this
+        # HTTP process. Forward only non-secret harness configuration explicitly.
+        keys = ('PROP_HARNESS_CONTENT_ROOT', 'PROP_HARNESS_DATA', 'HIP_DATA', 'HIP_DB', 'HIP_PICK',
+                'PROP_HARNESS_ENGINE', 'PROP_HARNESS_MODEL', 'PROP_HARNESS_CODEX_MODEL',
+                'PROP_HARNESS_EFFORT', 'PROP_HARNESS_PAR', 'PROP_HARNESS_TIMEOUT',
+                'PROP_HARNESS_REVIEW_EFFORT', 'PROP_HARNESS_REVIEW2_MODEL', 'PROP_HARNESS_ATTEMPTS',
+                'PROP_HARNESS_RECOVER_ROOT')
+        config = [f'--setenv={key}={os.environ[key]}' for key in keys if key in os.environ]
         r = subprocess.run(['systemd-run', '--user', '--collect', '--quiet', f'--unit=prop-harness-pool-{int(time.time())}',
                             f'--working-directory={ROOT}', '-p', f'StandardOutput=append:{os.path.join(LOGS, "pool.log")}',
-                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + cmd, capture_output=True)
+                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + config + cmd, capture_output=True)
         if r.returncode == 0: return
     subprocess.Popen(cmd, cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(LOGS, 'pool.log'), 'a'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
@@ -108,7 +116,7 @@ def _hist(r):
 
 def _redraw_section(r, folder):
     """다시 그리기(attempt>1)면 지난 시도의 탈락 이유를 작업자에게 그대로 준다."""
-    h = _hist(r)
+    h = [x for x in _hist(r) if x.get('stage') in ('hard', 'review')]
     if (r.get('attempt') or 1) <= 1 or not h: return ''
     last = h[-1]; prev = f"{folder}/{_out(r)}.a{last['attempt']}"
     lines = [f"", f"## 다시 그리기 — 시도 {r['attempt']}/{MAX_ATTEMPTS}", "",
@@ -331,10 +339,45 @@ def _top_gate(r, v):
     v['fix'] = (v.get('fix') or '') + f" 꼭대기 면({v.get('top', '')})을 위에서 내려다본 면으로 {need}행 이상 — 지붕·상판이 띠로만 보이는 옆모습이면 남쪽 면을 줄이고 윗면을 늘린다."
 
 
+def _recover_candidate(r):
+    """Opt-in recovery of files written by an old pool without its content root.
+
+    Existing destination files are never overwritten. Keep the misplaced source
+    for audit; resume the checker/reviewer instead of choosing an image.
+    """
+    source_root = os.environ.get('PROP_HARNESS_RECOVER_ROOT')
+    if not source_root: return
+    from common import slug
+    source = os.path.join(source_root, 'tiledata/hand-interior/pick/candidates', slug(r['item']))
+    target = _folder(r, absolute=True)
+    if os.path.realpath(source) == os.path.realpath(target): return
+    name = _out(r)
+    if os.path.isfile(os.path.join(target, name + '.pxg')): return
+    if not os.path.isfile(os.path.join(source, name + '.pxg')): return
+    os.makedirs(target, exist_ok=True)
+    # Put pxg last, so an interrupted copy remains retryable.
+    files = sorted(glob.glob(os.path.join(source, name + '.*')) + glob.glob(os.path.join(source, name + '-x*.png')),
+                   key=lambda f: os.path.basename(f) == name + '.pxg')
+    import hashlib
+    for path in files:
+        dst = os.path.join(target, os.path.basename(path))
+        if os.path.exists(dst):
+            if open(dst, 'rb').read() != open(path, 'rb').read():
+                raise ValueError('복구 대상 파일 충돌: ' + dst)
+            continue
+        tmp = dst + '.recover-tmp'
+        shutil.copyfile(path, tmp); os.replace(tmp, dst)
+    store.add_feedback(r['item'], 'technical-file-recovery', r['round'], name, [],
+                       json.dumps(dict(source=source, target=target,
+                                       sha256=hashlib.sha256(open(os.path.join(target, name + '.pxg'), 'rb').read()).hexdigest())))
+    print(store.now(), name + ' 후보 파일 복구', flush=True)
+
+
 def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
+    _recover_candidate(r)
     phase = r.get('phase') or 'draw'
     if phase in ('review', 'review2'):
         pack = _pack_dir(r)
@@ -404,6 +447,7 @@ def retry_review_errors(rounds_, queue_only=False):
         for r in store.runs(rid):
             if r['status'] != 'failed' or r.get('phase') not in ('review', 'review2'):
                 continue
+            _recover_candidate(r)
             png = os.path.join(r['root'], _folder(r), _out(r) + '.png')
             if not os.path.isfile(png):
                 raise ValueError('기존 그림 없이 검수만 재개할 수 없습니다: ' + _out(r))
@@ -423,7 +467,7 @@ def retry_review_errors(rounds_, queue_only=False):
             locks = derive.lock_check(objects_by_id().get(r['item']) or {}, png, r.get('brief'))
             if ck.returncode or not checked.get('ok') or checked.get('hard') or locks:
                 raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))
-            history = _hist(r) + [dict(stage='technical-review-retry', at=store.now(), error=r.get('error'), imageSha256=after)]
+            history = _hist(r) + [dict(stage='technical-review-retry', attempt=r.get('attempt') or 1, at=store.now(), error=r.get('error'), imageSha256=after)]
             store.update_run(r['id'], status='queued', pid=None, ok=1, error='', history=json.dumps(history, ensure_ascii=False))
             n += 1
     print(f'기존 그림 보존 · 기술 오류 검수 {n}개 재개 대기', flush=True)
