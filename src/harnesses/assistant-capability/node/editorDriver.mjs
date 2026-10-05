@@ -69,7 +69,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
   const {onPage,bootTimeoutMs=180000,...contextOptions}=captureOptions;
   const context=await browser.newContext({ viewport:{width:1440,height:960},reducedMotion:'reduce',...contextOptions });
   const page=await context.newPage();
-  onPage?.(page,context);
+  await onPage?.(page,context);
   // Bundled asset installation and SQLite flush can hold the UI main thread.
   // Keep UI action deadlines consistent with the existing load/save deadlines.
   page.setDefaultTimeout(120000);
@@ -113,7 +113,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);
   }
   await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="project-export-json"]'),null,{timeout:120000});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:120000});
   // Companion readiness precedes canvas construction in a fresh context.
   // Wait for the editor's own rendered tile residency before taking evidence.
   await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
