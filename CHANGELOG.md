@@ -5,6 +5,37 @@
 
 <!-- releases -->
 
+## 0.133.0 — 2026-10-05
+
+### 기능
+
+- **super-harness** — simplify example and result decisions to allow or deny (`817a1a2`)
+- **worldmap** — record live editor assistant and canonical reload (`44b5af5`)
+- **worldmap** — implement six playable navigation structures (`5762ad8`)
+
+### 수정
+
+- **super-harness** — size all spaces from content and shared circulation (`223fac9`)
+- **super-harness** — recover orchestration faults without user intervention (`b1e305f`)
+- **worldmap** — allow dedicated tilesets for newly authored atlas maps (`9f9723d`)
+- 데스크톱 앱 상단바 전체화면 버튼이 창을 축소하지 못하던 문제 (`2c080c0`)
+- **worldmap** — wait for the native assistant composer when recording (`608ce6e`)
+- **worldmap** — retain browser startup diagnostics for live recording (`847079f`)
+- **super-harness** — recover malformed review responses without losing verdicts (`5f8c3ef`)
+- **assistant** — AI 조수가 깐 NPC 의 기본 이동을 정지에서 배회로 (`21509da`)
+- **ai** — allow collapsing the conversation dock (`11c7a95`)
+- **worldmap** — keep existing continent map as default (`48e0245`)
+- **worldmap** — replace placeholder maps with distinct shared cartography (`a21c6bc`)
+
+### 문서
+
+- **ai** — record conversation collapse UI evidence (`682d622`)
+- refresh wiki index after main integration (`7717497`)
+
+### 테스트
+
+- **qa** — NPC 이동 기본값 재현·충돌판정·런타임 배회 증거 스크립트 (`005ffb5`)
+
 ## 0.132.0 — 2026-10-05
 
 ### 기능
