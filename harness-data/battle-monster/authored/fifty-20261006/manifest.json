@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 42,
+  "archivedPassedSpecies": 43,
   "entireGoalComplete": false,
   "items": [
     {
@@ -464,6 +464,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "ac5efbdddbd519a7935cfa233fa87b5f693b937883c86a83170303e3ab360a20"
+    },
+    {
+      "key": "red-armor-gatekeeper/fifty-v1",
+      "binding": "dd8aef50eaa5b5bbc1b10f28b7c65c8b50f43816f2122599569fe45f0173eb90",
+      "nativeCell": 128,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "0f9b9f68c6e57d2670ef6acf1ee667ab305f1f3617bac86159728d2dc2a3ad56"
     }
   ]
 }

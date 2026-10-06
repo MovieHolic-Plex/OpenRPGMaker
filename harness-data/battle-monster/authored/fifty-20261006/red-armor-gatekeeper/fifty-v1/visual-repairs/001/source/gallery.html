@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>적갑문지기 · 8동작</title>
+<style>
+:root{--bg:#eee5d1;--size:256px}*{box-sizing:border-box}body{margin:0;padding:24px;background:#202731;color:#ece7db;font:15px system-ui,sans-serif}h1{font-size:24px;margin:0 0 12px}nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 24px}button,a{color:inherit}button{background:#35404e;border:1px solid #647181;border-radius:5px;padding:8px 12px;cursor:pointer}.motions{display:grid;grid-template-columns:repeat(auto-fit,minmax(276px,1fr));gap:18px}.card{background:#29333e;border:1px solid #52606f;border-radius:8px;padding:12px}.card h2{font-size:17px;margin:0 0 12px}.art{width:100%;display:flex;justify-content:center;align-items:end;background:var(--bg);border-radius:4px;overflow:auto}.art img{width:var(--size);height:var(--size);image-rendering:pixelated;object-fit:contain;flex:none}.checker .art{background:repeating-conic-gradient(#afb6bb 0 25%,#7f8992 0 50%) 0/16px 16px}p{color:#c3c9cf;line-height:1.5}.sheet{max-width:100%;width:768px;image-rendering:pixelated}details{margin-top:24px}summary{cursor:pointer;font-size:18px;padding:12px 0}</style>
+<h1>적갑문지기</h1><p>대기 · 창격 · 피격 · 쓰러짐 · 적문쇄 · 독 · 기절 · 수면</p>
+<nav><button onclick="background('light')">밝은 바탕</button><button onclick="background('dark')">어두운 바탕</button><button onclick="background('checker')">체커 바탕</button><button onclick="size(128)">원본 1배</button><button onclick="size(256)">2배</button><button onclick="size(384)">3배</button></nav>
+<section class="motions">
+<article class="card"><h2>대기</h2><div class="art"><img src="gif/idle.gif" alt="대기 3자세"></div></article>
+<article class="card"><h2>창격</h2><div class="art"><img src="gif/attack.gif" alt="준비 전진 찌르기 회수"></div></article>
+<article class="card"><h2>피격</h2><div class="art"><img src="gif/hit.gif" alt="찡그린 얼굴과 기울어진 어깨"></div></article>
+<article class="card"><h2>쓰러짐</h2><div class="art"><img src="gif/dead.gif" alt="바닥에 내려온 갑옷과 감긴 눈"></div></article>
+<article class="card"><h2>적문쇄</h2><div class="art"><img src="gif/skill.gif" alt="창끝 기와 두 주홍 칼날, 세 잔광"></div></article>
+<article class="card"><h2>독</h2><div class="art"><img src="gif/poison.gif" alt="가슴과 턱을 감싸는 병든 자세"></div></article>
+<article class="card"><h2>기절</h2><div class="art"><img src="gif/stun.gif" alt="처진 머리와 창, 금색 별"></div></article>
+<article class="card"><h2>수면</h2><div class="art"><img src="gif/sleep.gif" alt="감긴 눈과 앉은 자세의 숨 변화"></div></article>
+</section>
+<details><summary>18자세 전체</summary><img class="sheet" src="png/sheet-light-3x.png" alt="18자세 전체 확대 시트"></details>
+<details><summary>원본 1배 프레임 비교</summary><img class="sheet" src="png/gif-readback-all-1x.png" alt="8GIF를 다시 읽은 원본 크기 필름스트립"></details>
+<p><a href="AUTHORING.md">저작 기록</a> · <a href="TIMING.md">시간표</a> · <a href="png/poses-native-3x3.png">기본 원본 시트</a> · <a href="png/actions-native-3x3.png">추가 원본 시트</a></p>
+<script>function background(name){document.body.classList.toggle('checker',name==='checker');document.documentElement.style.setProperty('--bg',name==='dark'?'#17202b':'#eee5d1')}function size(px){document.documentElement.style.setProperty('--size',px+'px')}</script></html>

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "red-armor-gatekeeper",
+    "name": "적갑문지기",
+    "cell": 128,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "boss",
+    "idleFrameMs": 240,
+    "silhouette": "거대한 적갑 도깨비 무장, 둥근 청록 얼굴/작은 금 눈/두 짧은 뿔, 큰 주홍/청동 갑옷과 회은 관절, 오른손 큰 청동 창, 붉은 짧은 망토/큰 두 발. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "창을 양손으로 뒤로 당김 → 넓은 한 발 내딛음 → 연결된 양손/창자루의 찌르기 → 창/발 회수.",
+    "skill": "적문쇄: 창끝 금백 기 → 실제 창끝부터 두 큰 주홍 불빛 칼날 → 창 회수와 세 부서진 잔광.",
+    "resourceId": "jf-enemy-red-armor-gatekeeper",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 124,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

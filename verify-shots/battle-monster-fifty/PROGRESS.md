@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재42/50 통과
+# 신규50종 제작 · 현재43/50 통과
 
 ## 최초 두 종 확인
 
@@ -723,3 +723,11 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 적갑문지기 실제 GPT6.1sol/high `db41635d-871c-46b5-aa7a-4e6db1cf0399`는 **rework7건**: 대기 두 자세의 허리/양 허벅지 단절, move→attack 창끝 전진과 앞 장화 보폭, 쓰러진 다리 구분, 밝은 배경 준비 기 대비, 떠 있는 기절 픽셀. 처음 공개한 대기 초안의 갑옷 그림이 곧 합격을 뜻하지 않는다.
 - 천년송왕 실제 GPT6.1sol/high `636795dc-4de3-4d4a-932d-0e75bdc0a732`는 **rework5건**: 수면 두 자세 목/어깨 단절, 약한 전체 몸 피격 반동, 필요한3갈래 대신2갈래로 읽히는 발 뿌리 기술, 쓰러진 수관 부피 손실. 나무 수관/나무 몸의 명암과 가지팔 공격은 읽히지만 합격은 아니다.
 - 각각 실제 terminal exit0/model/effort/preparedOnlyFalse 검수와 원본18·검수4그림·writer 해시를 before-first-repair snapshot에서 다시 맞췄다. 감독 초안/실제 판정/작업/원본 그림은 별도 False 기록으로 보존하고 두 종의 첫 수정이 실행 중이다. 심연구목거미도 실제 최초 저작 중이다.
+
+## 43번째 신규 몬스터 · 적갑문지기 · 2026-10-06 14:03 UTC
+
+- 첫 직접 수정 뒤 실제 독립 GPT6.1sol/high `4b4441d9-5adf-4874-bde0-df38d0a44096`는 **keep / 정식 issues0건**이다. 현재 binding `dd8aef50eaa5b5bbc1b10f28b7c65c8b50f43816f2122599569fe45f0173eb90`, 기술 PASS와 실제 terminal 작업/네 검수 그림 해시가 일치한다. 최초 실제 rework7건과 처음 원본18자세/전체 메서드 검토는 보존한다.
+- 감독이 새 원본18자세를 원본1배와 nearest2배로 실제 열었다. 최초 전체 author 메서드/모듈과 현재 완전 diff, 새 repair.py 전체 apply/모듈을 읽어 현재 전체 저작 로직을 확인했다. main은 저장 후 명시적 좌표 행을 적용하며 프레임 전체 변환/몸 도형 생성/자동 트윈이 없다. 허리와 양 허벅지 연결, move의 손/창 회수와 attack의 더 넓은 앞발/찌르기, 쓰러진 무릎/장화 분리, 준비 기의 청동 경계, 기절의 떠 있는 픽셀 제거를 확인했다. 얼굴/흉갑의 정면 성향과 길고 가는 관절로 보스 무게감이 약하다는 실제 keeper 한계는 유지한다.
+- 선택된 ZIP/원본 PNG18/디코딩 GIF8/현재 source와 정본 source archive43종을 다시 읽었다. 실제 데스크톱 정지 화면과375/320px 화면도 감독이 열었다. 8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
+- 현재 합격 **43/50종 · 774자세 · 344GIF**. 동물10/요괴16/사람12(여성6)/보스5; 남은7종은128px 보스. 원래 결정52행/선택8건 보존, 새 위임129행/전체181행, 기존 정식 minor11건 유지. 대시보드 Allow51종은 기존8+신규43이다. 전체50 완료는 false다.
+- 천년송왕 첫 수정, 심연구목거미 독립 검수와 청동정마 최초 저작이 실제 고정 모델로 이어진다. 근거: `forty-three-passed-proof.json`, `root-review-red-armor-gatekeeper.json`, `browser-proof-red-armor-gatekeeper.json`, `source-archive-proof.json`.

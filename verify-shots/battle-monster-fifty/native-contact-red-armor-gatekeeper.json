@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-06T13:42:17.469005+00:00",
+  "at": "2026-10-06T13:58:32.729538+00:00",
   "key": "red-armor-gatekeeper/fifty-v1",
-  "binding": "050e6975ece331f0444bb2275807d1b063ee3897b04442c90e5d3f8b8a4da3cf",
+  "binding": "dd8aef50eaa5b5bbc1b10f28b7c65c8b50f43816f2122599569fe45f0173eb90",
   "nativeCell": 128,
   "nativePoses": 18,
   "displayScales": [
@@ -15,8 +15,8 @@
   "background": "#e5e2d7",
   "noSourceWrites": true,
   "approvalClaim": false,
-  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates",
-  "pngSha256": "a39c04b956ce24e0dcbe74598e37e7b0ce88539ea94ec12dd9d5b50f4b044534",
+  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster",
+  "pngSha256": "1ac4069744c0d4a781effd88c4622620b858e0249d47592f690269d1f555c9de",
   "frames": [
     {
       "pose": "idle_a",
@@ -26,14 +26,14 @@
     },
     {
       "pose": "idle_b",
-      "nativePngSha256": "1c8e889a7ed2b5a1126e7fd97c01004200ca89beff3c10b7b5e30c156e82c57c",
-      "sourceSha256": "cb60cdf94e051613d172d28ba9151e7cd460fe841500cb7df16837c6d1e694bb",
+      "nativePngSha256": "4039214ce6643eaa79897bb40e93b09b6893bce2fab069bff59f43b88aeeb7a5",
+      "sourceSha256": "bcd4e93ff5f33ca8955085d0c202c4b65e5e639f69dbf97780bde02f6e514f59",
       "rgbaMatchesNativeSource": true
     },
     {
       "pose": "idle_c",
-      "nativePngSha256": "49a3ab5dfe4ebc5ce06203a48828c7ae365a5b9542f49f480d9c351e2c5ef827",
-      "sourceSha256": "0764c7b3a1187d6ccfc3adc3e8ad62bcbed2d59df3059f668943d3badffb2847",
+      "nativePngSha256": "ed8d2632c9b6bbcb3414e514cf6201983a9637d527f2dc91f77588f93b6f0eab",
+      "sourceSha256": "92c633e530bb8b6e69dee75211f96e11509aa61310610456ca715f062e3bc305",
       "rgbaMatchesNativeSource": true
     },
     {
@@ -44,14 +44,14 @@
     },
     {
       "pose": "move",
-      "nativePngSha256": "b7277e8f9e136e9d56329a94e4f292a2ef5bb914e965cff9ffb23274bc264426",
-      "sourceSha256": "d5f0ad33841bec86d6456222d214a1a05a6bf8dce027d0ea28a30ede3e28ce48",
+      "nativePngSha256": "841ed41456f9e83158f6998c409863eb3279f8afc5d704c1da36dea0df38fef2",
+      "sourceSha256": "92e07138dc5de5c70c3168026b6253e784a60ee2357be6c287be8612afd972c4",
       "rgbaMatchesNativeSource": true
     },
     {
       "pose": "attack",
-      "nativePngSha256": "ed144acc57ed53ebf3a34e02c66f322414d1ade986b009395aec2b2ac28d42d4",
-      "sourceSha256": "23b410a175aafe1b4003ee6242a66be68d9c930f475238927d75c5b830799e78",
+      "nativePngSha256": "631403d0294e7cffc6290089af12e86d18f3f81b99c34ed7f79f6ba06d0b8f6a",
+      "sourceSha256": "497b48668b07d8b15579c62c1ae453dd851d2f8e83dcbf8ce44b7cb0fce47515",
       "rgbaMatchesNativeSource": true
     },
     {
@@ -68,14 +68,14 @@
     },
     {
       "pose": "dead",
-      "nativePngSha256": "33cf6be1650385fd92db083abe39105f11789a850a39e93309d9516d5ca4ad9b",
-      "sourceSha256": "7c4de844b6b2c5ab50cb4cabdd78c94863eac884b097d62bff2e8c81cb7f892e",
+      "nativePngSha256": "f27cd431af933d8f27147df80f62b0d99d5e7b2fc92c50008b0e8b30f04c964e",
+      "sourceSha256": "d9a30bcea29e2d0a9fd6f72ecdab129d3c8aae7701dbe990fa2823ad43b73f9e",
       "rgbaMatchesNativeSource": true
     },
     {
       "pose": "skill_a",
-      "nativePngSha256": "c79b26f698c914f17cff8552c2ece20e127ca06bc07bbe7c1ca3ded6a52834f2",
-      "sourceSha256": "2f079abd0a0092a18ed618eb813f9c58626cf4f054846147dd347417116f6052",
+      "nativePngSha256": "0a1579384efa08008ff2ca8cd9ece1070083c637d831512e02c464e1da15dd23",
+      "sourceSha256": "65d97a786a59159df1ecf7730c4fd5a21e84820a85e022b31297532e180b6b17",
       "rgbaMatchesNativeSource": true
     },
     {
@@ -110,8 +110,8 @@
     },
     {
       "pose": "stun_b",
-      "nativePngSha256": "fa7303504516de1442e9e035b1db911738579845331b10c73bd64948a4641404",
-      "sourceSha256": "c479ede0b2f4bd33f62560771bde3d591ca8bed7ed5efc3fe2b97d9bb67d9ff5",
+      "nativePngSha256": "da798130b8a946a884e9c46ec09694ddf3b1ccfb9f3b027043e089e61743b972",
+      "sourceSha256": "117c59042b5c8873a0bd23816d70838eae8bee53ab924f5aec0ace5326be6174",
       "rgbaMatchesNativeSource": true
     },
     {
