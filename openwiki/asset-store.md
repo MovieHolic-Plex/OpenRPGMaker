@@ -133,6 +133,14 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 
 화면 증거는 `verify-shots/asset-store/` 에 있다.
 
+## 화면 디자인
+
+- 기준 문서는 `store-server/DESIGN.md` 다(2026-10-06 「밤의 상점 진열대」 개편). 웹(`store-server/public/app.css`)과 편집기 창(`src/styles/database/assetStore/assetStore.css`)이 같은 토큰을 쓴다.
+- 어두운 바탕에 도트 그림을 `pixelated` 로 띄우고, 제목·라벨·단추만 도트 글꼴 Galmuri11 Bold(OFL, `store-server/public/galmuri11-bold.woff2`)로 쓴다. 문단은 고딕이다.
+- 웹 첫 화면은 맨 앞 상품 그림을 크게 거는 진열창이다. 그래서 대표 그림(미리보기 첫 장)에 작업용 설명 글자가 박혀 있으면 바로 눈에 띈다.
+  - 「일본 도시」는 그래서 판본 2에서 대표 그림을 `public/assets/store-covers/jp-city-street.png`(상가 거리 장면)로 바꿨다. 시드(`seedBundles.ts`)도 같은 그림을 먼저 쓴다.
+- 카드에는 표시를 「조수 사용 가능」 하나만 그림 위에 둔다. 받기 수가 0이면 「새로 올라옴」으로 쓴다.
+
 ## 함정
 
 - `pkill -f oprn-store` 처럼 셸 명령줄에도 들어가는 패턴으로 죽이면 자기 셸이 죽는다. `dev-unit.sh stop` 을 쓴다.
