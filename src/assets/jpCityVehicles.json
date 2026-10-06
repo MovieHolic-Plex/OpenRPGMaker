@@ -1,0 +1,760 @@
+{
+ "version": 1,
+ "tileSize": 16,
+ "vehicles": [
+  {
+   "id": "jp-car-white",
+   "name": "흰 승용차",
+   "kind": "car",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-white.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-silver",
+   "name": "은색 승용차",
+   "kind": "car",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-silver.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-black",
+   "name": "검은 승용차",
+   "kind": "car",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-black.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-red",
+   "name": "빨간 승용차",
+   "kind": "car",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-red.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-blue",
+   "name": "파란 승용차",
+   "kind": "car",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-blue.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-kei-yellow",
+   "name": "노란 경차",
+   "kind": "kei",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-kei-yellow.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-kei-mint",
+   "name": "민트 경차",
+   "kind": "kei",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-kei-mint.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-car-taxi",
+   "name": "택시",
+   "kind": "taxi",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-car-taxi.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-truck-kei",
+   "name": "경트럭",
+   "kind": "truck",
+   "length": 5,
+   "image": "/assets/jp-city/vehicles/jp-truck-kei.png",
+   "width": 230,
+   "height": 96,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 82,
+     "y": 48,
+     "w": 80,
+     "h": 48,
+     "foot": {
+      "w": 5,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 164,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    },
+    "down": {
+     "x": 198,
+     "y": 0,
+     "w": 32,
+     "h": 96,
+     "foot": {
+      "w": 2,
+      "h": 5
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-truck-box",
+   "name": "상자형 트럭",
+   "kind": "truck",
+   "length": 6,
+   "image": "/assets/jp-city/vehicles/jp-truck-box.png",
+   "width": 262,
+   "height": 112,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 56,
+     "w": 96,
+     "h": 56,
+     "foot": {
+      "w": 6,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 98,
+     "y": 56,
+     "w": 96,
+     "h": 56,
+     "foot": {
+      "w": 6,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 196,
+     "y": 0,
+     "w": 32,
+     "h": 112,
+     "foot": {
+      "w": 2,
+      "h": 6
+     }
+    },
+    "down": {
+     "x": 230,
+     "y": 0,
+     "w": 32,
+     "h": 112,
+     "foot": {
+      "w": 2,
+      "h": 6
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-bus-city",
+   "name": "노선버스(흰·초록 띠)",
+   "kind": "bus",
+   "length": 9,
+   "image": "/assets/jp-city/vehicles/jp-bus-city.png",
+   "width": 650,
+   "height": 176,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 112,
+     "w": 144,
+     "h": 64,
+     "foot": {
+      "w": 9,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 146,
+     "y": 112,
+     "w": 144,
+     "h": 64,
+     "foot": {
+      "w": 9,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 292,
+     "y": 0,
+     "w": 32,
+     "h": 176,
+     "foot": {
+      "w": 2,
+      "h": 9
+     }
+    },
+    "down": {
+     "x": 326,
+     "y": 0,
+     "w": 32,
+     "h": 176,
+     "foot": {
+      "w": 2,
+      "h": 9
+     }
+    },
+    "right_open": {
+     "x": 360,
+     "y": 112,
+     "w": 144,
+     "h": 64,
+     "foot": {
+      "w": 9,
+      "h": 2
+     }
+    },
+    "left_open": {
+     "x": 506,
+     "y": 112,
+     "w": 144,
+     "h": 64,
+     "foot": {
+      "w": 9,
+      "h": 2
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-tram",
+   "name": "노면전차(크림·초록)",
+   "kind": "tram",
+   "length": 12,
+   "image": "/assets/jp-city/vehicles/jp-tram.png",
+   "width": 842,
+   "height": 208,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 144,
+     "w": 192,
+     "h": 64,
+     "foot": {
+      "w": 12,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 194,
+     "y": 144,
+     "w": 192,
+     "h": 64,
+     "foot": {
+      "w": 12,
+      "h": 2
+     }
+    },
+    "up": {
+     "x": 388,
+     "y": 0,
+     "w": 32,
+     "h": 208,
+     "foot": {
+      "w": 2,
+      "h": 12
+     }
+    },
+    "down": {
+     "x": 422,
+     "y": 0,
+     "w": 32,
+     "h": 208,
+     "foot": {
+      "w": 2,
+      "h": 12
+     }
+    },
+    "right_open": {
+     "x": 456,
+     "y": 144,
+     "w": 192,
+     "h": 64,
+     "foot": {
+      "w": 12,
+      "h": 2
+     }
+    },
+    "left_open": {
+     "x": 650,
+     "y": 144,
+     "w": 192,
+     "h": 64,
+     "foot": {
+      "w": 12,
+      "h": 2
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-train-commuter",
+   "name": "통근 전철(은·주황 띠, 3량)",
+   "kind": "train",
+   "length": 30,
+   "image": "/assets/jp-city/vehicles/jp-train-commuter.png",
+   "width": 1926,
+   "height": 64,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 482,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "right_open": {
+     "x": 964,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "left_open": {
+     "x": 1446,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    }
+   }
+  },
+  {
+   "id": "jp-subway",
+   "name": "지하철(은·보라 띠, 3량)",
+   "kind": "subway",
+   "length": 30,
+   "image": "/assets/jp-city/vehicles/jp-subway.png",
+   "width": 1926,
+   "height": 64,
+   "frames": {
+    "right": {
+     "x": 0,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "left": {
+     "x": 482,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "right_open": {
+     "x": 964,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    },
+    "left_open": {
+     "x": 1446,
+     "y": 0,
+     "w": 480,
+     "h": 64,
+     "foot": {
+      "w": 30,
+      "h": 2
+     }
+    }
+   }
+  }
+ ]
+}
