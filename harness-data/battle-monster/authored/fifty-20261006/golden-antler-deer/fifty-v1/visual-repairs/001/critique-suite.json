@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed all four supplied actual PNGs at native 1x and the supplied nearest-neighbor 3x. The deer is immediately recognizable: branching gold antlers, warm brown coat, cream throat/belly and four dark hooves. Broad upper-left highlights and darker underside/far legs give useful volume; antlers have brighter narrow highlights than the fur. The figure uses the cell well. No obvious accidental transparent holes or detached anatomical parts are visible across the light, dark and checker previews; standing support hooves stay near the stated baseline. The main weaknesses are the predominantly full-profile head/body rather than the requested front-and-side three-quarter view, and an attack that lowers but retracts the head while keeping the antler tips directed steeply upward. Windup, extended movement, recoil, recovery and low collapsed death are distinguishable. The last nine frames are coherent authored states: skill preparation has a tip spark, contact has two pale-cored branching rays connected to the antlers, and recovery has loose gold particles; poison combines lowered posture with green bubbles, stun combines a tilted head and bent legs with stars, and sleep folds the legs and closes the eye with a small torso change between frames. These are not merely palette tints. This is a static pose review, not battle footage: playback timing, sliding, contact with a target and runtime continuity cannot be approved here. PNGs also cannot establish the claimed pxgrid authorship or absence of synthesized source poses. This recommendation is advisory; the user retains the selection decision.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 53,
+      "y": 26,
+      "message": "The eye, cheek and muzzle form a single lateral profile, reinforced by the almost straight side-on torso. Redraw the near cheek/muzzle and chest around this head landmark and (41,39) with an offset front-facing plane; adjust the near/far shoulder and leg roots to support the same three-quarter angle. Carry that anatomy through the other poses while retaining the readable cream throat and four hoof silhouettes."
+    },
+    {
+      "pose": "attack",
+      "x": 55,
+      "y": 20,
+      "message": "The leading tine rises toward this point, while the face near (46,37) has pulled back from the movement frame. At 1x this reads more as a crouched running deer than a committed antler ram. Redraw the head/neck connection with a forward extension and sweep the leading antler branches farther toward the right at strike height, preserving connected roots and the one-pixel cell margin. Keep the lowered torso and braced legs, and make the resulting contact silhouette follow visibly from move and return coherently into recover."
+    }
+  ],
+  "binding": "a3fa8de0d565d8fb737a5339a178723c23e900e1399cbef778831eef898c9266",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "0c41c15c27528b91cc1b968d2bbec4f4076f562df8d84cb19fe213eefbafb08b",
+    "preview/suite/light.png": "62f81640e330fc89b74f064aef098ae4c3d3621522fb7efa3b98118ac57af2f9",
+    "preview/suite/dark.png": "6d4ecaa09c66d694873122282cbb9445748c348f3d37af269854f173a0dd7a81",
+    "preview/suite/checker.png": "7fd23c54736aa9f48693fc7166b51d66d8873417fc0a6f523bac8bd05efbb5af"
+  },
+  "jobId": "37dbd378-45f3-42c8-bf29-671d3f79e8b1",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T03:53:18.647357+00:00",
+  "userApproved": false
+}

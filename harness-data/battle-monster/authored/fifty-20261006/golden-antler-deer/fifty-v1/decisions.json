@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "golden-antler-deer/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:11:40.941685+00:00",
+    "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "golden-antler-deer/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "afc596b82fca8e198a8ae14de2f0fcb1950493e242efc6126e10111d5911b14c",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:11:40.941685+00:00",
+    "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "golden-antler-deer/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "b1d2fa0dedef64e58e851b07780193043203b7d7a41953f161ded6e34d3aeba1",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:11:40.941685+00:00",
+    "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

@@ -1,0 +1,336 @@
+{
+  "idle_a": {
+    "bbox": [
+      6,
+      4,
+      60,
+      61
+    ],
+    "sha256_grid": "58f13aa18697808363299f79e31c8b62023f29916d4b9b66cafa8839e2d1dbd7"
+  },
+  "idle_b": {
+    "bbox": [
+      6,
+      4,
+      60,
+      61
+    ],
+    "sha256_grid": "f2f158a7dbffde2a077ef92f9c61fefc3fa0efe371568fba9ad6ea6bb9b14911"
+  },
+  "idle_c": {
+    "bbox": [
+      6,
+      4,
+      61,
+      61
+    ],
+    "sha256_grid": "58375b0c9f7e9a9af6088463a808904fd5721b9450016a265853c8b7103a90af"
+  },
+  "windup": {
+    "bbox": [
+      5,
+      10,
+      61,
+      61
+    ],
+    "sha256_grid": "2062f08504275095834ac135058e91fcdefa72b657a46e4e634ee01c8b34d5c5"
+  },
+  "move": {
+    "bbox": [
+      2,
+      9,
+      62,
+      60
+    ],
+    "sha256_grid": "b4f910ab0d221605069578b467ed7d283929bdb2820926d00aa850720413c59e"
+  },
+  "attack": {
+    "bbox": [
+      2,
+      24,
+      63,
+      61
+    ],
+    "sha256_grid": "03f6635ae59d00b83997c22372742245315bb19d245186e23690e52ac9c74c05"
+  },
+  "recover": {
+    "bbox": [
+      6,
+      7,
+      59,
+      61
+    ],
+    "sha256_grid": "b6a9d813cb8ce174dc7953494ea96ad6133d73e4728c3bcb8d270490d1ca31b7"
+  },
+  "hit": {
+    "bbox": [
+      7,
+      5,
+      51,
+      61
+    ],
+    "sha256_grid": "fa1e8e0a40bfdd90dfd55375238277bfaa7eaf1968f2a9670b738257dd534d3f"
+  },
+  "dead": {
+    "bbox": [
+      9,
+      38,
+      56,
+      61
+    ],
+    "sha256_grid": "f786d5ab713325002e02228ae13cb148528e974f6b8f29e6f902646bf2dd7d06"
+  },
+  "skill_a": {
+    "bbox": [
+      6,
+      2,
+      61,
+      61
+    ],
+    "sha256_grid": "e26c33673a332c844825b2865774241a4efa1b43a962a3349645ad445b1046be"
+  },
+  "skill_b": {
+    "bbox": [
+      5,
+      8,
+      63,
+      61
+    ],
+    "sha256_grid": "d1ef13c96df6860786a1339a7796038122e2d4d31e3559a8a4fc454952f8b7d6"
+  },
+  "skill_c": {
+    "bbox": [
+      7,
+      4,
+      61,
+      61
+    ],
+    "sha256_grid": "028bbe2f7f05c45b17326a02eb785fb392a646573f294370be2d5f86e9511e58"
+  },
+  "poison_a": {
+    "bbox": [
+      7,
+      10,
+      57,
+      61
+    ],
+    "sha256_grid": "0c3b12a08a637d0ed75ac39abcf15ddd8cecd5b3132f9ffe68edab8b8548e8fd"
+  },
+  "poison_b": {
+    "bbox": [
+      6,
+      10,
+      62,
+      61
+    ],
+    "sha256_grid": "e1cc58b7b783f0ba71a6d5faaab1f97702a6471b17f1907037075458cfa36535"
+  },
+  "stun_a": {
+    "bbox": [
+      6,
+      13,
+      59,
+      61
+    ],
+    "sha256_grid": "1501060d7e89746d3ff302d08898f49bd923bc0161091c4295d36e3f270d7e6b"
+  },
+  "stun_b": {
+    "bbox": [
+      6,
+      13,
+      60,
+      61
+    ],
+    "sha256_grid": "8ae08094f2cb449e388476d3f6bad3c62beffaae6d88ec983e87b802598dad85"
+  },
+  "sleep_a": {
+    "bbox": [
+      7,
+      16,
+      57,
+      61
+    ],
+    "sha256_grid": "9188739b8dad07e77a8f0388ae66233e38fcf77e1080c8f3295269bbc284aee9"
+  },
+  "sleep_b": {
+    "bbox": [
+      7,
+      16,
+      57,
+      61
+    ],
+    "sha256_grid": "7de93d0ee36c94ae6894e880b5e7a2264a31557a8c61e97cd28bf280b4cbb2f1"
+  },
+  "idle_gif": {
+    "frames": [
+      {
+        "pose": "idle_a",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_b",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_c",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_b",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "attack_gif": {
+    "frames": [
+      {
+        "pose": "idle_a",
+        "duration_ms": 260,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "windup",
+        "duration_ms": 180,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "move",
+        "duration_ms": 110,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "attack",
+        "duration_ms": 150,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "recover",
+        "duration_ms": 180,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_a",
+        "duration_ms": 320,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "hit_gif": {
+    "frames": [
+      {
+        "pose": "idle_a",
+        "duration_ms": 260,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "hit",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "recover",
+        "duration_ms": 160,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_a",
+        "duration_ms": 380,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "dead_gif": {
+    "frames": [
+      {
+        "pose": "idle_a",
+        "duration_ms": 260,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "hit",
+        "duration_ms": 180,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "dead",
+        "duration_ms": 1000,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "skill_gif": {
+    "frames": [
+      {
+        "pose": "idle_a",
+        "duration_ms": 240,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "skill_a",
+        "duration_ms": 320,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "skill_b",
+        "duration_ms": 180,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "skill_c",
+        "duration_ms": 280,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "idle_a",
+        "duration_ms": 320,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "poison_gif": {
+    "frames": [
+      {
+        "pose": "poison_a",
+        "duration_ms": 440,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "poison_b",
+        "duration_ms": 440,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "stun_gif": {
+    "frames": [
+      {
+        "pose": "stun_a",
+        "duration_ms": 480,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "stun_b",
+        "duration_ms": 480,
+        "visible_rgba_matches": true
+      }
+    ]
+  },
+  "sleep_gif": {
+    "frames": [
+      {
+        "pose": "sleep_a",
+        "duration_ms": 620,
+        "visible_rgba_matches": true
+      },
+      {
+        "pose": "sleep_b",
+        "duration_ms": 620,
+        "visible_rgba_matches": true
+      }
+    ]
+  }
+}

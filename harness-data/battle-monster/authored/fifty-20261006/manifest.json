@@ -1,0 +1,29 @@
+{
+  "expectedSpecies": 50,
+  "archivedPassedSpecies": 2,
+  "entireGoalComplete": false,
+  "items": [
+    {
+      "key": "golden-antler-deer/fifty-v1",
+      "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "295398f19dfcbb27e695263a692d8acf5b057a9b5dae980896a5341274d97aef"
+    },
+    {
+      "key": "bronze-bell-wraith/fifty-v1",
+      "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "5bf5c538b858e79ba4e44d764b664858cf5d13f9eac7ab4bd5e89bb8f87730ae"
+    }
+  ]
+}

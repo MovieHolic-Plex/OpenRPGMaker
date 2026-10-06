@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "bronze-bell-wraith/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:02:40.862744+00:00",
+    "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "bronze-bell-wraith/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "a6cea36b1a0b102d2b168fd197f41c53070c3d415629f0dafebf252cd1c4ac8f",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:02:40.862744+00:00",
+    "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "bronze-bell-wraith/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "83a230bd63513aebbe6adf0bff2531c8658cd8f3faacc7d8c482daf5b79dc9b8",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:02:40.862744+00:00",
+    "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

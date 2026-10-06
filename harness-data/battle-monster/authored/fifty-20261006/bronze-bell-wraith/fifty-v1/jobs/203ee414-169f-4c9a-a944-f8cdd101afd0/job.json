@@ -1,0 +1,43 @@
+{
+  "id": "203ee414-169f-4c9a-a944-f8cdd101afd0",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T03:57:36.254702+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/jobs/203ee414-169f-4c9a-a944-f8cdd101afd0",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "a74b26b657fb1d2af08c7a197c3b43e97a0b4395cc324aae1291cc4a3ff740a1",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "1b85107d58f3f3a64a0a2cb1c9f5730b8b455911766bceb18a2b113f68de99e9",
+    "preview/suite/light.png": "c21a359c17377be92796c6f480a298a3588b94d9d1f64896b1a2dcb7228e50a8",
+    "preview/suite/dark.png": "bba944b2f20f2af887f016eb9b4e65298d4bcab6a58bcaf5b4e33dc0830d5a3e",
+    "preview/suite/checker.png": "c731ca9199d0eb93905a01ed08c8034f2f444affc79945a2b785c966d348fd6e"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T03:59:57.985895+00:00"
+}

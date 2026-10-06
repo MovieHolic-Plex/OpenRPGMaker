@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "a3fa8de0d565d8fb737a5339a178723c23e900e1399cbef778831eef898c9266",
+  "priorReviewJob": "37dbd378-45f3-42c8-bf29-671d3f79e8b1",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 53,
+      "y": 26,
+      "message": "The eye, cheek and muzzle form a single lateral profile, reinforced by the almost straight side-on torso. Redraw the near cheek/muzzle and chest around this head landmark and (41,39) with an offset front-facing plane; adjust the near/far shoulder and leg roots to support the same three-quarter angle. Carry that anatomy through the other poses while retaining the readable cream throat and four hoof silhouettes."
+    },
+    {
+      "pose": "attack",
+      "x": 55,
+      "y": 20,
+      "message": "The leading tine rises toward this point, while the face near (46,37) has pulled back from the movement frame. At 1x this reads more as a crouched running deer than a committed antler ram. Redraw the head/neck connection with a forward extension and sweep the leading antler branches farther toward the right at strike height, preserving connected roots and the one-pixel cell margin. Keep the lowered torso and braced legs, and make the resulting contact silhouette follow visibly from move and return coherently into recover."
+    }
+  ],
+  "startedAt": "2026-10-06T03:53:18.946505+00:00"
+}

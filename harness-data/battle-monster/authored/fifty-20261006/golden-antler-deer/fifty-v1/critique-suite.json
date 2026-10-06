@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Inspected all four supplied actual PNGs, including the native 64px portrait and the native 1x / nearest 3x pose previews on light, dark and checker backgrounds. The small brown deer silhouette is immediately readable: branched gold antlers, tapered muzzle, connected white throat/belly, four separated dark hooves and a consistent tail. Broad warm upper-left highlights and lower-body shadows distinguish soft fur from the brighter gold antlers; the view is close to profile, with limited three-quarter depth chiefly supplied by offset near/far legs. No obvious unintended transparent body holes, broken neck/limb connections or detached antler bases are visible. Idle changes are restrained and retain planted feet; windup bends the forelegs, move opens the stride, attack lowers and projects the head/antlers, recover gathers the feet, hit compresses the body, and dead rests horizontally on the ground. Skill preparation adds a small antler-tip glow, release uses a distinct crouch with two branching gold discharges visibly connected to the antlers, and recovery raises the antlers with scattered gold motes. The upper discharge travels diagonally upward-right. Poison uses bent, unsteady legs and green bubbles; stun uses a drooping head and gold stars; sleep folds the legs beneath the body, closes the eye and changes the back contour between the pair. These are readable posture changes rather than whole-body tints or unrelated attacks. Ground contact is plausible in these stills, and the darkest hoof edges lose some contrast on the dark background without losing the overall leg silhouette. No specific pixel repair is required for this regular-tier candidate. Limits: these are pose previews, not actual battle footage; animation timing, foot sliding during playback, combat contact, and runtime presentation cannot be established here. Literal pxgrid authorship, model provenance, palette/alpha compliance and geometry gates are not certified by this visual review. This recommendation does not record or replace the user selection.",
+  "issues": [],
+  "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "72d18b3f923c6f6d35509e0281b58198be73ff77d487b4eac51b9970f22c7789",
+    "preview/suite/light.png": "c7df39d52aa4168f92c640175bd1ca12febbee11e9a738e1640bfa224f988b9d",
+    "preview/suite/dark.png": "d2a4e6f6939841b54ebb6d49450c835c2ce79c18e91ec5f2acd1ec1ba0429313",
+    "preview/suite/checker.png": "fb6642b7aeeb5bb318984918a3a672e834d89fdac500afc333bce4f2e1d0056c"
+  },
+  "jobId": "29701e7e-bebe-49b4-99d1-a2f0891ac247",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T04:07:18.440259+00:00",
+  "userApproved": false
+}

@@ -105,7 +105,7 @@ async function render(){
   document.querySelector('.motion-tools p').textContent=item.phase==='idle'?'기본 그림을 먼저 골라주세요':'모든 동작을 함께 보기';
   renderMotions(item);$('skill').textContent=item.skill?'스킬 · '+item.skill:'';
   renderSizeComparison(item).catch(()=>{if(selected===item.key)$('size-comparison').hidden=true;});
-  $('note').hidden=!item.note||['allow','deny'].includes(item.note);$('note').textContent=item.note?'수정 요청 · '+item.note:'';
+  $('note').hidden=!item.note||['allow','deny'].includes(item.choice)||['allow','deny'].includes(item.note);$('note').textContent=item.note?'수정 요청 · '+item.note:'';
   $('progress').hidden=!item.working&&!item.failed;
   $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':item.phase==='idle'?'Allow 선택은 반영됐습니다. 이 그림으로 동작을 만들고 있습니다. 완성된 후보는 검토 대기에 표시됩니다.':'Allow 선택은 반영됐습니다. 받을 파일을 준비 중이며, Modify·Deny로 선택을 바꿀 수 있습니다.';
   for(const id of ['allow','modify','deny'])$(id).disabled=busy||(id==='allow'&&(!item.ready||(item.choice==='allow'&&item.active!==false&&!item.failed)))||(id==='deny'&&item.choice==='deny');

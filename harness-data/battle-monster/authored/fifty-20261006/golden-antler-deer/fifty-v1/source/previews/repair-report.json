@@ -1,0 +1,275 @@
+{
+  "palette_bytes_preserved": true,
+  "frames": {
+    "idle_a": {
+      "changed_native_pixels": 268,
+      "changed_bbox_inclusive": [
+        31,
+        24,
+        58,
+        60
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "idle_b": {
+      "changed_native_pixels": 256,
+      "changed_bbox_inclusive": [
+        31,
+        25,
+        58,
+        60
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "idle_c": {
+      "changed_native_pixels": 277,
+      "changed_bbox_inclusive": [
+        31,
+        24,
+        59,
+        60
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "windup": {
+      "changed_native_pixels": 275,
+      "changed_bbox_inclusive": [
+        31,
+        30,
+        60,
+        54
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "move": {
+      "changed_native_pixels": 222,
+      "changed_bbox_inclusive": [
+        31,
+        27,
+        61,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 59,
+      "border_ink": []
+    },
+    "attack": {
+      "changed_native_pixels": 294,
+      "changed_bbox_inclusive": [
+        32,
+        20,
+        62,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "recover": {
+      "changed_native_pixels": 248,
+      "changed_bbox_inclusive": [
+        31,
+        26,
+        58,
+        49
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "hit": {
+      "changed_native_pixels": 293,
+      "changed_bbox_inclusive": [
+        27,
+        26,
+        50,
+        51
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "dead": {
+      "changed_native_pixels": 96,
+      "changed_bbox_inclusive": [
+        34,
+        47,
+        55,
+        55
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "skill_a": {
+      "changed_native_pixels": 273,
+      "changed_bbox_inclusive": [
+        31,
+        24,
+        59,
+        60
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "skill_b": {
+      "changed_native_pixels": 217,
+      "changed_bbox_inclusive": [
+        32,
+        35,
+        54,
+        51
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "skill_c": {
+      "changed_native_pixels": 271,
+      "changed_bbox_inclusive": [
+        31,
+        24,
+        58,
+        60
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "poison_a": {
+      "changed_native_pixels": 196,
+      "changed_bbox_inclusive": [
+        30,
+        31,
+        53,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "poison_b": {
+      "changed_native_pixels": 210,
+      "changed_bbox_inclusive": [
+        30,
+        31,
+        56,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "stun_a": {
+      "changed_native_pixels": 183,
+      "changed_bbox_inclusive": [
+        30,
+        33,
+        50,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "stun_b": {
+      "changed_native_pixels": 167,
+      "changed_bbox_inclusive": [
+        30,
+        34,
+        50,
+        48
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "sleep_a": {
+      "changed_native_pixels": 180,
+      "changed_bbox_inclusive": [
+        30,
+        37,
+        56,
+        52
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    },
+    "sleep_b": {
+      "changed_native_pixels": 177,
+      "changed_bbox_inclusive": [
+        30,
+        37,
+        56,
+        52
+      ],
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "lowest_ink_y": 60,
+      "border_ink": []
+    }
+  }
+}
