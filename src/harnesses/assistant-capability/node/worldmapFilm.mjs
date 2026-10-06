@@ -2,7 +2,7 @@
 // canonical host; retain unsuccessful attempts, raw video and public tool events.
 import { firefox } from 'playwright';
 import { resolve } from 'node:path';
-import { mkdirSync,writeFileSync,openSync,closeSync,unlinkSync } from 'node:fs';
+import { mkdirSync,writeFileSync,openSync,closeSync,unlinkSync,readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { gunzipSync } from 'node:zlib';
 import { isDeepStrictEqual } from 'node:util';
@@ -16,6 +16,14 @@ const cases=[
   // 빈 프로젝트 → 조수 혼자 전체 몬스터 게임. 고유명은 기획서처럼 문장으로만 준다(조수가 build_monster_game names 로 넘겨야 한다).
   {id:'monster',label:'포켓몬풍 전체 게임',deadlineMs:1800000,names:{startTown:'솔바람 마을',professor:'바람박사',firstGym:'바위 체육관',firstLeader:'단단'},
     prompt:'포켓몬스터 같은 몬스터 수집 게임을 처음부터 끝까지 만들어줘. 제목은 「바람개비 섬의 수호수」야. 지방은 바람개비 섬, 시작 마을은 솔바람 마을, 첫 동료를 주는 박사는 바람박사, 첫 도로는 1번 도로, 첫 체육관은 바위 체육관, 관장은 단단, 배지는 바위 배지로 해줘. 실제 프로젝트에 저장해줘.'},
+  // 기획서 그대로(「이 기획으로 시작」처럼 요약문만) — 고유명·체육관 타입을 조수가 스스로 읽어 넘겨야 한다.
+  ...['monster-desert','monster-harbor'].map(id=>{
+    const brief=JSON.parse(readFileSync(resolve('scripts/qa-game/briefs',`${id}.json`),'utf8'));
+    const pick=(re)=>re.exec(brief.brief.summary)?.[1];
+    return {id,label:`포켓몬풍 전체 게임 · ${brief.title}`,deadlineMs:1800000,
+      names:Object.fromEntries(Object.entries({startTown:pick(/마을 「([^」]+)」/)??pick(/「([^」]+(?:마을|항구))」/),firstGym:pick(/체육관[은 ]*「([^」]+)」/)??pick(/「([^」]+체육관)」/),firstLeader:pick(/관장[은 ]*「([^」]+)」/)}).filter(([,v])=>v)),
+      prompt:`포켓몬스터 같은 몬스터 수집 게임을 아래 기획서대로 처음부터 끝까지 만들어줘. 제목은 「${brief.title}」. 실제 프로젝트에 저장해줘.\n\n${brief.brief.summary}`};
+  }),
   {id:'pokemon',label:'포켓몬풍 마을과 도로',prompt:'포켓몬스터처럼 마을과 도로를 따라 여행하는 지역 월드맵을 만들어줘. 이름은 「솔바람 지방」으로 해줘. 마을·도로·능력 관문을 실제 맵과 이동 이벤트로 만들어줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 실제 프로젝트에 저장해줘.'},
 ].filter(entry=>selected.includes(entry.id));
 const save=(file,value)=>writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -91,7 +99,7 @@ for(const entry of cases){
     proof.newMaps=Object.keys(applied.project.maps).filter(id=>!before.project.maps[id]);
     proof.atlases=applied.project.worldAtlases??[];
     proof.tools=proof.events.filter(e=>e.type==='tool_end').map(e=>({name:e.name,ok:e.ok,summary:e.summary,args:proof.events.find(s=>s.type==='tool_start'&&s.id===e.id)?.args}));
-    const monster=entry.id==='monster';
+    const monster=entry.id.startsWith('monster');
     // 빈 프로젝트 교체 생성은 시작 맵을 바꾸는 것이 정상이다 — 보존 검사는 기존 게임이 있는 녹화에만.
     proof.existingMapsPreserved=monster||Object.entries(before.project.maps).every(([id,map])=>isDeepStrictEqual(map,applied.project.maps[id]));
     proof.startPreserved=monster||before.project.startMapId===applied.project.startMapId&&isDeepStrictEqual(before.project.startPos,applied.project.startPos);
@@ -99,14 +107,18 @@ for(const entry of cases){
       const text=JSON.stringify(applied.project);
       proof.monster={campaign:applied.project.system.monsterCampaign?.id,maps:Object.keys(applied.project.maps).length,
         startMap:applied.project.maps[applied.project.startMapId]?.name,title:applied.project.meta?.title,
-        namesFound:Object.fromEntries(Object.entries(entry.names).map(([k,v])=>[k,text.includes(v)]))};
+        namesFound:Object.fromEntries(Object.entries(entry.names).map(([k,v])=>[k,text.includes(v)])),
+        // 첫 관장 동료 — 「바위 체육관」이면 바위 몬스터인지 사람이 바로 읽게 남긴다.
+        gym1Team:(()=>{const db=applied.project.database,ev=applied.project.maps.mx_map_grove_gym?.events.find(e=>e.id.endsWith('_leader'));const tid=/"troopId":"([^"]+)"/.exec(JSON.stringify(ev??{}))?.[1];
+          return db.troops.find(t=>t.id===tid)?.members.map(m=>{const e=db.enemies.find(x=>x.id===m.enemyId);const sp=(db.monsterSpecies??[]).find(x=>x.id===e?.monster?.speciesId||x.id===e?.speciesId);return `${e?.name}${sp?.types?`(${sp.types.join('/')})`:''}`;});})(),
+        buildArgs:proof.events.filter(e=>e.type==='tool_start'&&e.name==='build_monster_game').map(e=>e.args)};
     }
     proof.correctMode=monster?Boolean(proof.monster.campaign)&&proof.monster.maps>=72&&String(proof.monster.startMap).includes(entry.names.startTown)&&Object.values(proof.monster.namesFound).every(Boolean)
       :entry.id==='default'?proof.newMaps.some(id=>applied.project.maps[id].worldmapSource?.theme==='fantasy')&&proof.atlases.length===0:proof.atlases.some(a=>a.structure==='region-routes');
     const resultMap=monster?applied.project.startMapId:entry.id==='default'?proof.newMaps.find(id=>applied.project.maps[id].worldmapSource):proof.atlases[0]?.nodes.find(n=>n.id===proof.atlases[0].startNodeId)?.mapId;
     if(resultMap)await showMap(page,resultMap);
     await page.screenshot({path:resolve(dir,'after.png')});await page.waitForTimeout(4500);
-    if(monster)for(const [kind,id] of [['route',mapNamed(applied.project,'1번 도로')],['gym',mapNamed(applied.project,entry.names.firstGym)]])if(id){await showMap(page,id);await page.screenshot({path:resolve(dir,`${kind}.png`)});await page.waitForTimeout(3000);}
+    if(monster)for(const [kind,id] of [['route',applied.project.maps.mx_map_meadow?'mx_map_meadow':undefined],['gym',mapNamed(applied.project,entry.names.firstGym)]])if(id){await showMap(page,id);await page.screenshot({path:resolve(dir,`${kind}.png`)});await page.waitForTimeout(3000);}
     if(entry.id==='pokemon')for(const node of proof.atlases[0]?.nodes.slice(1,3)??[]){await showMap(page,node.mapId);await page.screenshot({path:resolve(dir,`${node.kind}.png`)});await page.waitForTimeout(3000);}
     await page.reload({waitUntil:'domcontentloaded',timeout:120000});
     await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:180000});await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
