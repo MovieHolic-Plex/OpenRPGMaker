@@ -234,19 +234,24 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     return parents.length ? Math.max(...parents.map(p => Math.max(minimumLevel(p.species), p.level))) : 1;
   }
 
+  // 스타터 계통은 초반 풀숲·트레이너에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
+  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
+
   function pickSpecies(habitat: string, level: number, type?: string, count = 3): string[] {
-    let pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat));
+    // 초반 트레이너·관장도 스타터 계통을 내보내지 않는다(1번길 트레이너가 새싹토로 거울전을 걸었다, 2026-10-06 실플레이).
+    const early = (s: (typeof EXPEDITION_SPECIES)[number]) => level >= 20 || !starterFamilies.has(s.family);
+    let pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat) && early(s));
+    // 그 타입이 스타터 계통뿐이면(1관 풀 타입 Lv9) 스타터 계통을 쓴다 — 이르게 진화한 2단계(콩등충)는 Lv14 스타터도 못 이겼다(2026-10-06 실플레이).
+    if (!pool.length) pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat));
     if (!pool.length) pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)));
     if (!pool.length) throw Error(`No roster habitat/type ${habitat}/${type}`);
     const representatives = [...pool].sort((a, b) => b.stage - a.stage).filter((s, i, all) => all.findIndex(other => other.family === s.family) === i);
     return Array.from({ length: count }, (_, i) => representatives[i % representatives.length]!.id);
   }
 
-  // 스타터 계통은 초반 풀숲에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
-  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
 
-  function wild(map: GameMap, habitat: string, level: number): void {
+  function wild(map: GameMap, habitat: string, level: number): string[] {
     const fits = (s: (typeof EXPEDITION_SPECIES)[number]) => s.stage > 0 && minimumLevel(s.id) <= level - 2 && (level >= 20 || !starterFamilies.has(s.family));
     let pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && fits(s)).map(s => s.id);
     // 스타터를 빼고 한 종만 남으면 이웃 서식지의 첫 단계 종을 빌려 온다(풀숲에 벌레가 섞이듯).
@@ -259,6 +264,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const wildLevel = (i: number) => level <= 6 ? Math.max(2, level - (i === 0 ? 1 : 2)) : Math.max(3, level - i % 3);
     map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], wildLevel(i), false),
       weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
+    return pool;
   }
 
   function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track: string = audio.trainerBattle): GameEvent {
@@ -326,12 +332,15 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
 
   for (const r of routes) {
     const map = make(r.key, r.name, r.template, r.music, "field");
-    wild(map, r.habitat, r.level);
+    const wildPool = wild(map, r.habitat, r.level);
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
       const at = nearest(map, { x: 3 + i * 7, y: 6 + i * 8 }, connected(map), true);
-      battle(map, `trainer_${i}`, ["산책하는 소년", "연구원", "길을 걷는 조련사"][i]!, at, pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1), r.level + i,
+      // 첫 길의 트레이너는 그 길 풀숲의 종을 한두 레벨 아래로 — 스타터 한 마리로 넘을 수 있어야 한다(Lv4~6 바람삐가 풀 스타터를 이겼다).
+      const first = r.level <= 6;
+      const team = first ? Array.from({ length: i === 2 ? 2 : 1 }, (_, k) => wildPool[(i + k) % wildPool.length]!) : pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1);
+      battle(map, `trainer_${i}`, ["산책하는 소년", "연구원", "길을 걷는 조련사"][i]!, at, team, first ? Math.max(2, r.level - 1 + (i >> 1)) : r.level + i,
         `${map.id}_trainer_${i}_won`, ["우리 동료들이 자라는 모습을 봐 줘!", "타입 상성만큼 기술 횟수도 중요하지.", "먼 길을 걸었으니 서로 실력을 확인하자."][i]!, [gain("item_potion", 1), text("여행에 쓰라고 회복약 하나를 건네받았다.")]);
     }
     npc(map, "trail_sign", "지역 안내", `${r.name}. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.`, { x: 3, y: map.height - 4 }, [], 4);
