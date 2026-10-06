@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-06T13:48:31.948239+00:00",
+  "passed": false,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "binding": "95fbc5bea8bb7ce577a0ed22babec42c5f95c194a5a930d0446195aef7ccd985",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-thousand-year-pine-king-before-first-repair.png",
+  "nativeContactPngSha256": "bb3142b29cf0428bbf1c20a47c035cb0bf1206bc4d6ba9b9980ccf7cd68c95b6",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "2c54f2329b33efd66f786391554699f6af101d5b6bbe2296034535344c3af2a9",
+    "author_motion.py": "78b36b0714a5ca4851d1721c7e66afd94f56bc8ccef167405189eb79397aba81",
+    "author_rest.py": "3f2bd49a65eddf23be479036c13d4d014c853215c76a830bbba24707a2b42c18",
+    "author_actions.py": "678df5baa7204ec93457a9dd9a6bf646fef8f39b6bbb4f3484f57787c3b82997",
+    "repair_pixels.py": "2e57489ed9e1b8fe7735dc01604c871db50fe076976a5d892263be8a863e1a12",
+    "finish_pixels.py": "9d700c17b7eabe9c3d13c27e1b3037c56f0cff63271d042ed1592f586c6eaf00",
+    "rebuild.py": "877b017a59cbf27eed5db03c4cc6de50493053c8f75b62b013adf7dff9f0f8a5"
+  },
+  "observations": [
+    "Actually opened all18 initial native128 poses at original1632x1272 resolution, with native1x and nearest2x. Broad tiered teal pine crown, reddish layered bark, small gold eyes, pale root beard and spread root feet form a large tree figure with upper-left light and a dark right face/torso plane.",
+    "Raised branch-hand windup, spread-root stride, downward branch attack and arm recovery are separately authored. Hit mostly changes the face/arm and gives weak trunk/crown/leg recoil. Dead is a low grounded log pile with a markedly smaller crown, as independently flagged.",
+    "Front root-foot glow grows into outlined bark/root stems, then woody fragments; original skill_b has2 clearly rising tips against the brief requiring3. Poison bows/guards belly with bubbles; stun hangs arm with stars; sleep crouches with closed eyes but both sleep neck/shoulder junctions have actual angular transparent cuts.",
+    "Read all functions and complete module entry/import/call order in seven native writer/orchestrator files. Explicit literal crown/trunk/arm/root clusters are authored on blank128 grids; narrow selected rectangles are erased then replaced by literal anatomical rows. Six author/repair main functions execute sequentially in rebuild.py; all three historical stand definitions and module guards were read. Own rigid part reuse is allowed; no primitive body geometry, full-frame transform or automatic tween. Fully read render_pixels.py: native decode, backgrounds/nearest diagnostic enlargement, timed native GIF export and decoded equality, with no native art edits."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentJob": "636795dc-4de3-4d4a-932d-0e75bdc0a732",
+  "actualIndependentIssues": [
+    {
+      "pose": "sleep_a",
+      "x": 50,
+      "y": 65,
+      "message": "The angled head ends in a flat cut above a triangular transparent neck/shoulder gap, making the orange head plane look sliced away from the lower trunk. Reconnect this junction with an outlined dark bark neck cluster around x49-57, y64-73; retain the intentional open space inside the bent rear arm. Carry the upper-left highlight into the neck rather than ending it on an unoutlined orange triangle."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 51,
+      "y": 65,
+      "message": "The second sleep frame repeats the cut neck junction and widens its transparent wedge. Restore the same continuous bark neck and shoulder boundary as sleep_a around x49-58, y64-74, then move a small connected head/beard cluster for breathing. Preserve crown, shoulder and trunk mass between the two frames instead of shifting the exposed triangular cut."
+    },
+    {
+      "pose": "hit",
+      "x": 62,
+      "y": 56,
+      "message": "The forward facial smear and small arm changes provide little whole-body recoil; the crown, lower trunk and planted leg silhouette remain essentially the idle stance. Redraw the head/upper trunk as a connected backward flinch, bend a supporting knee/root and pull the striking arm inward. Keep the face attached to the neck and the supporting foot on y124 so hit reads at native 1x without relying on facial streaks."
+    },
+    {
+      "pose": "skill_b",
+      "x": 112,
+      "y": 74,
+      "message": "The front-foot root effect has two clearly separable upper tips, around (103,50) and (118,70); the broad lower fork does not read as a third rising stem. Author a third thick curling shoot with its own outlined tip and a small negative-space separation from its neighbors. Trace all three bark stems continuously back to the actual front root-foot junction around (100,115), retaining the existing grounded connection."
+    },
+    {
+      "pose": "dead",
+      "x": 46,
+      "y": 85,
+      "message": "The broad standing pine crown becomes a much smaller group of leaf strips in the collapsed pose, weakening volume continuity and making the corpse read as scattered small logs. Extend the fallen needle masses around the crown's right edge near (46,85), retaining the recognizable broad layered crown and an outlined attachment to the fallen trunk. Keep the corpse low and grounded rather than enlarging its empty upper cell."
+    }
+  ],
+  "claimScope": "Actual initial native18/source-method viewing and independent rework only; first repair pending. No keeper/Allow/archive/species completion claim."
+}

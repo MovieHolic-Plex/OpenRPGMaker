@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-06T13:48:31.912440+00:00",
+  "passed": false,
+  "key": "red-armor-gatekeeper/fifty-v1",
+  "binding": "050e6975ece331f0444bb2275807d1b063ee3897b04442c90e5d3f8b8a4da3cf",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-red-armor-gatekeeper-before-first-repair.png",
+  "nativeContactPngSha256": "a39c04b956ce24e0dcbe74598e37e7b0ce88539ea94ec12dd9d5b50f4b044534",
+  "nativeWriterFilesRead": {
+    "author.py": "bba69c591bc1ab4bb492ee30f4f9e2a056ee80c3866a7aca75201d20a75071f2"
+  },
+  "observations": [
+    "Actually opened all18 initial native128 poses at original1632x1272 resolution, with native1x and nearest2x. Small horned teal masked face, red/gold plate armor, bronze spear, silver joints and trailing red cape read as an armored humanoid creature. Head and chest planes are relatively flat.",
+    "Idle variants change face/armor/cape native clusters; two have actual waist/thigh transparent separation at rows83/84 as independently flagged. Windup grips the horizontal shaft with both hands; move and attack extend body/weapon but the actual spear-tip and forward-step difference is small. Fallen armor/boots merge and lose leg anatomy.",
+    "Skill preparation and two orange forks meet the spear tip; recovery has3 native sparks. Poison hand covers mouth/belly, star-marked stun droops head/arm, and closed-eye sleep kneels with grounded spear. Pale preparation contrast and a stray stun_b pixel need the actual requested repair.",
+    "Read complete frame/block/save/patch methods and whole module ordering of the4203-line author.py via lossless AST compaction of literal artwork strings; the initially truncated module portion was separately read through the final save. Each of18 named poses starts blank128 and receives individually written ASCII blocks and selected transparent replacement patches. No primitive-body generator, whole-frame transform or pose tween. Fully read render.py and inspect.py: native row decode, diagnostic display and GIF packing/readback only."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentJob": "db41635d-871c-46b5-aa7a-4e6db1cf0399",
+  "actualIndependentIssues": [
+    {
+      "pose": "idle_b",
+      "x": 51,
+      "y": 83,
+      "message": "양쪽 허벅지 위 y=83–84가 완전히 투명하다. 왼쪽 x=48–54와 오른쪽 x=68–74에 회은 관절과 어두운 윤곽 픽셀을 이어, y=82의 치마 갑옷 아래에서 y=85의 허벅지까지 각각 연결하라. 발 위치를 유지하고 몸의 들림은 연결된 관절 길이로 표현하라."
+    },
+    {
+      "pose": "idle_c",
+      "x": 71,
+      "y": 83,
+      "message": "idle_b와 같은 y=83–84의 투명 절단이 양쪽 다리를 떨어뜨린다. x=48–54 및 x=68–74에서 치마 아래와 허벅지 상단 사이를 실제 관절·윤곽 픽셀로 메워, idle_a → idle_b → idle_c에서 다리 연결이 사라지지 않게 하라."
+    },
+    {
+      "pose": "move",
+      "x": 117,
+      "y": 84,
+      "message": "이 자세에서 창끝이 이미 오른쪽 끝에 가까워 다음 attack의 끝점 전진이 약 4px에 그친다. move의 양손·팔·창 전체를 함께 더 뒤로 당겨 두고 attack에서 연결된 팔과 창이 확실히 펴지게 하라. 창자루만 줄이거나 손을 떼어 놓지 말고 1px 투명 테두리를 유지하라."
+    },
+    {
+      "pose": "attack",
+      "x": 85,
+      "y": 121,
+      "message": "지지하는 앞 장화가 move보다 약 3px만 전진해 접촉 때 넓게 내딛는 한 발이 약하다. 앞 무릎과 장화를 함께 더 오른쪽으로 내딛고 연결된 허벅지 각도를 조정하라. 지지 장화의 밑창은 y=124에 유지하고 뒤쪽 무릎·발목의 접힘도 이어진 관절로 읽히게 하라."
+    },
+    {
+      "pose": "dead",
+      "x": 43,
+      "y": 113,
+      "message": "왼쪽 아래 주홍 덩어리에서 흉갑·다리·장화의 경계가 합쳐져 서 있던 두 다리의 쓰러진 위치를 추적하기 어렵다. 이 영역에 접힌 무릎과 적어도 한 장화의 발목·발끝 윤곽을 다시 찍고, 다른 다리의 겹침을 어두운 면으로 분리하라. 바닥 높이와 연결된 목·팔·창은 유지하라."
+    },
+    {
+      "pose": "skill_a",
+      "x": 106,
+      "y": 77,
+      "message": "창끝 준비 기의 밝은 금백 가장자리가 light 배경에서 특히 1×로 약하게 보인다. 금백 중심을 유지하며 위쪽 광선과 창끝의 접점 바깥에 기존 청동 또는 주홍색 1px 경계를 넣어, 실제 창끝에서 올라오는 준비 기가 밝은 배경에서도 읽히게 하라."
+    },
+    {
+      "pose": "stun_b",
+      "x": 79,
+      "y": 102,
+      "message": "오른쪽 무릎 옆 투명 공간에 몸과 분리된 단일 불투명 픽셀이 남아 있다. 이 픽셀을 지우거나 의도한 무릎 윤곽에 연결해, 체커와 밝은 배경에서 떠 있는 점을 없애라."
+    }
+  ],
+  "claimScope": "Actual initial native18/source-method viewing and independent rework only; first repair pending. No keeper/Allow/archive/species completion claim."
+}

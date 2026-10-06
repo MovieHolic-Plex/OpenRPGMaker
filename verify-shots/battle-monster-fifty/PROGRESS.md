@@ -716,3 +716,10 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 현재 합격 **42/50종 · 756자세 · 336GIF**. 동물10/요괴16/사람12(여성6)/보스4; 남은8종은128px 대형 보스. 기존 결정52행/선택8건 보존, 새 위임126행/전체178행, 기존 정식 minor11건 유지. 대시보드 Allow50종은 기존8+신규42이며 신규 목표 완료가 아니다. 전체50 완료는 false다.
 - 갑옷/장병기의 적갑문지기와 나무 몸체의 천년송왕을 검객과 같은 배율로 실제 중간판에 보여 주었다. 당시는 검수 전18/18자세와1/18자세 초안이고 통과 주장 없이 보존한다. 적갑문지기/천년송왕/심연구목거미 실제 저작은 이어진다.
 - 근거: `forty-two-passed-proof.json`, `root-review-abyss-jade-turtle.json`, `browser-proof-abyss-jade-turtle.json`, `source-archive-proof.json`, `root-draft-review-abyss-jade-turtle-after-repair-six.json`.
+
+## 적갑문지기·천년송왕 최초 원본과 실제 rework · 2026-10-06 13:50 UTC
+
+- 신규 통과 수는 **42/50종 · 756자세 · 336GIF** 그대로다. 적갑문지기/천년송왕의 최초 원본18자세씩을 감독이1632×1272 원본1배+nearest2배로 실제 열었다. 적갑문지기 전체 frame/block/patch/save 메서드와 모듈 전체 호출 순서, 천년송왕 일곱 writer/orchestrator의 전체 메서드·모듈·재정의·재빌드 순서를 읽었다. 큰 문자열과 정적 픽셀 표만 축약하고 실행 로직은 빠짐없이 읽었다. 명시적 문자 도트 클러스터/선택 좌표 수정을 사용하며 프레임 전체 변환/자동 트윈/몸 도형 생성이 없다.
+- 적갑문지기 실제 GPT6.1sol/high `db41635d-871c-46b5-aa7a-4e6db1cf0399`는 **rework7건**: 대기 두 자세의 허리/양 허벅지 단절, move→attack 창끝 전진과 앞 장화 보폭, 쓰러진 다리 구분, 밝은 배경 준비 기 대비, 떠 있는 기절 픽셀. 처음 공개한 대기 초안의 갑옷 그림이 곧 합격을 뜻하지 않는다.
+- 천년송왕 실제 GPT6.1sol/high `636795dc-4de3-4d4a-932d-0e75bdc0a732`는 **rework5건**: 수면 두 자세 목/어깨 단절, 약한 전체 몸 피격 반동, 필요한3갈래 대신2갈래로 읽히는 발 뿌리 기술, 쓰러진 수관 부피 손실. 나무 수관/나무 몸의 명암과 가지팔 공격은 읽히지만 합격은 아니다.
+- 각각 실제 terminal exit0/model/effort/preparedOnlyFalse 검수와 원본18·검수4그림·writer 해시를 before-first-repair snapshot에서 다시 맞췄다. 감독 초안/실제 판정/작업/원본 그림은 별도 False 기록으로 보존하고 두 종의 첫 수정이 실행 중이다. 심연구목거미도 실제 최초 저작 중이다.

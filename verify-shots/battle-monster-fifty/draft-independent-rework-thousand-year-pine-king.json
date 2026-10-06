@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-06T13:48:31.948796+00:00",
+  "passed": false,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Viewed all four supplied actual PNGs at their original resolution, including the native 1x and nearest 3x pose panels. The wide teal crown, reddish bark, gold eyes and pale root beard identify the pine king clearly. Warm upper-left highlights and dark right planes give the standing trunk and limbs volume; standing root feet meet the common baseline. Windup, stride and downward branch-hand attack are readable, with visibly connected attacking arms. Poison uses a bowed head and guarded belly, stun a hanging arm and stars, and sleep a crouch: these are distinct states rather than palette tints. Rework is recommended for the abrupt transparent neck/shoulder cuts and angular loss of anatomy in both sleep frames, weak hit recoil, and the skill contact frame's two clearly readable root tips where three large stems are requested. The skill effect does meet the actual front root foot; it is not a floating hand projectile. The collapsed dead pose reads as a grounded pile, but crown volume drops markedly from the standing form. This is an advisory visual review, not a user selection or geometry approval. Static pose previews cannot establish animation timing, battle contact, dash placement, or literal-grid authorship/model provenance.",
+    "issues": [
+      {
+        "pose": "sleep_a",
+        "x": 50,
+        "y": 65,
+        "message": "The angled head ends in a flat cut above a triangular transparent neck/shoulder gap, making the orange head plane look sliced away from the lower trunk. Reconnect this junction with an outlined dark bark neck cluster around x49-57, y64-73; retain the intentional open space inside the bent rear arm. Carry the upper-left highlight into the neck rather than ending it on an unoutlined orange triangle."
+      },
+      {
+        "pose": "sleep_b",
+        "x": 51,
+        "y": 65,
+        "message": "The second sleep frame repeats the cut neck junction and widens its transparent wedge. Restore the same continuous bark neck and shoulder boundary as sleep_a around x49-58, y64-74, then move a small connected head/beard cluster for breathing. Preserve crown, shoulder and trunk mass between the two frames instead of shifting the exposed triangular cut."
+      },
+      {
+        "pose": "hit",
+        "x": 62,
+        "y": 56,
+        "message": "The forward facial smear and small arm changes provide little whole-body recoil; the crown, lower trunk and planted leg silhouette remain essentially the idle stance. Redraw the head/upper trunk as a connected backward flinch, bend a supporting knee/root and pull the striking arm inward. Keep the face attached to the neck and the supporting foot on y124 so hit reads at native 1x without relying on facial streaks."
+      },
+      {
+        "pose": "skill_b",
+        "x": 112,
+        "y": 74,
+        "message": "The front-foot root effect has two clearly separable upper tips, around (103,50) and (118,70); the broad lower fork does not read as a third rising stem. Author a third thick curling shoot with its own outlined tip and a small negative-space separation from its neighbors. Trace all three bark stems continuously back to the actual front root-foot junction around (100,115), retaining the existing grounded connection."
+      },
+      {
+        "pose": "dead",
+        "x": 46,
+        "y": 85,
+        "message": "The broad standing pine crown becomes a much smaller group of leaf strips in the collapsed pose, weakening volume continuity and making the corpse read as scattered small logs. Extend the fallen needle masses around the crown's right edge near (46,85), retaining the recognizable broad layered crown and an outlined attachment to the fallen trunk. Keep the corpse low and grounded rather than enlarging its empty upper cell."
+      }
+    ],
+    "binding": "95fbc5bea8bb7ce577a0ed22babec42c5f95c194a5a930d0446195aef7ccd985",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "aef99d43d126b3f87571e3f4bd31ce52c41572693927bbad21a5836236d0b99c",
+      "preview/suite/light.png": "1345c6d938cfba43517312db898fc216522883a6bc0b6f83881a6913176285ea",
+      "preview/suite/dark.png": "e027e7b8f70bf4f73b5cc70af873fa82c370ab436345c93e98e957defaa2e762",
+      "preview/suite/checker.png": "f61afb4b3d3532508b8720a8e22bc7e5dbc3ee005ecc35bc27d63fa0295f5311"
+    },
+    "jobId": "636795dc-4de3-4d4a-932d-0e75bdc0a732",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T13:44:32.544217+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "636795dc-4de3-4d4a-932d-0e75bdc0a732",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T13:40:54.757238+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/jobs/636795dc-4de3-4d4a-932d-0e75bdc0a732",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "458dcbcd02374f97130a5f053feba07fb2d5cc4e68b6bb2b82df48421eb627c0",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "aef99d43d126b3f87571e3f4bd31ce52c41572693927bbad21a5836236d0b99c",
+      "preview/suite/light.png": "1345c6d938cfba43517312db898fc216522883a6bc0b6f83881a6913176285ea",
+      "preview/suite/dark.png": "e027e7b8f70bf4f73b5cc70af873fa82c370ab436345c93e98e957defaa2e762",
+      "preview/suite/checker.png": "f61afb4b3d3532508b8720a8e22bc7e5dbc3ee005ecc35bc27d63fa0295f5311"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T13:44:31.635648+00:00"
+  },
+  "preservedBeforeFirstRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/visual-repairs/001/source",
+  "actualRootNative18Viewing": "root-draft-review-thousand-year-pine-king.json",
+  "claimScope": "Actual initial independent rework and previous root native/source viewing. No keeper/Allow/completion claim."
+}
