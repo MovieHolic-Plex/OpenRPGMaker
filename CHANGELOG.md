@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.146.1 — 2026-10-06
+
+### 수정
+
+- freeze prior review outputs before native retries (`e56002c`)
+- preserve demo coverage and finish collection before job handoff (`a7f2d3d`)
+- wait for native host artwork before attachment review (`c978c24`)
+- clear missing production instructions after theme collection (`39404e0`)
+- reject stale native checks and support dedicated palettes (`d26edc5`)
+- retain collected art during additional theme production (`e790dd6`)
+- show native previews from the current approved content directory (`68235fe`)
+
 ## 0.146.0 — 2026-10-06
 
 ### 기능
