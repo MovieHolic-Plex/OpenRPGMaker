@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "dusk-paper-falcon",
+    "name": "황혼부적매",
+    "cell": 96,
+    "grounded": true,
+    "motion": "hop",
+    "tier": "elite",
+    "idleFrameMs": 240,
+    "silhouette": "종이 부적이 깃털인 작은 매 요괴, 회백/주홍 날개, 검은 부리/발톱, 금빛 두 눈. 글자 없는 겹친 종이 날개. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "날개를 모아 준비 → 날개를 벌리며 낮은 도약 → 연결된 두 발의 발톱 타격 → 날개/발 접기.",
+    "skill": "부익참: 날개 끝 금빛 기 → 실제 종이 깃부터 두 갈래 주홍 날빛 발사 → 날개를 접으며 작은 종이 부스러기.",
+    "resourceId": "jf-enemy-dusk-paper-falcon",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 92,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

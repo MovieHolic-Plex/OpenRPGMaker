@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "dusk-paper-falcon",
+    "source": "qa-runs/harnesses/battle-monster/dusk-paper-falcon/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "710e46ee068a413f2d2ecdab2340fb1faf3c5c52337cb3934659b0512346108d",
+    "cell": 96,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T09:26:16.525015+00:00",
+    "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+    "entireGoalCompleteClaim": false
+  }
+]

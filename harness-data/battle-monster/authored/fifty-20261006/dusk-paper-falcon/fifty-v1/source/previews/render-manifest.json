@@ -1,0 +1,400 @@
+{
+  "paletteColors": 16,
+  "grids": {
+    "actions/poison_a.pxgrid": {
+      "sha256": "eae0196a523674edfaa48623cf9f80a9aeb545cf77d61d9b137be40b385c1f0d",
+      "inkBounds": [
+        12,
+        27,
+        85,
+        93
+      ]
+    },
+    "actions/poison_b.pxgrid": {
+      "sha256": "123e47429b316766ce98254f9156be71b1b1243073991eb41b74c4279a46e170",
+      "inkBounds": [
+        12,
+        23,
+        88,
+        93
+      ]
+    },
+    "actions/skill_a.pxgrid": {
+      "sha256": "c540289f73d068d35168510548619e087061c5da01ea5649ea850e9c7d6d058c",
+      "inkBounds": [
+        13,
+        16,
+        73,
+        93
+      ]
+    },
+    "actions/skill_b.pxgrid": {
+      "sha256": "470c3d6be6f31a899acc813f8e18c52a4c05a1973a148801e2c234e205d93f76",
+      "inkBounds": [
+        8,
+        24,
+        94,
+        93
+      ]
+    },
+    "actions/skill_c.pxgrid": {
+      "sha256": "ae2980360b68cac5ccff988796301ffa3c8a7eeba0c1412cceec29eea6e66409",
+      "inkBounds": [
+        10,
+        22,
+        88,
+        93
+      ]
+    },
+    "actions/sleep_a.pxgrid": {
+      "sha256": "105c21f4c8d981654d81c129ed17a94cc4e0bc0f9f0ada4a7daf952e4b251a27",
+      "inkBounds": [
+        10,
+        43,
+        62,
+        93
+      ]
+    },
+    "actions/sleep_b.pxgrid": {
+      "sha256": "554037eedff51f39f40f3d0b249da3fb0d9e6a3d344a03ba23dd7670a508b9c3",
+      "inkBounds": [
+        10,
+        42,
+        64,
+        93
+      ]
+    },
+    "actions/stun_a.pxgrid": {
+      "sha256": "9bab193c6454d2ced8898c4f8e453c0ae1e7a4828038ce828329668df1d0e3b4",
+      "inkBounds": [
+        10,
+        10,
+        76,
+        93
+      ]
+    },
+    "actions/stun_b.pxgrid": {
+      "sha256": "991984446342bfde93ff305208155b8ea2b5e83cf89ce170bcf2f313ecb5d9c9",
+      "inkBounds": [
+        10,
+        13,
+        81,
+        93
+      ]
+    },
+    "poses/attack.pxgrid": {
+      "sha256": "710e46ee068a413f2d2ecdab2340fb1faf3c5c52337cb3934659b0512346108d",
+      "inkBounds": [
+        5,
+        20,
+        80,
+        93
+      ]
+    },
+    "poses/dead.pxgrid": {
+      "sha256": "860d6f7add309beff7f2619e189f2f1c07196a51d5fed55f0fcc7a09731ac579",
+      "inkBounds": [
+        9,
+        64,
+        62,
+        93
+      ]
+    },
+    "poses/hit.pxgrid": {
+      "sha256": "31dc2de975a8fbe7c068e0a67f6da5ab29db59bf1612af5f065e7e19d2a5b29a",
+      "inkBounds": [
+        8,
+        24,
+        65,
+        93
+      ]
+    },
+    "poses/idle_a.pxgrid": {
+      "sha256": "f4dc09dc3f3818ecf8be407925e98aa4b5a78ec71b8eaf31c613ee74d9922baa",
+      "inkBounds": [
+        10,
+        16,
+        74,
+        93
+      ]
+    },
+    "poses/idle_b.pxgrid": {
+      "sha256": "94d7d863d0c93ed1490265caab58058126574c2473a434a3059216f2d701b31f",
+      "inkBounds": [
+        10,
+        17,
+        75,
+        93
+      ]
+    },
+    "poses/idle_c.pxgrid": {
+      "sha256": "7ba81f6c31a02811596a63b0c9ccf3b387d9648287477cd73f9d33e54229bc34",
+      "inkBounds": [
+        10,
+        16,
+        73,
+        93
+      ]
+    },
+    "poses/move.pxgrid": {
+      "sha256": "23573dd776ee50d5beb6e6407edc22658b3f5e7229f13905fe2922a4700e8072",
+      "inkBounds": [
+        6,
+        14,
+        71,
+        93
+      ]
+    },
+    "poses/recover.pxgrid": {
+      "sha256": "0d904fb0b3f297aa37fdf900a8263ae71fcc9c1049fe6d1154428de9724037a0",
+      "inkBounds": [
+        10,
+        23,
+        72,
+        93
+      ]
+    },
+    "poses/windup.pxgrid": {
+      "sha256": "f3da55d5b7566e877825f9e65906e35c9fc571521b7803e41292744679797497",
+      "inkBounds": [
+        15,
+        26,
+        69,
+        93
+      ]
+    }
+  },
+  "gifs": {
+    "idle": {
+      "frames": [
+        [
+          "idle_a",
+          240
+        ],
+        [
+          "idle_b",
+          240
+        ],
+        [
+          "idle_a",
+          240
+        ],
+        [
+          "idle_c",
+          240
+        ]
+      ],
+      "decodedDurationsMs": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "d476c4b4b56839ef40cb1f4ee4bd5f70ca12c4c17441b4e31370a531257cd7b1",
+      "opaquePixelsMatchSource": true
+    },
+    "attack": {
+      "frames": [
+        [
+          "idle_a",
+          120
+        ],
+        [
+          "windup",
+          200
+        ],
+        [
+          "move",
+          110
+        ],
+        [
+          "attack",
+          160
+        ],
+        [
+          "recover",
+          190
+        ],
+        [
+          "idle_a",
+          240
+        ]
+      ],
+      "decodedDurationsMs": [
+        120,
+        200,
+        110,
+        160,
+        190,
+        240
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "7a4c67f669b206b6ba2ca1502b11063f93b88f561d80c0745ae722f06e33713c",
+      "opaquePixelsMatchSource": true
+    },
+    "hit": {
+      "frames": [
+        [
+          "idle_a",
+          140
+        ],
+        [
+          "hit",
+          280
+        ],
+        [
+          "recover",
+          190
+        ],
+        [
+          "idle_a",
+          240
+        ]
+      ],
+      "decodedDurationsMs": [
+        140,
+        280,
+        190,
+        240
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "4e53aa5b214f64b58d98253f88d6f007bcd7d05d5cf7de8ac687639cfebfb7e2",
+      "opaquePixelsMatchSource": true
+    },
+    "dead": {
+      "frames": [
+        [
+          "hit",
+          160
+        ],
+        [
+          "dead",
+          1000
+        ]
+      ],
+      "decodedDurationsMs": [
+        160,
+        1000
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "3263193026a5af701895df7d3b597f48aa174057585ca0cfcf652e29ea0dcad0",
+      "opaquePixelsMatchSource": true
+    },
+    "skill": {
+      "frames": [
+        [
+          "idle_a",
+          160
+        ],
+        [
+          "skill_a",
+          300
+        ],
+        [
+          "skill_b",
+          200
+        ],
+        [
+          "skill_c",
+          260
+        ],
+        [
+          "idle_a",
+          220
+        ]
+      ],
+      "decodedDurationsMs": [
+        160,
+        300,
+        200,
+        260,
+        220
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "e0f5dae1d7e3001d986eecbe91a7453dbeed9b75f935b18cbe3641a3902a76ef",
+      "opaquePixelsMatchSource": true
+    },
+    "poison": {
+      "frames": [
+        [
+          "poison_a",
+          400
+        ],
+        [
+          "poison_b",
+          440
+        ]
+      ],
+      "decodedDurationsMs": [
+        400,
+        440
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "19270ea40d6f7c12ec93c2b40b4984fcc9aa1bf3bd53af3c6ad0fee4f4427509",
+      "opaquePixelsMatchSource": true
+    },
+    "stun": {
+      "frames": [
+        [
+          "stun_a",
+          380
+        ],
+        [
+          "stun_b",
+          380
+        ]
+      ],
+      "decodedDurationsMs": [
+        380,
+        380
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "de5c0dfa0b6af501747d568e184531ed4f8b4bc4a4d82e429353e6ff72e6e966",
+      "opaquePixelsMatchSource": true
+    },
+    "sleep": {
+      "frames": [
+        [
+          "sleep_a",
+          650
+        ],
+        [
+          "sleep_b",
+          650
+        ]
+      ],
+      "decodedDurationsMs": [
+        650,
+        650
+      ],
+      "nativeSize": [
+        96,
+        96
+      ],
+      "sha256": "e4e967247071589e44a880cb7b717a0d641c5461d3fc1ef76af597175f474561",
+      "opaquePixelsMatchSource": true
+    }
+  }
+}

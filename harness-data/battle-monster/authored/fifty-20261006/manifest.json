@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 24,
+  "archivedPassedSpecies": 25,
   "entireGoalComplete": false,
   "items": [
     {
@@ -244,6 +244,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "bed41f91533b4a817f2a7e2ec4dd26bd338083c568f4539a724d6fe311114107"
+    },
+    {
+      "key": "dusk-paper-falcon/fifty-v1",
+      "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "49d71501e10ee7144be551c79018cb6018d0e4adc3eef1b5453de9524ec1fd88"
     },
     {
       "key": "red-tassel-swordswoman/fifty-v1",

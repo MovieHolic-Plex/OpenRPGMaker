@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-06T09:29:02.839171+00:00",
+  "passed": true,
+  "key": "dusk-paper-falcon/fifty-v1",
+  "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+  "actualIndependentReviewJob": "1975672a-443a-447a-b57f-d575a562ba2e",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "1876a015d539a0ce069c85c06a29a4aab8eddf3f7946abd657b2ac12d759f4cf",
+    "preview/suite/light.png": "35f05fd388243330023bb7b8bc4e5e8c28c607bc6fe013db5101eba93dc62473",
+    "preview/suite/dark.png": "ca87fa685d7849da43bd34bc54115fe314dac990eb071e7bb66b0993954d4a2a",
+    "preview/suite/checker.png": "6fcc55bdc5e2d622a87e054fd9d2569c24a0d34f417f5abf35ac94d4707b28af"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-dusk-paper-falcon.png",
+  "nativeContactPngSha256": "4fb2ee80a2ca5da682db972b512cfd1e88b453dede68385690cd342ececd6396",
+  "actualUnresizedDarkNativeContact": "verify-shots/battle-monster-fifty/native-contact-dusk-paper-falcon-dark.png",
+  "nativeWriterFilesRead": {
+    "author.py": "9a9cfb53d72bf753a31f454e28998b7522e497e8ec16e849d9878c78da0e40c4"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actual final18pose native1x/nearest2x1248x984 light anddark sheets unresized. Hookeddarkbeak/goldeyes/graywhitepaperfolds/vermilion bands/goldankles connectedclaws. Crouchwindup/spreadwingonefoottakeoff/twoconnectedclawedfeetattack/foldrecovery/compressedwinghit. Deadcollapsedwingbundle hideshead but retainsvermilion andtuckedfeet; sleep lowbodyclosedeyes distinct. Goldtippreparation/twovermilionrays fromunfoldedwingedge/returnedpaperfragments. Poison slumpednarrowbody greenbubbles, dazeduprightstun stars andlowclosedeyesleep withsubtlepairchanges. Actualkeeper0issues butretainednote: heavygrayfolds can lookmetallic andblacktoecontrast islimitedondark; goldankles andclawforks remainreadable. Read author.frame/revise fullbodies, allshortenedcallnames/moduleloops: blank96 separateexplicitclusterframes, x,y literalrows/details andindividuallyselectedrowreplacements; no geometricbodygeneration or wholeframe/bodytransform. Render callnames only PNG/GIF/diagnosticencoding; checkerrectangles/scales do not modify sourcegrids. All18nativePNG exactlymatchASCII/palette; actualinitialkeep.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

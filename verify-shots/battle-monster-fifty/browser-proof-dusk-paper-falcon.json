@@ -1,0 +1,299 @@
+{
+  "items": [
+    {
+      "key": "dusk-paper-falcon/fifty-v1",
+      "name": "황혼부적매",
+      "phase": "suite",
+      "choice": "allow",
+      "nativeCell": 96,
+      "nativeGifImages": 8,
+      "motionTiles": 8,
+      "pauseResume": true,
+      "comparison": {
+        "visible": true,
+        "width": 352,
+        "height": 192,
+        "caption": "사람과 크기 비교 · 황혼부적매 / 흑건 자객 · 새 원안",
+        "pixels": 13888
+      },
+      "mobile": [
+        {
+          "width": 375,
+          "overflow": false
+        },
+        {
+          "width": 320,
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "finalSelection": [
+    {
+      "key": "earthen-jar-fiend/motions-v2",
+      "bindings": {
+        "suite": "d40de664fb837984ace7b689332f2ff6bf3f25bbf341182b523f8ecb37b78518",
+        "poses": "f4c814c2a2b7c1c69d92911631ece9ac6eba99f2bef5d49227173c0d52902c71",
+        "idle": "f34789c3a1d490bc3f91a43a4d30ca3b04ba00e5acf314cad305f568d1adf84b"
+      }
+    },
+    {
+      "key": "jangseung-spirit/motions-v2",
+      "bindings": {
+        "suite": "8e03bcf8769d3fb92a6f118a2bebf074547ef72ec7dfd575e4d5bca227c47724",
+        "poses": "0d9ca5479e7c7c8f1a3846792c68524e4bef3e10764a9d080a90e2c8cf9aeeb0",
+        "idle": "0d6309adc85b8cb5f0db43c31b8bfc311f4db236367633a736281bf982d6a903"
+      }
+    },
+    {
+      "key": "venom-toad/motions-v2",
+      "bindings": {
+        "suite": "3deb59b70d863292550e186d428b7b8d78f88edde92086e79d9569a708fe81e0",
+        "poses": "7f3c04c65b119df1420dbefea1cfdb02fa8c20f8f545a15082132ca38fa7a329",
+        "idle": "a3ea59ee162b1f00912d7c6fb8aec172b1604b361afb02b4058612de6d6dcc3a"
+      }
+    },
+    {
+      "key": "wild-boar/motions-v2",
+      "bindings": {
+        "suite": "04ba9f4bc39b75a4bc2af873d634843e9799918b6c9464c94c02748c1b011ad7",
+        "poses": "2b3aa157e2904008dd4e5415169e1bad7ea8117dcded3785a97f17eadd34f61a",
+        "idle": "c851dd41db13db02a0622b41a4c9505079d581b52b9df4d5ed648279c2215fe1"
+      }
+    },
+    {
+      "key": "black-cloth-assassin/motions-v1",
+      "bindings": {
+        "suite": "4a6ae545a7c71df12022fa91f1f7f300a6569735213a4ab179972791670d56f8",
+        "poses": "51ee2e03d29b9ddd1385021a4a010d465a606d191aef0509e41be96d18cf0fff",
+        "idle": "1a7e471eb51e52f17de39d8b05ca9f30347dda50fe5cdde3a2492392a0ea5c2b"
+      }
+    },
+    {
+      "key": "cult-sorcerer/motions-v1",
+      "bindings": {
+        "suite": "1ba5b5eaba4831c550b2666a89fbaaccf85ca5cadbbb89ff131faaf7e0f580f9",
+        "poses": "5c3c29711b246d1929b3b0c35dc2be7f132ae5729e5983572cac6bc520d3d009",
+        "idle": "186bedabb2e63fe2132776033cda264b6c82c0518496bdd66d2f2a2e3157c57c"
+      }
+    },
+    {
+      "key": "fallen-taoist/motions-v1",
+      "bindings": {
+        "suite": "95f0d1ea5cbbfccfb1b0bc22a4a6ecd4e7cfcba283702f3920a24c1fc145e70c",
+        "poses": "27a958829bc99c919216b5583cfa7fbbaad757ccef973b4e438314fdcede5788",
+        "idle": "d6a0904e808e1fa036ac0dc1f1b8f875ebe6118ccc16b1de6219e7569746024b"
+      }
+    },
+    {
+      "key": "mountain-spearman/motions-v1",
+      "bindings": {
+        "suite": "5aec314719268c8d43d2e8387329a98bc1c8fd2996bbc9407956e0fbd4c30d1e",
+        "poses": "90dadc35e3b4dbe18841c668884c134230511540240cfaf81dc7def82af61665",
+        "idle": "8ee5da57294ffa1569676dbcb47c371165b944b55a041503a3e09e41ce14e08c"
+      }
+    },
+    {
+      "key": "bronze-bell-wraith/fifty-v1",
+      "bindings": {
+        "suite": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+        "poses": "a6cea36b1a0b102d2b168fd197f41c53070c3d415629f0dafebf252cd1c4ac8f",
+        "idle": "83a230bd63513aebbe6adf0bff2531c8658cd8f3faacc7d8c482daf5b79dc9b8"
+      }
+    },
+    {
+      "key": "golden-antler-deer/fifty-v1",
+      "bindings": {
+        "suite": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+        "poses": "afc596b82fca8e198a8ae14de2f0fcb1950493e242efc6126e10111d5911b14c",
+        "idle": "b1d2fa0dedef64e58e851b07780193043203b7d7a41953f161ded6e34d3aeba1"
+      }
+    },
+    {
+      "key": "sun-gold-phoenix/fifty-v1",
+      "bindings": {
+        "suite": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+        "poses": "2279bb02eda306fd66ee7c7102aa22425e4fb40ca1ab9074aa99267cc76683af",
+        "idle": "09de326f51c47eeec8d2b8ad9ab685ca71f1dac8b440592832f6746b4adbfe21"
+      }
+    },
+    {
+      "key": "iron-beak-crane/fifty-v1",
+      "bindings": {
+        "suite": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+        "poses": "bb4775864a287456099d209cd594f278121ef166d71e2629a421b9952a0a054c",
+        "idle": "24e1b9688a5c42b9420fa6eed18b6c9158ee9edcb5570fbf07c085b3be1a697c"
+      }
+    },
+    {
+      "key": "lantern-goblin/fifty-v1",
+      "bindings": {
+        "suite": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+        "poses": "608d46d57bfe51ec5271c432f3601b43f5e72281773f23e2761798069208d748",
+        "idle": "55c0f4cfbf7ec7bb57aad4cae4475473045b3be69d5054ae474d25e7ee091681"
+      }
+    },
+    {
+      "key": "jade-mantis/fifty-v1",
+      "bindings": {
+        "suite": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+        "poses": "cb2fc6d9e0897df9db5f86c4d4acc402761dcd4551d7b3b3fed5c405dac45069",
+        "idle": "3b83c5676b76bb068fbe1ad10d63c5bc86ff63c8896a7113cdac691dd85ceabe"
+      }
+    },
+    {
+      "key": "mist-tail-lynx/fifty-v1",
+      "bindings": {
+        "suite": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+        "poses": "e1e7167ede7e0e205b42b05ca81dd989de321fb4e53dc5a5645785ebe886ad89",
+        "idle": "3c92755a23c9cc539a121063be51fe9907738224740a0e39a5a9ce6335a0c0dc"
+      }
+    },
+    {
+      "key": "red-tassel-swordswoman/fifty-v1",
+      "bindings": {
+        "suite": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+        "poses": "7f428257f2db1140c37415e6be9d1e93b780464e5a67520f63d42b739ef34062",
+        "idle": "d5f2ad49c7cd063d6ffb1d45bebadfdcc7eebf8509532d3cf898d77be0f1c265"
+      }
+    },
+    {
+      "key": "moss-back-badger/fifty-v1",
+      "bindings": {
+        "suite": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+        "poses": "325418034b65b1c3acb55fa2695ffa69e4e01e560c7d58dd02debca67a427543",
+        "idle": "c9bc4cfe1a52bb1c118553fb4a97aadb9a844c8e162cc4e68e25bad4b1646949"
+      }
+    },
+    {
+      "key": "fire-scale-viper/fifty-v1",
+      "bindings": {
+        "suite": "92d75b075ef71b1882eeaba3e3e8356c4a43d04fcba7000c0ea343f84e2cd81f",
+        "poses": "9eb139bd52ea31f16069075721fe207a5c6e422210428ef132969e860fd85e31",
+        "idle": "0239e30f66d23757f425957df3b72b65f0ed3b00825556d053c3c0969f275772"
+      }
+    },
+    {
+      "key": "red-jawed-wolf/fifty-v1",
+      "bindings": {
+        "suite": "d692062ca446fc036db7279c3bf7e42cd563b0ffdd09efd4831e104914e155f0",
+        "poses": "c84abceeaa2479a7a6052e7aac196433aa14ee397ae489bced3a6105692f15ed",
+        "idle": "324f2b904702a407277fedca87f456f4d7832b7295e2c6408a80b17a9e60a218"
+      }
+    },
+    {
+      "key": "snow-wing-owl/fifty-v1",
+      "bindings": {
+        "suite": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+        "poses": "f221d08f287bbe5a8a277e9831236efb0a2462fd4dff6682919e5f582ae6594d",
+        "idle": "d62b6298ba52e1b55437481fc9d64a4ece9326a88574c8bafe9dd662a7fef25a"
+      }
+    },
+    {
+      "key": "stone-shell-tortoise/fifty-v1",
+      "bindings": {
+        "suite": "73bca5d310d84ebbe91ac1b8358edae59db4915db843bb22c6ea291d7af9a80d",
+        "poses": "6e11abe5d23ae8a32e6366975d70b65ecee4b8a8eae68671d0c3fc5f67de1056",
+        "idle": "83f886ce928a44a8c2bbc35e888bab5a49785d4e37e6d556d453767bf1afd0e6"
+      }
+    },
+    {
+      "key": "lotus-marsh-wraith/fifty-v1",
+      "bindings": {
+        "suite": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+        "poses": "46f36b05a535f09181f090599e8e06c44ca8e8063887eb8b999946b3a52637f5",
+        "idle": "fcf5de21491f9fc014eeaaef0df85dc0147506239351d337b2e03ab92d6d58c1"
+      }
+    },
+    {
+      "key": "silk-loom-specter/fifty-v1",
+      "bindings": {
+        "suite": "92b8027ba1873852ad38c3ce7631669919bf6ceba52bcb0f623d805fee0d1944",
+        "poses": "c832a3e30f99ab667615843166f1dc8ff0feb1975b0510c32bc3ec13b7d0fdf3",
+        "idle": "005796baaf64464421354055f3515fa3f924311c267a6881db943c30489e8ef7"
+      }
+    },
+    {
+      "key": "reed-blade-weasel/fifty-v1",
+      "bindings": {
+        "suite": "79ad5e2c3430d42a81ecc04fdc470dc836407f1d598f12e225fa04293caa545e",
+        "poses": "5c175f4dd15104e0b8f523fb8237faa9e0ac24ad5d0d4089f55edad776590829",
+        "idle": "9210b43ae7565d14c996fddd6aa50990786b1bdb49a0ca3ca6c2400fee738869"
+      }
+    },
+    {
+      "key": "moon-disk-spirit/fifty-v1",
+      "bindings": {
+        "suite": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+        "poses": "e2c3a8c38be1a7cc06353aba4a340354d8c2dd764cff11c7eac6fadcb280f1d7",
+        "idle": "0ccd169ffcb801a2793fbf5b6754aeecab3a69624cb8bff8bdeb09151d0bd226"
+      }
+    },
+    {
+      "key": "ink-brush-oni/fifty-v1",
+      "bindings": {
+        "suite": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+        "poses": "7aeb335021a7f7c028385d6f828bb7dd67453c7c4b1ee9d78da53962b39bc748",
+        "idle": "ccda52fb248119a73e4c8ab860612a389ebbfc681d0395ff2b0f2c62813260dc"
+      }
+    },
+    {
+      "key": "plum-blossom-spirit/fifty-v1",
+      "bindings": {
+        "suite": "5285ecd41d425d19ad5f852995102a0ad7895cf9336747c7cb4c6323a3f0578d",
+        "poses": "36e1dd90bf5bfa4adcf8f10d71659c52d54b1093964048fb9c8feef13a86b28a",
+        "idle": "44a9545f099d396fbee283c417dba62d6c4c942e7ef21d801873fb58cef0ec0f"
+      }
+    },
+    {
+      "key": "jade-lantern-serpent/fifty-v1",
+      "bindings": {
+        "suite": "3d1e6bb8a82cec3a3529f85dbbf85581e7045fdde98dc5326e413725f8b21451",
+        "poses": "b022cc579f09da374ba01fa41b9ff77ca85456f4ca81bb81a0f09d8214e8ed1e",
+        "idle": "5387255d9689b4d9e5122e54af48fcc8e869c53e17b74d35d4f68e4f6758c3ee"
+      }
+    },
+    {
+      "key": "storm-kite-spirit/fifty-v1",
+      "bindings": {
+        "suite": "835082df80a345cebbf5aa46cd5e7fc5d1933731626a56ea9f794b085d341c29",
+        "poses": "0e77546a62116cec632c2ec8806a7f33c20d2d9b783b455ddda02fdbe2de1956",
+        "idle": "49db5ccfb6fc27b910c06bf37c0cab7baf3e35a2be0f59c9af7ff895cb6ae831"
+      }
+    },
+    {
+      "key": "frost-ribbon-maiden/fifty-v1",
+      "bindings": {
+        "suite": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+        "poses": "a558857a56c878e3aab967565d4e4ffacf2070ec442db9df38f7e6ebf0cffbb6",
+        "idle": "e37755be86c8a304cb621ca3766b214de19b92167988013473dd080125805744"
+      }
+    },
+    {
+      "key": "ember-mask-goblin/fifty-v1",
+      "bindings": {
+        "suite": "62d5580075d4e16b143777b6ba9e30121b37d3c6974432d6335e4e7eb4215c80",
+        "poses": "08435430bdeabba1ced45dfcdef217602b21db1d85d41bf6467263ce2416c577",
+        "idle": "898836559335c581258d576fc2a73c3ba928c3b06fd7eb65cd4e2ecda5ea44a8"
+      }
+    },
+    {
+      "key": "thorn-crown-demon/fifty-v1",
+      "bindings": {
+        "suite": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+        "poses": "1fff60c1cc59947c772ed05e5c42be16f035fcc232fb0f3146537aa6e0a7f3fc",
+        "idle": "bedea738e8c5d7b5a9987d5cf212bc0f2a005106a92a9e7b51ca5bec8d4c480b"
+      }
+    },
+    {
+      "key": "dusk-paper-falcon/fifty-v1",
+      "bindings": {
+        "suite": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+        "poses": "5239b5136b67f8b78b186eb68993e91b80ff230a0bb08f32c86dcaf2849b520e",
+        "idle": "69aecc685202bcc2bb507474a73c004cf945db54519451e11b06381a03f778be"
+      }
+    }
+  ],
+  "noChoiceButtonsClicked": true
+}

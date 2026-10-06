@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed all four supplied actual PNGs at native 1x and nearest 3x. The right-facing falcon has a readable hooked dark beak, two gold eyes, overlapping gray-white/vermilion paper wings and connected legs. Broad upper-left highlights and cool underside shadows describe folded surfaces consistently, although the thick gray folds can suggest metal. The wing openings read as exterior negative space, with no apparent unintended enclosed transparent holes or detached anatomy. Standing, crouching and recovery feet reach a consistent ground line; the move frame reads as a one-foot takeoff and the attack extends two connected clawed feet. Windup, spread-wing movement, claw contact, recovery and wing compression on hit are distinguishable. The dead frame reads as a collapsed paper-wing bundle, retaining the red bands and tucked feet but hiding the head. Skill preparation places gold energy on feather tips; both vermilion blades visibly originate at the right edge of the unfolded paper wing, and recovery closes the wing with separate small scraps. Poison uses a slumped, narrowed body and green bubbles; stun retains a more upright dazed body with overhead stars; sleep lowers the body and closes the eyes. Their pairs make small posture/effect changes rather than merely recoloring an idle or substituting an unrelated attack. Black toe contours have limited contrast on the dark background, but ochre ankles and claw forks remain discernible. No mandatory pixel repair identified. This is an advisory visual recommendation, not a user selection. Static pose previews cannot establish actual battle readability, hop trajectories, animation timing, literal pxgrid authorship, palette limits or binary-alpha compliance.",
+  "issues": [],
+  "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "1876a015d539a0ce069c85c06a29a4aab8eddf3f7946abd657b2ac12d759f4cf",
+    "preview/suite/light.png": "35f05fd388243330023bb7b8bc4e5e8c28c607bc6fe013db5101eba93dc62473",
+    "preview/suite/dark.png": "ca87fa685d7849da43bd34bc54115fe314dac990eb071e7bb66b0993954d4a2a",
+    "preview/suite/checker.png": "6fcc55bdc5e2d622a87e054fd9d2569c24a0d34f417f5abf35ac94d4707b28af"
+  },
+  "jobId": "1975672a-443a-447a-b57f-d575a562ba2e",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:21:56.664661+00:00",
+  "userApproved": false
+}
