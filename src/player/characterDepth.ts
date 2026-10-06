@@ -1,3 +1,4 @@
+import { characterBaseOrigin } from "./characterOrigin";
 import { TILE_SIZE } from "@/assets/bundled";
 import type { EventPriority, TilesetDef } from "@/project/types";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -93,7 +94,8 @@ export function isAlwaysAboveCharacterUpperTile(tileset: TilesetDef, tile: numbe
 }
 
 export function placeCharacterSprite(sprite: CharacterSprite, priority: EventPriority): void {
-  sprite.setOrigin(0.5, 1);
+  const origin = characterBaseOrigin(sprite);
+  sprite.setOrigin(origin.x, origin.y);
   updateCharacterDepth(sprite, priority);
 }
 

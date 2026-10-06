@@ -1,3 +1,4 @@
+import { spriteFrameOrigin, type SpriteFrameOrigin } from "@/project/spriteFrameAnchor";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Dir } from "@/player/input";
@@ -16,6 +17,7 @@ export type PlayerSpriteKind = "charset";
 export type PlayerSpriteResource = {
   readonly texture: string;
   readonly resourceId: string;
+  readonly origin?: SpriteFrameOrigin;
   /** 시트 안 인물 칸(0~7). 같은 시트의 다른 칸으로 갈아입었는지 가르는 데 쓴다. */
   readonly characterIndex: number;
   readonly kind: PlayerSpriteKind;
@@ -35,7 +37,9 @@ export function resolvePlayerSpriteResource(project: Project, session: PlaySessi
   const resourceId = override?.resourceId ?? effectiveActor?.characterResourceId;
   const characterIndex = override !== undefined ? override.characterIndex : effectiveActor?.characterIndex ?? 0;
   if (resourceId && project.assets.uploaded[resourceId]?.kind === "charset") {
-    return createCharsetSpriteResource(resourceId, resourceId, characterIndex);
+    const resource = createCharsetSpriteResource(resourceId, resourceId, characterIndex);
+    const origin = spriteFrameOrigin(project.assets.sprites[resourceId]);
+    return origin ? { ...resource, origin } : resource;
   }
   const charsetAsset = resourceId ? findCharsetAsset(resourceId) : undefined;
   if (charsetAsset) {

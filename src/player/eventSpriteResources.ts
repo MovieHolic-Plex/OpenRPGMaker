@@ -1,3 +1,4 @@
+import { spriteFrameOrigin, type SpriteFrameOrigin } from "@/project/spriteFrameAnchor";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
@@ -15,6 +16,7 @@ export type EventSpriteTexture = {
   readonly texture: string;
   readonly frame: string | number;
   readonly charset?: boolean;
+  readonly origin?: SpriteFrameOrigin;
   /** Static battler art is fitted to a field-sized box before authored scale. */
   readonly fitSize?: number;
 };
@@ -41,10 +43,14 @@ export function resolveEventSpriteTexture(
 ): EventSpriteTexture | null {
   const frame = pattern ?? 0;
   const spriteDef = project.assets.sprites[spriteId];
+  const origin = spriteFrameOrigin(spriteDef);
+  const anchored = origin ? { origin } : {};
+  const uploadedCharsetDefinition = spriteDef?.image.type === "uploaded"
+    && project.assets.uploaded[spriteDef.image.id]?.kind === "charset";
   if (spriteDef?.image.type === "bundled") {
-    return { texture: spriteDef.image.id, frame };
+    return { texture: spriteDef.image.id, frame, ...anchored };
   }
-  if (spriteDef) return { texture: spriteId, frame };
+  if (spriteDef) return { texture: spriteId, frame, ...anchored, ...(uploadedCharsetDefinition ? { charset: true } : {}) };
 
   // Existing item pictures can depict a real investigation object. They are
   // static images, so a charset frame number must never crop them.
@@ -61,7 +67,10 @@ export function resolveEventSpriteTexture(
   const bundledSprite = Object.values(project.assets.sprites).find(
     (sprite) => sprite.image.type === "bundled" && sprite.image.id === spriteId
   );
-  if (bundledSprite) return { texture: spriteId, frame };
+  if (bundledSprite) {
+    const base = spriteFrameOrigin(bundledSprite);
+    return { texture: spriteId, frame, ...(base ? { origin: base } : {}) };
+  }
   if (!uploadedKind && isGeneratedMonsterSprite(spriteId)) return { texture: spriteId, frame: "__BASE", fitSize: 32 };
   return null;
 }

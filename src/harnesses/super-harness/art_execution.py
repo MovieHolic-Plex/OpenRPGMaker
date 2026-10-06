@@ -71,6 +71,16 @@ def prepare(root, request, resume=False):
         # never inherit the unrelated global prop picker's content directory.
         content_root = prop_content_root(root, request)
         if content_root: env['PROP_HARNESS_CONTENT_ROOT'] = str(content_root)
+        with sqlite3.connect((Path(local('data')) / 'harness.sqlite').as_uri() + '?mode=ro', uri=True) as db:
+            briefs = db.execute('SELECT id,brief FROM rounds').fetchall()
+        for rid, brief in briefs:
+            try:
+                valid = (isinstance(brief, str) and '\n' not in brief
+                         and (root / brief).resolve().is_relative_to(root)
+                         and (root / brief / 'brief.md').is_file())
+            except (OSError, ValueError):
+                valid = False
+            if not valid: raise ValueError(f'h{rid}: brief는 설명문이 아닌 brief.md 폴더 경로여야 합니다.')
         command = ['src/harnesses/interior-props/harness.py', 'pool']
     elif harness == 'modern-chipset':
         round_id = request.get('round')

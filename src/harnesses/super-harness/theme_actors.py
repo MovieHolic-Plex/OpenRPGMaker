@@ -122,6 +122,69 @@ def collect(data,cid):
                                     for rid,ids in receipt['requirementActors'].items()},theme=receipt['theme'])
 
 
+def runtime_pack(root, receipt_file, destination):
+    """Prepare exact native runtime images. This is neither selection nor installation."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'charset-actor'))
+    import chr as C
+    from PIL import Image
+    root = Path(root).resolve()
+    receipt_file, destination = Path(receipt_file).resolve(), Path(destination).resolve()
+    if not receipt_file.is_relative_to(root) or not destination.is_relative_to(root):
+        raise ValueError('Runtime preparation must stay inside its art worktree')
+    receipt = read(receipt_file)
+    if receipt.get('scope') != 'theme-actors' or not receipt.get('actors'):
+        raise ValueError('A native theme actor receipt is required')
+    def verified(ref):
+        path = (root / ref['path']).resolve()
+        if not path.is_relative_to(root) or sha(path) != ref['sha256']:
+            raise ValueError('Native actor source changed: ' + ref['path'])
+        return path
+    # Verify the entire delivery before emitting any derived runtime files.
+    for actor in receipt['actors']:
+        if not actor.get('machineReady') or len(actor['sheets']) != 2:
+            raise ValueError('Walking and action delivery must both be complete')
+        for ref in actor['sources'] + actor['sheets']: verified(ref)
+    destination.mkdir(parents=True, exist_ok=True)
+    actors, assets, sprites = [], {}, {}
+    for actor in receipt['actors']:
+        source_walk, source_action = map(verified, actor['sheets'])
+        key = hashlib.sha256(json.dumps(dict(actor=actor['id'], sheets=actor['sheets']), sort_keys=True).encode()).hexdigest()[:24]
+        walk_id, action_id = 'shared_charset_actor_' + key, 'shared_actor_action_' + key
+        walk, action = destination / (walk_id + '.png'), destination / (action_id + '.png')
+        with Image.open(source_walk) as original:
+            sheet = C.pack_single_actor(original)
+            sheet.save(walk)
+            with Image.open(walk) as reread:
+                if reread.convert('RGBA').tobytes() != sheet.tobytes():
+                    raise ValueError('Packed PNG readback changed native pixels')
+        shutil.copyfile(source_action, action)
+        if sha(action) != actor['sheets'][1]['sha256']: raise ValueError('Action copy changed')
+        frames = actor['actions']; fw, fh = actor['actionFrame']
+        anchors = {tuple(f['anchor']) for f in frames}
+        if len(anchors) != 1: raise ValueError('One runtime sheet must have a consistent ground anchor')
+        with Image.open(action) as image:
+            if image.size != (fw * len(frames), fh): raise ValueError('Action dimensions changed')
+        for identifier, path, kind, width, height, frame_width, frame_height, count, anchor in [
+            (walk_id, walk, 'charset', 288, 256, 24, 32, 96, actor['walkAnchor']),
+            (action_id, action, 'sprite', fw * len(frames), fh, fw, fh, len(frames), next(iter(anchors))),
+        ]:
+            assets[identifier] = dict(id=identifier, name=actor['title'], kind=kind,
+                file=dict(path=str(path.relative_to(root)), sha256=sha(path)),
+                meta=dict(width=width, height=height, frameWidth=frame_width, frameHeight=frame_height, frames=count))
+            sprites[identifier] = dict(id=identifier, image=dict(type='uploaded', id=identifier),
+                frameWidth=frame_width, frameHeight=frame_height, frames=count, anchor=dict(x=anchor[0], y=anchor[1]))
+        actors.append(dict(id=actor['id'], title=actor['title'], walk=walk_id, action=action_id,
+            characterIndex=0, actions=frames, sources=actor['sheets'],
+            idleFrames=dict(up=1, right=13, down=25, left=37)))
+    output = dict(version=1, status='prepared-not-approved', canonicalReload=False, publicRegistered=False,
+        receipt=dict(path=str(receipt_file.relative_to(root)), sha256=sha(receipt_file)),
+        theme=receipt.get('theme'), actors=actors, assets=assets, sprites=sprites)
+    (destination / 'runtime-assets.json').write_text(json.dumps(output, ensure_ascii=False, indent=2))
+    return output
+
+
 if __name__=='__main__':
-    if len(sys.argv)!=5 or sys.argv[1]!='--inspect': raise SystemExit('internal native inspection only')
-    print(json.dumps(inspect(*sys.argv[2:]),ensure_ascii=False))
+    if len(sys.argv) != 5 or sys.argv[1] not in ('--inspect', '--runtime-pack'):
+        raise SystemExit('--inspect ORDER ACTIONS ROOT | --runtime-pack ROOT RECEIPT DESTINATION')
+    function = inspect if sys.argv[1] == '--inspect' else runtime_pack
+    print(json.dumps(function(*sys.argv[2:]), ensure_ascii=False))

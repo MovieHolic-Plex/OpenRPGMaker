@@ -223,7 +223,7 @@ def ensure_layout_feedback(data, cid):
     feedback = dict(previous, layoutReviewSha256=source, created=store.now(), status='queued',
                     revision=revision, limits=limits(data, cid),
                     layoutRepairs=review['fixes'], layoutReasons=review.get('reasons', []),
-                    policy={'route': route, 'phase': snapshot['layout']['phase'], 'repeatedChecks': [],
+                    policy={'route': route, 'phase': 'scene' if art_repair.whole_scene_required(folder) else snapshot['layout']['phase'], 'repeatedChecks': [],
                             'reason': '실제 도면 반려 지적을 새 준비 입력에 반영한다. 그림 수정 회차는 유지한다.'})
     write(archive / 'feedback.json', feedback)
     write(folder / 'art-feedback.json', feedback)

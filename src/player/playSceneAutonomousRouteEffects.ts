@@ -1,3 +1,4 @@
+import { setCharacterBaseOrigin, characterBaseOrigin } from "./characterOrigin";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { resourceDisplayName } from "@/player/resourceDisplay";
@@ -31,6 +32,9 @@ export function applyMoveRouteGraphicChange(
   const texture = resolveEventSpriteTexture(store.getCurrent(), normalized, view.page?.graphic.pattern);
   if (texture) {
     sprite.setTexture(texture.texture, texture.frame);
+    setCharacterBaseOrigin(sprite, texture.origin);
+    const origin = characterBaseOrigin(sprite);
+    sprite.setOrigin(origin.x, origin.y);
     sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterFactor));
   }
 }

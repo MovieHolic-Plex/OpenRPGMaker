@@ -1,3 +1,4 @@
+import { setCharacterBaseOrigin } from "./characterOrigin";
 import { phaserBlendMode } from "@/project/blendMode";
 import { invalidateSunlight } from "./sunlightLayer";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -874,6 +875,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const position = furniturePushPosition(scene, event.id) ?? renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
     const texture = spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID;
     const signature = [texture, scene.textures?.get?.(texture), spriteTexture?.frame, spriteTexture?.fitSize, spriteTexture?.charset,
+      spriteTexture?.origin?.x, spriteTexture?.origin?.y,
       authoredPattern, overrideFrame, view.page?.graphic.scale, view.page?.graphic.scaleMode,
       size, referenceSize, view.priority, view.page?.graphic.blendMode];
     const blendMode = phaserBlendMode(view.page?.graphic.blendMode);
@@ -896,6 +898,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     }
     eventGraphicSignatures.set(marker, signature);
     retained.add(event.id);
+    setCharacterBaseOrigin(marker, spriteTexture?.origin);
     placeCharacterSprite(marker, view.priority);
     marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterSizeFactor(scene.map)));
     scene.eventSprites.set(event.id, marker);

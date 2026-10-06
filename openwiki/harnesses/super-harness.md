@@ -944,3 +944,42 @@ legacy layout 없는 관찰만 이전 seed 경로를 사용하며 시각 미리�
 헤더의 「새 키워드·세계관 기획」 링크로 입력란과 컨셉 선택에 바로 이동한다.
 변경 전 실제 브라우저에서 공간 카드 시작점이 y=1309px로 첫 화면 밖에 있었으며,
 제작 중 이미지가 없는 것처럼 보이는 문제를 바로잡았다.
+
+### 부품 검수의 후속 장면 선행 요구 방지 (2026-10-06)
+
+준비 프롬프트는 native 부품 검수와 전체 공간 검수의 입력 범위를 구분한다.
+수납함의 새 PNG는 시점/상자 수를 통과했지만 아직 조립되지 않은 네 상태 전체 장면이
+없다는 이유로 READ FAIL을 받았다. 다음 준비는 실제 국소 표본을 제공해 재검수하고,
+전체 보존/동선/정체성 의무는 `art-demo → art-context-review`에 유지한다.
+기존 FAIL을 수정하거나 그림 결함을 면제하지 않는다. 원본이 정상인 경우 재도색 없이
+현재 승인 입력에 묶은 새 검수로 복구한다.
+
+### 부분 교체 후 보존할 원본 (2026-10-06)
+
+동일 품목의 최신 후보가 양옆 선반만 교체할 때 이전 북쪽 선반까지 사라지던 경로를 분리했다.
+`layout.preservedSources`의 path/sha256/requirement/reason과 `layout.sources`를 새 도면 승인에 묶는다.
+`art_demo.preserved_sources`는 동일 테마의 보존된 batch 영수증 candidateImages 및 themeCoverage를 확인한다.
+조립 입력은 이 원본만 추가 허용하며, 매 상태 recipe에서 비어 있지 않은 crop으로 실제 사용해야 한다.
+기존 FAIL 판정은 보존하고 독립 공간 검수에서 배치·보존 구간을 다시 판정한다. 임의의 옛 그림 사용 허가는 아니다.
+
+준비 단계의 native rounds.brief는 `brief.md` 본문이 아닌 폴더 경로다. `set_brief`와 실행 전 검사에서 경로를 검증한다.
+설명문 오입력으로 검수 pack 경로가 파일명 상한을 넘던 장애는 그림을 다시 그리는 사유가 아니다.
+원문이 승인된 brief.md와 동일한지 확인하고 경로만 복구한 뒤 native 기술 재검사·독립 검수를 재개한다.
+
+### 전용 인물 런타임 포장 (2026-10-06)
+
+`python3 src/harnesses/super-harness/theme_actors.py --runtime-pack ROOT RECEIPT DESTINATION`은
+현재 native 인물 영수증의 모든 원본 해시를 재확인하고 걷기·행동을 플레이어용으로 포장한다.
+charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 첫 슬롯에 무손실 복사한다.
+나머지 슬롯은 투명이고 up/right/down/left 행 순서를 보존한다. 기존 charset-actor 공용 게시도 같은 함수를 쓴다.
+행동 PNG는 바이트 그대로 복사하며 `runtime-assets.json`에 24×32/48×40 프레임과 각 발 기준점,
+원본 영수증, 행동별 시간·프레임 목록을 남긴다. 걷기 프레임 수는 96, 첫 인물 정지 프레임은 up1/right13/down25/left37.
+산출물은 `prepared-not-approved`이며 선택·공용 게시·프로젝트 저장·플레이 검증을 대신하지 않는다.
+공용 설치 시 이미지 ID와 SpriteDef ID를 일치시키고 두 자료를 함께 게시한다.
+
+### 전체 데모 수정은 전체 데모로 재검수 (2026-10-06)
+
+`art_repair.whole_scene_required`는 현재·보류·완료 피드백의 `space-demo` 범위를 유지한다.
+반복된 projection/style 오류가 있더라도 전체 공간을 calibration으로 되돌리지 않는다.
+종전 경로는 교체된 옛 부품까지 누적 28그룹을 시점 표본으로 다시 승인받게 해 완성 장면 재조립을 지연시켰다.
+`route`와 `ensure_layout_feedback` 모두 scene을 유지하며, 도면 승인·원본 해시·최대 수정 횟수는 그대로 적용한다.
