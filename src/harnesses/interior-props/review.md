@@ -79,6 +79,9 @@ production 주문에 `slotResults`가 있으면 각 측정값을 해당 슬롯 �
 최상위 측정값이나 reasons 문장만으로 슬롯 측정을 대신할 수 없다.
 일반 슬롯의 top_rows/top_y, 시점 판정을 요구한 슬롯의 side_elevation,
 stepped 계단의 top_bands는 모두 해당 slotResults 항목에 들어간다.
+production의 `topMin>0` 슬롯은 깊이가 1칸이어도 `side_elevation`을 true/false로 판정한다.
+위 일반 단일 기물 형식의 ‘깊이 1칸은 null’ 규칙을 이 슬롯에 적용하지 않는다.
+true는 실제로 옆모습일 때, false는 윗면과 남쪽 면이 함께 읽힐 때만 쓴다.
 예: `{"key":"stair","verdict":"PASS","top_rows":20,"top_y":null,"top_bands":[[1,5],[9,13],[17,21],[25,29]],"side_elevation":false,"reasons":"실제 그림에서 잰 근거"}`.
 이 숫자는 형식 예시일 뿐이다. 반드시 현재 후보를 열어 직접 잰 값을 기록한다.
 계단은 디딤면 사이의 단앞면까지 연속 윗면으로 세지 않으며, 서로 겹치지 않는 각 디딤면을 따로 적는다.
