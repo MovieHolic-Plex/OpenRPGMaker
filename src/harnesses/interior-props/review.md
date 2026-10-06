@@ -72,3 +72,16 @@
 - git, npm, vitest, gates, 다른 에이전트 띄우기 금지.
 
 마지막 답: `PASS` 또는 `FAIL` + 한 줄.
+
+## production 다중 슬롯의 측정값 위치
+
+production 주문에 `slotResults`가 있으면 각 측정값을 해당 슬롯 객체 **안**에 쓴다.
+최상위 측정값이나 reasons 문장만으로 슬롯 측정을 대신할 수 없다.
+일반 슬롯의 top_rows/top_y, 시점 판정을 요구한 슬롯의 side_elevation,
+stepped 계단의 top_bands는 모두 해당 slotResults 항목에 들어간다.
+예: `{"key":"stair","verdict":"PASS","top_rows":20,"top_y":null,"top_bands":[[1,5],[9,13],[17,21],[25,29]],"side_elevation":false,"reasons":"실제 그림에서 잰 근거"}`.
+이 숫자는 형식 예시일 뿐이다. 반드시 현재 후보를 열어 직접 잰 값을 기록한다.
+계단은 디딤면 사이의 단앞면까지 연속 윗면으로 세지 않으며, 서로 겹치지 않는 각 디딤면을 따로 적는다.
+일부 슬롯의 측정값을 다른 슬롯에 복사하거나, 근거가 없는 값을 PASS에 맞추어 만들지 않는다.
+제출 전 현재 native review_gate가 요구하는 슬롯별 필드를 확인한다. 형식 누락은 그림 결함이 아니므로
+관찰과 판정을 바꾸지 않고 누락된 측정 위치/필드를 보완한다.
