@@ -1,0 +1,14 @@
+{
+  "injected": true,
+  "before": [
+    "traffic-ew44-right",
+    "traffic-ew44-left",
+    "bus-ew44-right"
+  ],
+  "cleared": 0,
+  "after": [
+    "traffic-ew44-right:7",
+    "traffic-ew44-left:7"
+  ],
+  "ok": true
+}

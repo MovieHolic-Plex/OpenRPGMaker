@@ -167,6 +167,101 @@ export const INSPECT_MAP_TRANSIT_TOOL: ToolDefinition = {
   },
 };
 
+/**
+ * set_map_transit 인자 → 새 노선 목록(맵은 바꾸지 않는다). 편집기 「탈것」 칸의 자동 버튼도 이것을 부른다.
+ * 고칠 수 없는 입력이면 ToolError 를 던진다.
+ */
+export function planMapTransit(draft: Project, map: GameMap, args: Record<string, unknown>): { routes: MapTransitRoute[]; next: MapTransit; notes: string[]; warnings: string[] } {
+  const W = map.width, H = map.height;
+  let routes: MapTransitRoute[] = args.clear === true ? [] : structuredClone(map.transit?.routes ?? []);
+  const notes: string[] = [];
+  const warnings: string[] = [];
+  if (Array.isArray(args.removeRouteIds)) {
+    const rm = new Set(args.removeRouteIds as string[]);
+    routes = routes.filter((r) => !rm.has(r.id));
+  }
+  const auto = args.auto && typeof args.auto === "object" ? (args.auto as Record<string, unknown>) : null;
+  if (auto) {
+    const bands = mapRoadBands(draft, map);
+    routes = routes.filter((r) => !/^(traffic|bus|tram)-/.test(r.id));
+    if (auto.traffic !== false || Array.isArray(auto.busStops)) {
+      const usable = bands.road.filter((b) => b.edgeToEdge);
+      if (!usable.length) {
+        throw new ToolError(`자동으로 깔 차도가 없다 — 가장자리에서 가장자리까지 이어진 생활도로 띠(1층 ${LANE_GROUP}, 폭 2~8칸)를 찾지 못했다. 찾은 띠: ${bands.road.map(describeBand).join(" / ") || "없음"}. 길을 맵 끝까지 잇거나, routes 로 칸 경로를 직접 준다.`, { code: "no-road", mapId: map.id });
+      }
+      const made = autoTrafficRoutes(bands.road, map, {
+        ...(typeof auto.headwaySec === "number" ? { headwaySec: auto.headwaySec } : {}),
+        ...(Array.isArray(auto.vehicles) ? { vehicles: auto.vehicles as string[] } : {}),
+        ...(Array.isArray(auto.busStops) ? { busStops: auto.busStops as NonNullable<Parameters<typeof autoTrafficRoutes>[2]>["busStops"] } : {}),
+        ...(typeof auto.busHeadwaySec === "number" ? { busHeadwaySec: auto.busHeadwaySec } : {}),
+      });
+      if (made.unmatchedStops.length) {
+        throw new ToolError(`버스 정류장 ${made.unmatchedStops.map((s) => `(${s.x},${s.y})`).join(" ")} 이 어느 차선 위도 아니다 — 버스 머리가 서는 **차선 칸**을 준다. 차선: ${usable.map((b) => b.axis === "ew" ? `y ${b.edge}~${b.edge + 1}(동쪽행)${b.width >= 4 ? ` · y ${b.edge + b.width - 2}~${b.edge + b.width - 1}(서쪽행)` : ""}` : `x ${b.edge + (b.width >= 4 ? b.width - 2 : 0)}~${b.edge + (b.width >= 4 ? b.width - 1 : 1)}(남쪽행)${b.width >= 4 ? ` · x ${b.edge}~${b.edge + 1}(북쪽행)` : ""}`).join(" / ")}`, { code: "invalid-args", mapId: map.id });
+      }
+      routes.push(...made.routes.filter((r) => auto.traffic !== false || r.kind === "bus"));
+      notes.push(`차도 띠 ${usable.length}개(${usable.map(describeBand).join(" / ")})`);
+    }
+    if (auto.tram === true) {
+      const rails = bands.tram.filter((b) => b.edgeToEdge);
+      if (!rails.length) throw new ToolError(`노면전차 레일이 가장자리→가장자리로 이어지지 않는다 — 2층에 jp-tram-rail-h(가로 2줄)/jp-tram-rail-v(세로 2열)를 맵 끝까지 잇거나 routes 로 kind:"tram" 경로를 직접 준다. 찾은 레일: ${bands.tram.map(describeBand).join(" / ") || "없음"}`, { code: "no-rail", mapId: map.id });
+      // 복선: 같은 축에서 4칸 안에 나란한 두 레일 = 좌측통행(동서 길이면 위 레일 동쪽행·아래 레일 서쪽행, 남북 길이면 왼쪽 북쪽행·오른쪽 남쪽행).
+      // 단선(짝 없는 레일)은 한 방향만 — 마주 오는 전차가 한 레일에서 만나면 서로 비켜 갈 수 없다.
+      const used = new Set<RoadBand>();
+      const matchedTramStops = new Set<Record<string, unknown>>();
+      for (const b of rails) {
+        if (used.has(b)) continue;
+        const mate = rails.find((o) => o !== b && !used.has(o) && o.axis === b.axis && o.edge > b.edge && o.edge - b.edge <= 4);
+        used.add(b); if (mate) used.add(mate);
+        const lanes: Array<[RoadBand, TransitDir]> = mate
+          ? (b.axis === "ew" ? [[b, "right"], [mate, "left"]] : [[b, "up"], [mate, "down"]])
+          : [[b, b.axis === "ew" ? "left" : "down"]];
+        for (const [band, dir] of lanes) {
+          const OFF = 16;
+          const along = band.axis === "ew" ? W : H;
+          const [a0, z0] = dir === "right" || dir === "down" ? [-OFF, along - 1 + OFF] : [along - 1 + OFF, -OFF];
+          const path = band.axis === "ew" ? [{ x: a0, y: band.edge }, { x: z0, y: band.edge }] : [{ x: band.edge, y: a0 }, { x: band.edge, y: z0 }];
+          const stops = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? [])
+            .map((s) => ({ s, index: straightPathIndex(path, s.x as number, s.y as number) })).filter((e): e is { s: Record<string, unknown>; index: number } => e.index !== null)
+            .map((e) => { matchedTramStops.add(e.s); return e; })
+            .map(({ s, index }) => ({ index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) }));
+          routes.push({ id: `tram-${band.axis}${band.edge}-${dir}`, name: "노면전차", kind: "tram", path, vehicles: ["jp-tram"], headwaySec: 45, ...(stops.length ? { stops } : {}) });
+        }
+        if (!mate) warnings.push(`노면전차 레일 ${describeBand(b)} 은 단선이라 한 방향(${b.axis === "ew" ? "서쪽행" : "남쪽행"})만 다닌다 — 양방향이면 레일을 한 줄 더(4칸 안에 나란히) 깐다`);
+      }
+      const lost = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? []).filter((t) => !matchedTramStops.has(t));
+      if (lost.length) throw new ToolError(`노면전차 정류장 ${lost.map((t) => `(${String(t.x)},${String(t.y)})`).join(" ")} 이 레일 위가 아니다 — 전차 머리가 서는 레일 칸(레일 2줄 중 하나)을 준다. 레일: ${rails.map(describeBand).join(" / ")}`, { code: "invalid-args", mapId: map.id });
+      notes.push(`노면전차 레일 ${rails.length}줄`);
+    }
+  }
+  if (Array.isArray(args.routes)) {
+    for (const raw of args.routes as Array<Record<string, unknown>>) {
+      const r = routeFromArgs(raw);
+      const allowed = TRANSIT_ROUTE_VEHICLE_KINDS[r.kind];
+      const wrong = r.vehicles.filter((id) => !allowed.includes(transitVehicle(id)?.kind ?? ("?" as never)));
+      if (wrong.length) throw new ToolError(`노선 ${r.id}(${KIND_KO[r.kind]})에 맞지 않는 탈것: ${wrong.join(", ")} — ${r.kind} 노선에는 ${allowed.join("·")} 종류만`, { code: "invalid-args", mapId: map.id });
+      routes = routes.filter((x) => x.id !== r.id);
+      routes.push(r);
+    }
+  }
+  if (!auto && !Array.isArray(args.routes) && !Array.isArray(args.removeRouteIds) && args.clear !== true) {
+    throw new ToolError("바꿀 것이 없다 — auto:{} · routes · removeRouteIds · clear 중 하나를 준다", { code: "invalid-args", mapId: map.id });
+  }
+  const next: MapTransit = { routes };
+  const { problems } = normalizeMapTransit(next, { width: W, height: H });
+  if (problems.length) throw new ToolError(`노선을 깔지 않았다 — ${problems.map((p) => `${p.routeId}: ${p.message}`).join(" / ")}`, { code: "invalid-route", mapId: map.id });
+  for (const r of routes) {
+    const off = offRoadCells(draft, map, r);
+    if (off.length) throw new ToolError(`노선을 깔지 않았다 — ${r.id}(${KIND_KO[r.kind]})의 몸이 차도 밖 칸 ${off.map((c) => `(${c.x},${c.y})`).join(" ")} 에 걸린다. 몸 폭 2칸(가로로 달리면 머리 행·그 아래 행, 세로면 머리 열·그 오른쪽 열)이 모두 1층 생활도로여야 한다. inspect_map_transit 로 띠 좌표를 본다.`, { code: "off-road", mapId: map.id, x: off[0]!.x, y: off[0]!.y });
+    for (const s of r.stops ?? []) {
+      if (!s.board) continue;
+      const dest = draft.maps[s.board.mapId];
+      if (!dest) throw new ToolError(`노선 ${r.id} 정류장의 board.mapId '${s.board.mapId}' 맵이 없다`, { code: "map-not-found", mapId: map.id });
+      if (!inMapBounds(dest, s.board.x, s.board.y)) throw new ToolError(`노선 ${r.id} 정류장의 board (${s.board.x},${s.board.y}) 가 ${dest.name}(${dest.width}×${dest.height}) 밖이다`, { code: "invalid-args", mapId: map.id });
+    }
+  }
+  return { routes, next, notes, warnings };
+}
+
 export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
   name: "set_map_transit",
   mode: "write",
@@ -204,93 +299,7 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
   invalidArgsExample: { auto: { busStops: [{ x: 30, y: 44, name: "学校前" }] } },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, String(args.mapId ?? ""));
-    const W = map.width, H = map.height;
-    let routes: MapTransitRoute[] = args.clear === true ? [] : structuredClone(map.transit?.routes ?? []);
-    const notes: string[] = [];
-    const warnings: string[] = [];
-    if (Array.isArray(args.removeRouteIds)) {
-      const rm = new Set(args.removeRouteIds as string[]);
-      routes = routes.filter((r) => !rm.has(r.id));
-    }
-    const auto = args.auto && typeof args.auto === "object" ? (args.auto as Record<string, unknown>) : null;
-    if (auto) {
-      const bands = mapRoadBands(draft, map);
-      routes = routes.filter((r) => !/^(traffic|bus|tram)-/.test(r.id));
-      if (auto.traffic !== false || Array.isArray(auto.busStops)) {
-        const usable = bands.road.filter((b) => b.edgeToEdge);
-        if (!usable.length) {
-          throw new ToolError(`자동으로 깔 차도가 없다 — 가장자리에서 가장자리까지 이어진 생활도로 띠(1층 ${LANE_GROUP}, 폭 2~8칸)를 찾지 못했다. 찾은 띠: ${bands.road.map(describeBand).join(" / ") || "없음"}. 길을 맵 끝까지 잇거나, routes 로 칸 경로를 직접 준다.`, { code: "no-road", mapId: map.id });
-        }
-        const made = autoTrafficRoutes(bands.road, map, {
-          ...(typeof auto.headwaySec === "number" ? { headwaySec: auto.headwaySec } : {}),
-          ...(Array.isArray(auto.vehicles) ? { vehicles: auto.vehicles as string[] } : {}),
-          ...(Array.isArray(auto.busStops) ? { busStops: auto.busStops as NonNullable<Parameters<typeof autoTrafficRoutes>[2]>["busStops"] } : {}),
-          ...(typeof auto.busHeadwaySec === "number" ? { busHeadwaySec: auto.busHeadwaySec } : {}),
-        });
-        if (made.unmatchedStops.length) {
-          throw new ToolError(`버스 정류장 ${made.unmatchedStops.map((s) => `(${s.x},${s.y})`).join(" ")} 이 어느 차선 위도 아니다 — 버스 머리가 서는 **차선 칸**을 준다. 차선: ${usable.map((b) => b.axis === "ew" ? `y ${b.edge}~${b.edge + 1}(동쪽행)${b.width >= 4 ? ` · y ${b.edge + b.width - 2}~${b.edge + b.width - 1}(서쪽행)` : ""}` : `x ${b.edge + (b.width >= 4 ? b.width - 2 : 0)}~${b.edge + (b.width >= 4 ? b.width - 1 : 1)}(남쪽행)${b.width >= 4 ? ` · x ${b.edge}~${b.edge + 1}(북쪽행)` : ""}`).join(" / ")}`, { code: "invalid-args", mapId: map.id });
-        }
-        routes.push(...made.routes.filter((r) => auto.traffic !== false || r.kind === "bus"));
-        notes.push(`차도 띠 ${usable.length}개(${usable.map(describeBand).join(" / ")})`);
-      }
-      if (auto.tram === true) {
-        const rails = bands.tram.filter((b) => b.edgeToEdge);
-        if (!rails.length) throw new ToolError(`노면전차 레일이 가장자리→가장자리로 이어지지 않는다 — 2층에 jp-tram-rail-h(가로 2줄)/jp-tram-rail-v(세로 2열)를 맵 끝까지 잇거나 routes 로 kind:"tram" 경로를 직접 준다. 찾은 레일: ${bands.tram.map(describeBand).join(" / ") || "없음"}`, { code: "no-rail", mapId: map.id });
-        // 복선: 같은 축에서 4칸 안에 나란한 두 레일 = 좌측통행(동서 길이면 위 레일 동쪽행·아래 레일 서쪽행, 남북 길이면 왼쪽 북쪽행·오른쪽 남쪽행).
-        // 단선(짝 없는 레일)은 한 방향만 — 마주 오는 전차가 한 레일에서 만나면 서로 비켜 갈 수 없다.
-        const used = new Set<RoadBand>();
-        const matchedTramStops = new Set<Record<string, unknown>>();
-        for (const b of rails) {
-          if (used.has(b)) continue;
-          const mate = rails.find((o) => o !== b && !used.has(o) && o.axis === b.axis && o.edge > b.edge && o.edge - b.edge <= 4);
-          used.add(b); if (mate) used.add(mate);
-          const lanes: Array<[RoadBand, TransitDir]> = mate
-            ? (b.axis === "ew" ? [[b, "right"], [mate, "left"]] : [[b, "up"], [mate, "down"]])
-            : [[b, b.axis === "ew" ? "left" : "down"]];
-          for (const [band, dir] of lanes) {
-            const OFF = 16;
-            const along = band.axis === "ew" ? W : H;
-            const [a0, z0] = dir === "right" || dir === "down" ? [-OFF, along - 1 + OFF] : [along - 1 + OFF, -OFF];
-            const path = band.axis === "ew" ? [{ x: a0, y: band.edge }, { x: z0, y: band.edge }] : [{ x: band.edge, y: a0 }, { x: band.edge, y: z0 }];
-            const stops = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? [])
-              .map((s) => ({ s, index: straightPathIndex(path, s.x as number, s.y as number) })).filter((e): e is { s: Record<string, unknown>; index: number } => e.index !== null)
-              .map((e) => { matchedTramStops.add(e.s); return e; })
-              .map(({ s, index }) => ({ index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) }));
-            routes.push({ id: `tram-${band.axis}${band.edge}-${dir}`, name: "노면전차", kind: "tram", path, vehicles: ["jp-tram"], headwaySec: 45, ...(stops.length ? { stops } : {}) });
-          }
-          if (!mate) warnings.push(`노면전차 레일 ${describeBand(b)} 은 단선이라 한 방향(${b.axis === "ew" ? "서쪽행" : "남쪽행"})만 다닌다 — 양방향이면 레일을 한 줄 더(4칸 안에 나란히) 깐다`);
-        }
-        const lost = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? []).filter((t) => !matchedTramStops.has(t));
-        if (lost.length) throw new ToolError(`노면전차 정류장 ${lost.map((t) => `(${String(t.x)},${String(t.y)})`).join(" ")} 이 레일 위가 아니다 — 전차 머리가 서는 레일 칸(레일 2줄 중 하나)을 준다. 레일: ${rails.map(describeBand).join(" / ")}`, { code: "invalid-args", mapId: map.id });
-        notes.push(`노면전차 레일 ${rails.length}줄`);
-      }
-    }
-    if (Array.isArray(args.routes)) {
-      for (const raw of args.routes as Array<Record<string, unknown>>) {
-        const r = routeFromArgs(raw);
-        const allowed = TRANSIT_ROUTE_VEHICLE_KINDS[r.kind];
-        const wrong = r.vehicles.filter((id) => !allowed.includes(transitVehicle(id)?.kind ?? ("?" as never)));
-        if (wrong.length) throw new ToolError(`노선 ${r.id}(${KIND_KO[r.kind]})에 맞지 않는 탈것: ${wrong.join(", ")} — ${r.kind} 노선에는 ${allowed.join("·")} 종류만`, { code: "invalid-args", mapId: map.id });
-        routes = routes.filter((x) => x.id !== r.id);
-        routes.push(r);
-      }
-    }
-    if (!auto && !Array.isArray(args.routes) && !Array.isArray(args.removeRouteIds) && args.clear !== true) {
-      throw new ToolError("바꿀 것이 없다 — auto:{} · routes · removeRouteIds · clear 중 하나를 준다", { code: "invalid-args", mapId: map.id });
-    }
-    const next: MapTransit = { routes };
-    const { problems } = normalizeMapTransit(next, { width: W, height: H });
-    if (problems.length) throw new ToolError(`노선을 깔지 않았다 — ${problems.map((p) => `${p.routeId}: ${p.message}`).join(" / ")}`, { code: "invalid-route", mapId: map.id });
-    for (const r of routes) {
-      const off = offRoadCells(draft, map, r);
-      if (off.length) throw new ToolError(`노선을 깔지 않았다 — ${r.id}(${KIND_KO[r.kind]})의 몸이 차도 밖 칸 ${off.map((c) => `(${c.x},${c.y})`).join(" ")} 에 걸린다. 몸 폭 2칸(가로로 달리면 머리 행·그 아래 행, 세로면 머리 열·그 오른쪽 열)이 모두 1층 생활도로여야 한다. inspect_map_transit 로 띠 좌표를 본다.`, { code: "off-road", mapId: map.id, x: off[0]!.x, y: off[0]!.y });
-      for (const s of r.stops ?? []) {
-        if (!s.board) continue;
-        const dest = draft.maps[s.board.mapId];
-        if (!dest) throw new ToolError(`노선 ${r.id} 정류장의 board.mapId '${s.board.mapId}' 맵이 없다`, { code: "map-not-found", mapId: map.id });
-        if (!inMapBounds(dest, s.board.x, s.board.y)) throw new ToolError(`노선 ${r.id} 정류장의 board (${s.board.x},${s.board.y}) 가 ${dest.name}(${dest.width}×${dest.height}) 밖이다`, { code: "invalid-args", mapId: map.id });
-      }
-    }
+    const { routes, next, notes, warnings } = planMapTransit(draft, map, args);
     if (routes.length) map.transit = next; else delete map.transit;
     const sim = routes.length ? simReport(map) : null;
     const quiet = sim ? Object.entries(sim.perRoute).filter(([, e]) => e.vehicles === 0).map(([id]) => id) : [];
