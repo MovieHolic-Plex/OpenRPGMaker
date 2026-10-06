@@ -154,3 +154,11 @@ another host has it. `runtimePassed:false` remains false until separate runtime 
 has real evidence; collisions, doors, animation, visual fidelity, and playable
 objectives remain the supervisor's checks. Serve the canonical folder through the
 SQLite project host for editor preview; bridge-free previews do not resolve refs.
+
+## Isolated wand shelf vacancy request
+
+`src/harnesses/super-harness/wand_vacancy_prepare.py prepare --root <native-artwork-root> --out <new-scope>` freezes the existing shelf, original native walk/actions, scene recipe and native harness code. It queues one native candidate in scope-local content/data/picks, with all pixels locked except box5 sockets XYWH `[2,34,12,5]` and `[18,34,12,5]`. It preserves the source palette and all other shelf pixels. The source-specific paths/hashes are explicit in the entry; refreshed sources require an explicit new request.
+
+`run --out <scope>` executes the copied native interior-props draw/independent-review path. `collect --out <scope>` validates changed pixels and source colors and creates lossless actual before/contact/lift comparisons from the frozen recipe and both delivered native actors, with exact anchors and 200ms lift poses. `review-context --out <scope>` requires native PASS, creates the comparisons, invokes the configured Codex reviewer and writes a hash-bound receipt. Each actor/side comparison isolates its subject and retains native scene placements; these images are review evidence, never a flattened runtime background.
+
+The receipt is reviewed content awaiting selection. It does not select, publish, save a project or establish runtime success. Context PASS does not resolve the original full-room wall FAIL. A current hash-bound selection, current whole-scene review, runtime integration/QA and canonical save/reload remain the supervisor's responsibilities. Partial failed preparation directories are retained and must not be reused.
