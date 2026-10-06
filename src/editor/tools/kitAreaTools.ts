@@ -282,7 +282,7 @@ export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, s
   // 6) 작은 소품: 나무·표식·물가의 밑동 둘레에 한두 개씩 — 서로 붙지 않게(붙이면 한 줄로 늘어서 울타리처럼 읽혔다).
   let smalls = 0;
   if (palette.smalls.length) {
-    const goal = Math.floor(emptyBefore * 0.4);
+    const goal = Math.floor(emptyBefore * 0.25);
     const smallAt = new Set<number>();
     const touchesSmall = (x: number, y: number) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => smallAt.has(idx(x + dx!, y + dy!)));
     for (const a of placed.slice()) {
