@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "b10648d88b7bd562d00f7c65c5af20fa29fd157c0827d5d5873c3e422e70d27a",
+  "priorReviewJob": "3bc05259-f26e-43a5-8d85-8262b02f88a8",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 54,
+      "y": 114,
+      "message": "The inner edge of the left foreground shin grows a thin horizontal green spur around x50-59, y114; another lateral interruption appears near y119. These read as stray slivers at 1x and break the smooth outlined leg seen in idle. Remove the lateral protruding pixels and redraw a continuous dark boundary with the highlight contained inside the shin. Preserve the foot at y124."
+    },
+    {
+      "pose": "attack",
+      "x": 108,
+      "y": 59,
+      "message": "The striking fist remains beside the face with a bent handle loop, only modestly farther right than in move. At 1x the contact frame reads as another bent-arm stance rather than the promised handle-fist strike. Redraw the connected handle forearm and fist around x96-117, y48-76 with a clearer forward extension and a shoulder/body response toward the right. Keep the arm root visibly attached and the supporting foot planted; leave the required outer pixel margin."
+    },
+    {
+      "pose": "skill_c",
+      "x": 82,
+      "y": 44,
+      "message": "The rightmost residual flame terminates around x81-82, y44 on the outer gold band beyond the dark inner opening. At 3x it reads as fire on the exterior lip. Move that flame's base inward into the visible opening and redraw its root against the inner cavity, retaining three separately readable residual flames."
+    }
+  ],
+  "startedAt": "2026-10-06T14:21:31.184643+00:00"
+}

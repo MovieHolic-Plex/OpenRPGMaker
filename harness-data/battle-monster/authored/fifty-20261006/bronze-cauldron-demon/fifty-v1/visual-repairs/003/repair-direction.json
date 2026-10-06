@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "be808cce24d94416ca8b8390f9ed6d14d2a1bc2db7a99185132a262094645868",
+  "priorReviewJob": "8caeabc2-041f-472e-b8b9-aa27af781de0",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 30,
+      "y": 63,
+      "message": "Repair the deep background-visible notch beneath the left handle: around x27-33, y59-65 the cauldron wall retreats to x34, then abruptly jumps left near y66, with a narrow open seam continuing toward y72. Redraw a continuous outlined wall from the underside of the rim into the belly, using the existing verdigris light/base/shadow clusters. Preserve the intentional opening inside the handle; do not fill the ring."
+    }
+  ],
+  "startedAt": "2026-10-06T14:45:58.415120+00:00"
+}

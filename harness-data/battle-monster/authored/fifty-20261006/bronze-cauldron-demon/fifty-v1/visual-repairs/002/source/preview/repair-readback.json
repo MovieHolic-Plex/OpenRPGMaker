@@ -1,0 +1,275 @@
+{
+  "changes": {
+    "poses/attack.pxgrid": {
+      "beforeSha256": "8a4616c93e0afe58d040518b564eb1074f4ff3260c741ac84ee455ebc08825db",
+      "currentSha256": "d37ae73c81eabe21b28d1ad7c2a66829b9d9d9fd661f4fabd85752669e3fbcc6",
+      "changedPixels": 626,
+      "changedBoundsInclusive": [
+        87,
+        47,
+        123,
+        78
+      ]
+    },
+    "poses/windup.pxgrid": {
+      "beforeSha256": "03cf34018bfa8021edc147b283a8f735bed583c34afb0a6c0ecfbcd1bd26af5c",
+      "currentSha256": "2a076372e0f21ebeaa96f5a8177d44c6ad6edc3c1d7c36d709448e6f0ab6a63a",
+      "changedPixels": 18,
+      "changedBoundsInclusive": [
+        43,
+        114,
+        55,
+        119
+      ]
+    },
+    "actions/skill_c.pxgrid": {
+      "beforeSha256": "c1c5ace2358e866ee670fcaf3047dd970559b5d62b61fdc7ab350b53f131ac45",
+      "currentSha256": "37c6fe455246539e89b05ef85fd73a153e9a0689b1dc39d5fbcce3152ca2930d",
+      "changedPixels": 199,
+      "changedBoundsInclusive": [
+        60,
+        30,
+        85,
+        44
+      ]
+    }
+  },
+  "unchangedOriginalFiles": 16,
+  "frames": {
+    "attack": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        124,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "dead": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        75,
+        110,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "hit": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        101,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "idle_a": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        106,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "idle_b": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        106,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "idle_c": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        106,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "move": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        111,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "recover": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        32,
+        104,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "windup": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        19,
+        103,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "poison_a": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        16,
+        99,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "poison_b": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        8,
+        98,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "skill_a": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        24,
+        100,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "skill_b": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        3,
+        105,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "skill_c": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        10,
+        27,
+        104,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "sleep_a": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        12,
+        61,
+        105,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "sleep_b": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        12,
+        62,
+        105,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "stun_a": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        13,
+        11,
+        111,
+        125
+      ],
+      "lowestInkY": 124
+    },
+    "stun_b": {
+      "size": [
+        128,
+        128
+      ],
+      "inkBoundsExclusive": [
+        13,
+        13,
+        110,
+        125
+      ],
+      "lowestInkY": 124
+    }
+  },
+  "note": "Local source/render readback only. No independent review or user selection."
+}

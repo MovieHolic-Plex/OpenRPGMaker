@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-06T14:53:18.758234+00:00",
+  "passed": true,
+  "key": "bronze-cauldron-demon/fifty-v1",
+  "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+  "actualIndependentReviewJob": "71fceaed-f71d-46a1-bd5c-c9017e709b16",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "8d0b31d717a0ab4aa39b84fc9b65758c60ba5da4f9dd6363a815190110942e28",
+    "preview/suite/light.png": "5286b5b699152cf06191944da9967f0b25fead2e76a93f410cef38b01b2c6072",
+    "preview/suite/dark.png": "ff69b55c14bb0fd3150b94c63b6b2a53f0f5b2478aaeb6e62deb0f2c3a624607",
+    "preview/suite/checker.png": "487297c87b2482731a8e52fe3a0c77c13cdce1945723b52f50ad1f51e69bb3e8"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "retainedIndependentSummary": "Viewed the actual portrait, light, dark and checker PNGs, including native 1x and the supplied nearest 3x panels; the portrait matches idle_a. The broad verdigris vessel, gold elliptical lip, two handle arms, three cauldron legs and red tassel form a readable cauldron demon. The face and extended punch orient toward the right. Broad upper-left highlights and darker right/lower planes give the body volume; the gold rim and handles distinguish metal from the patinated vessel. Dark-side outlines lose some contrast on the dark background, but remain traceable on light and checker backgrounds. No unintended transparent body holes, detached fists or broken limb connections were apparent; the open handle interiors and spaces between legs read as intentional. Windup raises the connected handle fist, move changes the leg stance, attack extends that fist, and recover retracts it. Hit compresses and tilts the vessel; dead lays the recognizable body and rim sideways. Standing support feet share the ground line, with the shorter rear leg reading behind them. Skill_a places a bright core inside the actual opening; skill_b emits two large connected flame columns from it; skill_c reduces them to three embers. Poison closes the eyes and brings a hand toward the mouth with purple bubbles; stun droops the arm beneath stars; sleep crouches the body with closed eyes and mouth. These are distinct bodily states, not palette tints or unrelated attacks. Idle and paired status changes are subtle at 1x. This is an advisory visual recommendation from static pose previews: animation timing, dash/contact behavior, battle placement and boss scale require actual playback. PNG inspection cannot authenticate literal-grid authorship or model provenance.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-bronze-cauldron-demon-after-repair-three.png",
+  "nativeContactPngSha256": "da6b7c22f9fb3e21abedbec4e3685535851ed8253df84195fd3c81661eb785fb",
+  "nativeWriterFilesRead": {
+    "author.py": "40cb6634305d82a91efa22eb5d7f3285d7292e1333bfbd54605fc6f14678fec2",
+    "repair_002.py": "bc24e6f0290b6b55228e2e4cb05acb45268dfed070a10e63bd98d106c32755d6",
+    "repair_003.py": "d3cec710d322b7057ae628800e7e2fb8b630fe7c160924addedee05e47a08a11",
+    "repair_004.py": "6af635d62abb792184a8fbf1c0d3880f2155225bc1cad9189a50e0ac9e784a8a"
+  },
+  "rootVisualAndSourceMethodObservations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Rounded green bronze vessel has gold open rim, near/far handle arms,3 feet, quiet gold face and red tassel. Broad upper-left light and dark right planes give material volume; the far arm is dark and paired changes are modest.",
+    "Actually viewed all18 current native128 poses at original1632x1272. Hit left wall now descends continuously from under the tilted rim/handle into the belly with outlined verdigris light/base/shadow clusters, preserving the deliberate open handle ring. Other17 native grids preserve the actually viewed repair2 source: stronger tilted-rim flinch, readable fallen opening/handle and small pale rim charge distinct from2 contact flames/3 recovery embers. Quiet status pairs/frontal face/simple planes remain; no live collision/timing claim.",
+    "Fully read repair_004.py all16 explicit native x/y/literal wall rows, apply/snapshot/module guard, complete2-line current author entry diff and entire render_repair_004.py. This last author step edits hit only after prior two literal repair modules; snapshot preserves its old source. Renderer only reads source and compares diagnostic images/8GIF native pixels/durations. Exact prior3 fully read writer hashes match except the fully read author diff. No body generator, whole-frame transform or tween.",
+    "Complete original writer/module reading and subsequent complete repair/diff reading are recorded in the binding-specific root drafts; exact current read writer hashes were rechecked. Native18/source/keeper4PNG/current technical binding all agree. Static pose/source review does not prove live battle contact or timing."
+  ],
+  "actualReadRecord": "verify-shots/battle-monster-fifty/root-draft-review-bronze-cauldron-demon-after-repair-three.json",
+  "claimScope": "Actual native18/complete current writers and actual independent keeper binding only. Selected ZIP/native GIF/archive/browser evidence is verified separately; entire50 completion remains pending."
+}

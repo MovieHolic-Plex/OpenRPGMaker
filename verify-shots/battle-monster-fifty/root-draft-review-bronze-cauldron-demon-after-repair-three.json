@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-06T14:52:21.124457+00:00",
+  "passed": false,
+  "key": "bronze-cauldron-demon/fifty-v1",
+  "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-bronze-cauldron-demon-after-repair-three.png",
+  "nativeContactPngSha256": "da6b7c22f9fb3e21abedbec4e3685535851ed8253df84195fd3c81661eb785fb",
+  "nativeWriterFilesRead": {
+    "author.py": "40cb6634305d82a91efa22eb5d7f3285d7292e1333bfbd54605fc6f14678fec2",
+    "repair_002.py": "bc24e6f0290b6b55228e2e4cb05acb45268dfed070a10e63bd98d106c32755d6",
+    "repair_003.py": "d3cec710d322b7057ae628800e7e2fb8b630fe7c160924addedee05e47a08a11",
+    "repair_004.py": "6af635d62abb792184a8fbf1c0d3880f2155225bc1cad9189a50e0ac9e784a8a"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Rounded green bronze vessel has gold open rim, near/far handle arms,3 feet, quiet gold face and red tassel. Broad upper-left light and dark right planes give material volume; the far arm is dark and paired changes are modest.",
+    "Windup lifts the attached handle fist, move changes the stride, attack extends the fist modestly and recovery lowers it. The actual reviewer requests a clearer punch and removal of shin slivers. Hit droops the face/body; dead lies horizontally with tucked limbs; closed-eye sleep crouches separately. Poison brings a hand toward the mouth with bubbles, stun slumps with stars.",
+    "Rim-origin charge develops into2 tall gold/orange flames then3 residual flames; the actual reviewer found one residual flame rooted on the outer rim. Static native views do not establish battle displacement/contact/timing.",
+    "Fully read every author.py method and full module call order, including inspected_joint_repairs after make_poses/rest_and_dead/skill/poison/stun. Blank grids receive explicit literal clusters, own rigid original parts are reused selectively, independently authored limb/face/status/dead rows and explicit selected erasures replace changing anatomy. No body primitives, full-frame transform or tween. Fully read render.py: native128 palette decode, nearest diagnostic sheets, explicit8 GIF timelines and actual decoded duration/hash readback; it writes previews rather than native grids.",
+    "Actually viewed all18 current native128 poses. Windup shin now has a continuous contained outline, attack extends an attached near handle/fist screen-right with wider legs, and skill_c has3 residual flames rooted within the open rim. Other15 poses retain the prior cauldron identity and status poses. Small paired changes and a fairly frontal face remain; no battle contact/timing claim.",
+    "Read the complete current author diff from the actually fully read initial author and every repair_002.py method/module guard. Its2 windup spans/67 attack rows/47 skill_c rows replace exactly those named native grids; the author entry imports/calls it last after all original writers. Fully read render_repair.py; before/current labeled panels and coordinate/hash facts only, with no native art writes. No body generator, whole-frame transform or tween.",
+    "Actually opened all18 current native128 poses at original1632x1272. Hit has a tilted oval rim, staggered face/body planes, inward handle and newly bent support legs while keeping the ground line. Fallen body now ends in a distinct thick gold tilted opening with dark center and separate connected lower handle/fist;3 rear feet remain. Skill preparation is a small pale gold-white core inside the cavity, unlike the2 high contact flames and3 recovery flames. Other15 native grids match the previously viewed repair1. Frontal face/quiet status pairs and simple metal planes remain; static views do not prove combat contact/timing.",
+    "Fully read repair_003.py runs/block/apply/snapshot/guard and entire current author diff. Exactly3 selected frames get explicit literal rows, with chosen transparent row padding to erase those parts; snapshot preserves the old native files. Current author calls repair_003 after repair_002 as its last native writing step. Fully read render_repair_003.py diagnostic comparisons and actual8 GIF RGBA/duration readback. Prior full writer method hashes match except the fully read author2-line entry diff. No body geometry, whole-frame transform or tween.",
+    "Actually viewed all18 current native128 poses at original1632x1272. Hit left wall now descends continuously from under the tilted rim/handle into the belly with outlined verdigris light/base/shadow clusters, preserving the deliberate open handle ring. Other17 native grids preserve the actually viewed repair2 source: stronger tilted-rim flinch, readable fallen opening/handle and small pale rim charge distinct from2 contact flames/3 recovery embers. Quiet status pairs/frontal face/simple planes remain; no live collision/timing claim.",
+    "Fully read repair_004.py all16 explicit native x/y/literal wall rows, apply/snapshot/module guard, complete2-line current author entry diff and entire render_repair_004.py. This last author step edits hit only after prior two literal repair modules; snapshot preserves its old source. Renderer only reads source and compares diagnostic images/8GIF native pixels/durations. Exact prior3 fully read writer hashes match except the fully read author diff. No body generator, whole-frame transform or tween."
+  ],
+  "actualIndependentRecommendation": "pending-bind-verification",
+  "claimScope": "Actual current native18 and complete current native writers viewed/read; keeper binding verification is separate. No Allow/selected/archive/browser/species completion claim."
+}

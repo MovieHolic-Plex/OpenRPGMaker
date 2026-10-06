@@ -1,0 +1,25 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the sheets' native 1x and nearest-neighbor 3x panels. The large verdigris cauldron, gold rim, three legs, handle-arms and red tassel are recognizable; broad upper-left highlights and the darker right plane give convincing volume. The raised handle, forward step, connected rightward punch and recovery read as one action. Forefeet share a ground line; the shorter rear leg reads in perspective. Skill preparation shows a gold-white core inside the opening, contact shows two attached fire columns, and recovery shows three attached embers. Poison uses narrowed eyes, a lowered arm and purple bubbles; stun uses slack arms and stars; sleep uses a low squat and closed eyes. These are distinguishable states rather than whole-body tints. Idle changes and state-pair changes are subtle at 1x. Intentional handle openings remain transparent, but the hit pose has a conspicuous notch in the left cauldron wall beneath its handle. The toppled dead pose remains identifiable. Recommendation concerns that local contour defect, not a user selection. Static pose previews cannot establish animation timing, dash/contact in actual battle, source authorship, or palette-index provenance; no geometry PASS is treated as visual approval.",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 30,
+      "y": 63,
+      "message": "Repair the deep background-visible notch beneath the left handle: around x27-33, y59-65 the cauldron wall retreats to x34, then abruptly jumps left near y66, with a narrow open seam continuing toward y72. Redraw a continuous outlined wall from the underside of the rim into the belly, using the existing verdigris light/base/shadow clusters. Preserve the intentional opening inside the handle; do not fill the ring."
+    }
+  ],
+  "binding": "be808cce24d94416ca8b8390f9ed6d14d2a1bc2db7a99185132a262094645868",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "8d0b31d717a0ab4aa39b84fc9b65758c60ba5da4f9dd6363a815190110942e28",
+    "preview/suite/light.png": "30b148928949fee6d47371b098df4b74a918840197bb94ce3ac7721dd0138d08",
+    "preview/suite/dark.png": "d1cb3f96022d92f35b4b3295d0550ace697c9d3fadfc87b2171395f277c3f002",
+    "preview/suite/checker.png": "96f469ef27de0e8f5ed80143af36e36bfe858ecd3c8ecaabef5792cba7b1b31d"
+  },
+  "jobId": "8caeabc2-041f-472e-b8b9-aa27af781de0",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T14:45:58.329767+00:00",
+  "userApproved": false
+}

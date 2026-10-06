@@ -1,0 +1,37 @@
+{
+  "id": "222087cd-6796-4653-a67e-7352557b015a",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T14:21:31.192556+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1/references/human-size.png",
+    "-"
+  ],
+  "promptSha256": "12aeed9a26046108e82bdd6addc1c6b784c3d49738657f875754f951ef0c2335",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "reference.png": "23d52b40a811f2beb4e48c2f66525a0dcc9905da82f0e61c98e876f64a5885d2",
+    "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T14:30:56.056779+00:00"
+}

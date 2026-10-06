@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the actual portrait, light, dark and checker PNGs, including native 1x and the supplied nearest 3x panels; the portrait matches idle_a. The broad verdigris vessel, gold elliptical lip, two handle arms, three cauldron legs and red tassel form a readable cauldron demon. The face and extended punch orient toward the right. Broad upper-left highlights and darker right/lower planes give the body volume; the gold rim and handles distinguish metal from the patinated vessel. Dark-side outlines lose some contrast on the dark background, but remain traceable on light and checker backgrounds. No unintended transparent body holes, detached fists or broken limb connections were apparent; the open handle interiors and spaces between legs read as intentional. Windup raises the connected handle fist, move changes the leg stance, attack extends that fist, and recover retracts it. Hit compresses and tilts the vessel; dead lays the recognizable body and rim sideways. Standing support feet share the ground line, with the shorter rear leg reading behind them. Skill_a places a bright core inside the actual opening; skill_b emits two large connected flame columns from it; skill_c reduces them to three embers. Poison closes the eyes and brings a hand toward the mouth with purple bubbles; stun droops the arm beneath stars; sleep crouches the body with closed eyes and mouth. These are distinct bodily states, not palette tints or unrelated attacks. Idle and paired status changes are subtle at 1x. This is an advisory visual recommendation from static pose previews: animation timing, dash/contact behavior, battle placement and boss scale require actual playback. PNG inspection cannot authenticate literal-grid authorship or model provenance.",
+  "issues": [],
+  "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "8d0b31d717a0ab4aa39b84fc9b65758c60ba5da4f9dd6363a815190110942e28",
+    "preview/suite/light.png": "5286b5b699152cf06191944da9967f0b25fead2e76a93f410cef38b01b2c6072",
+    "preview/suite/dark.png": "ff69b55c14bb0fd3150b94c63b6b2a53f0f5b2478aaeb6e62deb0f2c3a624607",
+    "preview/suite/checker.png": "487297c87b2482731a8e52fe3a0c77c13cdce1945723b52f50ad1f51e69bb3e8"
+  },
+  "jobId": "71fceaed-f71d-46a1-bd5c-c9017e709b16",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T14:51:24.916341+00:00",
+  "userApproved": false
+}

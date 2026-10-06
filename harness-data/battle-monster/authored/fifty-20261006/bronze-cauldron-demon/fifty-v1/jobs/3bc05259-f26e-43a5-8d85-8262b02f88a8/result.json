@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs at their original resolution, including the native 1x cells and nearest-neighbor 3x cells on light, dark and checker backgrounds. The cauldron silhouette, three legs, gold opening, green patina and red tassel are recognizable at 1x. Broad upper-left highlights and right-side shadows give the vessel readable volume; the gold rim contrasts well with the body. No obvious accidental transparent hole through the vessel or detached hand is visible. The two foreground feet retain a consistent ground line; the shorter rear foot reads in depth. Windup, collapse and crouched sleep have distinct silhouettes. Poison uses bubbles, tired eyes and a hand drawn inward; stun uses stars and a hanging arm; sleep closes the face and lowers the body. These states are visually distinct rather than simple color tints, and their paired changes are subtle but visible at 3x. Skill preparation, two large flame columns and three residual flames form a readable progression attached to the cauldron opening, but the rightmost residual flame sits on the exterior rim. Rework is recommended for the windup leg protrusions, the modest punch extension and that flame origin. This is an advisory visual review, not a user selection. Static pose previews cannot establish actual battle contact, dash travel, playback timing, foot sliding during motion or literal pixel authorship; geometry compliance alone would not establish visual approval.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 54,
+      "y": 114,
+      "message": "The inner edge of the left foreground shin grows a thin horizontal green spur around x50-59, y114; another lateral interruption appears near y119. These read as stray slivers at 1x and break the smooth outlined leg seen in idle. Remove the lateral protruding pixels and redraw a continuous dark boundary with the highlight contained inside the shin. Preserve the foot at y124."
+    },
+    {
+      "pose": "attack",
+      "x": 108,
+      "y": 59,
+      "message": "The striking fist remains beside the face with a bent handle loop, only modestly farther right than in move. At 1x the contact frame reads as another bent-arm stance rather than the promised handle-fist strike. Redraw the connected handle forearm and fist around x96-117, y48-76 with a clearer forward extension and a shoulder/body response toward the right. Keep the arm root visibly attached and the supporting foot planted; leave the required outer pixel margin."
+    },
+    {
+      "pose": "skill_c",
+      "x": 82,
+      "y": 44,
+      "message": "The rightmost residual flame terminates around x81-82, y44 on the outer gold band beyond the dark inner opening. At 3x it reads as fire on the exterior lip. Move that flame's base inward into the visible opening and redraw its root against the inner cavity, retaining three separately readable residual flames."
+    }
+  ]
+}

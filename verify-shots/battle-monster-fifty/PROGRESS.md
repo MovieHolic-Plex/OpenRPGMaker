@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재45/50 통과
+# 신규50종 제작 · 현재46/50 통과
 
 ## 최초 두 종 확인
 
@@ -762,3 +762,12 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 청동정마 둘째 수정 원본18자세·현재 세 writer의 전체 로직을 실제 열고 읽었다. 피격의 기울어진 입구/다리, 쓰러진 솥의 어두운 입구와 별도 손잡이, 준비 기 핵을 확인했다. 새 실제 `8caeabc2-041f-472e-b8b9-aa27af781de0` rework1건을 terminal 작업·불변 snapshot18/검수4PNG/writer 해시와 함께 보존하고 셋째 수정 중이다. 설갈사자왕/옥갑전갈왕 최초 저작도 실제 고정 모델로 이어진다. 근거: `forty-five-passed-proof.json`, `root-review-thousand-year-pine-king.json`, `browser-proof-thousand-year-pine-king.json`, `source-archive-proof.json`.
 
 - 같은 배율의 천년송왕/청동정마/설갈사자왕 대기 원본 중간판을 제공했다. 사자는 당시5/18자세 초안이고 청동정마는 수정 중이며 이 둘을45종 합격에 넣지 않는다.
+
+## 46번째 신규 몬스터 · 청동정마 · 2026-10-06 14:56 UTC
+
+- 셋째 직접 수정 뒤 실제 독립 GPT6.1sol/high `71fceaed-f71d-46a1-bd5c-c9017e709b16`는 **keep / 정식 issues0건**이다. 현재 binding `2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc`, 기술 PASS/실제 terminal 작업·검수4그림·선택 binding이 일치한다. 최초/첫째/둘째 수정의 실제 rework3/3/1건을 원문과 불변 원본으로 보존한다.
+- 감독이 현재 원본18자세를1632×1272 원본1배/nearest2배로 실제 열었다. 초기 전체 author 로직부터 현재 완전 diff와 native repair 세 파일의 전체 메서드/모듈을 읽어 현재4 writer를 확인했다. 새 repair_004의16명시적 좌표 행은 피격 왼쪽 손잡이 아래 몸통 윤곽만 이어 주며 고리 내부의 의도한 투명 공간을 보존한다. author가 앞 두 수정 뒤 이 수정의 apply를 마지막으로 실행한다. 다른17원본은 실제 열었던 둘째 수정 그대로다. 별도 진단 renderer들은 source를 쓰지 않는다.
+- 실제 준비 핵→솥 입구의2불기둥→3잔불, 앞으로 뻗는 손잡이 주먹, 기울어진 피격, 옆으로 쓰러진 솥 입구·손잡이, 독/기절/닫힌 눈의 수면을 확인했다. 어두운 쪽 외곽 대비와 작은 대기/상태 쌍 변화의 실제 keeper 한계를 보존한다. 첫 keeper 바인딩 확인은 observer의 실제 PNG 재출력 중 해시 불일치로 종료했고, 출력을 마친 뒤4PNG/18native/읽었던 writer/실제 job이 모두 맞는 상태에서만 감독 기록을 남겼다. 판정을 고치지 않았다.
+- 선택 ZIP/PNG18/디코딩8GIF 픽셀·노출시간과 현재 source 및 정본 source archive46종을 다시 읽었다. 감독이 실제 데스크톱 정지/375·320px 화면을 열었다.8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
+- 현재 합격 **46/50종 · 828자세 · 368GIF**. 동물10/요괴16/사람12(여성6)/보스8; 남은4종128px 보스는 설갈사자왕/옥갑전갈왕/해주영사/금익대붕이다. 기존 결정52행/선택8건 보존, 새 위임138행/전체190행, 기존 정식 minor11건 유지. 대시보드 Allow54는 기존8+신규46이다. 전체50 완료는 false다. 실제 세 작가는 사자/전갈/바다뱀을 저작 중이고 대붕은 다음 자리에서 시작한다.
+- 근거: `forty-six-passed-proof.json`, `root-review-bronze-cauldron-demon.json`, `browser-proof-bronze-cauldron-demon.json`, `source-archive-proof.json`.

@@ -493,5 +493,16 @@
     "currentAllow": true,
     "sourceArchiveReread": true,
     "selectedPackSha256": "f8cf12b81efb363d4b95f3280bb97ec41d58d4a82f71f157be8cce5280720bdc"
+  },
+  {
+    "key": "bronze-cauldron-demon/fifty-v1",
+    "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "31c46d709a8ae772a8b1e30ef2db9efef25ed72a6ad148dab2e9001edccab315"
   }
 ]

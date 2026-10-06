@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 128px panels and nearest-neighbor 3x panels. The broad patinated body, gold lip, red tassel and three legs identify the cauldron clearly. Upper-left highlights and darker right planes give convincing volume; the intentional handle openings remain readable on light, dark and checker backgrounds, with no obvious accidental body holes or detached fists. The raised handle, stepping legs and extended right fist distinguish the attack sequence, although the torso remains very fixed. The two skill pillars visibly originate inside the actual cauldron opening, and recovery has three embers. Poison's hand near the mouth, stun's hanging arm and sleep's crouch/closed eyes are distinct states, not tint substitutions or unrelated attacks; changes within their pairs are subtle. The standing support feet and collapsed body's lower edge appear grounded. Rework is advised for the weak hit recoil, ambiguous collapsed rim/handle anatomy and flame-like skill preparation. These are still pose previews: playback timing, dash translation, actual battle contact, original grid authorship and source palette compliance cannot be established from these PNGs alone. This recommendation is advisory, not a user selection.",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 64,
+      "y": 57,
+      "message": "The cauldron lip, trunk and planted legs retain almost the idle silhouette; the changed eyelids, mouth and shortened right handle carry most of the hit cue. Redraw a small leftward tilt/recoil through the lip, shoulder and torso clusters, fold the receiving handle toward the body and adjust the leg bends while keeping a support foot at baseline 124. Preserve the handle-to-body connection throughout the recoil."
+    },
+    {
+      "pose": "dead",
+      "x": 88,
+      "y": 83,
+      "message": "The recognizable gold oval opening becomes a tall gold L-shaped edge beside a green hand, leaving the cauldron mouth and handle difficult to distinguish. Redraw a connected, tilted rim at the right end of the fallen body with readable near/far lip thickness and a dark opening or clear edge-on closure. Place the collapsed handle and fist as a separately legible connected structure; retain the three rearward feet and the grounded lower body edge."
+    },
+    {
+      "pose": "skill_a",
+      "x": 68,
+      "y": 43,
+      "message": "Preparation already shows a pointed orange-edged flame with a broad yellow fill, making it read as a smaller version of contact rather than the specified gold-white charging core. Redraw a compact pale core seated inside the dark cauldron opening with a restrained gold surround, preserving the visible foreground lip and connected raised handle. Reserve the tall branching flame silhouette for skill_b and retain the three residual flames in skill_c."
+    }
+  ],
+  "binding": "5e56693d097201caa30b14e0ad2269389b918b0c20ed9015afa2ffd2b7f8a345",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "8d0b31d717a0ab4aa39b84fc9b65758c60ba5da4f9dd6363a815190110942e28",
+    "preview/suite/light.png": "9652f148532f8dcd22d1afc37a8789c5804151a6679aa39659e9484f8240843d",
+    "preview/suite/dark.png": "77d72fbaf1f9fe675ad15f3a0b5a84a6a9ffce8c3f270f20ad46c72a669ff5fd",
+    "preview/suite/checker.png": "827fd0b58fdf2cdb3f52b886606c1547d6ad38cbbff9dd6188bb51c1a93e26d6"
+  },
+  "jobId": "1eb977bf-b5b7-40c8-90bc-69ec3c647de0",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T14:33:42.575176+00:00",
+  "userApproved": false
+}

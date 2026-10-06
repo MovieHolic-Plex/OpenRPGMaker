@@ -1,0 +1,158 @@
+{
+  "idle": [
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "idle_b",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "idle_c",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "idle_b",
+      "differentPixels": 0,
+      "durationMs": 240
+    }
+  ],
+  "attack": [
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "windup",
+      "differentPixels": 0,
+      "durationMs": 270
+    },
+    {
+      "pose": "move",
+      "differentPixels": 0,
+      "durationMs": 110
+    },
+    {
+      "pose": "attack",
+      "differentPixels": 0,
+      "durationMs": 130
+    },
+    {
+      "pose": "recover",
+      "differentPixels": 0,
+      "durationMs": 220
+    },
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    }
+  ],
+  "hit": [
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "hit",
+      "differentPixels": 0,
+      "durationMs": 190
+    },
+    {
+      "pose": "recover",
+      "differentPixels": 0,
+      "durationMs": 230
+    },
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 300
+    }
+  ],
+  "dead": [
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "hit",
+      "differentPixels": 0,
+      "durationMs": 130
+    },
+    {
+      "pose": "dead",
+      "differentPixels": 0,
+      "durationMs": 1200
+    }
+  ],
+  "skill": [
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    },
+    {
+      "pose": "skill_a",
+      "differentPixels": 0,
+      "durationMs": 360
+    },
+    {
+      "pose": "skill_b",
+      "differentPixels": 0,
+      "durationMs": 270
+    },
+    {
+      "pose": "skill_c",
+      "differentPixels": 0,
+      "durationMs": 350
+    },
+    {
+      "pose": "idle_a",
+      "differentPixels": 0,
+      "durationMs": 240
+    }
+  ],
+  "poison": [
+    {
+      "pose": "poison_a",
+      "differentPixels": 0,
+      "durationMs": 430
+    },
+    {
+      "pose": "poison_b",
+      "differentPixels": 0,
+      "durationMs": 430
+    }
+  ],
+  "stun": [
+    {
+      "pose": "stun_a",
+      "differentPixels": 0,
+      "durationMs": 400
+    },
+    {
+      "pose": "stun_b",
+      "differentPixels": 0,
+      "durationMs": 400
+    }
+  ],
+  "sleep": [
+    {
+      "pose": "sleep_a",
+      "differentPixels": 0,
+      "durationMs": 700
+    },
+    {
+      "pose": "sleep_b",
+      "differentPixels": 0,
+      "durationMs": 780
+    }
+  ]
+}

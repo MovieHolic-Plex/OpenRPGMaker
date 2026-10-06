@@ -1,0 +1,359 @@
+{
+  "changes": {
+    "poses/hit.pxgrid": {
+      "beforeSha256": "5a06b54492b14e6d98e12b4d10ea689e2364ff50b6ae7d4d041c2c8720c0f551",
+      "currentSha256": "f9d4312898efa70757b0a0f8c128f844271d0850cf867b72beae6c6a0d1954b7",
+      "changedPixels": 91,
+      "changedBoundsInclusive": [
+        25,
+        57,
+        40,
+        72
+      ]
+    }
+  },
+  "unchangedOriginalFiles": 18,
+  "paletteUnchanged": true,
+  "allFramesDistinct": true,
+  "frames": {
+    "attack": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "d37ae73c81eabe21b28d1ad7c2a66829b9d9d9fd661f4fabd85752669e3fbcc6"
+    },
+    "dead": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "44b6dbeabe95b8c4ea682eddac9b65d4953b2288b76b9f20631e8132cd15ffce"
+    },
+    "hit": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "f9d4312898efa70757b0a0f8c128f844271d0850cf867b72beae6c6a0d1954b7"
+    },
+    "idle_a": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "894161b867cf47f8e6128345c6d753637286800fd1d0ea079883e08b9ceeaf69"
+    },
+    "idle_b": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "b0a1b0451baae4388a6f17857f79692b6400773d197f3e71598a9661bf33e0c5"
+    },
+    "idle_c": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "27576fa3492da6fc2139539903b8ed7efd752a44eebe64d6c97556dd5f705ba1"
+    },
+    "move": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "0e52752e49993cc7ae40f6905be73c609755faa521e95d4f107b3c3b8a53f710"
+    },
+    "recover": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "c0bb1703c2afda4fe497e3de974bad128db75dd0e915faefa009b1bfaf61042d"
+    },
+    "windup": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "2a076372e0f21ebeaa96f5a8177d44c6ad6edc3c1d7c36d709448e6f0ab6a63a"
+    },
+    "poison_a": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLOPRSTWYgpr",
+      "sourceSha256": "01e8b12e2e32a574a5570c60f01ee8430b2d57ccac7ef7875dc50d9e1c5a2335"
+    },
+    "poison_b": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLOPRSTWYgpr",
+      "sourceSha256": "4003981ebd82890813f5804891ebadde63fbf4efd2715e9ae9e54209c7f7861e"
+    },
+    "skill_a": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "91d1607814a5659d758664cfff99443ed74419fdafd027c02c1cfb7a8c571fc1"
+    },
+    "skill_b": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABCDFGHLORSTWYgr",
+      "sourceSha256": "8e0dd0f39ac48ede198f96cf6c748ed91da227a93870aa5b63953ef68dbac263"
+    },
+    "skill_c": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABCDFGHLORSTWYgr",
+      "sourceSha256": "37c6fe455246539e89b05ef85fd73a153e9a0689b1dc39d5fbcce3152ca2930d"
+    },
+    "sleep_a": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "6ed3e95492479684eb82f6833b79b665b04a1a2f66cc466d9595ee0c10cf5939"
+    },
+    "sleep_b": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "b28ae1b3218000aabcd599e14be0a53081f23b31508c4aa25897150f290560d8"
+    },
+    "stun_a": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "ec8611a82f3dbd9ccd2823d6da007b10610da73841867ec2e0fa683d46bb8d24"
+    },
+    "stun_b": {
+      "size": [
+        128,
+        128
+      ],
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "symbols": "ABDFGHLORSTWYgr",
+      "sourceSha256": "6acec254c7dd8cbb4b8fce31401e01b745cde679767ba8a9dd84addf8bea581f"
+    }
+  },
+  "gifReadback": {
+    "idle": [
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_c",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "attack": [
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "windup",
+        "durationMs": 270,
+        "differentPixels": 0
+      },
+      {
+        "pose": "move",
+        "durationMs": 110,
+        "differentPixels": 0
+      },
+      {
+        "pose": "attack",
+        "durationMs": 130,
+        "differentPixels": 0
+      },
+      {
+        "pose": "recover",
+        "durationMs": 220,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "hit": [
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "hit",
+        "durationMs": 190,
+        "differentPixels": 0
+      },
+      {
+        "pose": "recover",
+        "durationMs": 230,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_a",
+        "durationMs": 300,
+        "differentPixels": 0
+      }
+    ],
+    "dead": [
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "hit",
+        "durationMs": 130,
+        "differentPixels": 0
+      },
+      {
+        "pose": "dead",
+        "durationMs": 1200,
+        "differentPixels": 0
+      }
+    ],
+    "skill": [
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "pose": "skill_a",
+        "durationMs": 360,
+        "differentPixels": 0
+      },
+      {
+        "pose": "skill_b",
+        "durationMs": 270,
+        "differentPixels": 0
+      },
+      {
+        "pose": "skill_c",
+        "durationMs": 350,
+        "differentPixels": 0
+      },
+      {
+        "pose": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "poison": [
+      {
+        "pose": "poison_a",
+        "durationMs": 430,
+        "differentPixels": 0
+      },
+      {
+        "pose": "poison_b",
+        "durationMs": 430,
+        "differentPixels": 0
+      }
+    ],
+    "stun": [
+      {
+        "pose": "stun_a",
+        "durationMs": 400,
+        "differentPixels": 0
+      },
+      {
+        "pose": "stun_b",
+        "durationMs": 400,
+        "differentPixels": 0
+      }
+    ],
+    "sleep": [
+      {
+        "pose": "sleep_a",
+        "durationMs": 700,
+        "differentPixels": 0
+      },
+      {
+        "pose": "sleep_b",
+        "durationMs": 780,
+        "differentPixels": 0
+      }
+    ]
+  },
+  "note": "Actual local files only. No independent review result or user selection."
+}
