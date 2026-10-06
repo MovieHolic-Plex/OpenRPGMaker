@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재35/50 통과
+# 신규50종 제작 · 현재36/50 통과
 
 ## 최초 두 종 확인
 
@@ -500,3 +500,33 @@ job/result를 보존했다. 오른손 끝 연결은 유지하되 각진 분기 �
 근거:thirty-five-passed-proof.json,root-review-mountain-herbalist-fighter.json,
 native-contact-mountain-herbalist-fighter.*,browser-proof-mountain-herbalist-fighter.json,
 draft-independent-rework-spirit-lantern-medium-initial.json,지속 출처35종.
+
+
+## 혼등무녀 한 차례 교정 후 통과 · 실제36/50
+
+초기 실제 독립 rework의 두 둥근 혼불/짧은 붉은 등롱 끈 지적을 별도 실제 모델 호출로
+직접 고친 뒤 새 GPT 6.1 sol/high 독립 keep0지적을 받았다. 감독이 수정된18자세 native1배/
+최근접2배864×696 원본 시트를 직접 열고 author_native의 세 쓰기 본문과 repair_native.
+apply_repairs 전체 본문·모듈 흐름·호출을 읽었다. 두 혼불 머리/굽은 꼬리는 손끝 뒤로 갈라져
+빈 공간이 있고, 짧은 진홍 끈은 연결된 등불 손잡이 옆에서 치마 윤곽과 구분된다. 기존 성인
+얼굴/머리/미백 소매/진홍 치마, 손바닥 공격과 피격·낮은 쓰러짐·앉은 수면은 유지됐다.
+명시적 x46~61 행 문자열과 자세별 끈 좌표 문자열만 직접 저장했다. 원본18PNG와 실제
+ASCII/팔레트가 같고 최종 공개 원본/writer/시트 해시가 실제 열람한 교정본과 같다.
+초기 실제 rework/draft(false)는 보존했다. keep 요약의 약한 피격, 낮은 머리/신발 대비,
+작은 상태 쌍 변화도 보존하며 고쳤다고 주장하지 않는다.
+
+적궁궁녀 초기18자세 시트를 직접 열고 author_rows.frame/replace_rows/pixels 전체 쓰기
+본문·모듈 흐름·호출을 읽었다. 실제 초기 독립 rework는 활시위 위 끝의 투명 간격과 긴
+홍색 화살 대신 넓고 짧게 보이는 발사 섬광을 지적했다. 실제 job/result/원본 시트와
+감독 draft(false)를 보존했다. 새로운 교정·독립 검수 전에는 통과로 세지 않는다.
+
+현재36/50/648자세/288GIF/전체false다. 같은36종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/저작 방식을 확인했다. 원래52판정/8선택 보존, 신규108행은 사용자
+목표 위임 Allow다. 실제 minor5개와 keep 요약 관찰은 보존한다. 남은14종은 사람형3종/
+128px 보스11종이다. 철권 무인·여성 검술 고수·궁수 교정의 실제 세 체인이 진행 중이다.
+기술 중간안과64/96/128 실제 같은2배 크기 비교를 보존하며 전체50 완료/게임 설치·
+실전 접촉·피해 동기화 완료를 주장하지 않는다.
+근거:thirty-six-passed-proof.json,root-review-spirit-lantern-medium.json,
+native-contact-spirit-lantern-medium.*,browser-proof-spirit-lantern-medium.json,
+draft-independent-rework-crimson-bow-huntress-initial.json,지속 출처36종.

@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "thorn-crown-demon",
+    "source": "qa-runs/harnesses/battle-monster/thorn-crown-demon/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "80296a784a644ee873ab0c4eecaef8fa157411b492c0bbe6828a66f525e22e0d",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "mountain-herbalist-fighter",
+    "source": "qa-runs/harnesses/battle-monster/mountain-herbalist-fighter/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "c39766787c4ab35c8b95392b796bedfcf84011fd11d031f70f043efe5d706cee",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/harnesses/battle-monster/sun-gold-phoenix/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "crimson-bow-huntress",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "9df81879f4dc0310924c7479f83ccd0b5bc41566b482c1f09dc8dd8070f1efbe",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "08b270a1831bb9d69219b4103c971bd1143deee77e66a3bc6ad8b2ccac95b120",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "mountain-herbalist-fighter",
+    "source": "qa-runs/harnesses/battle-monster/mountain-herbalist-fighter/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "c39766787c4ab35c8b95392b796bedfcf84011fd11d031f70f043efe5d706cee",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "spirit-lantern-medium",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/spirit-lantern-medium/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "0b07ab3b032d2f5fc6e3cc5173aa561d73a8a17fdf6a13c9c6d1a7a4d1445980",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:07:48.369852+00:00",
+    "binding": "103c8b8df2fd2fcbc01c2cb96ef5f9111cfce1000d0d076204a9295b8bb88819",
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 35,
+  "archivedPassedSpecies": 36,
   "entireGoalComplete": false,
   "items": [
     {
@@ -376,6 +376,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "813628a8c83169e9cffd75d15a7009722430c7563053e980241b60bd4f41061d"
+    },
+    {
+      "key": "spirit-lantern-medium/fifty-v1",
+      "binding": "103c8b8df2fd2fcbc01c2cb96ef5f9111cfce1000d0d076204a9295b8bb88819",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "5e21223fceb662dbba6f00bcb1167bd878b22f3c9d2256879fa4908f2896bc30"
     },
     {
       "key": "sun-gold-phoenix/fifty-v1",

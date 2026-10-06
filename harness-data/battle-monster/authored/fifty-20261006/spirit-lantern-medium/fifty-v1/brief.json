@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "spirit-lantern-medium",
+    "name": "혼등무녀",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "성인 여성 조선/무협 SD 적. 머리18~21px/피부 얼굴12~14px, 실제 키50~54px, 우향3/4 차분한 눈과 눈썹. 높게 묶은 검은 머리/금 장식, 미백 넓은 소매와 진홍 치마, 왼손 작은 청록 등롱/오른손 결인, 짧은 붉은 끈. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "등롱손을 가슴으로 모음 → 치마 밑 발 내딛음 → 연결된 결인 손바닥 타격 → 손/등 회수.",
+    "skill": "혼등화: 실제 등롱 안 청록 핵 → 오른손 손끝부터 두 굽은 혼불 발사 → 손을 모아 잔불 두 덩어리.",
+    "resourceId": "jf-enemy-spirit-lantern-medium",
+    "kind": "human",
+    "reviewActions": true,
+    "gender": "female",
+    "role": "shaman",
+    "age": "adult"
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

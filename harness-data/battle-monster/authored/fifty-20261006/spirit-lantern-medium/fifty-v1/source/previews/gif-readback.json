@@ -1,0 +1,222 @@
+[
+  {
+    "motion": "idle",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 4,
+    "frames": [
+      {
+        "pose": "idle_a",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_b",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_c",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_b",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "attack",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 6,
+    "frames": [
+      {
+        "pose": "idle_a",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "windup",
+        "hold_ms": 280,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "move",
+        "hold_ms": 120,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "attack",
+        "hold_ms": 180,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "recover",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_a",
+        "hold_ms": 360,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "hit",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 4,
+    "frames": [
+      {
+        "pose": "idle_a",
+        "hold_ms": 300,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "hit",
+        "hold_ms": 340,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "recover",
+        "hold_ms": 240,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_a",
+        "hold_ms": 360,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "dead",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 3,
+    "frames": [
+      {
+        "pose": "idle_a",
+        "hold_ms": 300,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "hit",
+        "hold_ms": 220,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "dead",
+        "hold_ms": 1200,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "skill",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 5,
+    "frames": [
+      {
+        "pose": "idle_a",
+        "hold_ms": 260,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "skill_a",
+        "hold_ms": 380,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "skill_b",
+        "hold_ms": 280,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "skill_c",
+        "hold_ms": 360,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "idle_a",
+        "hold_ms": 340,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "poison",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 2,
+    "frames": [
+      {
+        "pose": "poison_a",
+        "hold_ms": 460,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "poison_b",
+        "hold_ms": 460,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "stun",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 2,
+    "frames": [
+      {
+        "pose": "stun_a",
+        "hold_ms": 520,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "stun_b",
+        "hold_ms": 520,
+        "rgba_matches_native": true
+      }
+    ]
+  },
+  {
+    "motion": "sleep",
+    "native_size": [
+      64,
+      64
+    ],
+    "frame_count": 2,
+    "frames": [
+      {
+        "pose": "sleep_a",
+        "hold_ms": 780,
+        "rgba_matches_native": true
+      },
+      {
+        "pose": "sleep_b",
+        "hold_ms": 900,
+        "rgba_matches_native": true
+      }
+    ]
+  }
+]

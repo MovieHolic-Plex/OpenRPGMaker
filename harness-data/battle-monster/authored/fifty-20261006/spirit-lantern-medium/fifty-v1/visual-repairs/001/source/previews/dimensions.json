@@ -1,0 +1,200 @@
+[
+  {
+    "name": "attack",
+    "ink_bbox": [
+      17,
+      9,
+      54,
+      60
+    ],
+    "ink_pixels": 923,
+    "palette_symbols": 17
+  },
+  {
+    "name": "dead",
+    "ink_bbox": [
+      11,
+      38,
+      56,
+      60
+    ],
+    "ink_pixels": 541,
+    "palette_symbols": 17
+  },
+  {
+    "name": "hit",
+    "ink_bbox": [
+      17,
+      10,
+      42,
+      60
+    ],
+    "ink_pixels": 771,
+    "palette_symbols": 17
+  },
+  {
+    "name": "idle_a",
+    "ink_bbox": [
+      17,
+      7,
+      48,
+      60
+    ],
+    "ink_pixels": 859,
+    "palette_symbols": 17
+  },
+  {
+    "name": "idle_b",
+    "ink_bbox": [
+      17,
+      7,
+      47,
+      60
+    ],
+    "ink_pixels": 857,
+    "palette_symbols": 17
+  },
+  {
+    "name": "idle_c",
+    "ink_bbox": [
+      17,
+      7,
+      50,
+      60
+    ],
+    "ink_pixels": 859,
+    "palette_symbols": 17
+  },
+  {
+    "name": "move",
+    "ink_bbox": [
+      17,
+      9,
+      46,
+      60
+    ],
+    "ink_pixels": 855,
+    "palette_symbols": 17
+  },
+  {
+    "name": "recover",
+    "ink_bbox": [
+      18,
+      8,
+      48,
+      60
+    ],
+    "ink_pixels": 843,
+    "palette_symbols": 17
+  },
+  {
+    "name": "windup",
+    "ink_bbox": [
+      18,
+      7,
+      42,
+      60
+    ],
+    "ink_pixels": 816,
+    "palette_symbols": 17
+  },
+  {
+    "name": "poison_a",
+    "ink_bbox": [
+      17,
+      11,
+      52,
+      60
+    ],
+    "ink_pixels": 775,
+    "palette_symbols": 18
+  },
+  {
+    "name": "poison_b",
+    "ink_bbox": [
+      16,
+      12,
+      50,
+      60
+    ],
+    "ink_pixels": 772,
+    "palette_symbols": 18
+  },
+  {
+    "name": "skill_a",
+    "ink_bbox": [
+      18,
+      7,
+      40,
+      60
+    ],
+    "ink_pixels": 830,
+    "palette_symbols": 17
+  },
+  {
+    "name": "skill_b",
+    "ink_bbox": [
+      20,
+      8,
+      59,
+      60
+    ],
+    "ink_pixels": 975,
+    "palette_symbols": 17
+  },
+  {
+    "name": "skill_c",
+    "ink_bbox": [
+      18,
+      7,
+      49,
+      60
+    ],
+    "ink_pixels": 835,
+    "palette_symbols": 17
+  },
+  {
+    "name": "sleep_a",
+    "ink_bbox": [
+      16,
+      27,
+      50,
+      60
+    ],
+    "ink_pixels": 547,
+    "palette_symbols": 17
+  },
+  {
+    "name": "sleep_b",
+    "ink_bbox": [
+      16,
+      27,
+      50,
+      60
+    ],
+    "ink_pixels": 541,
+    "palette_symbols": 17
+  },
+  {
+    "name": "stun_a",
+    "ink_bbox": [
+      8,
+      10,
+      48,
+      60
+    ],
+    "ink_pixels": 725,
+    "palette_symbols": 17
+  },
+  {
+    "name": "stun_b",
+    "ink_bbox": [
+      14,
+      11,
+      51,
+      60
+    ],
+    "ink_pixels": 707,
+    "palette_symbols": 17
+  }
+]

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>혼등무녀 — 18자세 · 8동작</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#151822;color:#eee}
+body{margin:0 auto;padding:24px;max-width:1220px}h1{font-size:24px;margin:0 0 8px}p{color:#c5ccd0}
+a{color:#bae8df}nav{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+article{background:#242834;border-radius:8px;padding:12px}h2{font-size:16px;margin:0 0 10px}
+.stage{display:flex;align-items:end;justify-content:center;min-height:270px;background:#1e212d;gap:8px}
+.stage img{image-rendering:pixelated}.big{width:256px;height:256px}.native{width:64px;height:64px}
+body.light .stage{background:#ebe8df}body.checker .stage{background:repeating-conic-gradient(#d2d3d5 0% 25%,#999eaa 0% 50%) 0/32px 32px}
+button{background:#394255;color:white;border:1px solid #728093;border-radius:4px;padding:6px 14px;cursor:pointer}
+.sheet{width:min(100%,960px);height:auto;image-rendering:pixelated;display:block;margin:12px 0}
+</style>
+<body>
+<h1>혼등무녀</h1>
+<p>원본 64px · 18자세 · 18색 · 8동작 — 각 동작을 1배와 최근접 4배로 함께 표시합니다.</p>
+<nav><button onclick="document.body.className=''">어두운 배경</button><button onclick="document.body.className='light'">밝은 배경</button><button onclick="document.body.className='checker'">체커 배경</button><a href="../AUTHORING.md">저작 기록</a><a href="../TIMING.md">시간표</a></nav>
+<main>
+<article><h2>대기</h2><div class="stage"><img class="native" src="idle.gif" alt="대기 1배"><img class="big" src="idle.gif" alt="대기 4배"></div></article>
+<article><h2>준비 · 전진 · 손바닥 타격 · 회수</h2><div class="stage"><img class="native" src="attack.gif" alt="공격 1배"><img class="big" src="attack.gif" alt="공격 4배"></div></article>
+<article><h2>피격</h2><div class="stage"><img class="native" src="hit.gif" alt="피격 1배"><img class="big" src="hit.gif" alt="피격 4배"></div></article>
+<article><h2>쓰러짐</h2><div class="stage"><img class="native" src="dead.gif" alt="쓰러짐 1배"><img class="big" src="dead.gif" alt="쓰러짐 4배"></div></article>
+<article><h2>혼등화</h2><div class="stage"><img class="native" src="skill.gif" alt="혼등화 1배"><img class="big" src="skill.gif" alt="혼등화 4배"></div></article>
+<article><h2>독</h2><div class="stage"><img class="native" src="poison.gif" alt="독 1배"><img class="big" src="poison.gif" alt="독 4배"></div></article>
+<article><h2>기절</h2><div class="stage"><img class="native" src="stun.gif" alt="기절 1배"><img class="big" src="stun.gif" alt="기절 4배"></div></article>
+<article><h2>수면 · 호흡</h2><div class="stage"><img class="native" src="sleep.gif" alt="수면 1배"><img class="big" src="sleep.gif" alt="수면 4배"></div></article>
+</main>
+<h2 style="margin-top:28px">기본 9자세</h2><img class="sheet" src="poses-checker-4x.png" alt="기본 9자세">
+<h2>기술 · 상태 9자세</h2><img class="sheet" src="actions-checker-4x.png" alt="기술 상태 9자세">
+<p>저작 후보이며 독립 검수와 사용자 선택은 하네스에서 진행합니다.</p>
+</body></html>
