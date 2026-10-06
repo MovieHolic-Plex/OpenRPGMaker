@@ -22,7 +22,14 @@
 ```
 실제 후보가 없으면 candidates=[]와 정확한 실패 이유를 기록한다. 다른 판의 PNG나 승인 결과를 가져오지 않는다.
 
-전용 테마는 이번 실행에서 만든 모든 원본 PNG를 `themeCoverage`의 실제 요구사항 id에 연결한다.
+전용 테마는 이번 native 실행이 납품한 현재 후보 PNG를 `themeCoverage`의 실제 요구사항 id에 연결한다.
+interior-props의 coverage는 receipt.runs의 현재 `h<round>-<letter>.png`만 가리킨다.
+`h1-A.a1.png` 같은 과거 시도 사본·확대 시트·context 그림은 images의 비교 근거로 보존하되
+coverage에 섞지 않는다. 과거 시도 하나가 섞이면 현재 후보까지 미제작으로 판정될 수 있다.
+`execution.resumeMode`가 review/collect-existing인 경우 현재 DB 행의 완료 검사·독립 검수에
+해시가 연결된 원본은 이번 실행의 검수 납품이다. 다시 그리지 않았다는 이유로 빼지 않는다.
+이 경우 영수증에 재검수/재수집임을 명시하고 제작 이력을 그대로 보존한다. 현재 DB·검수에
+연결되지 않은 다른 판의 그림은 여전히 금지한다.
 아직 만들지 않은 재료는 빈 배열/누락 목록으로 정직하게 남긴다. 이번 실행의 candidates/receipt만 반환한다.
 감독이 `art-batches/`의 이전 실행 영수증을 해시 확인하여 누적하고, 누락 재료는 다음 제작으로 넘긴다.
 현재 실행이 만들지 않은 이전 PNG를 이번 영수증에 넣거나 기존 영수증을 덮어쓰지 않는다.
