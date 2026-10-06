@@ -1,0 +1,411 @@
+{
+  "batch": "v2-production-176",
+  "passedAttempts": 8,
+  "rejectedAttempts": 2,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-176",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:43:21.570737+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-176",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:43:46.269177+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-176",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:48:50.942574+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-176",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:53:29.388141+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-176-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-176",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-176"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:53:29.817186+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--bond--collect--bright",
+      "nativeSha256": "d5642a799ea57e89282301dadb8f77792e405dff8ea30ee13197711ccbc6119b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "bf45875bf9167f84895f482bd51e3b933e6034575c8eaea7f186e8b20fafff5d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--bright.png",
+          "sha256": "7270279eaceefea67413de0616b5483053bf03201c5c105ac6fa22ddcaa35a90",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key native and actual original BONDcollect prefix2: full actual shallow DIRT paw pads/toes now LEFT, full EMPTYpadded restmat/OPENwater/helpcloth/closed EMPTYtransparentjar/rope/movedbranch/daylight/no unselected progression/scope/body/capturegear/text. All meaningful props/traces before60.3 and insideframe; x45 ideal deviation alone not failure. Dense outside woodland resting court differs original cliff shelter/book-binocular stump and wide mountain/lake panorama. All seven directly checked. Direct downstream174 route/CASE recomparison recorded separately."
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat",
+      "nativeSha256": "67ec4408ade0b8df8283d4c19a1e654b852a6452a77c5ac4772d4ee747ad1159",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f35a0f349f5fae08c33ee408729d2266796c7b52bae75f10c7d8b783f673f461",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--bright--habitat.png",
+          "sha256": "899971aadf918408f38f888acdfe7512964600c0e1851db51e9c223c3e5acc8c",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key native/actual new176 bright mood: carved paw-emblem stone completely removed and replaced with ordinary DIRT bearing full shallow physical LEFTpads/toes. Whole actual LEFTOPEN wetland/forest/ruin inner views/full LOWLEFTwater/helpcloth/closed EMPTYjar/rope/movedbranch/daylight/no scope/village/body/capturegear/text correct. Outer arch support beyond60.3 is background; meaningful inner openings visible. New upperhabitats/LOWaid court differs mood plain restmat and original giant indoor workbench/fullwidthhabviews; all seven checked. Actual held174 HABscene reverse focal depth comparison separately."
+    },
+    {
+      "key": "monster--bond--collect--bright--case--scene",
+      "nativeSha256": "c8292ed4669c93b4502c422a2141a5f538730f2a64b96c514108834ad896f389",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "237b5b5e93ad39dc1a125e462d575813d93c2d26f743735583eb92cbdc1e6613",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--bright--case--scene.png",
+          "sha256": "7a65920cfca4bfeee4c1c33c6e1a972e2bb6d28526330e21141c63ad0ef9fe5f",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key and actual passing174 CASE parent: roof peak/roof/body/OPENdoor/base now WHOLE insideframe with woodland above and left. Full tipped hollow EMPTYwoodpail/rope/LOWaidwater/helpcloth/closed EMPTYjar/movedbranch/WHOLEphysical LEFTpads/daylight/first trust ready/no growthreturnvillagebodycapturegeartext. Upperrefuge/LOWaid is reverse focal depth to actual parent upperaid/LOWhouse. All seven directly checked; no mechanical6percent margin failure."
+    },
+    {
+      "key": "monster--bond--collect--secret--route--scene",
+      "nativeSha256": "967c6278b8dd87be46a269b52c1ecc48daf151d9632f17320b633ca99000bb5d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "514fca7d6cfede9f6291ed0fb54634008c824e51de789a0f3ac76d34ce5aea5e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--secret--route--scene.png",
+          "sha256": "ece8fb936ea0375af0bdc53201220911b43c469ba543de81af1199f81fb34380",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key and passing175 secretroute parent: BOTHdifferent village houses now wholly LEFT before60.3 including second rightwall/roof/door/base. Full physical LEFTpads/toes/full UPPERLEFTwater/helpercloth/closed EMPTYjar/rope/movedbranch/continuous route/moonlit/first trust/no growthreturncapturegearbodyTEAMtext. Upperaid/LOWhouses reverses actual parent LOWaid/UPvillage. All seven directly checked; far-right woodland fence endpoint is incidental background and no route barrier."
+    },
+    {
+      "key": "monster--bond--collect--secret--route--episode",
+      "nativeSha256": "a6e702cf00036071c095c933e20c50f6b7891f9cd7ae7a059494650b9b0a88c4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b99e0d0d5f5b35cf9440acef6a8c8e2600e99f87b9df630b24fcce1a8458c8cf",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--secret--route--episode.png",
+          "sha256": "bb26f2e475412e53863bea5588da25031eaada8995facfdf5bf160f4038a1764",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key and passing175 secretroute parent: physical DIRT paw impressions now complete LEFT before60.3; full LOWLEFT EMPTYleaf-lined hollow nest/OPENwater/plain WHITEcloth BESIDEaid/closed EMPTYjar/rope/movedbranch/whole UPPERLEFTdifferent village/continuouspath/moonlit/no return/body/capturegearTEAMtext. Low side-view enlarged foregroundcare/stepped uppervillage differs higher parent tinyLOWcave aid/diagonal trail/uppervillage. All seven checked; carecloth need not be FLAT on worktop for own BESIDE requirement."
+    },
+    {
+      "key": "monster--bond--collect--secret--route--short",
+      "nativeSha256": "46e2a751351303e2b66d3ca8b0e1fb2db6f68e50199391efa28cf563bb3ec1d9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "0c67568f16ddae7b20b61811812fd17a08147db751d29f5fe47d71101998ffbd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--secret--route--short.png",
+          "sha256": "429e7e78a36ae9b8b20bc9eba18f5302749ee70f444a246c62dc31283340b1fb",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key and passing175 secretroute parent: full physical LEFTreturnpad/toes now present, primary nearhomebase roof/body/OPENdoor/base now whole inside nativeLEFT/top. Full independent CREAMfold FLAT ON SAME aidworktop OUTSIDEcontainers/OPENwater/closed EMPTYjar/rope/movedbranch/whole UPPERLEFTdifferent village/continuous route/moonlit/no growthnest/body/capturegearTEAMtext. Near large side-on OPENhome/foregroundreturnworktop differs higher parent tinyLOWcave aid/UPvillage. All seven directly checked."
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--scene",
+      "nativeSha256": "13d9c95cbb86130b80a57c0a65c6fdd1ce70ef2bd229e34bf82c21f19d774204",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4d985ad54dc454152e9dd8c1fa5542d52de51c9a3371b2b34f9ee3111cf04fcb",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-175-monster--bond--collect--secret--habitat--scene.png",
+          "sha256": "3fc11fc91021f2f283ea8f5f537bf5a00593a7258555ca4ff28f45c8833fbc59",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual175 failed same-key and actual original secretHAB parent: full physical dirt LEFTpads/toes now present before60.3; full LOWaid/water/helpercloth/closed EMPTYjar/rope/movedbranch/whole actual UPPERLEFTOPEN wetland/forest/ruin innerviews/moonlit/first trust ready/no growthreturnvillagebodycapturegearTEAMtext. Meaningful openings insideframe; outer supports alone not F. Exterior upperhab/LOWaid differs old indoor giantLOWworkbench/fullwidtharches/RIGHTcarebed. All seven checked; new176 secretHAB parent fails absentpads so child stays held pending actual future replacement direct comparison."
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat",
+      "nativeSha256": "4293fe3c35bc4694259d137a601c193cd3527fca300e16ab4d9476c761f1f241",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a65228548f63a733102d78f03214f8dd7389b708c11c3fa81f00744a06e26d8f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original secretHAB parent/actual secret mood precursor: full UPPERLEFTwater/helpercloth/closed EMPTYjar/rope/movedbranch/actual WHOLE LEFTOPEN wetland/forest/ruin innerviews/moonlit/no scopegrowthreturnvillagebodycapturegearTEAMtext correct. Upperaid/LOWhab court differs old indoor lowerworkbench/fullwidtharches/RIGHTcarebed and mood indoor restbed/LOWbooks-binoculars/lake. However physical DIRT paw impressions entirely absent; allChoices false ONLY. No mechanical outer arch endpoint failure."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original secretHAB parent/actual secret mood precursor: full UPPERLEFTwater/helpercloth/closed EMPTYjar/rope/movedbranch/actual WHOLE LEFTOPEN wetland/forest/ruin innerviews/moonlit/no scopegrowthreturnvillagebodycapturegearTEAMtext correct. Upperaid/LOWhab court differs old indoor lowerworkbench/fullwidtharches/RIGHTcarebed and mood indoor restbed/LOWbooks-binoculars/lake. However physical DIRT paw impressions entirely absent; allChoices false ONLY. No mechanical outer arch endpoint failure."
+    },
+    {
+      "key": "monster--wild--partner--warm--route--short",
+      "nativeSha256": "7a770aea37edbd89f2c519fd3314b4e4d208700c97bcc670f97b9190a82b1def",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a2bafb50a90064cc2832610e0985d28fd03ac63e79ae00fca9795fd495cf0eb9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-171-monster--wild--partner--warm--route--short.png",
+          "sha256": "82beeaebd6e001f61ca29af6669b29b94923ec6a4fee5f30dd21a31fb2ee803e",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual171 failed same-key target and actual passing174 warmPARTNERroute parent: full captureNET includingmesh/handle/open EMPTYbasket/OPENwater/independent CREAMfold FLAT ON SAME worktop OUTSIDEbasket/whole physical LEFTreturnpads/WHOLEdifferent LEFTvillage/continuous route/WARM/no growthnest/TEAM/jar/body/text correct. Large nearfronthome/foregroundkit differs actual parent tinyUPkit/LOWvillage. But primary nearhomebase roof still cut substantially by nativeTOPedge despite precise whole roof request; composition false ONLY. No inherited missingfold or paw failure."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual171 failed same-key target and actual passing174 warmPARTNERroute parent: full captureNET includingmesh/handle/open EMPTYbasket/OPENwater/independent CREAMfold FLAT ON SAME worktop OUTSIDEbasket/whole physical LEFTreturnpads/WHOLEdifferent LEFTvillage/continuous route/WARM/no growthnest/TEAM/jar/body/text correct. Large nearfronthome/foregroundkit differs actual parent tinyUPkit/LOWvillage. But primary nearhomebase roof still cut substantially by nativeTOPedge despite precise whole roof request; composition false ONLY. No inherited missingfold or paw failure."
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--episode",
+      "nativeSha256": "771b01a64d3d3690d58930ec1c735974a090c2d93770173aaf21a392341bd506",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b011f6aff99d19b016173e3848c96605dbf98799d81974fdba72048d76ae2f21",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual original secretHAB parent and actual176 new failedparent: EMPTYleaf-lined shallow hollow nest/OPENwater/plain WHITEcloth BESIDEaid/closed EMPTYjar/rope/movedbranch/whole physical LEFTpads/toes/three actual UPPERLEFTOPEN wetland/forest/ruin innerviews/moonlit/no returnvillagebodycapturegearTEAMtext correct. Meaningful innerviews before60.3. Large foregroundLOWcare/upperhabitat focal depth reverses current176 parent upperaid/LOWhab and differs old indoor giantLOWworkbench/fullwidtharches. All seven directly checked, but failedcurrentparent holds child until passing future parent and direct allseven comparison."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 755,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

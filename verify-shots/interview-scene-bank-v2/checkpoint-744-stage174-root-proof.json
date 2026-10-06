@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 744,
+  "remainingAtSnapshot": 713,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T15:29:14.588393+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 744,
+      "manifestSha256": "4056c06421f0dbb8c585b5739d6f29c7be3684c25862ba76ad63156ccebd99b4",
+      "finishedAt": "2026-10-06T15:28:54.082225+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-744-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--partner--warm--route--scene,monster--wild--partner--warm--route--episode,monster--wild--partner--warm--case,monster--wild--partner--secret--case,monster--wild--team--secret--route--scene,monster--wild--partner--bright--habitat--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 744,
+      "manifestSha256": "4056c06421f0dbb8c585b5739d6f29c7be3684c25862ba76ad63156ccebd99b4",
+      "finishedAt": "2026-10-06T15:29:13.210440+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-744-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--team--secret--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--team--secret--route--scene.png",
+      "sha256": "3bcf14d3c99a6a491f48aa4121ed7361bdfea925f667017a714132a2ca4d2086",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--partner--bright--habitat--episode.png",
+      "sha256": "bbf48439503da9d1c1152f0a82e63c29c76e24cab922d4105a655982d52af145",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--secret--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--partner--secret--case.png",
+      "sha256": "e6b48343fd74b29c6c3660bebdb969a763aa732c814f55c48333f56c36aa09d1",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--warm--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--partner--warm--route--scene.png",
+      "sha256": "8945694c1580c342a7ecea07c5e9665cf2ce85ab67472501add500c01a4ea9ed",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--warm--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--partner--warm--route--episode.png",
+      "sha256": "41f9f424d4f30324d09d88f485762117d00692b14a1b2d728ce932a65eac5618",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--warm--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-744-stage174-selected-monster--wild--partner--warm--case.png",
+      "sha256": "9e280e3aee2db87e71a62f8c7f56b035af130c320bf9ba12d15a88066d1a0458",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 34,
+  "scope": "744 file/record integrity and six explicitly selected production-dialog paths, 34 actual clicks, six settled screens actually viewed by root. Left-caption overlap remains. Privately confirmed original BOND secret HAB visibility failure pending official review. Not an all744 fresh visual audit/full app boot/AI handoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-744-stage174-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-744-stage174-click-proof.json"
+  }
+}

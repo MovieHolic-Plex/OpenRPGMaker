@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 742,
+  "remainingAtSnapshot": 715,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T14:59:34.429552+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 742,
+      "manifestSha256": "35ca758e8f51b6c93439f73d3f97453f4ad32bcb699b2b004c873d5af3d5c3bf",
+      "finishedAt": "2026-10-06T14:59:12.449573+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-742-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--team--warm--case--episode,monster--wild--partner--bright--habitat--episode,monster--wild--partner--secret--route--episode,monster--wild--team--secret--case--short,monster--wild--partner--warm--habitat,monster--wild--partner--bright--route--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 742,
+      "manifestSha256": "35ca758e8f51b6c93439f73d3f97453f4ad32bcb699b2b004c873d5af3d5c3bf",
+      "finishedAt": "2026-10-06T14:59:32.977370+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-742-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--team--secret--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--team--secret--case--short.png",
+      "sha256": "411e3d9f51c726bc69f77bf54e18ffdfddb9b52e76925663ef4d5e5ba7645e05",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--warm--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--team--warm--case--episode.png",
+      "sha256": "c4bfdcb0ba87060ac9db391d8f990a87bd06171e316371e92428a23aa2a40a37",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--bright--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--partner--bright--route--episode.png",
+      "sha256": "b9983a7ca9f4f7e225d8004b2b4a599053546f26cd1188b50910b8618367cf88",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--partner--bright--habitat--episode.png",
+      "sha256": "c12b30d5d889d881c0020361518677c8883f5d25fd83f956d2bcdcc54efffdbe",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--secret--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--partner--secret--route--episode.png",
+      "sha256": "c092338fe1b58e869bdff6ef65ad139b765bef2890b6707cac1833fbd810422b",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--warm--habitat",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage172-selected-monster--wild--partner--warm--habitat.png",
+      "sha256": "a1c42a55a9a87749666244765e9960faa1310f0097bc5992533e43d07892dc03",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "742 file/record integrity and six explicitly selected production-dialog paths, 35 clicks and six settled screens actually viewed by root, including new172 warmPARTNERhabitat parent. Left-caption overlap remains. Two original BONDcollect bright HAB/CASE visibility failures privately confirmed pending next official review; no all742 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-742-stage172-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-742-stage172-click-proof.json"
+  }
+}

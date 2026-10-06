@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 755,
+  "remainingAtSnapshot": 702,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T15:57:29.222143+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 755,
+      "manifestSha256": "190b5c09c4a7c622742c44faf74b7dd0118754f41e8c0c908fd8bfa25f7359e4",
+      "finishedAt": "2026-10-06T15:57:06.775716+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-755-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--collect--bright--route,monster--bond--collect--bright--habitat--scene,monster--bond--collect--bright--case--episode,monster--bond--collect--secret--route--scene,monster--bond--collect--secret--route--short,monster--bond--collect--bright--case--scene"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 755,
+      "manifestSha256": "190b5c09c4a7c622742c44faf74b7dd0118754f41e8c0c908fd8bfa25f7359e4",
+      "finishedAt": "2026-10-06T15:57:27.740648+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-755-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--bond--collect--bright--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--bright--route.png",
+      "sha256": "36072ef9cee712a5bce3a764fcb395c447f1540a4dfc3adeabaa276c9682d801",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--bright--habitat--scene.png",
+      "sha256": "39e907a8b8ca9393414d6cc4f7800e3810bbbcbdc62986d275a10170cf8af81e",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--bright--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--bright--case--scene.png",
+      "sha256": "3721825cc1ff10ab7d20670273426f95a98a050666437778c6b5f9b42a15de7f",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--bright--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--bright--case--episode.png",
+      "sha256": "303d02e8dfa6d80729c3596f89fee5149fd06261b95d5bddcd8ddd5fb4fa51c7",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--secret--route--scene.png",
+      "sha256": "ad80c5e88040e202c2119b07df4cfcc9561f8d025da5e854d7ac984e217b8964",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage176-selected-monster--bond--collect--secret--route--short.png",
+      "sha256": "7b1a56f0d8e9fd995eb4977a723aad9b63c74443f53d8f945b92c63d6b7fa8e2",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "755 file/record integrity and six explicitly selected production-dialog paths, 35 actual clicks, six settled screens actually viewed by root. Left-caption overlap remains. Four privately confirmed original BOND warm MOOD/ROUTE/HAB and secret CASE visibility failures are pending official corrective review after this frozen snapshot/commit. Not an all755 fresh visual audit/full app boot/AI handoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-755-stage176-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-755-stage176-click-proof.json"
+  }
+}

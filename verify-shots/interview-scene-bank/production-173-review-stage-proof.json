@@ -1,0 +1,315 @@
+{
+  "batch": "v2-production-173",
+  "passedAttempts": 2,
+  "rejectedAttempts": 8,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-173",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-173-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:04:51.401124+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-173-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-173",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-173-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:05:15.367309+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-173-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-173",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-173",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T15:05:15.424061+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--partner--secret--case",
+      "nativeSha256": "d606b51bf8cda5696f22b3fe1cdc86dac331b26426c7a667ecf0d79a868255ad",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7253383351d3d2b657de8491bcf57d3dfaa6be165014a4945a69dcbb64ce54c5",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-172-monster--wild--partner--secret--case.png",
+          "sha256": "17d1030906e989434adb68645ad9febe700d28b412994b38da483ad539c6ff09",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual172 same-key failed target/actual original secretPARTNERcase parent: entire small OPENlocalrefuge roof/body/door/base now inside native left/bottom; no substantial chosen-motif crop, do not mechanically fail ideal6%margin. Full net/open EMPTYbasket/helpercloth/OPENwater/EMPTYtrust platform/loose rope/tipped EMPTYbrown woodpail/whole physical LEFTpads all before60.3. Moonlit/no scope/body/TEAM/jars/village/text. Outside upperLEFT kit/lowerLEFTrefuge differs original giant indoor carebench/right cave. All seven directly checked, no inherited verdict."
+    },
+    {
+      "key": "monster--wild--team--secret--route--scene",
+      "nativeSha256": "626fa9562c35ae674faa4911e04a9f2900320ed987279437ca78c0c27a23f845",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "c1fa16fb2b42231b015983ce9452968215f3b4940f04b47be875eae2cdcdea61",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-172-monster--wild--team--secret--route--scene.png",
+          "sha256": "7881cebc597245636ae924044c89e2121fe93d721b8b9cd0b4c40fbdb67ff28d",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT whole native/FULL OWN/actual172 same-key failed target/actual164 TEAMsecretROUTE parent: TWO WHOLE village houses now insideframe, every roof/wall/door/base readable before60.3; cropped fence endpoint is background not house. Continuous LEFTearth path/full LEFTphysicalpads/tiny UPPERLEFT net/open EMPTYbasket/whole MIDLEFT hurdle/posts/ramp/moonlit first-ready no growth/return/body/text correct. No water/helpercloth in OWN. Reverse overhead upperkit/lower village differs actual164 giantLOWkit/UPvillage/rightlake parent. Hard coarse pixels. All seven directly checked."
+    },
+    {
+      "key": "monster--wild--partner--warm--route",
+      "nativeSha256": "309656e963a446e8bba3eff7377148266dda32381b52fcc5e35130e4db8eecda",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5f922bc95893af154707230ebedf376fe9c8d0213967f0b087433630bbe3dfcc",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original warmPARTNERroute parent: new high reverse upperLEFT kit/two whole LOWERLEFT village houses/continuous walkable LEFTtrail/warm/helpcloth/full net/open EMPTYbasket distinct from indoor giant carebed/rightvillage and inside native controls. However required OPENwater bowl entirely missing and physical paw impressions absent on earth trail. allChoices false ONLY; selected travel latest is correct, no unchosen growth/return/body/TEAM/jar/text. Brand-new generation had no reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original warmPARTNERroute parent: new high reverse upperLEFT kit/two whole LOWERLEFT village houses/continuous walkable LEFTtrail/warm/helpcloth/full net/open EMPTYbasket distinct from indoor giant carebed/rightvillage and inside native controls. However required OPENwater bowl entirely missing and physical paw impressions absent on earth trail. allChoices false ONLY; selected travel latest is correct, no unchosen growth/return/body/TEAM/jar/text. Brand-new generation had no reference input."
+    },
+    {
+      "key": "monster--wild--partner--warm--case",
+      "nativeSha256": "3f208cebd381eab96b2b13efa692a98f2520497aef7fab33de87961c8c34364a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ceca1b3ae46dc5a87e7c0a6e102225aced6d64a1708a3f1b4e146db251bd7c3c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original warmPARTNERcase parent: exterior upperLEFTkit/LOWLEFTlocal OPENrefuge/loose rope/tipped hollow brown wooden pail/full LEFTphysicalpads/warm/no differentvillage/body/TEAM/jar/text differ original indoor carebed/rightdoor. But OPENwater bowl absent and a prominent nest/rest alcove with leafy growth-like lining is introduced despite explicit no growth scope, allChoices false; actual refuge wall/body clipped at native left, composition false. Plain helpful cloth present. Latest localcase clue remains readable; no inherited pass. No reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original warmPARTNERcase parent: exterior upperLEFTkit/LOWLEFTlocal OPENrefuge/loose rope/tipped hollow brown wooden pail/full LEFTphysicalpads/warm/no differentvillage/body/TEAM/jar/text differ original indoor carebed/rightdoor. But OPENwater bowl absent and a prominent nest/rest alcove with leafy growth-like lining is introduced despite explicit no growth scope, allChoices false; actual refuge wall/body clipped at native left, composition false. Plain helpful cloth present. Latest localcase clue remains readable; no inherited pass. No reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--route",
+      "nativeSha256": "d12c3c8a67bf630e2d9671f288664a23f11d4888386ebe207c2158f2b53e6122",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "30670134852e49fc4567bccbfced416ce86a6be5f406edcd6a317458c145d4a8",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightROUTE parent: OPENwater/helpcloth/CLOSED EMPTYtransparent observationjar/loose rope/moved-aside branch/unblocked LEFTearth route/two whole different village houses/daylight correct, no captureNET/basket/cage/egg/body/growth/return/TEAM/text. New exterior upperLEFTaid/LOWLEFTvillage differs original indoor hugeworkbench/rightvillage. Physical paw impressions explicitly requested by OWN are entirely absent, allChoices false ONLY. No numeric x45 failure when actual whole selected motifs fit before60.3; no reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightROUTE parent: OPENwater/helpcloth/CLOSED EMPTYtransparent observationjar/loose rope/moved-aside branch/unblocked LEFTearth route/two whole different village houses/daylight correct, no captureNET/basket/cage/egg/body/growth/return/TEAM/text. New exterior upperLEFTaid/LOWLEFTvillage differs original indoor hugeworkbench/rightvillage. Physical paw impressions explicitly requested by OWN are entirely absent, allChoices false ONLY. No numeric x45 failure when actual whole selected motifs fit before60.3; no reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--route--short",
+      "nativeSha256": "83f6371e648a33ccea48ba4ebfe0e6c97a0823d3ded96fafa0a41b8009014432",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e07d95eaec8fd0b9645f50f084224acb7788e54c994b8cbca7a5db10debb8a09",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightROUTE parent and actual173 new candidate: independent CREAM fold FLAT on same upperLEFTaid worktop outsidecontainer/openwater/EMPTYclosedjar/helpcloth/rope/moved-asidebranch/daylight/different village present, no wildcapturegear/body/growth/TEAM/text. However required physical return paw impressions absent and near homebase doorway is CLOSED, allChoices/latestChoice false. Homebase roof/body native-left cropped, composition false. Exterior return court differs parent overhead aid clearing. No false missing CREAM fold; plain storage crate not capture basket. No reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightROUTE parent and actual173 new candidate: independent CREAM fold FLAT on same upperLEFTaid worktop outsidecontainer/openwater/EMPTYclosedjar/helpcloth/rope/moved-asidebranch/daylight/different village present, no wildcapturegear/body/growth/TEAM/text. However required physical return paw impressions absent and near homebase doorway is CLOSED, allChoices/latestChoice false. Homebase roof/body native-left cropped, composition false. Exterior return court differs parent overhead aid clearing. No false missing CREAM fold; plain storage crate not capture basket. No reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat--scene",
+      "nativeSha256": "86f9072c88b3bd715f6fc26347b3753af18ac1b4b7852d422204b6d89d690345",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d94226e4f738e47be9b155bef9329945a6568ac49fd52874b85736a614852608",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: new upperLEFT aid/tiny CLOSED EMPTYtransparentjar/openwater/helpcloth/rope/moved-asidebranch/THREE actual OPEN wetland/forest/ruin inner views LOWERLEFT/daylight/no scope/growth/return/body/wildcapture/TEAM/text correct. Meaningful inner wetland view is still wholly insideframe; cropped outer arch stone is supporting background, not automatic failure. Physical paw impressions entirely absent, allChoices false ONLY. Reverse exterior upperkit/lower passages differs original inside giant lowerworkbench/full-width arches. No reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: new upperLEFT aid/tiny CLOSED EMPTYtransparentjar/openwater/helpcloth/rope/moved-asidebranch/THREE actual OPEN wetland/forest/ruin inner views LOWERLEFT/daylight/no scope/growth/return/body/wildcapture/TEAM/text correct. Meaningful inner wetland view is still wholly insideframe; cropped outer arch stone is supporting background, not automatic failure. Physical paw impressions entirely absent, allChoices false ONLY. Reverse exterior upperkit/lower passages differs original inside giant lowerworkbench/full-width arches. No reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat--episode",
+      "nativeSha256": "7508ef99a50395dc9b5c07fbd38f40807fe5e987cac2982e4517eb0f35796df7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "0878499e65e59bc5366aa30b10f11a6ffa486e965703cbf0333a28af8227ffec",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": false,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: EMPTYleaf-lined hollow restnest/OPENwater/plain WHITEcarecloth BESIDEaid/CLOSED EMPTYjar/rope/movedbranch/three actual OPEN LEFTinner habitat views/daylight/no return/wildcapture/body/TEAM/text correct. Outer ruin supporting stones cross60.3 but whole meaningful inner view fits, no automatic composition failure. Physical paw impressions absent (allChoices false); substantial soft blended soil and hazy forest shading produce painterly depth rather than coherent coarse hard grid/flat shade steps (pixelArt false). New raised exterior carealcove abovehabitats differs original inside workbench. No reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: EMPTYleaf-lined hollow restnest/OPENwater/plain WHITEcarecloth BESIDEaid/CLOSED EMPTYjar/rope/movedbranch/three actual OPEN LEFTinner habitat views/daylight/no return/wildcapture/body/TEAM/text correct. Outer ruin supporting stones cross60.3 but whole meaningful inner view fits, no automatic composition failure. Physical paw impressions absent (allChoices false); substantial soft blended soil and hazy forest shading produce painterly depth rather than coherent coarse hard grid/flat shade steps (pixelArt false). New raised exterior carealcove abovehabitats differs original inside workbench. No reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--habitat--short",
+      "nativeSha256": "496533883d5658f937101c39f6a8b98b2e328618231ef9145439491cf5fd90c9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "c2de62bb1c44ff296da68cc56ae6137008a870abe9b8cde327192c6a81ea1e1e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: OPENnearLEFThomebase/independent CREAMfold FLATsameworktop OUTSIDEcontainers/openwater/CLOSED EMPTYjar/rope/movedbranch/three actual OPENhabviews/daylight/no growth/wildcapture/body/TEAM/text present. Physical return paw impressions absent, allChoices false. Meaningful RUIN inner opening x50-62 partly behind actual60.3 controls and whole required homebase roof/body substantially cropped at native left, composition false. New upperLEFTaidworktop/LOWLEFTnearhomebase/middle-left arches differs old inside giantworkbench. No false absent ending fold; no reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightHAB parent: OPENnearLEFThomebase/independent CREAMfold FLATsameworktop OUTSIDEcontainers/openwater/CLOSED EMPTYjar/rope/movedbranch/three actual OPENhabviews/daylight/no growth/wildcapture/body/TEAM/text present. Physical return paw impressions absent, allChoices false. Meaningful RUIN inner opening x50-62 partly behind actual60.3 controls and whole required homebase roof/body substantially cropped at native left, composition false. New upperLEFTaidworktop/LOWLEFTnearhomebase/middle-left arches differs old inside giantworkbench. No false absent ending fold; no reference input."
+    },
+    {
+      "key": "monster--bond--collect--bright--case--scene",
+      "nativeSha256": "223f0d619f0a70fc06673f94e2b2b19db4c1c842e75baa8e5a27fc0ddc1dcdde",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "10093abc51cf02ace8352d8e7cbf929184821998d057341e3d83931564b1464d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": false,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT whole native/FULL OWN/actual original BONDcollectbrightCASE parent: full physical LEFTpads/OPENlocalrefuge/rope/tipped hollow EMPTYbrown wooden pail/aidhelpcloth/OPENwater/CLOSED EMPTYobservationjar/moved-asidebranch/daylight/first-ready/no growth/return/differentvillage/wildcapture/body/TEAM/text correct, whole core motifs before60.3. Exterior upperLEFTaid/LOWLEFTrefuge differs old inside giant lowerworkbench/rightcarebed. But ground and distant forest have soft blended fine texture/hazy depth instead of hard coarse consistent pixel clusters/flat shade steps, pixelArt false ONLY. No reference input."
+      ],
+      "note": "ROOT whole native/FULL OWN/actual original BONDcollectbrightCASE parent: full physical LEFTpads/OPENlocalrefuge/rope/tipped hollow EMPTYbrown wooden pail/aidhelpcloth/OPENwater/CLOSED EMPTYobservationjar/moved-asidebranch/daylight/first-ready/no growth/return/differentvillage/wildcapture/body/TEAM/text correct, whole core motifs before60.3. Exterior upperLEFTaid/LOWLEFTrefuge differs old inside giant lowerworkbench/rightcarebed. But ground and distant forest have soft blended fine texture/hazy depth instead of hard coarse consistent pixel clusters/flat shade steps, pixelArt false ONLY. No reference input."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

@@ -1,0 +1,43 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 744,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--wild--partner--secret--case",
+      "sourceSha256": "33b70047501021ce16e7581e89892299b1bc23292cc4c602cd50acbda3511f83",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--case-33b700475010.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--secret--case-1-33b700475010.png",
+      "replacementPublished": true,
+      "replacementSha256": "d606b51bf8cda5696f22b3fe1cdc86dac331b26426c7a667ecf0d79a868255ad",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-174"
+    },
+    {
+      "key": "monster--wild--partner--warm--route",
+      "sourceSha256": "5d2f1f10c1e6dd2c41336b90236d38959d701c0bf2e460b1968ff6bf3a8f901c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--warm--route-5d2f1f10c1e6.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--route-1-5d2f1f10c1e6.png",
+      "replacementPublished": true,
+      "replacementSha256": "4a1bcd3471f2bc3cdf3be6d7c57704704a0d06488feac75abb8a6d006a4fd91e",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-174"
+    },
+    {
+      "key": "monster--wild--partner--warm--case",
+      "sourceSha256": "6465fc89293f9a8a9609da243974fb691682ca9d249b7f21cc4bc4b6ad688e8e",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--warm--case-6465fc89293f.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--case-2-6465fc89293f.png",
+      "replacementPublished": true,
+      "replacementSha256": "8fd4102ef7722bdf5e576b43906e93605ee82dbf51c2fdca9da654d614b9e03e",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-174"
+    }
+  ],
+  "resolvedCumulative": 148
+}

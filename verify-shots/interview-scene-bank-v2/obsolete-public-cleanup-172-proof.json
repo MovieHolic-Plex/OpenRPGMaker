@@ -1,0 +1,19 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 742,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--wild--partner--warm--habitat",
+      "sourceSha256": "d5fdd81de453c9e4bd2ff31a7be40515d14aac73ffb32fe397f116c4b2436187",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--warm--habitat-d5fdd81de453.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--habitat-1-d5fdd81de453.png",
+      "replacementPublished": true,
+      "replacementSha256": "0d004287319b2d708af10955519dacf82049d6fd51e3f24b7c21bc1dff96087e",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-172"
+    }
+  ],
+  "resolvedCumulative": 145
+}
