@@ -1,19 +1,25 @@
 {
  "tiles": {
-  "count": 6110,
+  "count": 6755,
   "tilesPerRow": 48,
-  "rows": 128,
+  "rows": 141,
   "sheetPx": [
    768,
-   2048
+   2256
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 2973,
-  "legacy": 0,
-  "legacy_ids": [],
+  "block_cells": 3613,
+  "legacy": 5,
+  "legacy_ids": [
+   5137,
+   5275,
+   5649,
+   5650,
+   5922
+  ],
   "unused_source": 110,
   "people_reserved": 155,
   "by_category": {
@@ -24,40 +30,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 2973
+   "block": 3613
   }
  },
  "pc_counts": {
-  "star": 3878,
-  "solid": 1257,
+  "star": 4320,
+  "solid": 1435,
   "floor": 384,
   "solidfloor": 155,
-  "flat": 281,
+  "flat": 301,
   "blank": 155
  },
  "kits": {
-  "total": 274,
+  "total": 342,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 98
+   "block-kit": 166
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 98
+  "block_kit": 166
  },
  "groups": {
-  "total": 174,
+  "total": 175,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 21
+   "block": 22
   }
  },
  "autotiles": {
@@ -87,13 +93,15 @@
    "autotiles_ground",
    "autotiles_lines",
    "roads",
-   "buildings"
+   "buildings",
+   "street_hand"
   ],
   "merged": [
    "autotiles_ground",
    "autotiles_lines",
    "roads",
-   "buildings"
+   "buildings",
+   "street_hand"
   ],
   "missing": [],
   "on_disk_not_in_order": [],
@@ -124,16 +132,24 @@
    },
    {
     "name": "buildings",
-    "cells": 2363,
+    "cells": 2777,
     "autotiles": 0,
     "groups": 0,
-    "kits": 59,
-    "notes": "일본 동네 건물 59종 블록. 그림은 houses/ 의 조립 키트(기준 집 ref_house 를 사용자가 승인한 화풍)로 그린 통 건물을 16px 로 자른 것이다. 같은 화소·같은 통행의 칸은 합쳤다. 통행: 맨 아래 D줄(2, 큰 건물 3)의 벽 칸만 solid, 처마 옆·윗층·지붕은 star(뒤로 지나감). 한계: (1) 건물은 정면 하나(뒷면·옆면 없음). (2) 간판 글자는 일본어 고정(JIS 16px 글리프). (3) 마당·담·주차장은 키트에 없다 — 기존 오토타일·소품으로 깐다."
+    "kits": 77,
+    "notes": "일본 동네 건물 77종 블록. 그림은 houses/ 의 조립 키트(기준 집 ref_house 를 사용자가 승인한 화풍)로 그린 통 건물을 16px 로 자른 것이다. 같은 화소·같은 통행의 칸은 합쳤다. 통행: 맨 아래 D줄(2, 큰 건물 3)의 벽 칸만 solid, 처마 옆·윗층·지붕은 star(뒤로 지나감). 한계: (1) 건물은 정면 하나(뒷면·옆면 없음). (2) 간판 글자는 일본어 고정(JIS 16px 글리프). (3) 마당·담·주차장은 키트에 없다 — 기존 오토타일·소품으로 깐다."
+   },
+   {
+    "name": "street_hand",
+    "cells": 226,
+    "autotiles": 0,
+    "groups": 1,
+    "kits": 50,
+    "notes": "손 도트 거리 소품 50종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 274,
+  "kits_checked": 342,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -142,7 +158,29 @@
    "fumikiri": 4,
    "underpass": 1,
    "footbridge": 1,
-   "bldg": 59
+   "bldg": 77,
+   "pole": 3,
+   "wire": 9,
+   "mirror2": 1,
+   "hydrant": 1,
+   "bus": 1,
+   "mark": 14,
+   "bwall": 4,
+   "bwallf": 3,
+   "gatepost": 1,
+   "gate": 1,
+   "carport": 1,
+   "tsukigime": 1,
+   "propane": 1,
+   "ac": 1,
+   "pots": 1,
+   "monohoshi": 1,
+   "keijiban": 1,
+   "gomi": 1,
+   "jizo": 1,
+   "torii": 1,
+   "gas": 1,
+   "school": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -152,9 +190,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6110,
-  "kits_checked": 274,
-  "groups_checked": 174,
+  "tiles_checked": 6755,
+  "kits_checked": 342,
+  "groups_checked": 175,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -169,10 +207,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "86a43c447fdd40aefa04225a456afc42451a18d1",
+ "sheet_hash": "ddadce7a5286649378342c3c4b7e73242606ddde",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 274,
+  "kits_checked": 342,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -181,7 +219,29 @@
    "fumikiri": 4,
    "underpass": 1,
    "footbridge": 1,
-   "bldg": 59
+   "bldg": 77,
+   "pole": 3,
+   "wire": 9,
+   "mirror2": 1,
+   "hydrant": 1,
+   "bus": 1,
+   "mark": 14,
+   "bwall": 4,
+   "bwallf": 3,
+   "gatepost": 1,
+   "gate": 1,
+   "carport": 1,
+   "tsukigime": 1,
+   "propane": 1,
+   "ac": 1,
+   "pots": 1,
+   "monohoshi": 1,
+   "keijiban": 1,
+   "gomi": 1,
+   "jizo": 1,
+   "torii": 1,
+   "gas": 1,
+   "school": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -191,9 +251,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6110,
-  "kits_checked": 274,
-  "groups_checked": 174,
+  "tiles_checked": 6755,
+  "kits_checked": 342,
+  "groups_checked": 175,
   "autotiles_checked": 17
  },
  "files": {
@@ -204,5 +264,38 @@
   "report": "tiledata/jp-city/bake-report.json",
   "kits": "tiledata/jp-city/kit-index.json",
   "pcrules": "tiledata/jp-city/bake/PC-RULES.md"
+ },
+ "selftest": {
+  "rebake_identical": {
+   "png": true,
+   "sheet": true,
+   "tileset": true,
+   "pins": true,
+   "kits": true,
+   "pcrules": true
+  },
+  "rebake_all_identical": true,
+  "add_block": {
+   "old_count": 6750,
+   "new_count": 6753,
+   "added_cells": 3,
+   "pinned_moved": 0,
+   "kits_changed": 0,
+   "old_cell_pixels_unchanged": true,
+   "new_ids_start_at": 6750,
+   "pass_": true
+  },
+  "remove_block": {
+   "count_unchanged": true,
+   "pins_unchanged": true,
+   "legacy_pixels_kept": true,
+   "legacy_cells": 139,
+   "pass_": true
+  },
+  "readd_block": {
+   "identical_to_before_remove": true,
+   "pass_": true
+  },
+  "pass": true
  }
 }
