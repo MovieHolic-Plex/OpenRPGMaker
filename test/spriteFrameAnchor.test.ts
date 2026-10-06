@@ -35,7 +35,7 @@ describe("native action frame ground anchor", () => {
     project.assets.uploaded["native-walk"] = { id: "native-walk", name: "Native walk", kind: "charset",
       dataUrl: "data:image/png;base64,", meta: { width: 288, height: 256 } };
     project.assets.sprites["native-walk"] = { ...action, id: "native-walk",
-      image: { type: "uploaded", id: "native-walk" }, frames: 144,
+      image: { type: "uploaded", id: "native-walk" }, frames: 96,
       frameWidth: 24, frameHeight: 32, anchor: { x: 12, y: 31 } };
     const session = { ...project.session, partyActorIds: [actor.id] } as PlaySession;
     expect(resolvePlayerSpriteResource(project, session).origin).toEqual({ x: 0.5, y: 31 / 32 });
