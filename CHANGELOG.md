@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.153.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 한·영·일·중 다국어 스토어와 진열대형 화면 (`d12aea3`)
+- **monster** — build_monster_game takes the brief's names (`7574758`)
+- **monster** — distinct grove, dune and moon towns with real gym buildings (`8753aa6`)
+
+### 수정
+
+- **asset-store** — 다른 언어 화면에서 한글 태그·그림 이름 숨김, 들어 있는 것 정렬, 디자인 문서 갱신 (`cdf5d36`)
+- **events** — battle result branches imply branchOnResult; unwrap nested battleProcessing (`cbea00a`)
+- **monster** — doors on drawn exits, trainers off grass and stairs, autoplay runs and heals near the fight (`84fa890`)
+- **qa** — monster autoplay heals like a player, wakes at the last center (`9ff3172`)
+- **monster** — first gym beatable by every starter, runtime journey QA in player.html (`6013172`)
+
 ## 0.152.1 — 2026-10-06
 
 ### 수정
