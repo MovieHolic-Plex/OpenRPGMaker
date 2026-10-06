@@ -33,11 +33,13 @@ put("jp-bldg-school", 2, 12);                                      // 昇降口 
 put("jp-bldg-school-gym", 23, 12);                                 // 문 (28,12)(31,12)
 put("jp-pool", 38, 17, { tag: "pool" });                           // x 38~66, y 1~17, 입구 (52,17)(53,17)
 
-// ── 3. 교사 앞 줄(y 15~18): 게양대·나팔꽃·화단·조례대·동상·수돗가 — 문 앞 열(12·28·31)은 비운다
+// ── 3. 교사 앞 줄(y 15~18): 게양대·나팔꽃·화단·조례대·게시판·동상·수돗가 — 문 앞 열(12·28·31)은 비운다
 put("jp-flagpoles", 2, 18, { tag: "flagpoles" });
 put("jp-asagao", 6, 16, { tag: "asagao" });
+put("jp-ichirinsha", 6, 18, { tag: "ichirinsha" });                // 1학년 나팔꽃 앞 외발자전거 걸이
 put("jp-kadan", 15, 16, { tag: "kadan-front" });
 put("jp-chorei-dai", 16, 18, { tag: "chorei-dai" });               // 트랙 북쪽 가운데, 운동장을 본다
+put("jp-keijiban", 20, 16, { tag: "keijiban" });                   // 학교 게시판
 put("jp-ninomiya", 24, 16, { tag: "ninomiya" });
 put("jp-teaarai", 26, 16, { tag: "teaarai" });                     // 운동장 → 교사 들어가기 전 손 씻는 곳
 
@@ -47,25 +49,33 @@ put("jp-goal-l", 5, 29, { tag: "goal-l" });
 put("jp-goal-r", 26, 29, { tag: "goal-r" });
 put("jp-tetsubo", 3, 36, { tag: "tetsubo-2" });
 put("jp-tires", 10, 36, { tag: "tires" });
+put("jp-fujidana", 16, 37, { tag: "fujidana-field" });             // 운동장 가 등나무 그늘(학부모·응원석)
+put("jp-teaarai", 23, 36, { tag: "teaarai-field" });
 for (let x = 2; x + 4 <= 30; x += 4) put("jp-ball-net", x, FENCE_S - 1, { tag: `net-${x}` });
 
-// ── 5. 동쪽 놀이·관찰 구역(진입로 동쪽, 수영장 남쪽)
-put("jp-souko", 38, 23, { tag: "souko" });                         // 체육 창고는 운동장 쪽 끝
-put("jp-tetsubo", 43, 23, { tag: "tetsubo" });
-put("jp-unte", 49, 23, { tag: "unte" });
-put("jp-hyakuyoubako", 56, 22, { tag: "hyakuyoubako" });           // 백엽상은 트인 잔디 쪽
-put("jp-prop-swing", 59, 23, { tag: "swing" });
-put("jp-prop-slide", 63, 23, { tag: "slide" });
-put("jp-jungle-gym", 38, 31, { tag: "jungle-gym" });
-put("jp-prop-sandbox", 42, 31, { tag: "sandbox" });
-put("jp-gakkyuen", 47, 31, { tag: "gakkyuen-1" });                 // 학급 밭 둘
-put("jp-gakkyuen", 53, 31, { tag: "gakkyuen-2" });
-put("jp-shiiku-goya", 38, 38, { tag: "shiiku-goya" });             // 사육장은 밭 곁
-put("jp-kadan", 43, 37, { tag: "kadan-shiiku" });
-tryPut("jp-prop-bench", 48, 37, "bench-1");
+// ── 5. 동쪽 놀이·관찰 구역(진입로 동쪽, 수영장 남쪽) — 네 줄, 줄 사이 1칸
+put("jp-teaarai", 56, 20, { tag: "teaarai-pool" });                // 수영장 나온 곳 손·발 씻기
+tryPut("jp-prop-bench", 61, 20, "bench-pool");
+put("jp-souko", 38, 22, { tag: "souko" });                         // ① 창고·오르기 봉·운제·철봉·백엽상·그네
+put("jp-noboribou", 43, 22, { tag: "noboribou" });
+put("jp-unte", 47, 22, { tag: "unte" });
+put("jp-tetsubo", 53, 22, { tag: "tetsubo" });
+put("jp-hyakuyoubako", 59, 23, { tag: "hyakuyoubako" });
+put("jp-prop-swing", 62, 23, { tag: "swing" });
+put("jp-jungle-gym", 38, 27, { tag: "jungle-gym" });              // ② 정글짐·모래밭·미끄럼틀·등나무 그늘·비오톱
+put("jp-prop-sandbox", 42, 27, { tag: "sandbox" });
+put("jp-prop-slide", 46, 27, { tag: "slide" });
+put("jp-fujidana", 50, 28, { tag: "fujidana" });
+put("jp-biotope", 56, 28, { tag: "biotope" });
+put("jp-gakkyuen", 38, 32, { tag: "gakkyuen-1" });                 // ③ 학급 밭 둘·사육장·화단
+put("jp-gakkyuen", 44, 32, { tag: "gakkyuen-2" });
+put("jp-shiiku-goya", 50, 32, { tag: "shiiku-goya" });
+put("jp-kadan", 55, 31, { tag: "kadan-shiiku" });
+put("jp-asagao", 55, 32, { tag: "asagao-2" });
 put("jp-bike-shelter", 60, 42, { tag: "bike-shelter" });           // 교직원 자전거
-for (const [id, x, f] of [["jp-prop-tree-ginkgo", 59, 32], ["jp-prop-tree-sakura", 63, 32], ["jp-prop-tree-sakura", 52, 40],
-  ["jp-prop-tree-zelkova", 56, 40], ["jp-prop-tree-sakura", 24, 6], ["jp-prop-tree-zelkova", 30, 6],
+for (const [id, x, f] of [["jp-prop-tree-sakura", 63, 33], ["jp-prop-tree-ginkgo", 59, 35],           // ④ 담 따라 벚나무 줄(입학식 벚꽃)
+  ["jp-prop-tree-sakura", 38, 40], ["jp-prop-tree-sakura", 43, 40], ["jp-prop-tree-zelkova", 48, 40], ["jp-prop-tree-sakura", 53, 40],
+  ["jp-prop-tree-sakura", 24, 6], ["jp-prop-tree-zelkova", 30, 6], ["jp-prop-tree-sakura", 34, 6],
   ]) tryPut(id, x, f, `tree-${x}-${f}`);
 put("jp-school-gate-l", GATE_X, FENCE_S, { tag: "school-gate" }); // 열린 칸 x 33~36
 
@@ -81,8 +91,9 @@ m.mark30(10, LANE[0]);
 m.poleRow(LANE[1], { forbid: (x) => x >= GATE_X - 1 && x <= GATE_X + 8, prefer: 16 });
 
 const { report, MAP } = await m.finish({ id: "jp-city-school", name: "일본 도시 · 小学校", start: START, file: "school",
+  emptyIgnore: [{ x: 3, y: 20, w: 28, h: 13 }], emptinessMax: 0.75,   // 트랙 안(운동장)은 비어 있어야 한다. 교정 기준 0.75 — 놀이 구역 맨흙도 뛰는 자리(research 03 「校庭」), 마을 기준 0.4 와 다르다
   bare: [T.SW, T.PAVE_A, T.PAVE_B, GROUND, GROUND_B, GROUND_C] });
-console.log(JSON.stringify({ ok: report.ok, doors: report.doors.n, failing: report.doors.failing, solidOpen: report.solid.open, issues: report.layers.issues, autotiles: Object.fromEntries(Object.entries(report.autotiles).map(([k, v]) => [k, v.mismatch])), emptiness: report.emptiness, poles: report.poles, deco: report.deco }, null, 1));
+console.log(JSON.stringify({ ok: report.ok, doors: report.doors.n, anchors: report.anchors, failing: report.doors.failing, solidOpen: report.solid.open, issues: report.layers.issues, autotiles: Object.fromEntries(Object.entries(report.autotiles).map(([k, v]) => [k, v.mismatch])), emptiness: report.emptiness, poles: report.poles, deco: report.deco }, null, 1));
 if (!report.ok) process.exitCode = 2;
 
 if (process.argv.includes("--publish")) {
@@ -96,6 +107,7 @@ if (process.argv.includes("--publish")) {
       "정문(jp-school-gate-l, 개구부 4칸)은 남쪽 담 x 31~38, 진입로(포장) x 33~36 → 교사 앞 포장 띠, 수영장 가는 길 y 18~19. 둘레는 철망 오토타일.",
       "앞 생활도로(폭 4칸, 보도 없음)에 側溝·흰 선·「30」, 남쪽 가장자리 전봇대·전선(4층, 정문 앞은 비움).",
       `문 ${report.doors.n}개(+수영장 입구) 접근칸 전부 정문 앞 (34,45) 에서 도달, 막힘 칸 ${report.solid.cells}개 전부 엔진이 막는다.`,
+      "빈칸: 校庭 맨흙은 뛰는 자리라 비어 있는 것이 기능이다(research 03 「校庭」). 트랙 안은 빈칸 판정에서 빼고, 나머지 17×13 창 빈칸 상한 0.75(마을 0.4 와 다름).",
       "축척: 교사·트랙은 압축 축척(교사 20칸·트랙 한 바퀴 약 75칸)이고 수영장만 실제 크기(25m)다 — 게임 화면에 학교 전체가 들어오게 하려는 선택.",
     ],
     limitations: "교사·체육관 실내 없음(문 칸에 전이 이벤트를 두면 다른 맵으로). 아이들·선생님 없음. 밤 조명 없음. 수영장 물은 막힘(헤엄 없음)." });

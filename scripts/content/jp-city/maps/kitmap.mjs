@@ -37,7 +37,7 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   const issues = [];
   const fail = (msg) => issues.push(msg);
   const single = (id) => KIT[id].rows[0].upperTiles[0];
-  const doors = [], solidCells = [], placed = [];
+  const doors = [], anchors = [], solidCells = [], placed = [];
   const laneSet = new Set();
   const reserved = new Set();
   const deco = { placed: 0, skipped: 0 };
@@ -62,6 +62,12 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
       const a = (k.ai?.access ?? []).find((q) => q.dx === p.dx) ?? { dx: p.dx, dy: p.dy + 1 };
       doors.push({ b: tag, x: x0 + p.dx, y: y0 + p.dy, ax: x0 + a.dx, ay: y0 + a.dy });
       reserved.add(idx(x0 + a.dx, y0 + a.dy)); reserved.add(idx(x0 + a.dx, y0 + a.dy + 1));
+    }
+    for (const p of k.parts ?? []) if (p.kind === "anchor") {                  // 걸어 들어가는 입구(수영장·역 출입구) — 칸 자체가 걸음, 바로 아래 칸도 비운다
+      for (let i = 0; i < (p.w ?? 1); i++) {
+        anchors.push({ b: tag, x: x0 + p.dx + i, y: y0 + p.dy });
+        reserved.add(idx(x0 + p.dx + i, y0 + p.dy)); reserved.add(idx(x0 + p.dx + i, y0 + p.dy + 1));
+      }
     }
   }
   const put = (id, x, yFoot, opt = {}) => stamp(id, x, yFoot - KIT[id].height + 1, opt);
@@ -106,6 +112,15 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     for (const [x, y] of cells) { if (!inb(x, y)) continue; if (L3[idx(x, y)] >= 0) { fail(`철망이 3층 칸 위에 (${x},${y}) ${own3[idx(x, y)]}`); continue; } L3[idx(x, y)] = fenceG.variantMap["15"]; own3[idx(x, y)] = tag; ok.push([x, y]); }
     fenceCellsAll.push(...ok);
     shapeGroup(fenceG, { width: W, height: H, lowerTiles: L3 }, fenceCellsAll, new Set(fenceG.memberTileIds));
+  }
+  /** 3층 선 오토타일(생울타리 jp-hedge·블록담 jp-wall-block·가드레일 …) — 칸 목록을 깔고 이웃 모양을 다시 맞춘다. */
+  const lineCells = {};
+  function groupLine(gid, cells, tag = gid) {
+    const G = GRP[gid]; if (!G) throw new Error(`오토타일 그룹 없음 ${gid}`);
+    const ok = [];
+    for (const [x, y] of cells) { if (!inb(x, y)) continue; if (L3[idx(x, y)] >= 0) { fail(`${gid} 가 3층 칸 위에 (${x},${y}) ${own3[idx(x, y)]}`); continue; } L3[idx(x, y)] = G.variantMap["15"]; own3[idx(x, y)] = tag; ok.push([x, y]); }
+    (lineCells[gid] ??= []).push(...ok);
+    shapeGroup(G, { width: W, height: H, lowerTiles: L3 }, lineCells[gid], new Set(G.memberTileIds));
   }
   /** 생활도로 가장자리 側溝+흰 선(2층). ew=[[y0,y1]] 동서 길, ns=[[x0,x1]] 남북 길. 교차 칸은 비운다. */
   function edgeMarks({ ew = [], ns = [], nsY = [0, H - 1], skip = () => false }) {
@@ -160,7 +175,7 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   }
 
   // ── 검사·쓰기
-  async function finish({ id, name, start, bare = [T.SW, T.PAVE_A, T.PAVE_B, T.GRAVEL, T.LAWN], extraLayersCheck = null, file }) {
+  async function finish({ id, name, start, bare = [T.SW, T.PAVE_A, T.PAVE_B, T.GRAVEL, T.LAWN], extraLayersCheck = null, file, emptyIgnore = [], emptinessMax = null }) {
     const project = createEmptyToolProject("jp-kitmap");
     project.tilesets.jp_city = TS;
     const MAP = { id, name, width: W, height: H, tilesetId: "jp_city", tileSize: 16, lowerTiles: L1, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, events: [], climate: { mode: "inherit" } };
@@ -181,6 +196,8 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     const report = { map: { id, size: [W, H] }, start, poles: poleReport, deco };
     const doorRes = doors.map((d) => ({ ...d, doorBlocked: !pass(d.x, d.y), accessPassable: pass(d.ax, d.ay), accessReached: reach.has(idx(d.ax, d.ay)) }));
     report.doors = { n: doors.length, allReached: doorRes.every((d) => d.doorBlocked && d.accessPassable && d.accessReached), failing: doorRes.filter((d) => !(d.doorBlocked && d.accessPassable && d.accessReached)) };
+    const anchorRes = anchors.map((a) => ({ ...a, passable: pass(a.x, a.y), reached: reach.has(idx(a.x, a.y)) }));
+    report.anchors = { n: anchors.length, allReached: anchorRes.every((a) => a.passable && a.reached), failing: anchorRes.filter((a) => !(a.passable && a.reached)) };
     const body = solidCells.map(([x, y, tag]) => ({ x, y, tag, passable: pass(x, y) }));
     report.solid = { cells: body.length, openByEngine: body.filter((b) => b.passable).length, open: body.filter((b) => b.passable).slice(0, 8) };
     const maskAudit = (group, viewTiles, extra) => {
@@ -194,21 +211,23 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
       }
       return { cells, mismatch: bad, ex };
     };
-    report.autotiles = { lane: maskAudit(laneG, L1, [...kitLaneIds]), rail: maskAudit(railG, L1, []), fence: maskAudit(fenceG, L3, []) };
+    report.autotiles = { lane: maskAudit(laneG, L1, [...kitLaneIds]), rail: maskAudit(railG, L1, []), fence: maskAudit(fenceG, L3, []), ...Object.fromEntries(Object.keys(lineCells).map((g) => [g, maskAudit(GRP[g], L3, [])])) };
     report.layers = { overlaps: issues.length, issues: issues.slice(0, 12), l2: L2.filter((t) => t >= 0).length, l3: L3.filter((t) => t >= 0).length, l4: L4.filter((t) => t >= 0).length };
     const BARE = new Set(bare);
     let worst = 0, worstAt = null;
-    const isBare = (x, y) => BARE.has(L1[idx(x, y)]) && L2[idx(x, y)] < 0 && L3[idx(x, y)] < 0 && L4[idx(x, y)] < 0;
+    // emptyIgnore: 목적상 비어 있어야 하는 사각(운동장 트랙 안 등) — 빈칸으로 세지 않는다. 사각은 보고에 그대로 적는다.
+    const ignored = (x, y) => emptyIgnore.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
+    const isBare = (x, y) => !ignored(x, y) && BARE.has(L1[idx(x, y)]) && L2[idx(x, y)] < 0 && L3[idx(x, y)] < 0 && L4[idx(x, y)] < 0;
     for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
       let c = 0; for (let y = y0; y < y0 + 13; y++) for (let x = x0; x < x0 + 17; x++) if (isBare(x, y)) c++;
       if (c / 221 > worst) { worst = c / 221; worstAt = [x0, y0]; }
     }
-    report.emptiness = { worst17x13: +worst.toFixed(3), worstAt };
+    report.emptiness = { worst17x13: +worst.toFixed(3), worstAt, ignore: emptyIgnore, max: emptinessMax };
     report.reach = { reachable: reach.size };
     report.placed = placed.length;
     if (extraLayersCheck) report.extra = extraLayersCheck({ project, MAP, pass, reach, idx });
-    report.ok = issues.length === 0 && report.doors.allReached && report.solid.openByEngine === 0 && Object.values(report.autotiles).every((a) => a.mismatch === 0) && (!report.extra || report.extra.ok !== false);
-    fs.writeFileSync(join(OUT, `${file}.report.json`), JSON.stringify({ ...report, placedList: placed, doorList: doorRes }, null, 1));
+    report.ok = issues.length === 0 && report.doors.allReached && report.anchors.allReached && (emptinessMax == null || report.emptiness.worst17x13 <= emptinessMax) && report.solid.openByEngine === 0 && Object.values(report.autotiles).every((a) => a.mismatch === 0) && (!report.extra || report.extra.ok !== false);
+    fs.writeFileSync(join(OUT, `${file}.report.json`), JSON.stringify({ ...report, placedList: placed, doorList: doorRes, anchorList: anchorRes }, null, 1));
     return { report, MAP };
   }
 
@@ -255,5 +274,5 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   }
 
   return { TS, KIT, GRP, W, H, L1, L2, L3, L4, own3, own4, ground, laneSet, reserved, doors, placed, issues, deco, inb, idx, fail, single,
-    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, edgeMarks, mark30, poleRow, finish, publish };
+    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, groupLine, edgeMarks, mark30, poleRow, finish, publish };
 }

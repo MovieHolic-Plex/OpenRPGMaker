@@ -100,6 +100,95 @@ def _tetsubo(c):
     shadow(c, 2, 31, 78)
 
 
+@prop('noboribou', '登り棒 오르기 봉(봉 다섯·위 가로대)', 3, 3, solid=[(x, 2) for x in range(3)], tags=['학교', '놀이', '오르기 봉'],
+      rules='교정 놀이 구역(철봉·운제 곁). 아래 줄(밑동) 막힘, 위 두 줄은 뒤로 지나간다.')
+def _noboribou(c):
+    for px in (3, 42): pipe_v(c, px, 6, 44, 'kii', 1, 3)                                                    # 양 끝 기둥(굵음)
+    for px in (12, 19, 26, 33): pipe_v(c, px, 9, 44, 'tekko', 2, 2)                                       # 오르는 봉 넷
+    c.R(2, 4, 44, 5, K('kii', 1)); c.HL(2, 4, 44, K('kii', 3)); c.HL(2, 5, 44, K('kii', 2)); c.HL(2, 8, 44, K('kii', -1))   # 위 가로대(윗면 2줄 밝음)
+    c.HL(1, 3, 46, OL); c.HL(1, 9, 46, OL); c.VL(1, 4, 5, OL); c.VL(46, 4, 5, OL)
+    for px in (3, 12, 19, 26, 33, 42): c.R(px - 1, 43, 5, 2, K('conc', 1)); c.HL(px - 1, 43, 5, K('conc', 3))   # 밑동 콘크리트
+    shadow(c, 1, 45, 46)
+
+
+@prop('ichirinsha', '一輪車ラック 외발자전거 걸이(색색 일곱 대)', 4, 2, solid=[(x, 1) for x in range(4)], tags=['학교', '놀이', '외발자전거'],
+      rules='교사 앞·놀이 구역 가장자리. 아래 줄 막힘.')
+def _ichirin(c):
+    for px in (2, 59): pipe_v(c, px, 4, 30, 'tekko', 1, 3)
+    pipe_h(c, 2, 62, 5, 'tekko', 3)
+    cols = ('aka', 'kii', 'sora', 'pinku', 'midori', 'daidai', 'murasaki')
+    for k, m in enumerate(cols):
+        x = 8 + k * 7
+        c.R(x, 7, 5, 3, K(m, 2)); c.HL(x, 7, 5, K(m, 3)); c.HL(x - 1, 6, 7, OL); c.VL(x - 1, 7, 3, OL); c.VL(x + 5, 7, 3, OL)   # 안장(가로대에 걸림)
+        c.VL(x + 2, 10, 6, K('tekko', 3)); c.VL(x + 3, 10, 6, K('tekko', 0))                                 # 기둥
+        for j in range(11):                                                                                  # 바퀴(앞에서 본 세로 타원)
+            w = 1 if j in (0, 10) else 2 if j in (1, 9) else 3
+            c.HL(x + 3 - w, 16 + j, 2 * w, K('tekko', -2)); c.P(x + 3 - w, 16 + j, OL); c.P(x + 2 + w, 16 + j, OL)
+        c.VL(x + 2, 17, 9, K(m, 1))                                                                          # 림 색
+    shadow(c, 1, 29, 62)
+
+
+@prop('fujidana', '藤棚 등나무 그늘 시렁(아래 벤치)', 5, 4, solid=[(0, 3), (4, 3), (1, 3), (2, 3), (3, 3)], tags=['학교', '공원', '그늘', '등나무'],
+      rules='교정·공원 쉼터. 맨 아래 줄(기둥 밑동·벤치) 막힘, 위 세 줄(시렁 지붕)은 아래로 지나간다(★).')
+def _fujidana(c):
+    W = 80
+    for px in (4, 72):                                                                                       # 앞 기둥(나무)
+        c.R(px, 22, 5, 38, K('ita', 0)); c.VL(px, 22, 38, K('ita', 2)); c.VL(px + 4, 22, 38, K('ita', -2)); c.VL(px - 1, 22, 38, OL); c.VL(px + 5, 22, 38, OL)
+    c.R(14, 46, 52, 4, K('ita', 2)); c.HL(14, 46, 52, K('ita', 3)); c.R(14, 50, 52, 3, K('ita', 0)); c.HL(13, 45, 54, OL); c.HL(13, 53, 54, OL)   # 벤치 앉는 판
+    for px in (18, 60): c.R(px, 53, 3, 6, K('ita', -1)); c.VL(px - 1, 53, 6, OL); c.VL(px + 3, 53, 6, OL)
+    c.R(0, 4, W, 18, K('midori', -1))                                                                        # 시렁 윗면: 잎 덮개(16px 깊이)
+    for y in range(4, 22):
+        for x in range(0, W):
+            h = (x * 7 + y * 13) % 17
+            if h < 3: c.P(x, y, K('midori', 1))
+            elif h == 9: c.P(x, y, K('midori', 0))
+    for x in range(0, W, 12): c.VL(x + 3, 4, 18, K('ita', 1))                                                # 시렁 대(위에서 비쳐 보임)
+    for y in (8, 15): c.HL(0, y, W, K('ita', 1))
+    c.R(0, 20, W, 3, K('ita', 1)); c.HL(0, 20, W, K('ita', 2)); c.HL(0, 22, W, K('ita', -1))                  # 앞 도리
+    c.HL(0, 3, W, OL); c.HL(0, 23, W, OL); c.VL(0, 4, 19, OL); c.VL(W - 1, 4, 19, OL)
+    for k, x in enumerate(range(6, W - 4, 7)):                                                               # 앞으로 늘어진 보라 꽃송이
+        L = 6 + (k * 5) % 5
+        for j in range(L):
+            w = 2 if j < L - 2 else 1
+            c.HL(x - w // 2, 24 + j, w + 1, K('murasaki', 2 if j % 3 == 0 else 1))
+        c.P(x, 24 + L, K('murasaki', 0))
+    shadow(c, 2, 60, 76)
+
+
+def _biotope_ground(c):
+    """1층: 흙 바닥 + 가운데 연못(칸 1..4 × 1..2 는 물 = solidfloor) + 둘레 돌."""
+    _ground_tile(c, 0, 0, 96, 64, seed=5)
+    x0, y0, x1, y1 = 16, 16, 80, 48
+    for y in range(y0 - 4, y1 + 4):
+        for x in range(x0 - 4, x1 + 4):
+            nx = (x - (x0 + x1) / 2) / ((x1 - x0) / 2 + 3); ny = (y - (y0 + y1) / 2) / ((y1 - y0) / 2 + 3)
+            if nx * nx + ny * ny <= 1.0: c.P(x, y, K('conc', 0))                                              # 둘레 돌(어두운 회색)
+    cx_, cy_, rx, ry = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2
+    for y in range(y0, y1):                                                                                  # 물: 막힘 칸 안에 꽉 찬 타원(모서리는 둘레 돌)
+        for x in range(x0, x1):
+            nx = (x + 0.5 - cx_) / rx; ny = (y + 0.5 - cy_) / ry
+            if nx * nx + ny * ny > 1.0: continue
+            c.P(x, y, K('sora', -1) if y < y0 + 4 else K('sora', 1))
+    for y in range(y0 + 8, y1 - 2, 5):                                                                      # 잔물결(짧은 밝은 가로 줄)
+        for x in range(x0 + 6 + (y * 7) % 9, x1 - 6, 13):
+            nx = (x + 1.5 - cx_) / rx; ny = (y + 0.5 - cy_) / ry
+            if nx * nx + ny * ny < 0.8: c.HL(x, y, 3, K('sora', 2))
+    for (cx, cy) in ((12, 14), (26, 10), (60, 11), (82, 20), (84, 40), (70, 51), (40, 53), (14, 46), (11, 30)):   # 둥근 돌
+        c.R(cx - 2, cy - 1, 5, 3, K('conc', 2)); c.HL(cx - 2, cy - 1, 5, K('conc', 3)); c.HL(cx - 2, cy + 1, 5, K('conc', -1))
+    for (cx, cy) in ((34, 30), (58, 38)):                                                                    # 수련 잎
+        c.R(cx - 2, cy - 1, 5, 3, K('midori', 1)); c.P(cx, cy - 1, K('pinku', 2))
+
+
+@prop('biotope', 'ビオトープ 학교 연못(돌 둘레·부들·수련)', 6, 4, solid=[], tags=['학교', '연못', '관찰'],
+      ground=_biotope_ground, ground_solid=[(x, y) for x in range(1, 5) for y in range(1, 3)],
+      rules='교정 구석·관찰 구역. 가운데 물 칸(1..4 × 1..2, 1층 solidfloor)은 막힘, 둘레 돌·흙은 걷는다. 부들은 3층 ★(뒤로 지나감).')
+def _biotope(c):
+    for (bx, by) in ((20, 14), (24, 16), (74, 18), (78, 15), (70, 44)):                                    # 부들(갈대 + 갈색 이삭)
+        for k in range(3):
+            x = bx + k * 2; h = 12 + (k * 3) % 5
+            c.VL(x, by - h, h, K('midori', 0 if k % 2 else 1)); c.R(x, by - h - 3, 1, 3, K('soil', -1))
+
+
 @prop('chorei-dai', '朝礼台 조례대', 3, 2, solid=[(0, 1), (1, 1), (2, 1)], tags=['학교', '조례대'],
       rules='운동장 북쪽 가운데(교사 앞), 트랙을 바라본다. 아래 줄 막힘.')
 def _chorei(c):
@@ -511,15 +600,15 @@ def _finalize():
                   repeatability='repeat' if p['repeat'] else 'fixed', growthAxis=p['repeat'],
                   anchor=dict(dx=0, dy=R - 1), access=[], role=p['role'])
         parts = []
-        if p['id'] == 'pool': parts = [dict(kind='anchor', x=9, y=PH - 1, w=2, h=1, label='수영장 입구(발 씻는 곳)')]
+        if p['id'] == 'pool': parts = [dict(kind='anchor', x=ENT[0], y=PH - 1, w=2, h=1, label='수영장 입구(발 씻는 곳)')]
         kits.append(dict(id='jp-' + p['id'], name=p['name'], grid=grid, base=base, parts=parts, ai=ai))
     groups = [
         dict(id='jp:school-ground', name='校庭 흙 바닥', role='terrain', defaultLayer='lower',
              cells=[k for k, v in cells.items() if k.startswith('school-ground-')], desc='학교 운동장·교정의 다진 흙(A·B·C 변형).',
              rules='paint_tiles·fill 로 1층에 깐다. 세 변형을 섞는다.'),
         dict(id='jp:school-track', name='운동장 트랙 선', role='detail', defaultLayer='upper',
-             cells=[k for k, v in cells.items() if k.startswith('school-track/')], desc='트랙 흰 분필 선(투명 덧그림).',
-             rules='키트 jp-school-track 으로 통째로 2층에 찍는다.'),
+             cells=[k for k, v in cells.items() if k.startswith('school-track-l/')], desc='트랙 흰 분필 선(투명 덧그림).',
+             rules='키트 jp-school-track-l 로 통째로 2층에 찍는다.'),
     ]
     _CACHE['r'] = (cells, kits, sprites, groups)
     return _CACHE['r']

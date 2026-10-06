@@ -98,12 +98,22 @@ def _pole_wood(c):
     c.R(19, 60, 10, 14, K('shiro', 1)); c.R(20, 62, 8, 4, K('aka', 0)); c.HL(20, 68, 8, K('sumi', 2)); c.HL(20, 70, 6, K('sumi', 2))   # 옛 광고판
 
 
+WIRE_BOTTOM = 46        # 키트 높이 3칸(48px) 안 — 처짐이 이보다 내려가면 잘려 끊긴 조각이 된다(2026-10-07 학교 관문 지적)
+
+
 def wire(c, x0, x1, y0, y1, sag, col):
+    """두 점 사이 처진 전선. 처짐은 키트 바닥(WIRE_BOTTOM)을 넘지 않게 줄이고, 이웃 화소 사이 세로 틈은 메워 끊기지 않게 한다."""
     n = max(1, x1 - x0)
+    sag = max(0.0, min(sag, WIRE_BOTTOM - max(y0, y1)))
+    prev = None
     for i in range(n + 1):
         t = i / n
-        y = y0 + (y1 - y0) * t + sag * 4 * t * (1 - t)
-        c.P(x0 + i, int(round(y)), col)
+        y = int(round(y0 + (y1 - y0) * t + sag * 4 * t * (1 - t)))
+        if prev is not None and abs(y - prev) > 1:
+            step = 1 if y > prev else -1
+            for yy in range(prev + step, y, step): c.P(x0 + i - 1 if step > 0 and t <= 0.5 else x0 + i, yy, col)
+        c.P(x0 + i, y, col)
+        prev = y
 
 
 WIRE_SPANS = tuple(range(5, 21))
