@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-06T14:27:48.281654+00:00",
+  "passed": false,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Inspected the four supplied actual PNGs, including the native 128-pixel portrait and native 1x / nearest 3x panels on light, dark and checker backgrounds. The broad teal pine crown, reddish split bark, pale root beard and right-facing gold eyes establish the pine king clearly; the idle body fills its cell. Broad bark highlights and darker right planes generally support the upper-left light. Feet remain grounded, the branch hands connect to their arms, and no obvious accidental transparent interior holes or broken body outlines were visible. Windup, stride, downward branch strike, recovery and collapse are distinguishable. Skill preparation has a green-gold core at the front foot; contact has three rising root branches joined to that foot, with an upper branch meeting the folded hand; recovery retains a stump and airborne wood fragments. Poison uses a bowed head, folded arm and purple bubbles; stun uses a hanging arm and stars; sleep uses closed eyes and bent root legs. These are distinct posed states, not merely tints or unrelated attacks. The main visual weakness is mass and material continuity: hit abruptly narrows the crown and trunk, and both sleep frames replace the split bark with a much smoother upright slab. Recommendation is advisory; user selection remains pending. This is a static pose preview, not battle footage: playback timing, dash trajectory, opponent contact, runtime boss scale, and literal pxgrid authorship cannot be established from these PNGs. Geometry compliance alone is not visual approval.",
+    "issues": [
+      {
+        "pose": "hit",
+        "x": 52,
+        "y": 23,
+        "message": "The colored crown spans approximately x=9..71 here versus x=9..87 in idle_a, while retaining nearly the same height. Together with the narrowed torso this reads as a smaller version of the monster. Redraw the canopy clusters to retain the idle crown mass, showing recoil through tilt and displaced branch tips rather than this abrupt narrowing."
+      },
+      {
+        "pose": "hit",
+        "x": 51,
+        "y": 74,
+        "message": "The broad split trunk contracts into a narrow waist strip, and its large dark bark cavity loses much of its width. Keep the established trunk thickness and corresponding light/shadow bark planes through the recoil bend; move those connected planes with the body so the king does not appear to lose wood between recover and hit."
+      },
+      {
+        "pose": "sleep_a",
+        "x": 49,
+        "y": 82,
+        "message": "In both sleep_a and sleep_b the left trunk face becomes a smooth tall orange slab with a thin straight highlight, losing the recognizable split-bark clusters seen in idle. Restore the large bark cleft and a few matching angular bark ridges on this face while keeping the closed eyes and bent root legs. Carry those same clusters into sleep_b so the breathing pair retains the pine king material."
+      }
+    ],
+    "binding": "0184a1aa716bf6b66efc25fa6aaccd2ced72b9d5c5852baeb757d7709aae892b",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+      "preview/suite/light.png": "176471b8475db163e0edf18352fb0209277fb2fc7d82c51fcd2a145c4bcb0e32",
+      "preview/suite/dark.png": "7e6de8f6feaa10993db0240894d9805c88487878b4851399b39d876eec3ee261",
+      "preview/suite/checker.png": "e3560e8cb01c12094c8790174a77aa1b76e5879c9001d3c12387306e9fb8d25d"
+    },
+    "jobId": "90c1dcf5-d26c-4c8a-8d8f-2ec54381471c",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T14:23:39.908807+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "90c1dcf5-d26c-4c8a-8d8f-2ec54381471c",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T14:18:53.437684+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/jobs/90c1dcf5-d26c-4c8a-8d8f-2ec54381471c",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "5556d6db8d1112c7699651fde5076c3f1d768b86f7ea957b81f181fcccd07740",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+      "preview/suite/light.png": "176471b8475db163e0edf18352fb0209277fb2fc7d82c51fcd2a145c4bcb0e32",
+      "preview/suite/dark.png": "7e6de8f6feaa10993db0240894d9805c88487878b4851399b39d876eec3ee261",
+      "preview/suite/checker.png": "e3560e8cb01c12094c8790174a77aa1b76e5879c9001d3c12387306e9fb8d25d"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T14:23:39.101618+00:00"
+  },
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/visual-repairs/003/source",
+  "rootNative18ReviewOfThisSnapshotClaim": true,
+  "claimScope": "Actual native18 viewing, complete writer/module reading and actual independent rework only. No keeper, Allow, selected archive or completed species claim."
+}

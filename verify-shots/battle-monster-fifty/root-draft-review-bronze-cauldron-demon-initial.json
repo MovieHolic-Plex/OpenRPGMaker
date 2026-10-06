@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-06T14:27:48.300081+00:00",
+  "passed": false,
+  "key": "bronze-cauldron-demon/fifty-v1",
+  "binding": "b10648d88b7bd562d00f7c65c5af20fa29fd157c0827d5d5873c3e422e70d27a",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-bronze-cauldron-demon-initial.png",
+  "nativeContactPngSha256": "20bedb7f1a177a37c6d541d20d8bbf14b76cb55f06b773341e69242b7d4ff60f",
+  "nativeWriterFilesRead": {
+    "author.py": "ca93e0f93ec27f860cafb8d309c7c280091d53412b2e70c20d375329bd8a9d44"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Rounded green bronze vessel has gold open rim, near/far handle arms,3 feet, quiet gold face and red tassel. Broad upper-left light and dark right planes give material volume; the far arm is dark and paired changes are modest.",
+    "Windup lifts the attached handle fist, move changes the stride, attack extends the fist modestly and recovery lowers it. The actual reviewer requests a clearer punch and removal of shin slivers. Hit droops the face/body; dead lies horizontally with tucked limbs; closed-eye sleep crouches separately. Poison brings a hand toward the mouth with bubbles, stun slumps with stars.",
+    "Rim-origin charge develops into2 tall gold/orange flames then3 residual flames; the actual reviewer found one residual flame rooted on the outer rim. Static native views do not establish battle displacement/contact/timing.",
+    "Fully read every author.py method and full module call order, including inspected_joint_repairs after make_poses/rest_and_dead/skill/poison/stun. Blank grids receive explicit literal clusters, own rigid original parts are reused selectively, independently authored limb/face/status/dead rows and explicit selected erasures replace changing anatomy. No body primitives, full-frame transform or tween. Fully read render.py: native128 palette decode, nearest diagnostic sheets, explicit8 GIF timelines and actual decoded duration/hash readback; it writes previews rather than native grids."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentJob": "3bc05259-f26e-43a5-8d85-8262b02f88a8",
+  "actualIndependentIssues": [
+    {
+      "pose": "windup",
+      "x": 54,
+      "y": 114,
+      "message": "The inner edge of the left foreground shin grows a thin horizontal green spur around x50-59, y114; another lateral interruption appears near y119. These read as stray slivers at 1x and break the smooth outlined leg seen in idle. Remove the lateral protruding pixels and redraw a continuous dark boundary with the highlight contained inside the shin. Preserve the foot at y124."
+    },
+    {
+      "pose": "attack",
+      "x": 108,
+      "y": 59,
+      "message": "The striking fist remains beside the face with a bent handle loop, only modestly farther right than in move. At 1x the contact frame reads as another bent-arm stance rather than the promised handle-fist strike. Redraw the connected handle forearm and fist around x96-117, y48-76 with a clearer forward extension and a shoulder/body response toward the right. Keep the arm root visibly attached and the supporting foot planted; leave the required outer pixel margin."
+    },
+    {
+      "pose": "skill_c",
+      "x": 82,
+      "y": 44,
+      "message": "The rightmost residual flame terminates around x81-82, y44 on the outer gold band beyond the dark inner opening. At 3x it reads as fire on the exterior lip. Move that flame's base inward into the visible opening and redraw its root against the inner cavity, retaining three separately readable residual flames."
+    }
+  ],
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1/visual-repairs/001/source",
+  "claimScope": "Actual native18 viewing, complete writer/module reading and actual independent rework only. No keeper, Allow, selected archive or completed species claim."
+}

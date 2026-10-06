@@ -737,3 +737,9 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 합격43/50종(774자세/344GIF) 유지. 천년송왕 첫 수정 binding `137f82252f27d4a775573041eb8811c09dc440072da659ce1a006f2eb48bb5cc`의 실제 GPT6.1sol/high `3fef1686-4ca5-4666-909f-fc61f6a2a9a7`는 **rework3건**: 정면을 보는 눈/수염의 방향, 피격과 수면의 수관 층/부피 손실. 두 번째 수정 중이다.
 - 심연구목거미 최초 binding `9ceaef75b82a3bb395c39b1fd4a4cfec15fd519e8ad0f0efe45af65c6b1e0fad`의 실제 GPT6.1sol/high `1d2529af-be1f-4d98-83d8-a1190579e13f`는 **rework5건**: 대기 먼 송곳니 길이, 뒷다리 추진, 실제 물기 접촉, 기술 회수의 턱 닫힘, 수면의 앞다리 길이 보존. 첫 수정 중이다.
 - 두 실제 terminal 작업 exit0/model/effort/preparedOnlyFalse와 검수4그림 해시를 다음 수정 전 snapshot에서 확인했다. 원본 source/판정/작업을 보존하되, 이 두 snapshot18자세를 감독이 열었다는 주장은 하지 않는다. 최종 keeper에는 전체 원본·현재 writer·별도 감독 검토가 필요하다. 청동정마 최초 저작도 이어진다. 전체50 완료는 false다.
+
+## 세 대형 보스 원본·전체 저작 로직과 실제 재검수 · 2026-10-06 14:30 UTC
+
+- 신규 합격은 **43/50종 · 774자세 · 344GIF** 유지. 감독이 천년송왕 둘째 수정, 심연구목거미 첫 수정, 청동정마 최초 원본18자세씩을1632×1272 원본1배/nearest2배로 실제 열었다. 천년송왕 기존6개 writer의 읽었던 해시를 맞추고 새 두 repair와 변경된 rebuild의 모든 메서드·모듈 흐름, 구목거미 두 writer와 청동정마 전체 author를 읽었다. 세 renderer/진단 코드도 읽었다. 명시적 문자 도트·선택 좌표 수정을 확인했고 프레임 전체 변환·몸 도형 생성·자동 트윈이 없다.
+- 천년송왕 실제 `90c1dcf5-d26c-4c8a-8d8f-2ec54381471c` **rework3건**: 피격의 수관 너비/줄기 두께, 수면의 갈라진 나무껍질 연속성. 구목거미 실제 `54b7efc0-33c9-4d94-ab4b-36ea114cd9ca` **rework4건**: 실제 물기, 앞다리의 뾰족한 발끝, 독의 아픈 몸 자세, 수면의 떠 있는2픽셀. 청동정마 실제 `3bc05259-f26e-43a5-8d85-8262b02f88a8` **rework3건**: 준비 다리의 돌출 픽셀, 주먹의 전진, 회수 불꽃의 솥 내부 발원점. 현재 각각 셋째/둘째/첫 수정 중이다.
+- 실제 terminal GPT6.1sol/high/exit0/preparedOnlyFalse와 검수4그림·native18·읽었던 writer 해시를 수정 전 불변 snapshot에서 맞췄다. 실제 원본 접촉판과 감독 초안/판정/작업은 False 기록으로 보존한다. 세 현재 주술 원본을 검객과 같은 배율로 나란히 제공한 중간판도 보존한다. 초안은 합격으로 세지 않는다. 전체50 목표는 계속 active다.

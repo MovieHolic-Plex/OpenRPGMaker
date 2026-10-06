@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-06T14:27:48.295508+00:00",
+  "passed": false,
+  "key": "abyss-nine-eye-spider/fifty-v1",
+  "binding": "579f5cdffd492e80e76a5a6972c90290642a2a16a455af7f988836a3f5f775e5",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-nine-eye-spider-after-repair-one.png",
+  "nativeContactPngSha256": "eb602d0246f1dc36d0489be79c1daf741df079fd6dfdc98dc684a1f2f1f2a48f",
+  "nativeWriterFilesRead": {
+    "author.py": "bec2e6fa3c63f3ed0c6b7d52d8b101089c24178bc43b3ea2fa1731bb9e4b6e3e",
+    "repair.py": "13d49528f0d9d0fbc2debc008f0e40e609c98bcedd127386015f3bfcf6499e69"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Silver segmented abdomen has upper-left ivory highlights and dark blue/purple underside. Nine small red eyes,8 thin bent legs and paired fangs identify the spider; distant legs and angular joints have limited dark-background contrast.",
+    "Windup folds the foreleg; move bends a pushing rear leg; attack advances a forelimb and adjusts fangs but the bite remains weak, as independently flagged. Hit raises the head; corpse is a separate flat collapse. Poison folds the foreleg with bubbles but needs more sick-body deformation. Stars mark drooping stun; sleep curls the body with closed eyes and preserved long forelimb. The actual reviewer found2 stray sleep outline pixels.",
+    "Charge and2 purple web forks meet the actual mouth; recovery closes fangs and leaves3 droplets. Rigid abdomen reuse and small idle changes remain. No live collision or timing claim.",
+    "Fully read all author.py functions and ordered module corrections, complete repair.py apply/module guard, and entire read-only render.py. The author copies its own literal BODY rows, clears selected part rectangles and writes explicit x/y literal clusters; dead/sleep are separately authored on blank grids. repair.py loads its own original-before-repair snapshot and applies ordered PATCHES/REFINEMENTS to6 named frames; author.py does not import it. No body-shape generator, whole-frame transform or automatic tween. Renderer decodes nativeRGBA, makes diagnostic backgrounds/sheets and8 native GIFs and checks decoded equality without editing native grids."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentJob": "54b7efc0-33c9-4d94-ab4b-36ea114cd9ca",
+  "actualIndependentIssues": [
+    {
+      "pose": "attack",
+      "x": 83,
+      "y": 86,
+      "message": "The fangs still curl beneath the face while the foreleg does most of the visible attacking. Redraw the connected jaw and fang clusters to project toward the right and converge into a clear biting contact; carry the head and neck forward with that contact while preserving their connection to the thorax. Make the windup-to-attack mouth change readable at 1x."
+    },
+    {
+      "pose": "attack",
+      "x": 111,
+      "y": 117,
+      "message": "The advancing foreleg ends in a broad, flat purple wedge that reads as a boot and changes the pointed-foot design seen in idle and move. Taper this terminal cluster into a narrow articulated spider tip, retaining its connection to the highlighted leg segment and the intended landing height."
+    },
+    {
+      "pose": "poison_a",
+      "x": 75,
+      "y": 86,
+      "message": "At 1x the folded attacking foreleg and nearly unchanged torso make the poison pair read largely as windup with purple bubbles. Give poison_a and poison_b a clearer sick-body silhouette: sag the connected head/thorax and relax or buckle a supporting leg, with a small authored tremble between the pair. Preserve supported feet and keep the bubbles as a secondary cue."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 88,
+      "y": 107,
+      "message": "There is a detached dark two-pixel vertical fragment at native (88,107) and (88,108), in the transparent gap beside the curled mouth. Remove these stray outline pixels, or join them into the intended fang contour with a continuous outlined cluster if they are meant to be anatomy. Preserve the intentional open space between mouth and foreleg."
+    }
+  ],
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/abyss-nine-eye-spider/fifty-v1/visual-repairs/002/source",
+  "claimScope": "Actual native18 viewing, complete writer/module reading and actual independent rework only. No keeper, Allow, selected archive or completed species claim."
+}

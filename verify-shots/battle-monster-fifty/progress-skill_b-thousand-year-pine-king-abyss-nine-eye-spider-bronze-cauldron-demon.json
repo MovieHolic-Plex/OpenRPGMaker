@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "thousand-year-pine-king",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "7c8682304efae6b614ade23229e94c80e7e2c07999564a8f4ce1e3371334a8a5",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T13:59:44.789988+00:00",
+    "binding": "0184a1aa716bf6b66efc25fa6aaccd2ced72b9d5c5852baeb757d7709aae892b",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "abyss-nine-eye-spider",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-nine-eye-spider/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "03fb5c71d1d7e3bf704250c91d2a8556da93d0fecea443cc0d654d02524c0ab0",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T13:59:44.789988+00:00",
+    "binding": "579f5cdffd492e80e76a5a6972c90290642a2a16a455af7f988836a3f5f775e5",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "bronze-cauldron-demon",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "8e0dd0f39ac48ede198f96cf6c748ed91da227a93870aa5b63953ef68dbac263",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T13:59:44.789988+00:00",
+    "binding": "b10648d88b7bd562d00f7c65c5af20fa29fd157c0827d5d5873c3e422e70d27a",
+    "entireGoalCompleteClaim": false
+  }
+]
