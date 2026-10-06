@@ -99,3 +99,11 @@ interior-props `data/seed.json`의 `reviewDependencies`에 소품 id별 `[{"item
 실제 주문 round/letter에 맞춰 지정하고 seed 및 `src/harnesses/interior-props/review_dependencies.py`를 layout.sources에 묶는다.
 받침의 실제 PNG가 기계·독립검수 PASS인 뒤 소품 검수가 시작된다. 빈 v5.png를 받침으로 사용하지 않는다.
 후보가 여러 개면 임의 자동선택하지 말고 이번 검수에 쓸 후보를 계약에 명시한다. 이미 완성된 받침도 실제 PNG·해시를 근거에 연결한다.
+# 교체된 부품의 보존과 실제 사용
+현재 공간에서 더 이상 사용하지 않는 옛 부품도 PNG/영수증은 보존한다. 새 부품을 만들 때 네이티브
+품목 이름이 달라졌다면 전체 데모가 두 품목을 모두 강제로 사용하지 않도록 layout.componentReplacements에
+[{"from":"기존 art-choices 그룹 ID","to":"새 native 품목 그룹 ID","requirement":"동일한 기획 재료 ID","reason":"교체 이유와 보존할 역할"}]를 명시한다.
+현재 수집 전에는 to가 새 네이티브 품목 ID여야 한다. 새 부품이 그 재료의 필수 기능을 전부 대체하는
+경우만 쓰며, 기존 가마솥/후드와 새 배기 지지대처럼 역할을 나눠 사용하는 품목은 함께 보존한다.
+이 명세는 새 도면 독립 검수에 포함한다. 감독은 이전 납품과 새 coverage가 같은 재료인지 확인한다.
+예전 문을 수집 자료로 보존하기 위해 승인 도면에 없는 문을 방 안에 덧붙이지 않는다.
