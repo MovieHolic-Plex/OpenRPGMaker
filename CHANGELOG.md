@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.149.0 — 2026-10-06
+
+### 기능
+
+- create native scene project packets without I/O (`383cc71`)
+- add canonical native space persistence adapter (`77d926d`)
+
+### 수정
+
+- recover action requirements from older prepared manifests (`f7ec3f4`)
+- retain added action obligations from native receipts (`d554971`)
+- **qa** — monster campaign check budget, route tests follow the monster start map (`bedc665`)
+- preserve native structure headroom in runtime camera bounds (`886630f`)
+- require new actor poses in assembled scene evidence (`8e288c6`)
+- show commissioned actor interactions in whole scene examples (`b1f6130`)
+- reject stale calibration scope before scene repair admission (`ecc9c7b`)
+- **qa** — monster campaign autoplay reaches the ending (`3b96870`)
+- **qa** — autoplay carries a monster campaign through three gyms (`f352dcf`)
+- **monster** — playable first route — starters out of early wild pools, type-aware headless moves (`4ea4c73`)
+
 ## 0.148.0 — 2026-10-06
 
 ### 기능
