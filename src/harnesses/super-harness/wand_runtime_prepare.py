@@ -178,8 +178,10 @@ def pack(manifest, out):
             branch += [{"kind": "setEventGraphicPattern", "eventId": id, "pattern": 0}, switch("wand_actor_busy", False)]
             # Shelf-lift preview at current actor location is explicitly isolated
             # from shelf stock; contextual removal requires a native vacant bed.
-            menus.append((pose, branch))
-        action_menu = choice(menus, "원본 행동 시연 · 선반 재고 제거는 미연결")
+            direction = {"up": "뒤쪽", "right": "오른쪽", "down": "앞쪽", "left": "왼쪽"}[pose.rsplit("-", 1)[-1]]
+            action = "치수 재기" if pose.startswith("measure-") else "지팡이 들어보기" if pose.startswith("wand-raise-") else "상자 들기 동작"
+            menus.append((action + " · " + direction, branch))
+        action_menu = choice(menus, "행동 미리보기 · 상자 꺼내기는 준비 중")
         scene_options = []
         for s, scene_state in enumerate(rt["fourStates"]):
             commands = [switch(key, s == index) for index, key in enumerate(STATE, 1)]
@@ -187,7 +189,7 @@ def pack(manifest, out):
             for door, status in zip(("entry", "staff"), scene_state[:2]):
                 commands += [switch("wand_" + door + "_closed", status == "closed"), switch("wand_" + door + "_locked", status == "locked")]
             scene_options.append((str(s + 1) + " · " + scene_state[2], commands))
-        commands = [choice([("원본 행동", [action_menu]), ("교실 상태", [choice(scene_options, "네 상태")]),
+        commands = [choice([("행동 보기", [action_menu]), ("가게 장면 바꾸기", [choice(scene_options, "가게 장면")]),
                            ("지팡이 시험", [switch("wand_response_busy", True)])], "지팡이 상점")]
         pages = [page(id + "_" + str(s), graphic(sprite), commands,
                       [] if s == 0 else [condition(STATE[s - 1])], "same", True) for s, sprite in enumerate(state_sprites)]
@@ -225,7 +227,7 @@ def pack(manifest, out):
         slots = [0, 32, 64] if name == "entry" else [96, 128, 160]
         door_frames = [f.crop(door_path, [x, 0, 32, 48]) for x in slots]
         sprite = p.sheet(name + "-door", door_frames, door["cell"], [door["sheetTopLeft"][0], door["sheetTopLeft"][1] - 32], [16, 40])
-        options = [(state, [switch("wand_" + name + "_closed", state == "closed"), switch("wand_" + name + "_locked", state == "locked")]) for state in ("open", "closed", "locked")]
+        options = [(label, [switch("wand_" + name + "_closed", state == "closed"), switch("wand_" + name + "_locked", state == "locked")]) for state, label in (("open", "열기"), ("closed", "닫기"), ("locked", "잠그기"))]
         pages = [page(name + "_open", graphic(sprite), [choice(options, "문")], priority="same"),
                  page(name + "_closed", graphic(sprite, 1), [choice(options, "닫힌 문")], [condition("wand_" + name + "_closed")], "same", True),
                  page(name + "_locked", graphic(sprite, 2), [text("잠겨 있습니다."), choice([( "잠금 해제", [switch("wand_" + name + "_locked", False), switch("wand_" + name + "_closed", True)])], "잠금")], [condition("wand_" + name + "_locked")], "same", True)]
@@ -247,7 +249,7 @@ def pack(manifest, out):
                       "reason": "Current shelf stock is baked into sheet. No native empty-bed crop exists to remove the held box without drawing/duplicate stock.",
                       "required": "hash-bound vacant native shelf slot or layered native shelf+box originals; then contextual actor contact/lift can bind its same18frame delivery"}
     for side, cell in (("west", [2, 6]), ("east", [8, 6])):
-        p.events.append(event("wand_shelf_" + side, cell, [page(side + "_shelf", commands=[text("상자 꺼내기 연결은 원본 빈 받침 슬롯을 기다리고 있습니다. 재고 중복 표시를 하지 않습니다.")])]))
+        p.events.append(event("wand_shelf_" + side, cell, [page(side + "_shelf", commands=[text("길쭉한 지팡이 상자들이 놓여 있습니다. 상자를 꺼내는 동작은 아직 준비 중입니다.")])]))
     atlas = Image.new("RGBA", (256, math.ceil(len(p.tiles) / 16) * 16), (0, 0, 0, 0))
     for i, image in enumerate(p.tiles):
         atlas.paste(image, (i % 16 * 16, i // 16 * 16))
