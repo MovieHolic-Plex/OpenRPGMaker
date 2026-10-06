@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.158.0 — 2026-10-07
+
+### 기능
+
+- **monster** — start town and first route follow the brief's landscape (`851d493`)
+- **assistant** — furnish empty outdoor ground on kit sheets with find_empty_ground and furnish_outdoor_area (`1242ac7`)
+
+### 수정
+
+- **assistant** — monster game fingerprint ignores key order; repair keeps an equal hero cell (`74399be`)
+- **assistant** — garden fill places a few props even when trees already cover the ground; film tolerates boot tileset resync (`b503405`)
+
+### 문서
+
+- **openwiki** — startTheme, canonical monster fingerprint, journey video (`d01c71c`)
+
+### 테스트
+
+- **qa** — monster journey records an mp4 and walks the opening stretch (`4b2ec53`)
+
 ## 0.157.1 — 2026-10-07
 
 ### 수정
