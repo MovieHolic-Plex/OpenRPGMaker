@@ -1,0 +1,1151 @@
+{
+  "scope": "Actual exported player. Isolated genuine predecessor slot. QA teleports only for setup; keyboard inputs own the door/dock/stairs transitions. A separate runtime phase unlocks progression switches only to exercise conditional exits; no user saves or canonical writes.",
+  "errors": [],
+  "transfers": [
+    {
+      "from": "mx_map_home",
+      "to": "mx_map_school",
+      "input": "ArrowUp",
+      "native": true
+    },
+    {
+      "from": "mx_map_home",
+      "to": "mx_map_school",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_grove",
+      "to": "mx_map_garden",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_moon",
+      "to": "mx_map_ghost_tower",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_harbor",
+      "to": "mx_map_forest",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_harbor",
+      "to": "mx_map_ship_deck",
+      "input": "ArrowRight",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_harbor",
+      "to": "mx_map_river",
+      "input": "ArrowRight",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_harbor",
+      "to": "mx_map_beach",
+      "input": "ArrowDown",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_harbor",
+      "to": "mx_map_sea_cave",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_prism",
+      "to": "mx_map_museum",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_prism",
+      "to": "mx_map_hideout",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_summit",
+      "to": "mx_map_observatory",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_summit",
+      "to": "mx_map_league_0",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_prism",
+      "to": "mx_map_desert",
+      "input": "ArrowLeft",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_prism",
+      "to": "mx_map_cave",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_frost",
+      "to": "mx_map_ice_cave",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_ember",
+      "to": "mx_map_lava_cave",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    },
+    {
+      "from": "mx_map_frost",
+      "to": "mx_map_marsh",
+      "input": "ArrowUp",
+      "native": true,
+      "qaProgressionSetup": true
+    }
+  ],
+  "maps": [
+    {
+      "id": "mx_map_home",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_grove",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_harbor",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ember",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_prism",
+      "nativeNpcSprites": 5,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_dune",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_frost",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_moon",
+      "nativeNpcSprites": 4,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_summit",
+      "nativeNpcSprites": 5,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_grove_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_harbor_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ember_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_prism_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_dune_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_frost_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_moon_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_summit_gym",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_lab",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_museum",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_school",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_hideout",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_observatory",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_league_0",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_league_1",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_league_2",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_league_3",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_league_4",
+      "nativeNpcSprites": 2,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_home_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_home_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_home_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_grove_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_grove_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_grove_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_harbor_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_harbor_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_harbor_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ember_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ember_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ember_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_prism_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_prism_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_prism_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_dune_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_dune_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_dune_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_frost_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_frost_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_frost_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_moon_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_moon_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_moon_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_summit_center",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_summit_mart",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_summit_house",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_meadow",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_forest",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_river",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_mountain",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_desert",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_snow",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_marsh",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ruins",
+      "nativeNpcSprites": 3,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_garden",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_beach",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_sea_cave",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_lava_cave",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_cave",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ice_cave",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ghost_tower",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ship_deck",
+      "nativeNpcSprites": 0,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ship_corridor",
+      "nativeNpcSprites": 0,
+      "noArrow": true
+    },
+    {
+      "id": "mx_map_ship_cabin",
+      "nativeNpcSprites": 1,
+      "noArrow": true
+    }
+  ],
+  "predecessorPreserved": true,
+  "schoolReturn": {
+    "x": 23,
+    "y": 12
+  },
+  "qaProgressionFlags": [
+    "mx_starter",
+    "mx_badge_2",
+    "mx_badge_3",
+    "mx_badge_4",
+    "mx_badge_8",
+    "mx_story_beacon",
+    "mx_story_rescue",
+    "mx_badge_6"
+  ],
+  "walk": [
+    {
+      "x": 104,
+      "y": 160,
+      "frame": 76,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 104,
+      "y": 160,
+      "frame": 76,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 104,
+      "y": 160,
+      "frame": 76,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 106.389,
+      "y": 160,
+      "frame": 63,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 108.61133333333332,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 110.83299999999998,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 113.05566666666665,
+      "y": 160,
+      "frame": 65,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 115.83333333333331,
+      "y": 160,
+      "frame": 65,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 118.61099999999999,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120.83333333333333,
+      "y": 160,
+      "frame": 63,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 122.55600000000001,
+      "y": 160,
+      "frame": 63,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 124.61166666666666,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 126.83433333333332,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 129.11199999999997,
+      "y": 160,
+      "frame": 65,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 132.61166666666662,
+      "y": 160,
+      "frame": 65,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 135.05599999999998,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 136,
+      "y": 160,
+      "frame": 64,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 134.83333333333331,
+      "y": 160,
+      "frame": 87,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 132.38966666666664,
+      "y": 160,
+      "frame": 87,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 130.55666666666664,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 128.7793333333333,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 127.11233333333332,
+      "y": 160,
+      "frame": 89,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 125.44533333333332,
+      "y": 160,
+      "frame": 89,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 123.223,
+      "y": 160,
+      "frame": 89,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 121.55633333333334,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    },
+    {
+      "x": 120,
+      "y": 160,
+      "frame": 88,
+      "scale": 1,
+      "width": 24,
+      "height": 32
+    }
+  ],
+  "completed": true
+}

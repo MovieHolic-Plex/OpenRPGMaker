@@ -1,0 +1,28 @@
+{
+  "projectSha256": "f3252fe92cca5974453179c6b96e6b7d39415403aeaccdeb6dde0b543912ebad",
+  "exactVerifiedFiles": {
+    "project.json": "f3252fe92cca5974453179c6b96e6b7d39415403aeaccdeb6dde0b543912ebad",
+    "player.html": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+    "dependency-collector.js": "e8e6e732419d69a148e053746e7b94afed0c9e98c64ad6bab318b3de39f19c1f",
+    "player.js": "be25148c2fa2350f316c34e4e2621e56ffbc7ea6de48377a4dc39fb2b883809a"
+  },
+  "nativeRuntimeChecks": 39,
+  "battleRuntimeCompleted": true,
+  "structuralAndLifecycleControls": 109,
+  "exportAndAiRepairControls": 10,
+  "canonicalRevision": 29,
+  "canonicalSha256": "83c8efb90bd3a398bf5be3c3f38262471a0df7fd852fef3b470342f81eb9e893",
+  "canonicalFreshConnectionReload": true,
+  "mediaBytesCompared": 22,
+  "imagegenUsed": false,
+  "resizingUsed": false,
+  "paletteQuantizationUsed": false,
+  "author": "root / Python native pixel artist",
+  "sourceSelection": "/home/main/z-project/pokemon-hand-pixels-20261004/review/selection.json",
+  "sourceScripts": "scripts/asset-gen/pokemon-characters/",
+  "limits": [
+    "Private gait routes and prepared battle parties are described in summaries; not whole-campaign completion.",
+    "Original60monster-species artwork preserved pending human candidate selection.",
+    "Shared faces/anatomy/front stances and angular field bodies remain style limitations; side limb depth changes can be subtle at1x."
+  ]
+}

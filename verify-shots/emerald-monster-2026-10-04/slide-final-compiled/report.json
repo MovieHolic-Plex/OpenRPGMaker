@@ -1,0 +1,109 @@
+{
+  "scope": "Actual compiled player; native Continue; genuine predecessor slot copied byte-for-byte into isolated browser localStorage. No runtime state injection.",
+  "slotSha256": "f07cd4691462db7479cead6f350a0b5af696a84bf0f81b5b757d640b11cc8b0f",
+  "storageKey": "starlight-islands-v1:save-slot:v5:1",
+  "errors": [],
+  "camera": {
+    "zoom": 2,
+    "width": 480,
+    "height": 320
+  },
+  "loaded": {
+    "map": "mx_map_lab",
+    "x": 7,
+    "y": 7,
+    "gold": 1600,
+    "party": [
+      {
+        "instanceId": "monster_1",
+        "speciesId": "mx_species_spriglet",
+        "level": 5,
+        "exp": 190,
+        "ivs": {
+          "hp": 11,
+          "atk": 4,
+          "def": 9,
+          "spd": 10
+        },
+        "friendship": 70,
+        "caughtAt": {
+          "mapId": "mx_map_lab",
+          "x": 7,
+          "y": 6
+        },
+        "currentHp": 20,
+        "skillIds": [
+          "mx_skill_normal_1",
+          "mx_skill_grass_1"
+        ],
+        "skillPp": {
+          "mx_skill_normal_1": 30,
+          "mx_skill_grass_1": 30
+        }
+      }
+    ],
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    }
+  },
+  "icons": [
+    {
+      "width": 32,
+      "height": 32,
+      "complete": true
+    }
+  ],
+  "slideScope": "QA teleport to three original authored start tiles, then35ms real direction tap and released-input travel. No tile, route, collision or movement-state mutation.",
+  "slides": [
+    {
+      "plan": {
+        "mapId": "mx_map_frost_gym",
+        "x": 3,
+        "y": 6,
+        "key": "ArrowDown",
+        "endX": 3,
+        "endY": 15
+      },
+      "settled": {
+        "map": "mx_map_frost_gym",
+        "x": 3,
+        "y": 15,
+        "moving": false
+      }
+    },
+    {
+      "plan": {
+        "mapId": "mx_map_hideout",
+        "x": 5,
+        "y": 6,
+        "key": "ArrowLeft",
+        "endX": 8,
+        "endY": 8
+      },
+      "settled": {
+        "map": "mx_map_hideout",
+        "x": 8,
+        "y": 8,
+        "moving": false
+      }
+    },
+    {
+      "plan": {
+        "mapId": "mx_map_hideout",
+        "x": 19,
+        "y": 6,
+        "key": "ArrowRight",
+        "endX": 19,
+        "endY": 6
+      },
+      "settled": {
+        "map": "mx_map_hideout",
+        "x": 19,
+        "y": 6,
+        "moving": false
+      }
+    }
+  ],
+  "completed": true
+}

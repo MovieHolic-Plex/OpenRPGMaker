@@ -1,0 +1,81 @@
+{
+  "version": "pokemon-motion-2",
+  "base": "/tmp/pokemon-clip-raster-verifier-ZekwE0",
+  "results": [
+    {
+      "name": "six genuine changed poses pass raster structure without adaptive pixel grid",
+      "pass": true
+    },
+    {
+      "name": "identical raw feet remain identical native feet with one source scale and row origin",
+      "pass": true,
+      "detail": {
+        "scale": 0.26785714285714285,
+        "feet": [
+          62,
+          62,
+          62,
+          62,
+          62,
+          62
+        ],
+        "sourceFeet": [
+          240,
+          240,
+          240,
+          240,
+          240,
+          240
+        ]
+      }
+    },
+    {
+      "name": "clip alpha128 foreground retained",
+      "pass": true
+    },
+    {
+      "name": "clip alpha127 foreground rejected as empty",
+      "pass": true
+    },
+    {
+      "name": "clip hidden RGB cannot warp alpha geometry",
+      "pass": true
+    },
+    {
+      "name": "explicit reviewed source crops match adaptive transparent-gutter crops",
+      "pass": true
+    },
+    {
+      "name": "negative crop origin rejected",
+      "pass": true
+    },
+    {
+      "name": "alpha threshold palette ceiling and unknown sampling rejected",
+      "pass": true
+    },
+    {
+      "name": "actual source body shortening remains visible and requires semantic rejection, never normalized away",
+      "pass": true,
+      "detail": {
+        "changedFeet": [
+          62,
+          62,
+          62,
+          62,
+          62,
+          60
+        ],
+        "semanticReviewRequired": true
+      }
+    },
+    {
+      "name": "source translation only cannot advertise drawn raster animation",
+      "pass": true
+    },
+    {
+      "name": "explicit custom64x96 remains separate from Emerald64x64 profile",
+      "pass": true
+    }
+  ],
+  "count": 11
+}

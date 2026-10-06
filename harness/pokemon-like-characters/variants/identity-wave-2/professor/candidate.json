@@ -1,0 +1,12 @@
+{
+  "role": "professor",
+  "label": "박사",
+  "variant": "해명 v2 · 안경 박사",
+  "description": "둥근 이마와 흰 옆머리, 테 안경, 긴 연구복 안의 자주색 조끼",
+  "identity": "둥근 이마와 흰 옆머리, 테 안경, 긴 연구복 안의 자주색 조끼 · 원작 보행과 발 접지 유지",
+  "collection": "identity-wave-2",
+  "base": "professor-identity-v2",
+  "templateId": "prof_birch",
+  "sourceNote": "에메랄드 prof_birch의 몸·보행을 판형으로 사용하고 머리·얼굴·옷을 명시적 픽셀 행으로 수정한 파생 캐릭터입니다.",
+  "author": "Codex GPT-6"
+}

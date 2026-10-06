@@ -495,6 +495,7 @@ function isBattleUsableItem(item: {
   readonly type: string;
   readonly hpRecovery: { flat: number; percentMax: number };
   readonly mpRecovery: { flat: number; percentMax: number };
+  readonly ppRecovery?: { flat: number; percentMax: number };
   readonly healStateIds: readonly string[];
   readonly stateEffects: readonly unknown[];
 }): boolean {
@@ -509,6 +510,8 @@ function isBattleUsableItem(item: {
       item.hpRecovery.percentMax > 0 ||
       item.mpRecovery.flat > 0 ||
       item.mpRecovery.percentMax > 0 ||
+      (item.ppRecovery?.flat ?? 0) > 0 ||
+      (item.ppRecovery?.percentMax ?? 0) > 0 ||
       item.healStateIds.length > 0 ||
       item.stateEffects.length > 0
   );

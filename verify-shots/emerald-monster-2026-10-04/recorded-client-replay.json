@@ -1,0 +1,78 @@
+{
+  "scope": "Recorded real-model final output replay through actual browser classifier/plainPiCommand/runPiCommand/client NDJSON/checkpoint publication/apply gate/store. Reconstructed envelopes; no second live model request.",
+  "acks": [
+    {
+      "kind": "checkpoint",
+      "id": "recorded-final-candidate",
+      "ok": true,
+      "returnedMapCount": 72,
+      "returnedUploadedCount": 621,
+      "returnedSpeciesCount": 60
+    },
+    {
+      "kind": "checkpoint",
+      "id": "recorded-final-heavy-omitted",
+      "ok": true,
+      "returnedMapCount": 72,
+      "returnedUploadedCount": 0,
+      "returnedSpeciesCount": 0
+    },
+    {
+      "kind": "render",
+      "id": "recorded-image-oprn_emerald_professor",
+      "pngBytes": 146630,
+      "pngHeader": true
+    },
+    {
+      "kind": "render",
+      "id": "recorded-image-mx_art_spriglet_front",
+      "pngBytes": 1233,
+      "pngHeader": true
+    },
+    {
+      "kind": "render",
+      "id": "recorded-image-mx_art_coalbit_front",
+      "pngBytes": 1219,
+      "pngHeader": true
+    },
+    {
+      "kind": "render",
+      "id": "recorded-image-mx_art_rivulet_front",
+      "pngBytes": 1173,
+      "pngHeader": true
+    }
+  ],
+  "receipts": [
+    {
+      "title": "변경 내용",
+      "detail": "변경 내용을 적용했어요.",
+      "mapId": "mx_map_beach",
+      "mapExists": true,
+      "maps": 72,
+      "species": 60
+    },
+    {
+      "title": "변경 내용",
+      "detail": "변경 내용을 적용했어요.",
+      "mapId": "mx_map_beach",
+      "mapExists": true,
+      "maps": 72,
+      "species": 60
+    }
+  ],
+  "errors": [],
+  "networkFailures": [],
+  "repository": {
+    "kind": "memory",
+    "target": null
+  },
+  "openingImageIds": [
+    "oprn_emerald_professor",
+    "mx_art_spriglet_front",
+    "mx_art_coalbit_front",
+    "mx_art_rivulet_front"
+  ],
+  "finalFingerprint": "eecf8c28",
+  "canonicalSaved": false,
+  "originalCheckpointEventsRecorded": false
+}

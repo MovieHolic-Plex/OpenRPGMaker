@@ -1,0 +1,107 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "238bcce74474f6d71aca2666e3887d28bdd04ec3211d26def6cd363048fd35a7",
+  "gifSha256": "ab0a98e62ca4940014636bf5e5c04356d9954e63e8851356345358a7115f9637",
+  "observationPackageSha256": "fd35a61697ca7c9278f40df0921b9ea22828ea3715198cc1aefd1fad844b267b",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-reference-revision/v11/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 16,
+      "reason": "Reference-relative cap/face/shoulderYplacement and compact dressed hips retain a coherent rounded small hero. Tapered rear nape is clearer. Profile feet/forearm still read as straight bars and vest/pack remain simple shapes, limiting final expressiveness."
+    },
+    "anatomy": {
+      "score": 16,
+      "reason": "Warmer cheek/ear shadow and stronger contour make face/limb separation more legible at1x. Profile chin/nose and attached arm roots are credible. Side hand/cuff planes and near/far foot depth remain somewhat stiff; no false limb count or attachment found."
+    },
+    "walking": {
+      "score": 16,
+      "reason": "Genuine opposing arms and support/swing persist; darkshoe/redtoe and trouser shading improve contact interpretation. Side idle still fuses near/far shoes into one lower bar, and phaseBforearm remains a flat sideways projection with limited downward forward gesture. References show more intentional near/far overlap and bent arm planes."
+    },
+    "pixelCraft": {
+      "score": 13,
+      "reason": "Navyouter contour, warmerskin, continuous descending hairhighlight/nape and darkshoe/redtoe provide visible native cluster improvements, not merely numeric palette changes. Compact side arm/foot clusters still need sculpted geometry; front vest and back pack are relatively flat simplified bands."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Originalcap/vest/gold-redbag remain coherent and readable, with better contour/value separation. Clothing construction and pack light/pocket/side planes are serviceable but simpler than the stronger actual reference accessories."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "All4views retain scale/palette/costume and better warm/cool contour relationship. Front/profile/back depth is consistent enough, though side shoe/hand overlap is still flatter."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All4decoded140ms frames repeat with identical idle and coherent bob;16nativeGIFmatches and transparentgutters personally checked. No unexplainedphase or file-level seam; gesture craft issues remain in walking."
+    }
+  },
+  "criticalFailures": [],
+  "total": 83,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v11/quality/native-contact.png",
+      "sha256": "e3359712cbf16492cc6320a6c8df4195fd84090679b6dc718bb24270b412f266"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v11/quality/decoded-gif-contact.png",
+      "sha256": "2c7201c02bcc16b5f9c23ce4810d38625a6e5687a08829bccdd1d67d533ff74c"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/firered-reference-contact.png",
+      "sha256": "3896ba5fde7e9181d0e5a09b9e16a3ccc17895a5ae3b66abcc18bd80460c1791"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "rgbaSha256": "6a0eab075e789b1c1f1e8e77f5be5b24a2ce0ca6e26e162f50fd16cdc0e998d1"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "rgbaSha256": "145a11a1f18a05b9c70bb2a412d7d0ff73f193c24b3ede7d2caeeae57ac82a2e"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "rgbaSha256": "f20f59cf6352110e32f49391fea958479c9e3c0ce124cb51c8899e8f02801090"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "rgbaSha256": "145a11a1f18a05b9c70bb2a412d7d0ff73f193c24b3ede7d2caeeae57ac82a2e"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no decorrelated-model independence claim.",
+  "requiredCorrections": [
+    "Redraw profileidle shoes as overlapping near/far footwear with leg/pant attachment and distinguishable toe/heel depth, rather than the uniform joinedlowerbar. A full alpha gap is not mandatory.",
+    "Give phaseBsidearm a diagonalforward/downward forearm/handgesture with a readable cuff at thejoint; avoid a flat sidewardbar. Keep attached arm roots and oppositeleg support."
+  ],
+  "nonblockingLimitations": [
+    "Vest/pack planes remain simple compared with some references.",
+    "Head/sidefacial planes remain stylized and less detailed than reference protagonists."
+  ],
+  "decisionReason": "83below fixed85. Actual native improvements are recognized; remaining sidearm/foot geometry prevents final craft approval.",
+  "scope": "Read-only source/art/store inspection plus requested reports."
+}

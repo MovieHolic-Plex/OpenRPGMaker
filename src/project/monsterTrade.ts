@@ -4,6 +4,7 @@
 // 개체를 지우고/바꾸는 규칙만 둔다. 파티가 마지막 한 마리일 때 놓아주기·재료가 되는 것은 막는다 —
 // 몬스터 파티 전투에서 파티가 비면 전투를 열 수 없다(playSceneBattle 의 BATTLE_MONSTER_PARTY_EMPTY).
 import { ensureMonsterSessionFields, giveMonster, monsterSpeciesById } from "@/project/monsterCollection";
+import { recordMonsterCaught } from "@/project/monsterJournal";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { MonsterFusionRecord, MonsterSpeciesId, Project } from "@/project/types";
@@ -55,7 +56,9 @@ export function fusionResultSpeciesId(project: Project, speciesA: MonsterSpecies
 }
 
 /** 개체를 파티·보관함·개체표에서 지운다. 확인 없이 지우는 내부 도구다. */
-function deleteMonsterInstance(session: PlaySession, instanceId: string): void {
+function deleteMonsterInstance(project: Project, session: PlaySession, instanceId: string): void {
+  const speciesId = session.monsterInstances[instanceId]?.speciesId;
+  if (speciesId) recordMonsterCaught(project, session, speciesId);
   const match = /^monster_(\d+)$/.exec(instanceId);
   if (match) session.retiredMonsterInstanceSeq = Math.max(session.retiredMonsterInstanceSeq ?? 0, Number(match[1]));
   session.monsterParty = session.monsterParty.filter((id) => id !== instanceId);
@@ -77,7 +80,7 @@ export function removeMonster(project: Project, session: PlaySession, instanceId
   const id = instanceId.trim() || session.monsterBox[0] || "";
   if (!id || !session.monsterInstances[id]) return { ok: false, reason: "missingInstance" };
   if (wouldEmptyParty(session, [id])) return { ok: false, reason: "lastPartyMonster" };
-  deleteMonsterInstance(session, id);
+  deleteMonsterInstance(project, session, id);
   syncMonsterPartyFollowers(project, session);
   return { ok: true, instanceId: id };
 }
@@ -98,7 +101,7 @@ export function tradeMonster(
   if (!offered) return { ok: false, reason: "noOffer" };
   const given = session.monsterInstances[offered]!;
   const partyIndex = session.monsterParty.indexOf(offered);
-  deleteMonsterInstance(session, offered);
+  deleteMonsterInstance(project, session, offered);
   const received = giveMonster(project, session, {
     speciesId: input.toSpeciesId,
     level: input.level ?? given.level,
@@ -133,8 +136,8 @@ export function fuseMonsters(project: Project, session: PlaySession, instanceIdA
   const firstPartyIndex = Math.min(
     ...[instanceIdA, instanceIdB].map((id) => session.monsterParty.indexOf(id)).filter((index) => index >= 0),
   );
-  deleteMonsterInstance(session, instanceIdA);
-  deleteMonsterInstance(session, instanceIdB);
+  deleteMonsterInstance(project, session, instanceIdA);
+  deleteMonsterInstance(project, session, instanceIdB);
   const created = giveMonster(project, session, { speciesId: resultSpeciesId, level });
   if (!created.ok) return { ok: false, reason: "missingSpecies" };
   if (Number.isFinite(firstPartyIndex) && created.location === "party") {

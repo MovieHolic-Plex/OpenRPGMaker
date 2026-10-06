@@ -128,17 +128,28 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     if (event.type === "agent_event") return receiveRender(event.event);
     if (event.type !== "render_request") return false;
     checkpoints = checkpoints.then(trackAck(async () => {
-      let png: string | undefined, issue: string | undefined;
+      let png: string | undefined, issue: string | undefined, still: import("../../editor/openingImageGeneration").CinematicStillResult | undefined;
       try {
         options.signal?.throwIfAborted();
-        const { renderPiToolImage } = await import("../toolImageRenderer");
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
-        const url = await renderPiToolImage(draft, event.toolName, event.data);
-        png = url.replace(/^data:image\/png;base64,/, "");
+        if (event.toolName === 'generate_opening_image') {
+          const { generateOpeningStill } = await import('../../editor/openingImageGeneration');
+          still = await generateOpeningStill(event.data as Record<string, unknown>, { project: draft, signal: options.signal });
+          if (!still.ok) { issue = still.summary; still = undefined; }
+        } else {
+          const url = event.toolName === 'preview_opening_reference'
+            ? await (await import('../../editor/openingAnimaticPreview')).renderOpeningReferencePreview(event.data, options.signal)
+            : event.toolName === 'preview_opening_animatic'
+            ? await (await import('../../editor/openingAnimaticPreview')).renderOpeningAnimaticPreview(draft, event.data, options.signal)
+            : event.toolName === 'show_opening_image'
+            ? await (await import('../../editor/openingImageGeneration')).renderOpeningImage(draft, event.data, options.signal)
+            : await (await import('../toolImageRenderer')).renderPiToolImage(draft, event.toolName, event.data);
+          png = url.replace(/^data:image\/png;base64,/, '');
+        }
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
       const ack = await doFetch(companionAuthUrl("/v1/agent/render", request.provider), {
         method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
-        body: JSON.stringify({ renderId: event.renderId, png, issue }),
+        body: JSON.stringify({ renderId: event.renderId, png, still, issue }),
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
@@ -290,6 +301,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
   if (checkpointError && !stale && !done) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
+  if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));
+  if (done?.gameSystemProduction?.issues.length) throw new PiAgentClientError('게임 시스템 제작 미완료: ' + done.gameSystemProduction.issues.join(' '));
+  if (done?.openingProduction?.issues.length) throw new PiAgentClientError('오프닝 제작 미완료: ' + done.openingProduction.issues.join(' '));
   if (done) return done;
   if (stale) {
     throw new PiAgentClientError(`워커에서 ${Math.round((Date.now() - lastLineAt) / 1000)}초 동안 신호가 없어 연결을 끊었습니다. 워커가 응답하지 않습니다 — 다시 시도하고, 반복되면 개발 서버 콘솔의 [oh-my-pi-worker] 줄을 봐 주세요.`);

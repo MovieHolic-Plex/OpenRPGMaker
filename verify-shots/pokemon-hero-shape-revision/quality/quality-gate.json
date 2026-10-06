@@ -1,0 +1,45 @@
+{
+  "sheetSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
+  "gifSha256": "9257ec516800810e25abbecf9e2f45c37e591869561d777d7bb38310caa863b4",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "implementationSha256": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "opaqueColors": 15,
+  "nativeGifPoseComparisons": 16,
+  "structuralPass": true,
+  "structuralWarnings": [],
+  "pass": true,
+  "judgments": [
+    {
+      "reviewer": "hero_shape_review",
+      "score": 85,
+      "criticalFailures": []
+    },
+    {
+      "reviewer": "root",
+      "score": 85,
+      "criticalFailures": []
+    }
+  ],
+  "packageSha256": "fb061bcf671936c4b00f1635044f251102cb7296ebcc6cb0b3b0158d60470c90",
+  "independentReviewSha256": "50343b6d402dacdff17be49a9489c949841a06965e6bc716032fee2b9065f4b3",
+  "rootReviewSha256": "b71229f3fea37bfce8a4d54d4f031cbd7f214ea819af25eb5837a8717ce83914",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/native-contact.png",
+      "sha256": "9a3384deda05d85c1924c22a06893f6b9df0a91bced6a95346d4b2aaea31e2c4"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/decoded-gif-contact.png",
+      "sha256": "56c08b7a460a7d1c60d76e7db0886cb01698b922382422ecde786fee853db123"
+    }
+  ],
+  "limitations": "Hashes bind recorded judgments to actual GIF/PNG bytes; they cannot prove aesthetic truth or authenticate that a reviewer viewed the images."
+}

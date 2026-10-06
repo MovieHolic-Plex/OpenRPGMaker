@@ -166,11 +166,12 @@ describe("edit_opening 부분 편집", () => {
 });
 
 describe("generate_opening_image", () => {
-  it("헤드리스에서는 편집기 UI 필요 상태만 돌려준다", () => {
+  // 성공처럼 보이던 ui-required 핸드오프는 없앴다(2026-10-03, editor-ai-tools.md 「Pi 오프닝 제작」). 실행기 연결 없이는 실패다.
+  it("생성 실행 경로가 없는 순수 레지스트리 호출은 실패하고 아무것도 등록하지 않는다", () => {
     const ctx = context();
     const result = runTool(ctx, "generate_opening_image", { prompt: "폐허가 된 성문 앞의 새벽" });
-    expect(result.ok, failure(result)).toBe(true);
-    expect((result.data as { status?: string } | undefined)?.status).toBe("ui-required");
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("image-generation-unavailable");
     expect(Object.keys(ctx.project.assets.uploaded)).not.toContain("generated-opening-still");
   });
 

@@ -187,6 +187,7 @@ const upsertResource: ToolDefinition = {
       meta: existing?.meta ?? {},
     };
     draft.assets.uploaded[id] = asset;
+    if (draft.meta.oprnMusicScores?.[id] && (kind !== "music" || dataUrl !== existing?.dataUrl)) delete draft.meta.oprnMusicScores[id];
     if (monsterMetadataUpdate !== undefined) draft.monsterMetadata = monsterMetadataUpdate;
     if (descriptionUpdate !== undefined) draft.audioDescriptions = descriptionUpdate;
     return { summary: `리소스 ${name}`, data: { resource: { id: asset.id, name: asset.name, kind: asset.kind } } };
@@ -211,6 +212,7 @@ const deleteResource: ToolDefinition = {
       throw new ToolError(`없는 리소스입니다: ${resourceId}`, { code: "resource-not-found" });
     }
     delete draft.assets.uploaded[resourceId];
+    if (draft.meta.oprnMusicScores) delete draft.meta.oprnMusicScores[resourceId];
     if (asset.kind === "music" || asset.kind === "sound") {
       draft.resourceProfiles = draft.resourceProfiles.filter(profile => profile.assetId !== resourceId);
       resetAudioDescriptionOnProject(draft, { kind: asset.kind, resourceId });

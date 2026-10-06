@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:23.976Z",
+    "role": "rival",
+    "sourceSha256": "9d40db789ac4e2229387a1bd953b46a4cfedeb9e1a7a684f21c607126b5f2182",
+    "promptSha256": "8f385fec2ef9fb3cd3728e9e3fc3840f7bc3a621e0cf97b68a024fa3caffe093",
+    "finalSha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "9d40db789ac4e2229387a1bd953b46a4cfedeb9e1a7a684f21c607126b5f2182",
+    "prompt.txt": "8f385fec2ef9fb3cd3728e9e3fc3840f7bc3a621e0cf97b68a024fa3caffe093",
+    "portrait.png": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "b87c1491d2d17c37d1ad9ec6b37100ee1ab81d23bc87e2db9ce7701c04eb5d23",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 14,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 18,
+      "y": 3,
+      "width": 36,
+      "height": 60
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.905Z",
+  "reviewSha256": "82f07b793ba13f5448e51e6ebf6f5df8d106ab948b08c5088680abd6ea12c38a"
+}

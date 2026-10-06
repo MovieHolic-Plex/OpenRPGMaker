@@ -1,9 +1,11 @@
+import { monsterKitSheet } from "./monsterKitAssets";
 import { RESOURCE_SLICING } from "./resourceSlicing";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import atlasBiomeInteriorSheet from "./atlasBiomeInteriorSheet.json";
+import { emeraldMonsterKitSheet } from "./emeraldMonsterKitAssets";
 import {
   CASTLE_REFERENCE_TILESET_TEXTURE_KEY,
   CASTLE_REFERENCE_TILE_SIZE,
@@ -40,6 +42,8 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.tilesPerRow;
   if (key === "tex_jp_city") return jpCitySheet.tilesPerRow;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInteriorSheet.tilesPerRow;
+  const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
+  if (monsterKit) return monsterKit.tilesPerRow;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILES_PER_ROW;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILES_PER_ROW;
   if (key === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_TILES_PER_ROW;

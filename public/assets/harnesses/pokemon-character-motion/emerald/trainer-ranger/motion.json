@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "ranger",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4",
+  "promptSha256": "f34294d74e6397c01bcc62578cff7f2c8d638dd99a47e96c49d2b4d7cd5bfc8a",
+  "portraitSha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+  "gateSha256": "ea92b0917da7a8ebd1a1b8c256f3ff45f4c32cf05e156a9057bcfffa7ab8e873"
+}

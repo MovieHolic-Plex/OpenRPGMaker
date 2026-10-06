@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:40.183Z",
+    "role": "hiker",
+    "sourceSha256": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0",
+    "promptSha256": "1ca67ea37f56e7b80f6da1a8dd057c2c2254055d398215a4b0ffaa5bb6115975",
+    "finalSha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0",
+    "prompt.txt": "1ca67ea37f56e7b80f6da1a8dd057c2c2254055d398215a4b0ffaa5bb6115975",
+    "portrait.png": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "aac29df4136bef1bc7dabe2f1f5ed69a5dfa6d6caa31d3de7c0c52f4855f9cb0",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 13,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 15,
+      "y": 3,
+      "width": 32,
+      "height": 60
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.979Z",
+  "reviewSha256": "7c30d09203d7400c57230ac1dff2df636da9fe303cc2fa80a2c178ac0f2a27c3"
+}

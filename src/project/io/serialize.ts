@@ -1,3 +1,4 @@
+import { encodeCinematicWire, decodeCinematicWire } from "../cinematicWire";
 import { SCHEMA_VERSION } from "../types";
 import type { Project } from "../types";
 import { ProjectFormatError } from "./errors";
@@ -22,6 +23,7 @@ function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<str
  * `keepReferenceDocuments` 는 .oprn 내보내기처럼 문서가 자기완결이어야 하는 곳용이다.
  */
 export function projectWireView(project: Project, options?: { readonly keepReferenceDocuments?: boolean }) {
+  project = encodeCinematicWire(project);
   const strip = options?.keepReferenceDocuments !== true;
   let tilesets: Record<string, unknown> | null = null;
   let parts: Map<string, unknown> | null = null;
@@ -93,7 +95,7 @@ export function deserializeParsed(parsed: unknown): Project {
   // v3 는 얼굴 짝(시트 id + faceIndex)을 들고 있다 — 낱장 얼굴 id 로 바꾼 뒤 검사한다.
   if (version === 3) return migrateV3toV4(data);
   if (version === SCHEMA_VERSION) {
-    const project = validateProjectV4(data, { adoptParsed: true });
+    const project = validateProjectV4(decodeCinematicWire(data as unknown as Project) as unknown as typeof data, { adoptParsed: true });
     // 저장본에서 뺀 번들·공용 참고문서를 되돌린다 — 정규화 전에 되돌려야 「로드가 프로젝트를 바꿨다」로 세지 않는다.
     restoreOwnedReferenceDocuments(project);
     return project;

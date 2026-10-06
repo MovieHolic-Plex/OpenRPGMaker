@@ -1,0 +1,48 @@
+{
+  "walk": {
+    "hero": "/home/main/z-project/pokemon-hero-refinement-2/review/candidates/hero-1791160299682-d9ad055a",
+    "rival": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/rival-1791123203357-06f2c537",
+    "professor": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/professor-1791123204597-3053505c",
+    "nurse": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/nurse-1791123205931-5f9e2de5",
+    "merchant": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/merchant-1791123207114-dce8eff7",
+    "mother": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/mother-1791123208217-9374f661",
+    "resident": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/resident-1791123209333-0244f50f",
+    "gym_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/gym_leader-1791123210485-a07275c8",
+    "company_agent": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/company_agent-1791123211630-4b4be5dc",
+    "captain": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/captain-1791123212754-87b5b3b7",
+    "worker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/worker-1791123213832-1ee64e7b",
+    "explorer": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/explorer-1791123214937-277240dc",
+    "student": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/student-1791123216099-86750fde",
+    "ranger": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/ranger-1791123217262-7c242991",
+    "moon_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/moon_leader-1791123218390-08ddd7cf",
+    "hiker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hiker-1791123219555-797c9781"
+  },
+  "trainers": {
+    "hero": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8",
+    "rival": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-rival-1791123203968-9d40db78",
+    "professor": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-professor-1791123205319-0c1988c6",
+    "nurse": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5",
+    "merchant": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed",
+    "mother": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e",
+    "resident": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15",
+    "gym_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-gym_leader-1791123211053-3debc9e6",
+    "company_agent": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-company_agent-1791123212199-b4a6243c",
+    "captain": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-captain-1791123213318-895e9b64",
+    "worker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-worker-1791123214390-054d4785",
+    "explorer": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc",
+    "student": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-student-1791123216724-34893493",
+    "ranger": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7",
+    "moon_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-moon_leader-1791123218997-d3ab3356",
+    "hiker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa",
+    "hero_back": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b"
+  },
+  "authoring": "/home/main/z-project/pokemon-hero-refinement-2/source/authoring.json",
+  "clip": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2",
+  "quality": {
+    "hero": {
+      "pack": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/quality-evidence.json",
+      "review": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/independent-review.json",
+      "rootReview": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/root-review.json"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "cases": [
+    {
+      "case": "missing-quality",
+      "rejected": true,
+      "sharedCatalogUntouched": true,
+      "reason": "Error: Hostile hero quality evidence required"
+    },
+    {
+      "case": "no-authoring-cannot-bypass",
+      "rejected": true,
+      "sharedCatalogUntouched": true,
+      "reason": "Error: Hostile hero quality evidence required"
+    },
+    {
+      "case": "wrong-reviewed-hero",
+      "rejected": true,
+      "sharedCatalogUntouched": true,
+      "reason": "Error: Quality evidence belongs to a different hero"
+    }
+  ]
+}

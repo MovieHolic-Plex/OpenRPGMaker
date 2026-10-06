@@ -1,0 +1,12 @@
+{
+  "role": "merchant",
+  "label": "상인",
+  "variant": "도윤 · 판형 수정",
+  "description": "갈색 머리와 남색 셔츠, 노란 명찰과 줄무늬 앞치마",
+  "identity": "갈색 머리와 남색 셔츠, 노란 명찰과 줄무늬 앞치마 · 원작 체형과 발 교대 유지",
+  "collection": "full-cast-v1",
+  "base": "mart_employee-merchant-full-cast-v1",
+  "templateId": "mart_employee",
+  "sourceNote": "에메랄드 mart_employee 원작을 판형으로 삼아 Codex가 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다.",
+  "author": "Codex GPT-6"
+}

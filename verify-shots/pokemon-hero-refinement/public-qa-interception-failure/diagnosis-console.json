@@ -1,0 +1,34 @@
+[
+  {
+    "kind": "error",
+    "text": "Access to CSS stylesheet at 'http://mdc-server:18301/monster-expedition/assets/player-Dv-H9esX.css' from origin 'http://mdc-server:18301' has been blocked by CORS policy: The request client is not a secure context and the resource is in more-private address space `local`."
+  },
+  {
+    "failed": "http://mdc-server:18301/monster-expedition/assets/player-Dv-H9esX.css",
+    "error": {
+      "errorText": "net::ERR_FAILED"
+    }
+  },
+  {
+    "kind": "error",
+    "text": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+    "kind": "error",
+    "text": "Access to script at 'http://mdc-server:18301/monster-expedition/player.js' from origin 'http://mdc-server:18301' has been blocked by CORS policy: The request client is not a secure context and the resource is in more-private address space `local`."
+  },
+  {
+    "failed": "http://mdc-server:18301/monster-expedition/player.js",
+    "error": {
+      "errorText": "net::ERR_FAILED"
+    }
+  },
+  {
+    "kind": "error",
+    "text": "Failed to load resource: net::ERR_FAILED"
+  },
+  {
+    "text": "",
+    "title": "별빛섬 몬스터 원정"
+  }
+]

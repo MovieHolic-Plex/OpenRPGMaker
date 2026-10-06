@@ -1,0 +1,71 @@
+{
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:22.753Z",
+    "role": "hero",
+    "sourceSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
+    "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "finalSha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
+    "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "portrait.png": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "34bcfbb4c8e9d087fb33a562b9250cc342a265a132265baf96c441a8e34eb57c",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "createdAt": "2026-10-04T14:36:23.923Z",
+  "verdict": "pass",
+  "who": "root / Python pixel author and visual reviewer",
+  "why": "Root directly authored native64x64 and viewed the current browser sheet: complete face, hands and shoes within margins; role hair/hat/uniform/prop agrees with field identity. Bare-leg rear shadow was corrected to skin, matching both legs. Hero_back is waist-up rear cap/navy hair/gold bag/red pocket. Face/anatomy and wide stances are shared style limitations; no shrink or quantization is approved.",
+  "evidence": [
+    {
+      "file": "review-evidence-0.png",
+      "sha256": "0b0e5b4c810846603f0b71cb910ab86a6a555169420316381268348dbfdbe3eb"
+    }
+  ],
+  "semanticChecklist": [
+    "native1x silhouette and anatomy readable",
+    "role/outfit matches declared source identity",
+    "palette and edge pixels reviewed at1x2x3x",
+    "native source pixels and complete pose retained without fit",
+    "front/back orientation is correct for declared role"
+  ],
+  "previewSha256": "4d917757e25397eec5c1242724945619d390cc17bf1895e488907cf64f120482"
+}

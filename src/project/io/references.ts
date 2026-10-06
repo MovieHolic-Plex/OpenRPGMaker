@@ -173,6 +173,21 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
   const endingIds = new Set((project.endings ?? []).map((record) => record.id));
   const mapIds = new Set(Object.keys(project.maps));
+  check(() => {
+    const campaign = project.system.monsterCampaign;
+    if (!campaign) return;
+    for (const speciesId of campaign.speciesIds) assert(speciesIds.has(speciesId), `monsterCampaign: unknown species ${speciesId}`);
+    for (const speciesId of Object.keys(campaign.speciesNotes)) assert(campaign.speciesIds.includes(speciesId), `monsterCampaign: note outside roster ${speciesId}`);
+    for (const badge of campaign.badges) {
+      assert(mapIds.has(badge.cityMapId), `monsterCampaign: unknown city ${badge.cityMapId}`);
+      assert(switchIds.has(badge.switchId), `monsterCampaign: unknown badge switch ${badge.switchId}`);
+    }
+    for (const location of campaign.locations) assert(mapIds.has(location.mapId), `monsterCampaign: unknown location ${location.mapId}`);
+    for (const objective of campaign.objectives) {
+      assert(switchIds.has(objective.switchId), `monsterCampaign: unknown objective switch ${objective.switchId}`);
+      if (objective.requiresSwitchId) assert(switchIds.has(objective.requiresSwitchId), `monsterCampaign: unknown prerequisite ${objective.requiresSwitchId}`);
+    }
+  });
   const resourceIds = collectResourceIds(project);
   check(() => {
     for (const widget of project.system.fieldHud?.widgets ?? []) {

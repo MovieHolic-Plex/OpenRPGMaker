@@ -1,0 +1,71 @@
+{
+  "sheetSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
+  "gifSha256": "9257ec516800810e25abbecf9e2f45c37e591869561d777d7bb38310caa863b4",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "reviewer": "root",
+  "author": "root",
+  "observationPackageSha256": "fb061bcf671936c4b00f1635044f251102cb7296ebcc6cb0b3b0158d60470c90",
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "criticalFailures": [],
+  "verdict": "pass",
+  "scores": {
+    "silhouette": {
+      "score": 17,
+      "reason": "The cap/cheek mass is compressed to ten rows; broader shoulder clusters lead into a full dressed torso and connected dark feet. Native front/back/profile now read as a compact person rather than a large head with dangling tiny legs. The low red cap remains a simple original shape."
+    },
+    "anatomy": {
+      "score": 16,
+      "reason": "The front cheek/chin transition tapers without the doubled dark chin band; collar and sleeves connect to hands. Profiles tuck the cheek into a broader shoulder, and the pack rounds behind the torso. The compact face and shoulder shading remain economical."
+    },
+    "walking": {
+      "score": 17,
+      "reason": "All four decoded frames have traceable alternating leg chains. Profiles change the near leg from forward planted contact at x10..13 to backward planted contact at x3..6, with the other shoe lifted one row, and the arm acts oppositely. Frontal/rear hip row27 and upper leg row28 change with the support side; this is not a whole-sprite bob or a missing toe."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Direct final-resolution clusters connect the blue vest and central cream shirt, with grouped cap light, tapered brown hair, and cleaner single-edge chin. Pants and shoes remain close in value; the deliberately limited palette and economical face constrain material depth."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "The same red cap, cream-brim/blue vest, gold-red backpack persist through all twelve views. Profiles have a protruding bag at x2/middle and a tapered top/bottom with a separate red lower pocket. Its shading and original costume remain simpler than reference protagonists."
+    },
+    "directionContinuity": {
+      "score": 5,
+      "reason": "All four headings preserve size, cap crown/brim, outfit and attached pack. Left/right are explicitly authored compatible mirrored views; no lost costume part or stretched head between directions."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All decoded 140 ms frames match their source poses, including identical repeated idle. The head stays fixed while hands, hips, bent legs and shoe contacts exchange. Actual HTML image playback captures all three distinct poses at native and 4x with exact pixels and no errors; no whole-body jump or loop seam observed."
+    }
+  },
+  "total": 85,
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/native-contact.png",
+      "sha256": "9a3384deda05d85c1924c22a06893f6b9df0a91bced6a95346d4b2aaea31e2c4"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/decoded-gif-contact.png",
+      "sha256": "56c08b7a460a7d1c60d76e7db0886cb01698b922382422ecde786fee853db123"
+    }
+  ],
+  "browserProof": {
+    "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/browser-gif/record.json",
+    "sha256": "e9291c96bca4c884f47691978ae6b9ebf148d1fb646867b28dc58daa719c1158"
+  },
+  "limitations": [
+    "Manual artistic judgment, not a user approval or a guarantee of original-game equivalence.",
+    "Economical face/cloth shading and close pants/shoe values remain.",
+    "Different-model critic provider was unavailable; independent reviewer is another native-model agent.",
+    "Decoded GIF frames and actual browser captures inspected; no claim of personally watching video."
+  ]
+}

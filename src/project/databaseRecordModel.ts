@@ -308,6 +308,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
     ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
+    ...(system.monsterCampaign ? { monsterCampaign: structuredClone(system.monsterCampaign) } : {}),
     ...(() => {
       const fonts = normalizeSystemFontConfig(system.fonts);
       return fonts ? { fonts } : {};
@@ -755,6 +756,8 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     healStateIds: cleanIds(record.healStateIds),
     hpRecovery: normalizeRecovery(record.hpRecovery),
     mpRecovery: normalizeRecovery(record.mpRecovery),
+    ...(record.ppRecovery && (record.ppRecovery.flat > 0 || record.ppRecovery.percentMax > 0)
+      ? { ppRecovery: normalizeRecovery(record.ppRecovery) } : {}),
     onlyUsableInMenu: record.onlyUsableInMenu ?? false,
     onlyEffectiveOnDeadActors: record.onlyEffectiveOnDeadActors ?? false,
     learnedSkillId: cleanOptionalId(record.learnedSkillId),

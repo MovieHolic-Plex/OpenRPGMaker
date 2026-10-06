@@ -1,0 +1,63 @@
+{
+  "sheets": 7,
+  "newAndExisting": true,
+  "authorAndEmptyPreserved": true,
+  "report": [
+    {
+      "id": "emerald_monster_overworld",
+      "count": 2192,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 13,
+      "images": 9
+    },
+    {
+      "id": "emerald_monster_wild",
+      "count": 2048,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 9,
+      "images": 13
+    },
+    {
+      "id": "emerald_monster_coast",
+      "count": 2528,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 8,
+      "images": 9
+    },
+    {
+      "id": "emerald_monster_climate",
+      "count": 2560,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 8,
+      "images": 11
+    },
+    {
+      "id": "emerald_monster_rooms",
+      "count": 1136,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 16,
+      "images": 19
+    },
+    {
+      "id": "emerald_monster_dungeon",
+      "count": 1920,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 10,
+      "images": 10
+    },
+    {
+      "id": "emerald_monster_gyms",
+      "count": 2144,
+      "fieldsPreserved": 12,
+      "categories": 2,
+      "documents": 18,
+      "images": 21
+    }
+  ]
+}

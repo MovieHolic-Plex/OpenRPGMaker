@@ -119,6 +119,8 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   // 강제 이동 루트는 전이를 넘어 살아남는다(진행 중인 걸음만 끊는다). 그 루트의 통과 설정은
   // 출발 맵 기준으로 켠 것이라 여기서 끈다 — clearPlayerRouteThrough 주석의 수명 계약.
   clearPlayerRouteThrough(scene);
@@ -156,6 +158,8 @@ export function placePlayerOnCurrentMap(scene: PlaySceneContext, x: number, y: n
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   // 순간이동은 걸음을 떼지 않으므로 연타 디바운스 키를 여기서 비운다 — 안 비우면 옮긴 자리에서 같은
   // NPC 에게 다시 말을 걸 수 없다.
   scene.lastActionTargetKey = "";

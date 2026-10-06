@@ -1,3 +1,4 @@
+import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from './monsterGameRequest';
 // 평문 조수 턴의 순수 부분 — 의도 선언 → 실행 계획, 그리고 Pi 요청(계획 턴·실행 턴) 조립.
 //
 // 채팅 패널(`aiChatPanel.plainPiTurn` + `aiPiAgentCommand.runPiCommand`)과 헤드리스 생성기
@@ -86,6 +87,12 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
   // 마을 계약도 이미 이 머리글을 보고 빠진다(villageContract.ts) — 선언이 바꿀 수 있는 판정이 남지 않았다.
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
+  if (!plan.readOnly && requestsEmeraldMonsterGame(input.text)) {
+    const routingAudit = "intent:emerald-monster-game → 전체72맵/60종 제작";
+    // One producer owns shared world/DB/session; never scatter a fresh campaign across map bundles.
+    return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
+      initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT, routingAudit };
+  }
   if (isGenrePresetBriefRequest(input.text)) {
     const team = input.piTeam && !plan.readOnly;
     return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false, routingAudit: GENRE_PRESET_ROUTING }, questionPromoted: false, intentNote: null,

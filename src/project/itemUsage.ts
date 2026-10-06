@@ -10,6 +10,7 @@ export function activeItemEffects(item: ItemRecord): ItemRecord {
     animationId: medicine || skillItem ? item.animationId : undefined,
     hpRecovery: medicine ? item.hpRecovery : { flat: 0, percentMax: 0 },
     mpRecovery: medicine ? item.mpRecovery : { flat: 0, percentMax: 0 },
+    ...(item.ppRecovery ? { ppRecovery: medicine ? item.ppRecovery : undefined } : {}),
     healStateIds: medicine ? item.healStateIds : [],
     stateEffects: medicine || (special && !item.activateSkillId && !item.skillId && !item.captureProfile && !item.careProfile) ? item.stateEffects : [],
     onlyEffectiveOnDeadActors: medicine && item.onlyEffectiveOnDeadActors,

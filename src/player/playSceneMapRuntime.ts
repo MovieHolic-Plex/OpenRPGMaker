@@ -969,6 +969,8 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.activeMapAnimations.clear();
   // 체공 상태와 그림자는 스프라이트 풀과 수명이 같다 — 남기면 새 맵에서 주인공이 떠 있다.
   scene.playerHop = null;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   abortHop(scene, PLAYER_SHADOW_KEY, scene.player);
   destroyAllCharacterShadows(scene);
   clearAllHopScales(scene);

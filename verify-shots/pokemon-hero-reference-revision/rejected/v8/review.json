@@ -1,0 +1,171 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "70417fa3c55f428a3baccf76630e8130159f4a204f0423cff1a38260aff155a8",
+  "gifSha256": "d75e26b982942960421e75e8881c64376ed40927b9d622ff5727ce1d6d8dfc4f",
+  "observationPackageSha256": "5e298747188a477d91505dda4d14375cd3e1f8558a19d66a325b8fd197c9e4b0",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-reference-revision/v8/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 15,
+      "reason": "Shorter head, compact feet and connected outlined arms now form a coherent small hero. Actual reference comparison still shows a broad rectangular bare front face and a tall fairly straight rear hair edge; the reference cap/temple/ear/cheek and cloth masses form more varied rounded silhouettes."
+    },
+    "anatomy": {
+      "score": 15,
+      "reason": "Hooked internal nose bar and bright convergent pupils are resolved, and rounded chin/collar plus arm attachment are credible. Front idle y16..19 remains a nearly rectangular skin field without distinct temple/ear/cheek masses; profile forehead/cheek is a flat vertical skin plane. Anatomy is serviceable but not sculpted to the reference level."
+    },
+    "walking": {
+      "score": 15,
+      "reason": "All directions genuinely exchange planted and swung feet with attached opposing hands; no raised detached-wing reading remains. However front/back forearms and side shoe clusters are still stiff rectangular forms, with little convincing cloth bend or rolling toe/heel near-far overlap. Real playback capture samples match native poses; that verifies rendering, not pose quality."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Outlined limb contacts and fewer ambiguous face pixels are cleaner. Rear Ehair highlights remain rectangular stepped patches, the gold/red pack has symmetrical OO highlights and stripe bands, and front white collar/central rails read like a schematic bib. Reference clusters describe coherent planes and selective contour/shadow transitions rather than these repeated geometric motifs."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Cap, blue vest and gold-red pack remain consistent and recognizable, with clearer attachment. Vest/undershirt planes and backpack pocket/depth are still underresolved: white V/rails and central bright pack marks attract attention without clearly describing clothing construction or accessory volume."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Front/back/profile headings and costume continuity are intact. The large flat frontal skin field and narrower vertical profile plane still turn less convincingly than actual references."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All4decoded140ms frames, repeated idle1/3, coherent bob and stable head/costume yield no file-level seam.16native GIF comparisons and transparent gutters personally checked. Root browser record has14samples at each1x/4x scale with3nativeposes and noerrors; record/screenshot inspected, no new live browser session claimed."
+    }
+  },
+  "criticalFailures": [],
+  "total": 79,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v8/quality/native-contact.png",
+      "sha256": "234f875a657324cd8d46a2251ad83377fabfa6085d8cdad99cf2aace5070d35d"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v8/quality/decoded-gif-contact.png",
+      "sha256": "b67ec851c2fde1bc0964fe8c965fbe2390a3ad5146df04dbfb267d9f7c0d0eff"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/idle-comparison-v8.png",
+      "sha256": "fb5e7668acfa7c995dae37dadf2f14c3cf6ebf70b2aab1e99aed2bb58bb2f226"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/firered-reference-contact.png",
+      "sha256": "3896ba5fde7e9181d0e5a09b9e16a3ccc17895a5ae3b66abcc18bd80460c1791"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v8/browser-gif/record.json",
+      "sha256": "cbae50661341d2ab1089daa57e9e871647238749232eb156c89cfb03f7562116"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v8/browser-gif/browser-playback.png",
+      "sha256": "8407e80cd108f61119347267ee75ad5c18137477f97b24cd7b26f51c215f8973"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "browserRecordAndScreenshotInspected": true,
+  "rootGeneratedBrowserProof": {
+    "file": "/home/main/z-project/pokemon-hero-reference-revision/v8/browser-gif/record.json",
+    "sha256": "cbae50661341d2ab1089daa57e9e871647238749232eb156c89cfb03f7562116",
+    "checks": [
+      {
+        "scale": 1,
+        "samples": 14,
+        "observedGifFrames": [
+          2,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          2,
+          0,
+          1,
+          1,
+          0
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      },
+      {
+        "scale": 4,
+        "samples": 14,
+        "observedGifFrames": [
+          1,
+          1,
+          0,
+          2,
+          0,
+          2,
+          0,
+          2,
+          0,
+          1,
+          1,
+          1,
+          2,
+          0
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      }
+    ],
+    "errors": []
+  },
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "rgbaSha256": "baa3c38340c810b99aadbcfbb980d8a08a044111be59a1ac791a7e5a9dd30d8b"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "rgbaSha256": "c072d70f58e0702cb028d6b990e36a9420e3615c42aef92c5a493bb827232dc9"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "rgbaSha256": "254d2a42e8fabd86a724390751c732aac2b2568b1713840cb5a1b6bb4103d6f0"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "rgbaSha256": "c072d70f58e0702cb028d6b990e36a9420e3615c42aef92c5a493bb827232dc9"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no decorrelated-model independence claim.",
+  "requiredCorrections": [
+    "Break the front idle y16..19skin rectangle into temple hair/ear/cheek masses: upper temple overlap, small ear projection, then tapered cheek/chin. Preserve simple dark eyes; do not restore eye-white stripes or add facial dot noise.",
+    "Give the profile skin plane a connected warm forehead/cheek/jaw shadow and selective contour so it reads as a rounded head rather than a vertical slab. Preserve the repaired nose/chin connection.",
+    "Redesign rear hair plane/edge: taper nape, vary straight lower edge and merge Ehighlights into a small deliberate curved/diagonal plane rather than repeated rectangular patches.",
+    "Choose one clear vest/undershirt construction: contiguous light undershirt plane framed by blue vest panels or a deliberate collar/hem. Remove white-rail/bib ambiguity and keep arm roots readable.",
+    "Give pack one light gold upper-left plane, shaded side/bottom and shaped red pocket; remove central symmetrical OO glyph-like highlights and repeated stripe appearance. This is a volume/attachment repair, not a demand for more colors.",
+    "Refine shoe toe/heel and near-far overlap without changing the real support/swing roles; use stable footwear clusters throughout idle/steps rather than rectangular soles."
+  ],
+  "scope": "Read-only source/art/store inspection plus requested report files. No code or artwork edits.",
+  "decisionReason": "79below unchanged85; all axis minima now met, with no critical failure. Current fixes are recognized, but actual reference-relative finished cluster quality remains below target."
+}

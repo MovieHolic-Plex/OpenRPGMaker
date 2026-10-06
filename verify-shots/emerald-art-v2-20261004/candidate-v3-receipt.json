@@ -1,0 +1,16 @@
+{
+  "revision": 3,
+  "species": 60,
+  "candidates": 120,
+  "regeneratedSpecies": 15,
+  "nativeMaximum": 64,
+  "paletteMaximum": 16,
+  "backFrontBodyMin": 0.8893905919223567,
+  "backFrontBodyMax": 1.0443810163523048,
+  "candidateErrors": 0,
+  "warnings": 168,
+  "selection": "superseded",
+  "sandbox": "/home/main/z-project/emerald-art-v3-review-20261004",
+  "finalCliCandidates": true,
+  "supersededBy": 4
+}

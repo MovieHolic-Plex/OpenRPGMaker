@@ -15,6 +15,11 @@ export function isBundledJpCityTileset(tile: TilesetDef | undefined): boolean {
   return !!tile && tile.image.type === 'bundled' && tile.image.id === 'tex_jp_city';
 }
 
+/** 몬스터 수집 손 도트 킷과 그 에메랄드 재채색. defaults/monsterKit.ts 는 큰 생성 표를 끌어오므로 계열 문자열만 본다. */
+export function isMonsterKitTileset(tile: TilesetDef | undefined): boolean {
+  return !!tile && (tile.family === 'oprn-monster' || tile.family === 'oprn-monster-emerald');
+}
+
 export function isPawTileset(tile: TilesetDef | undefined): boolean {
   return !!tile && (/^paw-/.test(tile.id) || /^shared_paw_/.test(tile.id) || /(?:^|__)shared_paw_/.test(tile.id));
 }
@@ -25,6 +30,9 @@ export function requestsModernMap(project: Project, task: string, mapIds: readon
   if (packTownTargetFor(project, task, null) || mapIds.some(id => packTownTargetFor(project, undefined, id))) return false;
   // 지금 다루는 맵이 번들 일본 도시(jp_city)면 PAW 전용 게이트 밖이다 — 그 맵은 build_jp_city_building 과 jp_city 참고문서로 짓는다.
   if (mapIds.length > 0 && mapIds.every(id => isBundledJpCityTileset(project.tilesets[project.maps[id]?.tilesetId ?? '']))) return false;
+  // 몬스터 수집 칩셋(oprn-monster·oprn-monster-emerald) 맵도 PAW 전용 게이트 밖이다 — 그 게임은 처음 고른 칩셋 계열을 끝까지 쓴다(2026-10-06 연속성 결정).
+  // 실측: 포켓몬풍 지침 문장 「현대식 카드…섞지 않는다」와 「상점」이 이 게이트를 켜 build_monster_game 을 PAW 위반으로 거부했다.
+  if (mapIds.length > 0 && mapIds.every(id => isMonsterKitTileset(project.tilesets[project.maps[id]?.tilesetId ?? '']))) return false;
   // 사용자가 번들 칩셋 jp_city 를 직접 부른 요청도 PAW 전용 게이트 밖이다 — 맵이 아직 없어 위 검사에 안 걸리는 «새 맵» 단계(설치 PAW 가 없으면 타일 배치를 멈추고 다운로드를 안내하던 곳).
   if (namesJpCityTileset(task)) return false;
   // 설치된 PAW 가 하나도 없는데 일본 거리 풍경을 «현대 …» 로 말한 요청 — 이 게이트는 타일 배치를 멈추고 다운로드를 안내할 뿐이다. 번들 jp_city 가 그 일을 한다.

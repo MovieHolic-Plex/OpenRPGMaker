@@ -5,6 +5,7 @@ import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
+import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
 import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
@@ -39,13 +40,22 @@ export function applyBattleRewardsToSession(
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
     // Transfer class, lineage and permanent skills before vitals. Never replay
     // arbitrary reclass: it would erase the earned promotion chain.
+    const journal = (monsterCampaign(project)?.speciesIds ?? []).map((speciesId) => ({
+      speciesId, seen: session.switches[`mx_seen_${speciesId}`] === true, caught: session.switches[`mx_caught_${speciesId}`] === true,
+    }));
     applyBattleClassOverridesToSession(session, outcome.eventState);
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
     applyBattleStatesToSession(session, outcome.actors ?? []);
     applyBattleEventStateToSession(session, outcome.eventState);
-    for (const capture of outcome.capturedMonsters ?? []) {
+    // The battle seeded its switch copy before first sighting; receipts are monotonic.
+    for (const receipt of journal) {
+      if (receipt.seen) recordMonsterSeen(project, session, receipt.speciesId);
+      if (receipt.caught) recordMonsterCaught(project, session, receipt.speciesId);
+    }
+    // Campaign captures require a committed victory or escape; legacy games retain their policy.
+    for (const capture of outcome.result === "defeat" && monsterCampaign(project) ? [] : outcome.capturedMonsters ?? []) {
       giveMonster(project, session, {
         speciesId: capture.speciesId, level: capture.level, caughtAt: capture.caughtAt,
         ivs: capture.ivs, currentHp: capture.currentHp, stateIds: capture.stateIds,

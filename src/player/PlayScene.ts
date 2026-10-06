@@ -75,6 +75,7 @@ import { updateAutonomousNPCs as updateSceneAutonomousNpcs } from "@/player/play
 import {
   showRuntimeOverlay as showSceneRuntimeOverlay,
   clearRuntimeOverlay as clearSceneRuntimeOverlay,
+  clearRecoveredMonsterPartyError,
   showGameOverScreen as showSceneGameOverScreen,
   showEndingScreen as showSceneEndingScreen,
   returnToTitle as returnSceneToTitle,
@@ -500,6 +501,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   refreshRuntimeSurfaces(): void {
     const project = store.getCurrent();
+    clearRecoveredMonsterPartyError(this);
     const nextPlayerSprite = resolvePlayerSpriteResource(project, this.session);
     if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId || this.playerSprite.characterIndex !== nextPlayerSprite.characterIndex) {
       this.playerSprite = nextPlayerSprite;
@@ -662,6 +664,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
     this.session = structuredClone(session);
+    this.clearRuntimeOverlay("runtime-error");
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
     this.setInputEnabled(true);

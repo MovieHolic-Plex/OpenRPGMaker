@@ -1,3 +1,4 @@
+import { configureEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
 import { inBounds, isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
@@ -284,6 +285,7 @@ export function materializeGenreBlankProjectSystemPreset(
   project.meta = { ...project.meta, title: canonical.title };
   project.system.opening = defaultOpeningSequence(canonical.title);
   applyGenrePreset(project, canonical.packId);
+  if (canonical.packId === "monster-collect") configureEmeraldMonsterStyle(project);
   return {
     project,
     receipt: {

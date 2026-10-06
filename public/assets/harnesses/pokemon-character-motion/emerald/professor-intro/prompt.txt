@@ -1,0 +1,1 @@
+Native64x64 original Python professor poses: neutral, blink, talk, open palm, orb, wave. Source scripts: scripts/asset-gen/pokemon-characters/portraits.py. All poses share one unchanged stance and head anchor; arms, face and props are drawn at their final integer coordinates. No image generator, resize, grid inference or quantization.

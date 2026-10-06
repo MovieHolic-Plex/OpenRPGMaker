@@ -812,3 +812,13 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 픽셀 대조는 `scripts/qa/runtime-tile-window.mjs`, 크기별 전후 실측은
 `scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
 공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant tools, shared renderer, poses, audio, preview evidence, and entry timing; [opening-reference-study.md](opening-reference-study.md) holds source-qualified research.
+
+## Monster authoring dogfood (2026-10-03)
+
+- `terrainLandingRecovery.ts` recovers only a player footprint whose originally passable authored floor was made solid by `session.mapOverrides`. Completed `changeTile` events call it once after all commands; save restoration calls it after session reconciliation. Vehicles, explicit through routes, intentional authored wall starts, and still-passable enclosed rooms are preserved. Candidate floors are local (radius 8), respect active blocking events and footprint passage, and need an exit. Device flags and changed tiles are never undone. No safe candidate means no relocation. Correct device authoring still keeps the operator outside its changed cells; the campaign pivot is now (8,17).
+- `showBattleAdmissionError` marks only `BATTLE_MONSTER_PARTY_EMPTY` overlays as recoverable. Restoring a real party refresh clears that marked error; unrelated errors persist. Applying a new loaded session clears the prior session's transient overlay. Event, wild, field-spawn, and scheduled battles share this presentation.
+- Scene simulation intentionally does not use terrain recovery. It must expose an unsafe authored operator position; shipping recovery and corrected authoring are separate safeguards.

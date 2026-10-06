@@ -1,0 +1,29 @@
+{
+  "stats": {
+    "ms": 27247,
+    "turns": 4,
+    "toolCalls": 6,
+    "toolErrors": 0,
+    "usage": {
+      "input": 35502,
+      "output": 346,
+      "cacheRead": 8576,
+      "cacheWrite": 0,
+      "totalTokens": 44424,
+      "calls": 4
+    }
+  },
+  "gameSystemProduction": {
+    "issues": [],
+    "playbackVerified": false
+  },
+  "changedKeys": [
+    "maps.mx_map_home",
+    "meta"
+  ],
+  "mapsPreserved": false,
+  "databasePreserved": true,
+  "sessionPreserved": true,
+  "canonicalSaved": false,
+  "playbackVerified": false
+}

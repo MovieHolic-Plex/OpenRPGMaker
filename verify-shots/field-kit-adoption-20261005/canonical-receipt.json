@@ -1,0 +1,39 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+  "host": "http://mdc-server:9888",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "bridgeProject": "",
+  "url": "http://mdc-server:9888/",
+  "revision": 35,
+  "sha256": "85fb2d5b0bde403c319e13d972e6268dc11e8786e3026decf90a0c89fc34b418",
+  "reloadedThroughFreshConnection": true,
+  "mediaByteReloads": [
+    {
+      "id": "mx_field_flurrykit_approved_v1",
+      "sha256": "0efd623e3a7fb91ae592f478d8fe3169c0a1d1cc468e69cf449d89520df59ae7"
+    },
+    {
+      "id": "composed_music_fieldkit_town_v1",
+      "sha256": "8fba6d8a1a76781deccbd9478dd95adfa685e7c77c366a3be5c8c611c9301ab4"
+    },
+    {
+      "id": "composed_music_fieldkit_route_v1",
+      "sha256": "18aaa90d7ecd401123231ccb1006fa85c839be50e891cfdeff14765a107f10f2"
+    },
+    {
+      "id": "mx_fieldkit_cursor_v1",
+      "sha256": "39808338835d4764f7e929af22bcd7c3ce4a11128567843d667cef836e02171b"
+    },
+    {
+      "id": "mx_fieldkit_confirm_v1",
+      "sha256": "4470352c209db6248d27d6e8f7d85ce55dbc812c2e6c7747386f8d60960a5826"
+    },
+    {
+      "id": "mx_fieldkit_cancel_v1",
+      "sha256": "62e120d6b87d582cd40ca9168cb3bd3270b045bf75a910b2ba8ff2dc0bcfb9c4"
+    }
+  ],
+  "maps": 72,
+  "preparedDocumentMatches": true
+}

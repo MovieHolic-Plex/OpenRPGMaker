@@ -1,0 +1,758 @@
+{
+  "scope": "Read-only prepared/candidate-decoded.json; whole closed patrol position combinations; sequential seven recommendations in analysis memory only; canonical/artifact unchanged; no puzzle/slide/ledge progression simulation",
+  "rows": [
+    {
+      "map": "mx_map_home",
+      "event": "mx_map_home_guide",
+      "from": {
+        "x": 11,
+        "y": 10
+      },
+      "recommended": {
+        "x": 11,
+        "y": 6,
+        "distance": 4,
+        "preferred": false
+      },
+      "alternatives": [
+        {
+          "x": 10,
+          "y": 7,
+          "distance": 4,
+          "preferred": false
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "distance": 4,
+          "preferred": false
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "distance": 4,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 27,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_lab",
+      "event": "mx_map_lab_rival",
+      "from": {
+        "x": 10,
+        "y": 6
+      },
+      "recommended": {
+        "x": 12,
+        "y": 5,
+        "distance": 3,
+        "preferred": true
+      },
+      "alternatives": [
+        {
+          "x": 8,
+          "y": 5,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "distance": 4,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 1,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_museum",
+      "event": "mx_map_museum_curator",
+      "from": {
+        "x": 6,
+        "y": 5
+      },
+      "recommended": {
+        "x": 6,
+        "y": 4,
+        "distance": 1,
+        "preferred": true
+      },
+      "alternatives": [
+        {
+          "x": 5,
+          "y": 5,
+          "distance": 1,
+          "preferred": false
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "distance": 1,
+          "preferred": false
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "distance": 2,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 1,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_river",
+      "event": "mx_map_river_trainer_1",
+      "from": {
+        "x": 10,
+        "y": 14
+      },
+      "recommended": {
+        "x": 8,
+        "y": 13,
+        "distance": 3,
+        "preferred": false
+      },
+      "alternatives": [
+        {
+          "x": 7,
+          "y": 14,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 8,
+          "y": 15,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "distance": 4,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 1,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_river",
+      "event": "mx_map_river_trainer_2",
+      "from": {
+        "x": 17,
+        "y": 22
+      },
+      "recommended": {
+        "x": 17,
+        "y": 19,
+        "distance": 3,
+        "preferred": false
+      },
+      "alternatives": [
+        {
+          "x": 16,
+          "y": 20,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 18,
+          "y": 20,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 15,
+          "y": 21,
+          "distance": 3,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 1,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_meadow",
+      "event": "mx_map_meadow_trainer_2",
+      "from": {
+        "x": 17,
+        "y": 22
+      },
+      "recommended": {
+        "x": 17,
+        "y": 19,
+        "distance": 3,
+        "preferred": false
+      },
+      "alternatives": [
+        {
+          "x": 16,
+          "y": 20,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 18,
+          "y": 20,
+          "distance": 3,
+          "preferred": false
+        },
+        {
+          "x": 15,
+          "y": 21,
+          "distance": 3,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 1,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    },
+    {
+      "map": "mx_map_prism",
+      "event": "mx_map_prism_sign_mx_map_cave",
+      "from": {
+        "x": 26,
+        "y": 10
+      },
+      "recommended": {
+        "x": 26,
+        "y": 9,
+        "distance": 1,
+        "preferred": false
+      },
+      "alternatives": [
+        {
+          "x": 25,
+          "y": 10,
+          "distance": 1,
+          "preferred": false
+        },
+        {
+          "x": 27,
+          "y": 10,
+          "distance": 1,
+          "preferred": false
+        },
+        {
+          "x": 26,
+          "y": 11,
+          "distance": 1,
+          "preferred": false
+        }
+      ],
+      "validation": {
+        "patrolPositionCombinations": 27,
+        "patrolRouteDistanceGreaterThan2": true,
+        "allNestedTransferSourceAndTargetDistanceGreaterThan2": true,
+        "preservesOtherFloorFromEachEntry": true,
+        "adjacentActionAccessFromEachEntry": true
+      }
+    }
+  ],
+  "prior13ConflictReview": [
+    {
+      "map": "mx_map_prism",
+      "event": "mx_map_prism_sign_mx_map_cave",
+      "from": {
+        "x": 26,
+        "y": 10
+      },
+      "isolatedFloor": 1,
+      "recommended": {
+        "x": 26,
+        "y": 9,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 25,
+          "y": 10,
+          "distance": 1
+        },
+        {
+          "x": 27,
+          "y": 10,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_summit",
+      "event": "mx_map_summit_sign_mx_map_league_0",
+      "from": {
+        "x": 26,
+        "y": 10
+      },
+      "isolatedFloor": 1,
+      "recommended": {
+        "x": 26,
+        "y": 9,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 25,
+          "y": 10,
+          "distance": 1
+        },
+        {
+          "x": 27,
+          "y": 10,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_lab",
+      "event": "mx_map_lab_rival",
+      "from": {
+        "x": 10,
+        "y": 6
+      },
+      "isolatedFloor": 10,
+      "recommended": {
+        "x": 8,
+        "y": 5,
+        "distance": 3
+      },
+      "alternatives": [
+        {
+          "x": 12,
+          "y": 5,
+          "distance": 3
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "distance": 3
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_museum",
+      "event": "mx_map_museum_curator",
+      "from": {
+        "x": 6,
+        "y": 5
+      },
+      "isolatedFloor": 26,
+      "recommended": {
+        "x": 6,
+        "y": 4,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 5,
+          "y": 5,
+          "distance": 1
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_meadow",
+      "event": "mx_map_meadow_trainer_2",
+      "from": {
+        "x": 17,
+        "y": 22
+      },
+      "isolatedFloor": 3,
+      "recommended": {
+        "x": 17,
+        "y": 21,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 16,
+          "y": 22,
+          "distance": 1
+        },
+        {
+          "x": 17,
+          "y": 23,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 17,
+          "y": 22
+        },
+        {
+          "x": 17,
+          "y": 22
+        }
+      ]
+    },
+    {
+      "map": "mx_map_river",
+      "event": "mx_map_river_trainer_1",
+      "from": {
+        "x": 10,
+        "y": 14
+      },
+      "isolatedFloor": 2,
+      "recommended": {
+        "x": 10,
+        "y": 12,
+        "distance": 2
+      },
+      "alternatives": [
+        {
+          "x": 8,
+          "y": 14,
+          "distance": 2
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "distance": 3
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 10,
+          "y": 14
+        },
+        {
+          "x": 10,
+          "y": 14
+        }
+      ]
+    },
+    {
+      "map": "mx_map_river",
+      "event": "mx_map_river_trainer_2",
+      "from": {
+        "x": 17,
+        "y": 22
+      },
+      "isolatedFloor": 82,
+      "recommended": {
+        "x": 17,
+        "y": 21,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 16,
+          "y": 22,
+          "distance": 1
+        },
+        {
+          "x": 17,
+          "y": 20,
+          "distance": 2
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 17,
+          "y": 22
+        },
+        {
+          "x": 17,
+          "y": 22
+        }
+      ]
+    },
+    {
+      "map": "mx_map_mountain",
+      "event": "mx_map_mountain_sign_mx_map_prism",
+      "from": {
+        "x": 13,
+        "y": 2
+      },
+      "isolatedFloor": 6,
+      "recommended": {
+        "x": 13,
+        "y": 1,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 13,
+          "y": 0,
+          "distance": 2
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "distance": 2
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 12,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "map": "mx_map_mountain",
+      "event": "mx_map_mountain_trainer_2",
+      "from": {
+        "x": 17,
+        "y": 12
+      },
+      "isolatedFloor": 1,
+      "recommended": {
+        "x": 17,
+        "y": 11,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 16,
+          "y": 12,
+          "distance": 1
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 17,
+          "y": 12
+        },
+        {
+          "x": 17,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "map": "mx_map_ruins",
+      "event": "mx_map_ruins_trainer_0",
+      "from": {
+        "x": 3,
+        "y": 6
+      },
+      "isolatedFloor": 3,
+      "recommended": {
+        "x": 3,
+        "y": 7,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 1,
+          "y": 6,
+          "distance": 2
+        },
+        {
+          "x": 1,
+          "y": 9,
+          "distance": 5
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 3,
+          "y": 6
+        },
+        {
+          "x": 3,
+          "y": 6
+        }
+      ]
+    },
+    {
+      "map": "mx_map_garden",
+      "event": "mx_map_garden_researcher",
+      "from": {
+        "x": 4,
+        "y": 14
+      },
+      "isolatedFloor": 1,
+      "recommended": {
+        "x": 4,
+        "y": 13,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 3,
+          "y": 14,
+          "distance": 1
+        },
+        {
+          "x": 5,
+          "y": 14,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_beach",
+      "event": "mx_map_beach_researcher",
+      "from": {
+        "x": 16,
+        "y": 32
+      },
+      "isolatedFloor": 2,
+      "recommended": {
+        "x": 16,
+        "y": 31,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 17,
+          "y": 32,
+          "distance": 1
+        },
+        {
+          "x": 16,
+          "y": 33,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": []
+    },
+    {
+      "map": "mx_map_ship_cabin",
+      "event": "mx_map_ship_cabin_captain",
+      "from": {
+        "x": 4,
+        "y": 2
+      },
+      "isolatedFloor": 1,
+      "recommended": {
+        "x": 4,
+        "y": 1,
+        "distance": 1
+      },
+      "alternatives": [
+        {
+          "x": 3,
+          "y": 2,
+          "distance": 1
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "distance": 1
+        }
+      ],
+      "note": "No floor other than occupied tile lost from any authored transfer entry in static native collision.",
+      "patrolCellConflicts": [],
+      "doorLandingProtectedDistance2": [
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        }
+      ]
+    }
+  ]
+}

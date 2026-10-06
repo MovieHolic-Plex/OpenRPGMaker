@@ -1,0 +1,67 @@
+{
+  "method": "lossless-distinct-original-npc-adoption",
+  "source": {
+    "id": "wally",
+    "file": "wally.png",
+    "sha256": "13e4c15ed996858feea6ebff6d858c26fcb54415933a2f57ae6488c76612f111",
+    "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/wally.png",
+    "originalArtwork": "Nintendo / Game Freak / Creatures",
+    "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+  },
+  "sourceSha256": "13e4c15ed996858feea6ebff6d858c26fcb54415933a2f57ae6488c76612f111",
+  "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/wally.png",
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "independentlyAuthored": false,
+  "bodyBase": "wally",
+  "frameMapping": [
+    [
+      "up",
+      [
+        5,
+        1,
+        6
+      ],
+      false
+    ],
+    [
+      "right",
+      [
+        7,
+        2,
+        8
+      ],
+      true
+    ],
+    [
+      "down",
+      [
+        3,
+        0,
+        4
+      ],
+      false
+    ],
+    [
+      "left",
+      [
+        7,
+        2,
+        8
+      ],
+      false
+    ]
+  ],
+  "seed": {
+    "role": "rival",
+    "label": "라이벌",
+    "variant": "C · 소년",
+    "base": "wally",
+    "description": "작은 체형 · 내려오는 녹색 머리 · 흰 셔츠와 멜빵",
+    "identity": "소년 · 짧은 보폭 · 좁은 어깨",
+    "palette": {}
+  },
+  "generatorSha256": "60ddc3a7e0f07cefed039eaa91a4f073d2e97c12a2e0147aa4cdf170d09f74ca",
+  "resizingAuthoredPixels": false,
+  "colorEdits": false,
+  "scope": "Walking only; original-game art adoption. Context is a scale mockup, not runtime play."
+}

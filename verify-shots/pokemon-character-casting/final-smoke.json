@@ -1,0 +1,42 @@
+{
+  "pass": true,
+  "restartedRegisteredCli": true,
+  "roleFiltering": true,
+  "emptyFilterClearsSelectedDetails": true,
+  "originalReferenceGif": true,
+  "frameStepping": true,
+  "mobileWidth": {
+    "width": 320,
+    "viewport": 320
+  },
+  "decisions": [
+    {
+      "id": "rival-ea48107670366e56",
+      "state": "pending"
+    },
+    {
+      "id": "rival-d4f3c1dcef0ed1a6",
+      "state": "pending"
+    },
+    {
+      "id": "explorer-c2f5ac22c6f79926",
+      "state": "pending"
+    },
+    {
+      "id": "explorer-22a5eec116ca7e35",
+      "state": "pending"
+    },
+    {
+      "id": "ranger-c7f32825dbb060cb",
+      "state": "pending"
+    },
+    {
+      "id": "ranger-31326a64626a3a88",
+      "state": "pending"
+    }
+  ],
+  "productionVotesWrittenByQA": 0,
+  "gameProjectSha256": "129d33c9038429b4551aa7fefa8fc591a389be0e8efd7731126c4b3505b5ded2",
+  "gameUnchangedFromPrevious": true,
+  "errors": []
+}

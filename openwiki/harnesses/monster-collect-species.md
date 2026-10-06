@@ -1,5 +1,25 @@
 # 몬스터 수집 종 스프라이트 하네스 (`monster-collect-species`)
 
+동일 생성 시트의 걷기 프레임을 추출할 때는 `pixelize(source, maxColors, { block: n })`의 검토된
+정수 블록(2~40)을 고정할 수 있다. 자동 탐색이 프레임마다 7~15로 달라져 같은 캐릭터의
+크기를 바꾸는 오류를 피한다. 기본 자동 탐색과 사람의 후보 선택 계약은 그대로다.
+
+배경 마스크는 마젠타뿐 아니라 alpha<128도 배경으로 처리한다. 생성 PNG의 투명 영역에
+남아 있던 RGB·희미한 광륜을 도트 잉크로 바꾸면 배경 덩어리와 잘못된 몸집이 생긴다.
+모서리 표본의 과반이 alpha<128이면 alpha·마젠타 마스크가 배경의 근거이며, 모서리 RGB
+중앙값의 연결 영역을 추측해 지우지 않는다. 투명 픽셀의 숨은 RGB가 흰색·검정·갈색 등
+몸체나 윤곽과 비슷하면 그 RGB flood가 실제 불투명 전경까지 지울 수 있기 때문이다.
+과반 투명 모서리가 없는 입력에서는 기존 모서리 색 flood를 유지한다(불투명 단색·흰색
+배경 및 내부에 투명 구멍 한 개만 있는 RGBA 입력).
+마젠타 정리와 alpha128 문턱은 그대로다.
+
+`import --block N`은 검토한 2~40 정수 격자를 정적 그림과 `--action` 줄 모두에 전달한다.
+범위 밖·소수·NaN·누락값은 후보 폴더를 만들기 전에 거부한다. `run.json`의 `fixedBlock`은
+명시된 값이고 각 `candidates[].block`은 실제 사용된 값이다. 플래그가 없으면 `fixedBlock`
+필드는 생기지 않으며 기존 자동 탐색을 쓴다. 일반 front/back/action 생성 호출은 그대로다.
+고정 격자는 크기 오탐지를 막는 별도 제어이며, 배경 마스크 수정만으로 후보 품질이나
+앞뒤 몸집 일치를 보장하지 않는다. 후보 선택은 계속 사람이 한다.
+
 몬스터 수집(포켓몬류) 장르 **전용**. 도감 시드의 종마다 상대 앞모습·내 몬스터 뒷모습 전투 스프라이트와
 대기·공격·피격 애니메이션 스트립을 만든다.
 JRPG 일반 적 그림은 여기서 만들지 않는다(`src/editor/aiDatabaseGeneration.ts` 의 자료집 그림 생성 경로).
@@ -18,6 +38,7 @@ npm run harness -- monster-collect-species action --species sparkit --side front
 npm run harness -- monster-collect-species pick --species sparkit --side front --action attack --run <run> --candidate 1
 npm run harness -- monster-collect-species build                        # 동작 스트립 + anim.json
 npm run harness -- monster-collect-species preview                      # 대기·동작 재생 HTML
+npm run harness -- monster-collect-species import --species sparkit --side front --raw <PNG> --block 8 # 검토한 격자 고정
 ```
 
 - 후보 비교 시트는 `qa-runs/harnesses/monster-collect-species/<종>/<front|back>/<run>/sheet.html`. **고르는 건 사람이다.**
@@ -25,6 +46,19 @@ npm run harness -- monster-collect-species preview                      # 대기
 - 새 종은 `harness-data/monster-collect-species/seed.json` 에 먼저 적는다. 진화형은 `evolvesFrom` 을 적으면 앞 단계 앞모습을 참고로 그린다(앞 단계를 먼저 골라야 한다).
 - **시험 실행은 모래상자에서**: `MONSTER_HARNESS_SANDBOX=<폴더>` 를 주면 시드(`<폴더>/data/seed.json`)·기록·격자·번들·산출물이 전부 그 폴더 아래로 간다. 커밋된 `seed.json`·`ledger.json`·번들을 건드리지 않는다. 에이전트가 시험 삼아 고르는 건 여기서만 한다.
 - 이미지 서버: god-tibo-imagen `POST /v1/generate/json`, 주소 `OPRN_HARNESS_IMAGE_URL`(기본 `http://mdc-server:8091`). 502 `MISSING_IMAGE_GENERATION_OUTPUT` 이 흔해 한 번 재시도한다.
+
+### Alpha/고정 격자 집중 확인 (2026-10-04)
+
+Vitest·전체 게이트 없이 실행하는 fixture:
+`node_modules/.bin/vite-node --script src/harnesses/monster-collect-species/node/verifyAlphaGrid.ts -- <개인 출력 폴더> [실제 PNG] [옛 grid.ts]`.
+alpha0 RGB흰색과 이어진 불투명 흰색 보존, 숨은 RGB 불변성, alpha127/128 문턱,
+불투명 단색·마젠타·흰색 배경 및 내부 alpha0 구멍의 정리, import2/8/40·잘못된 값 거부·provenance·기본 자동
+import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 하며, 생성·pick·build·
+정본 쓰기는 없다. 선택 사항인 옛 TS baseline은 Node24의 타입 제거로 읽는다.
+실제 PNG 비교는 원본과, alpha<128 RGB만 흰색으로 바꾼 변형(보이는 전경은 동일),
+그 배경만 불투명 마젠타로 바꾼 변형의 수정 후 결과가 같음을 확인한다. 옛 처리기의
+실제 원본 손실 수와 흰색 RGB 변형 손실 수는 별도로 기록하며, 실제 손실을 가정하지 않는다.
+흰색 연결 fixture의 회귀 근거와 실제 원본 측정은 서로 구분한다.
 
 ## 파일
 

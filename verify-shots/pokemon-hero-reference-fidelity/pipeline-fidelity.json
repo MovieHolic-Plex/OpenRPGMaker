@@ -1,0 +1,578 @@
+{
+  "pass": true,
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "revision": 34,
+  "canonicalSha256": "a8c2b6b63aca60c3d4135c732a8a4af61bfdc880c6648c0c93e1c345519602d0",
+  "assetSha256": "2cc5a2321a4215388c95c7887db6bef0f7253fe7cfc1ef6d6817e87c72dc7224",
+  "canonicalFreshConnectionReload": true,
+  "sourceSha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+  "stages": [
+    {
+      "stage": "prepared cast bound to fresh canonical media reload",
+      "assetSha256": "2cc5a2321a4215388c95c7887db6bef0f7253fe7cfc1ef6d6817e87c72dc7224",
+      "canonicalCastPixelsExact": true,
+      "canonicalBytesExact": true,
+      "minimumExactRatio": 1.0,
+      "poses": [
+        {
+          "direction": "up",
+          "phase": "stepA",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "idle",
+          "foregroundUnion": 216,
+          "exactForegroundPixels": 216,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "stepB",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "idle",
+          "foregroundUnion": 214,
+          "exactForegroundPixels": 214,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepB",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "stage": "shared cast",
+      "assetSha256": "ea8bb33750e3bcb9147724e30d58868a6f983b46ca19978aa0ed60933f3cc8b7",
+      "canonicalCastPixelsExact": true,
+      "canonicalBytesExact": false,
+      "minimumExactRatio": 1.0,
+      "poses": [
+        {
+          "direction": "up",
+          "phase": "stepA",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "idle",
+          "foregroundUnion": 216,
+          "exactForegroundPixels": 216,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "stepB",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "idle",
+          "foregroundUnion": 214,
+          "exactForegroundPixels": 214,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepB",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "stage": "shipping export",
+      "assetSha256": "2cc5a2321a4215388c95c7887db6bef0f7253fe7cfc1ef6d6817e87c72dc7224",
+      "canonicalCastPixelsExact": true,
+      "canonicalBytesExact": true,
+      "minimumExactRatio": 1.0,
+      "poses": [
+        {
+          "direction": "up",
+          "phase": "stepA",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "idle",
+          "foregroundUnion": 216,
+          "exactForegroundPixels": 216,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "stepB",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "idle",
+          "foregroundUnion": 214,
+          "exactForegroundPixels": 214,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepB",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "stage": "actual compiled player twelve texture-frame samples",
+      "minimumExactRatio": 1.0,
+      "poses": [
+        {
+          "direction": "up",
+          "phase": "stepA",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "idle",
+          "foregroundUnion": 216,
+          "exactForegroundPixels": 216,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "up",
+          "phase": "stepB",
+          "foregroundUnion": 195,
+          "exactForegroundPixels": 195,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "right",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "idle",
+          "foregroundUnion": 214,
+          "exactForegroundPixels": 214,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "down",
+          "phase": "stepB",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepA",
+          "foregroundUnion": 198,
+          "exactForegroundPixels": 198,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "idle",
+          "foregroundUnion": 189,
+          "exactForegroundPixels": 189,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        },
+        {
+          "direction": "left",
+          "phase": "stepB",
+          "foregroundUnion": 197,
+          "exactForegroundPixels": 197,
+          "mismatchedForegroundPixels": 0,
+          "exactRatio": 1.0,
+          "silhouetteIoU": 1.0,
+          "pass": true
+        }
+      ],
+      "samples": [
+        {
+          "file": "walking-up-phase-0.png",
+          "sha256": "77d1ccfd0eecaf4ea6298730f4c61863a7692a6e2a0f0160e43ba69b69802bc4"
+        },
+        {
+          "file": "walking-up-phase-1.png",
+          "sha256": "2138339d42e3c1ceb861e0b74da78679e2d7c333613c410f613ed671bf25b99e"
+        },
+        {
+          "file": "walking-up-phase-2.png",
+          "sha256": "7362e7ce632c5973875efe2334e7529ede772e9fc14259429b5146bfd4d1835a"
+        },
+        {
+          "file": "walking-right-phase-0.png",
+          "sha256": "86375ee1332a3abb83bf69eef3e9eaea8b8ebb1cf562569a4f6d40793dd19b70"
+        },
+        {
+          "file": "walking-right-phase-1.png",
+          "sha256": "c60327f811c1f003aad7026dbc482049616759d83945267c97d84feaabba9ce5"
+        },
+        {
+          "file": "walking-right-phase-2.png",
+          "sha256": "f8c4517c5da583ab41aea582d524cb465406aea31142a691d76a2acd01078cf8"
+        },
+        {
+          "file": "walking-down-phase-0.png",
+          "sha256": "e373ed4986649aaa8deccea7e76a8b70e640320fd45794655e07e5e6b02fbbbb"
+        },
+        {
+          "file": "walking-down-phase-1.png",
+          "sha256": "c3ebf75427cf30ffd5e5110cf48ad7acaa7c4027712bfb054dc17afb9b942001"
+        },
+        {
+          "file": "walking-down-phase-2.png",
+          "sha256": "22fc53b7c663de2583bd2006e18a2d6d404f1a87c3c34eed28bc39ce041c7f24"
+        },
+        {
+          "file": "walking-left-phase-0.png",
+          "sha256": "f6b7009e1beb6694cfcb98a261ccc5042185cf53a189f2cab6da53294a8f0791"
+        },
+        {
+          "file": "walking-left-phase-1.png",
+          "sha256": "82e2960529fb7ab6e1eb9ca06c8e591ab142065a1f0781d61e88bef43fd95425"
+        },
+        {
+          "file": "walking-left-phase-2.png",
+          "sha256": "e404dfb791037c30ea23eff20c29e7a0d2b5a36cb63045d2191db851d144cab4"
+        }
+      ],
+      "scope": "Actual selected runtime texture pixels plus separately measured gait/scale/camera checks; background and screenshot enlargement excluded."
+    }
+  ],
+  "standaloneChecks": 39,
+  "scope": "Walking sprite identity at native pixels. GIF preview130ms; runtime uses its existing movement clock. Not whole-game or battle-portrait identity."
+}

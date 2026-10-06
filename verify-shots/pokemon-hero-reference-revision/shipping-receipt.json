@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "public": "/home/main/claude-viz/monster-expedition",
+  "backup": "/home/main/claude-viz/monster-expedition-before-hero-reference-v12",
+  "exactCopiedFiles": 3292,
+  "projectSha256": "1a3641104074b7cd5f595944974c900fb5725b5e71ca77c4eb9c51a2bbfe9ac5",
+  "playerSha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+  "allFileFingerprintSha256": "27e32b23d28a1263b5218b03093657ce2ea72255338d6941d313af37c6b77958",
+  "scope": "Exact verified export, no engine source changes; previously compiled player reused."
+}

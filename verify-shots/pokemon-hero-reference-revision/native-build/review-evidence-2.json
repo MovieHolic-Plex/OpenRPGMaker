@@ -1,0 +1,78 @@
+{
+  "sheetSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+  "gifSha256": "b88f1ce94a24e1e3fff18e3865746294796c6a62c5d324a23b2eec2004009caa",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "reviewer": "root",
+  "author": "root",
+  "observationPackageSha256": "c802b69b5d1a0f5a2c72c658c096da20d5e963ad29045dd212fbe1750faac798",
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "criticalFailures": [],
+  "verdict": "pass",
+  "scores": {
+    "silhouette": {
+      "score": 17,
+      "reason": "All12 native poses now read as a compact capped child: hat and cheek width anchor a short connected torso and dressed hips; the long adult calf columns of v4 are gone. Rear hair contour still has a straight segment."
+    },
+    "anatomy": {
+      "score": 17,
+      "reason": "Face now occupies18..22 with temple/ear/cheek shadow and short connected chin/collar; shoulder24 and hips27 preserve dense reference-scale anatomy. Profile eye and cheek are separated from cap and hair, without the former hooked mouth bar. The far cheek remains economical."
+    },
+    "walking": {
+      "score": 17,
+      "reason": "All four decoded phases alternate a planted lower sole with the raised opposite shoe; hands swing opposite supporting legs. Profile gray cuff stays on the arm joint and forward hand slopes down. Near/far idle shoe overlap remains stiff but has distinct toe and heel boundaries."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Native15-color clusters have a darker navy contour, warmer cheek shading, continuous tapered hair highlight and compact red-toe/dark-sole overlap. Cream collar/undershirt and blue vest form connected planes; the rear pack and cap highlights remain simple flat planes compared with references."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Red cap with cream brim, navy hair, cream shirt under blue vest and gold-brown/red-pocket backpack remain consistent across all12 poses. Profile backpack attaches behind the shoulder and rear view; pocket depth could use stronger asymmetry."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Front/back/profile preserve cap height, compact hip/sole baseline and wardrobe identity. Mirrored profiles keep the same pack and hand layering. Nape silhouette translates coherently though rear hair is still a broad plane."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "Exact native GIF uses stepA-idle-stepB-idle, four140ms frames, repeating idle and intentional1px bob. Actual browser samples observe all3 distinct source poses at1x and4x without pixel changes or playback errors."
+    }
+  },
+  "total": 85,
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/quality/native-contact.png",
+      "sha256": "f27eebe773a45628ab6c4114c9563b64360f34af057f109ffdbc2cb7c7ad1963"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/quality/decoded-gif-contact.png",
+      "sha256": "8a18a8ce985b203d53a5b818419c9be4bc7b6dd7ed17cd0a16d1d1cc3b3fc3a2"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/record.json",
+      "sha256": "60f7685f44ab7b422e60fa328d19a4c04a622dcb82a99fcf13fad47a6e86531f"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/browser-playback.png",
+      "sha256": "6ebfb7b4baf93050b1e90ac0f3e79952f908d2d4c347c77e8c58f3a9b9af2cd7"
+    }
+  ],
+  "browserProof": {
+    "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/record.json",
+    "sha256": "60f7685f44ab7b422e60fa328d19a4c04a622dcb82a99fcf13fad47a6e86531f"
+  },
+  "limitations": [
+    "Manual aesthetic judgment, not proof of original-game quality or user acceptance.",
+    "Simple cap highlight/rearpack planes and stiff idle profile shoes remain.",
+    "Root inspected all decoded frames and real browser captures; browser execution establishes playback, not a claim of watching video with a media tool."
+  ]
+}

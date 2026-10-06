@@ -1,0 +1,95 @@
+@layer runtime {
+/* Primary geometry: pret/pokeemerald src/shop.c sShopBuyMenuWindowTemplates.
+   240×160 GBA coordinates are doubled; this surface fits the visible game bounds. */
+.player-layout .play-viewport > .runtime-shop-overlay.emerald-shop-overlay,
+.runtime-shop-overlay.emerald-shop-overlay {
+  position:absolute; inset:auto; left:50%; top:50%; transform:translate(-50%,-50%);
+  padding:0; margin:0; min-width:0; min-height:0; border:0; border-radius:0;
+  display:block; background:none; box-shadow:none; backdrop-filter:none;
+  overflow:hidden; animation:none; color:#384840; z-index:75;
+  --emerald-shop-scale:1;
+}
+.emerald-shop-overlay .emerald-shop-shell {
+  position:absolute; left:0; top:0; width:480px; height:320px; margin:0;
+  transform:scale(var(--emerald-shop-scale)); transform-origin:top left;
+  font:400 16px/1.4 var(--runtime-pixel-font,"Galmuri9",sans-serif);
+  color:#384840; text-shadow:none;
+}
+/* Once the real field crop is available it is the only displayed map image.
+   Opaque unused space prevents the original centered canvas appearing a second time.
+   If capture is unavailable, the transparent buy shell retains the single live field. */
+.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="buy"]:has(.emerald-shop-map-view[data-map-source="game-canvas-snapshot"]),
+.emerald-shop-overlay .emerald-shop-shell[data-shop-mode="sell"]:not([data-shop-phase="menu"]) { background:#83bba3; }
+.emerald-shop-overlay .emerald-shop-window {
+  position:absolute; box-sizing:border-box; background:#f8f8e8;
+  border:4px solid #487068; border-radius:0;
+  box-shadow:inset 0 0 0 2px #a8c0a0,inset 0 0 0 4px #ffffff;
+  padding:8px 12px; overflow:hidden;
+}
+.emerald-shop-overlay .emerald-shop-action {
+  position:relative; display:flex; align-items:center; justify-content:space-between;
+  min-width:0; width:100%; height:32px; padding:2px 4px 2px 20px;
+  margin:0; border:0; border-radius:0; background:transparent;
+  box-shadow:none; font:inherit; line-height:1.2; color:inherit; text-shadow:inherit;
+  text-align:left; white-space:nowrap;
+}
+.emerald-shop-overlay .emerald-shop-action.selected::before {
+  content:"▶"; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  font-size:12px; color:#384840; text-shadow:none;
+}
+.emerald-shop-overlay .emerald-shop-action:focus { outline:none; }
+.emerald-shop-overlay .emerald-shop-action:focus-visible { outline:none; }
+.emerald-shop-overlay .emerald-shop-entry { left:24px; top:12px; width:160px; height:auto; padding:8px 12px; }
+.emerald-shop-overlay .emerald-shop-money {
+  left:12px; top:12px; width:196px; height:48px; padding:6px 10px;
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.emerald-shop-overlay .emerald-shop-money strong { font:inherit; font-variant-numeric:tabular-nums; }
+.emerald-shop-overlay .emerald-shop-map-view { position:absolute; left:0; top:64px; width:224px; height:144px; overflow:hidden; }
+.emerald-shop-overlay .emerald-shop-map-view canvas { display:block; width:224px; height:144px; image-rendering:pixelated; }
+.emerald-shop-overlay .emerald-shop-goods {
+  left:224px; top:24px; width:248px; height:288px; padding:12px 10px;
+  background:#f8f8e8; overflow-y:auto; scrollbar-width:none;
+}
+.emerald-shop-overlay .emerald-shop-goods::-webkit-scrollbar { display:none; }
+.emerald-shop-overlay .emerald-shop-goods .emerald-shop-action { height:32px; flex-shrink:0; gap:6px; font-size:15px; }
+.emerald-shop-overlay .emerald-shop-item-name { overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.emerald-shop-overlay .emerald-shop-item-price { flex-shrink:0; font-variant-numeric:tabular-nums; }
+.emerald-shop-overlay .emerald-shop-description {
+  left:4px; top:208px; width:220px; height:108px; padding:10px 12px;
+  display:flex; flex-direction:column; overflow:hidden; font-size:15px; line-height:1.35;
+  white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere;
+}
+.emerald-shop-overlay .emerald-shop-description-copy { min-height:0; flex:1; overflow-y:auto; scrollbar-width:none; padding-right:8px; }
+.emerald-shop-overlay .emerald-shop-owned { flex:none; margin-top:6px; color:#586068; font-size:14px; }
+.emerald-shop-overlay .emerald-shop-description-more { display:none; position:absolute; right:10px; bottom:28px; font-size:11px; color:#d84038; }
+.emerald-shop-overlay .emerald-shop-description[data-overflow="true"] .emerald-shop-description-more { display:block; }
+.emerald-shop-overlay .emerald-shop-message {
+  left:16px; bottom:8px; width:448px; min-height:76px; max-height:92px; padding:12px 20px;
+  white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere; line-height:1.45;
+  z-index:3;
+}
+.emerald-shop-overlay .emerald-shop-shell[data-shop-phase="menu"] .emerald-shop-message { min-height:76px; }
+.emerald-shop-overlay .emerald-shop-count-owned { left:12px; top:174px; width:196px; height:44px; }
+.emerald-shop-overlay .emerald-shop-quantity {
+  left:282px; top:174px; width:174px; height:44px; padding:6px 10px;
+  display:flex; align-items:center; justify-content:space-between; gap:8px; z-index:4;
+}
+.emerald-shop-overlay .emerald-shop-quantity:focus { outline:none; }
+.emerald-shop-overlay .emerald-shop-quantity-count::before { content:"↕ "; color:#d84038; }
+.emerald-shop-overlay .emerald-shop-confirmation { left:332px; top:138px; width:120px; height:80px; padding:6px 12px; z-index:4; }
+.emerald-shop-overlay .emerald-shop-confirmation .emerald-shop-action { height:30px; }
+/* Pending trade shows one complete inactive selected row, rather than clipping
+   a stock list under the quantity/confirmation windows. The full list returns on cancel. */
+.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods { height:64px; overflow:hidden; }
+.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods .emerald-shop-action:not(.selected) { display:none; }
+.emerald-shop-overlay .emerald-shop-shell:not([data-shop-phase="items"]) .emerald-shop-goods .selected::before { color:#909098; }
+.emerald-shop-overlay .emerald-shop-advance { position:absolute; right:34px; bottom:18px; color:#d84038; z-index:5; font-size:12px; }
+.emerald-shop-overlay .emerald-shop-bag {
+  left:4px; top:64px; width:220px; height:144px; background:#e0e8d8;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+}
+.emerald-shop-overlay .emerald-shop-bag strong { font:inherit; }
+.emerald-shop-overlay .emerald-shop-bag .emerald-shop-bag-icon { width:40px; height:40px; background-size:contain; image-rendering:pixelated; flex:none; }
+.emerald-shop-overlay .emerald-shop-bag .runtime-shop-item-icon-fallback { display:none; }
+}

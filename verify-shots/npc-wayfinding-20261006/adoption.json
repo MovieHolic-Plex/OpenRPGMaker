@@ -1,0 +1,1724 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "sourceSha256": "85fb2d5b0bde403c319e13d972e6268dc11e8786e3026decf90a0c89fc34b418",
+  "authorization": {
+    "source": "explicit-user-message",
+    "request": "안에있는 NPC 들을 모두 저런 디자인으로 바꾸고 ... 화살표 ... 없어도 자연스럽게 길인지 ...",
+    "date": "2026-10-06",
+    "harnessBrowserDecisionsUnchanged": true,
+    "candidates": [
+      {
+        "id": "hero-3b3a28634d028191",
+        "role": "hero",
+        "variant": "해솔 · 판형 수정",
+        "packageSha256": "f8fa5416e3c588725c65f6c2389c2d731926e1491c2375c55d802bf4a6e7742f",
+        "sourceSha256": "9e6506b0829d301e165b81a8ba06fd481bcc6a46edb99dd2f17b2da1aba65856",
+        "files": {
+          "charset.png": "9e6506b0829d301e165b81a8ba06fd481bcc6a46edb99dd2f17b2da1aba65856",
+          "walk.gif": "056dc0f733867217d20385285a63121f08edbdc94333ce694d7cd69bcdeed71d",
+          "context.png": "9d0301bff1b49d30f4c327a45cf35d1a1534300b2f091003f0c53e2269bdb115",
+          "origin.txt": "b5e5c021204e76c55e92a1a1d0a2d65549770181a82020ad10f892f5f17163cd",
+          "recipe.json": "0c0362d8c51c66343ace47bd5b25c6784c58287f0bbc94f413ae93f3aefe81d6",
+          "template.png": "89993af51d8383af32857f20aa60d8e36f832ce92d7a1a8a8afc5286873fbfab",
+          "changes.png": "e92b7d2b08d22efd2da5c9ba966cc7512d58a06817e480521be7a2857e6c8aac"
+        },
+        "nativeFiles": {
+          "source.png": "9e6506b0829d301e165b81a8ba06fd481bcc6a46edb99dd2f17b2da1aba65856",
+          "prompt.txt": "b5e5c021204e76c55e92a1a1d0a2d65549770181a82020ad10f892f5f17163cd",
+          "charset.png": "b6888c7f256d1a21631ba6de10fb81a26f4088888863f411767e9d62df56e096",
+          "provenance.json": "626c5e88910a4f9607f2c47d10a99e3bdedff34a3f36f9a93a1992587b034199",
+          "preview.html": "80891078fbaeddd21d2639cdceff337d85ef13542b0a772b1fa726b61864df3a",
+          "preview-receipt.json": "ea1bbfdd98d452a5f41a465b144a5d823b10012c1a802edf18625caac2a70bef"
+        }
+      },
+      {
+        "id": "rival-2a9feb123a90ecdf",
+        "role": "rival",
+        "variant": "시온 · 판형 수정",
+        "packageSha256": "2d542fb9f523f5e2b2930031fc1aabb3cdaf5b36bb03fb7ab9e1904176903585",
+        "sourceSha256": "2ce79d02ad6d1b885f7b4b4f2a599397e30982b17a45cc4c3c5c8b5b7a75249d",
+        "files": {
+          "charset.png": "2ce79d02ad6d1b885f7b4b4f2a599397e30982b17a45cc4c3c5c8b5b7a75249d",
+          "walk.gif": "40fbfcea2a68cbfdbbd12e816a6ba2306de92c0bcc502b8860c7e49d36766e4c",
+          "context.png": "d0783d9e6f5111f827fe9479adeede6575769c686cb60106791d2f7aedb88c2f",
+          "origin.txt": "f8b39c31546104191ac3ba4de4b45063ea00320d3816d485cfb05049cbebaef4",
+          "recipe.json": "70f451e7c1b115bb74bb92c2518fd4b25ac9b0f10dbe151eb0086610e333107e",
+          "template.png": "f8a324ce86c99fe635608d00035e87e2cc37773b08db5118066649e521286308",
+          "changes.png": "a1d22e906106f6a1f9fe59e40ea130d1709e03b172e031d42d4995d4f38ffbd5"
+        },
+        "nativeFiles": {
+          "source.png": "2ce79d02ad6d1b885f7b4b4f2a599397e30982b17a45cc4c3c5c8b5b7a75249d",
+          "prompt.txt": "f8b39c31546104191ac3ba4de4b45063ea00320d3816d485cfb05049cbebaef4",
+          "charset.png": "fee0db89a400f52b1d3a1551f79ac7700995f3dcfa6183fa26211cc63744841f",
+          "provenance.json": "ca6551b4fabb19e578787c6faf4cd3d97a1539f1139d9adbb91b433a0799588c",
+          "preview.html": "4a302dfc9dfd4f387b7cab3558547bc46f35f0adc08fc1821f11ca66aa30d03d",
+          "preview-receipt.json": "d90d4b13c9f0bb45cc064e7e7feed5b60607709ebf198dc2cc79e4add3edbe6c"
+        }
+      },
+      {
+        "id": "professor-479d1212ea8f0489",
+        "role": "professor",
+        "variant": "해명 v2 · 안경 박사",
+        "packageSha256": "a46df17bdba1a35fe37243273d18d21ee0a5bbeafe6cfec9c7a28b7a920c24b6",
+        "sourceSha256": "60f860f1e50119332e80824c3f1a83152a14cd2e5904e73cd3e39c230aa68bc1",
+        "files": {
+          "charset.png": "60f860f1e50119332e80824c3f1a83152a14cd2e5904e73cd3e39c230aa68bc1",
+          "walk.gif": "2a8f868f85860acadb3efae1ed4c75742b04d6408a94b7aa36d5fa439a1c3cca",
+          "context.png": "998e6776237402c514ae7ff750f2f88df7227daad5f7609e27e62d8829497304",
+          "origin.txt": "381eaa0b8fce53ef1c4b4fe4d013bafd53afb6b906d9ec511ce604866375bd4b",
+          "recipe.json": "01c99b58dbbf4e01bb505e9a5c599d8de04b7542b660969e0ca5f3a66f2bd0f7",
+          "template.png": "a9098433b03a72a3dd3c89cd1919500447c7df0eb1faa0d18477dde5bf62c521",
+          "changes.png": "fb2e20bed638878b1828142c1d346a4651dfeb5190af085ae050686f442c2b1c"
+        },
+        "nativeFiles": {
+          "source.png": "60f860f1e50119332e80824c3f1a83152a14cd2e5904e73cd3e39c230aa68bc1",
+          "prompt.txt": "381eaa0b8fce53ef1c4b4fe4d013bafd53afb6b906d9ec511ce604866375bd4b",
+          "charset.png": "fdc07fc697d738550c40281fe7541c2171ac6141cd40a6dab06aefbd735afaa8",
+          "provenance.json": "b3ccd24a5b2a6e9d0f26be5d557ba77c511b240cb7cda39fea96305fdcfba40a",
+          "preview.html": "cbf5d2f02aabe79ce33849d0e63c3cc0a8357896523a84a09af449809c1717ee",
+          "preview-receipt.json": "c1fecb5b19fb98867f50a46f0ea53767e031cdcccc4b11046b9a73d80bc43e14"
+        }
+      },
+      {
+        "id": "nurse-907d5fb2b58e8b6f",
+        "role": "nurse",
+        "variant": "이솔 · 판형 수정",
+        "packageSha256": "cae0bc518e1d723ffa8050b32d8cfc71e2d6efef016b8e17dde18bdbe16c858e",
+        "sourceSha256": "02637ec4a012629e0be2534f292abb65b553d434d7601083c630824b5eb47477",
+        "files": {
+          "charset.png": "02637ec4a012629e0be2534f292abb65b553d434d7601083c630824b5eb47477",
+          "walk.gif": "7e2d93b186a6cd3bc8862bfada67e56a1d9ae897c60588031b4dcd5f688cbd69",
+          "context.png": "286f9791700d27c6f33965650da8804c3d232b6225e685e718aa0b23d419e157",
+          "origin.txt": "73be6799c6b672ea88a234b800c2ae6b6869f5726d2af4ea7ebeb45db727f38c",
+          "recipe.json": "18ce8f7912d83a05826d5203634717f410f21f04bf446f209dc1125601150ce1",
+          "template.png": "32fe066a4e943e2b0b5d7358634e526618a10a8fceaaa6c9cf741cb60ab2ee7a",
+          "changes.png": "8d9bcc253a163669dc71deb5e3ecd68c415485d14c528d4703e02bf934d782f0"
+        },
+        "nativeFiles": {
+          "source.png": "02637ec4a012629e0be2534f292abb65b553d434d7601083c630824b5eb47477",
+          "prompt.txt": "73be6799c6b672ea88a234b800c2ae6b6869f5726d2af4ea7ebeb45db727f38c",
+          "charset.png": "0c23e1303e142fe8343af3c66392ada22964bfe61d2d52b5c908b0fc83c75cbb",
+          "provenance.json": "eeac8f2e3d87f39528b97d5a07bcd7b8d2ece78d0f1853b76027ecd949de0b66",
+          "preview.html": "52446823b0469cb617f49f8bd47465147705e117db7a8af583708ba8304bf539",
+          "preview-receipt.json": "209fe0ace8e6e19409fd7924310616ddf6738dce2127ff1e5a2b1579e6157a05"
+        }
+      },
+      {
+        "id": "merchant-2d36fdaf6bdd88be",
+        "role": "merchant",
+        "variant": "도윤 v2.1 · 등 끈 수정",
+        "packageSha256": "cf6fa37e1ff0af60d7c906088348fe74be3b0c1effe021805f034042acae8da9",
+        "sourceSha256": "6feff448e6c5e03d4c33f4a69792ce160d8252f719ab5df0e4a18ce2f08c3421",
+        "files": {
+          "charset.png": "6feff448e6c5e03d4c33f4a69792ce160d8252f719ab5df0e4a18ce2f08c3421",
+          "walk.gif": "6743e3874b02017e9a1525cce46b6e0ab4628d4796348efa61c8f16bcdbbe4cc",
+          "context.png": "1dcdadecbaf0856c85a84b492bb35174d278698492f096a7a19400b52c6ed9c7",
+          "origin.txt": "2dd9e37ec24a33a73eacb27bedfc11aaf406e6bb954966c4964a67972344518f",
+          "recipe.json": "d38ca8b6749ae8741fa96e885f68da234a27cc09e5c3f23c55208864a0b2d305",
+          "template.png": "b642bb915fe9adf8e671c33fb128aed21cba749c5b782d6666daed685019e72d",
+          "changes.png": "24506d5acc7b78ab48ebcd0c4defdae785acbe06a3ca4403d0da15924ca3232f"
+        },
+        "nativeFiles": {
+          "source.png": "6feff448e6c5e03d4c33f4a69792ce160d8252f719ab5df0e4a18ce2f08c3421",
+          "prompt.txt": "2dd9e37ec24a33a73eacb27bedfc11aaf406e6bb954966c4964a67972344518f",
+          "charset.png": "ecc2bdf3078c8f6523776e90dc24c00e56c852880033f7e20fdee4d860570437",
+          "provenance.json": "eb543140e674ab8b20f4ae8ca74ae5642544c2825a33265b9624fdc1e471a29a",
+          "preview.html": "3bdeeb56bd415265e8d1e82887ba348ec5987a42e1b5161bd3686dfec63fec1d",
+          "preview-receipt.json": "993d3e7f58a477b9814a4d8416c1c0e8a3935a741270994f2fe8217cedc3e4c5"
+        }
+      },
+      {
+        "id": "mother-8cffef0687ad7c94",
+        "role": "mother",
+        "variant": "유나 · 판형 수정",
+        "packageSha256": "de4394390fdf778f34405cf639a4193ca042b322d4502dab6f8ac3c0d8c6af02",
+        "sourceSha256": "8caabc17bc58bd5f623978d4207d05fca30ef2513bf7b08542e80d35d6c45817",
+        "files": {
+          "charset.png": "8caabc17bc58bd5f623978d4207d05fca30ef2513bf7b08542e80d35d6c45817",
+          "walk.gif": "584e789394e72aaf0dd332626585fdd7468cd32a3dd5ebd2196cfe34a3105d17",
+          "context.png": "30347fc0f663ab05288166e1448a21a553c7ea48278ce5cb3418d685de0c8422",
+          "origin.txt": "0e3e11a11f5a08fb9c17e509b901339d87c952079e92a5bbc88c39d9227eb96a",
+          "recipe.json": "76696a916f91694c1933482cca5f468b63029ebeb6d00b66224fe299b65e78df",
+          "template.png": "08e38635c62a71ce88e47ec7e5ba6dbe152e8a4fd6cb5405037beb6015867c2c",
+          "changes.png": "b2fb2cf02c0937b6c360915b58bd22fda5ccbe01ad792109574608cac98dea5a"
+        },
+        "nativeFiles": {
+          "source.png": "8caabc17bc58bd5f623978d4207d05fca30ef2513bf7b08542e80d35d6c45817",
+          "prompt.txt": "0e3e11a11f5a08fb9c17e509b901339d87c952079e92a5bbc88c39d9227eb96a",
+          "charset.png": "d552c68bd28c775132b5138dae93fae4330ec80615aff9a744d8ca912079e62f",
+          "provenance.json": "cb5eb5ffa180901eda460ec01c4b37295c89df92e2f8d99ee2141ac8d8c401f3",
+          "preview.html": "099f86f5228521e20ff52cb08ef6505c1f936a9c812d9c18a6df99f93807bdec",
+          "preview-receipt.json": "9e89f105e995c4303f0c5c4ec00e4cc1318181f7d9a2f26afc4e58e93afccf6c"
+        }
+      },
+      {
+        "id": "resident-5fa29750168bea86",
+        "role": "resident",
+        "variant": "준서 · 판형 수정",
+        "packageSha256": "d118aa273d83ab6e66634be01c5a6b2eb81d39e1be8f1960eb8c39e49ab1c8b1",
+        "sourceSha256": "33143be13a296244a3b33f01118967604168f0e9f06e5a668c4c859c42718cb6",
+        "files": {
+          "charset.png": "33143be13a296244a3b33f01118967604168f0e9f06e5a668c4c859c42718cb6",
+          "walk.gif": "4454db5d11bbb5c3185888a88ab6ca2c8fec5d7e4ae2d330a3d6a99b34ab00ec",
+          "context.png": "14115f6d1745181823383ca693a0727c56cd90d260561e5b20e9fb2fa8601945",
+          "origin.txt": "a21e2d5fe9276497e8cbec92ecdac625e0b8020c9da807852e91fe096e89b780",
+          "recipe.json": "1ef7fa4f51c94a0a88f4e056db9aee3d1ea6676b6bc1a845485edae3d0746dc5",
+          "template.png": "3d0ab58a18339b034adce9aa98775bcc524f34573dea49aca3fbe928f39e0b22",
+          "changes.png": "5d848dcfc6d55af511769095f6cd6effd91d4c8b18282133ca806fb02add6dcb"
+        },
+        "nativeFiles": {
+          "source.png": "33143be13a296244a3b33f01118967604168f0e9f06e5a668c4c859c42718cb6",
+          "prompt.txt": "a21e2d5fe9276497e8cbec92ecdac625e0b8020c9da807852e91fe096e89b780",
+          "charset.png": "33d060f51bb377a6ff84f944cad32a8a4f64fe95f8a6186fa10d9ae387091201",
+          "provenance.json": "cd898a79bd43c89594a75480512ffde29ec8cfbbdb6602fad4fee2cead0e1517",
+          "preview.html": "d98f659d5e11fbf9b6beafa6bdebfcabcb9c78ac60e6a311ca33dfa1761c55ed",
+          "preview-receipt.json": "9dc75f4eb1c64febbbee826f8dba1dbb0756121a475a123239f9a7fa1257e293"
+        }
+      },
+      {
+        "id": "gym_leader-01012d11e46689b6",
+        "role": "gym_leader",
+        "variant": "태강 · 판형 수정",
+        "packageSha256": "e185c0eba64c77cf724c3afc5b3c7bc5484b359f984b53f290f7fe9bb119a721",
+        "sourceSha256": "f56891ce3ff27f10c3b344b4e7823da8e3071beb5db03b08e5b28cbcd73aa9b0",
+        "files": {
+          "charset.png": "f56891ce3ff27f10c3b344b4e7823da8e3071beb5db03b08e5b28cbcd73aa9b0",
+          "walk.gif": "c4d3ae956a1fa65a809182d052c265118d418c1ef4947ff2038fac5705c032d5",
+          "context.png": "7625eb1266e243e9b901f3ef5b80dc9e283efc839eecd25cff409c3e539eadba",
+          "origin.txt": "84d446c9b47c321eb18c5c59d080abb14d91b99c1b9ec9f561c65327a744cd8d",
+          "recipe.json": "f9b67b71ea5555a47f1c9a3ffd2d92a404647e02d9370ab88d67eed6b3189fdb",
+          "template.png": "33e4c89cc571a48983e680a42fc544c1abe0f6f1914e609fc5aac958ad91c6a8",
+          "changes.png": "c60f565fbe18494f47ddd85c4d5d7a4c0bfd3b9973a2d77ef01745cb1ddd8769"
+        },
+        "nativeFiles": {
+          "source.png": "f56891ce3ff27f10c3b344b4e7823da8e3071beb5db03b08e5b28cbcd73aa9b0",
+          "prompt.txt": "84d446c9b47c321eb18c5c59d080abb14d91b99c1b9ec9f561c65327a744cd8d",
+          "charset.png": "4d4d3513cccc33488cb9a3a163d631b2de38a8114191313f7d3ff4f803c16327",
+          "provenance.json": "c873d200cd773b298234f10d240546503e692699a386f39957d283e1ea76380d",
+          "preview.html": "3c15f492893b2608b5b5e68b5b09ff5f3cfb5e6e45019f0a738508288c24e082",
+          "preview-receipt.json": "ce63d5a71864934ec7180adc47857b8fe06e37b70f5001e9c74d2f43a163048f"
+        }
+      },
+      {
+        "id": "company_agent-a8ed368cbf601b90",
+        "role": "company_agent",
+        "variant": "서진 · 판형 수정",
+        "packageSha256": "388db395c6ff84f999d4427b0b4a8f7b3c6812a552b5b2c9292da4a8fe4dbe46",
+        "sourceSha256": "81d200c8ceed5351aed6f5ae2bde1ff14d0cfd1cbeb6979f6c75238631cea83b",
+        "files": {
+          "charset.png": "81d200c8ceed5351aed6f5ae2bde1ff14d0cfd1cbeb6979f6c75238631cea83b",
+          "walk.gif": "36ba6c33dcc947a347c9557e416984a80481999201f1c4448429dd23e7e9869b",
+          "context.png": "7248ee0699a3e6169a6e2f24ef91e9cc06680e7f9198ed0bb9fae2ad0ae740c2",
+          "origin.txt": "693e8fe8be250197b9678b44a9237ff1a89a74504d7acc2b74f80c330a6dff54",
+          "recipe.json": "ea4343b8de6551c5f27a5756c40888855de22a22f7571737e30bab52654156a6",
+          "template.png": "b4bf50bfcad3b1c49059b1f7533626817d56f8a65bb06b4073a8b164bfabbb58",
+          "changes.png": "5ae4f630e116d60c6dcbf794b76680b5fd2c3a68933b8e3bdae845f39296651f"
+        },
+        "nativeFiles": {
+          "source.png": "81d200c8ceed5351aed6f5ae2bde1ff14d0cfd1cbeb6979f6c75238631cea83b",
+          "prompt.txt": "693e8fe8be250197b9678b44a9237ff1a89a74504d7acc2b74f80c330a6dff54",
+          "charset.png": "dc4f4ecf077cd12f1fbb3bd0f6883a661a28d3ca742c39fd3313c83bc672b8c6",
+          "provenance.json": "fc48aad85a77dab1a08426d7d8212fb90c566b3c518029662c4be45080098bbc",
+          "preview.html": "abf2ae89b38364b25dab86196055ffc9ee2ce5cc707999ad0765eeced45c0958",
+          "preview-receipt.json": "bb5fe4b8d27043ac875e0462c2c5107a192c126c4451f3da7abcd563a720c3c6"
+        }
+      },
+      {
+        "id": "captain-bb9f0b056960c728",
+        "role": "captain",
+        "variant": "해준 v2 · 제복 선장",
+        "packageSha256": "6c80e55f707a7737643ad22d7d661950c5eff47eda3477f21239660e118ba063",
+        "sourceSha256": "e0484299bbe9a87e4f7444ba404c9949e52c7f7957d0e953bf779429bf45831f",
+        "files": {
+          "charset.png": "e0484299bbe9a87e4f7444ba404c9949e52c7f7957d0e953bf779429bf45831f",
+          "walk.gif": "22e492e57bd1450d56f9a7723a69bf025d388b7ce5675c35975fb7a5f974c632",
+          "context.png": "9d3d1c5402423f927ed87620f37ba0da72d9519de00ab9ebc7e99e7ce50a1a7c",
+          "origin.txt": "7c54d01298bf0c64b9968613208d03f421022d5398c28e5c64bb519b0febe028",
+          "recipe.json": "ba8ef5932ca9cfbee7629b9200a2729d74c42971e6e18b7eb3db3d70debecbe9",
+          "template.png": "22d8af0960906400b5d91ea672adbb4d3a042239121365831dbb44526d508e5c",
+          "changes.png": "72a122997266f26bafaa17680edb765820f365e77f52c44b3f4d3f7891bbb4ac"
+        },
+        "nativeFiles": {
+          "source.png": "e0484299bbe9a87e4f7444ba404c9949e52c7f7957d0e953bf779429bf45831f",
+          "prompt.txt": "7c54d01298bf0c64b9968613208d03f421022d5398c28e5c64bb519b0febe028",
+          "charset.png": "f059fa25ee1d9879f53d30ecc1788c8709f62598cfaa1e7bdf2c68ba744e2100",
+          "provenance.json": "f97af61e6fc259b6efa2ffaacaf149260419dfa4c6e4d10f6d9b42583ba7962f",
+          "preview.html": "a694e66642b0d2274784fe791e6c5addb15169599032944eafcae028de402ed6",
+          "preview-receipt.json": "5d2c0d5241534b3d4281840964f913e856ade3cabd8a4ffffff20203c33abc95"
+        }
+      },
+      {
+        "id": "worker-3e8de7699cdd8975",
+        "role": "worker",
+        "variant": "석호 · 판형 수정",
+        "packageSha256": "1f209c7cf77bf6ed0d842b245c8213e327cb5e59b3fa70108eca7111f3e4b108",
+        "sourceSha256": "ba34da0d632687c96a20a53f42f9eaf38ffc61d96111c9b084878e975cdfa570",
+        "files": {
+          "charset.png": "ba34da0d632687c96a20a53f42f9eaf38ffc61d96111c9b084878e975cdfa570",
+          "walk.gif": "af1451ef6d35e00376611e5f612a8e41da3bb6070317f4d844aa1093e40d9bc5",
+          "context.png": "23867798552f37f8b8594aa4a360226767231ae8d967775eade5a6bc8fbcaf8f",
+          "origin.txt": "794f74a352cfdbb4517b86d0b0889d2601765fe5f71691452ac6a45bc5383c4f",
+          "recipe.json": "090a0a68f5597764cefb4c694905babbdf3b4336b8a3092d1d3c4013b29b9416",
+          "template.png": "911affdd7a301bc105a5cefdb2c8ddaa5c133a82e0dec04d4401f4f0eaefbde1",
+          "changes.png": "f7422557ab98c1257d356711cd7ebf019232185de4f361576f0500b2ca39ce74"
+        },
+        "nativeFiles": {
+          "source.png": "ba34da0d632687c96a20a53f42f9eaf38ffc61d96111c9b084878e975cdfa570",
+          "prompt.txt": "794f74a352cfdbb4517b86d0b0889d2601765fe5f71691452ac6a45bc5383c4f",
+          "charset.png": "fc014ba2a69c8b759d3676fa7c75f5611e4d89de2f71a6457b3abe6f73af57b0",
+          "provenance.json": "0d5b19682e3a16b0e7a9e9468b4347d1dbb0f0c50aaead2ebc1891aaa1759ef3",
+          "preview.html": "ba85aea1fe8b57296c7f7a81b5fef6cc785f490e5db0daa4f3d912f00d7d94a0",
+          "preview-receipt.json": "fa1e3c124186fb8eb47b0a8df69c54050b8c6842336a1f92b5505d7a3d1ee680"
+        }
+      },
+      {
+        "id": "explorer-3c4d2aa4263774a6",
+        "role": "explorer",
+        "variant": "F · 나루 v2 · 판형 수정",
+        "packageSha256": "22a659ebb179d1cc50fc03b43a56d67868d3c664f255a6912eca7aa45ceac40d",
+        "sourceSha256": "42b6163a71eb751338ff77607402767739516f0c10b827c2cf1e12f6a530be0f",
+        "files": {
+          "charset.png": "42b6163a71eb751338ff77607402767739516f0c10b827c2cf1e12f6a530be0f",
+          "walk.gif": "9d5712a82c548e8273004e9efaae75ff288fc1cd99f98764734165329661d824",
+          "context.png": "18af507c70b07389048f32e0e3f4d5d21711dcc846e8a2bdb0da3654f6654eb2",
+          "origin.txt": "04207d528ce89d490b25b317e84ad6b691bc01b11633a1e9f11bb1ef7d832175",
+          "recipe.json": "80b0bc975bfa3da9acb625c9c0d349bd0ff06b86afdf95672a9df8f3f967f871",
+          "template.png": "65f01355e6f5cb560e37d837c98eeaa2e4d687371ffc9c313f001f1e41d8fae4",
+          "changes.png": "1243341a27abc549e7ec4d62044b984521c003233f7a6b152fc010e9724b9ef2"
+        },
+        "nativeFiles": {
+          "source.png": "42b6163a71eb751338ff77607402767739516f0c10b827c2cf1e12f6a530be0f",
+          "prompt.txt": "04207d528ce89d490b25b317e84ad6b691bc01b11633a1e9f11bb1ef7d832175",
+          "charset.png": "65a83e5bfb166a6cfd7ba254c25c23998af8335d10b50f6fa562a5f01d265bfa",
+          "provenance.json": "f2791160ca325307c428cb02b621f7803d2d5919eaf4830dd239fa773d46992d",
+          "preview.html": "7eac473e95dedec4d642297fa9eb338853857063cc5b91934c0b2ad79ed96f47",
+          "preview-receipt.json": "1c82fa17effb9a67f8255f5dc350e9a7dc0a1b40de3cb090dfd4e193167a2452"
+        }
+      },
+      {
+        "id": "student-aa432e63c8fb7251",
+        "role": "student",
+        "variant": "민재 · 판형 수정",
+        "packageSha256": "6f7af051791b553f777ce2d0bc93c2402342fdc203917a2e7445e5ce2f5b324d",
+        "sourceSha256": "d6b968bf45336719f1f50110c47f2ab9820f677692457526bdff5abc2065dece",
+        "files": {
+          "charset.png": "d6b968bf45336719f1f50110c47f2ab9820f677692457526bdff5abc2065dece",
+          "walk.gif": "42a8eeec466334a0862c89a1115f6de31293081986ad44a67b097f625b843487",
+          "context.png": "658af7a3ea27f5cbe9ae9a0c7f19f6fe6d603002f19ea22f2776b928f2e9b45e",
+          "origin.txt": "3ecb93922194e4ecd9650fc1193874f613285d5bcced36394a501515beb1d1ed",
+          "recipe.json": "3dddfe35864cf017005c63a4597867b9a5d77c7be5f9d28f24d978eb282dd920",
+          "template.png": "708ffeea5b299def1ac1d05134d33841702c8b13926076956eb9948ce668b00d",
+          "changes.png": "0b3a6187499bcde3503bbb0228d99952160dd7756bb7721f641669094a1192b8"
+        },
+        "nativeFiles": {
+          "source.png": "d6b968bf45336719f1f50110c47f2ab9820f677692457526bdff5abc2065dece",
+          "prompt.txt": "3ecb93922194e4ecd9650fc1193874f613285d5bcced36394a501515beb1d1ed",
+          "charset.png": "1fe01fee0a3b4cbf80e3f308f8ea412bcd901f0ecb8c7701fad770ff07bb06fa",
+          "provenance.json": "8e5664997a27704a447ef5f1013a9953e4a5aa85bbbeb30008c1464ca12f086e",
+          "preview.html": "f1736e9480c44123fe4b6f2d9f869e6cace5d16fd5a544c7c450c1bd0c80d782",
+          "preview-receipt.json": "9e2d8299be1f1d96f8c8e9556fefecb6420e379d4368b722d04f7496d98dc455"
+        }
+      },
+      {
+        "id": "ranger-80f567f41e112a38",
+        "role": "ranger",
+        "variant": "솔찬 v2 · 적갈색 머리 레인저",
+        "packageSha256": "dbf63c7e5f79ff0f4d98e925259992c7c26e312b5973c8d2c10de25013bb8075",
+        "sourceSha256": "7decd82fdaf1b847d3a02e0b7e79bc5e9e4a1a46568548d02237707c801f8852",
+        "files": {
+          "charset.png": "7decd82fdaf1b847d3a02e0b7e79bc5e9e4a1a46568548d02237707c801f8852",
+          "walk.gif": "21d8dfef7522b30dc1a0440eac1d6ee09a8f5299ced39edc987ece86ddb79be9",
+          "context.png": "dc8963ecbe97059c9008e9627ec1ddae8dca7d505b1675b94b188d52d5405741",
+          "origin.txt": "b493f718e8218ad002b0b3dd0e3720b969308c44fbbf1e4c9be4f50c37ca31e4",
+          "recipe.json": "c0f94680f357833e40998e71973fe16505e143d614e788ad9f185e306fdf7820",
+          "template.png": "7e4af5d29cf277127a3d28c05f231d1f0993954d02b4971f4b69893b5fab9159",
+          "changes.png": "3f9c742c985abf2db68431929eeb99f9b43e9d5ddfd6f2f04aa69085c3a993ea"
+        },
+        "nativeFiles": {
+          "source.png": "7decd82fdaf1b847d3a02e0b7e79bc5e9e4a1a46568548d02237707c801f8852",
+          "prompt.txt": "b493f718e8218ad002b0b3dd0e3720b969308c44fbbf1e4c9be4f50c37ca31e4",
+          "charset.png": "02fc60992480db8d5f630bce431864294f26eb0b98aa76a627da57f39cd9a2e2",
+          "provenance.json": "919c2b11b0d5bf901457f4ff9f765404915697d5783898c3d1e0ceaf4c57f06f",
+          "preview.html": "5357832651328345f6af564e1eb7cc20e6faab1f4adcf362f1c6d6d4764dfc94",
+          "preview-receipt.json": "69338ef9c2a359cfe09f0a68c95e8906ae67426fc005fc03a3eca290d166b2d3"
+        }
+      },
+      {
+        "id": "moon_leader-b54c5ffa450c1531",
+        "role": "moon_leader",
+        "variant": "백야 · 판형 수정",
+        "packageSha256": "b29d334930b9f6095b6dc8610725d27e4813ac8842988f9f7e617c90c8c9825c",
+        "sourceSha256": "09aaf3e24dd3c01065b1d25aa9f75b665a1698d54bb83653cb390f386699e959",
+        "files": {
+          "charset.png": "09aaf3e24dd3c01065b1d25aa9f75b665a1698d54bb83653cb390f386699e959",
+          "walk.gif": "0d38795dcf05656f987c9f641fc912d9121471df67f660456f6cc1784c79d390",
+          "context.png": "893214866a546db979661fb7a4ae8553510b3ba5d4b0fae6604e28dffa82c5a9",
+          "origin.txt": "3c12bb77940f919be3023f1c883ef1e4be6ea8917599e546636c6c29771950f3",
+          "recipe.json": "f55cdc709f5ff41b3bc2e193eab0dd73dbb1ea1328bda11097ccd5181456ba7c",
+          "template.png": "ed338f0070870ccca1c407afb5499d68706a9da8a264f0454a94ec087a296c9c",
+          "changes.png": "1b1f4c4fdfa88dc82a7ae7b8a7a544236931f93582ba72bffcf0e5ac506ca85b"
+        },
+        "nativeFiles": {
+          "source.png": "09aaf3e24dd3c01065b1d25aa9f75b665a1698d54bb83653cb390f386699e959",
+          "prompt.txt": "3c12bb77940f919be3023f1c883ef1e4be6ea8917599e546636c6c29771950f3",
+          "charset.png": "5ef7ed93a3c391ade40ee07f5409d661df382a12f3e8f490207b0db57a003e84",
+          "provenance.json": "cf1962ce53de536e2c01ef269dc15cca9215d859a0e811694088e8f820a73d5f",
+          "preview.html": "0392a5733043dbb2ee18991f1e95efb00f6fff5724dd6f67c2394af155795af0",
+          "preview-receipt.json": "32d7634a9e464976853994b1dd6796559aaee26522d32c9442e234961341338e"
+        }
+      },
+      {
+        "id": "hiker-5c6439e308e39151",
+        "role": "hiker",
+        "variant": "산호 · 판형 수정",
+        "packageSha256": "58c137a60c9260d6e144655e3975e5107315f5063f7c137ff9cbe0417ac38937",
+        "sourceSha256": "c17b00eb178fef789ad2d83090dda0ed9a1486c9fc05a4a767ad0cdeec34653a",
+        "files": {
+          "charset.png": "c17b00eb178fef789ad2d83090dda0ed9a1486c9fc05a4a767ad0cdeec34653a",
+          "walk.gif": "c28b727eaed6a1fed0ea64219b2d6d71abe00ccd6c063beda171872c8dfa408e",
+          "context.png": "da67bb13a672cb5ac307672f5067811a8a52a8723e2b8d3a2d72c1a4114c524a",
+          "origin.txt": "6417f19f4152b47bcad4408066dd09b60498fac3343dbdc06e5d75115ccfea66",
+          "recipe.json": "b70539c6dc3b7ab3644a59dc16df0a06216f764bd3c8c0a04dc773044edc5a11",
+          "template.png": "ccd284b59a71ee200444005cafc07c8a55ebdd84b40843c219b1c8cde7883bb7",
+          "changes.png": "13663869815a0ee8ad3d84784d4dd560cc695f6831cb85387b421839f3ec23c3"
+        },
+        "nativeFiles": {
+          "source.png": "c17b00eb178fef789ad2d83090dda0ed9a1486c9fc05a4a767ad0cdeec34653a",
+          "prompt.txt": "6417f19f4152b47bcad4408066dd09b60498fac3343dbdc06e5d75115ccfea66",
+          "charset.png": "8c08a3f20e23350ea5e04962c0b3e078141528dd016206e12cd31b97349d7e88",
+          "provenance.json": "d7d044130ee39a4dfff6bcdf95adb36c88c8970e553d43672d46a0fadfa745d2",
+          "preview.html": "66aba97c9ff27a014503079d05c0fe90df4e091a4d139d01fb4676cfebb86e2e",
+          "preview-receipt.json": "8e927d24e87ef8141aaf7eec65e800dd63077bf40b8644251a8c8cea49cbfee7"
+        }
+      }
+    ]
+  },
+  "newAssets": [
+    {
+      "id": "oprn_emerald_field_cast_1",
+      "sha256": "3449670c3e0a5b4f57aaa60ba55a165ff9a8b87a2850b280efd9dd7d376c0f08",
+      "bytes": 24473
+    },
+    {
+      "id": "oprn_emerald_field_cast_2",
+      "sha256": "5e69fca7197412767fa94eb401e537811f011f80a2f2b8aa2ec5f43ba5ef82c3",
+      "bytes": 23514
+    },
+    {
+      "id": "oprn_emerald_signpost",
+      "sha256": "62e61a63e818646401dff30a81b67ce6d7785168eaa51133e37c313bda7dc95c",
+      "bytes": 1622
+    }
+  ],
+  "packing": {
+    "lossless": true,
+    "resizing": false,
+    "nativeCell": [
+      16,
+      32
+    ],
+    "runtimeCell": [
+      24,
+      32
+    ],
+    "transparentPadding": [
+      4,
+      4
+    ],
+    "heroPreserved": true,
+    "roles": [
+      {
+        "role": "rival",
+        "candidate": "rival-2a9feb123a90ecdf",
+        "sourceSha256": "2ce79d02ad6d1b885f7b4b4f2a599397e30982b17a45cc4c3c5c8b5b7a75249d",
+        "posesCompared": 12
+      },
+      {
+        "role": "professor",
+        "candidate": "professor-479d1212ea8f0489",
+        "sourceSha256": "60f860f1e50119332e80824c3f1a83152a14cd2e5904e73cd3e39c230aa68bc1",
+        "posesCompared": 12
+      },
+      {
+        "role": "nurse",
+        "candidate": "nurse-907d5fb2b58e8b6f",
+        "sourceSha256": "02637ec4a012629e0be2534f292abb65b553d434d7601083c630824b5eb47477",
+        "posesCompared": 12
+      },
+      {
+        "role": "merchant",
+        "candidate": "merchant-2d36fdaf6bdd88be",
+        "sourceSha256": "6feff448e6c5e03d4c33f4a69792ce160d8252f719ab5df0e4a18ce2f08c3421",
+        "posesCompared": 12
+      },
+      {
+        "role": "mother",
+        "candidate": "mother-8cffef0687ad7c94",
+        "sourceSha256": "8caabc17bc58bd5f623978d4207d05fca30ef2513bf7b08542e80d35d6c45817",
+        "posesCompared": 12
+      },
+      {
+        "role": "resident",
+        "candidate": "resident-5fa29750168bea86",
+        "sourceSha256": "33143be13a296244a3b33f01118967604168f0e9f06e5a668c4c859c42718cb6",
+        "posesCompared": 12
+      },
+      {
+        "role": "gym_leader",
+        "candidate": "gym_leader-01012d11e46689b6",
+        "sourceSha256": "f56891ce3ff27f10c3b344b4e7823da8e3071beb5db03b08e5b28cbcd73aa9b0",
+        "posesCompared": 12
+      },
+      {
+        "role": "company_agent",
+        "candidate": "company_agent-a8ed368cbf601b90",
+        "sourceSha256": "81d200c8ceed5351aed6f5ae2bde1ff14d0cfd1cbeb6979f6c75238631cea83b",
+        "posesCompared": 12
+      },
+      {
+        "role": "captain",
+        "candidate": "captain-bb9f0b056960c728",
+        "sourceSha256": "e0484299bbe9a87e4f7444ba404c9949e52c7f7957d0e953bf779429bf45831f",
+        "posesCompared": 12
+      },
+      {
+        "role": "worker",
+        "candidate": "worker-3e8de7699cdd8975",
+        "sourceSha256": "ba34da0d632687c96a20a53f42f9eaf38ffc61d96111c9b084878e975cdfa570",
+        "posesCompared": 12
+      },
+      {
+        "role": "explorer",
+        "candidate": "explorer-3c4d2aa4263774a6",
+        "sourceSha256": "42b6163a71eb751338ff77607402767739516f0c10b827c2cf1e12f6a530be0f",
+        "posesCompared": 12
+      },
+      {
+        "role": "student",
+        "candidate": "student-aa432e63c8fb7251",
+        "sourceSha256": "d6b968bf45336719f1f50110c47f2ab9820f677692457526bdff5abc2065dece",
+        "posesCompared": 12
+      },
+      {
+        "role": "ranger",
+        "candidate": "ranger-80f567f41e112a38",
+        "sourceSha256": "7decd82fdaf1b847d3a02e0b7e79bc5e9e4a1a46568548d02237707c801f8852",
+        "posesCompared": 12
+      },
+      {
+        "role": "moon_leader",
+        "candidate": "moon_leader-b54c5ffa450c1531",
+        "sourceSha256": "09aaf3e24dd3c01065b1d25aa9f75b665a1698d54bb83653cb390f386699e959",
+        "posesCompared": 12
+      },
+      {
+        "role": "hiker",
+        "candidate": "hiker-5c6439e308e39151",
+        "sourceSha256": "c17b00eb178fef789ad2d83090dda0ed9a1486c9fc05a4a767ad0cdeec34653a",
+        "posesCompared": 12
+      }
+    ],
+    "noticeBoard": {
+      "source": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/public/assets/emerald-monster/tiles/overworld.png",
+      "tile": 582,
+      "atlasSha256": "a2d2b50f928cab1347c761bb0332b6d2798b83d49823bda3f46c93a2353b9cb6",
+      "resizing": false
+    }
+  },
+  "npcPages": 127,
+  "signPages": 8,
+  "arrowsRemoved": 142,
+  "relocations": [
+    {
+      "map": "mx_map_home",
+      "target": "mx_map_school",
+      "old": {
+        "x": 11,
+        "y": 1
+      },
+      "source": {
+        "x": 23,
+        "y": 11
+      },
+      "landing": {
+        "x": 23,
+        "y": 12
+      },
+      "label": "몬스터 학교"
+    },
+    {
+      "map": "mx_map_grove",
+      "target": "mx_map_garden",
+      "old": {
+        "x": 11,
+        "y": 1
+      },
+      "source": {
+        "x": 23,
+        "y": 11
+      },
+      "landing": {
+        "x": 23,
+        "y": 12
+      },
+      "label": "생태 정원 입구"
+    },
+    {
+      "map": "mx_map_moon",
+      "target": "mx_map_ghost_tower",
+      "old": {
+        "x": 11,
+        "y": 1
+      },
+      "source": {
+        "x": 23,
+        "y": 11
+      },
+      "landing": {
+        "x": 23,
+        "y": 12
+      },
+      "label": "탑 관리소 입구"
+    },
+    {
+      "map": "mx_map_harbor",
+      "target": "mx_map_forest",
+      "old": {
+        "x": 17,
+        "y": 21
+      },
+      "source": {
+        "x": 11,
+        "y": 2
+      },
+      "landing": {
+        "x": 11,
+        "y": 3
+      },
+      "label": "숲길"
+    },
+    {
+      "map": "mx_map_harbor",
+      "target": "mx_map_ship_deck",
+      "old": {
+        "x": 16,
+        "y": 9
+      },
+      "source": {
+        "x": 30,
+        "y": 4
+      },
+      "landing": {
+        "x": 29,
+        "y": 4
+      },
+      "label": "별바람호 승선 부두"
+    },
+    {
+      "map": "mx_map_harbor",
+      "target": "mx_map_river",
+      "old": {
+        "x": 15,
+        "y": 9
+      },
+      "source": {
+        "x": 30,
+        "y": 9
+      },
+      "landing": {
+        "x": 29,
+        "y": 9
+      },
+      "label": "계곡행 배편"
+    },
+    {
+      "map": "mx_map_harbor",
+      "target": "mx_map_beach",
+      "old": {
+        "x": 8,
+        "y": 10
+      },
+      "source": {
+        "x": 17,
+        "y": 20
+      },
+      "landing": {
+        "x": 17,
+        "y": 19
+      },
+      "label": "해변 돌계단"
+    },
+    {
+      "map": "mx_map_harbor",
+      "target": "mx_map_sea_cave",
+      "old": {
+        "x": 23,
+        "y": 10
+      },
+      "source": {
+        "x": 28,
+        "y": 18
+      },
+      "landing": {
+        "x": 28,
+        "y": 19
+      },
+      "label": "등대 지하 · 조수 동굴"
+    },
+    {
+      "map": "mx_map_prism",
+      "target": "mx_map_museum",
+      "old": {
+        "x": 16,
+        "y": 10
+      },
+      "source": {
+        "x": 19,
+        "y": 9
+      },
+      "landing": {
+        "x": 19,
+        "y": 10
+      },
+      "label": "별의 역사 박물관"
+    },
+    {
+      "map": "mx_map_prism",
+      "target": "mx_map_hideout",
+      "old": {
+        "x": 18,
+        "y": 10
+      },
+      "source": {
+        "x": 26,
+        "y": 9
+      },
+      "landing": {
+        "x": 26,
+        "y": 10
+      },
+      "label": "밤막회사 연구소"
+    },
+    {
+      "map": "mx_map_summit",
+      "target": "mx_map_observatory",
+      "old": {
+        "x": 17,
+        "y": 10
+      },
+      "source": {
+        "x": 19,
+        "y": 9
+      },
+      "landing": {
+        "x": 19,
+        "y": 10
+      },
+      "label": "천문 관측소"
+    },
+    {
+      "map": "mx_map_summit",
+      "target": "mx_map_league_0",
+      "old": {
+        "x": 24,
+        "y": 3
+      },
+      "source": {
+        "x": 26,
+        "y": 9
+      },
+      "landing": {
+        "x": 26,
+        "y": 10
+      },
+      "label": "별빛 리그 회관"
+    },
+    {
+      "map": "mx_map_prism",
+      "target": "mx_map_desert",
+      "old": {
+        "x": 17,
+        "y": 10
+      },
+      "source": {
+        "x": 1,
+        "y": 10
+      },
+      "landing": {
+        "x": 2,
+        "y": 10
+      },
+      "label": "서쪽 사막길"
+    },
+    {
+      "map": "mx_map_prism",
+      "target": "mx_map_cave",
+      "old": {
+        "x": 24,
+        "y": 3
+      },
+      "source": {
+        "x": 28,
+        "y": 13
+      },
+      "landing": {
+        "x": 28,
+        "y": 14
+      },
+      "label": "메아리 동굴 지하 계단"
+    },
+    {
+      "map": "mx_map_frost",
+      "target": "mx_map_ice_cave",
+      "old": {
+        "x": 16,
+        "y": 2
+      },
+      "source": {
+        "x": 16,
+        "y": 6
+      },
+      "landing": {
+        "x": 16,
+        "y": 7
+      },
+      "label": "서리종 동굴 석문"
+    },
+    {
+      "map": "mx_map_ember",
+      "target": "mx_map_lava_cave",
+      "old": {
+        "x": 15,
+        "y": 2
+      },
+      "source": {
+        "x": 12,
+        "y": 6
+      },
+      "landing": {
+        "x": 12,
+        "y": 7
+      },
+      "label": "용암 동굴 석문"
+    },
+    {
+      "map": "mx_map_frost",
+      "target": "mx_map_marsh",
+      "old": {
+        "x": 14,
+        "y": 3
+      },
+      "source": {
+        "x": 16,
+        "y": 2
+      },
+      "landing": {
+        "x": 16,
+        "y": 3
+      },
+      "label": "북쪽 습지길"
+    }
+  ],
+  "terrain": [
+    {
+      "map": "mx_map_home",
+      "kit": "house_i",
+      "x": 21,
+      "y": 8
+    },
+    {
+      "map": "mx_map_home",
+      "kit": "eastern-block",
+      "oldWidth": 22,
+      "width": 28
+    },
+    {
+      "map": "mx_map_grove",
+      "kit": "house_i",
+      "x": 21,
+      "y": 8
+    },
+    {
+      "map": "mx_map_grove",
+      "kit": "eastern-block",
+      "oldWidth": 22,
+      "width": 28
+    },
+    {
+      "map": "mx_map_moon",
+      "kit": "house_i",
+      "x": 21,
+      "y": 8
+    },
+    {
+      "map": "mx_map_moon",
+      "kit": "eastern-block",
+      "oldWidth": 22,
+      "width": 28
+    },
+    {
+      "map": "mx_map_prism",
+      "kit": "seawall_steps",
+      "x": 27,
+      "y": 12
+    },
+    {
+      "map": "mx_map_frost",
+      "kit": "ruin_gate",
+      "x": 15,
+      "y": 4
+    },
+    {
+      "map": "mx_map_ember",
+      "kit": "ruin_gate",
+      "x": 11,
+      "y": 4
+    },
+    {
+      "map": "mx_map_home",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "map": "mx_map_grove",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 17
+    },
+    {
+      "map": "mx_map_grove",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "map": "mx_map_ember",
+      "kit": "continuous-boundary-path",
+      "x": 17,
+      "y": 20
+    },
+    {
+      "map": "mx_map_ember",
+      "kit": "continuous-boundary-path",
+      "x": 16,
+      "y": 2
+    },
+    {
+      "map": "mx_map_prism",
+      "kit": "continuous-boundary-path",
+      "x": 18,
+      "y": 22
+    },
+    {
+      "map": "mx_map_dune",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 17
+    },
+    {
+      "map": "mx_map_dune",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "map": "mx_map_frost",
+      "kit": "continuous-boundary-path",
+      "x": 15,
+      "y": 16
+    },
+    {
+      "map": "mx_map_moon",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 17
+    },
+    {
+      "map": "mx_map_moon",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "map": "mx_map_summit",
+      "kit": "continuous-boundary-path",
+      "x": 18,
+      "y": 22
+    },
+    {
+      "map": "mx_map_hideout",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 14
+    },
+    {
+      "map": "mx_map_observatory",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "map": "mx_map_league_0",
+      "kit": "lg_door",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "map": "mx_map_league_1",
+      "kit": "lg_door",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "map": "mx_map_league_2",
+      "kit": "lg_door",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "map": "mx_map_league_3",
+      "kit": "lg_door",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "map": "mx_map_meadow",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 29
+    },
+    {
+      "map": "mx_map_meadow",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "map": "mx_map_forest",
+      "kit": "continuous-boundary-path",
+      "x": 15,
+      "y": 29
+    },
+    {
+      "map": "mx_map_forest",
+      "kit": "continuous-boundary-path",
+      "x": 15,
+      "y": 2
+    },
+    {
+      "map": "mx_map_river",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 31
+    },
+    {
+      "map": "mx_map_river",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "map": "mx_map_mountain",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 14
+    },
+    {
+      "map": "mx_map_mountain",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "map": "mx_map_desert",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 23
+    },
+    {
+      "map": "mx_map_desert",
+      "kit": "continuous-boundary-path",
+      "x": 11,
+      "y": 2
+    },
+    {
+      "map": "mx_map_snow",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 29
+    },
+    {
+      "map": "mx_map_snow",
+      "kit": "continuous-boundary-path",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "map": "mx_map_marsh",
+      "kit": "continuous-boundary-path",
+      "x": 13,
+      "y": 16
+    },
+    {
+      "map": "mx_map_marsh",
+      "kit": "continuous-boundary-path",
+      "x": 14,
+      "y": 2
+    },
+    {
+      "map": "mx_map_ruins",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "map": "mx_map_ruins",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 4
+    },
+    {
+      "map": "mx_map_garden",
+      "kit": "continuous-boundary-path",
+      "x": 13,
+      "y": 16
+    },
+    {
+      "map": "mx_map_beach",
+      "kit": "continuous-boundary-path",
+      "x": 13,
+      "y": 33
+    },
+    {
+      "map": "mx_map_sea_cave",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 16
+    },
+    {
+      "map": "mx_map_lava_cave",
+      "kit": "native-exit-stairs",
+      "x": 14,
+      "y": 15
+    },
+    {
+      "map": "mx_map_cave",
+      "kit": "rock_stairs2",
+      "x": 17,
+      "y": 16
+    },
+    {
+      "map": "mx_map_ice_cave",
+      "kit": "native-exit-stairs",
+      "x": 10,
+      "y": 20
+    },
+    {
+      "map": "mx_map_ghost_tower",
+      "kit": "native-exit-stairs",
+      "x": 11,
+      "y": 15
+    }
+  ],
+  "status": "saved-and-fresh-reloaded",
+  "portalChecks": [
+    {
+      "id": "mx_map_home_to_mx_map_home_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_home_to_mx_map_home_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_home_to_mx_map_home_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_home_to_mx_map_lab",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_home_to_mx_map_meadow",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_home_to_mx_map_school",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_grove_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_grove_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_grove_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_grove_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_meadow",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_forest",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_grove_to_mx_map_garden",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_harbor_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_harbor_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_harbor_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_harbor_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_forest",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_river",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_beach",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_sea_cave",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_harbor_to_mx_map_ship_deck",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_ember_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_ember_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_ember_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_ember_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_river",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_mountain",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_to_mx_map_lava_cave",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_prism_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_prism_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_prism_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_prism_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_mountain",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_desert",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_cave",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_museum",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_prism_to_mx_map_hideout",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_dune_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_dune_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_dune_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_dune_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_desert",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_dune_to_mx_map_snow",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_frost_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_frost_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_frost_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_frost_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_snow",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_marsh",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_to_mx_map_ice_cave",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_moon_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_moon_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_moon_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_moon_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_marsh",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_ruins",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_to_mx_map_ghost_tower",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_summit_center",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_summit_mart",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_summit_house",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_summit_gym",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_ruins",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_observatory",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_summit_to_mx_map_league_0",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_grove_gym_to_mx_map_grove",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_harbor_gym_to_mx_map_harbor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_gym_to_mx_map_ember",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_prism_gym_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_dune_gym_to_mx_map_dune",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_gym_to_mx_map_frost",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_gym_to_mx_map_moon",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_summit_gym_to_mx_map_summit",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_lab_to_mx_map_home",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_museum_to_mx_map_prism",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_school_to_mx_map_home",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_hideout_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_observatory_to_mx_map_summit",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_league_0_to_mx_map_summit",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_league_0_to_mx_map_league_1",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_league_1_to_mx_map_league_0",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_league_1_to_mx_map_league_2",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_league_2_to_mx_map_league_1",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_league_2_to_mx_map_league_3",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_league_3_to_mx_map_league_2",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_league_3_to_mx_map_league_4",
+      "approaches": 1
+    },
+    {
+      "id": "mx_map_league_4_to_mx_map_league_3",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_home_center_to_mx_map_home",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_home_mart_to_mx_map_home",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_home_house_to_mx_map_home",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_grove_center_to_mx_map_grove",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_grove_mart_to_mx_map_grove",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_grove_house_to_mx_map_grove",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_harbor_center_to_mx_map_harbor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_harbor_mart_to_mx_map_harbor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_harbor_house_to_mx_map_harbor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_center_to_mx_map_ember",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_mart_to_mx_map_ember",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ember_house_to_mx_map_ember",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_prism_center_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_prism_mart_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_prism_house_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_dune_center_to_mx_map_dune",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_dune_mart_to_mx_map_dune",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_dune_house_to_mx_map_dune",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_center_to_mx_map_frost",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_mart_to_mx_map_frost",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_frost_house_to_mx_map_frost",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_center_to_mx_map_moon",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_mart_to_mx_map_moon",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_moon_house_to_mx_map_moon",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_summit_center_to_mx_map_summit",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_summit_mart_to_mx_map_summit",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_summit_house_to_mx_map_summit",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_meadow_to_mx_map_home",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_meadow_to_mx_map_grove",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_forest_to_mx_map_grove",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_forest_to_mx_map_harbor",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_river_to_mx_map_harbor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_river_to_mx_map_ember",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_mountain_to_mx_map_ember",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_mountain_to_mx_map_prism",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_desert_to_mx_map_prism",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_desert_to_mx_map_dune",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_snow_to_mx_map_dune",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_snow_to_mx_map_frost",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_marsh_to_mx_map_frost",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_marsh_to_mx_map_moon",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_ruins_to_mx_map_moon",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_ruins_to_mx_map_summit",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_garden_to_mx_map_grove",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_beach_to_mx_map_harbor",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_sea_cave_to_mx_map_harbor",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_lava_cave_to_mx_map_ember",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_cave_to_mx_map_prism",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_ice_cave_to_mx_map_frost",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_ghost_tower_to_mx_map_moon",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_ship_deck_to_mx_map_harbor",
+      "approaches": 2
+    },
+    {
+      "id": "mx_map_ship_deck_to_mx_map_ship_corridor",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ship_corridor_to_mx_map_ship_deck",
+      "approaches": 4
+    },
+    {
+      "id": "mx_map_ship_corridor_to_mx_map_ship_cabin",
+      "approaches": 3
+    },
+    {
+      "id": "mx_map_ship_cabin_to_mx_map_ship_corridor",
+      "approaches": 3
+    }
+  ],
+  "systemUnchanged": true,
+  "databaseUnchanged": true,
+  "sessionUnchanged": true,
+  "canonicalReceipt": {
+    "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+    "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+    "host": "http://mdc-server:9888",
+    "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+    "bridgeProject": "",
+    "url": "http://mdc-server:9888/",
+    "revision": 36,
+    "sha256": "e95f055910b72808d716a3c78c256f96169f0e6b2c7246ce4b07983caaecf37a",
+    "reloadedThroughFreshConnection": true,
+    "mediaByteReloads": [
+      {
+        "id": "oprn_emerald_field_cast_1",
+        "sha256": "3449670c3e0a5b4f57aaa60ba55a165ff9a8b87a2850b280efd9dd7d376c0f08"
+      },
+      {
+        "id": "oprn_emerald_field_cast_2",
+        "sha256": "5e69fca7197412767fa94eb401e537811f011f80a2f2b8aa2ec5f43ba5ef82c3"
+      },
+      {
+        "id": "oprn_emerald_signpost",
+        "sha256": "62e61a63e818646401dff30a81b67ce6d7785168eaa51133e37c313bda7dc95c"
+      }
+    ],
+    "maps": 72
+  }
+}

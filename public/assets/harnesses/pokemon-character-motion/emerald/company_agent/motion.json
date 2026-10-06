@@ -1,0 +1,38 @@
+{
+  "role": "company_agent",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "4b4be5dcfa4488f3c24f4f853adba5cbcf616f49d42d189e482a156e9d35267c",
+  "charsetSha256": "e9c58a8ad84ee0274a733f22bf7393f37abf730954a9afb71c9c899190f7fad4",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "0eb835a779d8f8eda668b6e0b18a147ea40e7f18df1e772c36a42bc40156bba8"
+  },
+  "gateSha256": "18b49dcbdabaea1b4cada78e372f9c1e486feae6c5f80a7078f1a55fde84a66b",
+  "clip": null
+}

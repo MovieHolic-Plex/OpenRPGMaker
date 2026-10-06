@@ -1,0 +1,116 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "3cfe71e008507670135d11899838030b9942420404e1a8dc99847dbe4c0d80e1",
+  "gifSha256": "87b3da8d4672faec547fa32188c7d96e67bdec735107096ff8e5a156cabaa3ed",
+  "scores": {
+    "silhouette": {
+      "score": 14,
+      "reason": "Readable compact human, but the broad red crown still dominates the body and resembles a mushroom helmet. Torso/shoulder shape is serviceable rather than a distinctive, balanced hero design."
+    },
+    "anatomy": {
+      "score": 14,
+      "reason": "Wider shoulders, retained jaw width and longer2px legs now yield a coherent small person. Profile face is a nearly vertical skin wall without a convincing nose/forehead separation, and swinging profile sleeve/hand clusters still interleave visually with bag/waist."
+    },
+    "walking": {
+      "score": 14,
+      "reason": "Genuine support/swing exchange and longer legs now read as walking in all directions. Profile idle shoes still join into a4px brown bar at native y29; only bottom-row soles are separated. Step shoes become separate2px blocks, so foot silhouette changes abruptly rather than rolling through a consistent shoe shape."
+    },
+    "pixelCraft": {
+      "score": 11,
+      "reason": "Connected large clusters are clean enough for serviceable native art. Crown highlight pixels, similar dark blue shades and abrupt sleeve/hand intersections still provide weak volume. The thin dark profile brim looks like a spike, while front brim remains an undifferentiated full-width rim."
+    },
+    "identity": {
+      "score": 12,
+      "reason": "Cap/vest/gold-red pack remain consistent across directions, with a real gold/red bag profile. Cap brim and hair silhouette are not yet shaped clearly enough to create a polished hero identity; back pack is a flat color plaque with little attachment/depth."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "All directions retain the same costume, color placements and proportions; heading is clear. Flat nose-less side face and compressed accessories limit believable turn depth."
+    },
+    "loop": {
+      "score": 4,
+      "reason": "Four140ms frames, repeated identical idle at1/3 and coherent1px step bob produce a repeatable cycle without a file-level seam. Shoe silhouette/contact transitions remain visibly abrupt."
+    }
+  },
+  "criticalFailures": [],
+  "total": 73,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v2-gif-contact-native.png",
+      "sha256": "a5a2b95fb49edf41e1e16a78edbf79ea6d6b65a6a22fe1cbe0f23a4786322395"
+    },
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v2-gif-contact-4x.png",
+      "sha256": "a1c9f0c473b74a6ef297c2d9854b2a6752592eea392fbf41b8c63f03cc555175"
+    },
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v2-sheet-4x.png",
+      "sha256": "77c6734edb5fd452b806c60d4ba6ffd781e0ba05d356deb3e35c210f89cf282b"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "candidate": "/tmp/pokemon-hero-refine/review-v2/candidates/hero-1791127149541-3cfe71e0",
+  "rubricUnchanged": true,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "bbox": [
+        1,
+        11,
+        65,
+        31
+      ],
+      "rgbaSha256": "d4e3414d626a253e7aaf5a70b32363d7bac538b23225a24d2a613590f87b8af8"
+    },
+    {
+      "index": 1,
+      "bbox": [
+        1,
+        10,
+        65,
+        31
+      ],
+      "rgbaSha256": "391c023e853d5847c80a3f48ed83d60cce7f9e99362f7fbbacbd3731a146b825"
+    },
+    {
+      "index": 2,
+      "bbox": [
+        1,
+        11,
+        65,
+        31
+      ],
+      "rgbaSha256": "0b6ba830bb91afae566efe2ea9afaae2d84b2788fa763674824065fe831751ac"
+    },
+    {
+      "index": 3,
+      "bbox": [
+        1,
+        10,
+        65,
+        31
+      ],
+      "rgbaSha256": "391c023e853d5847c80a3f48ed83d60cce7f9e99362f7fbbacbd3731a146b825"
+    }
+  ],
+  "requiredCorrections": [
+    "Redesign cap as crown plus directional brim: remove uninterrupted mushroom-like front rim, replace profile dark spike with a coherent brim, simplify highlight cluster and clarify hair/cap separation.",
+    "Shape profile forehead/nose/chin so eye and facing direction belong to a face rather than a flat rectangular skin edge. Preserve the improved jaw/neck continuity.",
+    "Use one stable shoe design across poses; separate the profile idle shoes throughout their visible clusters, not only on y30. Keep support/swing differentiation without switching from a continuous brown bar to two unrelated blocks.",
+    "Clean profile cream sleeve/skin/waist intersections and give back pack a clear attachment/edge with selective depth. Retain improved torso/leg proportions and profile gold-red bag."
+  ],
+  "failureReason": "Total73 is below the immutable85 minimum. All axis minima are met; no critical failure is invented to justify rejection."
+}

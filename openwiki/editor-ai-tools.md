@@ -2744,6 +2744,102 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
 
+
+## Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
+
+`plan_opening({intent, shots:[{event,composition,continuity}], entry})`는 제작 계획이다.
+샷 수·전체 시간을 고정하지 않는다. 텍스트만 있는 도입, 입력 대기, 같은 그림의 의도적 반복도
+가능하다. 기존 인물/장소의 형태뿐 아니라 시간대·광원·사건 결과의 연속성을 유지한다.
+
+`show_opening_image({resourceId})`는 실제 그림을 모델에 전달한다. 이름 목록 조회로 대체하지
+않는다. `generate_opening_image`는 실제 실행기 연결이 있을 때만 성공하며, 연결 없는 순수
+레지스트리 호출은 `image-generation-unavailable`로 실패한다. 이전의 성공처럼 보이는
+`ui-required` 핸드오프를 제거했다. 일반 Pi 경로는 생성→등록→실제 그림 전달→검토를 연결한다.
+세부 실행 경로와 팀/읽기 전용 경계는 `editor-ai-panel.md`의 같은 날짜 절을 따른다.
+
+장면의 선택적 `narrationAudioResourceId`는 생략 또는 빈 문자열이면 음성 없음으로 정규화한다.
+실제 그림/영상의 필수 `resourceId`는 빈 값을 허용하지 않는다. 실제 LLM이 음성 없음에 빈 값을
+넣어 7번 연속 거부되던 도그푸딩 실패를 근거로 수정했다. 없는 음성을 생성했다고 보고하지 않는다.
+
+모델 전용 오프닝 지침은 실제 Pi에 넣는다. `contextBuilder`/`TASK_RECIPES`의 지침만 바꿔
+일반 채팅에서 적용됐다고 보고하지 않는다. 전체 도구 카탈로그를 초기 요청으로 보내지 않는다.
+새 도구를 추가하며 반복 설명을 줄였고 오프닝 가족 예산 1,300을 올리지 않는다. 전체 카탈로그의
+기존 99,000 초과 기준선은 별도 문제이며 이번 변경이 해결했다고 주장하지 않는다.
+
+
+`get_opening.generatedStills`는 최근 프로젝트 생성 그림 최대 20개의 ID·이름·연결 여부를
+반환한다. `list_opening_media`는 생성 그림 → 다른 프로젝트 자료 → 공용 자료 순서다.
+원본 이미지 바이트는 이름 목록에 싣지 않는다. 계획 샷 수와 연결한 장면 수가 다르면 계획을
+수정하거나 장면을 연결해야 한다. “그림으로 보여줘” 요청에 장문을 붙였으면 수리 대상으로
+보고한다. 이 검사는 미적 품질 점수나 모델의 이해를 판정하지 않는다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actual assistant tools, shared renderer, sprite poses, timed audio, preview evidence, and title/idle/New Game entry contracts; [opening-reference-study.md](opening-reference-study.md) holds source-qualified game research.
+
+## Monster collector setup and verification (2026-10-03)
+
+`configure_monster_system` keeps its omitted `battleParty` compatibility contract. Its optional `presentation: "collector"` uses `configureMonsterPresentation` to set pixel menus and collector HUD; omitted/`preserve` retains existing presentation. The genre preset and bundled monster example explicitly apply the same helper. Only the unchanged built-in four-scene kingdom opening is disabled; independently authored opening text is preserved. No schema field or migration is added.
+
+The result declares `verificationScope: "configuration-only"`. Configuration success does not establish event execution, native combat, persistent saving, or campaign completion. After device interaction, call `run_scene_test` with `playerCanMove: true` and an exact `reachableTile` assertion before any `set`/`moveTo` injection. The runner now applies actual runtime tile overrides; its headless scope, starting position and injected steps are returned by both play tools. Actual exported-player input and canonical host save/fresh-load evidence remain separate requirements.
+
+## Structured optional read arrays (2026-10-04)
+
+Real opening dogfood exposed repeated actor-ID guesses: the provider emitted
+`get_database_records(ids:[])`, which returned zero even with160 actors. Empty
+optional IDs now mean no filter, matching omission; nonempty arrays still select
+exact real IDs. `read_game_systems` exposes actual current actor ID/name/charset
+index/map/coordinates and companion count, so artists need not infer these from
+a generic catalog. Preset menu entries and non-map audio bindings similarly
+accept empty optional arrays. Mutation/delete lists retain their explicit contract.
+
+## NPC, shop and readable opening production (2026-10-04)
+
+Use read_npc_layout/configure_npc_patrol for unconditional ambient residents; see
+editor-event-authoring.md. See runtime-sessions.md for configure_shop_presentation,
+explicit project shop override and effective counts. make_opening_storybook defaults
+to Enter-confirm pages and persistent illustration; automatic timelines require
+progression:auto. See opening-animatic-authoring.md. Successful tool output is authoring
+evidence; shipping playback and canonical save/reload remain separate requirements.
+
+## 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
+
+`monsterGameTools.ts`는 공용 `configure_monster_style(reference:emerald)`,
+`build_monster_game(mode:create|repair)`, `read_monster_game`, `review_monster_game`를
+등록한다. 전체 기본 요구는72맵·60종·8배지·리그·스토리·엔딩이며 작은 시작 예제로
+대체하지 않는다. 새 프로젝트 생성은 `createMonsterExpedition()`의 검토된 공용 원작
+캠페인을 재사용했다고 보고한다. 대형 아트/맵 데이터는 create의 `prepare`에서 지연
+로드하므로 headless는 `runToolAsync` 또는 `prepareTool` 후 `runTool`을 사용한다.
+
+create는 한 장의 미편집 `map_blank_start`만 자동 교체하고 기존 저작 게임은 거부한다.
+전체 폐기가 명시된 경우만 `replace:true`를 받는다. 기존 캠페인은 repair로 보수하며
+세션·시작·타일·DB 로스터를 재생성하지 않는다. 검토된 NPC/상점 수리는 원작
+`starlight-islands` 캠페인에만 적용한다. 사용자 오프닝은 보존하고 기본 오프닝이나
+명시 `replaceOpening:true`일 때만 공용 교수 소개를 연결한다. 모든 도구는 기존
+runner의 draft/admission/audit 경로를 통과한다. 다른 요청의 preservation
+`allowedChanges` 어휘를 전체 생성 예외로 넓히지 않는다.
+
+`monsterGameReview.ts`는 실제 정의/그림/타입/기술PP/진화/생태·배지/목표 참조·스타터/
+회복/상점/전투/조우/엔딩·전송 그래프·시작 통행·Enter 확인 도입·교수 초상·음악과
+480×320/camera2를 검사한다. 최종 읽기/검토와 실제 이미지 전달 영수증은
+`PiMonsterGameProduction`가 보유한다. 구조/리소스 검사이며 정상 난이도 플레이,
+청취, 실제 상점 거래와 정본 SQLite 저장/재로드 증거를 대신하지 않는다.
+
+기존 별빛섬 정본의 표현 이관은 `scripts/content/adopt-emerald-monster.mjs`로
+분리된 문서를 준비한다. 세션·시작 위치·맵 ID와 레이어·이벤트 명령/경로·충돌표·
+기술/종족/진행 데이터가 유지되는지 확인하며, 배우는 캐릭터 그림 두 필드만 허용한다.
+정본 저장은 별도 `monster-expedition-store.mjs save`의 백업·SHA 비교·호스트 API·
+새 연결 재로드 및 자산 바이트 비교를 통과해야 한다. 이관 준비만으로 저장을 보고하지 않는다.
+공용 기존 몬스터 그림은 ID가 키인 객체이며 `Object.values`로 순회한다. repair의
+`replaceCreatureArt:true`는 명시적 그림 교체 요청에만 쓰며 종족 데이터와 세이브를 유지한다.
+
+
+## Emerald native sprite contract (2026-10-04 correction)
+
+`monsterGameRequest.ts` and the shared style guide distinguish the16×32 source from the24×32 editor cell: x4 transparent padding, no resize,15opaque colors across12field poses. Owned trainer/professor images are64×64; `review_monster_game` rejects stale64×96 metadata. Metadata review does not inspect pixel bytes; source/final dimensions, palette, immutable provenance, animation review and stale/mutation rejection belong to `openwiki/harnesses/pokemon-character-motion.md`. The harness is a Node CLI, not a browser assistant tool. The actual browser tool `configure_opening_portrait_motion` connects reviewed pose strips without replacing Enter narration or music. Shared default introductions use one slow six-pose professor strip; repair preserves authored story pages.
+
+Owned professor introductions without an authored `portraitMotion` are now repaired by the actual `build_monster_game(mode:repair)` tool: refresh the native64×64 owned still and add the reviewed six-pose strip, preserving all story pages and confirmation timings. A different authored portrait or existing custom motion is preserved. `scripts/qa/runtime/emerald-native-dependencies.mjs` exercises the actual tool on detached canonical clones and the real export collector; no canonical writes occur in that gate.
+
 ## 세계 지도 지형 도구 (2026-10-03)
 
 2026-10-05: `list_worldmap_structures`·`read_worldmap_structure_reference`·`author_worldmap_structure`·

@@ -1,0 +1,143 @@
+{
+  "wave": "full-cast-v1",
+  "items": [
+    {
+      "role": "hero",
+      "label": "주인공",
+      "name": "해솔",
+      "template": "brendan-walking",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/hero",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "rival",
+      "label": "라이벌",
+      "name": "시온",
+      "template": "wally",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/rival",
+      "headEditsMin": 5,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "professor",
+      "label": "박사",
+      "name": "해명",
+      "template": "prof_birch",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/professor",
+      "headEditsMin": 5,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "nurse",
+      "label": "간호사",
+      "name": "이솔",
+      "template": "woman_3",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/nurse",
+      "headEditsMin": 22,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "merchant",
+      "label": "상인",
+      "name": "도윤",
+      "template": "mart_employee",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/merchant",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "mother",
+      "label": "어머니",
+      "name": "유나",
+      "template": "mom",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/mother",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "resident",
+      "label": "주민",
+      "name": "준서",
+      "template": "man_3",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/resident",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "gym_leader",
+      "label": "체육관장",
+      "name": "태강",
+      "template": "black_belt",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/gym_leader",
+      "headEditsMin": 6,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "company_agent",
+      "label": "회사요원",
+      "name": "서진",
+      "template": "devon_employee",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/company_agent",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "captain",
+      "label": "선장",
+      "name": "해준",
+      "template": "sailor",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/captain",
+      "headEditsMin": 6,
+      "clothesEditsMin": 3
+    },
+    {
+      "role": "worker",
+      "label": "작업자",
+      "name": "석호",
+      "template": "man_1",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/worker",
+      "headEditsMin": 45,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "student",
+      "label": "학생",
+      "name": "민재",
+      "template": "school_kid_m",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/student",
+      "headEditsMin": 4,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "ranger",
+      "label": "레인저",
+      "name": "솔찬",
+      "template": "bug_catcher",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/ranger",
+      "headEditsMin": 8,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "moon_leader",
+      "label": "월영단장",
+      "name": "백야",
+      "template": "gentleman",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/moon_leader",
+      "headEditsMin": 6,
+      "clothesEditsMin": 2
+    },
+    {
+      "role": "hiker",
+      "label": "등산가",
+      "name": "산호",
+      "template": "hiker",
+      "bundle": "/home/main/z-project/rpg-zzu-tileset-harness-monster-opening-host/harness-data/pokemon-character-casting/templates/full-cast-v1/hiker",
+      "headEditsMin": 8,
+      "clothesEditsMin": 2
+    }
+  ],
+  "reuseExplorer": "explorer-2fe0ce80a94b963f",
+  "errors": [],
+  "scope": "Sixteen walking roles, twelve poses each; fifteen newly edited templates plus existing Naru v2. User Allow required."
+}

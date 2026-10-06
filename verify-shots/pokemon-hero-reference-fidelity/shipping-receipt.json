@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "exactCopiedFiles": 3292,
+  "public": "/home/main/claude-viz/monster-expedition",
+  "backup": "/home/main/claude-viz/monster-expedition-before-brendan-reference",
+  "projectSha256": "129d33c9038429b4551aa7fefa8fc591a389be0e8efd7731126c4b3505b5ded2",
+  "playerSha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+  "allFileFingerprintSha256": "7ceb2aef4d681f66d0afa77002c44852f307ec8514bdf7808e6d294a9a9a5e32",
+  "scope": "Exact verified export. Same previously compiled engine; original-game hero reference adoption."
+}

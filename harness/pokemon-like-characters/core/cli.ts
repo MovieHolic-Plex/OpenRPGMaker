@@ -1,0 +1,147 @@
+import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, copyFileSync } from "node:fs";
+import { resolve, join, dirname } from "node:path";
+import { readPng, writePng } from "./png";
+import { createImage, pixelAt, setPixel } from "./image";
+import { WIDTH,HEIGHT,ROWS,ORDER,LIMITS,VERSION,sha,framesFromNative,pack,importAtlas,importRasterAtlas,checkCharset,checkClip,importGeneratedClip,toEditorCharset,EDITOR_WIDTH,EDITOR_PADDING_X,type ClipMetadata } from "./motion";
+import { TRAINER_PORTRAIT,TRAINER_ROLES,prepareTrainerPortrait,checkTrainerPortrait } from './portrait';
+const ROOT=resolve(import.meta.dirname,".."),DEFAULT=resolve(ROOT,".data/native");
+const json=(path:string)=>JSON.parse(readFileSync(path,"utf8"));
+const save=(path:string,value:unknown)=>{mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify(value,null,2)+"\n");};
+const hashFile=(p:string)=>sha(readFileSync(p));
+const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+function args(argv:string[]){const flags:Record<string,string>={};const bool=new Set<string>();for(let i=0;i<argv.length;i++){const a=argv[i]!;if(!a.startsWith("--"))throw Error(`unexpected argument ${a}`);if(a==="--native"||a==="--structural-only"){bool.add(a.slice(2));continue;}const val=argv[++i];if(!val||val.startsWith("--"))throw Error(`missing value ${a}`);flags[a.slice(2)]=val;}return {flags,bool};}
+function pathRoot(f:Record<string,string>){return resolve(f.sandbox??process.env.POKEMON_MOTION_SANDBOX??DEFAULT);}
+function candidatePath(f:Record<string,string>){if(!f.candidate)throw Error("--candidate required");return resolve(f.candidate);}
+function snapshot(c:string){
+  const p=json(join(c,"provenance.json"));if(p.version!==VERSION)throw Error("obsolete provenance contract version; re-import source");
+  if(p.kind==='portrait'){if(!equal(p.contract,TRAINER_PORTRAIT)||!TRAINER_ROLES.includes(p.role))throw Error('wrong native trainer portrait contract or role');}
+  else if(p.kind!=="clip"&&(p.contract?.frameWidth!==WIDTH||p.contract?.frameHeight!==HEIGHT))throw Error("wrong native charset contract; editor container is separate");
+  const finalFile=p.kind==='portrait'?'portrait.png':p.kind==='clip'?'clip.png':'charset.png';
+  const files=p.kind==='portrait'?["source.png","prompt.txt","portrait.png"]:p.kind==="clip"?["source.png","prompt.txt","clip.png","clip-metadata.json"]:["source.png","prompt.txt","charset.png",...(p.clip?["clip-source.png","clip-metadata.json","clip.png"]:[])];
+  const hashes=Object.fromEntries(files.map(file=>[file,hashFile(join(c,file))]));
+  if(hashes["source.png"]!==p.sourceSha256||hashes["prompt.txt"]!==p.promptSha256||hashes[finalFile]!==p.finalSha256)throw Error("immutable provenance hash mismatch");
+  if(p.kind==="clip"&&hashes["clip-metadata.json"]!==p.metadataSha256)throw Error("immutable clip metadata hash mismatch");
+  if(p.clip&&["clip-source.png","clip-metadata.json","clip.png"].some(file=>hashes[file]!==p.clip.hashes[file]))throw Error("immutable clip provenance hash mismatch");
+  const implementationSha256=sha(["cli.ts","motion.ts","portrait.ts","./grid.ts","./image.ts","./oklab.ts","./png.ts"].map(file=>hashFile(resolve(import.meta.dirname,"../core",file))).join(":"));
+  return {provenance:p,hashes,implementationSha256,provenanceSha256:hashFile(join(c,"provenance.json")),version:VERSION,limits:p.kind==='portrait'?TRAINER_PORTRAIT:LIMITS};
+}
+function runCheck(c:string){
+  const snap=snapshot(c);if(snap.provenance.kind==='portrait')return {kind:'structural',...snap,...checkTrainerPortrait(readPng(join(c,'portrait.png'))),clip:null,createdAt:new Date().toISOString()};
+  if(snap.provenance.kind==="clip"){const r=checkClip(readPng(join(c,"clip.png")),json(join(c,"clip-metadata.json")));return {kind:"structural",...snap,pass:r.pass,errors:r.errors,warnings:[],metrics:{paletteUnion:r.paletteUnion,normalized:r.normalized,frames:r.frames.length},clip:{pass:r.pass,errors:r.errors,normalized:r.normalized},createdAt:new Date().toISOString()};}
+  const result=checkCharset(readPng(join(c,"charset.png")));
+  let clip=null;if(snap.provenance.clip){const r=checkClip(readPng(join(c,"clip-source.png")),json(join(c,"clip-metadata.json")));clip={pass:r.pass,errors:r.errors,normalized:r.normalized};if(!r.pass){result.pass=false;result.errors.push(...r.errors);}}
+  return {kind:"structural",...snap,...result,clip,createdAt:new Date().toISOString()};
+}
+function equal(a:unknown,b:unknown){return JSON.stringify(a)===JSON.stringify(b);}
+function reviewFresh(c:string,snap:ReturnType<typeof snapshot>){
+  const p=join(c,"review.json");if(!existsSync(p))throw Error("missing semantic review; run preview then review with evidence");const r=json(p);
+  if(!equal(r.hashes,snap.hashes)||r.provenanceSha256!==snap.provenanceSha256||r.version!==VERSION||r.implementationSha256!==snap.implementationSha256||!equal(r.limits,snap.limits))throw Error("stale review/source/final hash");
+  if(r.evidence.some((e:{file:string,sha256:string})=>!existsSync(join(c,e.file))||hashFile(join(c,e.file))!==e.sha256))throw Error("review evidence changed/missing");
+  if(r.previewSha256!==hashFile(join(c,"preview.html")))throw Error("review preview changed/missing");
+  if(r.verdict!=="pass")throw Error("semantic review rejected");return r;
+}
+function gate(c:string){const report=runCheck(c);let review=null;try{review=reviewFresh(c,report);}catch(e){report.pass=false;report.errors.push(String(e));}const out={...report,kind:"gate",reviewSha256:review?hashFile(join(c,"review.json")):null};save(join(c,"gate.json"),out);return out;}
+function preview(c:string){
+  const snap=snapshot(c);if(snap.provenance.kind==='portrait')return previewPortrait(c,snap);if(snap.provenance.kind==="clip")return previewStandaloneClip(c,snap);
+  const s=snap,src=`data:image/png;base64,${readFileSync(join(c,"charset.png")).toString("base64")}`;
+  const clip=s.provenance.clip?{src:`data:image/png;base64,${readFileSync(join(c,"clip.png")).toString("base64")}`,meta:json(join(c,"clip-metadata.json"))}:null;
+  const model={src,clip,rows:ROWS,order:ORDER,frameWidth:WIDTH,frameHeight:HEIGHT};
+  const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>캐릭터 모션 검수</title><style>body{background:#17202b;color:#eee;font:16px system-ui;margin:24px}section{display:flex;flex-wrap:wrap;gap:24px}article{background:#344152;padding:16px}canvas{image-rendering:pixelated;background:repeating-conic-gradient(#344152 0% 25%,#526075 0% 50%) 50% / 8px 8px;vertical-align:bottom}button,input{font:inherit}small{display:block;max-width:70ch}</style><h1>${escape(s.provenance.role)} 모션 검수</h1><p>원본 1배·게임 3배. 방향 의미, 발 교대, 상체 고정, 소품 일관성과 루프 경계를 직접 확인하세요.</p><button id="pause">일시정지</button> <label>속도 <input id="speed" type="range" min="60" max="300" value="130"></label> <span id="frame"></span><section id="walk"></section><h2>12개 원본 포즈</h2><img style="image-rendering:pixelated;width:144px" src="${src}" alt="4방향 3포즈 원본"><section id="clip"></section><small>출처 ${s.hashes["source.png"]}<br>최종 ${s.hashes["charset.png"]}<br>구조 관문은 방향이나 다리 교대의 의미를 증명하지 않습니다. 검수 후 별도 review 명령으로 판정을 남깁니다.</small><script type="application/json" id="model">${JSON.stringify(model).replace(/</g,"\\u003c")}</script><script>
+const m=JSON.parse(document.querySelector('#model').textContent);let step=0,paused=false,last=0;const img=new Image();img.src=m.src;const canvases=[];m.rows.forEach((dir,row)=>{const card=document.createElement('article');card.append(document.createTextNode(dir+' '));[1,3].forEach(scale=>{const cv=document.createElement('canvas');cv.width=m.frameWidth;cv.height=m.frameHeight;cv.style.width=m.frameWidth*scale+'px';cv.style.height=m.frameHeight*scale+'px';card.append(cv);canvases.push({cv,row});});document.querySelector('#walk').append(card);});const clipImage=new Image(),clips=[];if(m.clip){clipImage.src=m.clip.src;const cv=document.createElement('canvas');cv.width=m.clip.meta.frameWidth;cv.height=m.clip.meta.frameHeight;cv.style.width=cv.width*3+'px';cv.style.height=cv.height*3+'px';document.querySelector('#clip').append(cv);clips.push(cv);}let clipStep=0,clipLast=0;document.querySelector('#pause').onclick=()=>{paused=!paused;document.querySelector('#pause').textContent=paused?'재생':'일시정지';};function draw(t){if(!paused&&t-last>=+document.querySelector('#speed').value){step=(step+1)%4;last=t;}canvases.forEach(({cv,row})=>{const ctx=cv.getContext('2d');ctx.clearRect(0,0,m.frameWidth,m.frameHeight);ctx.drawImage(img,m.order[step]*m.frameWidth,row*m.frameHeight,m.frameWidth,m.frameHeight,0,0,m.frameWidth,m.frameHeight);});document.querySelector('#frame').textContent='pose '+m.order[step];if(m.clip){const meta=m.clip.meta;if(!paused&&t-clipLast>=(meta.durationsMs?.[clipStep]??1000/meta.fps)){clipStep=(clipStep+1)%meta.frameOrder.length;clipLast=t;}clips.forEach(cv=>{const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(clipImage,meta.frameOrder[clipStep]*cv.width,0,cv.width,cv.height,0,0,cv.width,cv.height);});}requestAnimationFrame(draw);}img.onload=()=>requestAnimationFrame(draw);
+</script></html>`;
+  const p=join(c,"preview.html");writeFileSync(p,html);save(join(c,"preview-receipt.json"),{...s,previewSha256:hashFile(p)});return p;
+}
+export async function run(argv:string[]):Promise<number>{
+  const [command,...rest]=argv;try{
+    const {flags:f,bool}=args(rest),base=pathRoot(f);
+    if(command==='portrait-import'){
+      if(!f.role||!f.source||!f['prompt-file'])throw Error('portrait-import requires --role --source --prompt-file');
+      if(!TRAINER_ROLES.includes(f.role as typeof TRAINER_ROLES[number]))throw Error('portrait role must be one of16 cast roles or hero_back');
+      const sourceBytes=readFileSync(resolve(f.source)),prompt=readFileSync(resolve(f['prompt-file']));if(!prompt.toString().trim())throw Error('prompt cannot be blank');
+      const source=readPng(resolve(f.source)),prepared=bool.has('native')?{image:source,sourceDimensions:{width:source.width,height:source.height},scale:1,sampling:'native-pixels-unchanged'}:prepareTrainerPortrait(source),checked=checkTrainerPortrait(prepared.image);if(!checked.pass)throw Error(checked.errors.join('; '));
+      const id=`portrait-${f.role}-${Date.now()}-${sha(sourceBytes).slice(0,8)}`,c=join(base,'candidates',id);mkdirSync(c,{recursive:true});writeFileSync(join(c,'source.png'),sourceBytes);writeFileSync(join(c,'prompt.txt'),prompt);writePng(join(c,'portrait.png'),prepared.image);
+      const {image:_,...processing}=prepared;
+      save(join(c,'provenance.json'),{version:VERSION,kind:'portrait',mode:bool.has('native')?'native':'extracted-existing-pixels',createdAt:new Date().toISOString(),role:f.role,sourceSha256:sha(sourceBytes),promptSha256:sha(prompt),finalSha256:hashFile(join(c,'portrait.png')),sourceDimensions:{width:source.width,height:source.height},contract:TRAINER_PORTRAIT,limits:TRAINER_PORTRAIT,...processing});console.log(c);return 0;
+    }
+    if(command==="status"){const seed=json(resolve(f.seed??join(ROOT,"core/seed.json")));const dir=join(base,"candidates");console.log(JSON.stringify({base,roles:seed.roles,candidates:existsSync(dir)?readdirSync(dir).map(id=>{const c=join(dir,id);try { const snap=snapshot(c); const gatePath=join(c,"gate.json"),g=existsSync(gatePath)?json(gatePath):null;let reviewed=false;try{reviewFresh(c,snap);reviewed=true;}catch{}return {id,role:snap.provenance.role,hashes:snap.hashes,reviewed,gateFresh:!!g&&g.pass&&equal(g.hashes,snap.hashes)&&g.provenanceSha256===snap.provenanceSha256&&g.version===VERSION&&g.implementationSha256===snap.implementationSha256&&equal(g.limits,snap.limits)&&reviewed&&g.reviewSha256===hashFile(join(c,"review.json"))};} catch(error) { return {id,error:String(error)}; }}):[]},null,2));return 0;}
+    if(command==="clip-import"){
+      if(!f.role||!f.source||!f["prompt-file"])throw Error("clip-import requires --role --source --prompt-file");
+      const seed=json(resolve(f.seed??join(ROOT,"core/seed.json")));if(!seed.roles.includes(f.role))throw Error("clip role not in seed");
+      const defaults=seed.openingClips,authored=f["clip-spec"]?json(resolve(f["clip-spec"])):{};
+      const sourceBytes=readFileSync(resolve(f.source)),prompt=readFileSync(resolve(f["prompt-file"]));if(!prompt.toString().trim())throw Error("prompt cannot be blank");
+      const columns=Number(f.columns??authored.columns??defaults.columns),rows=Number(f.rows??authored.rows??defaults.rows),frameWidth=Number(f["frame-width"]??authored.frameWidth??defaults.frameWidth),frameHeight=Number(f["frame-height"]??authored.frameHeight??defaults.frameHeight),block=f.block===undefined?undefined:Number(f.block);
+      const sampling=f.sampling??authored.sampling??(block===undefined?'raster':'grid');
+      if(sampling!=='raster'&&sampling!=='grid')throw Error('--sampling raster|grid');
+      const sourceImage=readPng(resolve(f.source));
+      let imported;
+      if(bool.has('native')){
+        if(![columns,rows,frameWidth,frameHeight].every(n=>Number.isInteger(n)&&n>0)||columns*rows<2||columns*rows>64||sourceImage.width!==columns*frameWidth||sourceImage.height!==rows*frameHeight)throw Error('native clip must exactly match its declared grid');
+        const image=createImage(columns*rows*frameWidth,frameHeight);
+        for(let i=0;i<columns*rows;i++)for(let y=0;y<frameHeight;y++)for(let x=0;x<frameWidth;x++)setPixel(image,i*frameWidth+x,y,pixelAt(sourceImage,(i%columns)*frameWidth+x,Math.floor(i/columns)*frameHeight+y));
+        imported={image,frameCount:columns*rows,scale:1,sampling:'native-pixels-unchanged',rects:Array.from({length:columns*rows},(_,i)=>({x:i%columns*frameWidth,y:Math.floor(i/columns)*frameHeight,width:frameWidth,height:frameHeight}))};
+      }else imported=importGeneratedClip(sourceImage,{columns,rows,frameWidth,frameHeight,block,sampling,sourceRects:authored.sourceRects,alphaThreshold:128,maxColors:Number(f["max-colors"]??authored.paletteUnionMax??defaults.paletteUnionMax)});
+      const clipId=f["clip-id"]??authored.id??`${f.role}-intro`;if(!/^[a-z][a-z0-9-]*$/.test(clipId))throw Error("clip id must be kebab-case");
+      const meta:ClipMetadata={id:clipId,frameWidth,frameHeight,fps:Number(f.fps??authored.fps??defaults.fps),frameOrder:f["frame-order"]?f["frame-order"].split(',').map(Number):authored.frameOrder??Array.from({length:imported.frameCount},(_,i)=>i),sourceRects:Array.from({length:imported.frameCount},(_,i)=>({x:i*frameWidth,y:0,width:frameWidth,height:frameHeight})),kind:authored.kind??'drawn',paletteUnionMax:Number(f["max-colors"]??authored.paletteUnionMax??defaults.paletteUnionMax),...(authored.durationsMs?{durationsMs:authored.durationsMs}:{})};
+      const checked=checkClip(imported.image,meta);if(!checked.pass)throw Error(checked.errors.join('; '));
+      const id=`clip-${clipId}-${Date.now()}-${sha(sourceBytes).slice(0,8)}`,c=join(base,'candidates',id);mkdirSync(c,{recursive:true});writeFileSync(join(c,'source.png'),sourceBytes);writeFileSync(join(c,'prompt.txt'),prompt);writePng(join(c,'clip.png'),imported.image);save(join(c,'clip-metadata.json'),meta);
+      const {image:preparedImage,...processing}=imported;
+      save(join(c,'provenance.json'),{version:VERSION,kind:'clip',mode:bool.has('native')?'native':'generated',createdAt:new Date().toISOString(),role:f.role,clipId,sourceSha256:sha(sourceBytes),promptSha256:sha(prompt),finalSha256:hashFile(join(c,'clip.png')),metadataSha256:hashFile(join(c,'clip-metadata.json')),columns,rows,frameWidth,frameHeight,frameCount:imported.frameCount,sourceRects:imported.rects,commonScale:imported.scale,headAlignment:'top silhouette root, native translations only',...processing,limits:LIMITS});console.log(c);return 0;
+    }
+    if(command==="import"){
+      if(!f.role||!f.source||!f["prompt-file"])throw Error("import requires --role --source --prompt-file");
+      const seed=json(resolve(f.seed??join(ROOT,"core/seed.json")));if(!seed.roles.includes(f.role))throw Error("role not in seed");
+      const sourceBytes=readFileSync(resolve(f.source)),prompt=readFileSync(resolve(f["prompt-file"]));if(!prompt.toString().trim())throw Error("prompt cannot be blank; document legacy origin if native");
+      const block=f.block===undefined?undefined:Number(f.block);if(block!==undefined&&(!Number.isInteger(block)||block<2||block>40))throw Error("--block integer 2..40");
+      let preparedClip:{metaBytes:Buffer;sourceBytes:Buffer;meta:ClipMetadata;checked:ReturnType<typeof checkClip>}|null=null;
+      if(f["clip-metadata"]||f["clip-source"]){if(!f["clip-metadata"]||!f["clip-source"])throw Error("clip requires metadata and source");const metaBytes=readFileSync(resolve(f["clip-metadata"])),meta=JSON.parse(metaBytes.toString()) as ClipMetadata,sourceBytes=readFileSync(resolve(f["clip-source"])),checked=checkClip(readPng(resolve(f["clip-source"])),meta);if(!checked.pass)throw Error(checked.errors.join("; "));preparedClip={metaBytes,sourceBytes,meta,checked};}
+      const source=readPng(resolve(f.source));let imported:Record<string,unknown>,image;
+      if(bool.has("native")){const slot=f.slot===undefined?undefined:Number(f.slot);image=pack(framesFromNative(source,slot));imported={mode:"native",slot:slot??0,scale:1};}
+      else if((f.sampling??(block===undefined?'raster':'grid'))==="raster"){const r=importRasterAtlas(source);image=r.image;imported={mode:"generated",...r,image:undefined};}
+      else{if(f.sampling&&f.sampling!=="grid")throw Error("--sampling grid|raster");const r=importAtlas(source,block);image=r.image;imported={mode:"generated",commonBlock:r.block,inferredBlocks:r.inferredBlocks,sourceRects:r.rects,commonScale:r.scale,palette:r.palette,headAlignment:"top silhouette root, native translations only"};}
+      const id=`${f.role}-${Date.now()}-${sha(sourceBytes).slice(0,8)}`,c=join(base,"candidates",id);mkdirSync(c,{recursive:true});writeFileSync(join(c,"source.png"),sourceBytes);writeFileSync(join(c,"prompt.txt"),prompt);writePng(join(c,"charset.png"),image);
+      let clip=null;if(preparedClip){const {metaBytes,sourceBytes,meta,checked:r}=preparedClip;writeFileSync(join(c,"clip-source.png"),sourceBytes);writeFileSync(join(c,"clip-metadata.json"),metaBytes);const strip=createImage(meta.frameWidth*r.frames.length,meta.frameHeight);r.frames.forEach((fr,i)=>{for(let y=0;y<fr.height;y++)for(let x=0;x<fr.width;x++)setPixel(strip,i*fr.width+x,y,pixelAt(fr,x,y));});writePng(join(c,"clip.png"),strip);clip={hashes:Object.fromEntries(["clip-source.png","clip-metadata.json","clip.png"].map(file=>[file,hashFile(join(c,file))]))};}
+      save(join(c,"provenance.json"),{version:VERSION,createdAt:new Date().toISOString(),role:f.role,sourceSha256:sha(sourceBytes),promptSha256:sha(prompt),finalSha256:hashFile(join(c,"charset.png")),contract:seed.charset,limits:LIMITS,...imported,clip});
+      console.log(c);return 0;
+    }
+    if(command==="check"){
+      if(f.source&&f.kind==='portrait'){const r=checkTrainerPortrait(readPng(resolve(f.source)));console.log(JSON.stringify(r,null,2));if(f.report)save(resolve(f.report),{...r,version:VERSION,limits:TRAINER_PORTRAIT,sourceSha256:hashFile(resolve(f.source))});return r.pass?0:1;}
+      if(f.source){const source=readPng(resolve(f.source)),image=pack(framesFromNative(source,f.slot===undefined?undefined:Number(f.slot))),r=checkCharset(image);console.log(JSON.stringify(r,null,2));if(f.report)save(resolve(f.report),{...r,version:VERSION,limits:LIMITS,sourceSha256:hashFile(resolve(f.source))});return r.pass?0:1;}
+      const c=candidatePath(f),r=runCheck(c);save(join(c,"check.json"),r);console.log(JSON.stringify(r,null,2));return r.pass?0:1;
+    }
+    if(command==="preview"){console.log(preview(candidatePath(f)));return 0;}
+    if(command==="review"){
+      const c=candidatePath(f),snap=snapshot(c),r=runCheck(c);if(!r.pass)throw Error("structural check fails; cannot record pass review");if(!f.who||!f.why||!f.evidence||!['pass','redo'].includes(f.verdict??''))throw Error("review requires --who --why --evidence file[,file] --verdict pass|redo");
+      const previewPath=join(c,"preview.html"),receiptPath=join(c,"preview-receipt.json");if(!existsSync(previewPath)||!existsSync(receiptPath))throw Error("preview required before review");const pr=json(receiptPath);if(pr.previewSha256!==hashFile(previewPath)||!equal(pr.hashes,snap.hashes)||pr.implementationSha256!==snap.implementationSha256||pr.provenanceSha256!==snap.provenanceSha256||pr.version!==snap.version||!equal(pr.limits,snap.limits))throw Error("stale preview");
+      const evidence=f.evidence.split(',').map((path,i)=>{const file=`review-evidence-${i}${path.match(/\.[a-zA-Z0-9]+$/)?.[0]??'.bin'}`;copyFileSync(resolve(path),join(c,file));return {file,sha256:hashFile(join(c,file))};});
+      if(existsSync(join(c,"review.json"))){const previous=hashFile(join(c,"review.json"));copyFileSync(join(c,"review.json"),join(c,`review-history-${previous}.json`));}
+      save(join(c,"review.json"),{...snap,createdAt:new Date().toISOString(),verdict:f.verdict,who:f.who,why:f.why,evidence,semanticChecklist:snap.provenance.kind==='portrait'?["native1x silhouette and anatomy readable","role/outfit matches declared source identity","palette and edge pixels reviewed at1x2x3x",snap.provenance.mode==='native'?"native source pixels and complete pose retained without fit":"uniform nearest fit retains aspect and complete pose","front/back orientation is correct for declared role"]:snap.provenance.kind==="clip"?["blink/talk and gestures visible if authored","all source poses retained in declared order","head/body identity and root stable","actual shapes change if advertised drawn","timing and loop natural"]:["correct four directions","alternating feet read while walking","head/body identity stable","loop seam natural","clip is actual drawn poses if advertised drawn"],previewSha256:hashFile(previewPath)});console.log(join(c,"review.json"));return 0;
+    }
+    if(command==="gate"){const c=candidatePath(f),r=bool.has("structural-only")?runCheck(c):gate(c);if(bool.has("structural-only"))save(join(c,"check.json"),r);console.log(JSON.stringify(r,null,2));return r.pass?0:1;}
+    if(command==="build"){
+      const c=candidatePath(f),snap=snapshot(c),gp=join(c,"gate.json");if(!existsSync(gp))throw Error("missing gate; run gate first");const g=json(gp);
+      if(!g.pass||g.kind!=="gate"||g.version!==VERSION||g.implementationSha256!==snap.implementationSha256||!equal(g.hashes,snap.hashes)||g.provenanceSha256!==snap.provenanceSha256||!equal(g.limits,snap.limits)||g.reviewSha256!==hashFile(join(c,"review.json")))throw Error("failed/stale gate hash");reviewFresh(c,snap);const current=runCheck(c);if(!current.pass)throw Error("current structure fails");
+      if(snap.provenance.kind==='portrait'){
+        const out=resolve(f.out??join(base,'output','portraits',snap.provenance.role));mkdirSync(out,{recursive:true});['portrait.png','provenance.json','review.json','gate.json'].forEach(file=>copyFileSync(join(c,file),join(out,file)));
+        save(join(out,'motion.json'),{kind:'portrait',profile:'emerald-trainer-native',role:snap.provenance.role,width:TRAINER_PORTRAIT.width,height:TRAINER_PORTRAIT.height,frameCount:1,paletteUnionMax:TRAINER_PORTRAIT.maxOpaqueColors,alphaThreshold:TRAINER_PORTRAIT.alphaThreshold,sourceSha256:snap.hashes['source.png'],promptSha256:snap.hashes['prompt.txt'],portraitSha256:snap.hashes['portrait.png'],gateSha256:hashFile(gp)});console.log(out);return 0;
+      }
+      const out=resolve(f.out??join(base,"output",snap.provenance.role));mkdirSync(out,{recursive:true});if(snap.provenance.kind==="clip"){const clipOut=resolve(f.out??join(base,"output","clips",snap.provenance.clipId));mkdirSync(clipOut,{recursive:true});["clip.png","clip-metadata.json","provenance.json","review.json","gate.json"].forEach(file=>copyFileSync(join(c,file),join(clipOut,file)));save(join(clipOut,"motion.json"),{...json(join(c,"clip-metadata.json")),role:snap.provenance.role,sourceSha256:snap.hashes["source.png"],clipSha256:snap.hashes["clip.png"],gateSha256:hashFile(gp)});console.log(clipOut);return 0;}
+      const files=["charset.png","provenance.json","review.json","gate.json",...(snap.provenance.clip?["clip.png","clip-metadata.json"]:[])];files.forEach(file=>copyFileSync(join(c,file),join(out,file)));writePng(join(out,"editor-charset.png"),toEditorCharset(readPng(join(c,"charset.png"))));save(join(out,"motion.json"),{role:snap.provenance.role,frameWidth:WIDTH,frameHeight:HEIGHT,rows:ROWS,columns:["stepA","idle","stepB"],idle:1,order:ORDER,frameMs:130,sourceSha256:snap.hashes["source.png"],charsetSha256:snap.hashes["charset.png"],nativeSheetWidth:WIDTH*3,nativeSheetHeight:HEIGHT*4,editorAdapter:{file:"editor-charset.png",frameWidth:EDITOR_WIDTH,frameHeight:HEIGHT,paddingX:EDITOR_PADDING_X,resize:false,sha256:hashFile(join(out,"editor-charset.png"))},gateSha256:hashFile(gp),clip:snap.provenance.clip?json(join(c,"clip-metadata.json")):null});console.log(out);return 0;
+    }
+    throw Error("stages: status import clip-import portrait-import check preview review gate build");
+  }catch(e){console.error(e instanceof Error?e.message:String(e));return 1;}
+}
+
+function previewPortrait(c:string,s:ReturnType<typeof snapshot>){
+  const src=`data:image/png;base64,${readFileSync(join(c,'portrait.png')).toString('base64')}`;
+  const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>트레이너 도트 검수</title><style>body{background:#17202b;color:#eee;font:16px system-ui;margin:24px}section{display:flex;flex-wrap:wrap;gap:24px;align-items:end}img{image-rendering:pixelated;display:block;background:repeating-conic-gradient(#344152 0% 25%,#526075 0% 50%) 50% / 8px 8px}small{display:block;max-width:80ch}</style><h1>${escape(s.provenance.role)} 트레이너64×64 검수</h1><p>정적 원본1배·2배·3배. 얼굴·옷·앞뒤 방향·실루엣·가장자리 픽셀을 직접 확인하세요. 구조 통과가 그림의 품질 승인은 아닙니다.</p><section>${[1,2,3].map(scale=>`<article><h2>${scale}×</h2><img data-scale="${scale}" width="${64*scale}" height="${64*scale}" src="${src}" alt="${escape(s.provenance.role)} 트레이너 ${scale}배"></article>`).join('')}</section><small>원본 ${s.hashes['source.png']}<br>프롬프트 ${s.hashes['prompt.txt']}<br>후보 ${s.hashes['portrait.png']}</small></html>`;
+  const p=join(c,'preview.html');writeFileSync(p,html);save(join(c,'preview-receipt.json'),{...s,previewSha256:hashFile(p)});return p;
+}
+
+function previewStandaloneClip(c:string,s:ReturnType<typeof snapshot>){
+  const src=`data:image/png;base64,${readFileSync(join(c,"clip.png")).toString("base64")}`,meta=json(join(c,"clip-metadata.json"));
+  const model={src,meta};
+  const html=`<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오프닝 클립 검수</title><style>body{background:#17202b;color:#eee;font:16px system-ui;margin:24px}section{display:flex;flex-wrap:wrap;gap:24px}canvas{image-rendering:pixelated;background:repeating-conic-gradient(#344152 0% 25%,#526075 0% 50%) 50% / 8px 8px;vertical-align:bottom}button,input{font:inherit}img{max-width:100%;image-rendering:pixelated}</style><h1>${escape(s.provenance.clipId)} 실제 생성 클립</h1><p>원본 1배·3배 재생. 눈 깜빡임, 말하는 입, 손과 소품의 실제 변화 및 인물 정체성을 확인하세요.</p><button id="pause">일시정지</button> <button id="next">다음 프레임</button> <span id="frame"></span><section id="clips"></section><h2>전체 ${meta.sourceRects.length}포즈</h2><img src="${src}" alt="실제 생성 포즈 스트립"><p>원본 ${s.hashes['source.png']}<br>최종 ${s.hashes['clip.png']}</p><script type="application/json" id="model">${JSON.stringify(model).replace(/</g,'\\u003c')}</script><script>
+const m=JSON.parse(document.querySelector('#model').textContent),img=new Image();let step=0,paused=false,last=0;const canvases=[];[1,3].forEach(scale=>{const cv=document.createElement('canvas');cv.width=m.meta.frameWidth;cv.height=m.meta.frameHeight;cv.style.width=cv.width*scale+'px';cv.style.height=cv.height*scale+'px';document.querySelector('#clips').append(cv);canvases.push(cv);});document.querySelector('#pause').onclick=()=>{paused=!paused;document.querySelector('#pause').textContent=paused?'재생':'일시정지';};document.querySelector('#next').onclick=()=>{paused=true;step=(step+1)%m.meta.frameOrder.length;};function draw(t){if(!paused&&t-last>=(m.meta.durationsMs?.[step]??1000/m.meta.fps)){step=(step+1)%m.meta.frameOrder.length;last=t;}const index=m.meta.frameOrder[step];canvases.forEach(cv=>{const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(img,index*cv.width,0,cv.width,cv.height,0,0,cv.width,cv.height);});document.querySelector('#frame').textContent='frame '+index;requestAnimationFrame(draw);}img.onload=()=>requestAnimationFrame(draw);img.src=m.src;
+</script></html>`;
+  const path=join(c,'preview.html');writeFileSync(path,html);save(join(c,'preview-receipt.json'),{...s,previewSha256:hashFile(path)});return path;
+}

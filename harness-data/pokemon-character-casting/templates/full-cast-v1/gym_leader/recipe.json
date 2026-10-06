@@ -1,0 +1,422 @@
+{
+  "method": "pinned-template-explicit-edits",
+  "author": "Codex GPT-6 edits on original Emerald black_belt artwork",
+  "independentlyAuthored": false,
+  "copiedOriginalPixels": true,
+  "templateSpec": {
+    "version": 1,
+    "templateId": "black_belt",
+    "templateSourceSha256": "5e6dd34ff0760090a322f9f420bb40b080a5ed60ca5fec9364a6d97bfb767eaa",
+    "paletteOverrides": {
+      "B": "#d5d5cb",
+      "C": "#979da1",
+      "D": "#4a515d",
+      "5": "#b5514d",
+      "6": "#79383e",
+      "7": "#422d3c",
+      "8": "#e5bb63",
+      "9": "#a47b3d",
+      "A": "#614c38",
+      "E": "#d57865"
+    },
+    "patches": [
+      {
+        "frame": "up_stepA",
+        "y": 13,
+        "rows": [
+          "...DCBDCCBBD...."
+        ]
+      },
+      {
+        "frame": "up_stepA",
+        "y": 15,
+        "rows": [
+          "...DDCCBBBBDD..."
+        ]
+      },
+      {
+        "frame": "up_stepA",
+        "y": 24,
+        "rows": [
+          ".7E655E88E5557.."
+        ]
+      },
+      {
+        "frame": "up_stepA",
+        "y": 25,
+        "rows": [
+          ".4224EE88EE574.."
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 12,
+        "rows": [
+          "...DCBDCCBBD...."
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 14,
+        "rows": [
+          "...DDCCBBBBDD..."
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 23,
+        "rows": [
+          "427655E88E556724"
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 24,
+        "rows": [
+          "43765EE88EE56734"
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 13,
+        "rows": [
+          "...DCBDCCBBD...."
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 15,
+        "rows": [
+          "...DDCCBBBBDD..."
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 24,
+        "rows": [
+          "..7555E88E556E7."
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 25,
+        "rows": [
+          "..475EE88EE4224."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 13,
+        "rows": [
+          "...DBBBCDBCD...."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 15,
+        "rows": [
+          "...DDCCBBBCDD..."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 24,
+        "rows": [
+          "...767E88EE7...."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 12,
+        "rows": [
+          "...DBBBCDBCD...."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 14,
+        "rows": [
+          "...DDCCBBBCDD..."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 23,
+        "rows": [
+          "...76788E6E7...."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 13,
+        "rows": [
+          "...DBBBCDBCD...."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 15,
+        "rows": [
+          "...DDCCBBBCDD..."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 24,
+        "rows": [
+          "...76788E7E7...."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 13,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 15,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 24,
+        "rows": [
+          "..75EE8338EE5E7."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 25,
+        "rows": [
+          "..475EE88EE4224."
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 12,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 14,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 23,
+        "rows": [
+          "4275EE8338EE5724"
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 24,
+        "rows": [
+          "43475EE88EE57434"
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 13,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 15,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 24,
+        "rows": [
+          ".7E5EE8338EE57.."
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 25,
+        "rows": [
+          ".4224EE88EE574.."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 13,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 15,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 24,
+        "rows": [
+          "....7EE88E767..."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 12,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 14,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 23,
+        "rows": [
+          "....7E6E88767..."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 13,
+        "rows": [
+          "....DCBDCBBBD..."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 15,
+        "rows": [
+          "...DDCBBBCCDD..."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 24,
+        "rows": [
+          "....7E7E88767..."
+        ]
+      }
+    ],
+    "protectedRows": [
+      28,
+      29,
+      30,
+      31
+    ],
+    "design": "\uc740\ud68c\uc0c9 \uba38\ub9ac\uc640 \ubd89\uc740 \uba38\ub9ac\ub760, \uc9d9\uc740 \ub3c4\ubcf5\uacfc \uae08\ube5b \ub760",
+    "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+  },
+  "templateAudit": {
+    "source": {
+      "id": "black_belt",
+      "file": "black_belt.png",
+      "sha256": "5e6dd34ff0760090a322f9f420bb40b080a5ed60ca5fec9364a6d97bfb767eaa",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/black_belt.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited derivatives."
+    },
+    "frames": [
+      {
+        "frame": "up_stepA",
+        "headIndexEdits": 9,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "up_idle",
+        "headIndexEdits": 9,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "up_stepB",
+        "headIndexEdits": 9,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_stepA",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_idle",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_stepB",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_stepA",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_idle",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_stepB",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 4,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_stepA",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_idle",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_stepB",
+        "headIndexEdits": 6,
+        "clothingIndexEdits": 2,
+        "lowerFourRowsUnchanged": true
+      }
+    ],
+    "footGeometryPreserved": true,
+    "originalPixelsRetained": 712
+  },
+  "templateSpecSha256": "33fce655b15867060e07fd19f3fc819894ad4992a52217f77951265010bf539d",
+  "rendererSha256": "b45bd1f6cd4dc7205b317d2bc52da098b493e162bbad181ad10013da02f2d554",
+  "templateImplementationSha256": "ef27834d140960ea3ed54c70f9c00b4086a5b9797bf94ff2781545b4bbacb7a2",
+  "encoderSha256": "0e6306c559c7c54c5f229d46bfb220327b3b13202571a5e6584bb6234714f2e9",
+  "scope": "Original-game derivative. Body/gait template retained; new head/clothes row patches. Human Allow required."
+}

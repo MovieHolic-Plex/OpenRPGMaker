@@ -503,6 +503,8 @@ function stopCommandMovement(scene: PlaySceneContext): void {
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
 }
 
 export function updateTimers(scene: PlaySceneContext, deltaMs: number): void {

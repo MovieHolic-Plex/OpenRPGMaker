@@ -1,3 +1,4 @@
+import { monsterCampaign, recordEncounteredMonsters } from "@/project/monsterJournal";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
@@ -252,6 +253,9 @@ export async function playBattle(
         if (!current()) { abort(); return; }
         battleScene = mountBattleScene({
           host, runtime,
+          onSnapshot: monsterCampaign(project) ? (snapshot) => {
+            if (current()) recordEncounteredMonsters(project, session, snapshot.enemies);
+          } : undefined,
           fieldBackdropUrl,
           onField: onFieldAnchors,
           audioContext: { project, session },

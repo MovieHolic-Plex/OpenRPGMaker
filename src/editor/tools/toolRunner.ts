@@ -100,13 +100,21 @@ const FAMILY_CANDIDATE_LIMIT = 8;
  * 조수 실행이 폐기된 EasyRPG 계열 칩셋으로 새 맵을 만들거나 맵 칩셋을 그 칩셋으로 바꾸면 거부한다(2026-10-06 「대체품이 생기기 전까지 막고」).
  * 이미 그 칩셋인 맵을 고치는 것과 등록 장소 가져오기(LIBRARY_IMPORT_TOOLS)는 통과한다. 계열 검사보다 먼저 돌아 폐기 사유를 말한다.
  */
+/** 지금 보는 맵과 같은 계열의 칩셋 — 폐기 칩셋 대신 고를 자리. 실측(2026-10-06): 포켓몬풍 게임 조수가 동굴·체육관을 EasyRPG 던전으로 만들려다 거부만 받았다. */
+function sameFamilyHint(ctx: ToolContext, before: Project): string {
+  const viewed = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
+  if (!viewed || isRetiredEasyRpgTileset(before, viewed.tilesetId)) return "";
+  const choices = sameFamilyTilesets(before, tilesetFamily(before, viewed.tilesetId)).slice(0, 12);
+  return choices.length > 1 ? ` 지금 보는 맵과 같은 계열 칩셋에서 고르세요: ${choices.map(t => `${t.id}(${t.name})`).join(", ")}.` : "";
+}
+
 function rejectRetiredEasyRpgMaps(ctx: ToolContext, before: Project, draft: Project, name: string): void {
   if (!ctx.assistantRun || LIBRARY_IMPORT_TOOLS.has(name)) return;
   for (const [id, next] of Object.entries(draft.maps)) {
     const previous = before.maps[id];
     if (previous && previous.tilesetId === next.tilesetId) continue;
     if (!isRetiredEasyRpgTileset(draft, next.tilesetId)) continue;
-    throw new ToolError(retiredEasyRpgMessage(next.tilesetId, name), { code: "retired-easyrpg-tileset", mapId: id });
+    throw new ToolError(retiredEasyRpgMessage(next.tilesetId, name) + sameFamilyHint(ctx, before), { code: "retired-easyrpg-tileset", mapId: id });
   }
 }
 

@@ -39,6 +39,7 @@ import {
 } from "@/project/economyValues";
 import { syncMonsterPartyFollowers, syncPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { recoverPlayerFromTerrain } from "@/project/terrainLandingRecovery";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { SYSTEM_AUDIO_SLOTS, systemAudioOverrideKey } from "@/player/systemAudioSlots";
@@ -851,6 +852,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   }
   syncMonsterPartyFollowers(project, reconciled);
   syncPartyFollowers(project, reconciled);
+  recoverPlayerFromTerrain(project, reconciled);
   return reconciled;
 }
 
@@ -1004,6 +1006,9 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
 }
 
 function leadPartyLevel(project: Project, session: PlaySession): number | undefined {
+  if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) {
+    return session.monsterInstances[session.monsterParty[0]]?.level;
+  }
   const actorId = session.partyActorIds[0];
   if (!actorId) return undefined;
   const actor = project.database.actors.find((record) => record.id === actorId);

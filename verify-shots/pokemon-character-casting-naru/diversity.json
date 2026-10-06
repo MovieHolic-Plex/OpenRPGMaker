@@ -1,0 +1,235 @@
+{
+  "pass": true,
+  "policy": {
+    "version": 1,
+    "bodyStartY": 22,
+    "silhouetteCloneIoU": 0.985,
+    "lowerBodyCloneIoU": 0.985,
+    "wholePalettePartitionClone": true,
+    "lowerPalettePartitionClone": true
+  },
+  "implementationSha256": "a7df0250385c5d1b9b48a06b37e26fa4856ef1998ff66dec1959b088ce2789d7",
+  "pairs": [
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "silhouetteIoU": 0.7016912558474271,
+      "lowerBodyIoU": 0.67767929089444,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "silhouetteIoU": 0.7065972222222222,
+      "lowerBodyIoU": 0.6930533117932148,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "silhouetteIoU": 0.6116778051354204,
+      "lowerBodyIoU": 0.5947565543071162,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "silhouetteIoU": 0.7345099511828764,
+      "lowerBodyIoU": 0.7413024085637824,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "silhouetteIoU": 0.6759085799925065,
+      "lowerBodyIoU": 0.7575205104831358,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/source/authored-naru-v1/explorer/naru",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.6899253731343283,
+      "lowerBodyIoU": 0.7448405253283302,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "silhouetteIoU": 0.9014388489208633,
+      "lowerBodyIoU": 0.9356435643564357,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "silhouetteIoU": 0.7810140237324703,
+      "lowerBodyIoU": 0.7846961740435109,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "silhouetteIoU": 0.880180859080633,
+      "lowerBodyIoU": 0.8566610455311973,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "silhouetteIoU": 0.8074626865671641,
+      "lowerBodyIoU": 0.7736156351791531,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-898efd82a8c0c04b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.8202080237741456,
+      "lowerBodyIoU": 0.7701342281879194,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "silhouetteIoU": 0.7273949579831933,
+      "lowerBodyIoU": 0.7686622320768662,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "silhouetteIoU": 0.8726483357452967,
+      "lowerBodyIoU": 0.8716216216216216,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "silhouetteIoU": 0.7599720083974808,
+      "lowerBodyIoU": 0.7763371150729336,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-944e9e1c66436c77",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.8099644128113879,
+      "lowerBodyIoU": 0.7759197324414716,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "silhouetteIoU": 0.7339778016469746,
+      "lowerBodyIoU": 0.7024981074943225,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "silhouetteIoU": 0.7370562130177515,
+      "lowerBodyIoU": 0.6481481481481481,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-8e232070c9f418b2",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.6968939664405569,
+      "lowerBodyIoU": 0.6157303370786517,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "silhouetteIoU": 0.8054919908466819,
+      "lowerBodyIoU": 0.8123893805309734,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.8423076923076923,
+      "lowerBodyIoU": 0.8539325842696629,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    },
+    {
+      "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-3394266c334e7a3b",
+      "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/rival-dabaad1f37aa5ffd",
+      "silhouetteIoU": 0.8269079464988198,
+      "lowerBodyIoU": 0.8077634011090573,
+      "wholePalettePartitionIdentical": false,
+      "lowerPalettePartitionIdentical": false,
+      "clone": false,
+      "reasons": []
+    }
+  ],
+  "scope": "Reject repeated silhouette/body/palette-label pattern. Does not prove different age, gender, role, anatomy quality or artistic merit; user review required.",
+  "negativeControls": [
+    {
+      "case": "same-body-palette-only-recolor",
+      "rejected": true
+    },
+    {
+      "case": "head-only-change-shared-body-and-legs",
+      "rejected": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Read-only hero_shape_review provisional judgment: 68/100. CF3 confirmed: both profile phases retained the same forward planted foot; rear chain moved one pixel. Other defects: narrow shoulder/collar join, striped profile bag, parallel frontal legs. No formal quality gate was run for this rejected draft.

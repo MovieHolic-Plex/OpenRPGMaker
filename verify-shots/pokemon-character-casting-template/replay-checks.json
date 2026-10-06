@@ -1,0 +1,72 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "declared original and explicit patches exactly reproduce submitted PNG",
+      "pass": true
+    },
+    {
+      "name": "twelve poses preserve original leg and foot index geometry",
+      "pass": true
+    },
+    {
+      "name": "verified shared template body passes with a visible warning",
+      "pass": true
+    },
+    {
+      "name": "legacy undeclared palette-only and head-only copies remain rejected",
+      "pass": true
+    },
+    {
+      "name": "wrong source hash rejected",
+      "pass": true
+    },
+    {
+      "name": "no authored edits rejected",
+      "pass": true
+    },
+    {
+      "name": "protected feet modified rejected",
+      "pass": true
+    },
+    {
+      "name": "renamed identical template art remains rejected",
+      "pass": true
+    },
+    {
+      "name": "tampered template result rejected",
+      "pass": true
+    }
+  ],
+  "templateComparison": {
+    "pass": true,
+    "policy": {
+      "version": 2,
+      "verifiedSharedTemplate": "warn-and-human-review",
+      "bodyStartY": 22,
+      "silhouetteCloneIoU": 0.985,
+      "lowerBodyCloneIoU": 0.985,
+      "wholePalettePartitionClone": true,
+      "lowerPalettePartitionClone": true
+    },
+    "implementationSha256": "8464bdc0ceef6c5960350999475a0ab7adf939f7ddf513631f93fbcf19d062f5",
+    "pairs": [
+      {
+        "left": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/explorer-2fe0ce80a94b963f",
+        "right": "/home/main/.local/share/oprn/pokemon-character-casting/candidates/ranger-b631c623822c8a93",
+        "silhouetteIoU": 0.9520491803278689,
+        "lowerBodyIoU": 1.0,
+        "wholePalettePartitionIdentical": false,
+        "lowerPalettePartitionIdentical": false,
+        "clone": true,
+        "reasons": [
+          "nearly-identical-body-and-legs"
+        ],
+        "verifiedSharedTemplate": true,
+        "blocked": false,
+        "warning": "Shared source body/gait; compare edited identity visually."
+      }
+    ],
+    "scope": "Reject undeclared clones; replay-verified shared templates emit warnings and require human identity/gait review. Metrics do not prove artistic merit."
+  }
+}

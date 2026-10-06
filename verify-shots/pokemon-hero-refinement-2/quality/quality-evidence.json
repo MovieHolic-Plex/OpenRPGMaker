@@ -1,0 +1,36 @@
+{
+  "sheetSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+  "gifSha256": "2824de459ecbcb19723d067be118a9b36fd9e9f0e63dcac5c04e1d9f32340242",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "implementationSha256": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "opaqueColors": 15,
+  "nativeGifPoseComparisons": 16,
+  "structuralPass": true,
+  "structuralWarnings": [
+    "up: whole-frame exact color/pose change 0.599; semantic playback required",
+    "right: whole-frame exact color/pose change 0.668; semantic playback required",
+    "down: whole-frame exact color/pose change 0.632; semantic playback required",
+    "left: whole-frame exact color/pose change 0.668; semantic playback required"
+  ],
+  "sheet": "/home/main/z-project/pokemon-hero-refinement-2/v14/hero/charset.png",
+  "gif": "/home/main/z-project/pokemon-hero-refinement-2/v14/hero/walk.gif",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/native-contact.png",
+      "sha256": "5e976220e1e0e12bd9c8da031533d2fba4fdee26396cc0894f60de0d8bf4660e"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/decoded-gif-contact.png",
+      "sha256": "0b11370e73b35f90f56bee8d7f947d522c63f9da19f5ac2d25ce93da1faf54af"
+    }
+  ],
+  "scope": "Native12poses and all decoded GIF frames. Display enlargement only; no art resampling."
+}

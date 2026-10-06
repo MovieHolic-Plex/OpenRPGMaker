@@ -82,7 +82,25 @@ export function isMapDestruction(name: string): boolean {
  */
 export function removedMapIds(before: Project, proposed: Project): string[] {
   const after = proposed.maps ?? {};
-  return Object.keys(before.maps ?? {}).filter((id) => after[id] === undefined).sort();
+  return Object.entries(before.maps ?? {})
+    .filter(([id, map]) => after[id] === undefined && !isUntouchedFillMap(map))
+    .map(([id]) => id)
+    .sort();
+}
+
+/**
+ * 한 칸으로만 채우고 이벤트·윗층·덧층이 없는 맵 — 새 프로젝트의 빈 시작 맵 같은 것. 사라져도 잃는 작업이 없다.
+ * 실측(2026-10-06): build_monster_game 이 빈 시작 맵을 72맵 캠페인으로 갈아 끼우자 「맵 1개 삭제」 확인 카드가 떴고,
+ * 헤드리스 실행은 결정 카드를 띄우려다 죽었다.
+ */
+function isUntouchedFillMap(map: Project["maps"][string] | undefined): boolean {
+  if (!map || map.events?.length) return false;
+  const first = map.lowerTiles?.[0];
+  return (map.lowerTiles ?? []).every((tile) => tile === first)
+    && (map.upperTiles ?? []).every((tile) => tile === -1 || tile === 0)
+    && !(map.lowerOverlayTiles ?? []).some((tile) => tile !== -1)
+    && !(map.upperOverlayTiles ?? []).some((tile) => tile !== -1)
+    && !map.relief;
 }
 
 /**

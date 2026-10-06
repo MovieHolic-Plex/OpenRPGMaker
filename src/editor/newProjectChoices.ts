@@ -66,7 +66,7 @@ export const NEW_PROJECT_CHOICES: readonly NewProjectChoice[] = [
     label: "몬스터 수집",
     blurb: "수집 · 조우 · 도감",
     thumb: "/assets/generated/welcome/slide-01.png",
-    tone: "포획·도감·야생 조우 중심. 스타터 몬스터와 간단한 풀숲 인카운트 흐름을 우선한다.",
+    tone: "에메랄드 참고 픽셀 창과 교수 소개. AI 기획은 실제72맵·60종·8체육관·리그·엔딩의 완성 캠페인을 build_monster_game로 제작하며 스타터 선택·야생 조우·포획·상점·저장으로 이어진다.",
     featured: true,
   },
   {

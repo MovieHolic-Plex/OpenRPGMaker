@@ -41,7 +41,9 @@ import { playPathfindMove } from "@/player/playScenePathfinding";
 import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
-import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
+import { applyEventRelocationStep, placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
+import { recoverPlayerFromTerrain } from "@/project/terrainLandingRecovery";
+import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
@@ -258,6 +260,7 @@ export async function runCommands(
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
   const skipController = createCutsceneSkipController(scene, interpreter);
   const diagnosticOwner = diagnosticToken();
+  const changedTerrainMaps = new Set<string>();
   const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
     if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("event")) publishDiagnostic({ category: "event", phase, count: commands.length });
   };
@@ -268,6 +271,7 @@ export async function runCommands(
     while (result.kind !== "done" && current()) {
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       const step = result;
+      if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
@@ -286,6 +290,10 @@ export async function runCommands(
       && !scene.battleAbortController && scene.sys?.isActive() !== false;
     if (owns) {
       scene.clearRuntimeOverlay("cutscene-skip-hint"); scene.lastActionTargetKey = "";
+      if (changedTerrainMaps.has(scene.session.currentMapId) && scene.playerRoute?.through !== true) {
+        const landing = recoverPlayerFromTerrain(project, scene.session, scene.eventPositions);
+        if (landing) placePlayerOnCurrentMap(scene, landing.x, landing.y);
+      }
       if (lease) lease.release();
       else { scene.running = previousRunning; scene.setInputEnabled(previousInputEnabled); }
       dialogue.close(); scene.refreshRuntimeSurfaces();
@@ -569,7 +577,7 @@ async function consumeBlockingStep(
       } catch (error) {
         onHandledFailure();
         console.error("[player] event battle failed", error);
-        scene.showRuntimeOverlay("runtime-error", error instanceof Error ? error.message : "전투를 시작할 수 없습니다. 전투 설정을 확인하세요.");
+        showBattleAdmissionError(scene, error);
         return { kind: "done" }; // Do not resume the interpreter or invent a battle result.
       }
     }
@@ -813,6 +821,8 @@ function stopCommandMovement(scene: PlaySceneContext): void {
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   // 체공 중에 이동이 취소되면 원점 리프트가 남아 주인공이 공중에 붙는다.
   if (scene.playerHop) {
     scene.playerHop = null;

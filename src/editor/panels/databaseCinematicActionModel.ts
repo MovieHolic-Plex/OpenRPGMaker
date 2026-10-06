@@ -61,6 +61,7 @@ export function sceneWithKind(
   };
   if (kind === "text") return { ...common, kind };
   if (kind === "video") return { ...common, kind, resourceId };
+  if (kind === "animatic") return { ...common, kind, durationMs: Math.max(1, common.durationMs || 4000), composition: { width: 1280, height: 720, background: "#000000", layers: [] } };
   return {
     ...common,
     kind,

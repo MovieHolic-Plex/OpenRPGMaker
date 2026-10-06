@@ -1,0 +1,80 @@
+{
+  "file": "prologue.ogg",
+  "resourceId": "mx_audio_prologue",
+  "sampleRate": 22050,
+  "channels": 1,
+  "sourceSamples": 403515,
+  "decodedSamples": 403515,
+  "decodedDurationSeconds": 18.3,
+  "peakDbfs": -6.425,
+  "rmsDbfs": -20.281,
+  "clippedSamplesAbsAtLeastOne": 0,
+  "firstSample": 5.395567131927237e-05,
+  "lastSample": 0.0,
+  "loopJoinStep": 5.395567131927237e-05,
+  "last300msRmsDbfs": -121.791,
+  "regions": [
+    {
+      "start": 0,
+      "end": 4,
+      "rmsDbfs": -17.628,
+      "peakDbfs": -6.425
+    },
+    {
+      "start": 4,
+      "end": 9,
+      "rmsDbfs": -26.839,
+      "peakDbfs": -14.314
+    },
+    {
+      "start": 9,
+      "end": 18,
+      "rmsDbfs": -19.9,
+      "peakDbfs": -9.117
+    },
+    {
+      "start": 18,
+      "end": 18.3,
+      "rmsDbfs": -121.791,
+      "peakDbfs": -101.967
+    }
+  ],
+  "nonsilenceThresholdDbfs": -50,
+  "nonsilenceWindowSeconds": 0.049977324263038546,
+  "nonsilenceIntervalsSeconds": [
+    [
+      0.0,
+      4.5479
+    ],
+    [
+      5.0977,
+      6.697
+    ],
+    [
+      6.8469,
+      8.746
+    ],
+    [
+      8.9959,
+      17.9419
+    ]
+  ],
+  "bytes": 59562,
+  "sha256": "461427af5e6c52741feeecd5c7a176d98d64d22fcf96290ea21f888315333c59",
+  "sourcePcmSha256": "85d1dc88a2bdfb515f70d8c8cf7479a647f5335e24f96aaff482c71cfff7d3ab",
+  "containerProbe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "vorbis",
+        "sample_rate": "22050",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "18.300000"
+    }
+  },
+  "generatorSha256": "bce67e5a1ffb8c48c316b6a56bcd76fe176267f7d082056d1d17d4cfac5404bc",
+  "sourceReferenceSha256": "117b678a5f52fee3a342a73b9c07436155d24f226cbd087de14604428638f53f"
+}

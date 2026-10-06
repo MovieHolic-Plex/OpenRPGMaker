@@ -1,0 +1,65 @@
+{
+  "scope": "Pristine shipping player, fresh storage, native Enter/WASD/Esc, passive DOM/media observations",
+  "errors": [],
+  "pages": [
+    {
+      "id": "starlight_book_world",
+      "narration": "별빛섬에서는 사람과 몬스터가\n서로의 하루를 거들며 살았습니다.",
+      "musicTime": 10.260713
+    },
+    {
+      "id": "starlight_book_beacon",
+      "narration": "밤이면 등대가 별빛을 밝혔습니다.\n멀리 떠난 이들도 그 빛을 따라 돌아왔지요.",
+      "sameImage": true,
+      "animations": [],
+      "musicTime": 12.109858
+    },
+    {
+      "id": "starlight_book_company",
+      "narration": "그러던 어느 밤, 밤막회사가\n섬의 별빛을 기계 속으로 거두기 시작했습니다.",
+      "animations": [],
+      "musicTime": 12.834818
+    },
+    {
+      "id": "starlight_book_darkening",
+      "narration": "빛을 빼앗긴 등대는 점점 어두워졌습니다.\n돌아오는 길도 어둠 속에 묻혀 갔습니다.",
+      "sameImage": true,
+      "animations": [],
+      "musicTime": 13.584059
+    },
+    {
+      "id": "starlight_book_arrival",
+      "narration": "다음 날 새벽, 여행자 하나가\n별싹 마을에 도착했습니다. 바로 당신입니다.",
+      "animations": [],
+      "musicTime": 14.387151
+    },
+    {
+      "id": "starlight_book_question",
+      "narration": "저 등대에는 무슨 일이 있었을까요?\n당신은 사라진 빛의 까닭을 찾아보기로 했습니다.",
+      "sameImage": true,
+      "animations": [],
+      "musicTime": 15.155582
+    },
+    {
+      "id": "starlight_book_friends",
+      "narration": "마을의 천문박사는 별빛을 연구합니다.\n그의 연구소에는 세 작은 몬스터도 살고 있지요.",
+      "animations": [],
+      "musicTime": 15.907916
+    },
+    {
+      "id": "starlight_book_handoff",
+      "narration": "먼저 마을 북동쪽 연구소로 가 보세요.\n함께 길을 나설 첫 친구를 만날 차례입니다.",
+      "sameImage": true,
+      "animations": [],
+      "musicTime": 16.551628
+    }
+  ],
+  "waited9000msWithoutAdvance": true,
+  "wasd": {
+    "sameElement": true,
+    "before": 9.44865,
+    "after": 10.192874
+  },
+  "heldRepeatIgnored": true,
+  "completed": true
+}

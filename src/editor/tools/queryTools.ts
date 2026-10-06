@@ -901,7 +901,7 @@ const getDatabaseRecords: ToolDefinition = {
     properties: {
       collection: { type: "string", enum: DB_COLLECTIONS as unknown as string[] },
       include: { type: "string", enum: ["ids", "full"] },
-      ids: { type: "array", items: { type: "string" }, description: "조회할 실제 ID 목록. 생략하면 모든 레코드." },
+      ids: { type: "array", items: { type: "string" }, description: "조회할 실제 ID 목록. 생략 또는 빈 배열이면 모든 레코드." },
       limit: { type: "integer", minimum: 1, maximum: 500 },
       offset: { type: "integer", minimum: 0 },
     },
@@ -914,13 +914,13 @@ const getDatabaseRecords: ToolDefinition = {
       throw new ToolError(`알 수 없는 컬렉션: ${String(args.collection)}`, { code: "invalid-collection" });
     }
     const all = args.include === "full" ? collectionRecords(project, collection) : collectionEntries(project, collection);
-    const ids = Array.isArray(args.ids) ? new Set(args.ids) : null;
+    const ids = Array.isArray(args.ids) && args.ids.length > 0 ? new Set(args.ids) : null;
     const matching = ids ? all.filter((record) => ids.has(record.id)) : all;
     const offset = typeof args.offset === "number" ? args.offset : 0;
     const limit = typeof args.limit === "number" ? args.limit : matching.length;
     const records = matching.slice(offset, offset + limit);
     const nextOffset = offset + records.length < matching.length ? offset + records.length : null;
-    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset } };
+    return { summary: `${collection} ${records.length}건 / ${matching.length}건`, data: { collection, records, total: matching.length, nextOffset, ...(matching.length === 0 && all.length > 0 ? { availableIds: all.slice(0, 12).map(record => ({ id: record.id, name: record.name })), totalAvailable: all.length, hint: "일치하는 ID가 없습니다. 위 실제 ID를 사용하거나 ids:[]로 목록을 조회하세요. ID를 추측하지 마세요." } : {}) } };
   },
 };
 

@@ -1,3 +1,4 @@
+import { BattleAdmissionError } from "@/project/battleAdmission";
 import type { Project } from "@/project/types";
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
@@ -37,6 +38,21 @@ export function clearRuntimeOverlay(scene: PlaySceneContext, testId: string): vo
   overlay.__oprnDisposeCursor?.();
   overlay.__oprnDisposeCursor = undefined;
   overlay.remove();
+}
+
+/** Mark only a recoverable empty-party admission error for later party restoration. */
+export function showBattleAdmissionError(scene: PlaySceneContext, error: unknown): void {
+  scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투를 시작할 수 없습니다. 전투 설정을 확인하세요.');
+  if (error instanceof BattleAdmissionError && error.code === 'BATTLE_MONSTER_PARTY_EMPTY') {
+    dialogueHost(scene)?.querySelector<HTMLElement>("[data-testid='runtime-error']")?.setAttribute('data-recovery', 'monster-party');
+  }
+}
+
+/** A rejected empty-party battle is recoverable; keep other runtime errors intact. */
+export function clearRecoveredMonsterPartyError(scene: PlaySceneContext): void {
+  if (!(scene.session.monsterParty ?? []).some(id => scene.session.monsterInstances?.[id])) return;
+  const overlay = dialogueHost(scene)?.querySelector<HTMLElement>("[data-testid='runtime-error'][data-recovery='monster-party']");
+  if (overlay) clearRuntimeOverlay(scene, 'runtime-error');
 }
 
 export function returnToTitle(scene: PlaySceneContext): void {

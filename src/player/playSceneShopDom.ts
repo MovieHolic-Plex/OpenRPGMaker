@@ -29,7 +29,7 @@ import {
 } from "@/player/playSceneShopParts";
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import { CANCEL_KEY_LABEL, SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
-import { DEFAULT_SHOP_UI_PRESET } from "@/project/shopUiPresets";
+import { effectiveShopUiPreset } from "@/project/shopUiPresets";
 import { partyFit, recoveryPreview } from "@/player/shopPartyFit";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -197,7 +197,7 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   // 도트 비교 상점은 RM2003 처럼 파티 창을 비교 창 위에 둔다.
   const party = shopWindow("runtime-shop-party-panel", [partyPreview(request.scene, { cards: preset === "pixel", onActor: request.onActor })]);
   if (preset === "pixel") side.prepend(party);
-  else side.append(party);
+  else if(preset!=="collector") side.append(party);
   body.append(side);
   shell.append(body);
   if (preset === "pixel") {
@@ -259,7 +259,7 @@ export function defaultShopMode(step: ShopStep): ShopMode {
 
 /** 명령에 프리셋이 없으면 도트 비교 상점. 오버레이 클래스와 목록 데이터셋이 같은 값을 쓴다. */
 export function shopUiPresetOf(step: Pick<ShopStep, "shopUiPreset">): NonNullable<ShopStep["shopUiPreset"]> {
-  return step.shopUiPreset ?? DEFAULT_SHOP_UI_PRESET;
+  return effectiveShopUiPreset(step,store.getCurrent());
 }
 
 /**
@@ -289,7 +289,7 @@ export function updateShopPartyCards(
     card.setAttribute("aria-pressed", String(focused));
     card.classList.toggle("is-blocked", fit?.mark === "blocked");
     const lines = fit?.lines
-      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : "가득"}`,
+      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : heal.kind === "pp" ? "PP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : heal.reason ?? "가득"}`,
         tone: heal.next > heal.current ? "up" as const : "muted" as const }] : []);
     [first, second].forEach((slot, index) => {
       if (!slot) return;
@@ -485,7 +485,7 @@ function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | 
   ownedSlot.append(ownedPanel(scene, goods));
   // 비어 두는 슬롯 — 첫 커서 확정(onSelect → updateComparison) 때 비교 요약이 채운다.
   const statSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-stat-slot" } });
-  card.append(heroSlot, helpLine, statSlot, ownedSlot);
+  card.append(heroSlot, helpLine, ...(shopUiPresetOf(step)==="collector"?[]:[statSlot]), ownedSlot);
   return card;
 }
 

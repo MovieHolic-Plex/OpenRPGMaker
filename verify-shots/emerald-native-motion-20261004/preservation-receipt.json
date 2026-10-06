@@ -1,0 +1,13 @@
+{
+  "sourceSha256": "e30da78a338c910e81b10f12148f3478619e678f5d36c674a443376eeffcf01a",
+  "maps": 72,
+  "species": 60,
+  "openingPages": 8,
+  "sessionAndStoryPreserved": true,
+  "mapEventsMovementCollisionPreserved": true,
+  "monsterDataAndArtworkPreserved": true,
+  "nativeFieldFrame": "16x32",
+  "trainerFrame": "64x64",
+  "opaqueColorMax": 15,
+  "canonicalSaved": false
+}

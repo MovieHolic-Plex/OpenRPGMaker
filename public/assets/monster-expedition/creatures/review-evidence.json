@@ -1,0 +1,38 @@
+{
+  "species": 60,
+  "battleResources": 120,
+  "iconResources": 60,
+  "stableSpeciesAndBattleResourceIds": true,
+  "all120SpritesChanged": true,
+  "all3BodyTonesPresent": true,
+  "sourceSha256": "c4d259caa9724189465aadc8d159e8a6c3790f231da9f32e237bd6837fc91249",
+  "baselineGitRevision": "349fa573ed12322bea2f8871cc1c93758603f8e4",
+  "maxActualOpaqueColors": 8,
+  "all180PngByteMatchesSeed": true,
+  "all180PngByteMatchesCatalog": true,
+  "sourceProvenanceShaMatches": true,
+  "beforeReview": [
+    "before-contact-sheet.png",
+    "before-starter-review.png",
+    "before-rare-review.png"
+  ],
+  "afterReview": [
+    "contact-sheet.png",
+    "starter-review.png",
+    "rare-review.png",
+    "icon-contact-sheet.png"
+  ],
+  "validationScope": "generator plus independent PNG/seed/catalog byte audit and view_image review; no native runtime or canonical save QA",
+  "quadrupedFollowup": {
+    "referenceTitleSha256": "86a627ab7fd3ebce0a7dfe49ff72258210b9263d91642f7d36de69b5e4df9f5d",
+    "changedResources": [
+      "mx_art_astralhart_front",
+      "mx_art_astralhart_back",
+      "mx_art_astralhart_icon"
+    ],
+    "unchangedOtherPngResources": 177,
+    "nativeFourLegContoursFrontAndBack": true,
+    "palette": "forest green, ivory chest/muzzle, cream antlers",
+    "scope": "only astralhart anatomy/three sprites, complete aggregate seed/catalog/contact reviews"
+  }
+}

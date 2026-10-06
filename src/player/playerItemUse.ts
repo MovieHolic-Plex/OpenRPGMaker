@@ -5,6 +5,9 @@ import { effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorParameterKey, ItemRecord, Project, SkillId } from "@/project/types";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
+import { applyMonsterMedicine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { actorOwnedSkillIds } from "@/project/growth/runtime";
+export { previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
 
 export type MenuItemUseResult =
   | { readonly kind: "used"; readonly message: string }
@@ -25,6 +28,7 @@ export function previewMenuItemTarget(project: Project, session: PlaySession, au
     reason = "이 대상은 사용할 수 없습니다";
   }
   const skillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
+  const pp = restoredMovePp(project, actorOwnedSkillIds(project, session, actorId), session.actorSkillPp?.[actorId], item.ppRecovery);
   if (!reason && skillId) {
     if (session.actorSkillIds[actorId]?.includes(skillId)) reason = "이미 습득한 기술입니다";
   } else if (!reason && !canApplyItemEffects(project, item, session, actorId)) {
@@ -38,6 +42,7 @@ export function previewMenuItemTarget(project: Project, session: PlaySession, au
     mp: vitals?.mp ?? 0, maxMp: vitals?.maxMp ?? 0,
     hpAfter: vitals ? Math.min(vitals.maxHp, vitals.hp + (reason ? 0 : recoveryAmount(item.hpRecovery, vitals.maxHp))) : 0,
     mpAfter: vitals ? Math.min(vitals.maxMp, vitals.mp + (reason ? 0 : recoveryAmount(item.mpRecovery, vitals.maxMp))) : 0,
+    pp: pp.before, maxPp: pp.maximum, ppAfter: reason ? pp.before : pp.after,
     // 지금 걸린 상태와 이 아이템으로 풀리는 상태 — 대상 카드가 「독 → 정상」 을 미리 보인다.
     stateIds: [...(session.actorStateIds?.[actorId] ?? [])],
     curedStateIds: reason ? [] : (session.actorStateIds?.[actorId] ?? []).filter((stateId) => healStateIdsOf(item).includes(stateId)),
@@ -59,6 +64,16 @@ export function useItemFromMenu(
 
   if (item.careProfile) {
     return useCareItem(project, session, item, targetMonsterInstanceId);
+  }
+
+  if (targetsPartyMonsters(project, item)) {
+    const targets = item.scope === "allAllies" ? session.monsterParty ?? [] : targetMonsterInstanceId ? [targetMonsterInstanceId] : [];
+    if (!targets.length) return { kind: "unusable", message: "파티 몬스터를 선택하세요" };
+    let changed = false;
+    for (const instanceId of targets) changed = applyMonsterMedicine(project, session, item, instanceId) || changed;
+    if (!changed) return { kind: "unusable", message: `${item.name}의 효과가 없습니다` };
+    commitSuccessfulUse(project, session, item);
+    return { kind: "used", message: `${item.name}을 사용했습니다` };
   }
 
   const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
@@ -162,6 +177,7 @@ function canApplyItemEffects(project: Project, item: ItemRecord, session: PlaySe
   const hp = recoveryAmount(item.hpRecovery, vitals.maxHp);
   const mp = recoveryAmount(item.mpRecovery, vitals.maxMp);
   if ((hp > 0 && vitals.hp < vitals.maxHp) || (mp > 0 && vitals.mp < vitals.maxMp)) return true;
+  if (restoredMovePp(project, actorOwnedSkillIds(project, session, actorId), session.actorSkillPp?.[actorId], item.ppRecovery).changed) return true;
 
   const states = session.actorStateIds?.[actorId] ?? [];
   for (const stateId of healStateIdsOf(item)) {
@@ -184,6 +200,12 @@ function applyItemEffects(project: Project, item: ItemRecord, session: PlaySessi
   if (hp > 0) vitals.hp = Math.min(vitals.maxHp, vitals.hp + hp);
   if (mp > 0) vitals.mp = Math.min(vitals.maxMp, vitals.mp + mp);
   if (vitals.hp !== beforeHp || vitals.mp !== beforeMp) changed = true;
+  const pp = restoredMovePp(project, actorOwnedSkillIds(project, session, actorId), session.actorSkillPp?.[actorId], item.ppRecovery);
+  if (pp.changed) {
+    session.actorSkillPp ??= {};
+    session.actorSkillPp[actorId] = pp.skillPp;
+    changed = true;
+  }
 
   const healIds = healStateIdsOf(item);
   if (healIds.length > 0) {

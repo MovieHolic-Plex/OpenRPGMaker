@@ -1,0 +1,51 @@
+/* Atmosphere stays mounted across Enter pages. Native pixel illustrations use
+   integer translations rather than scaling or fractional sprite distortion. */
+@layer runtime {
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] {
+    isolation: isolate;
+    background: radial-gradient(ellipse at 76% 9%, #fffbd9 0, transparent 42%),
+      linear-gradient(145deg, #e8f1df 0%, #d7e8d8 52%, #bfdbd0 100%);
+  }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink]::before {
+    background: radial-gradient(ellipse, #fffef1 0%, #f0f4df 72%, #deead1 100%);
+    box-shadow: 0 5px 0 #b9cbaa, 0 14px 22px #437a5824;
+  }
+  .cinematic-emerald-atmosphere {
+    position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  }
+  .cinematic-emerald-atmosphere::before {
+    content: ""; position: absolute; inset: -30% 0 31% 37%;
+    background: linear-gradient(113deg, transparent 32%, #fff8c72e 34%, #fffbd449 40%, transparent 43%,
+      transparent 52%, #fff8c728 54%, transparent 62%);
+    transform-origin: 85% 0; animation: emerald-intro-light 13s ease-in-out infinite alternate;
+  }
+  .cinematic-emerald-mote {
+    position: absolute; left: var(--mote-x); top: var(--mote-y);
+    width: 2px; height: 2px; background: #fffde4; opacity: .6;
+    animation: emerald-intro-mote 11s ease-in-out infinite;
+    animation-delay: var(--mote-delay);
+  }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-image {
+    z-index: 1; animation: emerald-professor-idle 4.8s steps(1, end) infinite;
+  }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-creature {
+    z-index: 1; animation: emerald-creature-idle 3.2s steps(2, end) infinite;
+  }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-narration { z-index: 2; }
+  @keyframes emerald-professor-idle { 0%, 75%, 100% { translate: 0 0; } 42%, 62% { translate: 0 -1px; } }
+  @keyframes emerald-creature-idle { 0%, 70%, 100% { translate: 0 0; } 35%, 50% { translate: 0 -2px; } }
+  @keyframes emerald-intro-light { from { rotate: -1deg; opacity: .55; } to { rotate: 2deg; opacity: .85; } }
+  @keyframes emerald-intro-mote { 0%, 100% { translate: 0 0; opacity: .15; } 50% { translate: 5px -11px; opacity: .75; } }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink][data-portrait-motion="ready"] .cinematic-image {
+    animation: none; translate: 0 0;
+  }
+  .cinematic-portrait-motion { image-rendering: pixelated; object-fit: contain; }
+  .cinematic-emerald-atmosphere[data-reduced-motion="true"]::before,
+  .cinematic-emerald-atmosphere[data-reduced-motion="true"] .cinematic-emerald-mote { animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-image,
+    .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-creature,
+    .cinematic-emerald-atmosphere::before,
+    .cinematic-emerald-mote { animation: none; }
+  }
+}

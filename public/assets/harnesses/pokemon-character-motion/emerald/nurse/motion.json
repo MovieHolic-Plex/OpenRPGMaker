@@ -1,0 +1,38 @@
+{
+  "role": "nurse",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "5f9e2de5f2dfd59480bfda7ef14678f1511edd2bca5db4d30cdd800e4949f362",
+  "charsetSha256": "82a81a5edb1555788ed57fd2dd0d86f557874597c362564c5e40007a8138e7ee",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "be23e43a583750297cb7776412a45cc0bf50cf15ac2caaa3a0585871164faae6"
+  },
+  "gateSha256": "6675f0f31f9e6346c6c7406410129a18a7e7bfbee06f0ddeb21f7f14c8ff68d4",
+  "clip": null
+}

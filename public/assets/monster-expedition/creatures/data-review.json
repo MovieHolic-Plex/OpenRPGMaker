@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-03",
+  "kind": "native content consistency and resolver check; no gates or test runner",
+  "species": 60,
+  "moves": 90,
+  "enemies": 60,
+  "art": 120,
+  "learnableMoves": 90,
+  "types": [
+    "grass",
+    "psychic",
+    "fire",
+    "fighting",
+    "water",
+    "ice",
+    "bug",
+    "normal",
+    "flying",
+    "electric",
+    "dragon",
+    "rock",
+    "poison",
+    "ground",
+    "ghost"
+  ],
+  "expCurve": {
+    "base": 18,
+    "extra": 8,
+    "acceleration": 8
+  },
+  "cumulativeExp": {
+    "5": 190,
+    "16": 1871,
+    "34": 8127,
+    "56": 21524
+  },
+  "realAssetResolverMatches": 120,
+  "failures": []
+}

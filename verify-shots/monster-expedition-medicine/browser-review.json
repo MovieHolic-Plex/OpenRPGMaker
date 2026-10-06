@@ -1,0 +1,12 @@
+{
+  "hpText": "새싹토  Lv.12HP 1/35 → 21/35",
+  "ppText": "새싹토  Lv.12HP 21/35",
+  "hpAfter": 21,
+  "ppAfter": {
+    "mx_skill_normal_1": 11,
+    "mx_skill_grass_1": 30,
+    "mx_skill_grass_6": 10,
+    "mx_skill_grass_2": 25
+  },
+  "errors": []
+}

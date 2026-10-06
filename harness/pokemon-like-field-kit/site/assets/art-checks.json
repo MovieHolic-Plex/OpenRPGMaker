@@ -1,0 +1,48 @@
+{
+  "sourceSha256": "d7127e1daaf91c4ebc991b16d1425f7cf648e59cad37e8795e18ecf72b803770",
+  "nativeCell": [
+    32,
+    32
+  ],
+  "colorsIncludingTransparency": 8,
+  "protectedFeet": "unchanged palette indices below each source head +12",
+  "gif": {
+    "down": {
+      "frames": 4,
+      "durationMs": [
+        150,
+        150,
+        150,
+        150
+      ]
+    },
+    "left": {
+      "frames": 4,
+      "durationMs": [
+        150,
+        150,
+        150,
+        150
+      ]
+    },
+    "right": {
+      "frames": 4,
+      "durationMs": [
+        150,
+        150,
+        150,
+        150
+      ]
+    },
+    "up": {
+      "frames": 4,
+      "durationMs": [
+        150,
+        150,
+        150,
+        150
+      ]
+    }
+  },
+  "visualApproval": false
+}

@@ -1,0 +1,503 @@
+{
+  "type": "independent-read-only-focused-final-pixel-review",
+  "reviewedAt": "2026-10-04T14:24:06.284418+00:00",
+  "approvalGranted": false,
+  "blockingDefectFoundInRequestedFocus": false,
+  "verdict": "The definite rear-leg clothing mismatch is resolved in all8barelegroles; the hero field rear pocket now carries the same red/gold cue as hero_back. Prior shared-base art limitations remain. This is not an approval ledger or actual player QA pass.",
+  "selectionSha256": "8d9a0139c36ab3d915d25c6ce964f31c4bcc65e287a0fb5f35e0d74d844aa81f",
+  "selectionSnapshot": {
+    "walk": {
+      "hero": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hero-1791123202124-3efd6ab5",
+      "rival": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/rival-1791123203357-06f2c537",
+      "professor": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/professor-1791123204597-3053505c",
+      "nurse": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/nurse-1791123205931-5f9e2de5",
+      "merchant": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/merchant-1791123207114-dce8eff7",
+      "mother": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/mother-1791123208217-9374f661",
+      "resident": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/resident-1791123209333-0244f50f",
+      "gym_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/gym_leader-1791123210485-a07275c8",
+      "company_agent": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/company_agent-1791123211630-4b4be5dc",
+      "captain": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/captain-1791123212754-87b5b3b7",
+      "worker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/worker-1791123213832-1ee64e7b",
+      "explorer": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/explorer-1791123214937-277240dc",
+      "student": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/student-1791123216099-86750fde",
+      "ranger": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/ranger-1791123217262-7c242991",
+      "moon_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/moon_leader-1791123218390-08ddd7cf",
+      "hiker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hiker-1791123219555-797c9781"
+    },
+    "trainers": {
+      "hero": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8",
+      "rival": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-rival-1791123203968-9d40db78",
+      "professor": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-professor-1791123205319-0c1988c6",
+      "nurse": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5",
+      "merchant": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed",
+      "mother": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e",
+      "resident": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15",
+      "gym_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-gym_leader-1791123211053-3debc9e6",
+      "company_agent": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-company_agent-1791123212199-b4a6243c",
+      "captain": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-captain-1791123213318-895e9b64",
+      "worker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-worker-1791123214390-054d4785",
+      "explorer": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc",
+      "student": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-student-1791123216724-34893493",
+      "ranger": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7",
+      "moon_leader": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-moon_leader-1791123218997-d3ab3356",
+      "hiker": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa",
+      "hero_back": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b"
+    },
+    "authoring": "/home/main/z-project/pokemon-hand-pixels-20261004/source/authoring.json",
+    "clip": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2"
+  },
+  "visualInputProvenance": {
+    "gallery": "/home/main/z-project/pokemon-hand-pixels-20261004/qa/gallery.html",
+    "gallerySha256": "c14392be08b14dcdfb6b1eec0c2281d15a8d365ecafe47b590564a93b91aa075",
+    "visualInputs": [
+      {
+        "id": "hero",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hero-1791123202124-3efd6ab5",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/hero/charset.png",
+        "sha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          16,
+          32
+        ],
+        "galleryPngDecodedSize": [
+          48,
+          128
+        ],
+        "currentSourceSha256": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hero-1791123202124-3efd6ab5/charset.png",
+        "candidateSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-hero",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/hero/portrait.png",
+        "sha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8/portrait.png",
+        "candidateSha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-nurse",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/nurse/portrait.png",
+        "sha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5/portrait.png",
+        "candidateSha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-merchant",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/merchant/portrait.png",
+        "sha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "1ab272ed5854acd475324cffafc8c5b50b8ed7c6f3b1be551cd7f6446707a5f4",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed/portrait.png",
+        "candidateSha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-mother",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/mother/portrait.png",
+        "sha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "0ac7a00ef8c193bf7bf43bdb9dd01c4144711546f76f6908e039aa369263e8e6",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e/portrait.png",
+        "candidateSha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-resident",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/resident/portrait.png",
+        "sha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "a5cabb15589eb8734314dbad291d8dfdea4cd09ec7e93c44c73c74f93594ace1",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15/portrait.png",
+        "candidateSha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-explorer",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/explorer/portrait.png",
+        "sha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc/portrait.png",
+        "candidateSha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-ranger",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/ranger/portrait.png",
+        "sha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7/portrait.png",
+        "candidateSha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-hiker",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/hiker/portrait.png",
+        "sha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa/portrait.png",
+        "candidateSha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "trainer-hero_back",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/hero_back.png",
+        "sha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          64,
+          64
+        ],
+        "currentSourceSha256": "eb87e06b569b551bf879cbb5568916124e988c5274d9c57395256a903ffbbfa8",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b/portrait.png",
+        "candidateSha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      },
+      {
+        "id": "professor-intro",
+        "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2",
+        "source": "/home/main/z-project/pokemon-hand-pixels-20261004/source/professor-clip.png",
+        "sha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+        "galleryEmbeddedMatchesCurrentSource": false,
+        "metaSize": [
+          64,
+          64
+        ],
+        "galleryPngDecodedSize": [
+          384,
+          64
+        ],
+        "currentSourceSha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+        "candidatePng": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2/clip.png",
+        "candidateSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+        "galleryDecodedPixelsMatchCurrentSource": true,
+        "candidateDecodedPixelsMatchCurrentSource": true,
+        "galleryDecodedPixelsMatchCandidate": true
+      }
+    ]
+  },
+  "rearLegProbes": [
+    {
+      "role": "hero",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b"
+    },
+    {
+      "role": "nurse",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea"
+    },
+    {
+      "role": "merchant",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "1ab272ed5854acd475324cffafc8c5b50b8ed7c6f3b1be551cd7f6446707a5f4"
+    },
+    {
+      "role": "mother",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "0ac7a00ef8c193bf7bf43bdb9dd01c4144711546f76f6908e039aa369263e8e6"
+    },
+    {
+      "role": "resident",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "a5cabb15589eb8734314dbad291d8dfdea4cd09ec7e93c44c73c74f93594ace1"
+    },
+    {
+      "role": "explorer",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0"
+    },
+    {
+      "role": "ranger",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4"
+    },
+    {
+      "role": "hiker",
+      "rearLegPixelXY": [
+        37,
+        54
+      ],
+      "actualRGBA": [
+        206,
+        144,
+        112,
+        255
+      ],
+      "sourceSha256": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0"
+    }
+  ],
+  "heroPocketProbes": [
+    {
+      "phase": 0,
+      "localXY": [
+        7,
+        23
+      ],
+      "actualRGBA": [
+        213,
+        80,
+        60,
+        255
+      ]
+    },
+    {
+      "phase": 1,
+      "localXY": [
+        7,
+        23
+      ],
+      "actualRGBA": [
+        213,
+        80,
+        60,
+        255
+      ]
+    },
+    {
+      "phase": 2,
+      "localXY": [
+        7,
+        23
+      ],
+      "actualRGBA": [
+        213,
+        80,
+        60,
+        255
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "REAR-LEG-CLOTHES",
+      "status": "resolved",
+      "roles": [
+        "hero",
+        "nurse",
+        "merchant",
+        "mother",
+        "resident",
+        "explorer",
+        "ranger",
+        "hiker"
+      ],
+      "detail": "Current native1x/3x cards show both front and rear legs as skin/skinshadow under bare-legged outfits, with boots preserved. Former dark pants rear-leg mismatch is no longer visible. Code uses t for rearpolygon when dress/apron/vest; visual confirmation is independent of that code fact."
+    },
+    {
+      "id": "HERO-BACKPACK",
+      "status": "resolved-cue",
+      "detail": "Hero rear field phases0/1/2 all show gold bag inset and red lower pocket. Native pocketpixel(7,23) isRGBA[213,80,60,255] in all three phases. Hero_back goldbody/redpocket and fieldgold/red cue now coherent; small-resolution detail differences expected."
+    },
+    {
+      "id": "PRIOR-WALK-DIRECTIONS",
+      "status": "prior-verification-retained",
+      "detail": "Earlier whole-atlas review found16roles×12poses direction-correct with actual A/idle/B limb/leg phases. This focused rereview directly viewed latesthero0/1/2cards; it does not claim all192poses were recaptured again."
+    },
+    {
+      "id": "PRIOR-PROFESSOR",
+      "status": "unchanged-source-verification-retained",
+      "detail": "Professor clip sourcee0a284a2... unchanged. Prior native1x/3x review observed neutral,blink,talk,present,orb,wave and footwindow6posesexactRGBAequal. Gallery/candidate decoded pixels match that source."
+    },
+    {
+      "id": "SHARED-BASE",
+      "status": "remaining-art-caution",
+      "detail": "Head/face/body/stance templates remain strongly shared acrossroles. Hair,hats,outfits,props differentiate identities, but repeated facial features and broad stance reduce visual variety. This is an honest style/quality limitation, not a structural or identity rejection by itself."
+    },
+    {
+      "id": "WALK-READABILITY",
+      "status": "remaining-art-caution",
+      "detail": "Box-like field torso/limbs and very similar side-stepA/Bouterfoot silhouettes remain. Limb/depth phase changes exist; native1x lead-leg readability is subtle. No blanket claim of Emerald-quality or polished natural movement."
+    }
+  ],
+  "visualEvidenceObserved": [
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-hero-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-nurse-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-merchant-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-mother-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-resident-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-explorer-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-ranger-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-hiker-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/hero-phase-0.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/hero-phase-1.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/hero-phase-2.png",
+    "/home/main/z-project/pokemon-hand-pixels-20261004/qa/trainer-hero_back-phase-0.png"
+  ],
+  "limits": [
+    "No authoredsource/image/code/approvalledger/canonical writes. Only/tmpnotes and byte/RGBAreads.",
+    "Gallery embeddedPNG and candidatePNG compression SHA differ from sourcePNG, but all11focused entries have exact decodedRGBA/size equality with current source. Both SHA values are recorded. This proves preview pixels match source without drawing/resizing.",
+    "Initial review.json sourceSHA sampling occurred after rootrebuild; treat its older defect observation as historical, not as a defect assertion about those later SHA bytes. This final report supersedes requested-focus outcome.",
+    "Actual exported runtime input/audio/scene timing/cleanup remains rootQA. No visual approval ledger was written."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+  "host": "http://127.0.0.1:18584",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "bridgeProject": "",
+  "originalHost": "http://mdc-server:18364",
+  "url": "http://127.0.0.1:18584/",
+  "revision": 30,
+  "sha256": "db9910fa16aef5ca87aaaa1d74813d96f5e22afc5f1e1024b35f64a8ae63bd35",
+  "reloadedThroughFreshConnection": true,
+  "mediaByteReloads": [
+    {
+      "id": "oprn_emerald_field_cast_1",
+      "sha256": "a55e8127328c4bd44f5ddfdc52f59120685bdc2013718653c2ffa5f43cab3d56"
+    }
+  ],
+  "maps": 72
+}

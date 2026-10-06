@@ -1,0 +1,34 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "portrait",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:31.060Z",
+  "role": "gym_leader",
+  "sourceSha256": "3debc9e641f6b84819183ce619064761a2545f00eec01c6b7fc066cbc6b4f9f3",
+  "promptSha256": "547289245713b3fe3876b964597c405fab94abecb2a3465a875ca838212fe019",
+  "finalSha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
+  "sourceDimensions": {
+    "width": 64,
+    "height": 64
+  },
+  "contract": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
+}

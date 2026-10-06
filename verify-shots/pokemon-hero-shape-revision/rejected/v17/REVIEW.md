@@ -1,0 +1,1 @@
+Read-only hero_shape_review judgment: 80/100, no confirmed critical failures. Axes 16/16/16/11/12/5/4. Support exchange fixed; remaining defects: unchanged frontal/rear hip and upper-leg rows, straight profile bag pillar, stepped collar, stacked front vest bands. Below frozen 85 threshold; no formal PASS.

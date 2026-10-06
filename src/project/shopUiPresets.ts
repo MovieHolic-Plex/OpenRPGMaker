@@ -1,4 +1,4 @@
-import type { ShopUiPreset } from "@/project/types";
+import type { Project, ShopUiPreset } from "@/project/types";
 
 /**
  * 상점 UI 프리셋 목록 — 편집기 선택지·로드 검증·런타임 기본값이 한 곳을 본다.
@@ -7,7 +7,7 @@ import type { ShopUiPreset } from "@/project/types";
  * 명시적으로 "classic" 을 저장한 상점은 그대로 classic 이다.
  */
 export const SHOP_UI_PRESETS: readonly ShopUiPreset[] = [
-  "pixel", "classic", "tabs", "grid", "compare", "split", "cart", "stock", "story", "baram",
+  "collector", "pixel", "classic", "tabs", "grid", "compare", "split", "cart", "stock", "story", "baram",
 ];
 
 export const DEFAULT_SHOP_UI_PRESET: ShopUiPreset = "pixel";
@@ -16,3 +16,8 @@ export function isShopUiPreset(value: string): value is ShopUiPreset {
   return (SHOP_UI_PRESETS as readonly string[]).includes(value);
 }
 
+
+/** Explicit project presentation choice overrides event surfaces; commerce stays authored. */
+export function effectiveShopUiPreset(step:{shopUiPreset?:ShopUiPreset},project?:Project):ShopUiPreset {
+  return project?.meta.oprnShopPreset ?? step.shopUiPreset ?? DEFAULT_SHOP_UI_PRESET;
+}

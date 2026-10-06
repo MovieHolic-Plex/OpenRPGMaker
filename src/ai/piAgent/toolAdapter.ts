@@ -299,7 +299,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
       }
-      if (tool.mode === 'write' && result.ok && options.charsetGate) {
+      if (tool.mode === 'write' && result.ok && options.charsetGate && !tool.placesCuratedCast) {
         const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
         if (violation) { ctx.project = beforeProject; result = violation; }
       }

@@ -1,0 +1,13 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "sourceSha256": "136e7fedd09380e7bc346060d01e0c4afd78bbd40f1fbc37130da8075b60b13d",
+  "changedAsset": "oprn_emerald_field_cast_1",
+  "oldAssetSha256": "e9c9dc0f61d04f71e9cfe685b70f6db9812782bac3c1b779e8449ffe2bd15941",
+  "newAssetSha256": "2cc5a2321a4215388c95c7887db6bef0f7253fe7cfc1ef6d6817e87c72dc7224",
+  "outsideHeroPixelsCompared": 64512,
+  "outsideHeroPixelsIdentical": true,
+  "nativePaddingOnly": true,
+  "allOtherProjectFieldsAndAssetsIdentical": true,
+  "canonicalSaved": false
+}

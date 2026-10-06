@@ -1,0 +1,14 @@
+{
+  "supervisor": "root",
+  "directExecution": true,
+  "controls": {
+    "native": 36,
+    "raster": 21,
+    "clip-raster": 11,
+    "portraits": 35
+  },
+  "actualOriginalPositiveReferences": 4,
+  "totalControls": 107,
+  "source": "pokemon-motion-2",
+  "verificationScope": "Dimensions,palette,source-rastergeometry,lifecycle,mutation,staleapproval. SeparateactualgameQArequired."
+}

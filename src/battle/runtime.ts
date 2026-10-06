@@ -111,6 +111,7 @@ import { predictSkillDamage } from "@/battle/battlePredict";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 import { attemptGen1Capture } from "@/battle/gen1/capture";
+import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
   applyGen1PostActionResidual,
@@ -2014,7 +2015,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       strictRound: strictRoundCount,
       strictPendingActorIds: [...strictPendingActorIds],
       strictQueuedActorIds: strictActorCommands.map((entry) => entry.actorId),
-      eventState: battleEvents.snapshot(),
+      eventState: {
+        ...battleEvents.snapshot(),
+        ...(usePartyMonsters && options.partyMonsters?.length ? {
+          monsterCollection: {
+            instances: Object.fromEntries(options.partyMonsters.map(instance => [instance.instanceId, {
+              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp,
+            }])),
+          },
+        } : {}),
+      },
       targetSelection,
       roundLogs,
       eventLogs: battleEvents.logs(),
@@ -2560,6 +2570,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         item.activateSkillId ||
         (item.hpRecovery && (item.hpRecovery.flat > 0 || item.hpRecovery.percentMax > 0)) ||
         (item.mpRecovery && (item.mpRecovery.flat > 0 || item.mpRecovery.percentMax > 0)) ||
+        (item.ppRecovery && (item.ppRecovery.flat > 0 || item.ppRecovery.percentMax > 0)) ||
         (item.healStateIds && item.healStateIds.length > 0) ||
         (item.stateEffects && item.stateEffects.length > 0)
     );
@@ -2571,6 +2582,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     readonly activateSkillId?: string;
     readonly hpRecovery: { flat: number; percentMax: number };
     readonly mpRecovery: { flat: number; percentMax: number };
+    readonly ppRecovery?: { flat: number; percentMax: number };
     readonly healStateIds: readonly string[];
     readonly stateEffects: readonly { operation: string }[];
   }): boolean {
@@ -2583,7 +2595,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       item.hpRecovery.flat > 0 ||
       item.hpRecovery.percentMax > 0 ||
       item.mpRecovery.flat > 0 ||
-      item.mpRecovery.percentMax > 0;
+      item.mpRecovery.percentMax > 0 ||
+      (item.ppRecovery?.flat ?? 0) > 0 || (item.ppRecovery?.percentMax ?? 0) > 0;
     const hasHeal =
       item.healStateIds.length > 0 ||
       item.stateEffects.some((effect) => effect.operation === "remove");
@@ -2593,7 +2606,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function applyItemRecovery(
     user: MutableBattler,
     target: MutableBattler,
-    item: { readonly hpRecovery: { flat: number; percentMax: number }; readonly mpRecovery: { flat: number; percentMax: number } }
+    item: { readonly hpRecovery: { flat: number; percentMax: number }; readonly mpRecovery: { flat: number; percentMax: number }; readonly ppRecovery?: { flat: number; percentMax: number } }
   ): void {
     const hp = Math.max(0, Math.floor((target.maxHp * item.hpRecovery.percentMax) / 100) + item.hpRecovery.flat);
     const mp = Math.max(0, Math.floor((target.maxMp * item.mpRecovery.percentMax) / 100) + item.mpRecovery.flat);
@@ -2606,6 +2619,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 250 으로 되돌렸다(실측). 자원별로 나누고 어느 자원인지 함께 넘긴다.
     const hpGain = target.hp - beforeHp;
     const mpGain = target.mp - beforeMp;
+    const pp = restoredMovePp(options.project, target.skillIds, target.skillPp, item.ppRecovery);
+    if (pp.changed) {
+      target.skillPp = pp.skillPp;
+      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId,
+        targetId: target.id, commandKind: "item", success: true,
+        message: `${target.name}의 기술 PP가 ${pp.after - pp.before} 회복되었다!` });
+      // PP is its own resource: never send a PP amount to the HP/MP ledger.
+      if (hpGain === 0 && mpGain === 0) return;
+    }
     const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
       userRecordId: user.recordId,

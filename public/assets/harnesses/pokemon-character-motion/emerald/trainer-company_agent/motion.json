@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "company_agent",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+  "promptSha256": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+  "portraitSha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
+  "gateSha256": "9f18f1974eeb9b636a67051cf35cb276b5d914a493453f7b475c530242708119"
+}

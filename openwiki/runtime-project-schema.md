@@ -1241,7 +1241,18 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - Combined Town defaults seed conifer/dry-tree/broadleaf hard adjacency plus flower medium and bush soft examples, and expose 흙길/모래/lake-water terrain clusters for palette discovery. Harness re-application preserves an existing harness group as authored state, only backfilling default `rules` when the group has no `rules` property. Deleted Combined Town harness groups are persisted through `TilesetDef.suppressedHarnessGroupIds` tombstones so load/normalize does not recreate them.
 
 
+## Optional medicine PP recovery (2026-10-03)
+
+`ItemRecord.ppRecovery?: {flat:number, percentMax:number}` is an explicit medicine effect,
+independent of `mpRecovery`. Normalization uses the existing recovery bounds (flat 0–999,
+percentage 0–100) and omits absent or zero effects. Existing items retain their MP semantics.
+Field and battle use `restoredMovePp` in `project/monsterMedicine.ts`: each known move with
+an authored positive `maxPp` gains flat + floor(cap × percentage / 100), capped at `maxPp`.
+Missing session PP entries mean full PP. Both monster `skillPp` and actor `actorSkillPp`
+already persist through the existing session/save contract; no schema version changes.
+
 ## Variable arithmetic & loop runtime (2026-08-07)
+
 - 변수 연산: `session.setVariable`는 `/=`에서 `Math.trunc`(0 방향) + `-9,999,999..9,999,999` 클램프, `0` 나누기는 기존값 유지+경고. `previewSimulation.applyVariableOp` 동일 규격. 프리뷰 값 소스는 시뮬 상태 기준.
 - 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고를 반환한 뒤 현재 `breakLoop` 명령을 한 칸 넘긴다. 같은 명령을 재실행해 instruction budget을 소진하지 않는다. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
 
@@ -1506,6 +1517,25 @@ AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 
 
 첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
 키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.
+
+## Optional authored slide tables (2026-10-04)
+
+`TilesetDef.slideTiles` and exported `SlideRule` retain the original six-rule
+arrow/ice/stop contract. Load validation checks tile-index bounds and rule values;
+compact/pretty wire serialization and `prepareWebExport` retain the entire table.
+Absent fields remain absent, with no schema version change. Runtime continuation
+is transient scene state; saves do not acquire a new slide field. Native evidence
+and state ownership: [runtime-sessions.md](runtime-sessions.md#authored-sliding-floors-restored-in-the-current-engine-2026-10-04).
+
+
+## Uploaded charset pose cadence (2026-10-05)
+
+`assets.uploaded[id].meta.walkFrameMs` optionally declares milliseconds per walking
+pose, for charset assets only. Shape validation requires a finite number50..1000.
+Absent values preserve the80ms legacy cadence. Autonomous NPCs and party followers
+read the value by their uploaded texture ID; it does not change tile movement speed,
+frame geometry or idle pose. Runtime fallback also rejects nonfinite/out-of-range
+values. Approved field-kit snow cats use150ms; see `pokemon-like-field-kit.md`.
 
 ## 재편집 지형과 게임 높이 규칙 (2026-10-03)
 

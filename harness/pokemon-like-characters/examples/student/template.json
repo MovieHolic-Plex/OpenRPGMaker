@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "templateId": "school_kid_m",
+  "templateSourceSha256": "2e1b19f523829d775c623b84b75e02610b37dba4698345966655c905d764be0f",
+  "paletteOverrides": {
+    "8": "#ead8b1",
+    "9": "#53889f",
+    "A": "#5b433e",
+    "B": "#b58b61",
+    "C": "#765b49",
+    "D": "#423b3c",
+    "E": "#f6e8c9"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        "..4A48E55E844A.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        ".42498E55E89424."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "..A448E55E84A4.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 25,
+      "rows": [
+        "....A955449A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 24,
+      "rows": [
+        "....A954459A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 25,
+      "rows": [
+        "....A944559A...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 25,
+      "rows": [
+        "..A449E55EE4A4.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        ".4224EE55EE4224."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        "..4A4EE55E944A.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 25,
+      "rows": [
+        "....A944559A...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 24,
+      "rows": [
+        "....A954459A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "....FFCCCCFF...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 25,
+      "rows": [
+        "....A955449A...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "밤색 머리와 푸른 안경테, 크림색 교복 조끼와 책가방",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

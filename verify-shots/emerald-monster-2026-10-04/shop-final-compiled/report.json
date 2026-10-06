@@ -1,0 +1,464 @@
+{
+  "projectPath": "/tmp/oprn-emerald-20261004/player-final-existing/project.json",
+  "slotPath": "/tmp/monster-systems-20261004/native-starter/save-slot-one.json",
+  "projectSha256": "126c994b1d512272789b57b247dd535b0eaf2940cbefe8814fe198b4344cdf66",
+  "slotSha256": "f07cd4691462db7479cead6f350a0b5af696a84bf0f81b5b757d640b11cc8b0f",
+  "maps": 72,
+  "species": 60,
+  "scope": "Unchanged actual portable campaign + genuine older slot, shipping player/export store shim. Native Continue/door/counter/buy/No/Yes/cancel/Quit. Only setup teleport to town5,16. No money/item injection, authored content/canonical writes or suites. The supplied server determines source versus compiled entry.",
+  "continued": {
+    "gold": 1600,
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_lab",
+    "x": 7,
+    "y": 7
+  },
+  "entered": {
+    "gold": 1600,
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 7
+  },
+  "counter": {
+    "gold": 1600,
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 6
+  },
+  "stock": {
+    "phase": "items",
+    "background": "rgb(120, 136, 152)",
+    "mapSource": "game-canvas-snapshot",
+    "mapCanvases": 1,
+    "focus": "shop-buy-item_capture_orb",
+    "goods": {
+      "x": 608,
+      "y": 208,
+      "width": 496,
+      "height": 576,
+      "top": 208,
+      "right": 1104,
+      "bottom": 784,
+      "left": 608
+    },
+    "visibleRows": [
+      {
+        "id": "shop-buy-item_capture_orb",
+        "rect": {
+          "x": 636,
+          "y": 240,
+          "width": 440,
+          "height": 64,
+          "top": 240,
+          "right": 1076,
+          "bottom": 304,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_potion",
+        "rect": {
+          "x": 636,
+          "y": 304,
+          "width": 440,
+          "height": 64,
+          "top": 304,
+          "right": 1076,
+          "bottom": 368,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_hi_potion",
+        "rect": {
+          "x": 636,
+          "y": 368,
+          "width": 440,
+          "height": 64,
+          "top": 368,
+          "right": 1076,
+          "bottom": 432,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_ether",
+        "rect": {
+          "x": 636,
+          "y": 432,
+          "width": 440,
+          "height": 64,
+          "top": 432,
+          "right": 1076,
+          "bottom": 496,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_antidote",
+        "rect": {
+          "x": 636,
+          "y": 496,
+          "width": 440,
+          "height": 64,
+          "top": 496,
+          "right": 1076,
+          "bottom": 560,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_wake_herb",
+        "rect": {
+          "x": 636,
+          "y": 560,
+          "width": 440,
+          "height": 64,
+          "top": 560,
+          "right": 1076,
+          "bottom": 624,
+          "left": 636
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-item-cancel",
+        "rect": {
+          "x": 636,
+          "y": 624,
+          "width": 440,
+          "height": 64,
+          "top": 624,
+          "right": 1076,
+          "bottom": 688,
+          "left": 636
+        },
+        "disabled": null
+      }
+    ],
+    "shopRect": {
+      "x": 160,
+      "y": 160,
+      "width": 960,
+      "height": 640,
+      "top": 160,
+      "right": 1120,
+      "bottom": 800,
+      "left": 160
+    }
+  },
+  "before": {
+    "gold": 1600,
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 6
+  },
+  "desktopConfirm": {
+    "phase": "confirm",
+    "background": "rgb(120, 136, 152)",
+    "mapSource": "game-canvas-snapshot",
+    "mapCanvases": 1,
+    "focus": "shop-confirm-yes",
+    "goods": {
+      "x": 608,
+      "y": 208,
+      "width": 496,
+      "height": 128,
+      "top": 208,
+      "right": 1104,
+      "bottom": 336,
+      "left": 608
+    },
+    "visibleRows": [
+      {
+        "id": "shop-buy-item_capture_orb",
+        "rect": {
+          "x": 636,
+          "y": 240,
+          "width": 440,
+          "height": 64,
+          "top": 240,
+          "right": 1076,
+          "bottom": 304,
+          "left": 636
+        },
+        "disabled": "true"
+      }
+    ],
+    "shopRect": {
+      "x": 160,
+      "y": 160,
+      "width": 960,
+      "height": 640,
+      "top": 160,
+      "right": 1120,
+      "bottom": 800,
+      "left": 160
+    }
+  },
+  "afterNo": {
+    "gold": 1600,
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 6
+  },
+  "afterYes": {
+    "gold": 1440,
+    "inventory": {
+      "item_capture_orb": 12,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 6
+  },
+  "narrowStock": {
+    "phase": "items",
+    "background": "rgb(120, 136, 152)",
+    "mapSource": "game-canvas-snapshot",
+    "mapCanvases": 1,
+    "focus": "shop-buy-item_capture_orb",
+    "goods": {
+      "x": 182,
+      "y": 311.5,
+      "width": 201.5,
+      "height": 234,
+      "top": 311.5,
+      "right": 383.5,
+      "bottom": 545.5,
+      "left": 182
+    },
+    "visibleRows": [
+      {
+        "id": "shop-buy-item_capture_orb",
+        "rect": {
+          "x": 193.375,
+          "y": 324.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 324.5,
+          "right": 372.125,
+          "bottom": 350.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_potion",
+        "rect": {
+          "x": 193.375,
+          "y": 350.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 350.5,
+          "right": 372.125,
+          "bottom": 376.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_hi_potion",
+        "rect": {
+          "x": 193.375,
+          "y": 376.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 376.5,
+          "right": 372.125,
+          "bottom": 402.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_ether",
+        "rect": {
+          "x": 193.375,
+          "y": 402.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 402.5,
+          "right": 372.125,
+          "bottom": 428.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_antidote",
+        "rect": {
+          "x": 193.375,
+          "y": 428.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 428.5,
+          "right": 372.125,
+          "bottom": 454.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-buy-item_wake_herb",
+        "rect": {
+          "x": 193.375,
+          "y": 454.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 454.5,
+          "right": 372.125,
+          "bottom": 480.5,
+          "left": 193.375
+        },
+        "disabled": null
+      },
+      {
+        "id": "shop-item-cancel",
+        "rect": {
+          "x": 193.375,
+          "y": 480.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 480.5,
+          "right": 372.125,
+          "bottom": 506.5,
+          "left": 193.375
+        },
+        "disabled": null
+      }
+    ],
+    "shopRect": {
+      "x": 0,
+      "y": 292,
+      "width": 390,
+      "height": 260,
+      "top": 292,
+      "right": 390,
+      "bottom": 552,
+      "left": 0
+    }
+  },
+  "narrowConfirm": {
+    "phase": "confirm",
+    "background": "rgb(120, 136, 152)",
+    "mapSource": "game-canvas-snapshot",
+    "mapCanvases": 1,
+    "focus": "shop-confirm-yes",
+    "goods": {
+      "x": 182,
+      "y": 311.5,
+      "width": 201.5,
+      "height": 52,
+      "top": 311.5,
+      "right": 383.5,
+      "bottom": 363.5,
+      "left": 182
+    },
+    "visibleRows": [
+      {
+        "id": "shop-buy-item_capture_orb",
+        "rect": {
+          "x": 193.375,
+          "y": 324.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 324.5,
+          "right": 372.125,
+          "bottom": 350.5,
+          "left": 193.375
+        },
+        "disabled": "true"
+      }
+    ],
+    "shopRect": {
+      "x": 0,
+      "y": 292,
+      "width": 390,
+      "height": 260,
+      "top": 292,
+      "right": 390,
+      "bottom": 552,
+      "left": 0
+    }
+  },
+  "laterConfirm": {
+    "phase": "confirm",
+    "background": "rgb(120, 136, 152)",
+    "mapSource": "game-canvas-snapshot",
+    "mapCanvases": 1,
+    "focus": "shop-confirm-yes",
+    "goods": {
+      "x": 182,
+      "y": 311.5,
+      "width": 201.5,
+      "height": 52,
+      "top": 311.5,
+      "right": 383.5,
+      "bottom": 363.5,
+      "left": 182
+    },
+    "visibleRows": [
+      {
+        "id": "shop-buy-item_ether",
+        "rect": {
+          "x": 193.375,
+          "y": 324.5,
+          "width": 178.75,
+          "height": 26,
+          "top": 324.5,
+          "right": 372.125,
+          "bottom": 350.5,
+          "left": 193.375
+        },
+        "disabled": "true"
+      }
+    ],
+    "shopRect": {
+      "x": 0,
+      "y": 292,
+      "width": 390,
+      "height": 260,
+      "top": 292,
+      "right": 390,
+      "bottom": 552,
+      "left": 0
+    }
+  },
+  "afterQuit": {
+    "gold": 1440,
+    "inventory": {
+      "item_capture_orb": 12,
+      "item_potion": 5
+    },
+    "mapId": "mx_map_home_mart",
+    "x": 6,
+    "y": 6
+  },
+  "errors": [],
+  "httpErrors": []
+}
