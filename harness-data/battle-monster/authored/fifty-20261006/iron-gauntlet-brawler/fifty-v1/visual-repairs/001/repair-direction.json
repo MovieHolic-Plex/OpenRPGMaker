@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "3071aa843778e40f936bb25b6fbc6e8358c9f1c8a4d66b3fa0c6de4d7b30f3d7",
+  "priorReviewJob": "d06caf23-4549-4f66-b7ad-c83c45b88973",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 34,
+      "y": 38,
+      "message": "The dark eye marks at (34-35,38) and (39-40,38) retain the resting gaze, while the head stays upright above the seated gloves. Replace them with clearly lowered, bent closed-lid clusters and lower the chin toward the chest; preserve the connected neck. At 1x this should read asleep rather than seated and watching."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 34,
+      "y": 39,
+      "message": "The second sleep face repeats the same gaze one row lower: eye marks at (34-35,39) and (39-40,39). Carry the closed-lid repair into this frame, maintaining eye placement relative to the head, and keep the small breathing change in shoulders/gloves rather than reopening the alert face."
+    },
+    {
+      "pose": "dead",
+      "x": 20,
+      "y": 45,
+      "message": "The eye marks around (20-21,45) and (24-25,45), elevated face and bracing glove beneath the shoulder make the fallen pose read awake and reclining. Author visibly slack or closed eyes, drop the chin/head toward the supporting arm, and relax the forearm brace while retaining the neck-to-torso connection and floor contact."
+    }
+  ],
+  "startedAt": "2026-10-06T11:23:40.271076+00:00"
+}

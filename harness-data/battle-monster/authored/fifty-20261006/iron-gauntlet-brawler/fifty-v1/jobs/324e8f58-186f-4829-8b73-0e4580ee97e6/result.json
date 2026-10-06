@@ -1,0 +1,12 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the supplied portrait and all 18 poses in the light, dark and checker PNGs at native 1x and the supplied nearest-neighbor 3x. The adult SD brawler reads clearly: short black hair, red headband, navy sleeveless clothing, warm gray trousers and two silver gauntlets. Broad upper-left highlights and lower-right shadows give the gloves and limbs volume. Dark hair and shoes lose some contrast on the dark background but the silhouette remains readable. Windup lowers both fists toward the waist; move widens the stride; attack has a visibly connected shoulder, forearm and extended fist; recover restores the guard. Feet remain on the shared ground line. The prone death pose is distinct, with one minor exposed trouser edge at the bent rear leg. No obvious detached hands or unintended body holes are visible otherwise. Skill preparation has a pale fist aura, contact sends three unequal fragments from the actual glove tip, and recovery folds the arm with a small residual spark. Poison changes the hunch and chest-clutching pose, stun lowers both arms with overhead stars, and sleep uses a seated slump and closed eyelids; these are distinct authored-looking states rather than color tints. Static previews support pose continuity, but cannot establish playback timing, actual battle contact, runtime status behavior or the claimed authorship process. This is a visual recommendation only; user selection remains pending.",
+  "issues": [
+    {
+      "pose": "dead",
+      "x": 53,
+      "y": 54,
+      "message": "Minor outline cleanup: the trouser-base pixel at (53,54) touches the transparent leg gap at (52,54), leaving the inner rear-calf edge unoutlined. Replace (53,54) with the existing dark outline color to continue the boundary between the dark knee edge at (52,53) and shin edge at (52,55), preserving the gap and foot position."
+    }
+  ]
+}

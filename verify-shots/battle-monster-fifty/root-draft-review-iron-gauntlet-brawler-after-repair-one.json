@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-06T11:32:18.387550+00:00",
+  "passed": false,
+  "key": "iron-gauntlet-brawler/fifty-v1",
+  "binding": "63e058d82972c1b6d5ce34645730dce1f171bd53739e7c8c43869eb90e5aa82a",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-iron-gauntlet-brawler-after-repair-one.png",
+  "nativeContactPngSha256": "d46cdd6e632459fb6f57fe324168b1cda0bc06af2e67acd6dd30115137d0265f",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "c3569b95c68af4f19aee5e413998d8bdf52279edb66e5dda8a2eb6e246299588",
+    "pose_rows.py": "03c562850757a8cf0459fe694736474fa642a505546b7336df27ad9c89482dbc",
+    "action_rows.py": "a788bab13d0fa7bc4de0d077195ccdd55542610cab945c92155a395c6e331998",
+    "chosen_revisions.py": "240e37f76a0d897d0c1a530c5c29bd89e2c722c2794a1097aea193675c9a636d",
+    "state_revisions.py": "282d8b0db5fe0511cc493ad074af68069b3780fd92db558c2b39545782698696"
+  },
+  "observations": "Actually opened repaired18 native1x/nearest2x864x696 unresized. Sameadultbrawler/headband/navyvest/browntrousers/twoirongauntlets/basicpunch/qi/poison/stun. Sleepa/b nowbentclosedlids, droopedchin/head towardchestwithneckconnection, smallshoulder/glovepairchange. Deadhead loweredandtiltednearfloor/neckshouldercontinuous/gauntletbracerelaxed andloweredbesidebody. Read entire chosen_revisions module/staticnewstateimport/allcalls andstate_revisions.apply_to_grids body/moduleflow/calls. Explicit individuallychosenfullrowy/x/pixelstrings foronly3stateposes, importedintoexistingliteralserializer; no generatedgeometry/automaticwholeframe transformation. Otherthreewriterfilesunchanged sincefullmethod/moduleinspection. Newrender_source/render_state_comparison onlyPNG/GIF/diagnostics/decodedreadback. All18nativePNG match ASCII/palette. Initialactual3-issue reworkandinitialdraftpreserved; freshindependentdecisionrequired."
+}

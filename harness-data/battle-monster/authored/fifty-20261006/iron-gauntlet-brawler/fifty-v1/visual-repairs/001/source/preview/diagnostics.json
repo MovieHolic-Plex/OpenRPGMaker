@@ -1,0 +1,295 @@
+{
+  "paletteColors": 18,
+  "paletteSha256": "1e2e8126d418190daf036aa6f0b890bcd1ec21005a7fbcead8698c3894f46b04",
+  "frames": {
+    "idle_a": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        18,
+        8,
+        44,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "cb8a5487a30c911711faa4237283a4f23799ea382eb7b5c158e779815b4c47fa",
+      "pngSha256": "9fa7eff70bfb08829fffdc24400a2f4ff83ab8ed2aad074be5d05798ec5f9ee0"
+    },
+    "idle_b": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        18,
+        8,
+        44,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "e83c2e40ceabaea20ee2902c914870f5038a8fa914383dff268a3d005480ae3d",
+      "pngSha256": "cf0597f77de834eb8d06f6aedc49f268fce854115d2f61634ddaf519dc8172f5"
+    },
+    "idle_c": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        18,
+        9,
+        44,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "78b3ec0e63100756cf1566184a62967a9486b4b18d4c806da7acbf1902029e1c",
+      "pngSha256": "b7305d4786d24bb1fc78d83d66f21006270e3d417d0b540d281ed9bbaa7c172c"
+    },
+    "windup": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        15,
+        10,
+        45,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "73176b3e77de0a0abdaabb124b6acdd8f1a0676588c0c901504b1ff94d70ad04",
+      "pngSha256": "1f3849f36b1aecfd55a06a304bef04320ddbaea09a10c28a61f48e1e1862c145"
+    },
+    "move": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        9,
+        9,
+        49,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "98c0d6916a922283d334135d5697c14dd66d761dea1500f2c33542e90a4ac87c",
+      "pngSha256": "f2095923d18423646d62626fdb217150587372e34160eb75be61061ac04dfde4"
+    },
+    "attack": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        9,
+        9,
+        56,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "ecf20c101005770bed9c132f77f039b3b2745188ac85cdc6656842ffcc810458",
+      "pngSha256": "f5fba43139876be197136a2dba690183bd252ef4baafc53b8114aede51ba5c91"
+    },
+    "recover": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        19,
+        9,
+        45,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "043ce6f248a075264abc7015cb321b78edfc09ab3184dbe5db963721e055b75a",
+      "pngSha256": "6a511471a08c0f6fcac60bcace6da97b6e0225c5d8fc3a721e3884dcc4636860"
+    },
+    "hit": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        15,
+        10,
+        46,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "6003ff8ed3b959baf364f0a15cb3104e9e2dcc68c9b80372bd1770f101c22206",
+      "pngSha256": "f1082240ed1dc113fdf9b3696805a8eeafdc75c2f543486dbf8cf07fb74e1b46"
+    },
+    "dead": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        10,
+        34,
+        62,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "924ebc5a9afccef434db06f56a9f3fe284945517e066c4385a4e024d3b9fa2e7",
+      "pngSha256": "29fa21d7fb2279083632eed900e9c901df6ac637d65cd6de76ace63876c6d17f"
+    },
+    "skill_a": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        17,
+        10,
+        49,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "e5a979075c7f216e895fd298614bbe181b030cdbc0cf6afd785c87b6e9af2c17",
+      "pngSha256": "6df6fc07bc6acbb04ec9f5a3740095a9ad1f4b968226bb4ac2238ea064f573dc"
+    },
+    "skill_b": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        12,
+        12,
+        62,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "6d2e68c22048e407fdae949237b6c6541f5bc822a3ca1136aa1d50150c83ae5b",
+      "pngSha256": "11f435089936a3c77832b7281f5f6db027aaaa7dec865e0b3f79ff41843a22d9"
+    },
+    "skill_c": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        19,
+        10,
+        49,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "d81f059e19cf168d6f65f4f40aa1b45dfffe6ebfaff610bc5a66bcf2f7734ca2",
+      "pngSha256": "c1135f0fdf8534158dc47ea04666768527234a499a3b9fb9e8a914f8b1f47268"
+    },
+    "poison_a": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        19,
+        12,
+        57,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "2f8c94450659e43100de5bb40cb6b127959724e791fc528eba4b0fcc534154ae",
+      "pngSha256": "14dfc89a15436228f3043589c3e418cdf20d1a85b0e308e47fa3cc09a1a8e194"
+    },
+    "poison_b": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        19,
+        14,
+        56,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "4d71f078be22b3610e925d2a212731877214376a819f089df353a704add8d1ad",
+      "pngSha256": "b13038c0467c27329b6a4d2053e922c94b1e5ff9a045deb2e7d75f87d5479ede"
+    },
+    "stun_a": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        15,
+        5,
+        47,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "d204c40c954accec7b712f52b45d2621b04329a31ccf7f74c9133006cdca598c",
+      "pngSha256": "fcb4c6a6b5646890db79009e31329582470eb30d5225bc5ff2d3644f6d9f6867"
+    },
+    "stun_b": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        13,
+        5,
+        49,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "945d7e1aedb42154ec1c511eed9cebb804759a06399927a11ed1115de324fa6a",
+      "pngSha256": "7faa9bf66aee4b69cbefe118b16ba90588de132f7c6ea54d4feae00b98c24930"
+    },
+    "sleep_a": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        16,
+        27,
+        46,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "c188c7a21bc23bb347a27c206367a925832b14f665bc94b2f734e3219e21c353",
+      "pngSha256": "a62f81038dee7d13ff3aa025e03646181048c0a662e1b909cdb5534066f93d76"
+    },
+    "sleep_b": {
+      "size": [
+        64,
+        64
+      ],
+      "inkBoundsInclusive": [
+        16,
+        28,
+        46,
+        60
+      ],
+      "transparentBorder": true,
+      "bottomInkY": 60,
+      "sourceSha256": "3a78f5060e155229e4a2507d065cacb9cf98957a8c8589c6d4c6120841a393f2",
+      "pngSha256": "6f8176ff697ce3438025eca840ccf1123f3741c25eff1f619955f891eac83f52"
+    }
+  },
+  "uniqueNativeFrames": 18
+}

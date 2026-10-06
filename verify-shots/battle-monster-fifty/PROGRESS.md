@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재37/50 통과
+# 신규50종 제작 · 현재38/50 통과
 
 ## 최초 두 종 확인
 
@@ -562,3 +562,34 @@ rework3지적은 수면 두 장의 아직 경계하는 듯한 눈/들린 턱과 
 근거:thirty-seven-passed-proof.json,root-review-crimson-bow-huntress.json,
 native-contact-crimson-bow-huntress.*,browser-proof-crimson-bow-huntress.json,
 draft-independent-rework-iron-gauntlet-brawler-initial.json,지속 출처37종.
+
+
+## 철권무인 한 차례 교정 후 통과 · 실제38/50 · 은검여협 초기 교정
+
+철권무인은 수면 두 장의 눈꺼풀·턱/쓰러짐의 얼굴·받친 권갑을 별도 실제 모델 호출로 직접
+고친 뒤 새 독립 GPT 6.1 sol/high keep를 받았다. 감독이 수정된18자세 native1배/최근접2배
+864×696 원본 시트를 직접 열고 chosen_revisions의 새 상태 행 가져오기와 state_revisions.
+apply_to_grids 전체 본문·모듈 흐름·호출을 읽었다. 나머지 원본 writer3개는 앞서 전체 본문/
+모듈 흐름을 읽은 해시 그대로다. 수면은 굽은 닫힌 눈/가슴으로 내려온 턱·머리·연결된 목,
+쓰러짐은 기울고 낮아진 머리와 몸 옆으로 내려간 받침 권갑이 확인된다. 원래 권갑 타격/
+근접 기술·독·기절을 유지한다. 명시적 자세별 전체 행 문자열만 저장하며 형상 생성/
+몸 전체 변환이 없다.18PNG는 원본 ASCII/팔레트와 같고 최종 공개 원본/writer/시트 해시를
+다시 읽었다. 실제 keep의 쓰러진 뒤 종아리 안쪽 윤곽1px 개선 의견을 보존한다. 초기 실제
+rework3지적/draft(false)와 교정본 시트/저작 방식 기록도 보존했다.
+
+은검여협의 초기 실제 독립 rework2지적은 낮은 쓰러짐의 납작한 몸통/들린 머리와 바지처럼
+갈라지는 하체였다. 감독이 실제18자세 시트와 author.write_sources/read_more 전체 본문·
+모듈 흐름·호출을 읽고 초기 원본 시트/draft(false)/실제 job/result를 보존했다. 계약은 긴
+은검과 짧은 검집/청록 겉옷·남청 치마다. 앞선 중간 설명의 쌍검은 원본 계약을 읽고 정정했다.
+몸통·목·어깨와 내려온 머리, 연속된 치마 앞면/밑단을 별도로 직접 고치는 중이며 새 검수
+전에는 통과로 세지 않는다. 심연현무128의 실제 대기/공격 준비 초안은 제작 중으로
+표시하고64px 사람과 같은2배 비교로 보존했다.
+
+현재38/50/684자세/304GIF/전체false다. 같은38종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/저작 방식을 확인했다. 원래52판정/8선택 보존, 신규114행은 사용자
+목표 위임 Allow다. 현재 실제 minor9개를 보존한다(이전8개+철권무인1개). 남은12종은
+사람형1종/128px 보스11종이다. 전체50 완료/게임 설치·실전 전투 완료를 주장하지 않는다.
+근거:thirty-eight-passed-proof.json,root-review-iron-gauntlet-brawler.json,
+native-contact-iron-gauntlet-brawler.*,browser-proof-iron-gauntlet-brawler.json,
+draft-independent-rework-silver-sword-matron-initial.json,지속 출처38종.

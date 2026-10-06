@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "iron-gauntlet-brawler",
+    "source": "qa-runs/harnesses/battle-monster/iron-gauntlet-brawler/fifty-v1/source/poses/windup.pxgrid",
+    "sha256": "73176b3e77de0a0abdaabb124b6acdd8f1a0676588c0c901504b1ff94d70ad04",
+    "cell": 64,
+    "pose": "windup",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:34:40.177110+00:00",
+    "binding": "63e058d82972c1b6d5ce34645730dce1f171bd53739e7c8c43869eb90e5aa82a",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "abyss-jade-turtle",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/source/poses/windup.pxgrid",
+    "sha256": "ae423afe031da03bd2182ccd01b1387b98b2339f8f01e471bfcc3b111fcce634",
+    "cell": 128,
+    "pose": "windup",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:34:40.177110+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]

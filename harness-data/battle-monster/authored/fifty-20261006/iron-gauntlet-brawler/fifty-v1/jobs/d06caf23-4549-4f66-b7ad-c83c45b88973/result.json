@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including the native 1x cells and existing nearest-neighbor 3x views. The adult SD brawler fills the cell well; right-facing three-quarter head, red headband, navy vest and paired silver gauntlets remain consistent. Broad skin and metal highlights support upper-left lighting. Neck, shoulders, punching forearm and gloves appear connected, with no obvious accidental interior transparency holes. Standing feet share a convincing ground line; the widened move/attack stance and hit recoil are readable. Dark boots lose some separation on the dark background. Skill preparation/contact/recovery are distinct, and the three unequal impact branches originate at the extended gauntlet. Poison has a chest clutch and bubbles; stun drops both arms beneath stars, so these are authored states rather than tints. The seated sleep pair retains an alert-looking face, and dead looks like an awake fighter reclining on a supporting arm. These need stronger state-specific face/head clusters. Static pose previews cannot establish animation timing, actual battle contact, or literal pxgrid authorship. This recommendation is advisory; user selection remains pending.",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 34,
+      "y": 38,
+      "message": "The dark eye marks at (34-35,38) and (39-40,38) retain the resting gaze, while the head stays upright above the seated gloves. Replace them with clearly lowered, bent closed-lid clusters and lower the chin toward the chest; preserve the connected neck. At 1x this should read asleep rather than seated and watching."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 34,
+      "y": 39,
+      "message": "The second sleep face repeats the same gaze one row lower: eye marks at (34-35,39) and (39-40,39). Carry the closed-lid repair into this frame, maintaining eye placement relative to the head, and keep the small breathing change in shoulders/gloves rather than reopening the alert face."
+    },
+    {
+      "pose": "dead",
+      "x": 20,
+      "y": 45,
+      "message": "The eye marks around (20-21,45) and (24-25,45), elevated face and bracing glove beneath the shoulder make the fallen pose read awake and reclining. Author visibly slack or closed eyes, drop the chin/head toward the supporting arm, and relax the forearm brace while retaining the neck-to-torso connection and floor contact."
+    }
+  ]
+}

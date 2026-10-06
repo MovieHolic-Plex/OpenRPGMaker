@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 37,
+  "archivedPassedSpecies": 38,
   "entireGoalComplete": false,
   "items": [
     {
@@ -398,6 +398,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "5e21223fceb662dbba6f00bcb1167bd878b22f3c9d2256879fa4908f2896bc30"
+    },
+    {
+      "key": "iron-gauntlet-brawler/fifty-v1",
+      "binding": "63e058d82972c1b6d5ce34645730dce1f171bd53739e7c8c43869eb90e5aa82a",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "7593bcb88974092fe4686150c52840adcbf1423461d99db667d5ef0c51aac368"
     },
     {
       "key": "sun-gold-phoenix/fifty-v1",
