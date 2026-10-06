@@ -23,6 +23,12 @@ def collect(data, cid, result):
     """
     if not theme_production.policy(cid): return result
     theme_production.require_binding(cid, result)
+    import theme_actors
+    actors = theme_actors.collect(data, cid)
+    if actors:
+        theme_production.require_binding(cid, {'theme': actors['theme']})
+        result = dict(result, candidates=[*result['candidates'], actors['batch']],
+                      themeCoverage={**result.get('themeCoverage', {}), **actors['coverage']})
     folder = Path(data) / 'concepts' / cid
     root = Path(data) / 'art-worktrees' / cid
     archive = folder / 'art-batches'

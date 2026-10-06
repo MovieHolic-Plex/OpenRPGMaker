@@ -455,3 +455,15 @@ Animal.png의 개·고양이·닭·양·소·말·호랑이·사자 8종을 원�
 이전 실행을 새 기준에서 이어 만든 경우 `production-state.json`의 `phase: continued`와 `continuedIn`을 기록한다.
 화면은 완료한 GIF를 계속 검토하게 하고 이어지는 실행으로 연결한다. 옛 실행을 다시 생성하지 않는다.
 일반 봉인 실행의 재개도 작업자 실행 전 도구 해시를 확인하므로 원본 선택/정지 상태를 먼저 바꾸지 않는다.
+
+### 걷기 원본에 행동 추가
+
+```bash
+npm run harness -- charset-actor actions produce /absolute/order.json --out /absolute/isolated/actions
+npm run harness -- charset-actor actions check /absolute/order.json --out /absolute/isolated/actions
+```
+
+검증된 현재 걷기 원본과 접지·팔레트를 유지하고 팔/도구의 각 프레임을 직접 찍는다.
+`actions.py`와 `action-worker.md`가 원본 해시·머리/발 고정·기계 검사·수정 이력을 관리한다.
+`receipt.json`은 draft 기술 납품이며 사람의 선택·공간 접합 검수·공용 설치와 별개다.
+요청 필드와 결과 수집은 `openwiki/harnesses/charset-actor.md`의 행동 포즈 절을 따른다.

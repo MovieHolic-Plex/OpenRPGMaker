@@ -100,7 +100,7 @@ def accept(data, cid, result):
         if set(components) != set(originals): raise ValueError('모든 필수 품목을 포함한 데모가 필요합니다.')
         selected = [originals[g][c] for g,c in components.items()]
         import re
-        required_images = [{c['sheet']['sha256']} | {r['sha256'] for r in c['sources']
+        required_images = [{c['sheet']['sha256']} | {r['sha256'] for r in c.get('nativeSheets', [])} | {r['sha256'] for r in c['sources']
             if re.search(r'/h[0-9]+-[A-Z]\.png$', r['path'])} for c in selected]
         refs = [r for c in selected for r in c['sources'] + [c['sheet']]]
         for ref in refs: choices.verified(root, ref)

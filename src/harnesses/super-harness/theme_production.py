@@ -205,6 +205,8 @@ def coverage_status(cid, result, components):
               for r in [c['sheet'],*c['sources']] if r['path'].lower().endswith('.png')
               and ('/pick/candidates/' in r['path'] or re.search(r'^qa-runs/[^/]+/[A-E]\.png$',r['path']))}
     exceptions={(r['path'],r['sha256']) for r in ctx['policy']['reuseExceptions']}
+    authored.update((r['path'],r['sha256']) for g in components['groups'] for c in g['candidates']
+                    if c.get('nativeHarness')=='charset-actor' for r in c.get('nativeSheets',[]))
     refs_allowed=authored|exceptions
     allowed={digest for path,digest in refs_allowed}
     coverage=result.get('themeCoverage',{})

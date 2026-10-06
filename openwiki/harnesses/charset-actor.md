@@ -65,3 +65,21 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 
 상세 계약은 [캐릭터 하네스](../charset-actor-harness.md), 명령과 저장 구조는
 [실행 지침](../../src/harnesses/charset-actor/README.md). 화면 http://mdc-server:18314/.
+
+## 검증된 걷기 인물의 행동 포즈 (2026-10-06)
+
+`npm run harness -- charset-actor actions produce REQUEST --out DIR`는 같은 하네스의
+현재 `human_ready` 걷기 원본에 행동을 추가한다. 저장소는 `CHR_HARNESS_DATA`로 격리한다.
+REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/frames/durationMs/description)를 가진다.
+원본 24×32의 접지는 (12,31)이며 출력 origin에 정렬한다. 머리와 발을 보존하고 팔/도구를 직접 저작한다.
+원본 걷기·사람의 선택·기존 게시를 변경하지 않는다. 넓어진 행동 캔버스를 걷기 CharSet으로 설치하지 않는다.
+
+`actions.px.json`은 공통 pixelgrid의 명시 행 문자열이다. 모델 종료 후 `actions check`가
+팔레트·원점·시간·모든 행동 프레임·머리/발 화소 보존·행동 변경·잘림을 검사하고 PNG/GIF를 굽는다.
+최대 두 번의 기술 수정은 이전 격자/검사/프롬프트/프로세스 결과와 함께 보존한다.
+형식 통과는 동작 미감·몸의 해부학·실제 가구와 손의 접촉을 증명하지 않는다.
+그림은 공간의 독립 검수와 Allow/Deny를 거쳐야 하며 새로운 픽셀을 자동 보간하지 않는다.
+
+슈퍼하네스 `theme_actors.py`는 native 프로세스에서 현재 걷기 binding과 행동 receipt를 확인한다.
+두 납품이 모두 있고 전용 테마·팔레트·원본/출력/도구 해시가 맞을 때만 전용 재료 coverage에 연결한다.
+행동이 없는 걷기만으로 전체 인물 요구사항을 완료 처리하지 않는다.

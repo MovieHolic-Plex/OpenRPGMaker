@@ -847,3 +847,9 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 소비하지 않는다. 실제 covered ID 집합이 늘지 않는 후속 묶음은 반복 실행을 중단하고
 구체 누락 ID를 남긴다. `theme-material-progress.json`은 이 진행 근거를 보존한다.
 전체 coverage와 이후 실제 공간의 시각 검수는 계속 필수이며, 부분 제작은 완성 상태가 아니다.
+
+전용 인물은 `art-actors.json`의 걷기 주문과 `art-actor-actions.json`의 행동 주문을 따로 보존한다.
+`theme_actors.collect`가 새 native 프로세스로 걷기/행동 납품을 확인하여 기존 제작 묶음에 합친다.
+걷기만 있거나 행동이 미완료/변경되었으면 `art-actors-status.json`에 미완료 사유를 남기고 인물 coverage는 비워 둔다.
+`art_choices`는 두 원본 시트와 근거를 묶고 공간 검수가 필요하다고 표시한다.
+`theme_production`은 이 전용 어댑터가 확인한 nativeSheets만 조립 허용 원본으로 센다.

@@ -449,6 +449,11 @@
           "summary": "manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다."
         },
         {
+          "id": "actions",
+          "title": "행동 포즈",
+          "summary": "produce REQUEST --out DIR로 검증된 걷기 원본의 머리·발을 보존하며 팔·도구 동작을 직접 저작한다. check는 격자·팔레트·접지·PNG/GIF를 확인하며 선택/설치는 별도다."
+        },
+        {
           "id": "check",
           "title": "픽셀 검사",
           "summary": "12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다."
