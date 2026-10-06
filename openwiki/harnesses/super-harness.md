@@ -890,3 +890,12 @@ boolean으로 기록한다. 일반 단일 기물의 null 예외와 섞지 않는
 승인 layout.sources의 items.json 콘텐츠 경로를 읽는다. seed.contentRoot가 없는
 새 격리 묶음을 워크트리 루트로 잘못 돌려 옛 hN-A.png를 보여주지 않는다.
 legacy layout 없는 관찰만 이전 seed 경로를 사용하며 시각 미리보기로 게이트를 대체하지 않는다.
+후속 묶음이 이전 items.json을 조립 참고로 함께 보존한 경우, 승인 sources에 해시로 묶인
+현재 data/seed.json의 contentRoot를 사용한다. 선택한 루트의 items.json도 승인 sources에
+있어야 한다. 결합된 seed가 없고 후보 루트가 여러 개이면 임의로 고르지 않고 중단한다.
+
+추가 제작 중에도 `space_progress.collected`가 마지막 수집 원본을 계속 보여준다.
+`art-choices.artResultSha256`과 현재/previous 결과 파일, 현재 테마 바인딩 및 각 원본·receipt
+해시를 확인한다. 준비 단계가 결과 파일을 previous로 옮겼다는 이유로 확보한 칩이 0개로
+사라지지 않는다. 재료 수는 같은 묶음의 coverage를 다시 계산하고, 추가 제작을 검수 반려로
+잘못 설명하지 않는다. 보존한 칩은 품질 합격/공간 완료가 아니며 선택·승인 상태는 바꾸지 않는다.

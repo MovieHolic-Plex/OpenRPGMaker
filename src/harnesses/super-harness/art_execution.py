@@ -16,6 +16,17 @@ def prop_content_root(root, request):
     layout = json.loads(art_layout.verified(root, request['layout']).read_text())
     roots = {art_layout.verified(root, ref).parents[3] for ref in layout['sources']
              if ref['path'].endswith('/tiledata/hand-interior/new/items.json')}
+    # Later batches can retain older item definitions as assembly references.
+    # Only an approved current seed may disambiguate the active content root.
+    seed = (Path(root) / request['data'] / 'seed.json').resolve()
+    for ref in layout['sources']:
+        if (Path(root) / ref['path']).resolve() != seed: continue
+        config = json.loads(art_layout.verified(root, ref).read_text())
+        if config.get('contentRoot'):
+            selected = (Path(root) / config['contentRoot']).resolve()
+            if selected not in roots:
+                raise ValueError('현재 seed의 콘텐츠 루트가 승인된 items.json에 없습니다.')
+            return selected
     if len(roots) > 1: raise ValueError('여러 소품 콘텐츠 루트가 섞인 주문서')
     return next(iter(roots)) if roots else None
 
