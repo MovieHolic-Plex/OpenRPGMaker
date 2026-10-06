@@ -993,3 +993,10 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 `require_preparation`도 이전 실행의 policy와 layout이 함께 calibration으로 남은 경우를 거부한다.
 완료된 native 결과는 `resumeMode=collect-existing`으로 보존하고, scene 도면을 새로 독립 검수한 뒤
 수집·전체 장면 조립을 재개한다. 과거 부품/도면 판정을 PASS로 바꾸거나 그림 회차를 초기화하지 않는다.
+
+### 선택 DB를 제작 명세에 결합하지 않는다 (2026-10-06)
+
+빈 picks.sqlite도 WAL 체크포인트 뒤 바이트 해시가 달라져 마법약 교실의 준비1166이 멈췄다.
+`art_layout.build_input`은 실행 요청의 picks 폴더에 있는 picks.sqlite/WAL/SHM을 sources로 받지 않는다.
+새 도면에서만 선택 DB 참조를 제거하고 독립 검수를 다시 받는다. 후보 실행 DB·주문서·그림 해시는
+계속 확인하며 과거 승인 해시를 고치거나 선택 기록을 삭제하지 않는다. 해시 오류에는 원본 경로도 표시한다.
