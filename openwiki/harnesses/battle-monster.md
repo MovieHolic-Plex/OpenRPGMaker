@@ -254,6 +254,15 @@ npm run harness -- battle-monster accept-batch \
 현재 선택 binding·8GIF/정지/재생/375/320px 브라우저 근거와 기존 판정/선택 보존을 다시 읽는다.
 부분 합격 수는 전체50 완료와 구별하며 원본 그림과 쓰기 함수의 실제 감독 열람은 여전히 필요하다.
 
+`verify-fifty-scope.py --progress-proof <현재 근거 JSON> --out <JSON>`는 같은 현재 감사
+binding에 대해 신규50종의 범위·규격·실제 모델 작업을 별도로 읽는다. 최초 계획 커밋
+`cb4e0b7d04`의 부모 시드에 있던23종의 전체 레코드를 현재 시드와 대조하고, 새50개 ID와
+resourceId의 분리/유일성, 동물10×64·요괴16×96·사람12×64·보스12×128, 성인 여성6/남성6과
+네 직업을 확인한다. 게시된 각 brief 및 실제 성공 author/keeper 작업의 고정 모델·high·실제
+명령도 읽는다. `before-state.json`에는 과거 종 목록이 없고 종 수만 있으므로 빈 items를
+과거 목록으로 취급하지 않는다. 원본 그림/GIF/저장/화면은 현재 근거가 별도로 증명한다.
+부분 확인을 전체 완료로 바꾸지 않으며 보조 원본은 같은 controllers에 보존한다.
+
 `finalize-fifty-root-review.py`는 감독이 이미 실제18원본을 열고 모든 현재 writer/모듈을 읽은
 binding별 False 초안 기록만 받는다. 현재 native18·이미지·읽었던 writer 해시와 기술 PASS,
 별도 GPT6.1sol/high의 실제 terminal keep/검수4PNG를 다시 맞춘 뒤 감독 기록을 묶는다.

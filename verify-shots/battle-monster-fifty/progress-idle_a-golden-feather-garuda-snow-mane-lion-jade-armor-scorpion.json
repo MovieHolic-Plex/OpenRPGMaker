@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "snow-mane-lion",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "cc82af65cfe539c6cb612e54ff0f020332386bf125fdef2ffae90ce0bae3aa2b",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T15:43:27.043894+00:00",
+    "binding": "d32294752cd0927bae4f22b4a4fa7e89bfbb655ba673e898ebd2dd1769eacadd",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "jade-armor-scorpion",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/jade-armor-scorpion/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "82f757daabab43f55d28ddc3b2e88ebe12c91fd5550f7ef70b0063a6ab0bb078",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T15:43:27.043894+00:00",
+    "binding": "96e1d76389a988bfe5d3466fa358d900874ef04d0ef3e68ffa44e4141f9a68f7",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "golden-feather-garuda",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "53fd678c435fdaf76d5637d6b7b2d9286081a011e4a8ac8098a33b2fb289c8d4",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 5,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T15:43:27.043894+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-06T15:57:13.877787+00:00",
+  "passed": false,
+  "key": "jade-armor-scorpion/fifty-v1",
+  "binding": "3a6ff4773eac9f65c3c753ebfaeaf025c50b787c2023b037c29ca59dabd2f0da",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-jade-armor-scorpion-after-repair-two.png",
+  "nativeContactPngSha256": "5ffc11d0140b5bdfa1289a6ea01dc4ab230ee54773cf276aefd73ade08f04551",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "63f3da76daee7de55b04b51c2d9e4062b91d838f97a8fa71aec05bdca2a828c7",
+    "motion_pixels.py": "da5a239b438db6f300ff087e5502a7f861e58c9f5514bb505a9134bfaf221116",
+    "status_pixels.py": "2f3f99b48f29b9e50891fa96d57406e835ba9d1375adfd3aa09b9b248087a963",
+    "collapse_pixels.py": "fb06046bfa48913a1ba1673741e59bf4d7e5282cca54379e28840bb5aabbbdf0",
+    "skill_pixels.py": "07838e70dd86b0d80ce089417acffba8786164683bb13b832ba97a5d38a114b6",
+    "correct_pixels.py": "a60198d10b3ff854e1f6a4c62ea0580ddc258d128bec67c5c713060b5b6a3e4b",
+    "build_all.py": "1ec53dd0eabc33ab7d4217966a0495f9b9fa6fd6d23764b7671948c4ab91976b",
+    "review_repair_pixels.py": "b5ed2046dce58754edae3ac42f0d0bd0bb512c7632c194ba0e04f7dad84f26af",
+    "pincer_repair_pixels.py": "dba058a508fbf2662a08e9535cf3fba872f6fb0c286badfcf481549c69021c0c"
+  },
+  "readOnlyHelperFilesRead": {
+    "render_source.py": "196120efb91db627b792a9c221ac9160fb2680e4ed5c83a19569196dea0db12e",
+    "review_preview.py": "71487354ae833afc0da406d649a3fd7c16977356901034899af7df48ebbd3b45",
+    "pincer_export.py": "ac898d46b8b41e778deba829a8dce31759a94814d893c0a3fc0e2612068f8553"
+  },
+  "observations": [
+    "Actually viewed all18 second-repair native128 at original1632x1272/native1x/nearest2x. Same jade/gold plate shell and raised segmented tail/red sting; distinct solid hooked opposing idle fingers now replace tiny knobs. Upper-left highlights/lower-right jade shadows and far darker claw are readable.",
+    "Attack closes the gaps with2 short rounded solid fingers instead of previous outline loops, but their long tapered idle/move finger identity becomes mitten-like. Windup gap is narrower rather than opening outward. Forward support legs visually attach under the pincer palms; claw motion can appear to change the leg support. Hit/poison/stun now have compact folded palm/finger clusters rather than long dangling strips, but share similar lowered stance.",
+    "Still distinct low collapsed shell/tail and higher compact sleep; violet sting core→2 forked sting-rooted poison streams→3 droplets. Poison/stun symbols and subtle paired bodies remain. Actually read complete new pincer edit method/all module patch calls, complete changed build_all runpy order and readonly pincer_export module. Eight prior native writers keep hashes already fully read, with the changed orchestrator read at this checkpoint; current nine native writer/orchestrator hashes and three readonly helpers match actually read exact bytes. Historical backup scripts are unexecuted snapshots, not new current writers. No generated anatomy/whole-frame transform/tween. Static source/poses cannot establish live dash/contact/timing."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentReviewJob": "c82c292e-56ad-49b4-b10b-f8b8689249a1",
+  "actualIndependentIssues": [
+    {
+      "pose": "idle_a",
+      "x": 84,
+      "y": 110,
+      "message": "The forward diagonal support leg emerges from the underside of the near pincer; the farther forward leg also reads as growing from the other claw. Redraw both proximal leg segments back to distinct sockets on the body underside, with dark separation from the claw arms. Preserve six traceable body-rooted support legs through move and attack rather than moving or losing supports with the pincers."
+    },
+    {
+      "pose": "windup",
+      "x": 99,
+      "y": 88,
+      "message": "The near claw opening is narrower than in idle, so preparation already reads as closing. Swing the movable jaw outward around its visible hinge and leave a larger background wedge between the two fingers than idle. Keep the fixed finger and palm recognizable so move and attack can follow a clear open-then-close sequence."
+    },
+    {
+      "pose": "attack",
+      "x": 101,
+      "y": 70,
+      "message": "The long spear-shaped upper claw finger becomes a short rounded jaw here; the near claw similarly loses its long tapered finger around (109,89). Carry the same palm, hinge and finger lengths forward from move, rotating the movable fingers toward the fixed fingers to show a pinch. Restore tapered tips and narrow contact seams instead of making both claws read as newly shortened mitten shapes."
+    }
+  ],
+  "actualIndependentSummary": "Reviewed all four actual PNGs, including the suite's native 1x and nearest 3x views. The large right-facing silhouette, segmented raised tail, coral stinger and jade/gold armor are readable; broad upper-left highlights and darker inner claw/tail planes give useful volume on light, dark and checker backgrounds. No obvious accidental interior transparency hole or fully detached major body part is visible. Feet occupy the lower baseline, but the forward support legs appear rooted in the pincers, weakening the six-leg anatomy and changing support when the claws move. Windup narrows the already-open pincers, and attack replaces long tapered fingers with short rounded jaws, so the intended opening-to-closure sequence loses structural continuity. Dead is recognizably collapsed. The last nine frames show a purple stinger charge, an actual stinger-attached forked discharge, folded-tail recovery with three droplets, poison bubbles, stun stars and a lowered sleep pair; these are readable state drawings rather than whole-body tints or unrelated attacks, although poison and stun share a similar lowered-claw stance. This is a review recommendation only; user selection remains separate. Static pose previews cannot establish dash timing, foot sliding, impact contact or actual battle playback, and PNGs alone cannot prove literal-grid authorship or author model.",
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/jade-armor-scorpion/fifty-v1/visual-repairs/003/source",
+  "claimScope": "Actual same-binding second-repair native18/full9 current native writers and actual GPT6.1sol/high rework3. Not a keeper/selection/completion."
+}

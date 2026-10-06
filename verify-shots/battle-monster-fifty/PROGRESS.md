@@ -799,3 +799,11 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 실제 위임 Allow3단계/선택ZIP/PNG18·디코딩GIF8의 픽셀/시간, 정본 source archive47종, 현재 root47종/browser47종을 다시 읽었다. 감독은 실제 데스크톱pause·375/320px 화면3장을 열었고8GIF/정지·재생/같은 픽셀 배율 사람 비교/오류0·넘침0·선택 버튼 미클릭을 확인했다.
 - 현재 합격 **47/50종 · 846자세 · 376GIF**. 동물10/요괴16/사람12(여성6)/보스9. 남은128px 보스3종은 설갈사자왕/옥갑전갈왕/금익대붕이다. 실제 사자 첫 수정/전갈 둘째 수정/대붕 최초 저작을 이어간다. 원래 결정52행/선택8건 보존, 새 위임141행/전체193행, 이전 정식minor11건 유지. 대시보드 Allow55는 기존8+신규47. 전체50 완료는 false다.
 - 근거: `forty-seven-passed-proof.json`, `root-review-sea-pearl-serpent.json`, `root-draft-review-sea-pearl-serpent-after-repair-one.json`, `browser-proof-sea-pearl-serpent.json`, `source-archive-proof.json`.
+
+## 마지막 세 보스 새 원본과 범위 확인 · 2026-10-06 16:05 UTC
+
+- 전갈 둘째 수정의 실제18자세를 원본1배/nearest2배로 열고 현재 native writer9개/readonly helper3개의 모든 메서드·모듈 흐름을 확인했다. 같은 실제 읽었던 해시와 before-third source를 맞췄다. 실제 GPT6.1sol/high `c82c292e-56ad-49b4-b10b-f8b8689249a1` rework3건은 집게 아래에서 나오는 앞 지지 다리, 준비 때 더 닫힌 집게, 공격 때 짧은 둥근 장갑처럼 변하는 손가락이다. 실제 좌표/source/terminal 작업/검수4PNG와 감독18자세를 동일 binding으로 보존했다. 셋째 수정 중이며 keeper가 아니다.
+- 사자 첫 수정의 live 캡처는 둘째 저작이 시작되어 PNG/source 불일치에서 실제 종료됐다. 옛 초기 그림을 새 그림으로 열지 않았다. 대신 before-second 불변 source의 실제18PNG를 ASCII/팔레트와 대조하고 두 원본1배/nearest2배 author 시트의18칸을 nativeRGBA 합성과 맞춘 뒤 두 시트를 실제 열었다. 현재 native writer2개와 readonly helper2개의 전체 메서드/흐름·해시를 확인했다. 실제 `5a5c7a38-edb3-4176-8f66-2e580ba00e51` rework3건(판금 같은 갈기, 회수 자세의 발 없는 막대형 앞다리, 쓰러진 머리의 기둥 같은 목 연결)을 실제 source/좌표/작업/검수4PNG와 보존했다. 둘째 수정 중이다.
+- 금익대붕 초반5/18 대기·이동 그림과 사자/전갈의 실제 새 대기 원본을 동일2배 검객과 비교하여 사용자에게 보여 주었다. 대붕 초기 author 전체 메서드·모듈을 읽고 당시1269행/해시를 checkpoint로 보존했지만 이후 추가된 자세는 별도 전체 읽기와 실제18자세 검수가 필요하다. 현재 원본18자세 작성까지 이어졌으나 최초 저작은 아직 진행 중이다.
+- `fifty-scope-contract-proof.json`을 실제로 만들었다. 최초 계획 커밋 부모의 원래23종 전체 시드 레코드가 현재 그대로이고 새50 ID와 겹치지 않는 것을 확인했다. 전체73 ID/resourceId 유일, 동물10×64·요괴16×96·사람12×64(성인 여성6/남성6·네 직업)·보스12×128과 게시47종의 실제 brief/성공 author·keeper의 고정 GPT6.1sol/high 명령을 확인했다. before-state에는 종 수만 있고 목록은 없으므로 빈 items에서 신규 여부를 추론하지 않았다. 원본/선택/저장/화면은 별도 현재47종 근거로 확인한다.
+- 통과 **47/50종 · 846자세 · 376GIF**, 전체50 미완료를 유지한다. 초안·실제 rework와 모델 작업의 진행을 합격으로 세지 않는다.
