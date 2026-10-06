@@ -1,0 +1,120 @@
+{
+  "coordinates": "zero-based native",
+  "changes": [
+    {
+      "x": 86,
+      "y": 50,
+      "before": "FF",
+      "after": ".."
+    },
+    {
+      "x": 85,
+      "y": 51,
+      "before": "FCCF",
+      "after": "...."
+    },
+    {
+      "x": 85,
+      "y": 52,
+      "before": "FCWCF",
+      "after": "....."
+    },
+    {
+      "x": 86,
+      "y": 53,
+      "before": "FCCCFE",
+      "after": "......"
+    },
+    {
+      "x": 87,
+      "y": 54,
+      "before": "FCFFE",
+      "after": "....."
+    },
+    {
+      "x": 87,
+      "y": 55,
+      "before": "FEEE",
+      "after": "...."
+    },
+    {
+      "x": 84,
+      "y": 59,
+      "before": "FFE",
+      "after": "..."
+    },
+    {
+      "x": 83,
+      "y": 60,
+      "before": "FCCFE",
+      "after": "....."
+    },
+    {
+      "x": 82,
+      "y": 61,
+      "before": "FCWCCFE",
+      "after": "......."
+    },
+    {
+      "x": 82,
+      "y": 62,
+      "before": "FCCCCFE",
+      "after": "......."
+    },
+    {
+      "x": 83,
+      "y": 63,
+      "before": "FFFFEE",
+      "after": "......"
+    },
+    {
+      "x": 85,
+      "y": 64,
+      "before": "EEE",
+      "after": "..."
+    }
+  ],
+  "changedInkPixels": 57,
+  "beforeFileHashes": {
+    "palette.json": "08b4c3b8212b869384b19458f256b62d9bb56c91a0d1ce724d73d6103c4088b7",
+    "poses/attack.pxgrid": "c875a1e8bbc636a5ee5489b6f4a5b44d37f911b10bd11d69aff83d8f6f546403",
+    "poses/dead.pxgrid": "d970ba7ea967b911e0d506f566861d104f8d7c8e51742cf43134cfd9f6f3e58c",
+    "poses/hit.pxgrid": "8b89cfe4d31576beef704c394ad2c054024145e481cc74396de36ccdb5b01081",
+    "poses/idle_a.pxgrid": "8572f9a75b3a8a34a36483343d8a2d0b28fb9a655481bac69073c9277008f039",
+    "poses/idle_b.pxgrid": "5012ed8656f130c1f45df712c291b7af56ac6bba99e447882203a74b80dfba43",
+    "poses/idle_c.pxgrid": "4747427ed7861c7e0f18973c71fe950123c2bcf0853cbf935b682a6a2ab66cc8",
+    "poses/move.pxgrid": "787c0e3e0720128a2e15bf04eb809d4cd7b6c3b6fcdae0a1334b5e729ee78789",
+    "poses/recover.pxgrid": "259b1bd919365d1f1862f3ba639b7b9fba0abde56104fc3819d2589107903097",
+    "poses/windup.pxgrid": "443e7f16449a5616e23a16f2c613a4c363428edc72858959d090520d29d98cab",
+    "actions/poison_a.pxgrid": "448592a93c4fc118edbf85f68bb5f39b1f01486e65347798eaa4640e89249f99",
+    "actions/poison_b.pxgrid": "19cf26e1ebe52af4a5bbcb883c9f48959b3d3d6ccc5fed53644c9c45e2628765",
+    "actions/skill_a.pxgrid": "46d7c9b10f15d9d06a4e26cfc7adf4c1069375b58e4d29e6731f4fa70d0a5b15",
+    "actions/skill_b.pxgrid": "e94938829d40b3fdef3d1e6b878734ac395dbe36a762424777514733dec811de",
+    "actions/skill_c.pxgrid": "8814785f0ea87ed0209d7f748095010b62d940e6505b3f709265d7f386338af4",
+    "actions/sleep_a.pxgrid": "e236642936501973b393e6bb219926dc01e5ba33f7ad161207b94b9a103889d4",
+    "actions/sleep_b.pxgrid": "2d1d70a8937abd34921c887ec3f16db29d9707d6facbf5949a11af32a8032f92",
+    "actions/stun_a.pxgrid": "45128f0b10d956002bf6504e285a88dfc366256d00d31cff4feb3cb68f5a987d",
+    "actions/stun_b.pxgrid": "9b0e7c6db35da6c5a16dfc8f7ca39112aa4de845a75c0d9e12a1a2327d185507"
+  },
+  "afterFileHashes": {
+    "palette.json": "08b4c3b8212b869384b19458f256b62d9bb56c91a0d1ce724d73d6103c4088b7",
+    "poses/attack.pxgrid": "c875a1e8bbc636a5ee5489b6f4a5b44d37f911b10bd11d69aff83d8f6f546403",
+    "poses/dead.pxgrid": "d970ba7ea967b911e0d506f566861d104f8d7c8e51742cf43134cfd9f6f3e58c",
+    "poses/hit.pxgrid": "8b89cfe4d31576beef704c394ad2c054024145e481cc74396de36ccdb5b01081",
+    "poses/idle_a.pxgrid": "8572f9a75b3a8a34a36483343d8a2d0b28fb9a655481bac69073c9277008f039",
+    "poses/idle_b.pxgrid": "5012ed8656f130c1f45df712c291b7af56ac6bba99e447882203a74b80dfba43",
+    "poses/idle_c.pxgrid": "4747427ed7861c7e0f18973c71fe950123c2bcf0853cbf935b682a6a2ab66cc8",
+    "poses/move.pxgrid": "787c0e3e0720128a2e15bf04eb809d4cd7b6c3b6fcdae0a1334b5e729ee78789",
+    "poses/recover.pxgrid": "259b1bd919365d1f1862f3ba639b7b9fba0abde56104fc3819d2589107903097",
+    "poses/windup.pxgrid": "443e7f16449a5616e23a16f2c613a4c363428edc72858959d090520d29d98cab",
+    "actions/poison_a.pxgrid": "448592a93c4fc118edbf85f68bb5f39b1f01486e65347798eaa4640e89249f99",
+    "actions/poison_b.pxgrid": "19cf26e1ebe52af4a5bbcb883c9f48959b3d3d6ccc5fed53644c9c45e2628765",
+    "actions/skill_a.pxgrid": "46d7c9b10f15d9d06a4e26cfc7adf4c1069375b58e4d29e6731f4fa70d0a5b15",
+    "actions/skill_b.pxgrid": "e94938829d40b3fdef3d1e6b878734ac395dbe36a762424777514733dec811de",
+    "actions/skill_c.pxgrid": "219816c27351274950930454f87df32d39f41fbbd4f3992e91f3e457d0eefec3",
+    "actions/sleep_a.pxgrid": "e236642936501973b393e6bb219926dc01e5ba33f7ad161207b94b9a103889d4",
+    "actions/sleep_b.pxgrid": "2d1d70a8937abd34921c887ec3f16db29d9707d6facbf5949a11af32a8032f92",
+    "actions/stun_a.pxgrid": "45128f0b10d956002bf6504e285a88dfc366256d00d31cff4feb3cb68f5a987d",
+    "actions/stun_b.pxgrid": "9b0e7c6db35da6c5a16dfc8f7ca39112aa4de845a75c0d9e12a1a2327d185507"
+  }
+}

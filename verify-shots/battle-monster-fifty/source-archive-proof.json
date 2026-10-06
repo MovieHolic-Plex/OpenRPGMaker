@@ -187,6 +187,17 @@
     "selectedPackSha256": "941a234431e661caba6f1f1463930da18a46f59f0580f88cfa2786bc860c4ec0"
   },
   {
+    "key": "jade-lantern-serpent/fifty-v1",
+    "binding": "3d1e6bb8a82cec3a3529f85dbbf85581e7045fdde98dc5326e413725f8b21451",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "52685c0aa679734701f63ad8b879d896a70e09673eeb9410b8eb8f2c189e9746"
+  },
+  {
     "key": "red-tassel-swordswoman/fifty-v1",
     "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
     "nativeCell": 64,

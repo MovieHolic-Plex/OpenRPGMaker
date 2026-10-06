@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "jade-lantern-serpent",
+    "name": "옥등사",
+    "cell": 96,
+    "grounded": true,
+    "motion": "hop",
+    "tier": "elite",
+    "idleFrameMs": 240,
+    "silhouette": "비취 뱀 요괴, 길게 구부린 목/둥근 하단 몸, 금빛 배판과 검은 두 눈, 꼬리 끝에 연결된 녹청 등롱. 뿔/다리 없음. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "목을 낮춰 준비 → 하단 몸을 풀어 밀기 → 긴 턱 물기 → 목을 세워 회수.",
+    "skill": "옥등식: 꼬리 등롱에 청록 핵 → 실제 입에서 옥빛 독기 두 갈래 → 턱을 닫으며 두 잔기.",
+    "resourceId": "jf-enemy-jade-lantern-serpent",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 92,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

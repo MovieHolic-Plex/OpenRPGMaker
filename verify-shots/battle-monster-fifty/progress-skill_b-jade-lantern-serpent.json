@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "jade-lantern-serpent",
+    "source": "qa-runs/harnesses/battle-monster/jade-lantern-serpent/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "e94938829d40b3fdef3d1e6b878734ac395dbe36a762424777514733dec811de",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:19:57.113313+00:00",
+    "binding": "3d1e6bb8a82cec3a3529f85dbbf85581e7045fdde98dc5326e413725f8b21451",
+    "entireGoalCompleteClaim": false
+  }
+]

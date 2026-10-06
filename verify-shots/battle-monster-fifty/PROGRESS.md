@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재19/50 통과
+# 신규50종 제작 · 현재20/50 통과
 
 ## 최초 두 종 확인
 
@@ -202,4 +202,21 @@ PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정�
 감독 기록이 아직 없는 새 후보는 증거 확인에서 실제 종 ID와 함께 미완료로 남긴다.
 근거:nineteen-passed-proof.json,root-review-{ink-brush-oni,plum-blossom-spirit}.json,
 native-contact-*.png/json,각 실제 browser-proof 및 지속 출처19종.
+
+## 옥등사 최초 검수 통과 · 실제20/50
+
+옥등사는 최초 실제 독립 keep0지적을 받았다. 감독이 현재18자세 native1배/최근접2배
+시트를 직접 열고 write_literal.rows/save 두 쓰기 함수와 native 호출 목록을 읽었다.
+연녹색 목/등의 밝은 면과 짙은 옆면·황금 배, 의도한 감긴 몸의 빈 틈과 꼬리/청록 등불
+연결이 읽힌다. 짧게 모은 준비·뻗는 목/열린 입의 물기·뒤로 당긴 피격·낮게 누운 쓰러짐과
+웅크려 감긴 눈 수면, 입의 두 청록 빛 가지와 회수 방울이 구별된다.18PNG RGBA는 실제
+ASCII/팔레트와 정확히 같다. 형상 수학/전체 프레임 변환 없이 직접 고른 행/좌표 문자열을 쓴다.
+
+현재20/50/360자세/160GIF/전체false다. 같은20종의 현재 Allow/선택 ZIP native
+PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px
+브라우저 오류/넘침0과 현재 감독 그림/쓰기 방식을 다시 읽었다. 기존52판정/8선택을
+보존했고 신규60행은 사용자 목표 위임 Allow다. 화린독사/매화정의 작은 지적 각1개는 보존한다.
+전체50 목표와 나머지30종은 그대로 진행 중이다.20종을 전체 완료로 세지 않는다.
+근거:twenty-passed-proof.json,root-review-jade-lantern-serpent.json,native-contact-jade-lantern-serpent.*,
+실제 browser-proof 및 지속 출처20종.
 

@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T08:21:30.969534+00:00",
+  "passed": true,
+  "key": "jade-lantern-serpent/fifty-v1",
+  "binding": "3d1e6bb8a82cec3a3529f85dbbf85581e7045fdde98dc5326e413725f8b21451",
+  "actualIndependentReviewJob": "cd4f57eb-11c8-4c8a-9906-71aee8fc2cdf",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "572371f5c69cfd2e8e72dd3dd0f024f55c2141fa41d11cc65f1e8fddf565f5e3",
+    "preview/suite/light.png": "14c6777b38ac75d1c2cacee95e671d7bf20ff23f131b30d43049f5c9ea75fca8",
+    "preview/suite/dark.png": "67eef54332e86060f44636879eacad60afaf31ee0c8ba388a5d8346a145cfaae",
+    "preview/suite/checker.png": "3a7967f84012ea7f8b5c6b4efcfaef2a7477e7ff4e6b58187565b3b3489170c6"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-jade-lantern-serpent.png",
+  "nativeContactPngSha256": "d704fdb977e5df81ec42d51f06d0851154ff02bf3c4b73c9688225fae187a8bc",
+  "nativeWriterFilesRead": {
+    "write_literal.py": "5369220f27a119da585ae1ab934acb76da97fd5492739b70b3619b8073c556d1"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actualcurrent18pose compactnative1x/nearest2x1248x984 without resize. Jadegreen obliquehead/neck upperleft lightplanes/darkright shadow/yellowbelly, readable intentionalcoilopening, tail connected to brasscap/cyan lantern. Shortcompressed windup, longforwardneck/openjaw bite, drawnback hit, flatfallenhead/coil/lantern vs lowcurledclosedeyesleep. Lantern-brighter gather, two cyanmouth-origin curvedforks and3returned droplets; poisonbubbles/head droop/pairedstun retained. Root read write_literal.rows/save full bodies and ASTallcalls: only explicit perpose x:y/ink literalrows, y increments only rowplacement, unchangedclusters reused and changed clusters separatelyauthored; no nativegeometry/wholeframetransform. Initial actual keeper0issues. All18 nativePNG RGBA exactlymatch canonicalASCII/palette.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}
