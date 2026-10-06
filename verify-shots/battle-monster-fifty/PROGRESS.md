@@ -780,3 +780,7 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 실제 대기·공격 중간판 두 장을 보존하고 사용자에게 보여주었다. 실제128px 원본과 승인된64px 사람을 같은 픽셀 배율로 비교한다. 제작 중 후보를 통과로 표시하지 않는다.
 - 현재 통과 **46/50종 · 828자세 · 368GIF**와 원래 결정52행/선택8건을 유지한다. 사자·전갈은 수정, 바다뱀은 독립 검수, 대붕은 다음 자리 대기다. 전체50 완료는 false다.
 - 근거: `root-draft-review-snow-mane-lion-initial.json`, `draft-independent-rework-snow-mane-lion-initial.json`, `root-draft-review-jade-armor-scorpion-initial.json`, `draft-independent-rework-jade-armor-scorpion-initial.json`, `root-draft-review-sea-pearl-serpent-initial.json`, 각 immutable 최초 원본18자세 그림과 실제 중간판.
+
+## 바다뱀 실제 초기 검수 · 2026-10-06 15:26 UTC
+
+- 실제 GPT6.1sol/high 독립 검수 `83483309-3e42-4987-9ae9-2912af892c07`는 rework2건: 돌진/공격에서 아래 코일을 풀어 몸으로 전진하고 회복에 감기, 벌린 입의 짧은 아래턱을 긴 주둥이와 일치시킨다. 실제 초기 source/검수4PNG/terminal 작업, 감독이 열었던18자세와 완전히 읽은 writer/helpers를 같은 binding으로 보존했다. 첫 수정 중이며 통과46/50을 유지한다.

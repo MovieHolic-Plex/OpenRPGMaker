@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-06T15:27:32.420937+00:00",
+  "passed": false,
+  "key": "sea-pearl-serpent/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Reviewed the actual portrait and light, dark and checker PNGs, including native 1x and nearest 3x panels. The long snout, two gold eyes, short fins, double coils, gold belly and attached blue-white neck pearl identify the same creature throughout. Broad teal planes and upper-left highlights remain readable across backgrounds. Coil openings and the open jaw are intentional negative space; no obvious accidental body holes or detached anatomy are visible. The bottom coil stays grounded; feet, hands and tools are inapplicable. Windup bends the neck back, but move and attack retain two closed stacked coils, weakening the specified uncoiling dash. The attack also exaggerates the difference between upper and lower jaw lengths. Skill preparation has a core inside the mouth; the two branching water waves connect to that mouth, followed by three separate spray remnants and a closed jaw. Poison, stun and sleep have distinct slumped, dazed and closed-eye silhouettes with appropriate effects, rather than simple tints. This is an advisory review, not a user selection. Static pose previews cannot establish animation timing, actual battle contact, in-game boss scale or literal-grid authorship.",
+    "issues": [
+      {
+        "pose": "move",
+        "x": 58,
+        "y": 111,
+        "message": "The lower coil remains a closed horizontal ring, and attack preserves the same stacked-ring structure. Redraw this lower-coil section into a visibly opening sweep that drives the connected neck and upper body forward. Carry that released shape into attack and gather it back in recover, retaining a continuous body and grounded contact at y=124. The contracted uncoiling dash should read from the body silhouette as well as the neck lean."
+      },
+      {
+        "pose": "attack",
+        "x": 95,
+        "y": 65,
+        "message": "The lower jaw terminates near x=97 while the upper snout reaches x=111, producing a pronounced upper overhang compared with the closed-mouth poses. Extend and taper the connected lower-jaw silhouette toward a corresponding bite tip, or redraw the hinge angle to make the foreshortening convincing. Continue the gold underside, dark contour and tooth placement through the repaired tip so both jaws read as one consistent long biting mouth."
+      }
+    ],
+    "binding": "227042747f96210e39358faaa420e5838dd0b658aedfd2df7937beb130952de8",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "fb2a6463a3d2652e1aa0e476d0b75f5a874955ae57c175cf7474fbf887997d84",
+      "preview/suite/light.png": "75c50a6ccc981c9a210facf83ada5ac282afb6d0f484e3abcba5f5515ec6b98f",
+      "preview/suite/dark.png": "f9564759b61d30c9d70bf622425d266f25a3d8064fc4627f48073fba6ee49bd6",
+      "preview/suite/checker.png": "30a4753ea644b12ed1e9141d3f49825850cde6a25c082b22cfbb8140b1ddd1a6"
+    },
+    "jobId": "83483309-3e42-4987-9ae9-2912af892c07",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T15:26:06.481111+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "83483309-3e42-4987-9ae9-2912af892c07",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T15:23:08.725324+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/jobs/83483309-3e42-4987-9ae9-2912af892c07",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "3618a86a7cee2d1fea525564e99faada283921351f0272ccf9da881993140cc8",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "fb2a6463a3d2652e1aa0e476d0b75f5a874955ae57c175cf7474fbf887997d84",
+      "preview/suite/light.png": "75c50a6ccc981c9a210facf83ada5ac282afb6d0f484e3abcba5f5515ec6b98f",
+      "preview/suite/dark.png": "f9564759b61d30c9d70bf622425d266f25a3d8064fc4627f48073fba6ee49bd6",
+      "preview/suite/checker.png": "30a4753ea644b12ed1e9141d3f49825850cde6a25c082b22cfbb8140b1ddd1a6"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T15:26:05.762762+00:00"
+  },
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/visual-repairs/001/source",
+  "rootNative18ReviewOfThisSnapshotClaim": true,
+  "claimScope": "Actual same-binding native18/full writer/helpers reading and real GPT6.1sol/high rework2. No keeper/selection/completion."
+}
