@@ -114,6 +114,9 @@ export interface ToolDefinition {
    * run(draft,args) 는 ctx 를 받지 못하므로, 「지금 보는 맵」이 필요한 도구(ask_tileset_change)는 이 경로로 받는다.
    */
   readonly fillsCurrentMapId?: boolean;
+  // true 면 Pi 의 캐릭터 그림 선택 검사(charsetSelectionGate)를 건너뛴다 — 사람이 고른 출연진을 통째로 까는 도구(build_monster_game)용.
+  // 모델이 칩 번호를 고르지 않으니 「후보 그림을 먼저 봐라」는 계약의 대상이 아니다.
+  readonly placesCuratedCast?: boolean;
   // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
   readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
