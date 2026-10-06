@@ -77,19 +77,23 @@ def queue_missing(data, cid, result, components):
     no required material, stop with its concrete missing IDs instead of looping.
     """
     status = theme_production.coverage_status(cid, result, components)
-    if status is None or not status['missing']: return None
+    if status is None: return None
     folder = Path(data) / 'concepts' / cid
     path = folder / 'theme-material-progress.json'
     state = art_choices.read(path) if path.is_file() else {'states': []}
     signature = hashlib.sha256(json.dumps(status['covered'], sort_keys=True).encode()).hexdigest()
-    repeated = signature in state['states']
-    if not repeated: state['states'].append(signature)
+    repeated = bool(status['missing']) and signature in state['states']
+    if signature not in state['states']: state['states'].append(signature)
     state.update(missing=status['missing'], covered=status['covered'], repeated=repeated)
     write(path, state)
     write(folder / 'theme-material-feedback.json', {
-        'kind': 'missing-production', 'missing': status['missing'], 'covered': status['covered'],
+        'kind': 'missing-production' if status['missing'] else 'production-collected',
+        'missing': status['missing'], 'covered': status['covered'],
         'batches': str(folder / 'art-batches'), 'preserveExisting': True,
-        'instruction': '이미 제작된 원본·영수증을 보존하고 누락 재료만 별도 격리 묶음으로 제작한다. '
-                       '기존 그림 재제작이나 요구사항 삭제로 대체하지 않는다.',
+        'instruction': ('이미 제작된 원본·영수증을 보존하고 누락 재료만 별도 격리 묶음으로 제작한다. '
+                        '기존 그림 재제작이나 요구사항 삭제로 대체하지 않는다.' if status['missing'] else
+                        '모든 재료 ID에 원본이 수집됐다. 이전 누락 제작 지시는 완료됐다. '
+                        '품질 합격을 뜻하지 않으며 실제 공간 데모·독립 검수 및 구체 반려 항목의 수정을 이어간다. '
+                        '원본·영수증을 보존하고 이미 수집된 재료를 미제작으로 다시 주문하지 않는다.'),
     })
-    return state
+    return state if status['missing'] else None
