@@ -6,6 +6,7 @@ import { defaultActorCharacterResourceId } from "@/project/actorModel";
 import { resolveActorAppearance } from "@/project/characterAppearances";
 import { inBounds, isPassable } from "@/project/collision";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 
 const MAX_TRAIL_POINTS = 64;
 /** 궤적 버툴 길이. `gap * maxCompanions` 상한의 근거다. */
@@ -148,6 +149,9 @@ export function syncMonsterPartyFollowers(project: Project, session: PlaySession
     const instance = session.monsterInstances?.[instanceId];
     if (!instance) continue;
     const species = (project.database.monsterSpecies ?? []).find((record) => record.id === instance.speciesId);
+    // 에메랄드 문법에는 걷는 동료 몬스터가 없다. 종에 필드 그림이 없으면 기본값(EasyRPG 초록 슬라임)이 모든 몬스터를 대신해
+    // 사막 마을·연구소·체육관마다 같은 초록 덩이 둘이 주인공을 따라다녔다(2026-10-07 사막 기획서 플레이 영상, 사용자 지적).
+    if (isEmeraldMonsterStyle(project) && !species?.graphic?.fieldGraphic?.sprite?.id && !species?.graphic?.fieldCharsetId?.trim()) continue;
     monsterFollowers.push({
       id: `monster:${instance.instanceId}`,
       name: monsterFollowerName(instance, species?.name),
