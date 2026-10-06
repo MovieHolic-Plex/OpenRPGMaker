@@ -242,12 +242,22 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     return Array.from({ length: count }, (_, i) => representatives[i % representatives.length]!.id);
   }
 
+  // 스타터 계통은 초반 풀숲에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
+  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
+  const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
+
   function wild(map: GameMap, habitat: string, level: number): void {
-    const pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && s.stage > 0 && minimumLevel(s.id) <= level - 2).map(s => s.id);
+    const fits = (s: (typeof EXPEDITION_SPECIES)[number]) => s.stage > 0 && minimumLevel(s.id) <= level - 2 && (level >= 20 || !starterFamilies.has(s.family));
+    let pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && fits(s)).map(s => s.id);
+    // 스타터를 빼고 한 종만 남으면 이웃 서식지의 첫 단계 종을 빌려 온다(풀숲에 벌레가 섞이듯).
+    if (pool.length < 2 && neighbourHabitat[habitat]) pool = [...pool, ...EXPEDITION_SPECIES.filter(s => s.habitat === neighbourHabitat[habitat] && s.stage === 1 && fits(s)).map(s => s.id)];
     map.encounterRate = 14;
     // Named habitats prevent encounters on the transport/entry row and indoor surfaces.
     map.locations = [{ id: `${map.id}_habitat`, name: "몬스터 서식지", x: 1, y: 3, w: map.width - 2, h: map.height - 6 }];
-    map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], Math.max(3, level - i % 3), false),
+    // 첫 길은 Lv5 스타터 한 마리로 걸어 나가는 곳이라 야생을 두세 레벨 아래로 둔다.
+    // 첫 종만 Lv3, 나머지는 Lv2 — Lv3 벌레는 벌레 기술을 배워 풀 스타터를 두 배로 때린다.
+    const wildLevel = (i: number) => level <= 6 ? Math.max(2, level - (i === 0 ? 1 : 2)) : Math.max(3, level - i % 3);
+    map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], wildLevel(i), false),
       weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
   }
 
@@ -256,7 +266,8 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [battleMusic(), ...(winSwitch ? [sw(winSwitch)] : []), ...win, music(map.bgm!.resourceId!)],
-      defeatBranch: [battleMusic(), text("동료들이 지쳤다. 회복 센터에서 다시 준비하자."), { kind: "recoverAll" }, transfer(project.maps[id(`${townFor(map)}_center`)] ?? project.maps[id("home_center")]!, entries.get(id(`${townFor(map)}_center`)) ?? entries.get(id("home_center"))!)],
+      defeatBranch: [battleMusic(), text("동료들이 지쳤다. 회복 센터에서 다시 준비하자."), { kind: "recoverAll" },
+        transfer(project.maps[id(`${townFor(map)}_center`)] ?? project.maps[id("home_center")]!, centerLanding(project.maps[id(`${townFor(map)}_center`)] ? `${townFor(map)}_center` : "home_center"))],
       escapeBranch: [battleMusic(), text("다시 준비해서 돌아오자.")] };
     let commands: Command[] = [...intro, fight];
     if (required) commands = [{ kind: "fork", condition: condition(required), then: commands, else: [text("먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", name)] }];
@@ -265,6 +276,13 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const e = event(map, suffix, at, commands, { graphic: charsetGraphic("tex_easyrpg_charset_people1", 6) });
     manifest.battles.push({ mapId: map.id, eventId: e.id, troopId: tid, level, ...(winSwitch ? { victorySwitch: winSwitch } : {}) });
     return e;
+  }
+
+  // 패배하면 원작처럼 직원 앞에서 다시 선다 — 출입문 칸 위로 옮기면 다음 걸음에 문이 발동하지 않아 헤맨다.
+  function centerLanding(centerKey: string): Point {
+    const room = project.maps[id(centerKey)]!;
+    const exit = entries.get(room.id)!;
+    return nearest(room, { x: exit.x, y: exit.y - 1 }, connected(room).filter(p => coord(p) !== coord(exit)), true);
   }
 
   function townFor(map: GameMap): string {
@@ -485,7 +503,8 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       { id: "league", title: "별빛 리그의 사천왕과 챔피언 나루에게 도전하라.", switchId: "mx_ending", requiresSwitchId: "mx_story_beacon" }] };
   project.endings = [{ id: "mx_ending_starlight", name: "여덟 빛의 약속", conditions: [condition("mx_ending")], priority: 100,
     presentation: { tone: "warm", musicResourceId: audio.ending, credits: "별빛섬 몬스터 원정\n기획·맵·이벤트: OPRN Studio\n몬스터·타일·음악: 오리지널 좌표 도트와 작곡\n함께 걸어 준 모든 동료에게" } }];
-  project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다.", recovery: { mapId: id("home_center"), ...entries.get(id("home_center"))! } };
+  // 야생에게 지면 원작처럼 마지막으로 들른 회복 센터(직원의 checkpointSave)에서 깨어난다. 들른 적이 없으면 집.
+  project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다." };
   project.system.startActorIds = [DEFAULT_ACTOR_ID];
   project.session.partyActorIds = [DEFAULT_ACTOR_ID];
   project.system.sellPrices = [...(project.system.sellPrices ?? []).filter(p => p.itemId !== "item_capture_orb"), { itemId: "item_capture_orb", price: 0 }];

@@ -60,7 +60,9 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
   if (!options.skipAutoPlay) {
     const play = (recoverBeforeRandomEncounters: boolean): GameCheckReport["autoPlay"] => {
       try {
-        return runAutoPlay(project, { budgetMs: options.autoPlayBudgetMs, companionJoins: companionJoins(project), recoverBeforeRandomEncounters });
+        // 몬스터 캠페인(체육관 8곳·리그, 진 뒤 수련)은 한 실행에 1분 가까이 걸린다 — 기본 1분이면 회복 실행이 시간 상한에 걸렸다.
+        const budgetMs = options.autoPlayBudgetMs ?? (project.system?.monsterCollection === true ? 240_000 : undefined);
+        return runAutoPlay(project, { budgetMs, companionJoins: companionJoins(project), recoverBeforeRandomEncounters });
       } catch (error) {
         return { targets: [], plan: [], runs: [], skipped: `자동 플레이 중 예외: ${error instanceof Error ? error.message : String(error)}` };
       }
@@ -76,7 +78,10 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     // 확인 레벨에서도 못 이기는 보스는 그대로 막힘이다 — 「레벨을 올리면 이긴다」가 거짓인 한은 막힘이 맞다.
     const downgraded = new WeakSet<AutoPlayRun>();
     const downgrade = (run: AutoPlayRun) => { downgraded.add(run); return run; };
-    const encounterDefeat = (run: AutoPlayRun) => !run.ok && /random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "");
+    // 몬스터 게임은 자동 플레이가 지면 수련하고 다시 도전한다 — 회복 없이 걷다 수련 횟수를 다 쓴 실행도 소모전 신호다.
+    const monsterAttrition = project.system?.monsterCollection === true;
+    const encounterDefeat = (run: AutoPlayRun) => !run.ok && (/random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "")
+      || (monsterAttrition && /전투 패배|수련|쓰러져/u.test(run.failure?.detail ?? "")));
     const bossDefeat = (run: AutoPlayRun) => !run.ok && /이벤트 전투에서 패배해/u.test(run.failure?.detail ?? "");
     const retry = autoPlay.runs.some(encounterDefeat) ? play(true)! : undefined;
     const allRuns = [...autoPlay.runs, ...(retry?.runs ?? [])];

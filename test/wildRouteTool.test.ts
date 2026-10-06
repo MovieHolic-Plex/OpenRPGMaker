@@ -38,10 +38,11 @@ describe("author_wild_route", () => {
 
   it("refuses to repaint an authored map without replace", () => {
     const { context } = monsterProject();
-    const start = context.project.startMapId;
-    const map = context.project.maps[start]!;
+    // 몬스터 프로젝트의 시작 맵은 monster_overworld(#2232)라 도로 시공 대상이 아니다 — 시공 가능한 새 맵에서 본다.
+    expect(runTool(context, "create_map", { id: "map_route_1", name: "1번 도로", width: 28, height: 22 }).ok).toBe(true);
+    const map = context.project.maps.map_route_1!;
     map.upperTiles[0] = 5;
-    const result = runTool(context, "author_wild_route", { mapId: start, exits: [{ x: 0, y: 1 }, { x: map.width - 1, y: 1 }] });
+    const result = runTool(context, "author_wild_route", { mapId: "map_route_1", exits: [{ x: 0, y: 1 }, { x: map.width - 1, y: 1 }] });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain("replace:true");
   });
@@ -86,14 +87,14 @@ describe("author_wild_route", () => {
 });
 
 describe("monster-collect brief prompt", () => {
-  it("names the route builder so its schema is exposed on the first turn", async () => {
+  // #2232: 새 수집 게임은 build_monster_game(mode:create)이 검토된 캠페인 전체(도로 풀숲·트레이너 포함)를 짓는다.
+  it("names the campaign builder so its schema is exposed on the first turn", async () => {
     const { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } = await import("@/editor/welcomeGenrePresets");
     const preset = welcomeGenrePresetById("monster-collect")!;
     const prompt = buildWelcomeGenrePresetPrompt(preset, {
       version: 1, presetId: "monster-collect", summary: "첫 체육관까지",
       answers: { scope: { question: "범위", label: "첫 제작 범위", text: "첫 도전장", source: "user" } },
     } as never);
-    expect(prompt).toContain("author_wild_route");
-    expect(prompt).toContain("battleProcessing");
+    expect(prompt).toContain("build_monster_game");
   });
 });
