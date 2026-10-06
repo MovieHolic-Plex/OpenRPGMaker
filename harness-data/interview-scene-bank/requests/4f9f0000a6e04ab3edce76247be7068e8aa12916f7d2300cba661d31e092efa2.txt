@@ -1,0 +1,26 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.
+SELECTED FACTS:
+1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.
+2. 중심 플레이: 새로운 종을 발견하고 수집 — 다음 서식지에서 만날 생물이 궁금해요.
+3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.
+4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.
+LATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.
+SCENE ID: monster--hatch--collect--secret--case. This identifier is metadata; never draw it.
+
+FINAL SELECTED SCENE BRIEF. Use this brief and the selected facts above, with ONE independent camera for this image.
+True 1990s 16-bit SNES RPG pixel art. Large square pixel clusters, staircase contours, flat 2-4-tone shading, the same grid on every plane. Rich, deliberately hand-clustered architecture and woods; no painting, realistic texture, gradients, antialiasing, blur, bloom or grain.
+VERY DISTANT WIDE ESTABLISHING SHOT. All selected objects and buildings are SMALL and WHOLE on the left, with visible woodland around the entire roofs, chimneys, both eaves, walls, floors and bases. Nothing selected touches any image edge. All meaningful selected features including inner columns and steps stay before x60.3%, where the actual input panel starts. Right side is ordinary continuous woods, without any selected object. Never use a close-up, an interior filling the picture, or cropped foreground architecture.
+First companion HATCH: one naturally speckled egg with its FIRST CRACK, whole and unopened, in straw in a small protected timber-and-stone nursery cradle, a plain soft cloth and a separate open BLUE water bowl. No hatchling or invented species/body.
+COLLECTION: one whole low wooden field rack with THREE separate open trays of visibly different REEDS, LEAVES and STONES. These are actual ecological field samples, not animal bodies, pictures or diagrams. Do not draw binoculars, specimen jars, collection labels, a capture net/cage, a training course, or an exclusive personal-bond tableau.
+No humans, humanoids, creature bodies, text, direction signs, printed emblems, logos, open books, paper sheets, banners, menus or panels. Natural egg speckles and material seams are not printed logos.
+One continuous concealed MOONLIT night scene, no daylight zone or split view. Exactly one CLOSED PLAIN undecorated research notebook and a physical ecological earth trace on the LEFT beside the nursery, to show records versus actual ecology. No open page or writing.
+LOCAL CASE: one WHOLE small OPEN local refuge with full roof, empty floor and threshold, a tipped EMPTY hollow wooden pail and a short physical earth trace on the LEFT. No different village or three-way habitats.
+DISTANT independent oblique camera across separated terraced clearings: UPPER LEFT whole nursery/cradle/egg/cloth/BLUEwater and CLOSED notebook/earth trace; MIDDLE LEFT field rack; LOWER LEFT whole OPEN local refuge/pail/trace. No scope yet.
+Make the selected FIRST CRACK clearly visible as a thin BLACK angular zigzag on the otherwise whole naturally speckled egg. Natural spots alone do not show a first crack.
+FINAL CAMERA: zoomed OUT distant scene, all selected forms WHOLE and small on LEFT with visible surrounding woodland. No roof/chimney/body intersecting any image edge. No castle, distant settlement, landmark, furniture or meaningful selected feature on the RIGHT. Actual INNER columns/stairs completely before input controls. Native output unchanged; no input images. Independently compose a new shot, not a reskin.

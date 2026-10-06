@@ -1,0 +1,285 @@
+{
+  "batch": "v2-production-195",
+  "passedAttempts": 6,
+  "rejectedAttempts": 4,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-195",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-195-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:59:24.629834+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-195-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-195",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-195-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:59:40.781594+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-195-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-195",
+      "command": [
+        "/home/main/saza-backend/venv/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-195",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:59:40.824345+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--collect--secret--habitat",
+      "nativeSha256": "8682e34e17ab2a5d474339a4ac2f394700aead456e9654c5735ae23133b3d754",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f8ddb22e86eae76f39be2b9f2ec25d926e37f6b20afa11682a2296192d898ba6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. WHOLE nursery roof now inside native margin; UPnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MID3sample rack LOWthree real INNER habitat views in MOON. Both actual inner columns/all stairs before controls. Different actual194secretMOOD UPrackLOWnursery no progression. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--short",
+      "nativeSha256": "96da97eae891c42acc1f5def5537248f8d848dc0e10eba7cf8121626119ec6a1",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5806f14797f3a9d357c31526bdfa003d0bc008f976f58f0238a0edb0563241a1",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome with visible empty floor/threshold MIDtidyreturntable/crackedegg/cloth/BLUEwater/sample rack LOWthree real INNER habitat views SUN/return, no growth mat. Both actual INNER columns/steps before controls; outer posts not falsely counted. Different actual194brightHAB UPnursery MIDrack LOWviews without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--warm",
+      "nativeSha256": "c8a10e29f8658e25c8390260ffb140a344ed3759ba02bafaff9d5d55cc529811",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "388d886c68fc36c7cd8fd91d0ebae418778e80667f370f2b88f7bece39851bc8",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP3sample rack LOWWHOLEnursery/crackedegg/plaincloth/BLUEwater WARM SUNSET, no scope. Closed upper background dwelling is ordinary scenery, not selected OPEN return home/table. Different actual193COLLECT UPnursery LOWrack, beyond recolor. Whole roofs/props before controls. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--bright--case--episode",
+      "nativeSha256": "a7cf89b7c534db4a558fe590910ccb9d51abb94b1dafd548ca97559933d87b15",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "1357d9a9c09da9b4302e9fae4f42192e97e2796d6f47d927a4fdfa11bcd8c0f6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENcase refuge/tipped EMPTY pail/actual earth trace MID3samples LOWnursery/crackedegg/cloth/BLUEwater and separate larger EMPTY GROUND rest mat SUN/growth. Actual top chimney cap is wholly inside image: WHOLEnative then read-only NEAREST top-edge diagnostic, no false crop fail. Different actual194brightCASE UPnursery MIDrack LOWcase without growth. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--bright--case--short",
+      "nativeSha256": "55b3a69f7af2f319a044f03b8ea0a84047d9b1668efb2b78fb1ade9343d77a3a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "594499b7881af796f86adb3b18abcbcb4b53de8d27eb9480df7f7741503c6c2b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples LOWWHOLEOPENcase refuge/tipped EMPTY pail/earth trace SUN/return. COMPOSITION ONLY F: actual rightmost sample tray/stone contents straddle actual input boundary x60.3 and part is hidden. WHOLEnative first then read-only NEAREST diagnostic ending at actual control boundary. No arbitrary ideal55 failure. Other six checks P, different actual194brightCASE without return home/table."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples LOWWHOLEOPENcase refuge/tipped EMPTY pail/earth trace SUN/return. COMPOSITION ONLY F: actual rightmost sample tray/stone contents straddle actual input boundary x60.3 and part is hidden. WHOLEnative first then read-only NEAREST diagnostic ending at actual control boundary. No arbitrary ideal55 failure. Other six checks P, different actual194brightCASE without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--secret--route--scene",
+      "nativeSha256": "d48fe616bf8464df3bc77ce6478f644aef646a49cace25b94b80a7deeafc12bc",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "eb1ba9a6515466a75fd7b52258a7c6bb199254488765b14c446d0e2dd8afa908",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth paw imprints MOON. ALLCHOICES and LATESTCHOICE F: a separate large EMPTY GROUND growth mat is explicitly unchosen and forbidden for FIRST MOMENT. Other five P; actual194secretROUTE UPnursery MIDrack LOWhouses spatially reversed. Cloth/binding trim not automatically logos."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth paw imprints MOON. ALLCHOICES and LATESTCHOICE F: a separate large EMPTY GROUND growth mat is explicitly unchosen and forbidden for FIRST MOMENT. Other five P; actual194secretROUTE UPnursery MIDrack LOWhouses spatially reversed. Cloth/binding trim not automatically logos. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--secret--route--episode",
+      "nativeSha256": "5ab17c08fbda7dd207d8dffcbd94803fb7c143b9f885a6e3b162484d18298617",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fcfa293cc2843481104c24858457954c5e2c79ce8a5e640f241b5e348ab1572b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook and separate larger EMPTY GROUND rest mat MOON/growth. ALLCHOICES ONLY F: no distinct required ecological earth trace beside nursery; WHOLEnative and read-only NEAREST ground diagnostic show only ordinary path and the selected growth mat, not ecological imprints. Other six P; different actual194secretROUTE spatial arrangement and growth staging."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook and separate larger EMPTY GROUND rest mat MOON/growth. ALLCHOICES ONLY F: no distinct required ecological earth trace beside nursery; WHOLEnative and read-only NEAREST ground diagnostic show only ordinary path and the selected growth mat, not ecological imprints. Other six P; different actual194secretROUTE spatial arrangement and growth staging. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--secret--route--short",
+      "nativeSha256": "7678d41f0a97c284ee7ad057b27a138ac8acdd544673cc14235119b8e9cf9658",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "603d83bff49252ee8eed13eeedeeb3f7f6d5b30faad5082ba898a12f62c70478",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples/CLOSEDbook with actual irregular muddy paw imprints LOW2WHOLEdifferent travel houses/LEFTtrail MOON/return, no growth mat. Physical muddy imprints on table are ecological traces, not automatically printed logos; native shows irregular mud beside nursery. Different actual194secretROUTE UPnursery MIDrack LOWhouses without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--secret--habitat--scene",
+      "nativeSha256": "64ef44141fd76efac0345b920432a1c65ed69a823c7d6274d4b3f2890a073ff9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "39a597c13227e3eef3bc830a734ac00223b9c5dc06d70d5b5ee9a7bbffe98c19",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPthree REAL inner habitat views MID3samples LOWsmall nursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MOON. ALLCHOICES and LATESTCHOICE F: separate large EMPTY GROUND growth mat explicitly unchosen/forbidden for FIRST MOMENT. Other five P; different NEW195secretHAB UPnursery MIDrack LOWviews. Actual INNER columns/steps before controls."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPthree REAL inner habitat views MID3samples LOWsmall nursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MOON. ALLCHOICES and LATESTCHOICE F: separate large EMPTY GROUND growth mat explicitly unchosen/forbidden for FIRST MOMENT. Other five P; different NEW195secretHAB UPnursery MIDrack LOWviews. Actual INNER columns/steps before controls. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--collect--secret--habitat--episode",
+      "nativeSha256": "cc737341432bd275b5deb664158502eef080b543da1caa483c3d3e69f168970c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "dd8e85d68707ee04ece0bb6080a40bdcaa76a2c176e6a19c69518a2af0bca434",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPthree REAL inner habitat views MID3samples LOWWHOLEnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints and larger EMPTY GROUND mat MOON/growth. Both actual INNER ruin columns/all stairs before controls; outer masonry not falsely counted as inner. Different NEW195secretHAB UPnursery MIDrack LOWviews; coherent pixel clusters and material-shaded cloth/binding, no printed text/emblem. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

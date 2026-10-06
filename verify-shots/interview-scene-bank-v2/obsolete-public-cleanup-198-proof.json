@@ -1,0 +1,151 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 829,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--hatch--team",
+      "sourceSha256": "9cb24473e17ebf61b8249f88b5fc9986c06af5d0cda7a0fc5cc2cf2a8f8aa258",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team-9cb24473e17e.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team-2-9cb24473e17e.png",
+      "replacementPublished": true,
+      "replacementSha256": "0028bfd9f7b58984e80a0eac24d28041ddb8d38657e9ef0f79096b32c85397be",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--secret",
+      "sourceSha256": "a25d737f360ef01cd9216656579b8f16b2660a256bb9fb55ea983289833272ef",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--secret-a25d737f360e.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-2-a25d737f360e.png",
+      "replacementPublished": true,
+      "replacementSha256": "507adf0d25abe29cabf24bb5e4f58534043cca113f7a7600e3941a6415864a74",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--warm",
+      "sourceSha256": "42d557ff8c9942f7e8e352fd57cab41d13cb33a1b9659f3de411139953bc95e5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--warm-42d557ff8c99.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm-1-42d557ff8c99.png",
+      "replacementPublished": true,
+      "replacementSha256": "c8a10e29f8658e25c8390260ffb140a344ed3759ba02bafaff9d5d55cc529811",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--team--bright",
+      "sourceSha256": "87ee75e2504e109c1c95d7f39e05dd951eab7c3adb2c333e5bc85b4c0d53d3ea",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--bright-87ee75e2504e.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright-1-87ee75e2504e.png",
+      "replacementPublished": true,
+      "replacementSha256": "02667d8ccb8ad5efca0674da9879b4dda49f921e4f061d9657a6f194628b0362",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--secret--route",
+      "sourceSha256": "66b629c55a5cf15816415abd11fabfa3253d166de95434f6dab69dbd8ffb83f1",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--secret--route-66b629c55a5c.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route-1-66b629c55a5c.png",
+      "replacementPublished": true,
+      "replacementSha256": "4e5c82a35054d8b6a3a7260c0486bfb4ea6cc8a2f4e7c617e16f3fb5da0fd89b",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--secret--habitat",
+      "sourceSha256": "c1f4180ac0d377ce4291f0ca76a41e1ba2b45f941ed62005bb1d4ca998dc645a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat-c1f4180ac0d3.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat-1-c1f4180ac0d3.png",
+      "replacementPublished": true,
+      "replacementSha256": "8682e34e17ab2a5d474339a4ac2f394700aead456e9654c5735ae23133b3d754",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--secret--case",
+      "sourceSha256": "10bb61c478f0866e05c79944be3ecf29e038a30ee75594d5ccbeb2294301352b",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--secret--case-10bb61c478f0.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--case-1-10bb61c478f0.png",
+      "replacementPublished": true,
+      "replacementSha256": "69cbacb6fd630cab1a30bafe522e136cd90fdae6ad6c7e27e4cf8160794d01e8",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--warm--route",
+      "sourceSha256": "32b28fd59eff611bfe3dee8f539d0b024cae3d8b7bd5e0ab04f4d88297b1c575",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--warm--route-32b28fd59eff.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--route-1-32b28fd59eff.png",
+      "replacementPublished": true,
+      "replacementSha256": "d65db43b11b41c2943eac083bf312824f6be1dec30da6281963ca5b7c3969849",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--warm--habitat",
+      "sourceSha256": "47c78ad7b0c661717e4b9ef6eecbca9a3add901b64d7d220b897ff8b5fb5b6c6",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat-47c78ad7b0c6.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat-2-47c78ad7b0c6.png",
+      "replacementPublished": true,
+      "replacementSha256": "1957c4c2bfbfdf8a6294eef1c61ff3368a4b0df7c6eb2253713577e4a1d2ba9c",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--collect--warm--case",
+      "sourceSha256": "033ab7a799f2bfb9d2d6030c98b4d78c435580ed12fdab4c445c1da5bc49c6c6",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--collect--warm--case-033ab7a799f2.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--case-1-033ab7a799f2.png",
+      "replacementPublished": true,
+      "replacementSha256": "989aa95915d801fc77b3e139043311e42c3a97c2774d741b7a26b7cf6dcd025b",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--team--bright--route",
+      "sourceSha256": "c1501290a62c2162a5eedc3e6723147f32fc35cb3c1dc22a6def70a4f791bbf8",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--bright--route-c1501290a62c.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--route-1-c1501290a62c.png",
+      "replacementPublished": true,
+      "replacementSha256": "dc3fd72ef593a9f524ce42661fb6be9be2b13e0976e1bf3d4ae7a64b60b70ef3",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    },
+    {
+      "key": "monster--hatch--team--bright--habitat",
+      "sourceSha256": "f898768801152862cf1bb93f28d174160c168356775126c63aa57acbb5a1deb9",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--bright--habitat-f89876880115.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--habitat-1-f89876880115.png",
+      "replacementPublished": true,
+      "replacementSha256": "e9f5baf8e90a5cfe95a296d8d30ef6732769de687646eefe1e31860baf83afc6",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-198"
+    }
+  ],
+  "resolvedCumulative": 199
+}

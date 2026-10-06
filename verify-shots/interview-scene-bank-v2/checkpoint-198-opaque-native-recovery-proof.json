@@ -1,0 +1,71 @@
+{
+  "key": "monster--hatch--collect--secret",
+  "priorTechnicalHold": {
+    "key": "monster--hatch--collect--secret",
+    "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-3-1a017442e2c7.png",
+    "nativeSha256": "1a017442e2c7415d8891bfe71c8e346c1c2e678673510192206f80ba736b8643",
+    "exactOwnSha256": "a2415b9bb6ae5f6673e17c4ef4bc78c743874ca6c157f09e39d93211550e5762",
+    "preservedDirectVisualReview": {
+      "sourceSha256": "1a017442e2c7415d8891bfe71c8e346c1c2e678673510192206f80ba736b8643",
+      "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+      "reviewer": "Codex direct original visual inspection: v2-production-194",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPrack/CLOSEDPLAINnotebook actualearthtrace LOWwhole nursery crackedegg/cloth/BLUEwater, continuousMOON. Spatialreversal versus193COLLECT UPnurseryLOWrack, no progression/scope. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    "technicalGate": {
+      "ok": false,
+      "width": 1672,
+      "height": 941,
+      "colors": 185615,
+      "findings": [
+        "전체 배경에 투명 픽셀이 있다."
+      ]
+    },
+    "pixelsWithNonOpaqueAlpha": 1573352,
+    "nativeBytesUnchanged": true,
+    "scope": "194 root visual8P2F retained. This visually accepted candidate failed opaque-background native gate and its descendants are withheld. No flattening/resizing/palette manipulation; regenerate via builtin imagegen. First QA unpublished-path preflight failure retained, then rerun using six actual799 published paths. Future195/196 images are not included in this799 checkpoint."
+  },
+  "newNativeSha256": "507adf0d25abe29cabf24bb5e4f58534043cca113f7a7600e3941a6415864a74",
+  "newOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 새로운 종을 발견하고 수집 — 다음 서식지에서 만날 생물이 궁금해요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nLATEST CHOICE: 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nSCENE ID: monster--hatch--collect--secret. This identifier is metadata; never draw it.\n\nFINAL SELECTED SCENE BRIEF. Use this brief and the selected facts above, with ONE independent camera for this image.\nTrue 1990s 16-bit SNES RPG pixel art. Large square pixel clusters, staircase contours, flat 2-4-tone shading, the same grid on every plane. Rich, deliberately hand-clustered architecture and woods; no painting, realistic texture, gradients, antialiasing, blur, bloom or grain.\nVERY DISTANT WIDE ESTABLISHING SHOT. All selected objects and buildings are SMALL and WHOLE on the left, with visible woodland around the entire roofs, chimneys, both eaves, walls, floors and bases. Nothing selected touches any image edge. All meaningful selected features including inner columns and steps stay before x60.3%, where the actual input panel starts. Right side is ordinary continuous woods, without any selected object. Never use a close-up, an interior filling the picture, or cropped foreground architecture.\nFirst companion HATCH: one naturally speckled egg with its FIRST CRACK, whole and unopened, in straw in a small protected timber-and-stone nursery cradle, a plain soft cloth and a separate open BLUE water bowl. No hatchling or invented species/body.\nCOLLECTION: one whole low wooden field rack with THREE separate open trays of visibly different REEDS, LEAVES and STONES. These are actual ecological field samples, not animal bodies, pictures or diagrams. Do not draw binoculars, specimen jars, collection labels, a capture net/cage, a training course, or an exclusive personal-bond tableau.\nNo humans, humanoids, creature bodies, text, direction signs, printed emblems, logos, open books, paper sheets, banners, menus or panels. Natural egg speckles and material seams are not printed logos.\nOne continuous concealed MOONLIT night scene, no daylight zone or split view. Exactly one CLOSED PLAIN undecorated research notebook and a physical ecological earth trace on the LEFT beside the nursery, to show records versus actual ecology. No open page or writing.\nDISTANT independent oblique camera across separated terraced clearings: UPPER LEFT whole three-sample rack and CLOSED notebook/earth trace; LOWER LEFT whole nursery/cradle/egg/cloth/BLUEwater. No progression or scope yet.\nMake the selected FIRST CRACK clearly visible as a thin BLACK angular zigzag on the otherwise whole naturally speckled egg. Natural spots alone do not show a first crack.\nFINAL CAMERA: zoomed OUT distant scene, all selected forms WHOLE and small on LEFT with visible surrounding woodland. No roof/chimney/body intersecting any image edge. No castle, distant settlement, landmark, furniture or meaningful selected feature on the RIGHT. Actual INNER columns/stairs completely before input controls. Native output unchanged; no input images. Independently compose a new shot, not a reskin.\nFILE REQUIREMENT FOR THIS NEW NATIVE: FULLY OPAQUE edge-to-edge continuous landscape. Every background pixel, including dark night woods and shadows, must be opaque alpha255. No transparency anywhere, no transparent layer/cutout. This is a complete landscape background, not a transparent sprite. Native output unchanged.",
+  "newOwnSha256": "74cce9dc51f8775c79115d6d96c0d592205eaf907b258896229705d611ab1c5e",
+  "nativeUnmodified": true,
+  "alphaExtrema": [
+    255,
+    255
+  ],
+  "actualGate": {
+    "ok": true,
+    "width": 1672,
+    "height": 941,
+    "colors": 263563,
+    "findings": []
+  },
+  "rootReview": {
+    "sourceSha256": "507adf0d25abe29cabf24bb5e4f58534043cca113f7a7600e3941a6415864a74",
+    "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+    "reviewer": "Codex direct original visual inspection: v2-production-197",
+    "checks": {
+      "pixelArt": true,
+      "composition": true,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [],
+    "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP three ecological sample trays and CLOSED plain notebook with actual GROUND trace LOW whole protected cracked-egg nursery/plaincloth/BLUEwater MOON/no progression. Different actual193COLLECT UPnursery LOWrack. Actual native alpha255 confirmed separately, visual score never substituted for technical gate. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+  },
+  "publishedAtSnapshot": 829,
+  "preservedInitial194VisualReview": true,
+  "scope": "New197 native independently generated opaque, actual198 gate/build zero. Original194 visual-P/alpha technical-F unchanged, no flattening/postprocess and no retrospective own requirement."
+}

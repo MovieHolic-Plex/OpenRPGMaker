@@ -2368,7 +2368,32 @@
         "review": {
           "sourceSha256": "9cb24473e17ebf61b8249f88b5fc9986c06af5d0cda7a0fc5cc2cf2a8f8aa258",
           "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
-          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "reviewer": "Codex root original own/native corrective after197 original-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required empty tactical training stations and maneuvering posts at x61-99 hidden behind actual input controls60.3. Composition ONLY F. ExactOWN cracked speckled egg/straw/cloth/water present; no flags/emblems/bodies. Foreground sheltered egg/UPRIGHT tacticalcourse differs actual originalHATCH closeegg/window, now play stations added. No retro WHOLE roof/three-station count/alpha255/BLUE water requirement. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required empty tactical training stations and maneuvering posts at x61-99 hidden behind actual input controls60.3. Composition ONLY F. ExactOWN cracked speckled egg/straw/cloth/water present; no flags/emblems/bodies. Foreground sheltered egg/UPRIGHT tacticalcourse differs actual originalHATCH closeegg/window, now play stations added. No retro WHOLE roof/three-station count/alpha255/BLUE water requirement. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team-3-0028bfd9f7b5.png",
+        "sha256": "0028bfd9f7b58984e80a0eac24d28041ddb8d38657e9ef0f79096b32c85397be",
+        "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+        "generationPromptSha256": "a55ea45766d8741ffaea416b73651bf28eafb55435d16c1f714eb7c4262993fd",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "0028bfd9f7b58984e80a0eac24d28041ddb8d38657e9ef0f79096b32c85397be",
+          "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -2379,7 +2404,14 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Single cracked egg nursery plus visible empty obstacle course and approaches; no banners, hatchling or identity."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEEMPTYthree-stationtrainingcourse stoneCOVER/timberHURDLE/separatedPOSTS LOWWHOLEprotectednursery crackedegg/plaincloth/BLUEwater, no progression/scope. All stations before60.3. Different actualoriginalHATCH closeindoorforeegg/window, new outdoor distanttacticalstage. No invented moodselection from ordinary daylight. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 501203,
+          "findings": []
         }
       }
     ],
@@ -7113,6 +7145,36 @@
             "전체 배경에 투명 픽셀이 있다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-4-507adf0d25ab.png",
+        "sha256": "507adf0d25abe29cabf24bb5e4f58534043cca113f7a7600e3941a6415864a74",
+        "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+        "generationPromptSha256": "74cce9dc51f8775c79115d6d96c0d592205eaf907b258896229705d611ab1c5e",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "507adf0d25abe29cabf24bb5e4f58534043cca113f7a7600e3941a6415864a74",
+          "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP three ecological sample trays and CLOSED plain notebook with actual GROUND trace LOW whole protected cracked-egg nursery/plaincloth/BLUEwater MOON/no progression. Different actual193COLLECT UPnursery LOWrack. Actual native alpha255 confirmed separately, visual score never substituted for technical gate. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 263563,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--collect--warm": [
@@ -7147,6 +7209,36 @@
           "colors": 460954,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm-2-c8a10e29f865.png",
+        "sha256": "c8a10e29f8658e25c8390260ffb140a344ed3759ba02bafaff9d5d55cc529811",
+        "promptSha256": "9fda90c6c0f845ed72de9f9bc3775bb3d8505cef58ad06b336cc74dd17494239",
+        "generationPromptSha256": "388d886c68fc36c7cd8fd91d0ebae418778e80667f370f2b88f7bece39851bc8",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "c8a10e29f8658e25c8390260ffb140a344ed3759ba02bafaff9d5d55cc529811",
+          "promptSha256": "9fda90c6c0f845ed72de9f9bc3775bb3d8505cef58ad06b336cc74dd17494239",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP3sample rack LOWWHOLEnursery/crackedegg/plaincloth/BLUEwater WARM SUNSET, no scope. Closed upper background dwelling is ordinary scenery, not selected OPEN return home/table. Different actual193COLLECT UPnursery LOWrack, beyond recolor. Whole roofs/props before controls. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 506069,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--team--bright": [
@@ -7159,7 +7251,39 @@
         "review": {
           "sourceSha256": "87ee75e2504e109c1c95d7f39e05dd951eab7c3adb2c333e5bc85b4c0d53d3ea",
           "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9",
-          "reviewer": "Codex direct original visual inspection: v2-production-012",
+          "reviewer": "Codex root original own/native corrective after197 original-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required several EMPTY tactical stations/hurdle/posts outside nursery side door at x61-92 hidden behind actual controls60.3. Composition ONLY F. OWN crackedegg/straw and clearbrightSUN, no bodies/text/logos/flags present. Distinct actual originalTEAM sunsetwideyard/foregroundbarrel versus clearbrightday/newdiagonaldoor/window, no false water requirement in own. No retro WHOLEarchitecture/course exactcount/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required several EMPTY tactical stations/hurdle/posts outside nursery side door at x61-92 hidden behind actual controls60.3. Composition ONLY F. OWN crackedegg/straw and clearbrightSUN, no bodies/text/logos/flags present. Distinct actual originalTEAM sunsetwideyard/foregroundbarrel versus clearbrightday/newdiagonaldoor/window, no false water requirement in own. No retro WHOLEarchitecture/course exactcount/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 507185,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright-2-02667d8ccb8a.png",
+        "sha256": "02667d8ccb8ad5efca0674da9879b4dda49f921e4f061d9657a6f194628b0362",
+        "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9",
+        "generationPromptSha256": "47f37f7cd8654bfd19e5472b426f1f49c4abff694c3085d66f6b37bd795d7246",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "02667d8ccb8ad5efca0674da9879b4dda49f921e4f061d9657a6f194628b0362",
+          "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -7170,13 +7294,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Close cracked egg foreground and distinct empty obstacle stations through bright side door preserve hatch and team challenges; no visible hatchling or flags."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEnursery crackedegg/plaincloth/BLUEwater LOWWHOLEEMPTYthree-stationtacticalcourse SUN/bright; allstations before60.3. Spatially reversed actualNEW198TEAM UPcourseLOWnursery, not recolor. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 507185,
+          "colors": 586379,
           "findings": []
         }
       }
@@ -25572,6 +25696,36 @@
           "colors": 318924,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat-3-8682e34e17ab.png",
+        "sha256": "8682e34e17ab2a5d474339a4ac2f394700aead456e9654c5735ae23133b3d754",
+        "promptSha256": "e2e47c14656e93a8a9bd383f40696676f80bae674d202418f5d4f403ff501a60",
+        "generationPromptSha256": "f8ddb22e86eae76f39be2b9f2ec25d926e37f6b20afa11682a2296192d898ba6",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "8682e34e17ab2a5d474339a4ac2f394700aead456e9654c5735ae23133b3d754",
+          "promptSha256": "e2e47c14656e93a8a9bd383f40696676f80bae674d202418f5d4f403ff501a60",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. WHOLE nursery roof now inside native margin; UPnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MID3sample rack LOWthree real INNER habitat views in MOON. Both actual inner columns/all stairs before controls. Different actual194secretMOOD UPrackLOWnursery no progression. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 278710,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--collect--secret--case": [
@@ -25648,7 +25802,39 @@
         "review": {
           "sourceSha256": "32b28fd59eff611bfe3dee8f539d0b024cae3d8b7bd5e0ab04f4d88297b1c575",
           "promptSha256": "58f495bdd3d7eb5825f10e68c9d54b3fcd6406480fe9fbd55e00aa859fc24170",
-          "reviewer": "Codex direct original visual inspection: v2-production-045",
+          "reviewer": "Codex root original own/native corrective before195 import after194 frozen proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required continuous travel path and different destination settlement x62-89 hidden behind actual controls x60.3. OLDnear binoculars/three separate CLOSED EMPTY transparent jars/twoCLOSEDplainnotebooks/cracked naturally speckled egg present. No retro twoWHOLEhouses/roof/sampletrays/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+          ],
+          "notes": "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required continuous travel path and different destination settlement x62-89 hidden behind actual controls x60.3. OLDnear binoculars/three separate CLOSED EMPTY transparent jars/twoCLOSEDplainnotebooks/cracked naturally speckled egg present. No retro twoWHOLEhouses/roof/sampletrays/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 430808,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--route-2-d65db43b11b4.png",
+        "sha256": "d65db43b11b41c2943eac083bf312824f6be1dec30da6281963ca5b7c3969849",
+        "promptSha256": "58f495bdd3d7eb5825f10e68c9d54b3fcd6406480fe9fbd55e00aa859fc24170",
+        "generationPromptSha256": "f5639b3ec1da29370c2bc6e87a16446ba2603c06f159843f9c7377f0a98e8e74",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d65db43b11b41c2943eac083bf312824f6be1dec30da6281963ca5b7c3969849",
+          "promptSha256": "58f495bdd3d7eb5825f10e68c9d54b3fcd6406480fe9fbd55e00aa859fc24170",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -25659,13 +25845,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native original and parent inspected: ONE plainly cracked speckled egg in straw INSIDE timber-stone nursery; near binoculars, THREE CLOSED EMPTY transparent jars and TWO CLOSED plain books. Warm helpful cloth, continuous traversable route to different EMPTY settlement; fresh nursery departure camera versus closed-room parent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEnursery/crackedegg/plaincloth/BLUEwater MID3samples LOW2WHOLEdifferent travelhouses/continuousLEFTtrail WARM SUNSET/no scope. Required roofs/chimneys/doors/bases whole inside native and before controls. Different actual195warm UPrackLOWnursery without progression, not just recolor. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 430808,
+          "colors": 445297,
           "findings": []
         }
       }
@@ -25712,7 +25898,39 @@
         "review": {
           "sourceSha256": "47c78ad7b0c661717e4b9ef6eecbca9a3add901b64d7d220b897ff8b5fb5b6c6",
           "promptSha256": "277d31ce062a6e68d420e3f4cc4f558fb29fe8c654dc7bb6709fef7e5273c894",
-          "reviewer": "Codex direct original visual inspection: v2-production-046",
+          "reviewer": "Codex root original own/native corrective before195 import after194 frozen proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required FOREST inner view extends x54-75 and RUIN inner features x76-95 hidden behind actual controls60.3. OLDblack jagged firstcrack/threeCLOSEDemptytransparentjars/twoCLOSEDplainnotebooks/binoculars and THREEreal habitat views present. No retro whole-roof/sampletray/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+          ],
+          "notes": "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required FOREST inner view extends x54-75 and RUIN inner features x76-95 hidden behind actual controls60.3. OLDblack jagged firstcrack/threeCLOSEDemptytransparentjars/twoCLOSEDplainnotebooks/binoculars and THREEreal habitat views present. No retro whole-roof/sampletray/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 396350,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat-3-1957c4c2bfbf.png",
+        "sha256": "1957c4c2bfbfdf8a6294eef1c61ff3368a4b0df7c6eb2253713577e4a1d2ba9c",
+        "promptSha256": "277d31ce062a6e68d420e3f4cc4f558fb29fe8c654dc7bb6709fef7e5273c894",
+        "generationPromptSha256": "04d87fe5fff5a8cdf2165e4b77c81f52ba3e6ed1c1747789f1b2e6bdb6e971c6",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "1957c4c2bfbfdf8a6294eef1c61ff3368a4b0df7c6eb2253713577e4a1d2ba9c",
+          "promptSha256": "277d31ce062a6e68d420e3f4cc4f558fb29fe8c654dc7bb6709fef7e5273c894",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -25723,13 +25941,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native original and parent: Redraw succeeds: ONE unmistakably cracked speckled egg in straw inside timber-stone nursery, near binoculars/THREE CLOSED EMPTY transparent jars/TWO CLOSED plain books; warm helpful afternoon and THREE actual openings wetland/forest/ruins. Fresh vaulted habitat camera versus parent closed nursery room and failed intact-egg candidate. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEnursery/crackedegg/plaincloth/BLUEwater MID3samples LOWthree REAL WHOLE INNERhabitat views WARM SUNSET/no scope. Both actual INNERcolumns/allsteps before controls; no village/case. Different actual195warm UPrackLOWnursery/no progression. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 396350,
+          "colors": 559160,
           "findings": []
         }
       }
@@ -25744,7 +25962,39 @@
         "review": {
           "sourceSha256": "033ab7a799f2bfb9d2d6030c98b4d78c435580ed12fdab4c445c1da5bc49c6c6",
           "promptSha256": "8b042841d307b236e4f78e1af07d0e5a0f61b1944bd41e3bde9a450b3ebc0aa3",
-          "reviewer": "Codex direct original visual inspection: v2-production-045",
+          "reviewer": "Codex root original own/native corrective before195 import after194 frozen proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required physical muddy case trail x61-94 and damaged refuge doorway x65-85 hidden behind actual controls60.3. OLDnear binoculars/threeCLOSEDemptytransparentjars/twoCLOSEDplainnotebooks/cracked speckled egg/travelbag/rope/vacatedbedroll present. Actual paw ground imprints not a printed emblem. No retro pail/whole-roof/sampletray/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+          ],
+          "notes": "ROOT personally FULL exact original OWN/WHOLEnative and FULL exact195warmparentOWN/WHOLEnative: Required physical muddy case trail x61-94 and damaged refuge doorway x65-85 hidden behind actual controls60.3. OLDnear binoculars/threeCLOSEDemptytransparentjars/twoCLOSEDplainnotebooks/cracked speckled egg/travelbag/rope/vacatedbedroll present. Actual paw ground imprints not a printed emblem. No retro pail/whole-roof/sampletray/BLUEwater rule. Distinct actual indoor close foreground observer and progression view versus new195warm UPrackLOWnursery outdoor clearing; other six checks directlyROOT P. Seams/binding/pages not writing. Original criteria only. Original review retained. PRIVATE now; official corrective ONLY after194 frozen QA proof/cleanup."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 299168,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--case-2-989aa95915d8.png",
+        "sha256": "989aa95915d801fc77b3e139043311e42c3a97c2774d741b7a26b7cf6dcd025b",
+        "promptSha256": "8b042841d307b236e4f78e1af07d0e5a0f61b1944bd41e3bde9a450b3ebc0aa3",
+        "generationPromptSha256": "03ada315bfe5fa85c8a5b746da344aa9119d398c3310e322f984b9fb67a9569d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "989aa95915d801fc77b3e139043311e42c3a97c2774d741b7a26b7cf6dcd025b",
+          "promptSha256": "8b042841d307b236e4f78e1af07d0e5a0f61b1944bd41e3bde9a450b3ebc0aa3",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -25755,13 +26005,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native original and parent inspected: Warm local interrupted empty nursery: ONE cracked egg in straw, near binoculars/THREE CLOSED EMPTY jars/TWO CLOSED plain books, overturned travel bag/spilled rope/vacated bedroll and physical muddy trace to nearby broken threshold. Fresh damaged nursery camera versus neat parent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEnursery/crackedegg/plaincloth/BLUEwater MID3samples LOWWHOLEOPENlocalrefuge/EMPTYpail/actualearthtrace WARM SUNSET/no scope. WHOLEnative then read-only NEAREST water diagnostic confirms visibly BLUE water inside gray rim, no false gray/dry-bowl fail. Whole architecture inside margins/before controls. Different actual195warm UPrackLOWnursery without case. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 299168,
+          "colors": 391684,
           "findings": []
         }
       }
@@ -25776,7 +26026,39 @@
         "review": {
           "sourceSha256": "c1501290a62c2162a5eedc3e6723147f32fc35cb3c1dc22a6def70a4f791bbf8",
           "promptSha256": "137197e04b2c07807c8f700e4e9ab93ed8476f6b6403036e20323a0af11135cd",
-          "reviewer": "Codex direct original visual inspection: v2-production-045",
+          "reviewer": "Codex root original own/native corrective after197 original-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required continuous traversable route to different distant settlement at x61-92 hidden behind actual controls60.3. Composition ONLY F. Actual three tacticalstations lowSTONEcover/timberHURDLE/separatedPOSTS and one crackedegg/straw/clearbrightday present. Different original brightMOOD lowlargeegg/recedingdoorway to new smallerforeegg/open elevated departure landscape. No retro twoWHOLEvillagehouses/whole-roof/newbluewater/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required continuous traversable route to different distant settlement at x61-92 hidden behind actual controls60.3. Composition ONLY F. Actual three tacticalstations lowSTONEcover/timberHURDLE/separatedPOSTS and one crackedegg/straw/clearbrightday present. Different original brightMOOD lowlargeegg/recedingdoorway to new smallerforeegg/open elevated departure landscape. No retro twoWHOLEvillagehouses/whole-roof/newbluewater/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 468510,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--route-2-dc3fd72ef593.png",
+        "sha256": "dc3fd72ef593a9f524ce42661fb6be9be2b13e0976e1bf3d4ae7a64b60b70ef3",
+        "promptSha256": "137197e04b2c07807c8f700e4e9ab93ed8476f6b6403036e20323a0af11135cd",
+        "generationPromptSha256": "04c610789dc99b49682591cdc2a572f1b2c0ad8a8467ddb657eb5ae5de2954a2",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "dc3fd72ef593a9f524ce42661fb6be9be2b13e0976e1bf3d4ae7a64b60b70ef3",
+          "promptSha256": "137197e04b2c07807c8f700e4e9ab93ed8476f6b6403036e20323a0af11135cd",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -25787,13 +26069,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native original and parent inspected: Bright timber-stone nursery with ONE visibly cracked egg in straw and THREE actual empty tactical stations: stone cover barrier, timber hurdle and separated maneuvering posts. Continuous traversable route to different EMPTY settlement; fresh nursery-side departure shot versus frontal challenge yard parent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEEMPTYthree-stationcourse MIDWHOLEnursery crackedegg/plaincloth/BLUEwater LOWtwoWHOLEdifferenthouses/continuousLEFTtrail SUN/noscope. All selected formsbefore60.3 with intact roofs/chimneys/doors/bases. Different actualNEW198brightUPnurseryLOWcourse without travel. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 468510,
+          "colors": 574192,
           "findings": []
         }
       }
@@ -25808,7 +26090,39 @@
         "review": {
           "sourceSha256": "f898768801152862cf1bb93f28d174160c168356775126c63aa57acbb5a1deb9",
           "promptSha256": "f2d2666bf27e24875779e7b40bbfe222f5d957a04a05be7447bc4ed4383920ea",
-          "reviewer": "Codex direct original visual inspection: v2-production-045",
+          "reviewer": "Codex root original own/native corrective after197 original-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required FORESTinnerx60-65/RUINactualINNERx67-99 and separatedmaneuveringPOSTSx61-86 hidden behind actual controls60.3. Composition ONLY F. Actual crackedegg/straw and three real openings/wetlandforestRUIN and tacticalcover/HURDLE/posts present. Fresh broadthreevault habitat arrangement versus originalbrightMOOD singledoortrainingyard. No retro whole-roof/bluewater or arbitrary idealmargin; actual requiredINNERfeatures hidden. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required FORESTinnerx60-65/RUINactualINNERx67-99 and separatedmaneuveringPOSTSx61-86 hidden behind actual controls60.3. Composition ONLY F. Actual crackedegg/straw and three real openings/wetlandforestRUIN and tacticalcover/HURDLE/posts present. Fresh broadthreevault habitat arrangement versus originalbrightMOOD singledoortrainingyard. No retro whole-roof/bluewater or arbitrary idealmargin; actual requiredINNERfeatures hidden. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 472802,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--habitat-2-e9f5baf8e90a.png",
+        "sha256": "e9f5baf8e90a5cfe95a296d8d30ef6732769de687646eefe1e31860baf83afc6",
+        "promptSha256": "f2d2666bf27e24875779e7b40bbfe222f5d957a04a05be7447bc4ed4383920ea",
+        "generationPromptSha256": "6a57d9ae8136e50311ce32d1463c7081462b2e4ad7a4d90961166bacc117fe32",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e9f5baf8e90a5cfe95a296d8d30ef6732769de687646eefe1e31860baf83afc6",
+          "promptSha256": "f2d2666bf27e24875779e7b40bbfe222f5d957a04a05be7447bc4ed4383920ea",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -25819,13 +26133,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native original and parent inspected: Bright continuous timber-stone nursery: ONE cracked egg in straw and THREE actual EMPTY stone cover/hurdle/post tactical stations; THREE real openings to wetland/forest/ruins. Fresh vaulted habitat camera versus frontal nursery challenge yard parent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEEMPTYthree-stationcourse MIDWHOLEnursery crackedegg/plaincloth/BLUEwater LOWthreeREALWHOLEINNERwetland/forest/ruin SUN/noscope. BOTH actualINNERcolumns/allsteps before60.3; outerposts not INNERfeatures. Different actualNEW198brightUPnurseryLOWcourse without habitats. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 472802,
+          "colors": 656324,
           "findings": []
         }
       }
@@ -25840,24 +26154,58 @@
         "review": {
           "sourceSha256": "e8aa6fd4aaed87232c176c18d2645b65cef5a4c1e2cd4895d179f3d2fd8bca5d",
           "promptSha256": "cae5570fccf9aec46dcce685ea6cf458200c78b2942604f2f6605b1ba643fe34",
-          "reviewer": "Codex direct original visual inspection: v2-production-045",
+          "reviewer": "Codex root original own/native corrective after197 original-stage proof",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Direct native original and parent inspected: Bright interrupted EMPTY local nursery refuge: ONE cracked egg in straw, THREE actual tactical stations stone cover/hurdle/posts coexist with overturned travel bag/spilled rope/vacated bedroll and muddy trace to broken threshold. Fresh inside local-case camera versus neat challenge yard parent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          "findings": [
+            "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required actual muddycase trail/rope/vacatedbedroll and damagedrefugedoor at x61-96 hidden behind actual controls60.3; one required separatedPOST extends across controls too. Composition ONLY F. OWN crackedegg/straw/threeactualtacticalstations/overturnedbag/spilledrope/vacatedbedroll/day present, actualphysicalearthpawtrace not printedlogo. Different originalbrightMOOD sunnyexitcourt versus enclosedlocalrefuge/midinterruptedbelongings. No retro pail/whole-roof/bluewater/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/TEAM/bright parents. Required actual muddycase trail/rope/vacatedbedroll and damagedrefugedoor at x61-96 hidden behind actual controls60.3; one required separatedPOST extends across controls too. Composition ONLY F. OWN crackedegg/straw/threeactualtacticalstations/overturnedbag/spilledrope/vacatedbedroll/day present, actualphysicalearthpawtrace not printedlogo. Different originalbrightMOOD sunnyexitcourt versus enclosedlocalrefuge/midinterruptedbelongings. No retro pail/whole-roof/bluewater/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual197 immediate stage proof completed before this corrective. Native unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
           "colors": 320566,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--case-2-1e847a5fe5fe.png",
+        "sha256": "1e847a5fe5fe8278691c31280c4197d5e64d1789a98e2168ab743d96b0d2a8d7",
+        "promptSha256": "cae5570fccf9aec46dcce685ea6cf458200c78b2942604f2f6605b1ba643fe34",
+        "generationPromptSha256": "e321d5008b5257143857f7ee3f216002daaf303f264e67023c2a073d0ea89b1c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "1e847a5fe5fe8278691c31280c4197d5e64d1789a98e2168ab743d96b0d2a8d7",
+          "promptSha256": "cae5570fccf9aec46dcce685ea6cf458200c78b2942604f2f6605b1ba643fe34",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEEMPTYthree-stationcourse MIDWHOLEnursery crackedegg/BLUEwater LOWWHOLEOPENcase refuge EMPTYhollowpail/physicalearthtrace SUN/noscope. Required plainsoftCLOTH absent: WHOLEnative then read-only NEAREST fullnursery diagnostic confirms only straw/stone ledge, no cloth. allChoices ONLY F; case/latestChoice directlyP. Different actualNEW198bright no case."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEEMPTYthree-stationcourse MIDWHOLEnursery crackedegg/BLUEwater LOWWHOLEOPENcase refuge EMPTYhollowpail/physicalearthtrace SUN/noscope. Required plainsoftCLOTH absent: WHOLEnative then read-only NEAREST fullnursery diagnostic confirms only straw/stone ledge, no cloth. allChoices ONLY F; case/latestChoice directlyP. Different actualNEW198bright no case. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 644515,
           "findings": []
         }
       }
@@ -60533,6 +60881,36 @@
           "colors": 556466,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright--habitat--short-4-96da97eae891.png",
+        "sha256": "96da97eae891c42acc1f5def5537248f8d848dc0e10eba7cf8121626119ec6a1",
+        "promptSha256": "69b1b039c2d505821b06a110818a90ff8330b6a11bdacbb81a3142085313b202",
+        "generationPromptSha256": "5806f14797f3a9d357c31526bdfa003d0bc008f976f58f0238a0edb0563241a1",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "96da97eae891c42acc1f5def5537248f8d848dc0e10eba7cf8121626119ec6a1",
+          "promptSha256": "69b1b039c2d505821b06a110818a90ff8330b6a11bdacbb81a3142085313b202",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome with visible empty floor/threshold MIDtidyreturntable/crackedegg/cloth/BLUEwater/sample rack LOWthree real INNER habitat views SUN/return, no growth mat. Both actual INNER columns/steps before controls; outer posts not falsely counted. Different actual194brightHAB UPnursery MIDrack LOWviews without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 492095,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--collect--bright--case--scene": [
@@ -60563,6 +60941,860 @@
           "width": 1672,
           "height": 941,
           "colors": 544038,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--bright--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright--case--episode-1-a7cf89b7c534.png",
+        "sha256": "a7cf89b7c534db4a558fe590910ccb9d51abb94b1dafd548ca97559933d87b15",
+        "promptSha256": "b70dd97be44c973f225970232e7ace9c50ae9d356ef1dd35ce06b14b406ffd20",
+        "generationPromptSha256": "1357d9a9c09da9b4302e9fae4f42192e97e2796d6f47d927a4fdfa11bcd8c0f6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a7cf89b7c534db4a558fe590910ccb9d51abb94b1dafd548ca97559933d87b15",
+          "promptSha256": "b70dd97be44c973f225970232e7ace9c50ae9d356ef1dd35ce06b14b406ffd20",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENcase refuge/tipped EMPTY pail/actual earth trace MID3samples LOWnursery/crackedegg/cloth/BLUEwater and separate larger EMPTY GROUND rest mat SUN/growth. Actual top chimney cap is wholly inside image: WHOLEnative then read-only NEAREST top-edge diagnostic, no false crop fail. Different actual194brightCASE UPnursery MIDrack LOWcase without growth. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 551827,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--bright--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright--case--short-1-55b3a69f7af2.png",
+        "sha256": "55b3a69f7af2f319a044f03b8ea0a84047d9b1668efb2b78fb1ade9343d77a3a",
+        "promptSha256": "5c3edb31a7930df98e33c83d543cf07fc578d44c8001cd8e7f295412388bd1c5",
+        "generationPromptSha256": "594499b7881af796f86adb3b18abcbcb4b53de8d27eb9480df7f7741503c6c2b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "55b3a69f7af2f319a044f03b8ea0a84047d9b1668efb2b78fb1ade9343d77a3a",
+          "promptSha256": "5c3edb31a7930df98e33c83d543cf07fc578d44c8001cd8e7f295412388bd1c5",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples LOWWHOLEOPENcase refuge/tipped EMPTY pail/earth trace SUN/return. COMPOSITION ONLY F: actual rightmost sample tray/stone contents straddle actual input boundary x60.3 and part is hidden. WHOLEnative first then read-only NEAREST diagnostic ending at actual control boundary. No arbitrary ideal55 failure. Other six checks P, different actual194brightCASE without return home/table."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples LOWWHOLEOPENcase refuge/tipped EMPTY pail/earth trace SUN/return. COMPOSITION ONLY F: actual rightmost sample tray/stone contents straddle actual input boundary x60.3 and part is hidden. WHOLEnative first then read-only NEAREST diagnostic ending at actual control boundary. No arbitrary ideal55 failure. Other six checks P, different actual194brightCASE without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--bright--case--short-2-f13c76e77358.png",
+        "sha256": "f13c76e77358209a624d070c3ab5796c4816692c130243bc5750776c980b8c70",
+        "promptSha256": "5c3edb31a7930df98e33c83d543cf07fc578d44c8001cd8e7f295412388bd1c5",
+        "generationPromptSha256": "47e010292ca4e2169bf2e31e9787df5c8970a0192f8eea16886d362288a9b781",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f13c76e77358209a624d070c3ab5796c4816692c130243bc5750776c980b8c70",
+          "promptSha256": "5c3edb31a7930df98e33c83d543cf07fc578d44c8001cd8e7f295412388bd1c5",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEOPENreturnhome MIDtidytable/crackedegg/plaincloth/BLUEwater/3samples LOWWHOLEOPENcase refuge/EMPTYpail/earthtrace SUN/return. Entire stony tray/interior/contents now left of actual60.3 controls, no growth mat. Different actual194brightCASE UPnurseryMIDrackLOWrefuge without home/table. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 516750,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--scene-1-d48fe616bf84.png",
+        "sha256": "d48fe616bf8464df3bc77ce6478f644aef646a49cace25b94b80a7deeafc12bc",
+        "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+        "generationPromptSha256": "eb1ba9a6515466a75fd7b52258a7c6bb199254488765b14c446d0e2dd8afa908",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d48fe616bf8464df3bc77ce6478f644aef646a49cace25b94b80a7deeafc12bc",
+          "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth paw imprints MOON. ALLCHOICES and LATESTCHOICE F: a separate large EMPTY GROUND growth mat is explicitly unchosen and forbidden for FIRST MOMENT. Other five P; actual194secretROUTE UPnursery MIDrack LOWhouses spatially reversed. Cloth/binding trim not automatically logos."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth paw imprints MOON. ALLCHOICES and LATESTCHOICE F: a separate large EMPTY GROUND growth mat is explicitly unchosen and forbidden for FIRST MOMENT. Other five P; actual194secretROUTE UPnursery MIDrack LOWhouses spatially reversed. Cloth/binding trim not automatically logos. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--scene-2-7f1dc14cc9be.png",
+        "sha256": "7f1dc14cc9be785a6be98f5e292d3eb729521c87a18af50798ab2395937f8f57",
+        "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+        "generationPromptSha256": "bc785a4e4244214aab3c067aba7ce43a568e5a39edfe2d7ebb13525a0e7764b4",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "7f1dc14cc9be785a6be98f5e292d3eb729521c87a18af50798ab2395937f8f57",
+          "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWpreparednursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/two actualGROUNDpaw imprints MOON/FIRST; no growth mat now. NOTEXT ONLY F: isolated roadside blank signboard post with two empty rectangular hanging boards in mid travel path violates explicit OWN signs ban; WHOLEnative then read-only NEAREST diagnostic. No arbitrary ban on all T-shaped fence or lantern posts. Other six directly P, spatial reversal versus actual194secretROUTE UPnurseryMIDrackLOWhouses."
+          ],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWpreparednursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/two actualGROUNDpaw imprints MOON/FIRST; no growth mat now. NOTEXT ONLY F: isolated roadside blank signboard post with two empty rectangular hanging boards in mid travel path violates explicit OWN signs ban; WHOLEnative then read-only NEAREST diagnostic. No arbitrary ban on all T-shaped fence or lantern posts. Other six directly P, spatial reversal versus actual194secretROUTE UPnurseryMIDrackLOWhouses. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--scene-3-b1a27dbc9a47.png",
+        "sha256": "b1a27dbc9a47cb048e26d8ab6437eb25a23e8aaad727c3bf01a1c5bc949b4db6",
+        "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+        "generationPromptSha256": "d0d75a9cc47615f7d65d16575e8d74b91dc2a1e978fb57685f7aba05af303ba6",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "b1a27dbc9a47cb048e26d8ab6437eb25a23e8aaad727c3bf01a1c5bc949b4db6",
+          "promptSha256": "31ee3ffca7f6345638d7498c7cba41a605ce40c57590fe910b9edeb6ebc237cd",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP2WHOLEdifferent travelhouses/LEFTtrail MID3samples LOWwholeprepared cracked-egg nursery/plaincloth/BLUEwater/CLOSEDplainnotebook and actualGROUND ecological mud imprints MOON/FIRST. No ground growth mat or isolated blank signboard now. Different actual194secretROUTE reversed framing. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 294039,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--episode-1-5ab17c08fbda.png",
+        "sha256": "5ab17c08fbda7dd207d8dffcbd94803fb7c143b9f885a6e3b162484d18298617",
+        "promptSha256": "f0f7d28f8e85821d7a03aecf929660fa444c79eecff4f9b38a6e109c2d5b59c2",
+        "generationPromptSha256": "fcfa293cc2843481104c24858457954c5e2c79ce8a5e640f241b5e348ab1572b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "5ab17c08fbda7dd207d8dffcbd94803fb7c143b9f885a6e3b162484d18298617",
+          "promptSha256": "f0f7d28f8e85821d7a03aecf929660fa444c79eecff4f9b38a6e109c2d5b59c2",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook and separate larger EMPTY GROUND rest mat MOON/growth. ALLCHOICES ONLY F: no distinct required ecological earth trace beside nursery; WHOLEnative and read-only NEAREST ground diagnostic show only ordinary path and the selected growth mat, not ecological imprints. Other six P; different actual194secretROUTE spatial arrangement and growth staging."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/cloth/BLUEwater/CLOSEDbook and separate larger EMPTY GROUND rest mat MOON/growth. ALLCHOICES ONLY F: no distinct required ecological earth trace beside nursery; WHOLEnative and read-only NEAREST ground diagnostic show only ordinary path and the selected growth mat, not ecological imprints. Other six P; different actual194secretROUTE spatial arrangement and growth staging. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--episode-2-510e606ca8ab.png",
+        "sha256": "510e606ca8abde010b71b91640f8af5f81ae03efb7b031093299010e6ee4f40f",
+        "promptSha256": "f0f7d28f8e85821d7a03aecf929660fa444c79eecff4f9b38a6e109c2d5b59c2",
+        "generationPromptSha256": "c01669ce77d0437e712f376862783d0bea8069ec65ff44cc60c7f3cc3e6dcdbb",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "510e606ca8abde010b71b91640f8af5f81ae03efb7b031093299010e6ee4f40f",
+          "promptSha256": "f0f7d28f8e85821d7a03aecf929660fa444c79eecff4f9b38a6e109c2d5b59c2",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UP2WHOLEdifferent travel houses/LEFTtrail MID3samples LOWnursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/two distinct actualGROUNDmudpaw impressions and separate larger EMPTY groundmat MOON/growth. Required ecology trace now present separately from path/mat. Hanging actual illuminated lantern bracket is not a sign. Different actual194secretROUTE spatial reversal/growth staging. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 366865,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--route--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--route--short-1-7678d41f0a97.png",
+        "sha256": "7678d41f0a97c284ee7ad057b27a138ac8acdd544673cc14235119b8e9cf9658",
+        "promptSha256": "2f0ce630b8f30d8c3771724be5e79c46a2b482129559bd54f60149a08cb8a2ca",
+        "generationPromptSha256": "603d83bff49252ee8eed13eeedeeb3f7f6d5b30faad5082ba898a12f62c70478",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7678d41f0a97c284ee7ad057b27a138ac8acdd544673cc14235119b8e9cf9658",
+          "promptSha256": "2f0ce630b8f30d8c3771724be5e79c46a2b482129559bd54f60149a08cb8a2ca",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPWHOLEOPENreturnhome MIDtidyreturntable/crackedegg/cloth/BLUEwater/3samples/CLOSEDbook with actual irregular muddy paw imprints LOW2WHOLEdifferent travel houses/LEFTtrail MOON/return, no growth mat. Physical muddy imprints on table are ecological traces, not automatically printed logos; native shows irregular mud beside nursery. Different actual194secretROUTE UPnursery MIDrack LOWhouses without return home/table. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 286583,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat--scene-1-64ef44141fd7.png",
+        "sha256": "64ef44141fd76efac0345b920432a1c65ed69a823c7d6274d4b3f2890a073ff9",
+        "promptSha256": "a987076a56e73bf3ecf851d1598caf491d6be2d332821f3f58e07c4bbc9b2e7d",
+        "generationPromptSha256": "39a597c13227e3eef3bc830a734ac00223b9c5dc06d70d5b5ee9a7bbffe98c19",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "64ef44141fd76efac0345b920432a1c65ed69a823c7d6274d4b3f2890a073ff9",
+          "promptSha256": "a987076a56e73bf3ecf851d1598caf491d6be2d332821f3f58e07c4bbc9b2e7d",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPthree REAL inner habitat views MID3samples LOWsmall nursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MOON. ALLCHOICES and LATESTCHOICE F: separate large EMPTY GROUND growth mat explicitly unchosen/forbidden for FIRST MOMENT. Other five P; different NEW195secretHAB UPnursery MIDrack LOWviews. Actual INNER columns/steps before controls."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPthree REAL inner habitat views MID3samples LOWsmall nursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints MOON. ALLCHOICES and LATESTCHOICE F: separate large EMPTY GROUND growth mat explicitly unchosen/forbidden for FIRST MOMENT. Other five P; different NEW195secretHAB UPnursery MIDrack LOWviews. Actual INNER columns/steps before controls. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat--scene-2-157463f4eb7e.png",
+        "sha256": "157463f4eb7eff56915827c03860c448ceb8d1e9992eeae4307ce08a50457e3a",
+        "promptSha256": "a987076a56e73bf3ecf851d1598caf491d6be2d332821f3f58e07c4bbc9b2e7d",
+        "generationPromptSha256": "6316cfd5af8df3d2da0cf91d81669c6c4605f9649aa8ce492b93edf0de657d71",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "157463f4eb7eff56915827c03860c448ceb8d1e9992eeae4307ce08a50457e3a",
+          "promptSha256": "a987076a56e73bf3ecf851d1598caf491d6be2d332821f3f58e07c4bbc9b2e7d",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPthree REAL WHOLE INNERhabitat views MID3samples LOWsmallpreparednursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/actualGROUNDmudpaw impressions MOON/FIRST. No growth mat. WHOLEnative then read-only NEAREST crop ending at actual60.3 shows BOTH real INNER columns/all actual steps before controls; outer masonry not falsely counted. Different actual195secretHAB UPnurseryMIDrackLOWviews. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 285335,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--habitat--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat--episode-1-cc737341432b.png",
+        "sha256": "cc737341432bd275b5deb664158502eef080b543da1caa483c3d3e69f168970c",
+        "promptSha256": "bb8f1c1b5a6311e01b924cc21ef5be27db90c545cab0d31560c7415ff042d7d6",
+        "generationPromptSha256": "dd8e85d68707ee04ece0bb6080a40bdcaa76a2c176e6a19c69518a2af0bca434",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cc737341432bd275b5deb664158502eef080b543da1caa483c3d3e69f168970c",
+          "promptSha256": "bb8f1c1b5a6311e01b924cc21ef5be27db90c545cab0d31560c7415ff042d7d6",
+          "reviewer": "Codex direct original visual inspection: v2-production-195",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual193COLLECT,194secretMOOD/brightHAB/brightCASE/secretROUTE or NEW195secretHAB parent. UPthree REAL inner habitat views MID3samples LOWWHOLEnursery/crackedegg/cloth/BLUEwater/CLOSEDbook/actual earth imprints and larger EMPTY GROUND mat MOON/growth. Both actual INNER ruin columns/all stairs before controls; outer masonry not falsely counted as inner. Different NEW195secretHAB UPnursery MIDrack LOWviews; coherent pixel clusters and material-shaded cloth/binding, no printed text/emblem. Other checks directlyROOT P: native coarse square clusters/stair steps/flat shade across planes; no invented species/body/identity, no actual writing/signs/logos. Natural speckles/material seams/page edges/ground traces not automatically printed emblems. Only OWN criteria, no retro later constraints. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 332440,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--habitat--short-1-956c12c9ba00.png",
+        "sha256": "956c12c9ba001eb81dfed08bee2b903d7548e61e43c2ae56c374cb310df38445",
+        "promptSha256": "544d16cc16884d28fa55a761f7067deb2bdabd987bb1a789f3d37b36c0fca0a6",
+        "generationPromptSha256": "f0537d3a6a87d0a9b815ef414b1d63d7798f507908b00426b311bb8a0e694943",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "956c12c9ba001eb81dfed08bee2b903d7548e61e43c2ae56c374cb310df38445",
+          "promptSha256": "544d16cc16884d28fa55a761f7067deb2bdabd987bb1a789f3d37b36c0fca0a6",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEOPENreturnhome MIDtidytable/crackedegg/plaincloth/BLUEwater/3samples/CLOSEDbook and two actualGROUNDmudpaw impressions LOWthree REAL WHOLE INNERhabitat views MOON/return, no growth mat. Actual INNERcolumns/stairs before controls; outer post not substituted. Different actual195secretHAB UPnurseryMIDrackLOWviews without home/table. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 345120,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--case--scene-1-06f9ad89b257.png",
+        "sha256": "06f9ad89b257dff8952d00752369ef01c3e04052d54873b51e3a0bed2ea38fba",
+        "promptSha256": "ec95d9af9aa7dfac6148fa03c2c2b4b9c48b13aa5d308915749523da84757c40",
+        "generationPromptSha256": "fb7b30f96bb7fe2d6e5e1e6830391f56adf631d53f412a0eca6b9591e697b9ee",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "06f9ad89b257dff8952d00752369ef01c3e04052d54873b51e3a0bed2ea38fba",
+          "promptSha256": "ec95d9af9aa7dfac6148fa03c2c2b4b9c48b13aa5d308915749523da84757c40",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEOPENcase refuge/EMPTYpail/actualearthtrace MID3samples LOWsmallprotectednursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/two actualGROUNDmudpaw impressions MOON/FIRST, bare unpadded approach/no growth mat. Selected meaning and whole architecture before controls. Different actual194secretCASE UPnurseryMIDrackLOWrefuge, not recolor. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 280863,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--case--episode-1-18c7870c0e59.png",
+        "sha256": "18c7870c0e59429f2c369edfea4051c7359ecdccba93780bf8e5c88c97b5dc30",
+        "promptSha256": "553ed5b4afe8560177134e7a10237c36fe5527e024f56f4cc3e61ad3a3319629",
+        "generationPromptSha256": "ce99532cee2a5c82fef499d330e724d2c625a8651a6ed15a1fe19408b283d089",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "18c7870c0e59429f2c369edfea4051c7359ecdccba93780bf8e5c88c97b5dc30",
+          "promptSha256": "553ed5b4afe8560177134e7a10237c36fe5527e024f56f4cc3e61ad3a3319629",
+          "reviewer": "Codex direct original visual inspection: v2-production-196",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual194brightCASE/secretROUTE/secretCASE or195warm/secretHAB parent. UPWHOLEOPENcase refuge/EMPTYpail/actualearthtrace MID3samples LOWnursery/crackedegg/plaincloth/BLUEwater/CLOSEDbook/two actualGROUNDmudpaw impressions and separate larger EMPTY protected GROUNDmat MOON/growth. Whole architecture/features before controls. Different actual194secretCASE UPnurseryMIDrackLOWrefuge without growth. All other checks directlyROOT P: coherent coarse square clusters/stair steps/flat shading on every plane; no invented human/creature species or identity. Plain cloth trim/material fold highlights/book binding/page edges and physical ground paw imprints not automatically text or logos. Only OWN criteria; no retrospective requirements. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 258401,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--secret--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret--case--short-1-72b6a903ffbe.png",
+        "sha256": "72b6a903ffbe261e1d7aaf7236a6ab3f696a823ebf169bdbffcf5b31e7057e9e",
+        "promptSha256": "25112a46123d2d52ccb0ae7db31f61a3d515418e6f4a7853179bb294df0cf9d4",
+        "generationPromptSha256": "2f4fb62036bae0577a38630fe650c956f8140b5dabf0a03afb21e76bf3946e4d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "72b6a903ffbe261e1d7aaf7236a6ab3f696a823ebf169bdbffcf5b31e7057e9e",
+          "promptSha256": "25112a46123d2d52ccb0ae7db31f61a3d515418e6f4a7853179bb294df0cf9d4",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UPWHOLEOPENreturnhome MIDtidytable/crackedegg/plaincloth/BLUEwater/3samples/CLOSEDplainbook plus actualGROUNDmudimprints LOWWHOLEOPENcase refuge/EMPTYpail/earthtrace MOON/return. Different actual194secretCASE UPnurseryMIDrackLOWrefuge/no return. Cloth hem/material highlights not printed logo. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 244858,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--route--scene-1-bc0622f78b48.png",
+        "sha256": "bc0622f78b48f337573e9b722474db7bdb35fd5bf92243df8ed14d9b257728dc",
+        "promptSha256": "50551bfba266cedb1b2b84e33130c963fcf90e84381d8bb6e94d0e862874ce0d",
+        "generationPromptSha256": "a5f6e84d29e1681fc0e1f69ee0e74aad21fd9d32191cea8bde463375d175fb67",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bc0622f78b48f337573e9b722474db7bdb35fd5bf92243df8ed14d9b257728dc",
+          "promptSha256": "50551bfba266cedb1b2b84e33130c963fcf90e84381d8bb6e94d0e862874ce0d",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP2WHOLEdifferent houses/LEFTtrail MID3samples LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater WARM SUNSET/FIRST bare unpadded earth. Different actual196warmROUTE UPnurseryMIDrackLOWhouses, not recolor. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 452191,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--route--episode-1-1fd4b80dbb13.png",
+        "sha256": "1fd4b80dbb1317beba7517990ca42eb9bf451c971c49422d69e0edd2e9352a56",
+        "promptSha256": "6bbc45f8aa074bfd958c53bca7326d56a83f7d0b053ea9ca0b6cb4604f527313",
+        "generationPromptSha256": "892923aef242adaa4244c966f7497a1fc950b13dcffa6ed8511b30c309d88b2e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "1fd4b80dbb1317beba7517990ca42eb9bf451c971c49422d69e0edd2e9352a56",
+          "promptSha256": "6bbc45f8aa074bfd958c53bca7326d56a83f7d0b053ea9ca0b6cb4604f527313",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP2WHOLEdifferent houses/LEFTtrail MID3samples LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater and separate largerEMPTYGROUNDgrowthmat WARM SUNSET/growth. Different actual196warmROUTE reverse camera plus growth. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 454443,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--route--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--route--short-1-ef0cad042c64.png",
+        "sha256": "ef0cad042c64f30c887e17165bedae905face005f2c5f03e2e1f1e68a1d67f10",
+        "promptSha256": "95ab027ac2c4497baa6db772c0b447217b6c5c42979989a4d858ab23a6c57df8",
+        "generationPromptSha256": "1f7ecd841233f18e265dc5cdd49220115e57868d64b41ba2b0025243d92657e6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ef0cad042c64f30c887e17165bedae905face005f2c5f03e2e1f1e68a1d67f10",
+          "promptSha256": "95ab027ac2c4497baa6db772c0b447217b6c5c42979989a4d858ab23a6c57df8",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UPWHOLEOPENreturnhome MIDtidyreturntable crackedegg/plaincloth/BLUEwater/3samples LOW2WHOLEdifferent travelhouses/continuousLEFTtrail WARM SUNSET/return. BLACK angular first crack visible, no body or separate growth mat. Ordinary rug inside open home is not a growth mat beside nursery. Different actual196warmROUTE no returnhome/table. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 525208,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat--scene-1-c72e6c7b0a0e.png",
+        "sha256": "c72e6c7b0a0e79a386312279b3a2d69fe8336dbdb5de0a55899b7279dac0a676",
+        "promptSha256": "331bfed625e74a277312c069f417ff1fceecf4fbbdb623669104ee747e4181de",
+        "generationPromptSha256": "ebc26dccebbb871aef7ac83dabdc774a9af21756cc3f6f250ec04f85656c5e6b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c72e6c7b0a0e79a386312279b3a2d69fe8336dbdb5de0a55899b7279dac0a676",
+          "promptSha256": "331bfed625e74a277312c069f417ff1fceecf4fbbdb623669104ee747e4181de",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP3realWHOLEINNERwetland/forest/ruin MID3samples LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater WARM SUNSET/FIRST bare unpadded earth. BOTH actualINNERcolumns/allsteps before actual60.3 controls; outer columns not substituted. Different actual196warmHAB UPnurseryMIDrackLOW3. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 485132,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--habitat--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat--episode-1-252a162387af.png",
+        "sha256": "252a162387af2c446da271b0520ab02d9273c0e58f41126897c82f259189d233",
+        "promptSha256": "68f89b67cbc2a0eb32b5e10f8a7c62f9bd6a1bafd503ede96b2ce2383f4a4016",
+        "generationPromptSha256": "ea41ea8d2c53f616dd4cf45a37e2f3b428c937dec896c0c1f6097b2536fcf91f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "252a162387af2c446da271b0520ab02d9273c0e58f41126897c82f259189d233",
+          "promptSha256": "68f89b67cbc2a0eb32b5e10f8a7c62f9bd6a1bafd503ede96b2ce2383f4a4016",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UP3realWHOLEINNERhabitat views MID3samples LOWprotected crackedegg/plaincloth/BLUEwater plus separate largerEMPTYGROUNDgrowthmat WARM SUNSET/growth. BOTH actualINNERcolumns/allsteps before actual60.3; outer stone extension not INNER column. Woven mat texture not printed emblem. Different actual196warmHAB spatialreverse plus growth. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 526619,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat--short-1-c52df3c38ffc.png",
+        "sha256": "c52df3c38ffc239c79026166b0232c224f5cb835b37a668536c1ad5e47ef4aad",
+        "promptSha256": "3c5fde599615495f0e05da6ff938b2ff49fa74782881ff9f74636e6c3ea792ea",
+        "generationPromptSha256": "764701c6ba4c84182277856b6364d975f998f0fc306faf1c8e74c6f6eda39f34",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c52df3c38ffc239c79026166b0232c224f5cb835b37a668536c1ad5e47ef4aad",
+          "promptSha256": "3c5fde599615495f0e05da6ff938b2ff49fa74782881ff9f74636e6c3ea792ea",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEclosed village house MIDtidyreturntable crackedegg/plaincloth/BLUEwater/3samples LOW3realWHOLEINNERhabitat views WARM SUNSET. Required OPEN return home/empty inner floor missing: WHOLEnative then read-only NEAREST door diagnostic shows two CLOSED door leaves/handles, not an open inner floor. allChoices and latestChoice fail. Other five directly P; INNERcolumns/stairs before actual controls; spatially different actual196warmHAB."
+          ],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UPWHOLEclosed village house MIDtidyreturntable crackedegg/plaincloth/BLUEwater/3samples LOW3realWHOLEINNERhabitat views WARM SUNSET. Required OPEN return home/empty inner floor missing: WHOLEnative then read-only NEAREST door diagnostic shows two CLOSED door leaves/handles, not an open inner floor. allChoices and latestChoice fail. Other five directly P; INNERcolumns/stairs before actual controls; spatially different actual196warmHAB. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--habitat--short-2-5f3f21fb09eb.png",
+        "sha256": "5f3f21fb09eb7ec902c3c1aad244c204af916d3d039445b0d5c669bc111ad701",
+        "promptSha256": "3c5fde599615495f0e05da6ff938b2ff49fa74782881ff9f74636e6c3ea792ea",
+        "generationPromptSha256": "afc17112e9299cb78cbb4cdcbf7266c35bdcdf15a729f3a85e585decf40a245b",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "5f3f21fb09eb7ec902c3c1aad244c204af916d3d039445b0d5c669bc111ad701",
+          "promptSha256": "3c5fde599615495f0e05da6ff938b2ff49fa74782881ff9f74636e6c3ea792ea",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEOPENreturnhome bothdoorleaves fullyoutward/emptyvisibleinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/3samples LOWthreeREALWHOLEINNERhabitatviews WARM SUNSET/return. Door repair now directly present; actual INNERcolumns/allsteps before60.3. Different actual196warmHAB UPnurseryMIDrackLOW3 without home/table. Material cloth seams not print. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 510450,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--case--scene-1-b48985e0b100.png",
+        "sha256": "b48985e0b100938393f97bc0bb7b33214c864d5c8a33e61c57156c464c3c39fa",
+        "promptSha256": "3a425250de8d7912a8733eb9cdffc7d45cad9b088789130ccc2d13ee8359e44d",
+        "generationPromptSha256": "ab048af067488d26d364200720d40c992bd947ddb98e297f125c953e44485ada",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b48985e0b100938393f97bc0bb7b33214c864d5c8a33e61c57156c464c3c39fa",
+          "promptSha256": "3a425250de8d7912a8733eb9cdffc7d45cad9b088789130ccc2d13ee8359e44d",
+          "reviewer": "Codex direct original visual inspection: v2-production-197",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN and WHOLE native; actual parent FULL OWN/WHOLE native reviewed. UPWHOLEOPENcase refuge EMPTYpail/actualearthtrace MID3samples LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater WARM SUNSET/FIRST bare unpadded approach/no growthmat. Whole roofs/features before actualcontrols. Protected cradle walls/rails are a nursery without a mandatory added roof. Different actual196warmCASE UPnurseryMIDrackLOWrefuge. Coarse coherent square clusters/stair-step contours/flat shade ramps every plane, no invented protagonist/species/body or writing/logos/signs; cloth seams/book binding/paw-shaped physical earth traces not automatically print. Only OWN criteria and actual60.3 panel; no retrospective margin or alpha rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 420248,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--case--episode-1-2a444d432ca8.png",
+        "sha256": "2a444d432ca8a04f84de98927b3423d5ea06a7688397b44fc28a71e834c5299b",
+        "promptSha256": "9f4e9dc889f96482a03d53973500a4aa61024f7cdcfb734d9c9b6b5f1f61743b",
+        "generationPromptSha256": "794cf05ec70a6b6ab656d9e43651ebe942d44b564e1dda45529b9c69ca21e821",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2a444d432ca8a04f84de98927b3423d5ea06a7688397b44fc28a71e834c5299b",
+          "promptSha256": "9f4e9dc889f96482a03d53973500a4aa61024f7cdcfb734d9c9b6b5f1f61743b",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEOPENcase refuge EMPTYhollowpail/physicalearthtrace MID3samples LOWWHOLEprotectednursery crackedegg/plaincloth/BLUEwater and separate largerEMPTYGROUNDgrowthmat WARM SUNSET/growth. Pail emptied next to physical soil trace, no false filledpail fail. Wholeforms beforecontrols. Different actual196warmCASE UPnurseryMIDrackLOWrefuge without growth. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 453793,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--collect--warm--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--warm--case--short-1-bb2b959445cd.png",
+        "sha256": "bb2b959445cdaa5bab2fd6e48e51ca35e33d4c4962603fd0c2452b36013bb540",
+        "promptSha256": "bb871f3fe0079f400f2490f00c2618668352b9204a8a3b5937278bbc70e4fbaf",
+        "generationPromptSha256": "e001272f478a7b7595bdce0f2365536285f4480590be8fcb6d6860e780e731e5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bb2b959445cdaa5bab2fd6e48e51ca35e33d4c4962603fd0c2452b36013bb540",
+          "promptSha256": "bb871f3fe0079f400f2490f00c2618668352b9204a8a3b5937278bbc70e4fbaf",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPWHOLEOPENreturnhome bothdoorleaves outward/clearlyvisibleemptyinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/3samples LOWWHOLEOPENlocalrefuge EMPTYhollowpail/physicalearthtrace WARM SUNSET/return. Wholechimney inside native, allrequiredfeatures beforecontrols, no growthmat. Different actual196warmCASE without returnhome/table. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 448505,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--team--bright--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--route--scene-1-92eda1feba7c.png",
+        "sha256": "92eda1feba7c4575b260fdcb0b8d0b37ee5f9b7181630c90e2ffba9b75cc18b2",
+        "promptSha256": "acd6d86d697eb5625d7f64314ccab7763ffce3b7b3072be40964a431f6345cd3",
+        "generationPromptSha256": "24436e1de269adba7436c3c30f0596478e9c8688c4796b12670621632c104e74",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "92eda1feba7c4575b260fdcb0b8d0b37ee5f9b7181630c90e2ffba9b75cc18b2",
+          "promptSha256": "acd6d86d697eb5625d7f64314ccab7763ffce3b7b3072be40964a431f6345cd3",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDWHOLEEMPTYthree-stationcourse LOWWHOLEsmallprotectednursery crackedegg/plaincloth/BLUEwater SUN/FIRST bareunpaddedapproach. No growthmat/signboards. All actualtacticalstations beforecontrols. Different actualNEW198ROUTE UPcourseMIDnurseryLOWhouses spatialreverse. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 586523,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--team--bright--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--route--episode-1-0ca021036cd0.png",
+        "sha256": "0ca021036cd03408948efc1db03db5b051126475d308f64bf4a9b5573db79cfd",
+        "promptSha256": "4ec2c84ac192c6767266d9176c4c449f03d1df26362a26cd26a43fd58f4e4f2b",
+        "generationPromptSha256": "84666509b98caba47bd0964f6e35fb27249619a21ee1cddb43721d8a220565ea",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "0ca021036cd03408948efc1db03db5b051126475d308f64bf4a9b5573db79cfd",
+          "promptSha256": "4ec2c84ac192c6767266d9176c4c449f03d1df26362a26cd26a43fd58f4e4f2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-198",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual selected parent, including direct originalHATCH and NEW198TEAM/bright/route parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDWHOLEEMPTYthree-stationcourse LOWWHOLEprotectednursery crackedegg/plaincloth/BLUEwater plus separate largerEMPTYGROUNDgrowthmat SUN/growth. All actualcoursefeatures beforecontrols. Different actualNEW198ROUTE UPcourseMIDnurseryLOWhouses spatialreverse/growth. All otherchecks directlyROOT P: coherent coarse squareclusters/stairsteps/flatshade on allplanes, no inventedprotagonist/species/body/writing/logo/sign, plainclothtrim/materialhighlight/bookbinding/physicalearthtrace not automatically print. Actual60.3 panel boundary, no invented idealmargin or retrospectiveOWN rules. Native unchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 463689,
           "findings": []
         }
       }
