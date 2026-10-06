@@ -174,6 +174,9 @@ def prepare(data, cid):
     for group in groups:
         for candidate in group['candidates']:
             candidate.update(generation=generation, phase=phase)
+    # Accumulated batches can repair one item without erasing other completed
+    # items. The newest receipt owns that item's current candidate set.
+    groups = list({g['id']: g for g in groups}.values())
     manifest = {'version': 1, 'artResultSha256': generation, 'groups': groups}
     path = concept / 'art-choices.json'
     temporary = path.with_suffix('.tmp')

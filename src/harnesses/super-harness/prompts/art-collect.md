@@ -22,6 +22,11 @@
 ```
 실제 후보가 없으면 candidates=[]와 정확한 실패 이유를 기록한다. 다른 판의 PNG나 승인 결과를 가져오지 않는다.
 
+전용 테마는 이번 실행에서 만든 모든 원본 PNG를 `themeCoverage`의 실제 요구사항 id에 연결한다.
+아직 만들지 않은 재료는 빈 배열/누락 목록으로 정직하게 남긴다. 이번 실행의 candidates/receipt만 반환한다.
+감독이 `art-batches/`의 이전 실행 영수증을 해시 확인하여 누적하고, 누락 재료는 다음 제작으로 넘긴다.
+현재 실행이 만들지 않은 이전 PNG를 이번 영수증에 넣거나 기존 영수증을 덮어쓰지 않는다.
+
 사람 선택 화면은 감독의 art_choices.py가 실제 receipt에서 만든다. 현재 지원 receipt:
 - modern-chipset parking-kit: contractSha256, candidates[].candidate/imageSha256/machine/independent,
   receipt와 같은 폴더의 A~E.png. independent는 png_sha256와 13품목 items[].id/verdict를 포함한다.

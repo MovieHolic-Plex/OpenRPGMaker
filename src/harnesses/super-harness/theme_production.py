@@ -193,8 +193,8 @@ def on_result(meta, code, result):
         store.log(None,'테마 제작 입력 재확인: '+str(error))
 
 
-def demo_sources(cid, result, components):
-    """Every planned material must map to real native candidate pixels."""
+def coverage_status(cid, result, components):
+    """Report real native coverage without treating an unmade batch as a repair."""
     ctx=context(cid)
     if not ctx:return None
     require_binding(cid,result)
@@ -208,7 +208,20 @@ def demo_sources(cid, result, components):
     refs_allowed=authored|exceptions
     allowed={digest for path,digest in refs_allowed}
     coverage=result.get('themeCoverage',{})
-    if not required or set(coverage)!=required:raise ValueError('전용 세트 필수 재료가 모두 제작되지 않았습니다. 조립보다 재료 제작이 먼저입니다.')
-    for rid,refs in coverage.items():
-        if not isinstance(refs,list) or not refs or any((r.get('path'),r.get('sha256')) not in refs_allowed for r in refs):raise ValueError('전용 재료의 native 후보 근거 누락: '+rid)
-    return allowed
+    if not required: raise ValueError('전용 세트 필수 재료 계획이 없습니다.')
+    if not isinstance(coverage, dict): raise ValueError('전용 재료 coverage 객체 필요')
+    if set(coverage) - required: raise ValueError('기획에 없는 전용 재료 coverage ID')
+    missing = []
+    for rid in sorted(required):
+        refs = coverage.get(rid)
+        if not isinstance(refs,list) or not refs or any(not isinstance(r,dict) or (r.get('path'),r.get('sha256')) not in refs_allowed for r in refs): missing.append(rid)
+    return dict(missing=missing, covered=sorted(required-set(missing)), allowed=allowed)
+
+
+def demo_sources(cid, result, components):
+    """Every planned material must map to real native candidate pixels."""
+    status = coverage_status(cid, result, components)
+    if status is None: return None
+    if status['missing']:
+        raise ValueError('전용 재료의 native 후보 근거 누락: '+', '.join(status['missing']))
+    return status['allowed']
