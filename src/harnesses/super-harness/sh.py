@@ -178,8 +178,6 @@ def reap():
             continue
         del PROCS[jid]
         result = read_json(meta['result']) if meta.get('result') else None
-        store.update_job(jid, status='done' if code == 0 else f'exit {code}', ended=store.now(),
-                         result=result if result is not None else {'exit': code})
         try:
             if meta.get('concept') and not theme_production.current(meta['concept'],meta):
                 provider_retry.cancel(meta['concept'])
@@ -196,6 +194,12 @@ def reap():
                 store.update_concept(meta['concept'], stage='blocked', status='idle',
                                      note=f'{meta["kind"]} 결과 처리 오류 — 로그 확인 필요',
                                      reasons=[f'{type(error).__name__}: {error}'])
+        finally:
+            # Persist terminal status only after result handling. Other scoped
+            # runners use running rows as reservations; a premature done row
+            # lets a successor replace hash-bound inputs during collection.
+            store.update_job(jid, status='done' if code == 0 else f'exit {code}', ended=store.now(),
+                             result=result if result is not None else {'exit': code})
 
 
 def recover():
