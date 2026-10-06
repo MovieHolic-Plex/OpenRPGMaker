@@ -4,12 +4,20 @@ import { collectorFieldMenu } from '@/project/fieldMenu';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { isPassableLanding } from '@/project/collision';
 
+/** 키 순서와 무관한 직렬화 — 보수가 맵 객체를 다시 짜며 lowerTiles 키를 뒤로 옮기기만 해도 지문이 바뀌어
+ * 「마지막 변경 뒤 read_monster_game」 완료 검사가 끝나지 않았다(2026-10-07 사막 기획서 실편집기 녹화, 저장소에서 다시 읽은 문서). */
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(v => v === undefined ? 'null' : canonical(v)).join(',')}]`;
+  if (value && typeof value === 'object') return `{${Object.keys(value).filter(k => (value as Record<string, unknown>)[k] !== undefined).sort().map(k => `${JSON.stringify(k)}:${canonical((value as Record<string, unknown>)[k])}`).join(',')}}`;
+  return JSON.stringify(value) ?? 'null';
+}
+
 export function monsterGameFingerprint(p: Project): string {
   // No image bytes in the receipt; refs identify durable bytes, inline data is hashed.
   let hash = 2166136261;
   const add = (text: string) => { for (let i=0;i<text.length;i++) hash=Math.imul(hash^text.charCodeAt(i),16777619); };
-  add(JSON.stringify([p.meta,p.system,p.startMapId,p.startPos,p.maps,p.mapConnections,p.database,p.switches,p.variables]));
-  for (const [id,asset] of Object.entries(p.assets.uploaded)) { add(id);add(JSON.stringify(asset)); }
+  add(canonical([p.meta,p.system,p.startMapId,p.startPos,p.maps,p.mapConnections,p.database,p.switches,p.variables]));
+  for (const id of Object.keys(p.assets.uploaded).sort()) { add(id);add(canonical(p.assets.uploaded[id])); }
   return (hash>>>0).toString(16);
 }
 

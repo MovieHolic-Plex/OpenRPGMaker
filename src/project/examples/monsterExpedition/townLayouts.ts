@@ -13,7 +13,7 @@ type Legend =
   | { ground: string[] }            // 바닥 칸(이름 여럿이면 위치 해시로 고른다)
   | { group: string }               // 오토타일 그룹의 꽉 찬 칸 — 다 깐 뒤 엔진이 이웃으로 모양을 고른다
   | { tile: string[] }              // 낱칸 소품(시트 사전의 홈 층에 놓고 그 밑엔 바닥)
-  | { prop: string }                // 여러 칸 물체(타일셋 구조 킷)의 왼쪽 위 칸
+  | { prop: string; on?: string[] } // 여러 칸 물체(타일셋 구조 킷)의 왼쪽 위 칸. on = 그 밑 바닥(판 기본 바닥과 다를 때 — 모래 위 야자)
   | { frame: true };                // 숲 벽 — 템플릿 둘레를 주기 2 로 이어 붙인다
 
 export interface TownSketch {
@@ -67,6 +67,7 @@ export function composeTown(project: Project, map: GameMap, t: TownTemplate, ske
       const kit = tileset.structureKits?.find(k => k.name === legend.prop);
       if (!kit) throw Error(`Town sketch ${map.id}: no structure kit ${legend.prop}`);
       kit.rows.forEach((row, dy) => row.tiles.forEach((tile, dx) => {
+        if (legend.on) put(x + dx, y + dy, pick(legend.on, x + dx, y + dy), "lower");
         put(x + dx, y + dy, tile, "lower");
         put(x + dx, y + dy, row.upperTiles?.[dx] ?? -1, "upper");
       }));
@@ -106,6 +107,22 @@ const OVERWORLD: Record<string, Legend> = {
   T: { prop: "tree_a" },
   U: { prop: "tree_b" },
   P: { prop: "pine_a" },
+};
+
+const DESERT: Record<string, Legend> = {
+  "#": { group: "dcliff" },
+  "^": { group: "dface" },
+  "=": { group: "ashpath" },
+  g: { group: "dgrass" },
+  "~": { group: "oasis" },
+  c: { tile: ["cactus"] },
+  r: { tile: ["drock0", "drock1"] },
+  d: { tile: ["dbush"] },
+  S: { tile: ["sign"] },
+  P: { prop: "palm_a" },
+  R: { prop: "dcone" },
+  Q: { prop: "dcone_c" },
+  B: { prop: "dcone_b" },
 };
 
 /** 맵 키 → 판(마을과 관측탑). 없는 맵은 템플릿 그대로. 북·남 출구는 가운데 두 칸(world.ts connect 가 (w/2, 2)·(w/2, h-2) 근처를 고른다). */
@@ -171,21 +188,7 @@ export const TOWN_SKETCHES: Record<string, TownSketch> = {
   // 모래종 마을: 사암 벼랑에 안긴 사막 마을 — 북쪽 벼랑 틈 출구, 오아시스, 기백 도장(불꽃 지붕 체육관), 모래 지붕 집.
   dune: {
     ground: ["dsand0", "dsand0", "dsand1", "dsand2", "dsand3"],
-    legend: {
-      "#": { group: "dcliff" },
-      "^": { group: "dface" },
-      "=": { group: "ashpath" },
-      g: { group: "dgrass" },
-      "~": { group: "oasis" },
-      c: { tile: ["cactus"] },
-      r: { tile: ["drock0", "drock1"] },
-      d: { tile: ["dbush"] },
-      S: { tile: ["sign"] },
-      P: { prop: "palm_a" },
-      R: { prop: "dcone" },
-      Q: { prop: "dcone_c" },
-      B: { prop: "dcone_b" },
-    },
+    legend: DESERT,
     kits: [["gym_fire", 13, 5], ["center", 3, 5], ["mart", 2, 13], ["house_ash_a", 18, 12]],
     rows: [
       "###########==###########",
@@ -253,4 +256,161 @@ export const TOWN_SKETCHES: Record<string, TownSketch> = {
       "a_________M__________b",
     ],
   },
+};
+
+/**
+ * 시작 마을 테마 — 기획서가 사막·눈·바닷가 마을에서 시작하는데 별싹 마을(풀밭 템플릿)이 그대로 나왔다(2026-10-06 사막 기획서 실편집기 녹화).
+ * 판마다 집 둘(북서=주인공 집, 북동=연구소 — 킷 목록 순서상 앞 킷이 집이 된다)·마트(남서)·센터(남동)를 같은 자리에 두어
+ * world.ts 의 문 찾기·안내 대사(「북동쪽 집이 연구소」)가 그대로 맞는다. 출구는 북쪽 가운데 두 칸 하나뿐이다(home 은 connect 의 a 쪽만 된다).
+ */
+export type StartTheme = "desert" | "snow" | "coast";
+export const START_TOWNS: Record<StartTheme, { template: string; sketch: TownSketch }> = {
+  desert: { template: "climate/desert", sketch: {
+    ground: ["dsand0", "dsand0", "dsand1", "dsand2", "dsand3"], legend: DESERT,
+    kits: [["house_ash_a", 3, 4], ["house_ash_b", 15, 4], ["mart", 3, 14], ["center", 15, 14]],
+    rows: [
+      "##########==##########",
+      "##########==##########",
+      "##^^^^^^^^==^^^^^^^^##",
+      "##^^^^^^^^==^^^^^^^^##",
+      "##........==..r.....##",
+      "##......c.==........##",
+      "##........==.d......##",
+      "##........==S.......##",
+      "##.================.##",
+      "##.================.##",
+      "##.P...P.c==.gggggg.##",
+      "##........==.g~~~~g.##",
+      "##...B....==.g~~~~g.##",
+      "##.d....r.==.ggggggc##",
+      "##........==........##",
+      "##........==........##",
+      "##........==........##",
+      "##........==........##",
+      "##.================.##",
+      "######################",
+    ],
+  } },
+  snow: { template: "climate/snow_town", sketch: {
+    ground: ["snow0", "snow0", "snow1", "snow2", "snow3"],
+    legend: {
+      "#": { frame: true },
+      "=": { group: "snowpath" },
+      "~": { group: "pond" },
+      p: { tile: ["snow_pile0", "snow_pile1"] },
+      b: { tile: ["frost_bush"] },
+      S: { tile: ["sign_snow"] },
+      P: { prop: "spine_a" },
+      M: { prop: "snowman" },
+    },
+    kits: [["house_snow_a", 3, 3], ["house_snow_b", 15, 3], ["mart", 3, 9], ["center_snow", 15, 9]],
+    rows: [
+      "##########==##########",
+      "##########==##########",
+      "##########==##########",
+      "##........==........##",
+      "##......b.==........##",
+      "##........==.p......##",
+      "##........==........##",
+      "##.================.##",
+      "##........==S.......##",
+      "##......M.==........##",
+      "##........==........##",
+      "##........==.b......##",
+      "##........==........##",
+      "##.================.##",
+      "##.P...P.....~~~~~~.##",
+      "##...M.......~~~~~~.##",
+      "##........pb.~~~~~~.##",
+      "######################",
+      "######################",
+      "######################",
+    ],
+  } },
+  coast: { template: "coast/port", sketch: {
+    ground: ["grass0", "grass0", "grass1", "grass2", "grass3"],
+    legend: {
+      "#": { frame: true },
+      "=": { group: "pave" },
+      "~": { group: "shore" },
+      s: { ground: ["sand0", "sand0", "sand1"] },
+      f: { tile: ["flower_red", "flower_pink"] },
+      F: { tile: ["flowerbed_red", "flowerbed_pink"] },
+      b: { tile: ["bush0", "bush1"] },
+      S: { tile: ["sign"] },
+      P: { prop: "palm", on: ["sand0", "sand1"] },
+      L: { prop: "lamp" },
+      R: { prop: "parasol_red", on: ["sand0", "sand1"] },
+      B: { prop: "bench", on: ["sand0", "sand1"] },
+      // 항구 템플릿의 오른쪽 둘레는 잔교·배라 테두리로 옮기면 배가 세로로 늘어선다 — 오른쪽은 나무로 막는다.
+      T: { prop: "tree_a" },
+    },
+    kits: [["cabin_a", 3, 3], ["house_c", 15, 3], ["mart", 3, 8], ["center", 15, 8]],
+    rows: [
+      "##########==########T.",
+      "##########==########..",
+      "##########==########..",
+      "##......FF==..........",
+      "##......FF==L.......T.",
+      "##........==..f.......",
+      "##........==..........",
+      "##.================...",
+      "##........==S.......T.",
+      "##......f.==..........",
+      "##........==.b........",
+      "##........==..........",
+      "##.================.bb",
+      "sssPsssssssssssssPssss",
+      "sssssssRsssssBssssssss",
+      "ssssssssssssssssssssss",
+      "~~~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~~~~~~~~~~",
+    ],
+  } },
+};
+
+/**
+ * 시작 테마의 첫 도로. 사막 기획서는 「마을 북쪽 1번 모랫길」인데 풀밭 1번길이 나왔다 — 모래 위 굽은 흙길·오아시스 풀 덩이(풀숲 자리)·
+ * 선인장·바위. 출구는 북·남 가운데 두 칸(connect 가 (w/2,2)·(w/2,h-2) 근처를 고른다). 조우는 맵 서식지 사각형 전체라 바닥 그림과 무관하다.
+ */
+export const START_ROUTES: Partial<Record<StartTheme, { template: string; sketch: TownSketch }>> = {
+  desert: { template: "climate/desert", sketch: {
+    ground: ["dsand0", "dsand0", "dsand1", "dsand2", "dsand3"], legend: DESERT, kits: [],
+    rows: [
+      "###########==###########",
+      "###########==###########",
+      "##^^^^^^^^^==^^^^^^^^^##",
+      "##^^^^^^^^^==^^^^^^^^^##",
+      "##.........==....d..c.##",
+      "##.P....c..==...gggg..##",
+      "##.......r.==..ggggggg##",
+      "##...d.....==.gggggggg##",
+      "##.........==.ggggggg.##",
+      "##..c.=======...gggc..##",
+      "##....=======.........##",
+      "##.r..==.......c......##",
+      "##.ggg==...gg......ggg##",
+      "##gggg==.gggggg....ggg##",
+      "##gggg==.gggggg....ggg##",
+      "##gggg==.gggggg.r..ggg##",
+      "##gggg==.gggggg....ggg##",
+      "##.ggg==...gg.......gg##",
+      "##....==..d...........##",
+      "##....============....##",
+      "##.c..============..r.##",
+      "##.......B......==....##",
+      "##............c.==P...##",
+      "##...........r..==....##",
+      "##.ggggg........==....##",
+      "##.ggggggg.=======....##",
+      "##gggggggg.=======....##",
+      "##gggggggg.==.......R.##",
+      "##.gggggggc==.........##",
+      "##..gggg...==.........##",
+      "##..c......==.......c.##",
+      "###########==###########",
+    ],
+  } },
 };

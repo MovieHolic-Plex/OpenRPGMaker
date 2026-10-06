@@ -142,13 +142,16 @@ for(const entry of cases){
     // 재로드 때 공용 자료(공용 DB 캐릭터 등)가 그사이 늘었으면 부팅 정규화가 한 번 더 저장한다 — 2026-10-06 r9·r10 실측: 다른 세션이
     // shared_charset_actor 하나를 게시해 rev 가 하나 올랐고 맵·DB 는 같았다. 그 경우만 다시 저장된 문서를 기준으로 비교한다.
     const reloaded=stored(projectDir);
-    const libraryResync=applied.sha256!==reloaded.sha256&&reloaded.revision===applied.revision+1
-      &&applied.project.meta?.bootNormalization?.lib!==reloaded.project.meta?.bootNormalization?.lib
+    // r10·r12 에서는 폐기된 실내 칩셋(tibo_interior_expanded) 묶음이 재로드 때 다시 정규화돼 저장되기도 했다(키트 367→338, 맵·DB 무관).
+    // 바뀐 최상위 칸이 공용 자료 칸뿐이고 맵·DB 가 같을 때만 허용하고, 어떤 칸이 바뀌었는지 남긴다.
+    const resyncKeys=new Set(['tilesets','assets','resourceProfiles','charsetLabels','meta']);
+    const changedTop=Object.keys({...applied.project,...reloaded.project}).filter(k=>k!=='maps'&&!isDeepStrictEqual(applied.project[k],reloaded.project[k]));
+    const libraryResync=applied.sha256!==reloaded.sha256&&reloaded.revision===applied.revision+1&&changedTop.every(k=>resyncKeys.has(k))
       &&isDeepStrictEqual(applied.project.maps,reloaded.project.maps)&&isDeepStrictEqual(applied.project.database,reloaded.project.database);
     const loaded=editor.loads.find(l=>l.sha256===applied.sha256)??(libraryResync?editor.loads.find(l=>l.sha256===reloaded.sha256):undefined);
     if(resultMap)await showMap(page,resultMap);await page.screenshot({path:resolve(dir,'reloaded.png')});
     proof.persistence={projectId:before.projectId,afterRevision:applied.revision,reloadedRevision:reloaded.revision,afterSha256:applied.sha256,reloadedSha256:reloaded.sha256,
-      sameTarget:before.projectId===reloaded.projectId,sameStoredDocument:applied.sha256===reloaded.sha256||libraryResync,libraryResync,
+      sameTarget:before.projectId===reloaded.projectId,sameStoredDocument:applied.sha256===reloaded.sha256||libraryResync,libraryResync:libraryResync?changedTop:false,
       newContextLoadedSameMaps:Boolean(loaded)&&isDeepStrictEqual(applied.project.maps,loaded.maps),newContextLoadedSameDatabase:Boolean(loaded)&&isDeepStrictEqual(applied.project.database,loaded.database)};
     proof.passed=proof.correctMode&&proof.existingMapsPreserved&&proof.startPreserved&&proof.persistence.sameStoredDocument&&proof.persistence.newContextLoadedSameMaps&&proof.persistence.newContextLoadedSameDatabase&&proof.events.some(e=>e.type==='done')&&!/마치지 못했/.test(proof.status?.lastStatus??'')&&!proof.events.some(e=>['error','stream_error'].includes(e.type))&&!proof.errors.length;
     writeRuntimeProject(projectDir,resolve(dir,'live.json'));
