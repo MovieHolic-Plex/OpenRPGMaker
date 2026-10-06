@@ -17,6 +17,7 @@ export function writeWandRuntimeDraft(packetDir: string) {
   };
   verify();
   const input = JSON.parse(readFileSync(join(dir, 'authoring-input.json'), 'utf8')) as NativeSceneProjectInput;
+  const shelfBinding = JSON.parse(readFileSync(join(dir, 'shelf-binding.json'), 'utf8')) as { status: string };
   const bytes = serialize(createNativeSceneProject(input)) + '\n';
   const projectFile = join(dir, 'project.oprn.json');
   if (existsSync(projectFile)) throw new Error('Use a new draft output directory');
@@ -25,6 +26,7 @@ export function writeWandRuntimeDraft(packetDir: string) {
   const proof = { status: 'prepared-not-approved', draftId: `native_wand_${manifest.inputFingerprint.slice(0, 16)}`,
     projectFile, sha256: createHash('sha256').update(bytes).digest('hex'), inputFingerprint: manifest.inputFingerprint,
     authoringValid: true, runtimePassed: false, publicRegistered: false, canonicalReload: false,
+    shelfRemovalBound: shelfBinding.status === 'bound-awaiting-runtime-review',
     shelfRemovalResolved: false, externalDoorDestinationResolved: false };
   writeFileSync(join(dir, 'draft-project-proof.json'), JSON.stringify(proof, null, 2) + '\n', { flag: 'wx' });
   return proof;
