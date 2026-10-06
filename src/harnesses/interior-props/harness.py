@@ -20,7 +20,7 @@ if not __package__:
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
-from . import derive, store  # noqa: E402
+from . import derive, store, review_dependencies  # noqa: E402
 from ..provider_errors import tail as provider_tail, classify as provider_classify, BOUNDED_CONTEXT
 
 # 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
@@ -232,7 +232,12 @@ def _review_prompt(r):
            '{NEWMODE}': (derive.review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': ('파생 묶음 — 칸마다 **원본 칸과 같은 시점·같은 윗면 두께**가 기준이다(원본 칸보다 윗면이 눈에 띄게 얇거나 옆모습이면 `FRONT`). 원본 칸 자체의 행 수는 따지지 않는다.'
                            if o.get('set') else top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).')}
     for k, v in rep.items(): t = t.replace(k, v)
-    return t, pack
+    waiting, hosts = _review_dependencies(r)
+    if waiting: raise ValueError('받침 제작 검수 대기: ' + ', '.join(waiting))
+    evidence = os.path.join(pack, 'native-hosts.json')
+    with open(evidence, 'w', encoding='utf-8') as f:
+        json.dump(hosts, f, ensure_ascii=False, indent=2)
+    return t + review_dependencies.prompt(hosts), pack
 
 
 NEW_REVIEW = '''
@@ -521,6 +526,11 @@ def retry_review_errors(rounds_, queue_only=False):
     return n
 
 
+def _review_dependencies(r):
+    return review_dependencies.inspect(r, store.runs(), store.DATA,
+        lambda host: os.path.join(_folder(host, absolute=True), _out(host) + '.png'))
+
+
 def _alive(pid):
     try:
         os.kill(pid, 0)
@@ -579,12 +589,27 @@ def pool():
         while queued and len(live) < MAX_PAR:
             r = queued.pop(0)
             try:
+                if r.get('phase') in ('review', 'review2'):
+                    waiting, _ = _review_dependencies(r)
+                    if waiting:
+                        store.update_run(r['id'], error='받침 제작 검수 대기: ' + ', '.join(waiting))
+                        continue
+                    store.update_run(r['id'], error='')
                 live[r['id']] = (_start(r), r, time.time())
                 print(store.now(), f"h{r['round']}-{r['letter']} 시작 — {r['item']}", flush=True)
             except (Exception, SystemExit) as e:
                 traceback.print_exc()
                 store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
-        if not live and not store.runs(status=('queued',)): break
+        if not live:
+            pending = store.runs(status=('queued',))
+            if not pending: break
+            # No worker can resolve this dependency graph. Preserve the prop
+            # and drawing attempt; report a technical scheduling failure.
+            if all(r.get('brief') and r.get('phase') in ('review', 'review2') for r in pending):
+                for r in pending:
+                    store.update_run(r['id'], status='failed', ended=store.now(),
+                                     error='검수 의존성 해결 불가: 받침 대기 순환 또는 실패')
+                break
         time.sleep(3)
     print(store.now(), '일꾼 끝', flush=True)
 
