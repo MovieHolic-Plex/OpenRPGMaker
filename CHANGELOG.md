@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.151.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 스토어 화면 개편 — 밤의 상점 진열대(웹·에디터 창 공통) (#2247) (`d55c930`)
+- wire reviewed native shelf pickup and return in wand demo (`1b89a29`)
+- prepare isolated native wand shelf vacancy states (`fbd6655`)
+
+### 수정
+
+- accept identical replacement declarations and clear resolved demo errors (`926364d`)
+- show understandable actions in wandshop playable draft (`ba6a993`)
+- validate preserved material receipts before layout review (`399da47`)
+
 ## 0.150.0 — 2026-10-06
 
 ### 기능
