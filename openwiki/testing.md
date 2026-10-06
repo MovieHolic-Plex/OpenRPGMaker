@@ -2089,3 +2089,10 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 ## 조수 기능별 실제 수행 점검 (2026-10-05)
 
 `assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.
+
+## 몬스터 여정 영상 (2026-10-07)
+
+`JOURNEY_VIDEO=1 node scripts/qa/runtime/monster-journey.mjs <play.json> <out>`(netns 안에서 — `unshare -rn sh -c "ip link set lo up && …"`)는
+`<out>/journey.mp4`(H.264, 타이틀부터)를 남긴다. 영상 모드는 시작 마을→연구소→마을→도로 풀숲, 센터→도로→트레이너를 실제 방향 입력으로 걷는다
+(짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
+관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
