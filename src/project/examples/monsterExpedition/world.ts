@@ -242,12 +242,17 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
     // Visible, inspectable signposts explain interior route entrances.
     // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
+    // 나무 이정표는 바깥(마을·길)에만, 이미 3칸 안에 표지판이 있으면 더 세우지 않는다 — 리그 경기장·배 복도에 나무 이정표가 서고
+    // 서리꽃 마을 북쪽 길목에 셋이 몰렸다(2026-10-06 실제 편집기 조수 실행의 조화 검수 지적, 렌더로 확인).
+    const roleA = manifest.maps.find(m => m.id === a.id)?.role;
+    if (roleA !== "town" && roleA !== "field") return;
     const before = walkable(a).size;
     const wide = connected(a).filter(p => directions.every(([dx, dy]) => canMove(project, a, p.x, p.y, p.x + dx, p.y + dy)))
       .filter(p => !reserved.get(a.id)!.has(coord(p)) && !a.events.some(e => e.x === p.x && e.y === p.y));
     const wanted = { x: atA.x + 1, y: atA.y + 1 };
     wide.sort((p, q) => Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) - Math.abs(q.x - wanted.x) - Math.abs(q.y - wanted.y));
     const spot = wide.find(p => walkable(a, p).size === before - 1) ?? wanted;
+    if (a.events.some(e => /_sign_/.test(e.id) && Math.max(Math.abs(e.x - spot.x), Math.abs(e.y - spot.y)) <= 3)) return;
     npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, spot, [], 4);
   }
 
