@@ -1,0 +1,56 @@
+{
+ "stage": "tramstreet",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 7,
+ "seconds": 286,
+ "focus": "예제 맵 ⑤ 노면전차 거리 48×30 — 7회차. 6회차 지적 반영: (major) 예제 JSON 의 가선 줄 글을 손으로 적지 않고 bake_refs.py _tram_wires() 가 맵 4층 jp-tram-wire-h 배치와 전차 노선 머리 행에서 직접 만든다(행 13·18 = 레일 윗행 15·20 −2, 두 값이 어긋나면 굽기가 assert 로 멈춘다). 번들에서 '13·16' 0건, 참고문서 transit-*.md 에 옛 단면 숫자(19~20·23~25·21~22·48×28·1×6·보도 2) 0건. engine_dump → bake_refs → verify_refs 다시 돌림. (minor) 기계적 반복 → 가로수 은행나무(x6)·느티나무(x40) 다른 종·비대칭, 가로등 하나(x15) + 상점가 깃발 기둥(x46), 센터 전주 x 2·22·44(간격 20·22). probe 15/15.",
+ "files": {
+  "verify-shots/jp-city/tramstreet-x3.png": "447354d3aa7ea19c7a1583f2cdc7555dc4dc19b3ef51373530dec70ea645bd73",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "ed9320aaba0355c81eecc42f3819faca2263f904750dccf4bde354c9e0f5fee9",
+  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "9c7416f4328fdb8092251d44e49766f451737295b6f1af2a307fa961e0202625",
+  "verify-shots/jp-city/tram-runtime/flow.png": "88190b4cb9ad57dd0c9feaaede4462c195a823b178b20809464b52f956ddc43a",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "0e8698be8ffd9701e513c89ce0903d37dead6c5312ad17c1a6d8b2497fb46fb5",
+  "scripts/content/jp-city/maps/tramstreet.mjs": "1fdbde4e58379b84eae1419ac350eae66e6c280fd3617d8e310b014f61518db3",
+  "scripts/content/jp-city/maps/out/tramstreet.report.json": "617aa8e5e6005857b20a545f1e06c25f66c8ea972e382a5d724bec847b1394cd",
+  "scripts/content/jp-city/qa/tram-street.probe.mjs": "f80d876b9191d65aed9890195e3e81d0014c08232e7cb36d43c1f9e09e2f63e1",
+  "scripts/content/jp-city/blocks/transit_street.py": "5668f525d9f7690759bb12ec0dfea7fe96548e317388d36befa2c46864bf4067",
+  "scripts/content/jp-city/bake_refs.py": "eedfd03e5c04cecd3606cf18ddc2ac7517ddf9b302c4e24e41105728123b2c22",
+  "public/assets/jp-city-references/transit-tramstreet.png": "aa71a8f222b657f4e1ba9b4c49a3f196a12109cebdeced5f96182c3e030b4a38",
+  "tiledata/jp-city/refs/transit-ex.md": "f5a48d054afbbe05b832c2034860a1a5f5275439a269eaa42e0b5c211721d72c",
+  "tiledata/jp-city/refs/transit-rules.md": "97852a5336fb08a13237bc35fb7819a5df639464b93f6ea38dbe72190234f8a6",
+  "scripts/content/jp-city/vehicles/SPEC.md": "f81a14bb34fce1c0f1cd1527d27146d4e772674ec8bfed16e5a2ad37ac0ae7d0"
+ },
+ "findings": [
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/refs/transit-ex.md",
+   "where": "22행 transit.routes traffic-ew24-left (planMapTransit 생성), SUMMARY.md 노선 줄",
+   "problem": "id·이름은 「동서 길 24 서쪽행」인데 path y=25. 동쪽행 ew12는 path y12와 일치해 명명 규칙이 어긋나고, 조수가 서쪽행 머리 행을 24로 오학습할 수 있다",
+   "fix": "src/editor/tools/transitTools.ts 에서 노선 id·이름을 path 첫 행으로 짓고 engine_dump → bake_refs → verify_refs 재실행"
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/tram-runtime/SUMMARY.md",
+   "where": "정차 범위 줄(동쪽행 x 6~17, 서쪽행 x 23~34) / tramstreet.report.json",
+   "problem": "실제 3층 섬 그림은 동쪽 x7~17(x6은 빈 열), 서쪽 x23~33이라 보고 숫자와 그림이 다르다",
+   "fix": "probe·report 에 섬 그림 칸 범위를 쓰거나 '배치 x 기준'이라고 명시"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "남 보도 28~29행 x0~47 전체(85~88행 배치부), 북 보도 10~11행 대부분",
+   "problem": "보도 하단 2행이 48칸 전부 비어 넓은 빈 바닥이 된다(남 보도는 사실상 가드레일 한 줄뿐)",
+   "fix": "보도를 2행으로 줄이거나 28~29행에 남측 건물 앞면 줄·자전거 거치대·정류장 같은 목적 있는 시설을 둔다"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/refs/transit-ex.md",
+   "where": "layer3 27행 x44~45(2칸 토막), x47(단독 왼쪽 마감 3530), x46 빈칸",
+   "problem": "깃대 x46 때문에 가드레일 동쪽 끝이 2칸 토막과 홀로 선 마감 조각으로 끊겨 보인다",
+   "fix": "x44~47 구간 가드레일을 빼거나 깃대를 x47로 옮겨 x40~46을 한 토막으로 잇는다(tramstreet.mjs 85행 필터)"
+  }
+ ],
+ "report": "tramstreet 7회차 적대 검수 결과는 **통과**입니다. blocker·major는 없고 minor 4건이 남았습니다.\n\n이전 major(가선 행 13·16)는 고쳐졌습니다. `bake_refs.py` 2307~2316행의 `_tram_wires()`가 실제 배치에서 가선 문자열을 만들고 assert로 묶습니다. `transit-ex.md:22`는 「행 13·18 = 레일 윗행 15·20 −2」이고, 번들 `jpCityReferences.json`에서 `13·16`은 0건, `transit-*.md`의 옛 단면 숫자도 0건입니다. 검수는 읽기만 했고 게이트·테스트는 돌리지 않았습니다.\n\n**minor**\n1. **노선 id·이름과 실제 행이 다름** (`tiledata/jp-city/refs/transit-ex.md:22` transit.routes, `verify-shots/jp-city/tram-runtime/SUMMARY.md` 노선 줄)\n   - 문제: `traffic-ew24-left`(「동서 길 24 서쪽행」)의 path가 y=25입니다. 동쪽행은 `ew12`이고 path도 y12라서 규칙이 서로 다릅니다. 참고문서를 읽는 조수가 이름을 보고 서쪽행 머리 행을 24로 잘못 배울 수 있습니다.\n   - 고칠 곳: `planMapTransit`(`src/editor/tools/transitTools.ts`)에서 노선 id·이름을 path 첫 행으로 짓게 바꿉니다. 그다음 engine_dump → bake_refs → verify_refs를 다시 돌립니다.\n2. **정차 범위 숫자가 그림과 다름** (`SUMMARY.md`, `tramstreet.report.json`)\n   - 문제: 보고는 동쪽행 x6~17, 서쪽행 x23~34입니다. 3층 섬 그림은 동쪽 x7~17(x6은 비어 있음), 서쪽 x23~33입니다.\n   - 고칠 곳: 보고와 probe를 배치 x가 아니라 섬 그림 칸 기준으로 적거나, 「배치 x 기준」이라고 명시합니다.\n3. **남쪽 보도 28·29행이 48칸 전부 비어 있음** (`scripts/content/jp-city/maps/tramstreet.mjs` 85~88행, `verify-shots/jp-city/tramstreet-x3.png` 하단)\n   - 문제: 남쪽 보도는 사실상 27행 가드레일 한 줄뿐입니다. 북쪽 보도 10·11행도 거의 비어 있어 넓은 빈 바닥이 됩니다.\n   - 고칠 곳: 보도를 2행으로 줄이거나, 남쪽 건물 앞면 줄·자전거 거치대·버스 정류장 같은 목적 있는 시설을 28~29행에 둡니다.\n4. **27행 가드레일 동쪽 끝이 토막남**\n   - 위치: 동쪽 끝 x44~45(2칸)와 x47(왼쪽 마감 한 칸만), 빈칸 x46. 근거는 `transit-ex.md` layer3 27행입니다.\n   - 문제: x46 깃대 때문에 짧은 토막과 홀로 선 마감 조각이 생겨 그림이 끊겨 보입니다.\n   - 고칠 곳: x44~47 구간은 가드레일을 빼거나, 깃대를 x47로 옮겨 x40~46을 한 토막으로 잇습니다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/transit-ex.md\", \"where\": \"22행 transit.routes traffic-ew24-left (planMapTransit 생성), SUMMARY.md 노선 줄\", \"problem\": \"id·이름은 「동서 길 24 서쪽행」인데 path y=25. 동쪽행 ew12는 path y12와 일치해 명명 규칙이 어긋나고, 조수가 서쪽행 머리 행을 24로 오학습할 수 있다\", \"fix\": \"src/editor/tools/transitTools.ts 에서 노선 id·이름을 path 첫 행으로 짓고 engine_dump → bake_refs → verify_refs 재실행\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/tram-runtime/SUMMARY.md\", \"where\": \"정차 범위 줄(동쪽행 x 6~17, 서쪽행 x 23~34) / tramstreet.report.json\", \"problem\": \"실제 3층 섬 그림은 동쪽 x7~17(x6은 빈 열), 서쪽 x23~33이라 보고 숫자와 그림이 다르다\", \"fix\": \"probe·report 에 섬 그림 칸 범위를 쓰거나 '배치 x 기준'이라고 명시\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"남 보도 28~29행 x0~47 전체(85~88행 배치부), 북 보도 10~11행 대부분\", \"problem\": \"보도 하단 2행이 48칸 전부 비어 넓은 빈 바닥이 된다(남 보도는 사실상 가드레일 한 줄뿐)\", \"fix\": \"보도를 2행으로 줄이거나 28~29행에 남측 건물 앞면 줄·자전거 거치대·정류장 같은 목적 있는 시설을 둔다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/transit-ex.md\", \"where\": \"layer3 27행 x44~45(2칸 토막), x47(단독 왼쪽 마감 3530), x46 빈칸\", \"problem\": \"깃대 x46 때문에 가드레일 동쪽 끝이 2칸 토막과 홀로 선 마감 조각으로 끊겨 보인다\", \"fix\": \"x44~47 구간 가드레일을 빼거나 깃대를 x47로 옮겨 x40~46을 한 토막으로 잇는다(tramstreet.mjs 85행 필터)\"}\n]}\n```"
+}

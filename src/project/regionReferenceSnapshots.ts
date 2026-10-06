@@ -26,6 +26,7 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "river-fortress-160x144": () => import("./regionReferences/river-fortress.json"),
   "modern-city-60x60": () => import("./regionReferences/modern-city.json"),
   "jp-city-shopstreet-48x40": () => import("./regionReferences/jp-city-shopstreet.json"),
+  "jp-city-tram-street-48x30": () => import("./regionReferences/jp-city-tramstreet.json"),
   "jp-city-school-68x48": () => import("./regionReferences/jp-city-school.json"),
   "jp-city-town-96x80": () => import("./regionReferences/jp-city-town.json"),
   "castle-courtyard": () => import("./regionReferences/castle-courtyard.json"),

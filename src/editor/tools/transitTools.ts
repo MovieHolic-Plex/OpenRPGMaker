@@ -17,7 +17,7 @@ const DIRS: TransitDir[] = ["right", "left", "up", "down"];
 const KIND_KO: Record<TransitRouteKind, string> = { road: "차 흐름", bus: "버스", tram: "노면전차", train: "전철", subway: "지하철" };
 /** 차·버스가 달려도 되는 1층 칸 = 생활도로 오토타일 묶음. */
 const LANE_GROUP = "jp-lane-road";
-const TRAM_RAIL_KITS = ["jp-tram-rail-h", "jp-tram-rail-v", "jp-tram-rail-end"];
+const TRAM_RAIL_KITS = ["jp-tram-rail-h", "jp-tram-rail-h-xwalk", "jp-tram-rail-v", "jp-tram-rail-end"];
 const TRACK_KITS = ["jp-subway-track"];
 
 const vehicleIds = (): string[] => transitVehicleCatalog().map((v) => v.id);
@@ -57,7 +57,8 @@ export function mapRoadBands(project: Project, map: GameMap): { road: RoadBand[]
   const track = trackTileSet(project, map);
   const overlay = map.lowerOverlayTiles as ReadonlyArray<number> | undefined;
   return {
-    road: lane.size ? findRoadBands(map, (x, y) => lane.has(tileAt(map.lowerTiles, map, x, y))) : [],
+    // 노면전차 레일(2층)이 깔린 칸은 차도 띠에서 뺀다 — 궤도를 가운데 둔 간선은 양쪽 일방 차로 둘로 잡힌다.
+    road: lane.size ? findRoadBands(map, (x, y) => lane.has(tileAt(map.lowerTiles, map, x, y)) && !tram.has(tileAt(overlay, map, x, y))) : [],
     tram: tram.size ? findRoadBands(map, (x, y) => tram.has(tileAt(overlay, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
     track: track.size ? findRoadBands(map, (x, y) => track.has(tileAt(map.lowerTiles, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
   };
@@ -73,6 +74,8 @@ function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): A
   const set = route.kind === "road" || route.kind === "bus" ? laneTileSet(project, map) : route.kind === "tram" ? tramTileSet(project, map) : trackTileSet(project, map);
   if (!set.size) return [];
   const layer = onRail ? (map.lowerOverlayTiles as ReadonlyArray<number> | undefined) : map.lowerTiles;
+  const rails = route.kind === "road" || route.kind === "bus" ? tramTileSet(project, map) : new Set<number>();   // 차·버스는 노면전차 궤도 위를 달리지 않는다
+  const overlay = map.lowerOverlayTiles as ReadonlyArray<number> | undefined;
   const cells = expandTransitPath(route.path, route.loop === true) ?? [];
   const bad: Array<{ x: number; y: number }> = [];
   const seen = new Set<string>();
@@ -83,7 +86,7 @@ function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): A
     for (const p of horizontal ? [c, { x: c.x, y: c.y + 1 }] : [c, { x: c.x + 1, y: c.y }]) {
       if (!inMapBounds(map, p.x, p.y)) continue;
       const k = `${p.x},${p.y}`;
-      if (seen.has(k) || set.has(tileAt(layer, map, p.x, p.y))) continue;
+      if (seen.has(k) || (set.has(tileAt(layer, map, p.x, p.y)) && !rails.has(tileAt(overlay, map, p.x, p.y)))) continue;
       seen.add(k); bad.push(p);
       if (bad.length >= 6) return bad;
     }
@@ -243,13 +246,13 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
     if (auto.tram === true) {
       const rails = bands.tram.filter((b) => b.edgeToEdge);
       if (!rails.length) throw new ToolError(`노면전차 레일이 가장자리→가장자리로 이어지지 않는다 — 2층에 jp-tram-rail-h(가로 2줄)/jp-tram-rail-v(세로 2열)를 맵 끝까지 잇거나 routes 로 kind:"tram" 경로를 직접 준다. 찾은 레일: ${bands.tram.map(describeBand).join(" / ") || "없음"}`, { code: "no-rail", mapId: map.id });
-      // 복선: 같은 축에서 4칸 안에 나란한 두 레일 = 좌측통행(동서 길이면 위 레일 동쪽행·아래 레일 서쪽행, 남북 길이면 왼쪽 북쪽행·오른쪽 남쪽행).
+      // 복선: 같은 축에서 6칸 안에 나란한 두 레일(가운데 섬·전주 띠 3행까지) = 좌측통행(동서 길이면 위 레일 동쪽행·아래 레일 서쪽행, 남북 길이면 왼쪽 북쪽행·오른쪽 남쪽행).
       // 단선(짝 없는 레일)은 한 방향만 — 마주 오는 전차가 한 레일에서 만나면 서로 비켜 갈 수 없다.
       const used = new Set<RoadBand>();
       const matchedTramStops = new Set<Record<string, unknown>>();
       for (const b of rails) {
         if (used.has(b)) continue;
-        const mate = rails.find((o) => o !== b && !used.has(o) && o.axis === b.axis && o.edge > b.edge && o.edge - b.edge <= 4);
+        const mate = rails.find((o) => o !== b && !used.has(o) && o.axis === b.axis && o.edge > b.edge && o.edge - b.edge <= 6);
         used.add(b); if (mate) used.add(mate);
         const lanes: Array<[RoadBand, TransitDir]> = mate
           ? (b.axis === "ew" ? [[b, "right"], [mate, "left"]] : [[b, "up"], [mate, "down"]])
@@ -265,7 +268,7 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
             .map(({ s, index }) => ({ index: s.at === "center" ? headIndexFromCenter(index, transitVehicle("jp-tram")?.length ?? 12) : index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) }));
           routes.push({ id: `tram-${band.axis}${band.edge}-${dir}`, name: "노면전차", kind: "tram", path, vehicles: ["jp-tram"], headwaySec: 45, ...(stops.length ? { stops } : {}) });
         }
-        if (!mate) warnings.push(`노면전차 레일 ${describeBand(b)} 은 단선이라 한 방향(${b.axis === "ew" ? "서쪽행" : "남쪽행"})만 다닌다 — 양방향이면 레일을 한 줄 더(4칸 안에 나란히) 깐다`);
+        if (!mate) warnings.push(`노면전차 레일 ${describeBand(b)} 은 단선이라 한 방향(${b.axis === "ew" ? "서쪽행" : "남쪽행"})만 다닌다 — 양방향이면 레일을 한 줄 더(6칸 안에 나란히) 깐다`);
       }
       const lost = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? []).filter((t) => !matchedTramStops.has(t));
       if (lost.length) throw new ToolError(`노면전차 정류장 ${lost.map((t) => `(${String(t.x)},${String(t.y)})`).join(" ")} 이 레일 위가 아니다 — 전차 머리가 서는 레일 칸(레일 2줄 중 하나)을 준다. 레일: ${rails.map(describeBand).join(" / ")}`, { code: "invalid-args", mapId: map.id });

@@ -11,12 +11,12 @@
 
 - PASS — 시작 맵: jp-city-school (35,41)
 - PASS — 노선이 런타임에 도달: traffic-ew44-right, traffic-ew44-left, bus-ew44-right
-- PASS — 맵 위에 그려진 탈것: 10대 / 전체 16대 — jp-car-white@64.5,44(right) jp-bus-city@32.0,44(right_open) jp-car-silver@26.0,44(right) jp-car-kei-yellow@21.0,44(right) jp-car-black@15.0,44(right) jp-bus-city@5.0,44(right)
-- PASS — 동쪽행이 동쪽으로 달린다: 안 막힌 2대 중앙값 Δx 6.93칸/1.5초
-- PASS — 서쪽행이 서쪽으로 달린다: 안 막힌 5대 중앙값 Δx -6.93칸/1.5초
+- PASS — 맵 위에 그려진 탈것: 10대 / 전체 16대 — jp-car-white@64.7,44(right) jp-bus-city@32.0,44(right_open) jp-car-silver@26.0,44(right) jp-car-kei-yellow@21.0,44(right) jp-car-black@15.0,44(right) jp-bus-city@5.0,44(right)
+- PASS — 동쪽행이 동쪽으로 달린다: 안 막힌 2대 중앙값 Δx 6.67칸/1.5초
+- PASS — 서쪽행이 서쪽으로 달린다: 안 막힌 5대 중앙값 Δx -6.67칸/1.5초
 - PASS — 화면이 실제로 달라진다: 변한 픽셀 18.93%
 - PASS — 차가 주인공 칸을 덮지 않는다: 없음
-- PASS — 주인공 바로 앞에서 차가 선다: jp-bus-city 꼬리..머리 x 11.0~20.0 막힘 16.95초
+- PASS — 주인공 바로 앞에서 차가 선다: jp-bus-city 꼬리..머리 x 11.0~20.0 막힘 16.98초
 - PASS — 버스가 学校前 에 서서 문을 연다: jp-bus-city x 32~41 y 44 프레임 right_open
 - PASS — 정차 프레임: right_open (동쪽행 = 오른쪽 면 — 문은 왼쪽 면에만 있어 right_open = right 그림)
 - PASS — 「조사」로 버스를 타면 board 맵으로 간다: map_lantern_village (14,18)

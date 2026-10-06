@@ -48,9 +48,9 @@ def arrow(c, x, y, d, col):
 
 
 def digit(c, x, y, n, col):
-    """3x5 숫자(번호판용). 글자 표가 아니라 픽셀."""
-    F = {1: ('010', '110', '010', '010', '111'), 2: ('111', '001', '111', '100', '111'),
-         3: ('111', '001', '111', '001', '111'), 4: ('101', '101', '111', '001', '001')}
+    """4x5 숫자(번호판용). 글자 표가 아니라 픽셀. 3x5 「3」은 ヨ 로 읽혀서 모서리를 깎은 4폭으로 찍는다."""
+    F = {1: ('0110', '1110', '0110', '0110', '1111'), 2: ('1110', '0001', '0110', '1000', '1111'),
+         3: ('1110', '0001', '0110', '0001', '1110'), 4: ('0010', '0110', '1010', '1111', '0010')}
     for j, row in enumerate(F[n]):
         for i, ch in enumerate(row):
             if ch == '1': c.P(x + i, y + j, col)
@@ -146,6 +146,68 @@ def d_wall(c):
     white_wall(c, 0, 0, 16, 32)
 
 
+def wall_top_h(c, y0):
+    """남쪽 둘레 벽 윗면(두께) 가로 띠: y0 윤곽 · 4px 윗면 · 윤곽 · 바깥 그늘."""
+    c.R(0, y0 + 6, 16, 16 - y0 - 6, K('yoru', -3)); c.HL(0, y0 + 6, 16, K('sumi', 0))
+    c.HL(0, y0, 16, OL); c.HL(0, y0 + 1, 16, K('conc', 3)); c.R(0, y0 + 2, 16, 2, K('conc', 2)); c.HL(0, y0 + 4, 16, K('conc', 0))
+    c.HL(0, y0 + 5, 16, OL)
+    c.VL(7, y0 + 1, 4, K('conc', 0)); c.P(8, y0 + 1, K('conc', 3))           # 덮개 타일 이음
+
+
+def wall_top_v(c, x0):
+    """서·동 둘레 벽 윗면 세로 띠(x0 = 띠 왼쪽 윤곽). 빛은 왼쪽 위 — 띠 왼쪽 단이 밝다."""
+    c.VL(x0, 0, 16, OL); c.VL(x0 + 1, 0, 16, K('conc', 3)); c.R(x0 + 2, 0, 2, 16, K('conc', 2))
+    c.VL(x0 + 4, 0, 16, K('conc', 0)); c.VL(x0 + 5, 0, 16, OL)
+    c.HL(x0 + 1, 7, 4, K('conc', 0)); c.P(x0 + 1, 8, K('conc', 3))           # 덮개 타일 이음
+
+
+@prop('subway-wall-s', '콘코스 남쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='x',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 아래 줄에 가로 반복. 화면에 등을 보이는 벽이라 윗면 띠와 바깥 그늘만 보인다. 양끝은 jp-subway-wall-sw / jp-subway-wall-se.')
+def d_wall_s(c):
+    wall_top_h(c, 0)
+
+
+@prop('subway-wall-w', '콘코스 서쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='y',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 왼쪽 열에 세로 반복. 북쪽 흰 타일 벽(jp-subway-wall 2줄) 바로 아래 줄부터 남쪽 벽 바로 위 줄까지. 아래 끝은 jp-subway-wall-sw.')
+def d_wall_w(c):
+    c.R(0, 0, 10, 16, K('yoru', -3)); c.VL(9, 0, 16, K('sumi', 0))
+    wall_top_v(c, 10)
+
+
+@prop('subway-wall-e', '콘코스 동쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='y',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 오른쪽 열에 세로 반복. 북쪽 흰 타일 벽(jp-subway-wall 2줄) 바로 아래 줄부터 남쪽 벽 바로 위 줄까지. 아래 끝은 jp-subway-wall-se.')
+def d_wall_e(c):
+    c.R(6, 0, 10, 16, K('yoru', -3)); c.VL(6, 0, 16, K('sumi', 0))
+    wall_top_v(c, 0)
+
+
+@prop('subway-wall-sw', '콘코스 남서 모서리 벽(윗면 ㄴ)', 1, 1, solid=((0, 0),), role='wall',
+      tags=('지하철', '역', '벽', '둘레', '모서리'),
+      rules='콘코스 왼쪽 아래 모서리 한 칸. 위로 jp-subway-wall-w, 오른쪽으로 jp-subway-wall-s 가 이어진다.')
+def d_wall_sw(c):
+    c.R(0, 0, 16, 16, K('yoru', -3))
+    wall_top_v(c, 10); c.R(0, 6, 16, 10, K('yoru', -3))                      # 서쪽 띠는 남쪽 띠 아래로 내려가지 않는다
+    c.HL(0, 6, 16, K('sumi', 0)); c.VL(9, 0, 6, K('sumi', 0))
+    c.R(11, 1, 5, 4, K('conc', 2)); c.HL(11, 1, 5, K('conc', 3)); c.HL(11, 4, 5, K('conc', 0))   # 꺾임: 남쪽 띠가 오른쪽으로 이어짐
+    c.P(15, 0, OL); c.HL(10, 5, 6, OL); c.VL(10, 0, 6, OL)
+    c.VL(11, 1, 4, K('conc', 3)); c.P(14, 0, K('conc', 2))
+
+
+@prop('subway-wall-se', '콘코스 남동 모서리 벽(윗면 ㄱ 거울)', 1, 1, solid=((0, 0),), role='wall',
+      tags=('지하철', '역', '벽', '둘레', '모서리'),
+      rules='콘코스 오른쪽 아래 모서리 한 칸. 위로 jp-subway-wall-e, 왼쪽으로 jp-subway-wall-s 가 이어진다.')
+def d_wall_se(c):
+    c.R(0, 0, 16, 16, K('yoru', -3))
+    wall_top_v(c, 0); c.R(0, 6, 16, 10, K('yoru', -3))
+    c.HL(0, 6, 16, K('sumi', 0)); c.VL(6, 0, 6, K('sumi', 0))
+    c.R(0, 1, 5, 4, K('conc', 2)); c.HL(0, 1, 5, K('conc', 3)); c.HL(0, 4, 5, K('conc', 0))
+    c.P(0, 0, OL); c.HL(0, 5, 6, OL); c.VL(5, 0, 6, OL)
+    c.VL(1, 1, 3, K('conc', 3)); c.P(1, 0, K('conc', 3))
+
+
 def back_wall(c, x0, y0, w):
     """승강장 뒷벽 3칸(48px): 상아색 타일 · 노선색 띠 · 아래는 짙은 콘크리트 + 케이블 덕트."""
     c.R(x0, y0, w, 48, K('kinari', 1))
@@ -183,6 +245,62 @@ def d_backwall_ad(c):
         c.VL(ix + i, iy + ih - hh, hh, K('midori', 0 if i % 7 else 1))
     c.R(ix + 22, iy + 2, 5, 5, K('kii', 2)); c.P(ix + 22, iy + 2, K('sora', 1)); c.P(ix + 26, iy + 6, K('kii', 0))
     c.HL(x, y + h, w, K('kinari', -1))
+
+
+def ad_frame(c):
+    """광고판 틀(40x22) — 안쪽 그림 칸 좌표를 돌려준다."""
+    back_wall(c, 0, 0, 48)
+    x, y, w, h = 4, 5, 40, 22
+    c.R(x, y, w, h, K('tekko', 1)); box(c, x, y, w, h, OL)
+    c.HL(x + 1, y + 1, w - 2, K('tekko', 3)); c.VL(x + 1, y + 1, h - 2, K('tekko', 2))
+    c.HL(x, y + h, w, K('kinari', -1))
+    return x + 3, y + 3, w - 6, h - 6
+
+
+@prop('subway-backwall-ad2', '승강장 뒷벽 + 광고판(도시 야경 포스터, 글자·상표 없음)', 3, 3, solid=[(x, y) for x in range(3) for y in range(3)],
+      role='wall', tags=('지하철', '승강장', '벽', '광고판', '야경'), rules='jp-subway-backwall-ad 와 같은 자리·크기. 같은 벽에 섞어 끼워 넣는다.')
+def d_backwall_ad2(c):
+    ix, iy, iw, ih = ad_frame(c)
+    for j in range(ih):                                                        # 밤하늘: 위 남색 → 지평선 보라
+        c.HL(ix, iy + j, iw, K('kon', -2 + j // 4) if j < 8 else K('murasaki', -1 + (j - 8) // 4))
+    for (sx, sy) in ((3, 1), (11, 3), (19, 1), (29, 2), (25, 5)): c.P(ix + sx, iy + sy, K('kii', 3))
+    c.R(ix + 28, iy + 1, 3, 3, K('kinari', 3)); c.P(ix + 28, iy + 1, K('kon', -2))       # 달
+    bx = 0
+    for (bw, bh) in ((4, 7), (3, 10), (5, 6), (2, 12), (4, 9), (6, 5), (3, 11), (4, 8), (3, 6)):
+        if bx >= iw: break
+        bw = min(bw, iw - bx)
+        c.R(ix + bx, iy + ih - 3 - bh, bw, bh, K('yoru', -3))
+        for wy in range(iy + ih - 2 - bh, iy + ih - 4, 2):                         # 불 켜진 창
+            for wx in range(ix + bx + 1, ix + bx + bw - 1, 2):
+                if (wx * 7 + wy * 3) % 5 < 2: c.P(wx, wy, K('kii', 2) if (wx + wy) % 3 else K('daidai', 2))
+        bx += bw
+    c.R(ix, iy + ih - 3, iw, 3, K('kon', -1))                                  # 물가 반사
+    for i in range(0, iw, 3): c.P(ix + i + (i // 3) % 2, iy + ih - 2, K('kii', 1))
+
+
+@prop('subway-backwall-ad3', '승강장 뒷벽 + 광고판(큰 원 상품 광고, 글자·상표 없음)', 3, 3, solid=[(x, y) for x in range(3) for y in range(3)],
+      role='wall', tags=('지하철', '승강장', '벽', '광고판', '상품'), rules='jp-subway-backwall-ad 와 같은 자리·크기. 같은 벽에 섞어 끼워 넣는다.')
+def d_backwall_ad3(c):
+    ix, iy, iw, ih = ad_frame(c)
+    c.R(ix, iy, iw, ih, K('pinku', 2))
+    for i in range(iw):                                                        # 비스듬한 색 띠
+        for j in range(ih):
+            if (i + j) % 12 < 3: c.P(ix + i, iy + j, K('pinku', 3))
+    c.R(ix, iy + ih - 4, iw, 4, K('daidai', 1)); c.HL(ix, iy + ih - 4, iw, K('daidai', 2))
+    c.HL(ix, iy + ih - 1, iw, K('daidai', -1))
+    cx, cy, r = ix + 11, iy + 7, 6.5                                           # 큰 원(상품) — 왼쪽 위 빛
+    for j in range(-7, 8):
+        for i in range(-7, 8):
+            d = (i * i + j * j) ** 0.5
+            if d <= r:
+                col = K('aka', 0)
+                if d > r - 1: col = OL
+                elif i + j < -5: col = K('aka', 2)
+                elif i + j > 5: col = K('aka', -1)
+                c.P(cx + i, cy + j, col)
+    c.R(cx - 3, cy - 4, 2, 2, K('shiro', 3))
+    c.R(ix + 22, iy + 4, 9, 2, K('shiro', 3)); c.R(ix + 22, iy + 8, 7, 2, K('shiro', 2))   # 오른쪽 색 띠(글자 대신)
+    c.R(ix + 22, iy + 12, 5, 1, K('aka', 0))
 
 
 @prop('subway-station-sign', '역명판 「さくら町」(양옆 역 みなと·森川)', 8, 3, solid=[(x, y) for x in range(8) for y in range(3)],
@@ -342,14 +460,15 @@ def stair_sides(c, y_top, north):
         c.HL(10, 4, 44, OL); c.VL(10, 0, 5, OL); c.VL(53, 0, 5, OL)
 
 
-@prop('subway-stairs-down', '내려가는 계단(승강장으로)', 4, 3, solid=[(0, y) for y in range(3)] + [(3, y) for y in range(3)],
+@prop('subway-stairs-down', '내려가는 계단(승강장으로)', 4, 3, solid=[(0, y) for y in range(3)] + [(3, y) for y in range(3)] + [(1, 0), (2, 0)],   # 맨 윗줄 가운데 = 머리벽(북쪽에서는 못 들어온다)
       ground=lambda c: floor_tiles(c, 0, 0, 64, 48), tags=('지하철', '역', '계단', '입구'),
-      rules='콘코스 바닥 한가운데 놓는다. 가운데 2열(1·2)로 걸어 내려간다. 맨 아래 가운데가 입구(anchor).')
+      rules='콘코스 바닥 한가운데 놓는다. 가운데 2열(1·2)로 걸어 내려간다. 맨 아래 가운데가 입구(anchor), 맨 윗줄은 머리벽(막힘) — 입구 앞(남쪽) 칸에서만 들어간다.')
 def d_stairs_down(c):
     c.R(16, 0, 32, 48, K('yoru', -3))
     for k in range(7):                                                         # 디딤판: 남(앞)일수록 밝고 높다
         y = 44 - k * 6
-        c.R(16, y - 5, 32, 5, K('conc', 2 - k)); c.HL(16, y - 5, 32, K('conc', 3 - k))
+        tr = (('conc', 1), ('conc', -1), ('yoru', 1), ('yoru', 0), ('yoru', -1), ('yoru', -2), ('yoru', -2))   # 내려갈수록(북) 어둡다
+        c.R(16, y - 5, 32, 5, K(*tr[k])); c.HL(16, y - 5, 32, K(tr[k][0], tr[k][1] + 1))
         c.HL(16, y, 32, OL if k < 6 else K('sumi', 0))
         c.R(20, y - 4, 24, 1, K('kii', 0 - k // 3)) if k < 3 else None        # 앞 디딤판 노란 미끄럼막이
     c.HL(16, 46, 32, K('kii', 1)); c.HL(16, 47, 32, OL)
@@ -361,14 +480,42 @@ def d_stairs_down(c):
       rules='콘코스 벽(jp-subway-wall) 줄에 붙여 놓는다. 위 2줄은 벽을 품는다. 가운데 2열로 올라간다. 맨 아래 가운데가 입구(anchor).')
 def d_stairs_up(c):
     white_wall(c, 0, 0, 64, 32)
-    c.R(16, 3, 32, 16, K('yoru', -2)); c.HL(16, 3, 32, K('yoru', -3))         # 벽에 뚫린 출구 구멍
-    for k in range(6):                                                         # 디딤판 + 챌판: 남(앞)일수록 낮고 밝다
+    for j in range(16):                                                        # 벽에 뚫린 출구 구멍: 위(지상)에서 빛이 든다
+        c.HL(16, 3 + j, 32, K('shiro', 3) if j < 5 else K('kinari', 3 - (j - 5) // 4))
+    for k in range(6):                                                         # 디딤판 + 챌판: 위(출구)로 갈수록 밝다
         y = 18 + k * 5
-        c.R(16, y, 32, 2, K('conc', 2 - (5 - k) // 2)); c.R(16, y + 2, 32, 3, K('conc', 0 - (5 - k) // 2))
-        c.HL(16, y, 32, K('kii', 1) if k == 5 else K('conc', 3 - (5 - k) // 2))
+        c.R(16, y, 32, 2, K('conc', 3 - k // 2)); c.R(16, y + 2, 32, 3, K('conc', 1 - k // 2))
+        c.HL(16, y, 32, K('kii', 1) if k == 5 else K('shiro', 3 - k // 2))
         c.HL(16, y + 4, 32, OL)
     c.VL(15, 3, 16, OL); c.VL(48, 3, 16, OL)
     stair_sides(c, 0, 'lintel')
+    x, y = 25, 4                                                               # 출구 위 ↑ 안내판(초록 바탕·흰 화살표)
+    c.R(x, y, 14, 11, K('midori', 0)); box(c, x, y, 14, 11, OL)
+    c.HL(x + 1, y + 1, 12, K('midori', 2)); c.VL(x + 1, y + 1, 9, K('midori', 1)); c.HL(x + 1, y + 9, 12, K('midori', -1))
+    arrow(c, x + 3, y + 2, 'U', K('shiro', 3))
+    c.HL(x + 1, y + 11, 12, K('conc', -1))                                     # 판 밑 그늘
+
+
+@prop('subway-boarding-mark', '승강장 승차 위치 표시(노란 삼각 + 점 2개, 바닥 칠)', 1, 1, other='flat',
+      tags=('지하철', '승강장', '승차위치', '바닥표시'),
+      rules='투명 덧칠(2층). 열차 문마다 하나 — 그 문 앞 열, 승강장 끝(jp-subway-edge) 바로 아래 줄 바닥에 찍는다. 걸을 수 있다.')
+def d_boarding_mark(c):
+    for j in range(6):                                                         # 선로 쪽(위)을 가리키는 삼각
+        c.HL(8 - j - 1 if j else 7, 2 + j, 2 * j + 2 if j else 2, K('kii', 2))
+    c.HL(2, 8, 12, K('kii', -1))                                               # 칠 밑단 그늘
+    for x in (1, 12):                                                          # 줄 서는 점 2개(문 양옆)
+        c.R(x, 11, 3, 3, K('kii', 2)); c.P(x, 11, K('kii', 3)); c.HL(x, 14, 3, K('kii', -1))
+
+
+@prop('subway-tactile-warn', '점형 경고 블록(칸 가득, 바닥 칠)', 1, 1, other='flat',
+      tags=('지하철', '역', '점자블록', '경고', '바닥표시'),
+      rules='투명 덧칠(2층). 계단 입구 바로 앞 행에 입구 폭 전체(입구 칸마다 하나), 유도선(jp-tactile)이 지나는 칸이면 그 칸을 이것으로 바꿔 찍는다 — 선 블록 팔이 칸 가장자리에서 맞닿는다. 걸을 수 있다.')
+def d_tactile_warn(c):
+    c.R(0, 1, 16, 14, K('kii', 1))                                             # 노란 판(가로 끝까지 — 옆 칸 판·선 팔과 이어짐)
+    c.HL(0, 1, 16, K('kii', 0)); c.HL(0, 14, 16, K('kii', -1))                 # 위 빛·아래 그늘 단
+    for dx in (1, 5, 9, 13):                                                   # 점 4×3(볼록 점: 밝은 3px + 그늘 1px)
+        for dy in (3, 7, 11):
+            c.P(dx, dy, K('kii', 3)); c.P(dx + 1, dy, K('kii', 2)); c.P(dx, dy + 1, K('kii', 2)); c.P(dx + 1, dy + 1, K('kii', -1))
 
 
 # ─────────────────────────── 간판 ───────────────────────────
@@ -389,11 +536,29 @@ def d_sign_exit(c):
     SP.text(c, 14, 11, '出口', K('sumi', 0), step=16)
 
 
+@prop('subway-sign-exit-up', '천장 매단 출구 간판 「出口」(↑ 위쪽)', 3, 2, tags=('지하철', '역', '간판', '出口', '출구'),
+      rules='출구 계단이 화면 위쪽(북쪽)에 있을 때 그 통로 위 천장에 매단다. 겹침(별) 칸이라 밑으로 걸을 수 있다. 계단이 왼쪽이면 jp-subway-sign-exit.')
+def d_sign_exit_up(c):
+    hanger(c, (K('kii', 2), K('kii', 3), K('kii', 0)))
+    arrow(c, 3, 15, 'U', K('sumi', 0))
+    SP.text(c, 14, 11, '出口', K('sumi', 0), step=16)
+
+
 @prop('subway-sign-line', '천장 매단 승강장 안내 「のりば」', 3, 2, tags=('지하철', '역', '간판', 'のりば', '승강장'),
       rules='내려가는 계단 위 천장에 매단다. 겹침(별) 칸.')
 def d_sign_line(c):
     hanger(c, (K('kon', 0), K('kon', 1), K('kon', -1)))
     SP.text(c, 1, 11, 'のりば', K('shiro', 3), step=15)
+
+
+@prop('subway-sign-line-down', '천장 매단 승강장 안내 「のりば」(↓ 아래쪽)', 3, 2, tags=('지하철', '역', '간판', 'のりば', '승강장'),
+      rules='승강장 계단(남쪽 입구)이 화면 아래쪽에 있을 때, 그 계단 바로 북쪽 통로(개찰구와 계단 사이) 위 천장에 매단다. 겹침(별) 칸이라 밑으로 걸을 수 있다.')
+def d_sign_line_down(c):
+    hanger(c, (K('kon', 0), K('kon', 1), K('kon', -1)))
+    col = K('shiro', 3)
+    c.VL(3, 12, 8, col); c.HL(1, 18, 5, col); c.HL(2, 19, 3, col); c.P(3, 20, col)   # ↓ 5폭(9폭 화살표는 のりば 와 한 판에 안 들어간다)
+    for ch, x in (('の', 6), ('り', 18), ('ば', 31)):                    # 잉크 폭 14·9·15 를 1px 틈으로 붙여 찍는다
+        SP.text(c, x, 11, ch, col)
 
 
 @prop('subway-office', '역무실 창구', 4, 3, solid=[(x, y) for x in range(4) for y in (1, 2)] + [(x, 0) for x in range(4)],
@@ -461,6 +626,71 @@ def d_station_sign_hang(c):
     c.HL(x + 2, y + h, w - 2, K('conc', -3))
 
 
+def shade_floor(c, x, y, w):
+    """밑동 오른쪽 아래 그늘 한 줄(바닥 위)."""
+    c.HL(x + 1, y, w, K('conc', 0))
+
+
+@prop('subway-recycle', '승강장 분별 쓰레기통 3칸(병·캔/페트/종이)', 2, 2, solid=((0, 1), (1, 1)), tags=('지하철', '승강장', '쓰레기통', '분리수거'),
+      rules='승강장 바닥, 기둥 옆이나 의자 끝에 붙여 놓는다. 아래 줄 2칸이 막힌다. 점자 블록 위·계단 입구 앞에는 놓지 않는다.')
+def d_recycle(c):
+    x, y, w = 1, 6, 30
+    c.R(x, y, w, 5, K('tekko', 1)); c.HL(x, y, w, K('tekko', 3)); c.HL(x, y + 4, w, K('tekko', 0))   # 윗면(뚜껑 판)
+    c.VL(x + 1, y, 5, K('tekko', 2))
+    for i, col in enumerate(('sora', 'kii', 'midori')):                                  # 병·캔 / 페트 / 종이
+        sx = x + 1 + i * 10
+        c.R(sx + 2, y + 1, 5, 2, K('yoru', -3)); c.HL(sx + 2, y + 3, 5, K('tekko', -1))  # 투입구
+        c.R(sx, y + 5, 9, 20, K(col, 1)); c.VL(sx, y + 5, 20, K(col, 3)); c.VL(sx + 1, y + 5, 20, K(col, 2))
+        c.VL(sx + 8, y + 5, 20, K(col, -1)); c.HL(sx, y + 5, 9, K(col, 3))
+        c.R(sx + 2, y + 8, 5, 5, K('shiro', 3)); box(c, sx + 2, y + 8, 5, 5, K(col, -1))   # 기호 판(글자 대신 점)
+        if i == 0: c.R(sx + 3, y + 9, 1, 3, K(col, -1)); c.R(sx + 5, y + 10, 1, 2, K(col, -1))   # 병·캔
+        elif i == 1: c.R(sx + 4, y + 9, 1, 3, K(col, -1)); c.P(sx + 3, y + 11, K(col, -1)); c.P(sx + 5, y + 11, K(col, -1))   # 페트
+        else: c.HL(sx + 3, y + 9, 3, K(col, -1)); c.HL(sx + 3, y + 11, 3, K(col, -1))   # 종이(줄)
+        c.R(sx, y + 21, 9, 4, K('tekko', 0)); c.HL(sx, y + 21, 9, K('tekko', 2))        # 아래 받침
+        c.VL(sx + 9, y + 5, 20, OL)
+    box(c, x - 1, y - 1, w + 2, 6, OL); c.VL(x - 1, y + 5, 21, OL); c.HL(x - 1, y + 25, w + 2, OL)
+    shade_floor(c, x, y + 26, w + 1)
+
+
+@prop('subway-extinguisher', '벽 소화기 상자(빨강)', 1, 2, tags=('지하철', '승강장', '소화기', '벽'),
+      rules='벽에 붙는 장식(겹침 칸, 막힘 없음 — 밑의 벽이 이미 막는다). 승강장에서는 뒷벽(jp-subway-backwall 3줄)의 아래 두 줄(둘째·셋째)에 겹쳐 둔다. 아래 칸이 선로·바닥 줄로 내려오면 안 된다. 광고판·역 이름판 칸과 겹치지 않게 그 사이 빈 벽에.')
+def d_extinguisher(c):
+    x, y, w, h = 3, 6, 10, 22
+    c.R(x, y, w, 3, K('aka', 3)); c.HL(x, y, w, K('aka', 4))                             # 상자 윗면
+    c.R(x, y + 3, w, h - 3, K('aka', 1)); c.VL(x, y + 3, h - 3, K('aka', 3)); c.VL(x + w - 1, y + 3, h - 3, K('aka', -1))
+    c.R(x + 2, y + 5, 6, 12, K('aka', -1)); c.R(x + 3, y + 6, 4, 10, K('aka', 2))        # 유리 창 속 소화기
+    c.VL(x + 3, y + 7, 8, K('aka', 4)); c.R(x + 4, y + 5, 2, 2, K('sumi', 2)); c.P(x + 6, y + 6, K('tekko', 2))
+    c.R(x + 2, y + 18, 6, 2, K('shiro', 3)); c.HL(x + 3, y + 19, 4, K('aka', 2))   # 아래 흰 띠(빨간 줄)
+    box(c, x - 1, y - 1, w + 2, h + 1, OL); c.HL(x - 1, y + 2, w + 2, OL)
+    c.VL(x + w + 1, y + 1, h - 1, K('conc', -1))                                          # 벽 위 그늘(오른쪽)
+
+
+@prop('subway-vending', '승강장 음료 자판기', 2, 3, solid=((0, 2), (1, 2)), tags=('지하철', '승강장', '자판기', '음료'),
+      rules='승강장 바닥 기둥 사이에 홀로 세운다(뒷벽에 붙이지 않는다). 아래 줄 2칸이 막힌다. 앞(남쪽) 1칸은 비워 사람이 설 자리. 점자 블록 줄에서 1칸 이상 떨어진 안쪽.')
+def d_vending(c):
+    x, W, T, F = 2, 28, 6, 36; y = 4; fy = y + T; body = 'aka'
+    c.R(x, y, W, T, K('conc', 1)); c.HL(x, y, W, K('conc', 3)); c.VL(x, y, T, K('conc', 2)); c.HL(x, y + T - 1, W, K('conc', 0))   # 윗면
+    c.R(x, fy, W, F, K(body, 1)); c.VL(x, fy, F, K(body, 3)); c.VL(x + 1, fy, F, K(body, 2))
+    c.VL(x + W - 1, fy, F, K(body, -1)); c.VL(x + W - 2, fy, F, K(body, 0)); c.HL(x, fy, W, K(body, 3))
+    c.R(x + 3, fy + 2, 16, 3, K('shiro', 3)); c.R(x + 6, fy + 3, 3, 1, K(body, 2)); c.R(x + 12, fy + 3, 3, 1, K(body, 2))   # 무늬 띠(글자 아님)
+    wx, wy, ww, wh = x + 3, fy + 7, 17, 15
+    c.R(wx - 1, wy - 1, ww + 2, wh + 2, K('tekko', -3)); c.R(wx, wy, ww, wh, K('tekko', -1)); c.HL(wx, wy, ww, K('tekko', 1))
+    cols = ['sora', 'kii', 'midori', 'aka', 'daidai', 'sora', 'kii', 'midori', 'aka', 'daidai', 'sora', 'kii', 'midori', 'aka', 'daidai']
+    for row in range(3):
+        sy = wy + 2 + row * 4
+        for k in range(5):
+            cx = wx + 1 + k * 3; cc = cols[row * 5 + k]
+            c.R(cx, sy, 2, 3, K(cc, 2)); c.VL(cx, sy, 3, K(cc, 4)); c.P(cx + 1, sy + 2, K(cc, 0)); c.P(cx, sy - 1, K('shiro', 3))
+        if row < 2: c.HL(wx, sy + 3, ww, K('tekko', 1))
+    px = x + 22
+    for k in range(4): c.R(px, wy + 1 + k * 3, 3, 2, K('shiro', 3) if k != 1 else K('kii', 3)); c.HL(px, wy + 2 + k * 3, 3, K('tekko', 1))
+    c.R(px, wy + 13, 3, 2, K('tekko', -2))                                               # 동전구
+    c.R(x + 4, fy + 25, 16, 6, K('tekko', -3)); c.R(x + 5, fy + 26, 14, 4, K('tekko', -1)); c.HL(x + 5, fy + 25, 14, K('tekko', 0))   # 취출구
+    c.R(x, fy + F - 3, W, 3, K('tekko', 0)); c.HL(x, fy + F - 1, W, K('tekko', -2))     # 킥판
+    box(c, x - 1, y - 1, W + 2, T + F + 1, OL); c.HL(x - 1, fy - 1, W + 2, OL)
+    shade_floor(c, x, y + T + F, W + 1)
+
+
 # ─────────────────────────── 조립(셀 자르기·키트) ───────────────────────────
 def _render(fn, w, h):
     c = Cv(w * 16, h * 16)
@@ -483,7 +713,9 @@ PARTS = {      # 계약 part 는 x·y·w·h 를 다 적는다. 개찰구 통로�
     'subway-stairs-down': [dict(kind='anchor', x=1, y=2, w=2, h=1, label='계단 입구(전이 이벤트 자리 — 승강장으로)')],
     'subway-stairs-up': [dict(kind='anchor', x=1, y=2, w=2, h=1, label='계단 입구(전이 이벤트 자리 — 지상 출구로)')],
     'subway-sign-exit': [dict(kind='sign', x=0, y=0, w=3, h=1)],
+    'subway-sign-exit-up': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-sign-line': [dict(kind='sign', x=0, y=0, w=3, h=1)],
+    'subway-sign-line-down': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-station-sign': [dict(kind='sign', x=0, y=0, w=8, h=3)],
     'subway-station-sign-hang': [dict(kind='sign', x=0, y=0, w=6, h=2)],
     'subway-office': [dict(kind='window', x=0, y=0, w=4, h=2)],
@@ -553,16 +785,17 @@ def build():
 def _kit(id_): return next(k for k in _finalize()[2] if k['id'] == 'jp-' + id_)
 
 
-def _tactile(img, path, ghost=()):
+def _tactile(img, path, ghost=(), dots=()):
     """점자 유도 블록 덧칠(장면 합성 때만, 바닥 1층 위·소품 3층 아래). path: 이어진 칸 목록.
     곧은 칸은 선형 블록, 꺾임·갈래·끝은 점형 블록(jp-tactile 모양 재구현)."""
     a = np.array(img); S = set(path) | set(ghost)   # ghost: 이어짐만 세고 그리지 않는 칸(끝 블록 줄 등)
     cyc = [K('kii', n) for n in (0, 2, 1)]
     def put(px, py, col): a[py, px] = ((col >> 16) & 255, (col >> 8) & 255, col & 255, 255)
     for (x, y) in path:
+        if (x, y) in dots: continue                                           # 경고 블록 칸 — jp-subway-tactile-warn 키트가 그린다
         ox, oy = x * 16, y * 16
         nb = {d for d, (dx, dy) in dict(E=(1, 0), W=(-1, 0), N=(0, -1), S=(0, 1)).items() if (x + dx, y + dy) in S}
-        straight = nb in ({'E', 'W'}, {'N', 'S'})
+        straight = nb in ({'E', 'W'}, {'N', 'S'}) and (x, y) not in dots
         for d in nb:
             if d in 'EW':
                 xs = range(0, 16) if straight else (range(12, 16) if d == 'E' else range(0, 4))
@@ -594,10 +827,13 @@ def _line(*pts):
     return out
 
 
+WALL_OVERLAY = {'subway-extinguisher'}
+
+
 def _compose(W, H, base_fill, places, bg=(0, 0, 0, 255), tactile=None):
     """base_fill: (x,y)->cell key (1층). places: [(kit_id, x, y)] 순서대로 1층(base) 후 3층(grid)."""
     cells = _finalize()[0]
-    L1 = {}; L3 = {}
+    L1 = {}; L3 = {}; L4 = {}   # L4: 벽에 겹치는 장식(소화기) — 밑 벽 칸을 지우지 않고 위에 얹는다
     for y in range(H):
         for x in range(W):
             k = base_fill(x, y)
@@ -609,9 +845,9 @@ def _compose(W, H, base_fill, places, bg=(0, 0, 0, 255), tactile=None):
                 if k and 0 <= px + cx < W and 0 <= py + cy < H: L1[(px + cx, py + cy)] = k
         for cy, row in enumerate(kit['grid']):
             for cx, k in enumerate(row):
-                if k and 0 <= px + cx < W and 0 <= py + cy < H: L3[(px + cx, py + cy)] = k
+                if k and 0 <= px + cx < W and 0 <= py + cy < H: (L4 if kid in WALL_OVERLAY else L3)[(px + cx, py + cy)] = k
     img = Image.new('RGBA', (W * 16, H * 16), bg)
-    for L in (L1, L3):
+    for L in (L1, L3, L4):
         for (x, y), k in L.items():
             t = cells[k]['img']
             img.alpha_composite(t, (x * 16, y * 16))
@@ -620,33 +856,46 @@ def _compose(W, H, base_fill, places, bg=(0, 0, 0, 255), tactile=None):
 
 
 def scene_concourse():
-    W, H = 20, 13
+    W, H = 20, 16
     places = [('subway-ceiling', x, 0) for x in range(W)] + [('subway-wall', x, 1) for x in range(W)]
+    places += [('subway-wall-w', 0, y) for y in range(3, H - 1)] + [('subway-wall-e', W - 1, y) for y in range(3, H - 1)]
+    places += [('subway-wall-s', x, H - 1) for x in range(1, W - 1)] + [('subway-wall-sw', 0, H - 1), ('subway-wall-se', W - 1, H - 1)]
     places += [('subway-ticket', 1, 1), ('subway-stairs-up', 8, 1), ('subway-office', 15, 1),
-               ('subway-gates', 5, 7), ('subway-stairs-down', 8, 10)]
-    places += [('subway-fence', x, 8) for x in (0, 1, 2, 3, 4, 14, 15, 16, 17, 18, 19)]
-    places += [('subway-pillar-plain', 2, 4), ('subway-pillar-plain', 17, 4), ('subway-pillar-plain', 2, 9), ('subway-pillar-plain', 17, 9)]
-    places += [('subway-sign-exit', 12, 4), ('subway-sign-line', 4, 10)]
-    path = _line((10, 4), (4, 4)) + _line((10, 4), (10, 9))                    # 출구 계단 → 매표기 / → 개찰 통로 → 내려가는 계단
-    return _compose(W, H, lambda x, y: 'subway-floor/g0.0', places, tactile=path)
+               ('subway-gates', 5, 7), ('subway-stairs-down', 8, 11)]
+    places += [('subway-fence', x, 8) for x in (1, 2, 3, 4, 14, 15, 16, 17, 18)]
+    places += [('subway-pillar-plain', 2, 5), ('subway-pillar-plain', 17, 5), ('subway-pillar-plain', 2, 9), ('subway-pillar-plain', 17, 9)]
+    places += [('subway-sign-exit-up', 9, 5), ('subway-sign-line-down', 8, 9)]
+    WARN = [(9, 4), (10, 4), (9, 14), (10, 14)]                                # 출구 계단 입구(9·10, 3) 앞 · 승강장 계단 입구(9·10, 13) 앞
+    places += [('subway-tactile-warn', x, y) for x, y in WARN]
+    # 매표기 앞 → 출구 계단 앞(경고) → 역무실 앞 끝 / 개찰 통로 12열로 곧장 내려(간판 밑을 피함) → 계단 입구 앞 14줄 → 입구 두 칸 경고 블록
+    path = _line((2, 4), (18, 4)) + _line((12, 5), (12, 14), (9, 14))
+    return _compose(W, H, lambda x, y: 'subway-floor/g0.0', places, tactile=(path, (), WARN))
+
+
+DOORS = (4, 7, 11, 14, 17, 21, 24, 27, 31)    # 장면 열차(3열부터 30칸)의 문 가운데 열 — 승차 위치 표시를 찍는 자리
 
 
 def scene_platform(train=False):
-    W, H = 36, 10
+    W, H = 36, 14
     places = [('subway-ceiling', x, 0) for x in range(W)] + [('subway-backwall', x, 1) for x in range(W)]
-    places += [('subway-backwall-ad', 3, 1), ('subway-station-sign', 14, 1), ('subway-backwall-ad', 28, 1)]
+    places += [('subway-backwall-ad2', 3, 1), ('subway-station-sign', 14, 1), ('subway-backwall-ad3', 24, 1), ('subway-backwall-ad', 29, 1)]
+    places += [('subway-boarding-mark', x, 7) for x in DOORS]                 # 열차 문 앞마다, 끝 줄 바로 아래
     places += [('subway-track', x, 4) for x in range(W)] + [('subway-edge', x, 6) for x in range(W)]
     for x in (6, 18, 30): places.append(('subway-pillar', x, 6))
-    places += [('subway-bench', 26, 9), ('subway-bench', 2, 9), ('subway-led', 22, 7),
-               ('subway-station-sign-hang', 9, 7)]
-    path = (_line((16, 7), (16, 9)), [(16, 6)])                                               # 승강장 끝 점자 → 계단 쪽 가지
+    places += [('subway-bench', 26, 9), ('subway-bench', 2, 9), ('subway-led', 22, 8),
+               ('subway-station-sign-hang', 9, 8), ('subway-stairs-up', 12, 10), ('subway-sign-exit-up', 17, 9),
+               ('subway-vending', 8, 10), ('subway-recycle', 31, 8), ('subway-extinguisher', 11, 2)]
+    # 승강장 끝 점자(6줄) → 계단 옆 16열 세로 → 계단 입구(13·14, 12) 앞 13줄 가로 (맵 station.mjs 승강장과 같은 꼴)
+    places += [('subway-tactile-warn', 13, 13), ('subway-tactile-warn', 14, 13)]   # 올라가는 계단 입구(13·14, 12) 앞
+    path = (_line((16, 7), (16, 13), (13, 13)), [(16, 6)], [(13, 13), (14, 13)])
     img = _compose(W, H, lambda x, y: 'subway-platform/g0.0', places, tactile=path)
     if train:
         fr = Image.open(TRAIN).convert('RGBA').crop((0, 0, 480, 64))           # 오른쪽을 보는 프레임(시트 맨 왼쪽)
         tr = Image.new('RGBA', img.size, (0, 0, 0, 0)); tr.alpha_composite(fr, (3 * 16, 6 * 16 - 64))
         # 열차는 선로(4~5줄) 위, 승강장 끝 앞의 기둥·LED·매단 역명판은 열차보다 앞에 그린다
         front = _compose(W, H, lambda x, y: None, [p for p in places if p[0] in (
-            'subway-pillar', 'subway-led', 'subway-bench', 'subway-edge', 'subway-station-sign-hang')], bg=(0, 0, 0, 0))
+            'subway-pillar', 'subway-led', 'subway-bench', 'subway-edge', 'subway-station-sign-hang',
+            'subway-stairs-up', 'subway-sign-exit-up', 'subway-vending', 'subway-recycle')], bg=(0, 0, 0, 0))
         img.alpha_composite(tr); img.alpha_composite(front)
     return img
 

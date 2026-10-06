@@ -123,8 +123,16 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
   const routes: MapTransitRoute[] = [];
   const accept = opts.accept ?? ((b: RoadBand) => b.edgeToEdge);
   const lanes: Array<{ id: string; dir: TransitDir; path: Array<{ x: number; y: number }> }> = [];
-  for (const band of bands.filter(accept)) {
-    const dirs: TransitDir[] = band.axis === "ew" ? (band.width >= 4 ? ["right", "left"] : ["right"]) : (band.width >= 4 ? ["down", "up"] : ["down"]);
+  const accepted = bands.filter(accept);
+  // 폭 2~3칸 일방 차로 둘이 같은 축으로 나란하면(가운데 노면전차 궤도·중앙분리대) 한 길의 양쪽 차로다 — 좌측통행으로
+  // 동서 길은 위 차로 동쪽행·아래 차로 서쪽행, 남북 길은 왼쪽 차로 북쪽행·오른쪽 차로 남쪽행.
+  const narrowDir = (band: RoadBand): TransitDir => {
+    const mate = accepted.find((o) => o !== band && o.axis === band.axis && o.width < 4 && o.from <= band.to && band.from <= o.to && Math.abs(o.edge - band.edge) <= 16);
+    if (!mate) return band.axis === "ew" ? "right" : "down";
+    return band.axis === "ew" ? (band.edge < mate.edge ? "right" : "left") : (band.edge < mate.edge ? "up" : "down");
+  };
+  for (const band of accepted) {
+    const dirs: TransitDir[] = band.width >= 4 ? (band.axis === "ew" ? ["right", "left"] : ["down", "up"]) : [narrowDir(band)];
     for (const dir of dirs) {
       const id = `traffic-${band.axis}${band.edge}-${dir}`;
       const path = bandLanePath(band, dir, grid);

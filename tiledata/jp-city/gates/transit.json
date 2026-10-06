@@ -1,117 +1,77 @@
 {
  "stage": "transit",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 3,
- "seconds": 376,
- "focus": "노면전차 거리·지하철역 — 3회차. 2회차 지적 반영: 보도 전주(pole-n/s)·행어를 없애고 복선 사이 센터 전주 jp-tram-pole-c(1×9, 수평 받침대+애자, 위=동행 가선·아래=서행 가선 높이)를 18칸 간격으로, 가선은 조가선+2px 전차선(반사 1px)+드로퍼, 도로 그림자 없음. 단면 보도3·동행 차로3·궤도2+1+2·섬2·서행 차로3·보도3, 차로 점선 대신 路側帯 실선. 북쪽 건물 줄을 가장자리까지 빈틈없이(블록담·자판기로 채움), 뒤쪽도 채움. 섬 난간은 바깥(남)쪽, 점자 띠는 궤도 쪽. 차막이 3/4(윗면 침목·레일 끝 + 남면 노랑/검정)을 장면 서행 궤도 동쪽 끝에. 지하철 출입구 옆벽 윗면 띠. 콘코스 점자 블록을 매표기(x2~7) 앞부터 역무실(x19~22) 앞까지 4행, 13열로 개찰 통로→승강장 계단 앞(계단은 11~13행이라 10행이 계단 바로 앞). 승강장 内方線 2px+그늘. 런타임 화면은 출하 플레이어 실측(검사 15/15 통과).",
+ "rounds": 11,
+ "seconds": 151,
+ "focus": "노면전차·지하철역 키트 — 11회차. 10회차는 통과(minor 5). 그 뒤 바뀐 것: 노면전차 거리 쪽(가로수 종·센터 전주 x2·22·44·깃발 기둥)과 참고문서 다시 굽기만 — 키트·역 맵은 그대로, 런타임 사진은 다시 찍음(probe 15/15). 10회차 minor(콘코스 남쪽 빈 바닥, のりば 간판·계단 머리 겹침, 서쪽행 가선이 섬 아랫줄을 지남, 계단 초록 ↑ 표지, 북쪽 차 앞범퍼)는 남은 minor 로 둔다.",
  "files": {
-  "tiledata/jp-city/blocks/transit_street/scene-street-x3.png": "a7fa03a970394a631fb97f3c06e11b75a63f58133cc40f41460fc121ab8f022d",
-  "tiledata/jp-city/blocks/transit_street/_all-x2.png": "436055afc28d8b5d94a2dbff3fb205de15f1df9cce58dd1ffc4d7bb3b5712b36",
-  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "3002e5c0b3233a1adf69b84bb957b5941d5d0430986f2f74c806d15cc9b583a0",
-  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "4a9040cfcdc155d6f2366bdabb7b0971b8eabb4f5a6f1ef846727e9645fd2960",
-  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "cc1fddc3cd0408f4f246c1a686fd9a57efe3d08a59f309fd76aeb2ab61b05c4d",
-  "verify-shots/jp-city/station-concourse-x3.png": "07a73c72fd6a58eda75de769db9520b4e81788da635b44e75827105ef628d4b7",
-  "verify-shots/jp-city/station-platform-x3.png": "4deca4d3102f7a9c2bdedafbe25be886c747d04648ae8c6ad4f7500b135034db",
-  "verify-shots/jp-city/transit-runtime/subway-stop.png": "a38073597293e141c6b85297bde56e821f5d8a362ca731e13d1c0d827b4379b0",
-  "verify-shots/jp-city/transit-runtime/t0.png": "69e8ae20cb5da6928b8ba5fc52e4d9d28fde1c7a0b84ee08fee7f9dcc7e1f458",
-  "scripts/content/jp-city/blocks/transit_street.py": "63db74b6648fc3430d49e1ea964d21d3b8e9c816cd0e40a7849f8453ab3b1120",
-  "scripts/content/jp-city/blocks/transit_station.py": "46df02aeab0c863599f37d5649c1451c5c83c4047f8eac6c51433fdbb031e2df",
-  "scripts/content/jp-city/maps/station.mjs": "0c6922242455e508a291fd6017a84c9a65a40f0120a56bfa9d58f1d1d2cf8d04"
+  "tiledata/jp-city/blocks/transit_street/_all-x2.png": "b2427ea4b8f0356d88bf4c873b1e460895e38ae98873775fb5f4ca4869c363bd",
+  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "f731f4c7ec6e821cb3d97a1ffea81441cdbe3dafb1bf191f9e4d0fecb827125f",
+  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "e0e0861859102373ccd368dc40b4c14fc416a48e1856600c361c9cda174aa9b7",
+  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "290fbbb0814d1d891195ba73ce52932e9135870b9c2aafaa7982a9abbf6fb988",
+  "verify-shots/jp-city/station-concourse-x3.png": "36c62ac582d0582ad2c6425d1657e52ea8ad74ff0b06eb060648d72388f7df95",
+  "verify-shots/jp-city/station-platform-x3.png": "4f7090bee0771786621711efe429d77114edb26f6d07d250fcd3e5d11633d428",
+  "verify-shots/jp-city/transit-runtime/subway-stop.png": "74556cf77de78be11bfaaf949e18ae4701f3f734990aa531aa6b14a0e60d5942",
+  "verify-shots/jp-city/transit-runtime/SUMMARY.md": "50e3b4bf85c26fb595e91a21f2ee36573686bf26a8998e742e8219db823e27c2",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "ed9320aaba0355c81eecc42f3819faca2263f904750dccf4bde354c9e0f5fee9",
+  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "9c7416f4328fdb8092251d44e49766f451737295b6f1af2a307fa961e0202625",
+  "verify-shots/jp-city/tram-runtime/concourse-stairs.png": "d02804a89059c0123c26e660e9aafc8540bdb39c86280a2049bc3bb4548fa616",
+  "verify-shots/jp-city/tram-runtime/platform-arrive.png": "4b1820219df13e6112227c12a17ffb918ae89463536358f36b6571fc1e772cae",
+  "verify-shots/jp-city/tram-runtime/concourse-return.png": "3a2740fe5acce6b2a1bca9ef0100b34f5d5e0947791c09351d147fa2c3796b49",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "0e8698be8ffd9701e513c89ce0903d37dead6c5312ad17c1a6d8b2497fb46fb5",
+  "scripts/content/jp-city/blocks/transit_street.py": "5668f525d9f7690759bb12ec0dfea7fe96548e317388d36befa2c46864bf4067",
+  "scripts/content/jp-city/blocks/transit_station.py": "222cdf79720aacc8e0360605d4c461d8d33fa3c444d0cd7c814b65e704191950",
+  "scripts/content/jp-city/maps/station.mjs": "478087844f91ccf7ccb71ee2f3b6ffd2b1c85b2e64bfafa3130ba999267fffda",
+  "scripts/content/jp-city/maps/kitmap.mjs": "1a34440fc0b9420dad7fae66d37cd3bf4532a356c399cf559b6237b60f03014b",
+  "scripts/content/jp-city/qa/tram-street.probe.mjs": "f80d876b9191d65aed9890195e3e81d0014c08232e7cb36d43c1f9e09e2f63e1",
+  "src/player/characterDepth.ts": "46e74d5cd958699067eed49442ea4a2992d579f5002eb1468b53736aa91082a5",
+  "tiledata/jp-city/refs/transit-rules.md": "97852a5336fb08a13237bc35fb7819a5df639464b93f6ea38dbe72190234f8a6"
  },
  "findings": [
   {
-   "severity": "blocker",
-   "file": "scripts/content/jp-city/blocks/transit_street.py; tiledata/jp-city/blocks/transit_street/scene-street-x3.png",
-   "where": "END = 34, jp-tram-rail-end at (34, track_s); scene x1680-1725 y875-955",
-   "problem": "In left-hand traffic the south track is westbound and must be entered from the east, but its east end is blocked by a buffer stop. Track 1 runs through and there is no crossover, so no tram can reach the island stop on track 2.",
-   "fix": "Remove the buffer and run both tracks to the map edge, or make a proper terminus: buffers on both tracks plus a crossover west of the stop, or a single-track stub end."
-  },
-  {
-   "severity": "major",
-   "file": "scripts/content/jp-city/blocks/transit_street.py; scene-street-x3.png",
-   "where": "WIRE_Y=8 / MSG_Y, tram-wire-h at track_s-5; scene y635-653 inside the eastbound lane (y576-720)",
-   "problem": "The track-2 wire lies inside the eastbound lane, parallel to the road-edge line (y602). Its bright 1px contact line (187,180,196) is close to the lane white (202,199,214), and with the droppers it reads as a guard pipe lying on the road. It is also 4.5 tiles (~6.5m) above the track, against a real ~5-5.4m.",
-   "fix": "Change the contact wire to a sumi body with a mid-gray highlight. Lower it to 4 tiles above the track. Add beam or pull-off wires from the center poles (gx 3, 21, 39) to both wires. Put a tram with its pantograph touching the wire in the verify scene."
-  },
-  {
-   "severity": "major",
-   "file": "scripts/content/jp-city/blocks/transit_street.py; scene-street-x3.png",
-   "where": "crosswalk x630-740 y1065-1195; subway entrance x640-830 y240-478",
-   "problem": "The crosswalk links only the south sidewalk and the island. There is no crossing over the two tracks and the eastbound lane to the north sidewalk and the subway entrance, so the tram-subway transfer route is broken.",
-   "fix": "Extend the crosswalk at tiles x13-15 from the north end of the island to the north sidewalk, with a pedestrian signal, or add a separate north crossing in front of the subway entrance."
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460",
+   "problem": "The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.",
+   "fix": "Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge."
   },
   {
    "severity": "minor",
-   "file": "scene-street-x3.png",
-   "where": "y960-1050",
-   "problem": "Only the westbound direction has a stop; eastbound (track 1) has no stopping area.",
-   "fix": "Add an eastbound safety island or boarding marking along the north sidewalk edge."
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half",
+   "problem": "(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.",
+   "fix": "Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners."
   },
   {
    "severity": "minor",
-   "file": "scene-street-x3.png",
-   "where": "crosswalk x630-740",
-   "problem": "The crosswalk is ~2.3 tiles wide, narrower than a real 4m+ crossing.",
-   "fix": "Widen it to 4 tiles."
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475",
+   "problem": "(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.",
+   "fix": "Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head."
   },
   {
    "severity": "minor",
-   "file": "scene-street-x3.png",
-   "where": "eastbound lane y576-720, road-edge line y602",
-   "problem": "The usable lane inside the road-edge line is only ~2.5 tiles.",
-   "fix": "Move the road-edge line toward the sidewalk, or narrow the north sidewalk by 1 tile so the lane gets 3 tiles."
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png",
+   "problem": "(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.",
+   "fix": "Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only."
   },
   {
    "severity": "minor",
-   "file": "scene-street-x3.png",
-   "where": "karaoke vertical signs x625-690 and x1485-1545",
-   "problem": "The same mid-rise appears twice in one scene and is cropped at the top, so it reads as mechanical repetition.",
-   "fix": "Replace one with a different mixed-tenant building and fit the height inside the scene."
+   "file": "scripts/content/jp-city/blocks/transit_station.py",
+   "where": "Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475",
+   "problem": "(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.",
+   "fix": "Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_street/_all-x2.png",
-   "where": "subway entrance cap",
-   "problem": "The 4 blue squares on the cap have no clear meaning.",
-   "fix": "Replace them with one line symbol or a 地下鉄 sign, or remove them."
-  },
-  {
-   "severity": "minor",
-   "file": "scripts/content/jp-city/maps/station.mjs; verify-shots/jp-city/station-concourse-x3.png",
-   "where": "jp-subway-sign-exit (16,6)",
-   "problem": "The exit stairs (x11-14, y3) are to the northwest of the sign, but the arrow points left only.",
-   "fix": "Change the arrow to up or up-left, or move the sign to just south of the center of the stairs."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png",
-   "where": "tactile line row 4, x205-515",
-   "problem": "In the demo scene the tactile line stops before the station office (x720-910).",
-   "fix": "Extend the scene tactile path to x22, matching line(2,4,22,4) in the map."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png",
-   "where": "tactile line x780-805 y335-470",
-   "problem": "The tactile line leads to nothing in the demo scene.",
-   "fix": "Place stairs in the scene or remove the line."
-  },
-  {
-   "severity": "minor",
-   "file": "scripts/content/jp-city/maps/station.mjs; verify-shots/jp-city/station-platform-x3.png",
-   "where": "benches x3, 13, 30, 38; ads x4, 20, 36",
-   "problem": "The same bench and ad graphics repeat across the platform.",
-   "fix": "Replace some with a vending machine, a 3-slot recycling bin or a fire extinguisher box."
-  },
-  {
-   "severity": "minor",
-   "file": "verify-shots/jp-city/transit-runtime/t0.png",
-   "where": "whole image; player around (480,390)",
-   "problem": "This is a bus scene by the school, not the tram street, so it cannot support the 15/15 runtime claim. The player is also drawn overlapping the bus roof.",
-   "fix": "Add a qa:runtime capture on the tram map showing a tram stopped at the island, and check the depth order between the bus and the player."
+   "file": "verify-shots/jp-city/tram-runtime/tram-stop-e.png",
+   "where": "North-side car on the eastbound lane, row 12, front bumper",
+   "problem": "(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.",
+   "fix": "Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap."
   }
  ],
- "report": "## 3회차 적대 검수 — 노면전차 거리 + 지하철역\n\n### BLOCKER\n\n**1. 서행(남쪽) 선로가 차막이로 막혀 섬 정류장에 갈 수 없다**\n- 파일: `scripts/content/jp-city/blocks/transit_street.py` (`END = 34`, `put('jp-tram-rail-end', END, SC['track_s'])`), `tiledata/jp-city/blocks/transit_street/scene-street-x3.png`\n- 위치: 장면 x1680–1725, y875–955 (타일 gx 34, 남쪽 선로 줄). 동행(북쪽) 1번 선로는 동쪽 끝까지 계속된다.\n- 문제:\n  - 좌측통행에서 남쪽 선로는 서쪽으로 가는 선로다. 서행 전차는 동쪽에서 들어와야 하는데, 그 동쪽 입구가 차막이로 막혀 있다.\n  - 渡り線(건넘선)이 없어 1번 선로에서 2번 선로로 옮겨 탈 수도 없다.\n  - 그래서 남쪽 선로에 붙은 安全地帯 정류장(x625–1200)에 서는 전차가 있을 수 없다. 운행 구조로 말이 안 된다.\n- 고칠 것 (둘 중 하나):\n  - 차막이를 빼고 두 선로를 모두 맵 끝까지 잇는다(관통선).\n  - 또는 종점으로 만든다. 두 선로를 모두 차막이로 끝내고, 정류장 서쪽에 X자 또는 한 방향 渡り線을 넣는다. 아니면 단선 종단으로 바꾼다.\n\n### MAJOR\n\n**2. 2번 선로 가선이 공중선이 아니라 도로 위에 놓인 가드 파이프로 읽힌다**\n- 파일: `transit_street.py` (`WIRE_Y = 8`, `MSG_Y = WIRE_Y - 5`, `tram-wire-h`, 배치 `track_s-5`), `scene-street-x3.png`\n- 위치:\n  - 조가선은 y≈635, 전차선은 y650(밝은 선 187,180,196)과 y653(어두운 선)이다.\n  - 둘 다 동행 차선 띠(y576–720) 안에 있고, 路側帯 실선(y602, 202,199,214)과 나란하다.\n- 문제:\n  - 전차선의 밝은 1px 선이 차선 흰색과 거의 같은 색이다.\n  - 32px마다 드로퍼가 있어 차선 위에 낮은 펜스나 파이프가 누운 것처럼 보인다. 3/4 시점에서 공중에 떠 있다는 단서가 없다.\n  - 높이도 맞지 않는다. 궤도 윗면에서 4.5칸, 즉 약 6.5m다. 실제 노면전차 전차선은 약 5~5.4m다.\n- 고칠 것:\n  - 전차선의 밝은 하이라이트를 빼고 스미색 몸통에 중간 회색 하이라이트로 바꾼다.\n  - 전차선을 궤도 위 4칸으로 내린다.\n  - 센터 전주(gx 3·21·39)에서 양쪽 전차선으로 이어지는 빔이나 곡선당김 선을 넣어 매달린 구조를 보여 준다.\n  - 검증 장면에 팬터그래프가 전차선에 닿은 전차 한 대를 둔다.\n\n**3. 정류장에서 북쪽 보도·지하철 출입구로 건너는 길이 없다**\n- 파일: `transit_street.py` (횡단보도 배치), `scene-street-x3.png`\n- 위치: 횡단보도 x630–740, y1065–1195 (남쪽 보도 ↔ 섬만 잇는다). 지하철 출입구는 북쪽 보도 x640–830, y240–478.\n- 문제:\n  - 섬에서 선로 두 줄과 동행 차선을 건너 북쪽 보도로 가는 횡단보도가 없다.\n  - 그래서 「전차 정류장 ↔ 지하철 환승」 동선이 끊긴다.\n  - 플레이어가 선로를 무단 횡단해야 하는 배치다.\n- 고칠 것:\n  - 횡단보도를 x13–15칸에서 섬 북쪽 끝부터 북쪽 보도까지 이어 차도 전체를 건너게 한다. 보행 신호기를 단다.\n  - 또는 지하철 출입구 바로 앞에 북쪽 횡단을 따로 둔다.\n\n### MINOR\n\n4. **정류장이 서행 한 방향뿐이다.**\n   - 위치: `scene-street-x3.png` y960–1050.\n   - 동행(1번 선로) 쪽 섬이나 보도 정차대가 없다. 북쪽 보도 가장자리에 동행 安全地帯 또는 승강 표시를 추가한다.\n\n5. **횡단보도 폭이 약 2.3칸이다.**\n   - 위치: x630–740.\n   - 실제 횡단보도는 4m 이상이다. 4칸으로 넓힌다.\n\n6. **동행 차선이 좁다.**\n   - 위치: y576–720.\n   - 路側帯 실선(y602) 안쪽 차선이 약 2.5칸뿐이라 차 폭(약 2칸) 대비 여유가 없다. 路側帯 선을 보도 쪽으로 붙이거나, 북쪽 보도를 1칸 줄여 차선을 3칸으로 만든다.\n\n7. **카라오케 중층 건물이 반복되고 윗부분이 잘린다.**\n   - 위치: 세로 간판 x625–690과 x1485–1545, 위쪽이 잘림.\n   - 한 장면에 같은 건물이 두 번 나와 기계적 반복으로 읽힌다. 하나를 다른 잡거빌딩으로 바꾸고, 높이를 장면 안에 다 들어오게 맞춘다.\n\n8. **지하철 출입구 캡의 파란 사각 4개가 무엇인지 모호하다.**\n   - 위치: `_all-x2.png` 출입구 캡.\n   - 고칠 것:\n     - 실제 일본 출입구라면 노선 기호(원 안 알파벳)나 「地下鉄」 가나·한자 표지 한 개로 바꾼다.\n     - 아니면 사각들을 지운다.\n\n9. **콘코스 「← 出口」 화살표 방향이 틀렸다.**\n   - 위치: `verify-shots/jp-city/station-concourse-x3.png`, 표지 (16,6).\n   - 출구 계단(x11–14, y3)은 표지의 북서쪽인데, 화살표는 왼쪽(←)만 가리킨다.\n   - 화살표를 ↑ 또는 ↖로 바꾸거나, 표지를 계단 바로 남쪽 가운데로 옮긴다.\n\n10. **블록 데모 장면의 점자 유도 블록이 역무실에 닿지 않는다.**\n    - 위치: `tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png`.\n    - 4줄이 x205–515에서 끊겨 역무실(x720–910)까지 가지 않는다. 지도(`station.mjs`)의 `line(2,4,22,4)`처럼 장면 경로도 x22까지 늘린다.\n\n11. **승강장 데모 장면의 점자선이 아무 곳에도 이어지지 않는다.**\n    - 위치: `scene-platform-train-x3.png` x780–805, y335–470.\n    - 데모 장면 안에 계단을 두거나, 그 점자선을 지운다.\n\n12. **승강장 벤치·광고가 같은 그림으로 반복된다.**\n    - 위치: `station-platform-x3.png`.\n    - 벤치 4개(x3·13·30·38)가 같은 그림이고, 광고 3개(x4·20·36)도 같은 그림이다. 자판기, 쓰레기통(분리수거 3구), 소화기함으로 일부를 바꾼다.\n\n13. **런타임 증거가 노면전차 거리를 보여 주지 않는다.**\n    - 위치: `verify-shots/jp-city/transit-runtime/t0.png`.\n    - 이 캡처는 학교 옆 버스 장면이라 노면전차 운행 「15/15」의 근거가 되지 못한다. 플레이어(약 480,390)가 버스 지붕과 겹쳐 그려진 것도 보인다.\n    - 노면전차 맵에서 전차가 섬 정류장에 정차하는 런타임 캡처를 `qa:runtime` 시나리오로 남긴다. 버스와 플레이어의 깊이 순서도 확인한다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"blocker\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py; tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"END = 34, jp-tram-rail-end at (34, track_s); scene x1680-1725 y875-955\", \"problem\": \"In left-hand traffic the south track is westbound and must be entered from the east, but its east end is blocked by a buffer stop. Track 1 runs through and there is no crossover, so no tram can reach the island stop on track 2.\", \"fix\": \"Remove the buffer and run both tracks to the map edge, or make a proper terminus: buffers on both tracks plus a crossover west of the stop, or a single-track stub end.\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py; scene-street-x3.png\", \"where\": \"WIRE_Y=8 / MSG_Y, tram-wire-h at track_s-5; scene y635-653 inside the eastbound lane (y576-720)\", \"problem\": \"The track-2 wire lies inside the eastbound lane, parallel to the road-edge line (y602). Its bright 1px contact line (187,180,196) is close to the lane white (202,199,214), and with the droppers it reads as a guard pipe lying on the road. It is also 4.5 tiles (~6.5m) above the track, against a real ~5-5.4m.\", \"fix\": \"Change the contact wire to a sumi body with a mid-gray highlight. Lower it to 4 tiles above the track. Add beam or pull-off wires from the center poles (gx 3, 21, 39) to both wires. Put a tram with its pantograph touching the wire in the verify scene.\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py; scene-street-x3.png\", \"where\": \"crosswalk x630-740 y1065-1195; subway entrance x640-830 y240-478\", \"problem\": \"The crosswalk links only the south sidewalk and the island. There is no crossing over the two tracks and the eastbound lane to the north sidewalk and the subway entrance, so the tram-subway transfer route is broken.\", \"fix\": \"Extend the crosswalk at tiles x13-15 from the north end of the island to the north sidewalk, with a pedestrian signal, or add a separate north crossing in front of the subway entrance.\"},\n{\"severity\": \"minor\", \"file\": \"scene-street-x3.png\", \"where\": \"y960-1050\", \"problem\": \"Only the westbound direction has a stop; eastbound (track 1) has no stopping area.\", \"fix\": \"Add an eastbound safety island or boarding marking along the north sidewalk edge.\"},\n{\"severity\": \"minor\", \"file\": \"scene-street-x3.png\", \"where\": \"crosswalk x630-740\", \"problem\": \"The crosswalk is ~2.3 tiles wide, narrower than a real 4m+ crossing.\", \"fix\": \"Widen it to 4 tiles.\"},\n{\"severity\": \"minor\", \"file\": \"scene-street-x3.png\", \"where\": \"eastbound lane y576-720, road-edge line y602\", \"problem\": \"The usable lane inside the road-edge line is only ~2.5 tiles.\", \"fix\": \"Move the road-edge line toward the sidewalk, or narrow the north sidewalk by 1 tile so the lane gets 3 tiles.\"},\n{\"severity\": \"minor\", \"file\": \"scene-street-x3.png\", \"where\": \"karaoke vertical signs x625-690 and x1485-1545\", \"problem\": \"The same mid-rise appears twice in one scene and is cropped at the top, so it reads as mechanical repetition.\", \"fix\": \"Replace one with a different mixed-tenant building and fit the height inside the scene.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_street/_all-x2.png\", \"where\": \"subway entrance cap\", \"problem\": \"The 4 blue squares on the cap have no clear meaning.\", \"fix\": \"Replace them with one line symbol or a 地下鉄 sign, or remove them.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs; verify-shots/jp-city/station-concourse-x3.png\", \"where\": \"jp-subway-sign-exit (16,6)\", \"problem\": \"The exit stairs (x11-14, y3) are to the northwest of the sign, but the arrow points left only.\", \"fix\": \"Change the arrow to up or up-left, or move the sign to just south of the center of the stairs.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png\", \"where\": \"tactile line row 4, x205-515\", \"problem\": \"In the demo scene the tactile line stops before the station office (x720-910).\", \"fix\": \"Extend the scene tactile path to x22, matching line(2,4,22,4) in the map.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png\", \"where\": \"tactile line x780-805 y335-470\", \"problem\": \"The tactile line leads to nothing in the demo scene.\", \"fix\": \"Place stairs in the scene or remove the line.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs; verify-shots/jp-city/station-platform-x3.png\", \"where\": \"benches x3, 13, 30, 38; ads x4, 20, 36\", \"problem\": \"The same bench and ad graphics repeat across the platform.\", \"fix\": \"Replace some with a vending machine, a 3-slot recycling bin or a fire extinguisher box.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/transit-runtime/t0.png\", \"where\": \"whole image; player around (480,390)\", \"problem\": \"This is a bus scene by the school, not the tram street, so it cannot support the 15/15 runtime claim. The player is also drawn overlapping the bus roof.\", \"fix\": \"Add a qa:runtime capture on the tram map showing a tram stopped at the island, and check the depth order between the bus and the player.\"}\n]}\n```"
+ "report": "Round 11 passes with no blocker or major findings; there are 6 minors. The 5 minors from round 10 are not fixed and are listed again. There is one new minor: the platform pillars, which are unchanged since round 10 but were not flagged then.\n\nChecked this round:\n- **Centre poles at x2·22·44:** gaps are 20 and 22, inside the 16–24 rule. None stands on the crosswalk, and their bases are on the bottom row of the centre band.\n- **Ginkgo at x6 and zelkova at x40:** different species, spaced unevenly, so not mechanical repetition. The trunks sit on the row-27 curb. The canopies hang over the westbound lane, and cars on row 25 are drawn under them, which is correct for a tree in front of the lane.\n- **Flag pole at x46:** the banner is vertical, which the research README requires (horizontal nobori is listed as a common mistake). It stands in a gap of the guardrail and leaves the walking strip on rows 28–29 clear.\n- **Runtime photos:** they match the probe results.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460\", \"problem\": \"The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.\", \"fix\": \"Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half\", \"problem\": \"(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.\", \"fix\": \"Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475\", \"problem\": \"(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.\", \"fix\": \"Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png\", \"problem\": \"(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.\", \"fix\": \"Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475\", \"problem\": \"(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.\", \"fix\": \"Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/tram-runtime/tram-stop-e.png\", \"where\": \"North-side car on the eastbound lane, row 12, front bumper\", \"problem\": \"(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.\", \"fix\": \"Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap.\"}\n]}\n```"
 }
