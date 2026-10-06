@@ -1,4 +1,4 @@
-# 신규50종 전체 통과 · 2/50 완료
+# 신규50종 전체 통과 · 현재3/50 완료
 
 이 기록 시점 실제 전체 감사는 **2/50**,36자세/16GIF이며 exit1/전체 false다.
 금각사슴은 얼굴/가슴3/4 면과 뿔의 전진 방향을 직접 교정한 후 실제 독립 keep를 받았다.
@@ -23,3 +23,16 @@
 기존 후속 대기 서비스를 교체한 것은 내부 일정 조정이며 목표/50종/합격 조건을 줄이지 않았다.
 
 근거: source-archive-proof.json, two-passed-proof.json, browser-proof-bronze-bell-wraith-golden-antler-deer.json.
+
+## 128px 대표 봉황 통과와 후속 제작 시작
+
+봉황은 실제 두 번의 좌표 교정/각 별도 검수 후 keep를 받았다. 감독이 현재18자세의
+1배/3배 실제 PNG와 직접 저작 helper를 읽은 binding 그대로 독립 keep가 나왔음을 다시 확인했다.
+실제 Allow API 저장/선택 팩 done 후 전체 감사는3/50/54자세/24GIF/exit1이었다.
+봉황 실제8GIF·일시 정지/재생·동일 픽셀 배율 비교·1440/375/320 화면에 오류/넘침0을 확인했다.
+지속 출처에 실제 원본/검수/이전 rework를 저장하고 같은 source binding으로3종을 재로드했다.
+세 대표의 실제 확인을 pilot-root-review.json에 기록해 후속45종이 시작했다. 초기2종과
+겹치는 현재 후속 작업자는1명으로 전체 최대3명을 유지한다. 첫 후속 종은 철취학이다.
+초롱도깨비는 손잡이 파지/불꽃 발원점의2개 실제 지적을 직접 고치는 중이다.
+전체 목표는 여전히50종이며 미완성47종을 완료로 보고하지 않는다.
+근거:three-passed-proof.json,pilot-root-review.json,browser-proof-sun-gold-phoenix.json.

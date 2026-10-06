@@ -1,0 +1,15 @@
+{
+  "monster": "sun-gold-phoenix",
+  "passed": true,
+  "rootViewedActual18PosePng": true,
+  "rootViewedSourceWhileIndependentReviewRunning": true,
+  "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+  "lightPngSha256": "9db944da651a28acce0ce579222cccb000ee38f6403c9c24be01e032b86af8d5",
+  "nativeCell": 128,
+  "sourceMethod": "Explicit y/x/literal cluster strings and targeted attack/skill_b ASCII repair; geometry/resize calls confined to own preview decoding. Actual author helper bodies inspected.",
+  "artRead": "Hook beak, connected long neck and wings, crouched sleep distinct from flat death; supported kick claw, fire forks originate at open mouth.",
+  "reviewRecommendation": "keep",
+  "reviewJob": "d86e8b1a-5960-4442-b8fe-aa031420972e",
+  "actualReviewIssues": 0,
+  "realVisualRepairCount": 2
+}

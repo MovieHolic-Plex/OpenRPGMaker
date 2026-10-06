@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>일금봉황 — 18자세 / 8 GIF</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,sans-serif;background:#171921;color:#eee9de}body{margin:24px;max-width:1500px}h1{font-size:24px;margin-bottom:8px}p{color:#b7b7ba}nav{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}button,select{font:inherit;padding:7px 12px;background:#34353d;color:#eee;border:1px solid #5c5c66;border-radius:5px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}figure{margin:0;border:1px solid #50515a;border-radius:7px;overflow:hidden}figcaption{padding:12px;background:#282a33}.stage{min-height:280px;display:flex;align-items:flex-end;justify-content:center;padding:8px;overflow:auto}.dark .stage{background:#242532}.light .stage{background:#e9dfc7}.checker .stage{background-color:#57575e;background-image:linear-gradient(45deg,#3f4149 25%,transparent 25%),linear-gradient(-45deg,#3f4149 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#3f4149 75%),linear-gradient(-45deg,transparent 75%,#3f4149 75%);background-size:32px 32px;background-position:0 0,0 16px,16px -16px,-16px 0}.sprite{image-rendering:pixelated;width:256px;height:256px;max-width:none}.sheet{image-rendering:pixelated;max-width:100%;margin-top:16px}a{color:#f7d982}small{color:#c0bec5}footer{margin:30px 0}
+</style></head><body class="checker">
+<h1>일금봉황 — 원본 18자세 · 8 GIF</h1>
+<p>저작 후보. 하네스 독립 검수와 사용자 선택은 대기 중입니다.</p>
+<nav><label>배경 <select id="bg"><option value="checker">체커</option><option value="light">밝음</option><option value="dark">어두움</option></select></label><label>원본 배율 <select id="scale"><option value="1">1배</option><option value="2" selected>2배</option><option value="4">4배</option></select></label><button id="play">모두 정지</button></nav>
+<div class="grid">
+<figure><figcaption>대기 <small>240ms × 4</small></figcaption><div class="stage"><img class="sprite" src="../gif/idle.gif" data-gif="idle" data-still="idle_a" alt="대기"></div></figure>
+<figure><figcaption>공격 <small>준비 → 전진 → 접촉 → 회수</small></figcaption><div class="stage"><img class="sprite" src="../gif/attack.gif" data-gif="attack" data-still="idle_a" alt="공격"></div></figure>
+<figure><figcaption>피격 <small>목/어깨 반동</small></figcaption><div class="stage"><img class="sprite" src="../gif/hit.gif" data-gif="hit" data-still="hit" alt="피격"></div></figure>
+<figure><figcaption>쓰러짐 <small>1100ms 마지막 자세</small></figcaption><div class="stage"><img class="sprite" src="../gif/dead.gif" data-gif="dead" data-still="dead" alt="쓰러짐"></div></figure>
+<figure><figcaption>일염익 <small>모으기 → 두 갈래 불꽃 → 잔불</small></figcaption><div class="stage"><img class="sprite" src="../gif/skill.gif" data-gif="skill" data-still="skill_b" alt="일염익"></div></figure>
+<figure><figcaption>독 <small>아픈 턱/날개 · 기포</small></figcaption><div class="stage"><img class="sprite" src="../gif/poison.gif" data-gif="poison" data-still="poison_a" alt="독"></div></figure>
+<figure><figcaption>기절 <small>처진 목/깃 · 별</small></figcaption><div class="stage"><img class="sprite" src="../gif/stun.gif" data-gif="stun" data-still="stun_a" alt="기절"></div></figure>
+<figure><figcaption>수면 <small>웅크림 · 600ms 숨 변화</small></figcaption><div class="stage"><img class="sprite" src="../gif/sleep.gif" data-gif="sleep" data-still="sleep_a" alt="수면"></div></figure>
+</div>
+<h2>원본 1배 비교판</h2><img class="sheet" src="native-contact.png" width="768" height="450" alt="18개의 128px 원본 비교판">
+<footer><a href="../AUTHORING.md">저작 기록과 남은 검토 항목</a> · <a href="../TIMING.md">시간표와 입/날개 앵커</a> · <a href="artifact-diagnostics.json">현재 파일 진단/해시</a></footer>
+<script>
+const sprites=[...document.querySelectorAll('.sprite')];let playing=true;
+document.querySelector('#bg').onchange=e=>document.body.className=e.target.value;
+document.querySelector('#scale').onchange=e=>sprites.forEach(i=>{i.style.width=i.style.height=(128*Number(e.target.value))+'px'});
+document.querySelector('#play').onclick=e=>{playing=!playing;sprites.forEach(i=>i.src=playing?'../gif/'+i.dataset.gif+'.gif':'../png/'+i.dataset.still+'.png');e.target.textContent=playing?'모두 정지':'모두 재생'};
+</script></body></html>

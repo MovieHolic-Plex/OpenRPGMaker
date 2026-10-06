@@ -1,0 +1,29 @@
+[
+  {
+    "monster": "jade-mantis",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "c0627c393470fd86ac373661cba064e9b1ed7611f67b9638d60419c12e6f1719",
+    "cell": 64,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "lantern-goblin",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/lantern-goblin/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "a3a5dff9eea5d8d791fc1514678855fb631d4e81cfb606ff99fb808e0334ff52",
+    "cell": 96,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "d416c9690ce2c15a25257e7eac7155f0ceca1f9aa8d5b81f74046785132abe77",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  }
+]

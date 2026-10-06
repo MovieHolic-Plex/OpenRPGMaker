@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checkedAt": "2026-10-06T04:33:11.626452+00:00",
+  "goalEntire50Complete": false,
+  "actualPixelSpeciesChecked": 3,
+  "rootReadActual18PosePngPerSpecies": true,
+  "items": [
+    {
+      "monster": "golden-antler-deer",
+      "passed": true,
+      "rootViewedActual18PosePng": true,
+      "authorHelperBodiesRead": true,
+      "diagnosticRectangleCalls": "render.py checker background only",
+      "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+      "reviewRecommendation": "keep",
+      "reviewJob": "29701e7e-bebe-49b4-99d1-a2f0891ac247",
+      "actualReviewIssues": 0,
+      "realVisualRepairCount": 1,
+      "method": "Explicit per-pose REPAIRS y/x/string tables and original before-repair files retained; no geometry or frame transform calls in native author."
+    },
+    {
+      "monster": "bronze-bell-wraith",
+      "passed": true,
+      "rootViewedActual18PosePng": true,
+      "authorHelperBodiesRead": true,
+      "diagnosticRectangleCalls": "render.py background only; native author uses explicit chosen ASCII runs",
+      "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+      "reviewRecommendation": "keep",
+      "reviewJob": "203ee414-169f-4c9a-a944-f8cdd101afd0",
+      "actualReviewIssues": 0,
+      "authorSha256": "6feab1740f6093f179bf7cb549a06fba39c0fb1bf2f3c1363bdd80a8f31ea292",
+      "rootApprovalBasis": "Current user delegated all50 passing; not a claim of human mouse selection."
+    },
+    {
+      "monster": "sun-gold-phoenix",
+      "passed": true,
+      "rootViewedActual18PosePng": true,
+      "rootViewedSourceWhileIndependentReviewRunning": true,
+      "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+      "lightPngSha256": "9db944da651a28acce0ce579222cccb000ee38f6403c9c24be01e032b86af8d5",
+      "nativeCell": 128,
+      "sourceMethod": "Explicit y/x/literal cluster strings and targeted attack/skill_b ASCII repair; geometry/resize calls confined to own preview decoding. Actual author helper bodies inspected.",
+      "artRead": "Hook beak, connected long neck and wings, crouched sleep distinct from flat death; supported kick claw, fire forks originate at open mouth.",
+      "reviewRecommendation": "keep",
+      "reviewJob": "d86e8b1a-5960-4442-b8fe-aa031420972e",
+      "actualReviewIssues": 0,
+      "realVisualRepairCount": 2
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "ecda7bc5-1a83-43ed-bff8-272641fc34dc",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T03:59:16.286861+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1/references/human-size.png",
+    "-"
+  ],
+  "promptSha256": "1051c697f6ccfaf8f0c6918a60b80516db94ea1655cb1e2a2017f15be9d27d0a",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "reference.png": "dbeccdce1f1f7360fac9b7a2b84fc3aecde2474d3c6319f86a0a246ea07f4454",
+    "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T04:15:26.389923+00:00"
+}

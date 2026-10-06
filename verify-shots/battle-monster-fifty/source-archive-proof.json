@@ -20,5 +20,16 @@
     "currentAllow": true,
     "sourceArchiveReread": true,
     "selectedPackSha256": "5bf5c538b858e79ba4e44d764b664858cf5d13f9eac7ab4bd5e89bb8f87730ae"
+  },
+  {
+    "key": "sun-gold-phoenix/fifty-v1",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "6190b19ea5f6b4f8f3c52564475dd4ac1df41f2e9da4bb16f38bfda2dc6d0392"
   }
 ]

@@ -1,0 +1,29 @@
+[
+  {
+    "monster": "jade-mantis",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "f3f9245a77774fa375936f8fb3f3d9901b6544ed012965084020ae43ad223aec",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "lantern-goblin",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/lantern-goblin/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "3b372fa5e3a86a61067b16b0a9b15ae2ecac89a8af314bcbbab1d621de4c1738",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  }
+]
