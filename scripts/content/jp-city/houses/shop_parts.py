@@ -449,3 +449,30 @@ PARTS['vsign'] = lambda cv, cx, fy, fh, f, it: vsign(cv, cx + it[2], fy + it[3],
 PARTS['stairwell'] = lambda cv, cx, fy, fh, f, it: stairwell(cv, cx + it[2], fy + 4, fh - 4, it[3] if len(it) > 3 else 16)
 PARTS['band'] = lambda cv, cx, fy, fh, f, it: band_stripe(cv, cx, fy + it[3], it[2], it[4] if len(it) > 4 else (('midori', 1), ('shiro', 2), ('sora', 1)))
 PARTS['carport_fl'] = PARTS['carport']
+
+
+# ─────────────────────────── 셔터 내린 가게(シャッター街) ───────────────────────────
+def shutter(c, x, y, w, h, paper=False):
+    """내린 철제 셔터: 위 셔터 상자 5px(윗면 +2 · 앞 0 · 아래 -2) · 가로 홈 3px 마다(밝은 줄 +1, 홈 -1) ·
+    양옆 가이드 레일 2px · 아래 바 2px · 왼쪽 빛. paper = 「テナント募集」 종이(흰 판 + 글 줄 + 빨강 머리 줄)."""
+    c.R(x, y, w, h, K('tekko', 1))
+    c.HL(x, y, w, K('tekko', 3)); c.R(x, y + 1, w, 3, K('tekko', 1)); c.HL(x, y + 4, w, K('tekko', -2))   # 셔터 상자
+    c.HL(x, y + 5, w, K('tekko', -3))                                                                      # 상자 밑 그늘
+    for j in range(y + 6, y + h - 2, 3):
+        c.HL(x + 2, j, w - 4, K('tekko', 2)); c.HL(x + 2, j + 1, w - 4, K('tekko', 1)); c.HL(x + 2, j + 2, w - 4, K('tekko', -1))
+    for j in range(y + 6, y + h - 2, 3): c.HL(x + 2, j, 6, K('tekko', 3))                                 # 왼쪽 빛 받는 홈
+    c.VL(x, y + 5, h - 5, K('tekko', -1)); c.VL(x + 1, y + 5, h - 5, K('tekko', 0))                        # 가이드 레일
+    c.VL(x + w - 2, y + 5, h - 5, K('tekko', -1)); c.VL(x + w - 1, y + 5, h - 5, K('tekko', -3))
+    c.R(x + 2, y + h - 2, w - 4, 2, K('tekko', -2)); c.HL(x + 2, y + h - 2, w - 4, K('tekko', 0))           # 아래 바
+    c.R(x + w // 2 - 2, y + h - 4, 4, 2, K('tekko', -3))                                                   # 손잡이
+    for k in range(0, w - 8, 23): c.P(x + 5 + k, y + h - 6 - (k % 5), K('renga', -1))                      # 녹 점
+    if paper:
+        px, py = x + w // 2 + 6, y + 12
+        c.R(px, py, 12, 15, K('shiro', 2)); c.HL(px, py, 12, K('aka', 0)); c.HL(px, py + 1, 12, K('aka', 1))
+        for j in (py + 4, py + 7, py + 10): c.HL(px + 2, j, 8, K('sumi', 2))
+        c.HL(px + 2, py + 12, 5, K('sumi', 2))
+        c.VL(px + 12, py + 1, 15, K('tekko', -2)); c.HL(px + 1, py + 15, 12, K('tekko', -2))               # 종이 그림자
+    c.HL(x, y + h, w, K('hodo', 2)); c.VL(x - 1, y, h, OL); c.VL(x + w, y, h, OL)
+
+
+PARTS['shutter'] = lambda cv, cx, fy, fh, f, it: shutter(cv, cx + it[3], fy + it[4], it[2], fh - it[4], it[5] if len(it) > 5 else False)

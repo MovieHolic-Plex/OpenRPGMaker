@@ -1,6 +1,6 @@
-# 일본 도시 — 손 도트 건물 59종 · 쓰는 법
+# 일본 도시 — 손 도트 건물 77종 · 쓰는 법
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6926칸**, 16px 칸, 시트 768×2320px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 스크립트 손 도트(modern3 팔레트, 빛 왼쪽 위, 정면 고정 3/4 시점, 한 층 32px·문 16×28·사람 16×24 눈금)로 그린 일본 동네 건물 한 채 = 키트 하나.
 그림 원본은 `scripts/content/jp-city/houses/`(기준 집 `ref_house.py` → 조립 키트 `house_kit.py` → 상점 부품 `shop_parts.py` → 목록 `catalog.py`), 굽기 블록은 `blocks/buildings.py`.
@@ -22,9 +22,11 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 **고정/반복.** 모든 건물 키트는 고정(늘리기 없음). 폭이 다른 건물이 필요하면 다른 키트를 고르거나 같은 계열 둘을 붙여 세운다.
 
+**셔터 가게**(`*-shut`·`shop-vacant`·줄 키트 `row-shutter-*` 안의 셔터 칸)는 문이 없다 — `access` 가 비어 있고 이벤트(전이)를 두지 않는다. 동네 한 장에 10칸 중 1~2칸 섞는다(빈 점포율 13.6%, 조사 `tiledata/jp-city/research/README.md`).
+
 **없는 것(정직한 목록).** 뒷면·옆면 그림 없음 · 간판 글자는 일본어 고정 · 마당·담·주차장·자전거 보관대는 키트 밖(오토타일·소품으로) · 실내 맵 없음 · 밤 조명판 없음.
 
-## 목록 (59종)
+## 목록 (77종)
 | 키트 | 이름 | 분류 | 폭×높이 | 막힘 줄 | 접근칸(dx,dy) | 도달(시험판 최소) |
 |---|---|---|---|---|---|---|
 | `jp-bldg-house-hip2` | 2층 寄棟 단독주택 | 단독주택 | 9×8 | 2 | (1,8) | 7 |
@@ -62,10 +64,21 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | `jp-bldg-shop-bicycle` | 自転車屋 | 가게 | 8×8 | 2 | (4,8) | 7 |
 | `jp-bldg-shop-realestate` | 不動産屋 | 가게 | 7×8 | 2 | (5,8) | 7 |
 | `jp-bldg-shop-salon` | 美容室 | 가게 | 7×8 | 2 | (1,8) | 7 |
+| `jp-bldg-shop-fish-shut` | 魚屋 생선가게 · 셔터 내림 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-butcher-shut` | 肉屋 정육점 · 셔터 내림 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-books-shut` | 本屋 서점 · 셔터 내림 | 가게 | 8×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-cleaning-shut` | クリーニング 세탁소 · 셔터 내림 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-bicycle-shut` | 自転車屋 · 셔터 내림 | 가게 | 8×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-sake-shut` | 酒屋 술가게 · 셔터 내림 | 가게 | 8×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-flower-shut` | 花屋 꽃집 · 셔터 내림 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-realestate-shut` | 不動産屋 · 셔터 내림 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
+| `jp-bldg-shop-vacant` | 빈 점포 · テナント募集 | 가게 | 7×8 | 2 | 출입구 없음(셔터·빈 점포) | - |
 | `jp-bldg-row-shotengai-a` | 상점가 줄 A · 八百屋·魚屋·肉屋·パン | 가게 | 24×9 | 2 | (4,9); (9,9); (16,9); (22,9) | 7 |
 | `jp-bldg-row-shotengai-b` | 상점가 줄 B · 花屋·書店·薬局·クリーニング | 가게 | 23×8 | 2 | (3,8); (9,8); (14,8); (17,8) | 7 |
 | `jp-bldg-row-shotengai-c` | 상점가 줄 C · 酒屋·自転車·不動産·美容室 | 가게 | 24×8 | 2 | (4,8); (10,8); (17,8); (18,8) | 7 |
 | `jp-bldg-row-shotengai-d` | 상점가 줄 D · 和菓子·駄菓子·たばこ·理髪 | 가게 | 20×10 | 2 | (1,10); (8,10); (13,10); (16,10) | 7 |
+| `jp-bldg-row-shutter-a` | 셔터 섞인 상점가 줄 A · 花屋·(셔터)·薬局·(셔터)·酒屋 | 가게 | 29×8 | 2 | (3,8); (13,8); (25,8) | 7 |
+| `jp-bldg-row-shutter-b` | 셔터 섞인 상점가 줄 B · 八百屋·(셔터)·パン·(빈 점포) | 가게 | 24×9 | 2 | (4,9); (17,9) | 7 |
 | `jp-bldg-shop-ramen` | ラーメン屋 | 음식점 | 7×9 | 2 | (1,9) | 7 |
 | `jp-bldg-shop-soba` | 蕎麦屋 소바집 | 음식점 | 8×6 | 2 | (2,6) | 7 |
 | `jp-bldg-shop-izakaya` | 居酒屋 선술집 | 음식점 | 7×9 | 2 | (3,9) | 7 |
@@ -78,14 +91,21 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | `jp-bldg-zakkyo5` | 5층 雑居ビル | 상업 건물 | 7×14 | 3 | (1,14); (5,14) | 7 |
 | `jp-bldg-office6` | 6층 오피스 빌딩 | 상업 건물 | 9×15 | 3 | (4,15) | 7 |
 | `jp-bldg-market-hall` | 市場 시장 건물 | 상업 건물 | 14×7 | 3 | (3,7); (7,7); (11,7) | 7 |
+| `jp-bldg-coin-laundry` | コインランドリー 코인 세탁소 | 상업 건물 | 8×6 | 3 | (6,6) | 7 |
+| `jp-bldg-gas-office` | 給油所 사무소 | 상업 건물 | 7×6 | 3 | (1,6) | 7 |
 | `jp-bldg-row-ekimae` | 역 앞 줄 · 薬局·コンビニ·喫茶·不動産 | 상업 건물 | 25×8 | 3 | (3,8); (10,8); (14,8); (23,8) | 7 |
 | `jp-bldg-post-office` | 郵便局 | 공공 건물 | 9×8 | 2 | (4,8) | 7 |
 | `jp-bldg-koban` | 交番 파출소 | 공공 건물 | 6×6 | 2 | (3,6) | 7 |
 | `jp-bldg-clinic` | 内科 의원 | 공공 건물 | 9×8 | 2 | (4,8) | 7 |
 | `jp-bldg-sento` | 銭湯 대중목욕탕 | 공공 건물 | 11×8 | 2 | (5,8) | 7 |
 | `jp-bldg-kindergarten` | 保育園 | 공공 건물 | 11×7 | 2 | (5,7) | 7 |
+| `jp-bldg-station-small` | さくら駅 작은 역사 | 공공 건물 | 14×6 | 2 | (7,6) | 7 |
+| `jp-bldg-school` | 小学校 교사(3층) | 공공 건물 | 20×10 | 3 | (10,10) | 7 |
+| `jp-bldg-school-gym` | 小学校 체육관 | 공공 건물 | 14×6 | 2 | (5,6); (8,6) | 7 |
+| `jp-bldg-shrine-haiden` | 神社 拝殿 | 공공 건물 | 8×7 | 2 | (4,7) | 7 |
 | `jp-bldg-factory` | 町工場 공장 | 공장·창고 | 11×5 | 3 | (6,5) | 7 |
 | `jp-bldg-warehouse` | 倉庫 창고 | 공장·창고 | 10×6 | 3 | (7,6) | 7 |
+| `jp-bldg-machikoba-home` | 町工場 · 2층 살림집 | 공장·창고 | 8×7 | 3 | (6,7) | 7 |
 
 도달 = 시험판(보도 + 도로 2줄)에 키트만 찍고 접근칸에서 걸어 갈 수 있는 칸 수(최대 6에서 멈춤). 모든 키트 ≥ 6이면 출입구 앞이 열려 있다.
 

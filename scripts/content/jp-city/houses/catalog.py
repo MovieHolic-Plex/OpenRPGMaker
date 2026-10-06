@@ -7,6 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import house_kit as hk  # noqa: E402
 import shop_parts  # noqa: E402,F401  (PARTS/ROOFS/JOINS 등록)
+import landmark_parts as LP  # noqa: E402
 from shop_parts import vsign, chimney, red_lamp  # noqa: E402
 from house_kit import RECIPES as R0  # noqa: E402
 
@@ -41,21 +42,21 @@ add('apart_wood2', '2층 목조 아파트', 'apartment', R0['apart2'])
 # ── 상점(1층 가게 + 2층 살림집) ──
 add('shop_greengrocer', '八百屋 채소가게', 'shop', dict(
     w=6, rmat='tairu', rbase=0, roof=('gable_side', {}),
-    floors=[fl(56, 'kinari', 1, S, ('sign', 0, 96, '八百屋', 'midori', WH, 1, 18),
+    floors=[fl(56, 'kinari', 1, S, ('sign', 0, 96, 'やおや', 'midori', WH, 1, 18),
               ('shopopen', 0, 96, 'veg', 0, 23), ('awning', 0, 96, 'midori', 0, 23)),
             fl(28, 'kinari', 1, S, ('sash', 0, 24, 14, 10, 8, False, True), ('sash', 3, 32, 14, 8, 8, True, True))],
     joins=[('shop_band', {'mat': 'conc'})]))
 
 add('shop_fish', '魚屋 생선가게', 'shop', dict(
     w=5, rmat='yoru', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'hodo', 1, P, ('sign', 0, 80, '魚屋', 'sora', WH, 1, 18),
+    floors=[fl(56, 'hodo', 1, P, ('sign', 0, 80, 'さかな', 'sora', WH, 1, 18),
               ('shopopen', 0, 80, 'fish', 0, 23), ('awning', 0, 80, 'sora', 0, 23)),
             fl(28, 'hodo', 2, P, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('shop_band', {})]))
 
 add('shop_butcher', '肉屋 정육점', 'shop', dict(
     w=5, rmat='kawara', rbase=-1, roof=('gable_side', {}),
-    floors=[fl(56, 'shiro', 1, T, ('sign', 0, 80, '肉', 'aka', WH, 1, 18),
+    floors=[fl(56, 'shiro', 1, T, ('sign', 0, 80, 'お肉', 'aka', WH, 1, 18),
               ('shopglass', 0, 80, 'meat', 0, 23, 'right'), ('awning', 0, 80, 'aka', 0, 23)),
             fl(28, 'kinari', 1, S, ('sash', 0, 24, 14, 8, 8, True, True), ('sash', 3, 16, 14, 6, 8, False, True))],
     joins=[('shop_band', {})]))
@@ -69,35 +70,35 @@ add('shop_bakery', 'パン屋 빵집', 'shop', dict(
 
 add('shop_flower', '花屋 꽃집', 'shop', dict(
     w=5, rmat='tekko', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'shiro', 1, P, ('sign', 0, 80, '花', 'midori', WH, 1, 18),
+    floors=[fl(56, 'shiro', 1, P, ('sign', 0, 80, 'フラワー', 'midori', WH, 1, 18),
               ('shopopen', 0, 80, 'flower', 0, 23), ('awning', 0, 80, 'midori', 0, 23, False)),
             fl(28, 'shiro', 1, P, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('shop_band', {})]))
 
 add('shop_books', '本屋 서점', 'shop', dict(
     w=6, rmat='tairu', rbase=-1, roof=('flat', {'items': (('ac', 60),)}),
-    floors=[fl(56, 'conc', 1, N, ('sign', 0, 96, '本', 'kon', WH, 1, 18),
+    floors=[fl(56, 'conc', 1, N, ('sign', 0, 96, 'ブックス', 'kon', WH, 1, 18),
               ('shopglass', 0, 96, 'books', 0, 23), ('bikes', 4, 2, 2)),
             fl(28, 'conc', 1, N, ('sash', 0, 40, 14, 8, 8, False, False), ('sash', 3, 40, 14, 4, 8, True, False))],
     joins=[('shop_band', {})]))
 
 add('shop_pharmacy', '薬局 약국', 'shop', dict(
     w=5, rmat='conc', rbase=0, roof=('flat', {'items': (('tank', 50),)}),
-    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 80, '薬局', 'sora', WH, 1, 18),
+    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 80, 'くすり', 'sora', WH, 1, 18),
               ('shopglass', 0, 80, 'drug', 0, 23)),
             fl(28, 'shiro', 2, T, ('sash', 0, 32, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('shop_band', {})]))
 
 add('shop_cleaning', 'クリーニング 세탁소', 'shop', dict(
     w=5, rmat='yoru', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'hodo', 2, P, ('sign', 0, 80, 'クリーニング', 'sora', WH, 1, 18) if False else ('sign', 0, 80, '洋服', 'sora', WH, 1, 18),
+    floors=[fl(56, 'hodo', 2, P, ('sign', 0, 80, '洗たく', 'sora', WH, 1, 18),
               ('shopglass', 0, 80, 'drug', 0, 23, 'left'), ('awning', 0, 80, 'sora', 0, 23)),
             fl(28, 'hodo', 2, P, ('sash', 0, 24, 14, 8, 8, True, True), ('sash', 3, 16, 14, 6, 8, False, True))],
     joins=[('shop_band', {})]))
 
 add('shop_ramen', 'ラーメン屋', 'restaurant', dict(
     w=5, rmat='tairu', rbase=0, roof=('gable_side', {}),
-    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 80, 'ラーメン', 'aka', YE, 1, 18) if False else ('sign', 0, 80, '麺', 'aka', YE, 1, 18),
+    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 80, 'ラーメン', 'aka', YE, 1, 18),
               ('shopglass', 0, 80, 'sake', 0, 23, 'left'), ('noren', 0, 30, 'aka', '', 2), ('lantern', 4, 4, 24)),
             fl(28, 'kinari', 1, S, ('sash', 0, 24, 14, 8, 8, True, True), ('sash', 3, 16, 14, 6, 8, False, True))],
     joins=[('lean', {})]))
@@ -110,21 +111,21 @@ add('shop_soba', '蕎麦屋 소바집', 'restaurant', dict(
 
 add('shop_izakaya', '居酒屋 선술집', 'restaurant', dict(
     w=5, rmat='tairu', rbase=-1, roof=('gable_side', {}),
-    floors=[fl(56, 'ita', 0, W, ('sign', 0, 80, '居酒屋', 'ita', YE, 1, 18),
+    floors=[fl(56, 'ita', 0, W, ('sign', 0, 80, 'いざかや', 'ita', YE, 1, 18),
               ('lattice', 1, 32), ('noren', 1, 32, 'kon', '', 0), ('lantern', 0, 6, 26), ('lantern', 3, 10, 26), ('crates', 4, 0, 3, 'kii')),
             fl(28, 'kinari', 0, S, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('lean', {})]))
 
 add('shop_cafe', '喫茶店 찻집', 'restaurant', dict(
     w=5, rmat='renga', rbase=0, roof=('gable_side', {}),
-    floors=[fl(56, 'renga', 0, B, ('sign', 0, 80, '喫茶', 'ita', YE, 1, 18),
+    floors=[fl(56, 'renga', 0, B, ('sign', 0, 80, '喫茶ルナ', 'ita', YE, 1, 18),
               ('shopglass', 0, 80, 'sweets', 0, 23, 'left'), ('awning', 0, 80, 'aka', 0, 23), ('pots', 4, 0, 2)),
             fl(28, 'renga', 0, B, ('sash', 0, 24, 14, 8, 8, True, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('shop_band', {'mat': 'kinari'})]))
 
 add('shop_barber', '理髪店 이발소', 'shop', dict(
     w=4, rmat='yoru', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 64, '理髪', 'sora', WH, 1, 18),
+    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 64, 'とこや', 'sora', WH, 1, 18),
               ('shopglass', 0, 56, 'drug', 4, 23, 'left'), ('barber', 3, 6)),
             fl(28, 'shiro', 2, T, ('sash', 0, 24, 14, 8, 8, True, True))],
     joins=[('shop_band', {})]))
@@ -206,41 +207,41 @@ add('danchi5', '5층 団地', 'apartment', dict(
 # ── 상점 2차 ──
 add('shop_sushi', '寿司屋 초밥집', 'restaurant', dict(
     w=5, rmat='tairu', rbase=-1, roof=('gable_side', {}),
-    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 80, '寿司', 'ita', WH, 1, 18), ('lattice', 0, 48), ('noren', 0, 30, 'kon', '', 8), ('pots', 4, 0, 2)),
+    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 80, 'すし', 'ita', WH, 1, 18), ('lattice', 0, 48), ('noren', 0, 30, 'kon', '', 8), ('pots', 4, 0, 2)),
             fl(28, 'kinari', 1, P, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('lean', {})]))
 add('shop_teishoku', '定食屋 백반집', 'restaurant', dict(
     w=5, rmat='yoru', rbase=0, roof=('gable_side', {}),
-    floors=[fl(56, 'kinari', 0, S, ('sign', 0, 80, '定食', 'aka', WH, 1, 18), ('shopglass', 0, 80, 'sake', 0, 23, 'left'), ('noren', 0, 26, 'kon', '', 4), ('awning', 0, 80, 'kinari', 0, 23, False)),
+    floors=[fl(56, 'kinari', 0, S, ('sign', 0, 80, 'めし処', 'aka', WH, 1, 18), ('shopglass', 0, 80, 'sake', 0, 23, 'left'), ('noren', 0, 26, 'kon', '', 4), ('awning', 0, 80, 'kinari', 0, 23, False)),
             fl(28, 'kinari', 0, S, ('sash', 0, 24, 14, 8, 8, True, True), ('sash', 3, 16, 14, 6, 8, False, True))],
     joins=[('shop_band', {})]))
 add('shop_wagashi', '和菓子屋', 'shop', dict(
     w=5, rmat='tairu', rbase=-1, roof=('irimoya', {'inset': 16}),
-    floors=[fl(56, 'shiro', 1, P, ('sign', 0, 80, '和菓子', 'ita', WH, 1, 18), ('shopglass', 0, 80, 'sweets', 0, 23, 'left'), ('noren', 0, 26, 'murasaki', '', 4))],
+    floors=[fl(56, 'shiro', 1, P, ('sign', 0, 80, 'だんご', 'ita', WH, 1, 18), ('shopglass', 0, 80, 'sweets', 0, 23, 'left'), ('noren', 0, 26, 'murasaki', '', 4))],
     joins=[]))
 add('shop_dagashi', '駄菓子屋', 'shop', dict(
     w=5, rmat='tekko', rbase=-1, roof=('gable_side', {}),
-    floors=[fl(56, 'ita', 0, W, ('sign', 0, 80, '駄菓子', 'kii', BK, 1, 18), ('shopopen', 0, 80, 'sweets', 0, 23), ('vend', 4, 0)),
+    floors=[fl(56, 'ita', 0, W, ('sign', 0, 80, 'だがし', 'kii', BK, 1, 18), ('shopopen', 0, 80, 'sweets', 0, 23), ('vend', 4, 0)),
             fl(28, 'ita', 0, W, ('sash', 0, 24, 14, 8, 8, False, True))],
     joins=[('lean', {})]))
 add('shop_sake', '酒屋 술가게', 'shop', dict(
     w=6, rmat='tairu', rbase=0, roof=('gable_side', {}),
-    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 96, '酒', 'ita', WH, 1, 18), ('shopglass', 0, 64, 'sake', 0, 23, 'right'), ('awning', 0, 64, 'midori', 0, 23, False), ('crates', 4, 0, 4, 'kii'), ('vend', 5, 0)),
+    floors=[fl(56, 'kinari', 1, W, ('sign', 0, 96, '酒のヤマ', 'ita', WH, 1, 18), ('shopglass', 0, 64, 'sake', 0, 23, 'right'), ('awning', 0, 64, 'midori', 0, 23, False), ('crates', 4, 0, 4, 'kii'), ('vend', 5, 0)),
             fl(28, 'kinari', 1, S, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 32, 14, 8, 8, True, True))],
     joins=[('shop_band', {})]))
 add('shop_bicycle', '自転車屋', 'shop', dict(
     w=6, rmat='yoru', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'hodo', 1, V, ('sign', 0, 96, '自転車', 'sora', WH, 1, 18), ('shopopen', 0, 96, 'tools', 0, 23), ('bikes', 0, 2, 4)),
+    floors=[fl(56, 'hodo', 1, V, ('sign', 0, 96, 'サイクル', 'sora', WH, 1, 18), ('shopopen', 0, 96, 'tools', 0, 23), ('bikes', 0, 2, 4)),
             fl(28, 'hodo', 1, V, ('sash', 0, 24, 14, 8, 8, False, True), ('sash', 3, 32, 14, 8, 8, True, True))],
     joins=[('shop_band', {})]))
 add('shop_realestate', '不動産屋', 'shop', dict(
     w=5, rmat='conc', rbase=0, roof=('flat', {'items': (('ac', 40),)}),
-    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 80, '不動産', 'midori', WH, 1, 18), ('shopglass', 0, 80, 'paper', 0, 23, 'right')),
+    floors=[fl(56, 'shiro', 2, T, ('sign', 0, 80, '住まい', 'midori', WH, 1, 18), ('shopglass', 0, 80, 'paper', 0, 23, 'right')),
             fl(28, 'shiro', 2, T, ('sash', 0, 40, 14, 8, 8, False, True), ('sash', 3, 16, 14, 6, 8, True, True))],
     joins=[('shop_band', {})]))
 add('shop_salon', '美容室', 'shop', dict(
     w=5, rmat='tekko', rbase=0, roof=('shed', {}),
-    floors=[fl(56, 'shiro', 2, P, ('sign', 0, 80, '美容室', 'pinku', WH, 1, 18), ('shopglass', 0, 80, 'drug', 0, 23, 'left'), ('pots', 4, 0, 2)),
+    floors=[fl(56, 'shiro', 2, P, ('sign', 0, 80, 'ヘアー', 'pinku', WH, 1, 18), ('shopglass', 0, 80, 'drug', 0, 23, 'left'), ('pots', 4, 0, 2)),
             fl(28, 'tekko', 0, V, ('sash', 0, 48, 14, 8, 8, False, False))],
     joins=[('shop_band', {})]))
 
@@ -257,7 +258,7 @@ add('zakkyo5', '5층 雑居ビル', 'commercial', dict(
     w=5, rmat='conc', rbase=0, roof=('flat', {'items': (('tank', 10), ('ac', 50))}),
     floors=[fl(44, 'tairu', 1, T, ('shopglass', 0, 56, 'sake', 0, 8, 'left'), ('door', 4, 0), ('awning', 0, 56, 'aka', 0, 4))] +
            [fl(28, 'tairu', 1, T, ('sash', 0, 48, 14, 4, 8, k % 2 == 0, False)) for k in range(4)],
-    joins=[('belt', {})] * 4, after=[lambda cv, g: vsign(cv, g['X1'] - 22, g['ys'][3] + 4, '居酒屋', 'aka')]))
+    joins=[('belt', {})] * 4, after=[lambda cv, g: vsign(cv, g['X1'] - 22, g['ys'][3] + 4, 'カラオケ', 'aka')]))
 add('office6', '6층 오피스 빌딩', 'commercial', dict(
     w=7, rmat='conc', rbase=0, roof=('flat', {'items': (('hatch', 6), ('ac', 60), ('ac', 80))}),
     floors=[fl(40, 'conc', 1, N, ('shopglass', 1, 80, 'paper', 0, 6, 'mid'), ('canopy', 1, 80, 0, 2))] +
@@ -274,7 +275,7 @@ add('koban', '交番 파출소', 'public', dict(
     joins=[], after=[lambda cv, g: red_lamp(cv, g['X0'] + 29, g['ys'][0] - 12)]))
 add('clinic', '内科 의원', 'public', dict(
     w=7, rmat='conc', rbase=0, roof=('flat', {'items': (('tank', 90),)}),
-    floors=[fl(56, 'shiro', 2, T, ('sign', 1, 80, '内科', 'midori', WH, 1, 18), ('shopglass', 2, 48, 'paper', 0, 23, 'mid'), ('sash', 0, 24, 14, 4, 30, False, False), ('sash', 5, 24, 14, 4, 30, False, False), ('pots', 6, 4, 1)),
+    floors=[fl(56, 'shiro', 2, T, ('sign', 1, 80, 'やま医院', 'midori', WH, 1, 18), ('shopglass', 2, 48, 'paper', 0, 23, 'mid'), ('sash', 0, 24, 14, 4, 30, False, False), ('sash', 5, 24, 14, 4, 30, False, False), ('pots', 6, 4, 1)),
             fl(28, 'shiro', 2, T, ('sash', 0, 32, 14, 8, 8, False, True), ('sash', 4, 32, 14, 8, 8, True, True))],
     joins=[('shop_band', {})]))
 add('sento', '銭湯 대중목욕탕', 'public', dict(
@@ -285,13 +286,13 @@ add('sento', '銭湯 대중목욕탕', 'public', dict(
 add('kindergarten', '保育園', 'public', dict(
     w=9, rmat='aka', rbase=0, roof=('gable_side', {}),
     floors=[fl(34, 'kinari', 2, P, ('sign', 3, 48, '保育園', 'midori', WH, 0, 18) if False else ('door', 4, 0), ('sash', 0, 48, 24, 8, 6, True, False), ('sash', 6, 40, 24, 0, 6, True, False), ('pots', 3, 0, 2)),
-            fl(28, 'kinari', 2, P, ('sign', 3, 48, '保育園', 'midori', WH, 4, 18), ('sash', 0, 32, 14, 8, 8, False, True), ('sash', 6, 32, 14, 8, 8, False, True))],
+            fl(28, 'kinari', 2, P, ('sign', 2, 80, 'さくら園', 'midori', WH, 4, 18), ('sash', 0, 24, 14, 4, 8, False, True), ('sash', 7, 24, 14, 4, 8, False, True))],
     joins=[('belt', {'mat': 'kii'})]))
 
 # ── 시장·공장 ──
 add('market_hall', '市場 시장 건물', 'commercial', dict(
     w=12, rmat='tekko', rbase=0, roof=('gable_front_big', {'rise': 30, 'depth': 12}),
-    floors=[fl(56, 'conc', 1, N, ('sign', 3, 96, '市場', 'aka', WH, 1, 18),
+    floors=[fl(56, 'conc', 1, N, ('sign', 3, 96, 'いちば', 'aka', WH, 1, 18),
               ('shopopen', 0, 56, 'veg', 4, 23), ('shopopen', 4, 56, 'fish', 4, 23), ('shopopen', 8, 56, 'fruit', 4, 23),
               ('awning', 0, 64, 'midori', 0, 23), ('awning', 4, 64, 'sora', 0, 23), ('awning', 8, 64, 'daidai', 0, 23))],
     joins=[]))
@@ -307,6 +308,68 @@ add('garage_carport_house', '단층 차고 딸린 집', 'house', dict(
     w=8, rmat='yoru', rbase=0, roof=('shed', {}),
     floors=[fl(30, 'kinari', 2, P, ('door', 0, 8), ('sash', 1, 40, 22, 12, 6, True, False), ('garage', 5, 44))],
     joins=[], porch=[(6, 22)]))
+
+
+# ── 셔터 내린 가게(シャッター街, 빈 점포율 13.6% — 58% 는 간판을 단 채 셔터만 내림) ──
+_FRONT = ('shopopen', 'shopglass', 'awning', 'noren', 'lattice', 'lantern', 'crates', 'bikes', 'pots', 'vend', 'barber', 'postbox')
+
+
+def _shut(src, paper=False, sign=None):
+    """src 가게의 1층 정면을 내린 셔터로 바꾼 사본. 정면 폭·높이는 원래 쇼윈도/열린 가게 부품에서 가져온다."""
+    import copy
+    name, cat, r = CATALOG[src]
+    r = copy.deepcopy(r)
+    f0 = r['floors'][0]
+    front = next(it for it in f0['items'] if it[0] in ('shopopen', 'shopglass'))
+    items = [it for it in f0['items'] if it[0] not in _FRONT]
+    if sign is not None:
+        items = [(it[:3] + (sign,) + it[4:]) if it[0] == 'sign' else it for it in items]
+    items.append(('shutter', 0, front[2], front[4], front[5], paper))
+    f0['items'] = items
+    return r
+
+
+for _src, _paper in (('shop_fish', False), ('shop_butcher', False), ('shop_books', True), ('shop_cleaning', False),
+                     ('shop_bicycle', False), ('shop_sake', True), ('shop_flower', False), ('shop_realestate', False)):
+    add(_src + '_shut', CATALOG[_src][0] + ' · 셔터 내림', 'shop', _shut(_src, _paper))
+add('shop_vacant', '빈 점포 · テナント募集', 'shop', _shut('shop_pharmacy', True, ''))
+
+
+# ── 동네 거점(조사 03: 역·학교·신사·코인 세탁소·町工場·주유소) ──
+add('coin_laundry', 'コインランドリー 코인 세탁소', 'commercial', dict(
+    w=6, rmat='conc', rbase=0, roof=('flat', {'items': (('ac', 14), ('ac', 60))}),
+    floors=[fl(52, 'shiro', 2, T, ('sign', 0, 96, 'ランドリー', 'sora', WH, 1, 18), ('washers', 0, 96, 0, 23))],
+    joins=[]))
+add('machikoba_home', '町工場 · 2층 살림집', 'industrial', dict(
+    w=6, rmat='tekko', rbase=0, roof=('shed', {}),
+    floors=[fl(44, 'tekko', 0, V, ('garage', 0, 64), ('door', 4, 8)),
+            fl(28, 'kinari', 1, S, ('sash', 0, 32, 14, 8, 8, True, True), ('sash', 3, 24, 14, 8, 8, False, True))],
+    joins=[('belt', {})]))
+add('station_small', 'さくら駅 작은 역사', 'public', dict(
+    w=12, rmat='kawara', rbase=0, roof=('hip', {'run': 40}),
+    floors=[fl(48, 'shiro', 2, P, ('sign', 3, 96, 'さくら駅', 'kon', WH, 1, 18), ('shopglass', 3, 96, 'paper', 0, 24, 'mid'),
+              ('vend', 0, 6), ('vend', 1, 8), ('sash', 9, 40, 14, 4, 26, False, False))],
+    joins=[], after=[lambda cv, g: LP.clock(cv, g['X0'] + 96, g['ys'][0] - 12, 6)]))
+add('school', '小学校 교사(3층)', 'public', dict(
+    w=18, rmat='conc', rbase=0, roof=('flat', {'items': (('tank', 24), ('hatch', 250))}),
+    floors=[fl(38, 'shiro', 2, N, *[('sash', c, 40, 18, 4, 8, False, False) for c in (0, 3, 12, 15)], ('shopglass', 7, 64, 'paper', 0, 6, 'mid')),
+            fl(38, 'shiro', 2, N, *[('sash', c, 40, 18, 4, 8, False, False) for c in (0, 3, 12, 15)], ('sash', 8, 32, 14, 0, 10, False, False)),
+            fl(38, 'shiro', 2, N, *[('sash', c, 40, 18, 4, 8, False, False) for c in (0, 3, 12, 15)])],
+    joins=[('belt', {'mat': 'conc'}), ('belt', {'mat': 'conc'})],
+    after=[lambda cv, g: LP.clock(cv, g['X0'] + 144, g['ys'][2] + 16, 8)]))
+add('school_gym', '小学校 체육관', 'public', dict(
+    w=12, rmat='tekko', rbase=0, roof=('gable_side', {}),
+    floors=[fl(56, 'conc', 1, N, *[('sash', c, 32, 10, 8, 6, False, False) for c in (0, 3, 6, 9)], ('door', 4, 0), ('door', 7, 0))],
+    joins=[]))
+add('shrine_haiden', '神社 拝殿', 'public', dict(
+    w=6, rmat='kawara', rbase=-1, roof=('irimoya', {'inset': 22}),
+    floors=[fl(44, 'ita', 0, W, ('lattice', 1, 64), ('saisen', 2, 4), ('suzu', 3, 0, 6, 16))],
+    joins=[], after=[lambda cv, g: (LP.posts(cv, g['X0'] + 2, g['ys'][0], 44), LP.posts(cv, g['X1'] - 7, g['ys'][0], 44),
+                                    LP.shimenawa(cv, g['X0'] + 10, g['X1'] - 10, g['ys'][0] + 2))]))
+add('gas_office', '給油所 사무소', 'commercial', dict(
+    w=5, rmat='conc', rbase=0, roof=('flat', {'items': (('ac', 40),)}),
+    floors=[fl(46, 'shiro', 2, T, ('band', 0, 80, 2, (('aka', 1), ('shiro', 2), ('aka', 1))), ('shopglass', 0, 80, 'mart', 0, 14, 'left'))],
+    joins=[]))
 
 
 def render(out, names=None):

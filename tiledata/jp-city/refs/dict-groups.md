@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (174개)
+# 일본 도시 — 타일 그룹 사전 (175개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6926칸**, 16px 칸, 시트 768×2320px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 23, fence 5, prop 77, roof 16, terrain 19, wall 31, water 3.
+역할별 개수: building 23, fence 5, prop 77, roof 16, terrain 20, wall 31, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -187,6 +187,7 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:fumikiri-parts","name":"철도 건널목 · 경보기·차단기","role":"prop","layer":"upper","n":10,"from":3670,"to":3683},
 {"id":"jp:fumikiri-deck","name":"철도 건널목 · 바닥판","role":"terrain","layer":"lower","n":2,"from":3675,"to":3680},
 {"id":"jp:underpass-footbridge","name":"지하도 입구·육교 계단","role":"prop","layer":"mixed","n":36,"from":3684,"to":3719},
-{"id":"jp:road-sign-parts","name":"길가 표지(1×2)","role":"prop","layer":"upper","n":14,"from":3720,"to":3734}
+{"id":"jp:road-sign-parts","name":"길가 표지(1×2)","role":"prop","layer":"upper","n":14,"from":3720,"to":3734},
+{"id":"jp:hand-marking","name":"손 도트 노면·길 가장자리","role":"terrain","layer":"upper","n":20,"from":6679,"to":6698}
 ]
 ```

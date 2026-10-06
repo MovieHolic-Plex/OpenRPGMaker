@@ -72,6 +72,9 @@ ROWS = collections.OrderedDict([
     ('row_shotengai_d', ('상점가 줄 D · 和菓子·駄菓子·たばこ·理髪', 'shop', ['shop_wagashi', 'shop_dagashi', 'shop_tabako', 'shop_barber'])),
     ('row_inshokugai', ('음식점 줄 · ラーメン·寿司·定食·居酒屋·喫茶', 'restaurant', ['shop_ramen', 'shop_sushi', 'shop_teishoku', 'shop_izakaya', 'shop_cafe'])),
     ('row_ekimae', ('역 앞 줄 · 薬局·コンビニ·喫茶·不動産', 'commercial', ['shop_pharmacy', 'conbini', 'shop_cafe', 'shop_realestate'])),
+    # 셔터 거리(조사 01: 빈 점포율 13.6%, 한 줄 10칸에 1~2칸) — 영업 가게 사이에 셔터 가게를 섞은 줄
+    ('row_shutter_a', ('셔터 섞인 상점가 줄 A · 花屋·(셔터)·薬局·(셔터)·酒屋', 'shop', ['shop_flower', 'shop_cleaning_shut', 'shop_pharmacy', 'shop_bicycle_shut', 'shop_sake'])),
+    ('row_shutter_b', ('셔터 섞인 상점가 줄 B · 八百屋·(셔터)·パン·(빈 점포)', 'shop', ['shop_greengrocer', 'shop_fish_shut', 'shop_bakery', 'shop_vacant'])),
 ])
 
 
