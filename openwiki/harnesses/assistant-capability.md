@@ -98,3 +98,9 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 `proof.json`, 원본 WebM, 실제 입력부터 결과/페이지 재로드까지 정상 속도 `assistant.mp4`가 산출물이다.
 실패 시도도 같은 폴더에 남고 기존 실행 폴더는 덮어쓰지 않는다. core 수행 점수·전체 게임
 품질·런타임 플레이 검증과 별도인 생성/저장 증거이며 이 단계만으로 플레이 검수 통과를 선언하지 않는다.
+
+`--case monster`(2026-10-06)는 빈 SQLite 프로젝트에 「포켓몬스터 같은 게임을 처음부터 끝까지 만들어줘」와 고유명을
+자연어로만 준다. 합격은 캠페인·72맵·시작 마을 이름·고유명 반영, 실행 상태가 「마치지 못했」이 아님, 같은 SHA 재로드다.
+`proof.refine`에 사용자가 보는 「더 다듬을 곳」 지적 전문을 남긴다. 저장본 플레이는 따로 —
+`live.json`을 `qa:game check`와 `scripts/qa/runtime/monster-journey.mjs`(gen 출력처럼 안 쓰는 업로드를 걷어 낸 사본)로 돌린다.
+여정은 찍을 때마다 전투 문장이 창 안에 있는지 재고 넘치면 `layout:` 단계로 실패한다.
