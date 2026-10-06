@@ -1341,7 +1341,20 @@ function isRestorationGround(tileset: TilesetDef, tile: number): boolean {
   if (meta?.role && (tileMetaOrigin(meta) === "user" || tileMetaLocked(meta))) return isGroundRole(meta.role);
   const roles = (tileset.tileGroups ?? []).filter(group => group.tileIds.includes(tile)).map(group => group.role);
   const groundRoles: string[] = meta?.role ? [meta.role, ...roles] : roles;
-  return groundRoles.length > 0 && groundRoles.every(isGroundRole);
+  if (groundRoles.length > 0) return groundRoles.every(isGroundRole);
+  // 역할표가 없는 번들 키트(몬스터 기후 등)는 덧그림 칸의 받침(layerBacking)으로 지면을 선언한다 — 저자가 그 칸을 덧그림 밑 바닥으로 정했다.
+  // 이 근거가 없어서 서리꽃 마을 눈밭(448)을 바닥으로 못 찾고 tile_erase 가 실패했다(2026-10-06 몬스터 이어 고치기).
+  return declaredBackingTiles(tileset).has(tile);
+}
+
+const backingTilesCache = new WeakMap<TilesetDef, ReadonlySet<number>>();
+function declaredBackingTiles(tileset: TilesetDef): ReadonlySet<number> {
+  let set = backingTilesCache.get(tileset);
+  if (!set) {
+    set = new Set(Object.values(tileset.tileMeta ?? {}).map(meta => meta?.layerBacking).filter((tile): tile is number => typeof tile === "number"));
+    backingTilesCache.set(tileset, set);
+  }
+  return set;
 }
 
 function mostFrequentTile(counts: ReadonlyMap<number, number>, tileset: TilesetDef): number | null {

@@ -12,9 +12,16 @@ function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown>
 }
 function referenceArgs(project: Project, input: Record<string, unknown>): Record<string, unknown> {
   const args = withoutEmptyIds(input);
-  if (args.tilesetId === undefined && args.categoryId !== undefined && typeof args.mapId === 'string') {
-    const map = project.maps[args.mapId];
+  if (args.tilesetId === undefined && args.categoryId !== undefined) {
+    const map = typeof args.mapId === 'string' ? project.maps[args.mapId] : undefined;
     if (map) args.tilesetId = map.tilesetId;
+    // 모델이 용도 id 만 보내면 mapId 는 편집기가 보고 있는 맵으로 채워진다 — 조수가 다른 맵을 고치는 중이면 틀린 타일셋이 잡힌다
+    // (2026-10-06 몬스터 이어 고치기: 서리꽃 마을의 mk-monster-climate 를 시작 마을 monster_overworld 에서 찾다 실패). 용도 id 는 타일셋마다 거의 유일하니 그 주인을 쓴다.
+    const owns = (id: unknown) => { const t = project.tilesets[String(id)]; return !!t && !!referenceOwner(project, t).referenceDocuments?.some(g => g.id === args.categoryId); };
+    if (!owns(args.tilesetId)) {
+      const found = Object.values(project.tilesets).filter(t => !isRetiredInteriorTileset(t.id, t) && owns(t.id));
+      if (found.length >= 1) args.tilesetId = found[0]!.id;
+    }
   }
   return args;
 }
