@@ -16144,6 +16144,36 @@
           "colors": 289310,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single-7-79ff3e778477.png",
+        "sha256": "79ff3e778477d75669a410893a1892a7f17fe1b23706d4b5e3e1600c3f6aac71",
+        "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+        "generationPromptSha256": "f55cf216e77bc142148e2df4f3b0d1bc7a4616d039bc1d3861797b82fe489e9f",
+        "attempt": 7,
+        "review": {
+          "sourceSha256": "79ff3e778477d75669a410893a1892a7f17fe1b23706d4b5e3e1600c3f6aac71",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened native and own exact request plus actual warm parent. Hard coarse pixels; ONE full pair/low table/bareBOX/mugs2, actual OPEN garden gate behind SAME pair, daylight/MIDflowers/bare nearfloor; full right BACK/SEAT before control edge. Lateral covered house/garden shot differs from parent near-round-table/lake-horizon camera. No fixed identity, glyph or forcedscope."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 452517,
+          "findings": []
+        }
       }
     ],
     "romance--town--talk--warm--routes": [
@@ -16395,6 +16425,93 @@
           "colors": 180212,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-3-86c20515f1db.png",
+        "sha256": "86c20515f1db67710270a9926eb475bdb493d1adcfb34e144d0647bb2ddca309",
+        "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+        "generationPromptSha256": "92761ac890519c14a8a59a917f30ca76d385806e055eb26c2329302ffff9ca1c",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "86c20515f1db67710270a9926eb475bdb493d1adcfb34e144d0647bb2ddca309",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required primary RIGHT chair whole BACK approx x70-81 and seat approx x65-80 hidden by actual controls from x60.3. Indoor private night, gray fabric over box top/side, two upright mugs and OPEN LEFT neighbor-garden passage are physically correct; composition alone fails."
+          ],
+          "notes": "Required primary RIGHT chair whole BACK approx x70-81 and seat approx x65-80 hidden by actual controls from x60.3. Indoor private night, gray fabric over box top/side, two upright mugs and OPEN LEFT neighbor-garden passage are physically correct; composition alone fails."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-4-9ff13b175b10.png",
+        "sha256": "9ff13b175b10000d3828f375b6eee02268ccec69b2fc9a7d35cadf6c48b14329",
+        "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+        "generationPromptSha256": "25648b0190cc9e413f7142fdc5c8f75b66d50751a49fff03d2905ddfe01aa340",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "9ff13b175b10000d3828f375b6eee02268ccec69b2fc9a7d35cadf6c48b14329",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Common BOX lid entirely bare/exposed. GRAY fabric hangs from tabletop UNDER box, not OVER BOX TOP and SIDE. Own concealment requirement fails; full LEFT pair/two uprightmugs/actual OPEN intimate garden passage/private night are correct."
+          ],
+          "notes": "Common BOX lid entirely bare/exposed. GRAY fabric hangs from tabletop UNDER box, not OVER BOX TOP and SIDE. Own concealment requirement fails; full LEFT pair/two uprightmugs/actual OPEN intimate garden passage/private night are correct."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 133225,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-5-270036fe9ffc.png",
+        "sha256": "270036fe9ffc4753d21b37205cf2709a8da7ee80cfa19bd84d87666dc179a0f4",
+        "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+        "generationPromptSha256": "216cfcdbbc5c4f11292c476a1ca00bdd9ebb2e3e036cd2020ffcafdcda71dd5f",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "270036fe9ffc4753d21b37205cf2709a8da7ee80cfa19bd84d87666dc179a0f4",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: one full LEFT pair, separate raised brown box on bare table, gray cloth over its top/side and two upright mugs. Actual open garden aperture and passage behind same pair; private night. New diagonal alcove camera versus rejected frontal parent. All full required props and passage before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 145671,
+          "findings": []
+        }
       }
     ],
     "romance--town--talk--secret--routes": [
@@ -16461,6 +16578,61 @@
           "colors": 191515,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-3-74c11b46162f.png",
+        "sha256": "74c11b46162f8b3e7983c811145bba5350919f9e73d236b0cf49ff7da1b9aac4",
+        "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+        "generationPromptSha256": "6d90a3f5dce32be6a47841e0258bccf7fa6c1b93c7ad740687d8e28a6210e842",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "74c11b46162f8b3e7983c811145bba5350919f9e73d236b0cf49ff7da1b9aac4",
+          "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required C meeting-nook BOTH primary chairs/back/seat surfaces approx x62-83 hidden by actual controls from x60.3. Six chairs/three separate tables/real internal Y/A gray-over-box/B closedbooks2/C mugs2+creamcloth/night are physically present. No retro counts or gray requirements used on old parent; this rejection is OWN new request."
+          ],
+          "notes": "Required C meeting-nook BOTH primary chairs/back/seat surfaces approx x62-83 hidden by actual controls from x60.3. Six chairs/three separate tables/real internal Y/A gray-over-box/B closedbooks2/C mugs2+creamcloth/night are physically present. No retro counts or gray requirements used on old parent; this rejection is OWN new request."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-4-6d86f19dccc9.png",
+        "sha256": "6d86f19dccc95a4e1773f19a778e7a24dadcb46e086f05de3588d00739b0f68a",
+        "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+        "generationPromptSha256": "36a72d80f585e1d7d69a51e124d72c0818356d4b1a96c3ee6865533262ab248e",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "6d86f19dccc95a4e1773f19a778e7a24dadcb46e086f05de3588d00739b0f68a",
+          "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request/actual secret mood parent and rejected old routes source. Fully LEFT compact three paired nooks/SIXchairs/internalphysicalY/A box partly covered byGRAY over TOP+SIDE/B closedbooks2/C uprightOPENmugs2+creamcloth. Private night/LEFTneighbor garden opening/bare timberplaster RIGHT. New far-high left vertical stepped hall instead of old whole-right thirdpair; no forced scope or glyph."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179355,
+          "findings": []
+        }
       }
     ],
     "romance--town--talk--secret--perspectives": [
@@ -16473,7 +16645,64 @@
         "review": {
           "sourceSha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
           "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
-          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "reviewer": "Codex direct OLD original and OWN exact request inspection, continuation136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT opened full original and OWN archived request. Required right-hand primary chair whole BACK/SEAT at approx x80-100 and required glazed-window view approx x65-99 are hidden behind actual right controls starting at x60.3. Own request requires two opposed seats and side-window/open-door views of SAME event. Only composition is changed; no retro two-mug, gray-fabric, left-half staging or forbidden-future foreground rules."
+          ],
+          "notes": "ROOT opened full original and OWN archived request. Required right-hand primary chair whole BACK/SEAT at approx x80-100 and required glazed-window view approx x65-99 are hidden behind actual right controls starting at x60.3. Own request requires two opposed seats and side-window/open-door views of SAME event. Only composition is changed; no retro two-mug, gray-fabric, left-half staging or forbidden-future foreground rules."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 171985,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives-2-d8889f34192a.png",
+        "sha256": "d8889f34192a050985c3dec7eb7cc7e6a737c38c0d8da696f105a5255cbc8887",
+        "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+        "generationPromptSha256": "fe1fad7e7f9e84f4246e06d424b299b89d1164f333868d340576bc59aeba4d92",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d8889f34192a050985c3dec7eb7cc7e6a737c38c0d8da696f105a5255cbc8887",
+          "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required RIGHT primary chair whole BACK and SEAT approx x64-74 hidden behind actual controls from x60.3. Own new LEFT glazed window/open garden door, two uprightmugs/gray-over-box/private night are correct. Window placement fixed compared with original, paired-seat composition still fails."
+          ],
+          "notes": "Required RIGHT primary chair whole BACK and SEAT approx x64-74 hidden behind actual controls from x60.3. Own new LEFT glazed window/open garden door, two uprightmugs/gray-over-box/private night are correct. Window placement fixed compared with original, paired-seat composition still fails."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives-3-d9970d55d7fd.png",
+        "sha256": "d9970d55d7fd1c196e01cf6cf280c4cb9ced6f6ef626ac97abd703c0de210ad9",
+        "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+        "generationPromptSha256": "ba91a14055829c3dac0641a0f896610eee209ddad18a5cfac322bfd03853009d",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "d9970d55d7fd1c196e01cf6cf280c4cb9ced6f6ef626ac97abd703c0de210ad9",
+          "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16484,13 +16713,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original: new near-overhead alcove, unique common closed box between two opposed vacant chairs; actual side window and different door reveal contrasting views of neighbor gates around same-event object. Night private room, hard moon shadows across box/floor, restrained light, no text/people."
+          "notes": "ROOT opened own native/exact request and actual secret mood plus old PERS source. One low common closed-keepsake CHEST functions as shared box-table between full LEFT opposed chairs; GRAY cover physically bends over its TOP+SIDE with BROWN front/latch exposed; two uprightmugs on covered lid. Own new request says common box table, does NOT require separate small box atop another table. WholeLEFT glazedwindow and distinctOPENgarden doorway share SAME private night event. Fresh far-high side room/left windows differs from old giant diagonal tabletop/farRIGHTwindow/chair. No extra identity/mark/scope."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 171985,
+          "colors": 153914,
           "findings": []
         }
       }
@@ -16505,7 +16734,39 @@
         "review": {
           "sourceSha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
           "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
-          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "reviewer": "Codex actual OLD original/OWN request/right-controls inspection continuation137",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+          ],
+          "notes": "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 394789,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single-2-94613e6897ef.png",
+        "sha256": "94613e6897ef2faa54330c9b90a6ca2e3e69ce3e74cdda55151f15af98703c7c",
+        "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+        "generationPromptSha256": "efc5e3a2cb6fb9982b80dd376b38ff41e5e2f6baf996f1c35732886ddc4e1744",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "94613e6897ef2faa54330c9b90a6ca2e3e69ce3e74cdda55151f15af98703c7c",
+          "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16516,13 +16777,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original compared to actual bittersweet parent: sheltered near-left porch pair with fully visible chairs around closed shared keep, one continuous private passage to neighboring gates. Wet ground/brown autumn leaves/quiet vacated threshold. Smaller side-staged pair and covered vestibule differ from parent large central exposed table."
+          "notes": "Native original: one full LEFT pair with small square bare brown box table and two upright mugs, actual open intimate garden gate behind pair. Ordinary rainy autumn neighboring houses, wet brown leaves, quiet dim light. Different from old large round-table/right-street shot; no forced secret cloth or identity."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 394789,
+          "colors": 208038,
           "findings": []
         }
       }
@@ -16537,7 +16798,71 @@
         "review": {
           "sourceSha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
           "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
-          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+          ],
+          "notes": "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 549833,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes-2-7b2eb7459511.png",
+        "sha256": "7b2eb74595119ace6d6262e1529781091277eab5db80b2c97f8a83d364c36c9b",
+        "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+        "generationPromptSha256": "9fd49b10d157630f0002efc3978d2c1ced6f55440b4de187cf0db01778c635d1",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "7b2eb74595119ace6d6262e1529781091277eab5db80b2c97f8a83d364c36c9b",
+          "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: all six chairs/three tables/Y paths and box/books2/mugs2/hanging cream cloth are visible LEFT. However the large standing tree and leafy orange foreground frame occupy left-bottom near-camera region (approximately x0-23,y66-100), contrary to this actual request forbidding near-camera plants. Composition fails; no fictional controls concealment or retro old-art count rules."
+          ],
+          "notes": "Native original: all six chairs/three tables/Y paths and box/books2/mugs2/hanging cream cloth are visible LEFT. However the large standing tree and leafy orange foreground frame occupy left-bottom near-camera region (approximately x0-23,y66-100), contrary to this actual request forbidding near-camera plants. Composition fails; no fictional controls concealment or retro old-art count rules."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 292705,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes-3-30dadc4d92fe.png",
+        "sha256": "30dadc4d92fe84217e169c5eb3480cfc29a0938078d90158d35c165ee2198bb6",
+        "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+        "generationPromptSha256": "dec632b8cc67864c516b11c62f5a338710c7199c56a70f49bd7543488ce7f913",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "30dadc4d92fe84217e169c5eb3480cfc29a0938078d90158d35c165ee2198bb6",
+          "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16548,13 +16873,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original: elevated oblique real path fork links three spatially distinct two-chair meeting nooks with varied cups/closed-book/keep arrangements. Ordinary neighboring rural homes, wet stone and spent brown leaves, departure mood. Fresh forked staging relative to single-table parent; sharp cluster shading."
+          "notes": "Native original: SIX complete LEFT chairs/three paired nooks on real Y walkable lanes around low walls; A bare box/Bexactly two closed books/Ctwo upright mugs with hanging cream cloth. Quiet wet autumn ordinary neighbor view, no near-camera tree or sunset. New diagonal side corridor camera versus old wide right nook and rejected 138 foreground tree; all required backs/seats and branches before actual controls. Left placement beyond preferred third is acceptable while full core stays before x60.3."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 549833,
+          "colors": 181334,
           "findings": []
         }
       }
@@ -16569,7 +16894,39 @@
         "review": {
           "sourceSha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
           "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
-          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+          ],
+          "notes": "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 356495,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives-2-e3a4c71f83fa.png",
+        "sha256": "e3a4c71f83faf2c19123007ab8e965b7844acdff818ee26753f99d4ef45c7515",
+        "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+        "generationPromptSha256": "ef345d0d0122ef1c62bd59e9a5180a7b0faa0d736454600f749a755637334e2b",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e3a4c71f83faf2c19123007ab8e965b7844acdff818ee26753f99d4ef45c7515",
+          "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16580,13 +16937,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original: unique closed common box between fully visible opposed seats in one sheltered rural alcove, real side window and differently framed doorway toward neighboring homes around same event. Autumn wet lane/brown leaves and subdued evening preserve bittersweet; fresh internal high-oblique camera relative to exposed parent."
+          "notes": "Native original: complete LEFT pair with separate box table and two upright mugs, full glazed LEFT window and distinct OPEN LEFT door onto same ordinary wet autumn garden. Quiet gray autumn light and brown leaves; no gray secret cloth or invented protagonist. New far high inside-room framing versus old giant frontal table/right-door shot; no core hidden by actual controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 356495,
+          "colors": 135489,
           "findings": []
         }
       }
@@ -16601,7 +16958,39 @@
         "review": {
           "sourceSha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
           "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
-          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation139",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original and OWN actual request directly opened: required entire RIGHT chair back is substantially behind actual controls x60.3 (back x60-67), and actual intimate private passage/view lies in right x70-99 controls region. Own request explicitly requires BOTH complete chair backs/seats and continuous private passage visible. Only composition changed; no retro two-mug, gray cloth, left-third or ending requirement."
+          ],
+          "notes": "Native original and OWN actual request directly opened: required entire RIGHT chair back is substantially behind actual controls x60.3 (back x60-67), and actual intimate private passage/view lies in right x70-99 controls region. Own request explicitly requires BOTH complete chair backs/seats and continuous private passage visible. Only composition changed; no retro two-mug, gray cloth, left-third or ending requirement."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 435969,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--single-2-0a28dd844160.png",
+        "sha256": "0a28dd844160a56722f4eb036beed6a208d55cf938ac0f5faaefc6ae44275d26",
+        "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
+        "generationPromptSha256": "ee97a4e3adec895f656cd95b00cfc4ef5c4f06c893e86a2c6359144c66ea9065",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "0a28dd844160a56722f4eb036beed6a208d55cf938ac0f5faaefc6ae44275d26",
+          "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16612,13 +17001,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native view: paired fully visible vacant chairs around prominent closed memory box, ordinary neighbor gates and continuous sheltered private passage; inviting fresh flowers/warm light. New side-staged near pair replaces parent low chest at left foreground and distant loose stools. No text/figures or defocus."
+          "notes": "Native original: full LEFT facing pair around prominent plain closed keepsake on small shared table. Actual OPEN house aperture and continuous visible intimate garden passage immediately behind same pair; farther boundary gate does not close this house aperture. Ordinary neighbor houses, welcoming daylight and fresh midground flowers BEHIND furniture. No conversation mugs required by this OWN memory request. New inside-room camera versus old warm memory outdoor low chest/loose distant stools and old giant round table/right avenue; full backs/seats and passage before controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 435969,
+          "colors": 209784,
           "findings": []
         }
       }
@@ -16633,7 +17022,39 @@
         "review": {
           "sourceSha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
           "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
-          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation140",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original and OWN exact request directly opened: entire third paired nook BOTH chairs/backs/seats at x70-90 and its required physical branch are hidden behind actual right controls x60.3. OWN request explicitly requires THREE paired meeting nooks and real connecting branches. Only composition changed; no retro TWO-books/mug/gray/left-third requirement."
+          ],
+          "notes": "Native original and OWN exact request directly opened: entire third paired nook BOTH chairs/backs/seats at x70-90 and its required physical branch are hidden behind actual right controls x60.3. OWN request explicitly requires THREE paired meeting nooks and real connecting branches. Only composition changed; no retro TWO-books/mug/gray/left-third requirement."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 489935,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes-2-10a43c999599.png",
+        "sha256": "10a43c9995998009db1b770753f55df55228ff5ae466ae90254af2f446301aec",
+        "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
+        "generationPromptSha256": "7d33b35e78b1df6748b1d3d2e28aad7827865e40183111ed4c25232a5e1cf1aa",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "10a43c9995998009db1b770753f55df55228ff5ae466ae90254af2f446301aec",
+          "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16644,13 +17065,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native view: actual fork connecting three spatially separate paired vacant places with distinct closed ordinary book/box/cup arrangements; near closed personal object, warm neighbor village preparations. Elevated branching camera differs from parent single chest/lane; all planes hard square-pixel shading."
+          "notes": "Native original: SIX complete LEFT chairs/three paired meeting nooks and real walkable Y lanes around low walls; A prominent closed memory BOX, B exactly TWO closed books one layer, C two upright open mugs and hanging cream cloth. Inviting day ordinary neighbor houses visible through left windows and fresh MID flowers BEHIND near A furniture. No near-camera plant frame; new compact inside-room diagonal vs old wide sunset/right-hidden third nook. All required core before controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 489935,
+          "colors": 240145,
           "findings": []
         }
       }
@@ -16665,7 +17086,39 @@
         "review": {
           "sourceSha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
           "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
-          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation140",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original and OWN exact request directly opened: entire required OPEN house doorway/garden view x79-100 and primary RIGHT chair back x65-74 are hidden behind actual controls x60.3. OWN request requires two opposed seats and actual side window plus differently framed doorway around SAME keepsake/event. Only composition changed; no retro two-mug/gray/left-third requirement."
+          ],
+          "notes": "Native original and OWN exact request directly opened: entire required OPEN house doorway/garden view x79-100 and primary RIGHT chair back x65-74 are hidden behind actual controls x60.3. OWN request requires two opposed seats and actual side window plus differently framed doorway around SAME keepsake/event. Only composition changed; no retro two-mug/gray/left-third requirement."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 349171,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--perspectives-2-2d2d39c24bf7.png",
+        "sha256": "2d2d39c24bf77e48030a80e45332500573d62d69910473220ab5ee9f8b89ad7f",
+        "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
+        "generationPromptSha256": "a5b3dd0a6c88096dfd60dd5aed92825cdb05c83e421c6a297cbde0f29b03a519",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "2d2d39c24bf77e48030a80e45332500573d62d69910473220ab5ee9f8b89ad7f",
+          "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16676,13 +17129,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native view: one prominent closed common keep between opposed empty chairs in sheltered rural alcove; real side window and different door frame views around same-event keep, neighboring gates outside, warm flowers in midground. High oblique interior camera differs from parent outdoor chest/lane; sharp pixels, no humans/text."
+          "notes": "Native original: complete LEFT pair/prominent closed bare brown memory BOX on small table. Complete glazed LEFT window AND distinct actual OPEN LEFT house door frame SAME ordinary neighbor garden, welcoming daylight/fresh flowers outdoors behind pair. No conversation mugs required by OWN memory request. New far high small side-staged pair vs old giant near table/right-hidden house door/chair. All core visible before controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 349171,
+          "colors": 208724,
           "findings": []
         }
       }
@@ -16729,7 +17182,39 @@
         "review": {
           "sourceSha256": "07fff475145cf68eac4e5deae57f167b5e61261fbbb0e4ed15b0cbc6683bd177",
           "promptSha256": "f7ae540dd1dfbafeab7121c0db1e4a277307fcccdc7392dea2e5d2a3082a74ab",
-          "reviewer": "Codex direct original visual inspection: v2-production-034",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation141",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Entire required internal private passage x73-98 and substantial RIGHT chair back x60-72 are hidden by actual right controls x60.3. OWN original request expressly needs TWO complete chair backs/seats and ONE continuous intimate internal passage. Only composition changed; no retro gray cloth/mug/left-third rule."
+          ],
+          "notes": "Entire required internal private passage x73-98 and substantial RIGHT chair back x60-72 are hidden by actual right controls x60.3. OWN original request expressly needs TWO complete chair backs/seats and ONE continuous intimate internal passage. Only composition changed; no retro gray cloth/mug/left-third rule."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 166800,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--single-3-3ace40b8b94c.png",
+        "sha256": "3ace40b8b94c0204cf9bcfc388ded777712dbecf66ea149a409d5a4be14dd5fd",
+        "promptSha256": "f7ae540dd1dfbafeab7121c0db1e4a277307fcccdc7392dea2e5d2a3082a74ab",
+        "generationPromptSha256": "a46513b41ca1c2702e2b2dea4c08b5b7e6b48948985283067d8c78b964c64f78",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "3ace40b8b94c0204cf9bcfc388ded777712dbecf66ea149a409d5a4be14dd5fd",
+          "promptSha256": "f7ae540dd1dfbafeab7121c0db1e4a277307fcccdc7392dea2e5d2a3082a74ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16740,13 +17225,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original: two fully visible vacant facing chairs around cloth-concealed closed common memory box, one private continuous internal passage in confined night rural room, narrow window shows neighbor gates, hard moon-shadow bands. Side-stage camera differs from new close worktable parent; no people/text/blur."
+          "notes": "Native original: full LEFT pair around raised closed bare brown memoryBOX with GRAYcloth physically overTOP/downSIDE, brownfrontlatch exposed and barebrown supporting table. Inside confined room at NIGHT, actual narrowOPENhouse/garden passage immediatelyBEHINDpair gives LEFTneighbor garden view. Farther boundarygate does not close actual open house aperture. No mugs/event/endingstack required. New distant side-staged pair vs old giantpair/RIGHTinternalpassage; no required core concealed."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 166800,
+          "colors": 155844,
           "findings": []
         }
       }
@@ -16793,7 +17278,71 @@
         "review": {
           "sourceSha256": "bbccd9e782217e4fa8acce4acec1d70c1bd3f7dc9ca5efbd6a4e6cd991c8f09d",
           "promptSha256": "5e5150a205cbcc2396b90b1764d245cf5264fb4c6630188800bae90bb931d5f9",
-          "reviewer": "Codex direct original visual inspection: v2-production-034",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation141",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Entire required third paired nook BOTH chairs/backs/seats x74-98 and its internal branch are hidden by actual controls x60.3; rear other pair right back x63-66 also concealed. OWN original request requires THREE complete pairs and real INTERNAL three branches. Only composition changed; no retro exact2books/mug/gray/left-third rule."
+          ],
+          "notes": "Entire required third paired nook BOTH chairs/backs/seats x74-98 and its internal branch are hidden by actual controls x60.3; rear other pair right back x63-66 also concealed. OWN original request requires THREE complete pairs and real INTERNAL three branches. Only composition changed; no retro exact2books/mug/gray/left-third rule."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 207147,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--routes-3-7dc59d322a78.png",
+        "sha256": "7dc59d322a78b81a5bb45c395b42c1ec60321abf2adabb97097294d3706ef106",
+        "promptSha256": "5e5150a205cbcc2396b90b1764d245cf5264fb4c6630188800bae90bb931d5f9",
+        "generationPromptSha256": "d82a48c51e88452d18d14a23eb3cd9f3c901af84680e433f45ed05a96ae9cb94",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "7dc59d322a78b81a5bb45c395b42c1ec60321abf2adabb97097294d3706ef106",
+          "promptSha256": "5e5150a205cbcc2396b90b1764d245cf5264fb4c6630188800bae90bb931d5f9",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six complete LEFT chairs/internalY nooks/Btwo closedbooks/Ctwo mugs+hangingcreamcloth/privateNIGHT. However gray fabric is a TABLECLOTH UNDER the completely bare-liddedBOX, not physically covering TOP/SIDE of raisedBOX as OWN exactrequest requires. All choices fails; no fabricated count/text/hidden-core finding."
+          ],
+          "notes": "Native original: six complete LEFT chairs/internalY nooks/Btwo closedbooks/Ctwo mugs+hangingcreamcloth/privateNIGHT. However gray fabric is a TABLECLOTH UNDER the completely bare-liddedBOX, not physically covering TOP/SIDE of raisedBOX as OWN exactrequest requires. All choices fails; no fabricated count/text/hidden-core finding."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 114887,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--routes-4-843da0fcca9e.png",
+        "sha256": "843da0fcca9e93a77bafe864395a84aad65252edc53c3a58d7a771c96d427ccb",
+        "promptSha256": "5e5150a205cbcc2396b90b1764d245cf5264fb4c6630188800bae90bb931d5f9",
+        "generationPromptSha256": "f2886aea11adce97c5003988210543048c3dbd406dbb490efabdb579757cfc3a",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "843da0fcca9e93a77bafe864395a84aad65252edc53c3a58d7a771c96d427ccb",
+          "promptSha256": "5e5150a205cbcc2396b90b1764d245cf5264fb4c6630188800bae90bb931d5f9",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16804,13 +17353,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native original: continuous enclosed night hall with actual fork leading to three distinct paired EMPTY-chair memory/cup nooks. Prominent near closed keep and closed revisitable domestic belongings, narrow windows show neighbors and sharp moon-shadow clusters. No outdoor garden or figures/text; independently branched architecture relative to worktable parent."
+          "notes": "SIX full LEFT chairs/internal Y-connected nooks. Raised brown A box with GRAY cloth physically OVER TOP and DOWN SIDE, bare brown supporting table and exposed brown front latch; B TWO closed books; C TWO upright open handled mugs/hanging cream cloth. Confined NIGHT room with actual LEFT neighbor exit. Fresh compact stair-nook shot replaces giant-right-hidden C and gray TABLECLOTH failure. All required core before actual controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 207147,
+          "colors": 119882,
           "findings": []
         }
       }
@@ -16825,7 +17374,39 @@
         "review": {
           "sourceSha256": "b7c178c3ce2be1bd7238bc19d9d7c82c5d167f896d528449ee544f99dac3b1ed",
           "promptSha256": "689b285f823277bfbcb9fd09870597b4a01d62dc877d78f6a2b9f696b897b571",
-          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation141",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Entire required glazed side window/view x70-96 and whole primary RIGHT chair back/seat x64-92 are hidden by actual controls x60.3. OWN original request expressly requires two opposed seats, actual side window and differently framed doorway around SAME keepsake/event. Only composition changed; no retro exact gray cloth/two-mug/left-third requirement."
+          ],
+          "notes": "Entire required glazed side window/view x70-96 and whole primary RIGHT chair back/seat x64-92 are hidden by actual controls x60.3. OWN original request expressly requires two opposed seats, actual side window and differently framed doorway around SAME keepsake/event. Only composition changed; no retro exact gray cloth/two-mug/left-third requirement."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 213556,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--perspectives-2-d6e75901b2a5.png",
+        "sha256": "d6e75901b2a53ad92b23b158f5c5f2de3e21bd68ec2fe3f0ed13aba6dba58a0c",
+        "promptSha256": "689b285f823277bfbcb9fd09870597b4a01d62dc877d78f6a2b9f696b897b571",
+        "generationPromptSha256": "9022fc6d7c426732a1eedc1ead3f3ab8c5bb660973fcdbf558751e4aeb22ac08",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d6e75901b2a53ad92b23b158f5c5f2de3e21bd68ec2fe3f0ed13aba6dba58a0c",
+          "promptSha256": "689b285f823277bfbcb9fd09870597b4a01d62dc877d78f6a2b9f696b897b571",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16836,13 +17417,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native view: confined private night alcove, common closed keep between two opposed fully visible seats; moon-shadow bands partly shade box, actual side window and doorway reveal different neighbor-gate views around same-event memory. Closed research book/revisitable belongings and narrow threshold retain investigation. Fresh interior camera differs from revoked outdoor parent; no figures/text."
+          "notes": "Native original: full LEFT pair/raised closed memoryBOX on bareBROWNtable with GRAYcloth physically overTOP/downSIDE and brownfront/latch exposed. Complete actual GLAZEDLEFTwindow and distinct OPENLEFThouse-door around SAME neighbor garden/privateNIGHT. No mugs/scope required; new tiny distant continuous-room pair vs old huge frontal table/RIGHTwindow. All full core before controls/no invented identity/writing."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 213556,
+          "colors": 151218,
           "findings": []
         }
       }
@@ -16857,7 +17438,39 @@
         "review": {
           "sourceSha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
           "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
-          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation142",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original and OWN exact request directly opened: complete pair and BOX are visible LEFT, but entire required intimate private passage is actual RIGHT garden/descending street x61-98, hidden behind actual controls x60.3. LEFThouse-door is closed and no alternate OPENprivatepassage LEFT. OWN original request requires ONE continuous intimate privatepassage linked to primarypair. Only composition changed, no retro TWO-mug/GRAY/overcast or no-sunset rule; original quiet autumn dusk is judged by OWN mood request."
+          ],
+          "notes": "Native original and OWN exact request directly opened: complete pair and BOX are visible LEFT, but entire required intimate private passage is actual RIGHT garden/descending street x61-98, hidden behind actual controls x60.3. LEFThouse-door is closed and no alternate OPENprivatepassage LEFT. OWN original request requires ONE continuous intimate privatepassage linked to primarypair. Only composition changed, no retro TWO-mug/GRAY/overcast or no-sunset rule; original quiet autumn dusk is judged by OWN mood request."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 383671,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet--single-2-ac188aba10e4.png",
+        "sha256": "ac188aba10e4e128ffc016b18049e0da74e3469dd3b05a0691f9dc67b055f78e",
+        "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
+        "generationPromptSha256": "38b7a06da3271467879b2f6e095c0b2aee0683b3247724e8edaae3a044145f5d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ac188aba10e4e128ffc016b18049e0da74e3469dd3b05a0691f9dc67b055f78e",
+          "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -16868,13 +17481,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Direct native view: two entirely visible empty facing chairs around one shared closed memory keep, sheltered intimate private passage toward neighbor gates. Wet stone/brown autumn leaves/vacated thresholds express departure; near side-staged paired place differs from parent chest/lane without main pair. Hard pixel clusters across whole frame."
+          "notes": "TWO complete LEFT facing chairs/plain closed brown common memory box/small table, no conversation mugs required by OWN request. Actual OPEN LEFT house aperture and intimate private garden passage behind pair, wet autumn neighbors/gray sky/brown spent leaves. Ordinary closed domestic books allowed. Fresh distant high square-table staging versus old large outdoor roundtable/right private passage. All core before controls."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 383671,
+          "colors": 122434,
           "findings": []
         }
       }
@@ -42117,6 +42730,36 @@
           "colors": 394511,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--routes--short-3-291a7056b6b8.png",
+        "sha256": "291a7056b6b8fe25de33cf5cfb7b7d321a7e7ecc2bca45c5948b575d1d0e0275",
+        "promptSha256": "39a93147f573c381f943b5dde4c1991fcef07f9764f0b7261f576aaeac2cffa0",
+        "generationPromptSha256": "87eb7d8d456ff0702025879eca2634147694953096e10dcd4062c8cf23a364d8",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "291a7056b6b8fe25de33cf5cfb7b7d321a7e7ecc2bca45c5948b575d1d0e0275",
+          "promptSha256": "39a93147f573c381f943b5dde4c1991fcef07f9764f0b7261f576aaeac2cffa0",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened native/own exact request and current actual warm ROUTES parent1343. Three full paired nooks/SIX chairs, real branched garden Y; A bareBOX+separate softCREAM foldedstack, B closedbooks2, C uprightmugs2+hangingcreamcloth. Actual CLOSED gate directly behind A pair; all main backs/seats before60.3. Low green path/wall dividers extend to left/bottom edge, are structural Y staging, no foreground pot/framingpost or hidden core furniture. No booklike ending stack or glyph."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 564477,
+          "findings": []
+        }
       }
     ],
     "romance--town--talk--warm--perspectives--scene": [
@@ -42213,6 +42856,61 @@
           "width": 1672,
           "height": 941,
           "colors": 334918,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives--short-2-cace6f2b9c63.png",
+        "sha256": "cace6f2b9c63eebfa594c6b9942acdc5b09761041038d6741606a98593c7b628",
+        "promptSha256": "c103e0173199f1b74939ece6ab384fcce1272123a1fbf560c7088aa1f1b9dfa8",
+        "generationPromptSha256": "0d8dc2b3306ae29057a5556ff58905c074f0c995ea3d69e2b5b9020b34d1f081",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "cace6f2b9c63eebfa594c6b9942acdc5b09761041038d6741606a98593c7b628",
+          "promptSha256": "c103e0173199f1b74939ece6ab384fcce1272123a1fbf560c7088aa1f1b9dfa8",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Required RIGHT primary chair BACK approx x62-67 fully hidden by actual controls from x60.3, seat partly hidden. LEFT glazed window and distinct open doorway, closed ending behind pair, box/mugs2/softcream ending stack are otherwise correct. Reject actual whole-back concealment, not preferred x55 margin alone."
+          ],
+          "notes": "Required RIGHT primary chair BACK approx x62-67 fully hidden by actual controls from x60.3, seat partly hidden. LEFT glazed window and distinct open doorway, closed ending behind pair, box/mugs2/softcream ending stack are otherwise correct. Reject actual whole-back concealment, not preferred x55 margin alone."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives--short-3-b42c853cc2ee.png",
+        "sha256": "b42c853cc2ee52f5cfc4f8f0f90fdb52bb5118419ced41acb378b604065fe151",
+        "promptSha256": "c103e0173199f1b74939ece6ab384fcce1272123a1fbf560c7088aa1f1b9dfa8",
+        "generationPromptSha256": "e63414480fd09d1a6294fd3baf632583132b9908cda28b4b6a2f3d53845cc0f2",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "b42c853cc2ee52f5cfc4f8f0f90fdb52bb5118419ced41acb378b604065fe151",
+          "promptSha256": "c103e0173199f1b74939ece6ab384fcce1272123a1fbf560c7088aa1f1b9dfa8",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request/current warm PERSparent. Full LEFT pair/low common table/bareclosedBOX/two uprightmugs, wholeLEFT glazedwindow+distinctOPEN garden door show SAME garden; separateCLOSED ending door behind pair and softCREAM foldedstack besideBOX. Warm/MIDflowers/sharp pixels/no glyph; fresh far room framing, no right chair concealment."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 147934,
           "findings": []
         }
       }
@@ -42345,6 +43043,93 @@
           "colors": 278761,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--scene-2-153d32d1acb0.png",
+        "sha256": "153d32d1acb06bb5438396cf9def1d0f116192caca48e1c9feba9b2186470caa",
+        "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+        "generationPromptSha256": "4c75531ab88428c60f596c9cc37a79b567c27d68264c179c3087cbebe29b4b05",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "153d32d1acb06bb5438396cf9def1d0f116192caca48e1c9feba9b2186470caa",
+          "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "C meeting-nook RIGHT whole primary chair BACK/SEAT approx x68-75 hidden by actual controls from x60.3. Native has SIX backed chairs, real internal Y, A partly gray-concealed box, B two closed books, C two upright mugs AND hanging cream cloth. C cloth omission is fixed; composition alone fails."
+          ],
+          "notes": "C meeting-nook RIGHT whole primary chair BACK/SEAT approx x68-75 hidden by actual controls from x60.3. Native has SIX backed chairs, real internal Y, A partly gray-concealed box, B two closed books, C two upright mugs AND hanging cream cloth. C cloth omission is fixed; composition alone fails."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--scene-3-042d76d43cf3.png",
+        "sha256": "042d76d43cf39b07e5b071c0ec6bf5fa1b5101b0f21d91d0b8c8de524fb125b1",
+        "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+        "generationPromptSha256": "9c93315782b2d4f8648082240d8f4c127b30fed57bddd4cc3a041b81a769e77f",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "042d76d43cf39b07e5b071c0ec6bf5fa1b5101b0f21d91d0b8c8de524fb125b1",
+          "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "The common BOX lid is entirely bare/exposed; GRAY fabric is a TABLECLOTH UNDER the box, not bent over its TOP+SIDE as own request requires. Private night/SIX chairs/internal Y/books2/mugs2+creamcloth/core entirelyLEFT are otherwise correct."
+          ],
+          "notes": "The common BOX lid is entirely bare/exposed; GRAY fabric is a TABLECLOTH UNDER the box, not bent over its TOP+SIDE as own request requires. Private night/SIX chairs/internal Y/books2/mugs2+creamcloth/core entirelyLEFT are otherwise correct."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 149906,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--scene-4-24df7b02d362.png",
+        "sha256": "24df7b02d3627edf3b450c5b198fc65824f3ad70fd01051a72af796459b0833a",
+        "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+        "generationPromptSha256": "e22f20c84dc2cd547d43b95b4a75b8af2c8b120b46a4f70141f722e4f3420f5e",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "24df7b02d3627edf3b450c5b198fc65824f3ad70fd01051a72af796459b0833a",
+          "promptSha256": "991bf866f050bfe8da5c2397a3a09cae6f83e16868cac42545fe829b7e4bf8e9",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: six complete chairs in three compact LEFT nooks, actual internal Y; A raised box with gray cloth physically over top/down side and exposed brown latch; B two closed books; C two upright mugs and hanging cream cloth. Untouched first encounter; private night neighbor view. Different high slanted entry layout from 137 routes parent; all core before actual x60.3 controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 99251,
+          "findings": []
+        }
       }
     ],
     "romance--town--talk--secret--routes--episode": [
@@ -42377,6 +43162,1400 @@
           "width": 1672,
           "height": 941,
           "colors": 256372,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--episode-2-8360014ec274.png",
+        "sha256": "8360014ec274135756f256ea482547abe9ddbf811be33b77391f7866c2a1a281",
+        "promptSha256": "2522c9fc6fe403b9a6f4c4a70a3b17c4d7cf237068cf2a43817504224a584e65",
+        "generationPromptSha256": "c8bcf9ae89e70f6f94c7074f95d148d113d22633bd26f1477eeae4d40c0a94c4",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8360014ec274135756f256ea482547abe9ddbf811be33b77391f7866c2a1a281",
+          "promptSha256": "2522c9fc6fe403b9a6f4c4a70a3b17c4d7cf237068cf2a43817504224a584e65",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "C far meeting-nook RIGHT whole BACK approx x65-68 hidden by actual controls from x60.3; common A right back is also partly behind controls. THREE paired nooks/internal Y, B books2, C uprightmugs2+cream cloth, A third tippedWHITE cup/RED spill/separateWHITE dryingcloth beside gray-over-box are otherwise correct."
+          ],
+          "notes": "C far meeting-nook RIGHT whole BACK approx x65-68 hidden by actual controls from x60.3; common A right back is also partly behind controls. THREE paired nooks/internal Y, B books2, C uprightmugs2+cream cloth, A third tippedWHITE cup/RED spill/separateWHITE dryingcloth beside gray-over-box are otherwise correct."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--episode-3-03f1c57c333f.png",
+        "sha256": "03f1c57c333f6f321041e248f1fcfbb21d5b86000c39a3964179b474e27d99f9",
+        "promptSha256": "2522c9fc6fe403b9a6f4c4a70a3b17c4d7cf237068cf2a43817504224a584e65",
+        "generationPromptSha256": "fe4c2d3a25b6db5d912e46731281b5c5c8f5745958fb9415dfa263ea571dc311",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "03f1c57c333f6f321041e248f1fcfbb21d5b86000c39a3964179b474e27d99f9",
+          "promptSha256": "2522c9fc6fe403b9a6f4c4a70a3b17c4d7cf237068cf2a43817504224a584e65",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request and actual secret ROUTES parents including newly viewed1374. Private night/internalY/SIXchairs/A gray fabric OVERBOX top+side/B closedbooks2/C uprightmugs2+hangingCREAMcloth. A extraTHIRD tippedWHITEcup/REDspill/separateWHITEdryingcloth on SAMEtable, not replaced uprightmugs or Ccreamcloth. All wholepairedplaces LEFTbeforecontrols; higher side-on left vertical internal branch than old right-spanning hall camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 177770,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--routes--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--short-1-e17ff685f6f8.png",
+        "sha256": "e17ff685f6f84c71f7fbf145f0fb9de6a9d093201f2e0bf365239be4c0e408ed",
+        "promptSha256": "045db7e2577a2d4ec8238f84205287aba1f70b85c137856ddd75146a78b96d05",
+        "generationPromptSha256": "6f35b340335daac95ee47700d2f6d5f5fbd903e3c59ac34b94a0e1d2b5fbf2f2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e17ff685f6f84c71f7fbf145f0fb9de6a9d093201f2e0bf365239be4c0e408ed",
+          "promptSha256": "045db7e2577a2d4ec8238f84205287aba1f70b85c137856ddd75146a78b96d05",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "C far meeting-nook RIGHT primary chair BACK approx x60-64 predominantly entirely behind actual controls from x60.3. Full SIX chairs/real internal Y/gray-over-box at A/books2 B/uprightmugs2+creamcloth C/soft separateCREAM ending foldedstack on A/actual CLOSED ending behind A pair are physically correct."
+          ],
+          "notes": "C far meeting-nook RIGHT primary chair BACK approx x60-64 predominantly entirely behind actual controls from x60.3. Full SIX chairs/real internal Y/gray-over-box at A/books2 B/uprightmugs2+creamcloth C/soft separateCREAM ending foldedstack on A/actual CLOSED ending behind A pair are physically correct."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes--short-2-e2a018446750.png",
+        "sha256": "e2a018446750e4364de162393784df5f24ee6b472f9478c218aac5658e5b3588",
+        "promptSha256": "045db7e2577a2d4ec8238f84205287aba1f70b85c137856ddd75146a78b96d05",
+        "generationPromptSha256": "5c0da3b872fb10cd34af030094a118931de440e97f026062229c07dbf2f6df6c",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e2a018446750e4364de162393784df5f24ee6b472f9478c218aac5658e5b3588",
+          "promptSha256": "045db7e2577a2d4ec8238f84205287aba1f70b85c137856ddd75146a78b96d05",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request/new1374parent and read-only original endingstack crop. SIXfullLEFTchairs/internalY/GRAYcloth OVERBOXtop+side atA/books2B/mugs2+hangingcreamclothC. Separate softCREAM foldedstack with wavy layered folded edges/cloth creases on SAME A table besideBOX, not writing or open pages. CLOSED actual neighborgarden gate seen through open house exit directly behind SAME A pairednook; own request permits closed GATE rather than requiring house-door closure. All essentialsLEFT. Fresh high stone-floor hall/window/door geometry differs from wooden-floor parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179050,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--perspectives--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives--scene-1-be2caba043db.png",
+        "sha256": "be2caba043db80201971f5856fa1a0b31d60f56935b2b5d4f7349a8b9850277f",
+        "promptSha256": "2c29bf93934cf1fdc97371a5707db5f1290b7dcf72e9c94ceebc5fbfe1370cc7",
+        "generationPromptSha256": "4f18b98b51055d50fdcf01459de5b16bbd127ddfbd8af735ad6c45ba41f0ec1c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "be2caba043db80201971f5856fa1a0b31d60f56935b2b5d4f7349a8b9850277f",
+          "promptSha256": "2c29bf93934cf1fdc97371a5707db5f1290b7dcf72e9c94ceebc5fbfe1370cc7",
+          "reviewer": "Codex direct original visual inspection: v2-production-136",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened native/own exact request and actual secret PERS parent. FIRSTmeeting untouched one full pair/low commonBOXtable/mugs2/gray draped over TOP+SIDE, GLAZED LEFT window and DISTINCT OPENLEFT neighbor garden door share SAME night setting; required views/back/seat before60.3, only extreme outer right-chair rim reaches edge. Fresh high lateral inside view differs from parent huge diagonal table/rightwindow/hiddenRIGHTpair. Unselected background CLOSED books are mundane home furniture, not competing BOOKSCARF trust thresholds."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 179576,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--perspectives--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives--episode-1-adf067ac3504.png",
+        "sha256": "adf067ac350492ea8fb31503484445b6ab9fd008c948b6a8318d65ee7f8149ea",
+        "promptSha256": "28e0c2b33b69c9cf7869390d866343c5d1852b3b3abe5c0e518d30c59cc0b16d",
+        "generationPromptSha256": "bb8de48c273e97dc3dc56fdea0e0b483c9b7c7012979f630802a672e292cdeb7",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "adf067ac350492ea8fb31503484445b6ab9fd008c948b6a8318d65ee7f8149ea",
+          "promptSha256": "28e0c2b33b69c9cf7869390d866343c5d1852b3b3abe5c0e518d30c59cc0b16d",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request/new1375actual parent. Shared low closed keepsakeCHEST as common box-table, GRAY overTOP+SIDE/BROWNfrontlatch, two uprightOPENmugs PLUS separate thirdWHITEtipped cup/REDspill/WHITEdryingcloth on SAMEsurface. LEFTglazedwindow+distinctOPENdoor show same night garden/fullpairedchairs beforecontrols. Own wording allows common box-table, not separate box/table requirement; frontal level interrupted encounter differs from parent diagonal high corner view, latestevent visible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 140769,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret--perspectives--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives--short-1-fc1ca07ef8cb.png",
+        "sha256": "fc1ca07ef8cbe74ecf1b1eae588727c3c485be4171303b6c18986d38eeb82842",
+        "promptSha256": "974e54a4e46cffb96bbee8c64ff8aa369381b298fd23c28d27cec5d3eb281fff",
+        "generationPromptSha256": "8981ef05e0f39d6814c39013c1a639aa6d0251a298500077195279aebd92f821",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "fc1ca07ef8cbe74ecf1b1eae588727c3c485be4171303b6c18986d38eeb82842",
+          "promptSha256": "974e54a4e46cffb96bbee8c64ff8aa369381b298fd23c28d27cec5d3eb281fff",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "GRAY fabric is TABLECLOTH UNDER bare exposed BOX, not cloth OVER BOX TOP+SIDE. Also THREE upright handledmugs instead of own exactlyTWO. Required LEFT full pair/window/distinctOPENdoor/closedgarden ending and separateCREAM folded stack are visible."
+          ],
+          "notes": "GRAY fabric is TABLECLOTH UNDER bare exposed BOX, not cloth OVER BOX TOP+SIDE. Also THREE upright handledmugs instead of own exactlyTWO. Required LEFT full pair/window/distinctOPENdoor/closedgarden ending and separateCREAM folded stack are visible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 156660,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives--short-2-9bb6cfa34867.png",
+        "sha256": "9bb6cfa34867a6a78fa4f7fc0f44e6a7f11ab40114561a62a6d71bbb52c667e6",
+        "promptSha256": "974e54a4e46cffb96bbee8c64ff8aa369381b298fd23c28d27cec5d3eb281fff",
+        "generationPromptSha256": "04dbd0a76dbf830e6e7364fc7ac6d61f7543f5815b48a67c61bcd3a3c8a21b31",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "9bb6cfa34867a6a78fa4f7fc0f44e6a7f11ab40114561a62a6d71bbb52c667e6",
+          "promptSha256": "974e54a4e46cffb96bbee8c64ff8aa369381b298fd23c28d27cec5d3eb281fff",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: whole LEFT glazed window and distinct open house doorway onto same night neighbor garden; actual closed garden ending gate behind same pair. Separate raised box with gray cloth physically over top/side, TWO upright mugs and separate soft cream folded stack beside box on same table. No third mug. Soft cloth folds, not rigid pages; new far high framing and all core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 151277,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--single--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single--scene-1-809b73d20d6c.png",
+        "sha256": "809b73d20d6cc273e09ab2cecf2ae3f2848311fbae054a43a5fa4729da2ab2a1",
+        "promptSha256": "2540059bf0cb7cdefaad939f28955f8e3cc35c25ee913c1e013431c8103fa27c",
+        "generationPromptSha256": "0b47a7f9172dd253a3204717d5bcbd11df171b1bdf65005752e6ea4b297ebdc1",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "809b73d20d6cc273e09ab2cecf2ae3f2848311fbae054a43a5fa4729da2ab2a1",
+          "promptSha256": "2540059bf0cb7cdefaad939f28955f8e3cc35c25ee913c1e013431c8103fa27c",
+          "reviewer": "Codex direct original visual inspection: v2-production-137",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT opened own native/exact request AND actual bittersweet single parent native/own request. UntouchedFIRSTmeeting one fullLEFTpair/lowtable/plainclosedBOX/two uprightmugs/actual intimateOPEN LEFTgarden passage behindpair. Ordinary neighbors/rain-clearedautumn spent brownleaves/wetwalk/quietdimlight, no imposed identity or masks/GRAYsecret/trustalternatives. Small high inside alcove framing clearly differs from old frontal roundtable/large centralpair/longRIGHTtownavenue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 153407,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--single--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single--episode-1-658ca7b68e53.png",
+        "sha256": "658ca7b68e53d72493db65e142c8f69bb8833955583201e5ea5ea0fbfceea7fe",
+        "promptSha256": "663fd3b32f076f43dc9abdb964024e349c571cfe210b3643c1bece29ab70b1ba",
+        "generationPromptSha256": "37510452ad70f9ce1fd23ff8fb0bcbff7943327be91aeec9eca37486a8cb1791",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "658ca7b68e53d72493db65e142c8f69bb8833955583201e5ea5ea0fbfceea7fe",
+          "promptSha256": "663fd3b32f076f43dc9abdb964024e349c571cfe210b3643c1bece29ab70b1ba",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: complete LEFT pair, bare brown box, two upright mugs PLUS third tipped white cup/red spill/separate white drying cloth on same table, open garden gate. However prominent pink/orange sunset sky and warm sunset-lit scenery contradict this actual request for quiet rain-cleared autumn with no bright sunset. All choices fails; event props and full required core are otherwise correct."
+          ],
+          "notes": "Native original: complete LEFT pair, bare brown box, two upright mugs PLUS third tipped white cup/red spill/separate white drying cloth on same table, open garden gate. However prominent pink/orange sunset sky and warm sunset-lit scenery contradict this actual request for quiet rain-cleared autumn with no bright sunset. All choices fails; event props and full required core are otherwise correct."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 242967,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single--episode-2-ec1756a5207a.png",
+        "sha256": "ec1756a5207a37a8d05886b271cd372f35a492460e1dad63c3853fb45c7f5009",
+        "promptSha256": "663fd3b32f076f43dc9abdb964024e349c571cfe210b3643c1bece29ab70b1ba",
+        "generationPromptSha256": "243f2bf9271b122c5a57c8bec8f5d0628ac07250c99f51f259224198bf1d6687",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ec1756a5207a37a8d05886b271cd372f35a492460e1dad63c3853fb45c7f5009",
+          "promptSha256": "663fd3b32f076f43dc9abdb964024e349c571cfe210b3643c1bece29ab70b1ba",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: one full LEFT pair, box and TWO upright open handled mugs PLUS third tipped white cup/red spill/separate white drying cloth. Actual OPEN garden threshold behind SAME pair; gray overcast autumn replaces rejected pink/orange sunset. New side-on interrupted table versus parent square untouched alcove; no core hidden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 132511,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--single--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single--short-1-3660a701cdda.png",
+        "sha256": "3660a701cddaa2d50818a78b54af0a7e8b51365bd3ff9dffd80c0aabde64b298",
+        "promptSha256": "eb1a3d52330a6436a3b98c57fd2351c2fd7c0530108b6a1fd24e6544337e61c7",
+        "generationPromptSha256": "4c08a74aad14e56aae89fb1cf78b60817a952463a935d865d26c54f7053ed7cd",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3660a701cddaa2d50818a78b54af0a7e8b51365bd3ff9dffd80c0aabde64b298",
+          "promptSha256": "eb1a3d52330a6436a3b98c57fd2351c2fd7c0530108b6a1fd24e6544337e61c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: full LEFT pair, brown box and soft cream folded stack on same table beside box, actual closed ending gate behind pair. Only ONE upright handled mug is present; actual request requires TWO upright open handled mugs. All choices fails; stack soft layers are not writing and no active spill is present."
+          ],
+          "notes": "Native original: full LEFT pair, brown box and soft cream folded stack on same table beside box, actual closed ending gate behind pair. Only ONE upright handled mug is present; actual request requires TWO upright open handled mugs. All choices fails; stack soft layers are not writing and no active spill is present."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 140275,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single--short-2-5d466d90daec.png",
+        "sha256": "5d466d90daecc39227814a497413d2e11863198056ac9c3e04cd61d4105a763a",
+        "promptSha256": "eb1a3d52330a6436a3b98c57fd2351c2fd7c0530108b6a1fd24e6544337e61c7",
+        "generationPromptSha256": "e003ac90260c7401e7a721898bf1e6e8b72dd94b2ffab5300ce06f394a798805",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "5d466d90daecc39227814a497413d2e11863198056ac9c3e04cd61d4105a763a",
+          "promptSha256": "eb1a3d52330a6436a3b98c57fd2351c2fd7c0530108b6a1fd24e6544337e61c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: exactly two full LEFT chairs, bare box and TWO clearly separate upright handled mugs plus soft cream folded stack beside box on SAME table. Actual CLOSED garden ending gate behind pair; gray-blue overcast wet autumn. Corrects missing mug in 138; fresh diagonal settled aperture framing versus single parent; no spill or identity/writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 152383,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--routes--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--scene-1-0e172e9caeaa.png",
+        "sha256": "0e172e9caeaa16a2ba596c28709eff435b949e8e260020044a0139a698c78771",
+        "promptSha256": "de3688abe3d921fc5f04b100d7bf7fb6f96dd21c799bccb0370f79d7b64d0541",
+        "generationPromptSha256": "3ff32010a744ca2bf0e7624e7f83265c9826721ab2f4d7a84cdafc05b7ef0aa2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "0e172e9caeaa16a2ba596c28709eff435b949e8e260020044a0139a698c78771",
+          "promptSha256": "de3688abe3d921fc5f04b100d7bf7fb6f96dd21c799bccb0370f79d7b64d0541",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: three complete LEFT paired nooks/SIX chairs, physical Y lanes around low dividers, A bare box, B two closed books, C two upright handled mugs with soft cream cloth hanging over table edge. Prepared first meeting, wet brown leaves/ordinary autumn neighbor view. Low grass/wall lane dividers are explicitly allowed, not a near-camera tree frame. Distinct side-on camera versus new parent; all core before controls. Withhold publication until routes parent passes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 180824,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--routes--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--episode-1-27dc5bf11561.png",
+        "sha256": "27dc5bf11561407548bc5620da43dd9187f4227cfb5a183edeb5c14221437d9a",
+        "promptSha256": "5436ab27e635986f752aceadc3c81d39acbcb08e93e63934e6f4325f5f6e3979",
+        "generationPromptSha256": "cae5f7809053272707020d6d5f2e2954c29930c70a25004441ab48b5f8f6baa9",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "27dc5bf11561407548bc5620da43dd9187f4227cfb5a183edeb5c14221437d9a",
+          "promptSha256": "5436ab27e635986f752aceadc3c81d39acbcb08e93e63934e6f4325f5f6e3979",
+          "reviewer": "Codex direct original visual inspection: v2-production-138",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: six complete chairs/three distinct LEFT nooks and physical Y lanes; A box plus extra tipped white cup/red spill/separate white drying cloth; B two closed books; C two upright mugs and separate hanging cream cloth. Autumn wet leaves and ordinary house view, no invented identity/writing. More overhead interrupted-event framing versus parent and side-on scene; low lane dividers explicitly allowed. All full core before controls; withhold until routes parent passes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 201965,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--routes--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--short-1-c8de1c64ef3e.png",
+        "sha256": "c8de1c64ef3efd5cd3bc76b3a39572607b6ccf1be9d9022823492f7f0b099c0f",
+        "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+        "generationPromptSha256": "928298db5803069736da5aff88952cd05f68944ec251b91b531f3e55f9d02915",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c8de1c64ef3efd5cd3bc76b3a39572607b6ccf1be9d9022823492f7f0b099c0f",
+          "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six complete LEFT chairs, Y lanes, A box and soft cream folded stack beside it on same table before CLOSED ending gate; C two mugs and hanging cream cloth. However B table contains FOUR closed books (two separate two-book stacks), contrary to OWN exact requirement TWO closed books. All choices fails. No fictitious text or hidden chair finding; low lane dividers are explicitly allowed."
+          ],
+          "notes": "Native original: six complete LEFT chairs, Y lanes, A box and soft cream folded stack beside it on same table before CLOSED ending gate; C two mugs and hanging cream cloth. However B table contains FOUR closed books (two separate two-book stacks), contrary to OWN exact requirement TWO closed books. All choices fails. No fictitious text or hidden chair finding; low lane dividers are explicitly allowed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 173796,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--short-2-d10dc7b567a8.png",
+        "sha256": "d10dc7b567a87fbf7ed48fc468236b46095d4f68726db1325b18c066a69f9fa1",
+        "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+        "generationPromptSha256": "c0cfe9e23495429965707c1ecaaf2e8861c7e04814787bce882c324c345ca29a",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d10dc7b567a87fbf7ed48fc468236b46095d4f68726db1325b18c066a69f9fa1",
+          "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six chairs/three LEFT paired nooks/Y lanes, A box+soft cream stack/Bexactly two books/Ctwo mugs+hanging cream cloth. However CLOSED ending gate and stone posts are in FRONT of SAME A pair between camera and furniture, rather than directly BEHIND pair as OWN ending request requires; near-camera gate/post frame also obstructs part of near furniture. Composition and latest choice fail, not a fabricated text/count issue."
+          ],
+          "notes": "Native original: six chairs/three LEFT paired nooks/Y lanes, A box+soft cream stack/Bexactly two books/Ctwo mugs+hanging cream cloth. However CLOSED ending gate and stone posts are in FRONT of SAME A pair between camera and furniture, rather than directly BEHIND pair as OWN ending request requires; near-camera gate/post frame also obstructs part of near furniture. Composition and latest choice fail, not a fabricated text/count issue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 187486,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--short-3-e4b558d42f05.png",
+        "sha256": "e4b558d42f0524244796f48c7d567f6ff4cffbf3cfcdf73f77ba5a3971b9dbf0",
+        "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+        "generationPromptSha256": "8eb1f890d1f17c38525c825ee24c4ed1530c416fa94800ae92cf3d6327c0f1bd",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "e4b558d42f0524244796f48c7d567f6ff4cffbf3cfcdf73f77ba5a3971b9dbf0",
+          "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six LEFT chairs/realY nooks, A brownBOX+softcreamfoldedSTACK SAMEtable, BexactTWOclosedbooks/Ctwo uprightmugs+hangingcreamcloth. However ending garden gate has a clear OPEN passage beside angled leaf to the RIGHT, rather than fully closed gate behind SAME A pair. OWN ending request requires actual CLOSED gate. Latest choice fails; no fictitious count/text/controls failure."
+          ],
+          "notes": "Native original: six LEFT chairs/realY nooks, A brownBOX+softcreamfoldedSTACK SAMEtable, BexactTWOclosedbooks/Ctwo uprightmugs+hangingcreamcloth. However ending garden gate has a clear OPEN passage beside angled leaf to the RIGHT, rather than fully closed gate behind SAME A pair. OWN ending request requires actual CLOSED gate. Latest choice fails; no fictitious count/text/controls failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 115264,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes--short-4-ad28fbd3ea91.png",
+        "sha256": "ad28fbd3ea913a6f99c971312bf3cbc34d0cf8b626fa977d30f552671c40d121",
+        "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+        "generationPromptSha256": "7a8b38b1b91e62a3eebb770280ea7b409968a76f3786407288d448013aa2ee2f",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "ad28fbd3ea913a6f99c971312bf3cbc34d0cf8b626fa977d30f552671c40d121",
+          "promptSha256": "61ca1d10f73a5c64d4df21ef1fda3e37c756682dd1fc961e6d3842f9bebb496e",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "SIX full LEFT chairs/three physical Y-linked nooks. A brown common box and separate soft cream folded cloth stack on SAME table directly before solid CLOSED flush backLEFT ending door filling frame; B exact TWO closed books; C TWO upright open handled mugs and hanging cream cloth. Gray autumn neighbors LEFT window. Fresh overhead reversed-depth framing versus parent and rejected ajar-door shot; all complete core before actual controls. No invented book counts from page bands."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 108320,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--perspectives--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives--scene-1-09b489d8421f.png",
+        "sha256": "09b489d8421f2fcf4f36f0a856ee6daa573a5de8177baab259e8e6e03448430b",
+        "promptSha256": "2c4a70074b9dd738ba22b87a1cb4d53eedc7054a48de96f1bc8775d2c09ff420",
+        "generationPromptSha256": "7e709d462c66841d5003f95c61e3131173751ca1b6d3103260f72e40ed0175fa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "09b489d8421f2fcf4f36f0a856ee6daa573a5de8177baab259e8e6e03448430b",
+          "promptSha256": "2c4a70074b9dd738ba22b87a1cb4d53eedc7054a48de96f1bc8775d2c09ff420",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/common closed brown box/TWO upright handled mugs; complete glazed LEFT window and distinct OPEN LEFT door view onto SAME wet ordinary autumn neighbor garden. Untouched first encounter, no extra event cup/ending stack. New front cabinet-table view versus parent far-high view; actual required core wholly before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 119803,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--perspectives--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives--episode-1-986880cca06e.png",
+        "sha256": "986880cca06e20f3f1881e2c42aa75eb908be1a4d59a113f051e9b5b2be069bf",
+        "promptSha256": "879c8b39908aaef449276e561bd5f06fe5baab7995b73427e9f80af3e4c3351d",
+        "generationPromptSha256": "09f9dab03c43b6e5f02461f16bdd41f0ab09ad6d29f7ab4633a88d7af39a455f",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "986880cca06e20f3f1881e2c42aa75eb908be1a4d59a113f051e9b5b2be069bf",
+          "promptSha256": "879c8b39908aaef449276e561bd5f06fe5baab7995b73427e9f80af3e4c3351d",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/common closed box and TWO upright mugs PLUS third tipped white cup/red spill/separate white drying cloth on SAME table. Glazed LEFT window and distinct OPEN LEFT door onto SAME autumn garden. Extra closed domestic books on same table are not competing trust-door alternatives or writing. Fresh diagonal interrupted-event shot versus parent, quiet gray autumn/no sunset; no hidden required core."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 163514,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet--perspectives--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives--short-1-3b261d641c85.png",
+        "sha256": "3b261d641c85bd768ec3a4e4fd37bb4644e6809ce756bed01f039990d4b6b6b0",
+        "promptSha256": "1de52e84b29e0105a6bb0abd4d0764c3eeb649ea13e87c1ce5cd93e0adb2ccce",
+        "generationPromptSha256": "e0b445b5ed2cdaa3d93a3404157fd39dda340017cb7ceea56d7b677ff06b59f6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3b261d641c85bd768ec3a4e4fd37bb4644e6809ce756bed01f039990d4b6b6b0",
+          "promptSha256": "1de52e84b29e0105a6bb0abd4d0764c3eeb649ea13e87c1ce5cd93e0adb2ccce",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: two full LEFT chairs, box/TWO open handled mugs and visibly soft cream folded stack on SAME table beside box. Complete glazed LEFT window and distinct OPEN LEFT house door view; actual CLOSED garden ending gate behind same pair. Quiet gray rainy autumn. New higher settled-table camera versus parent; cloth creases/folds are not glyphs or rigid pages. No spill/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 121921,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--single--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--single--scene-1-c5011b139046.png",
+        "sha256": "c5011b139046d5958f0c9a17357bc2e893aac3ba2ca67d0dea8cca38ec35ab45",
+        "promptSha256": "7736dbb8875c938d3c4bbd8b43d98b8e53bb78babbd8c332699b7499556d81af",
+        "generationPromptSha256": "99dcd9b7abdc3a8460e3910c44e5b0fd3a53b09df12fb686c9071319da5102fa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c5011b139046d5958f0c9a17357bc2e893aac3ba2ca67d0dea8cca38ec35ab45",
+          "promptSha256": "7736dbb8875c938d3c4bbd8b43d98b8e53bb78babbd8c332699b7499556d81af",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT prepared pair and prominent closed bare keepsake on small table, actual OPEN garden gate and intimate wet garden passage behind same pair, fresh midground flowers BEHIND furniture and ordinary neighboring houses/daylight. No invented protagonist or writing; memory request needs no conversation mugs. Untouched first encounter. Fresh lateral square-table/garden framing versus new narrower room parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 216024,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--single--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--single--episode-1-cc51fc330e2c.png",
+        "sha256": "cc51fc330e2c1a3334838fb98c1f985ba8dd4c7250b46c204358ab5fc2e61aa7",
+        "promptSha256": "33dd25bfb909df89d44617291cc5b11f0671b8686bff6ee05bcfdc83959488a0",
+        "generationPromptSha256": "8a4dbe0a520e4204ea012103997f239673d353d140f2e54dea8f375af91476be",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cc51fc330e2c1a3334838fb98c1f985ba8dd4c7250b46c204358ab5fc2e61aa7",
+          "promptSha256": "33dd25bfb909df89d44617291cc5b11f0671b8686bff6ee05bcfdc83959488a0",
+          "reviewer": "Codex direct original visual inspection: v2-production-139",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/common closed keepsake PLUS one tipped white event cup/red spill/separate soft white drying cloth on same table. OWN memory request expressly does not require conversation mugs. Actual OPEN intimate garden aperture/gate behind pair, welcoming light/MID flowers behind furniture. More overhead oblique close interrupted event versus parent/prepared scene; all core before controls, no writing/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 239620,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--single--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--single--short-1-aa1e1124c9e8.png",
+        "sha256": "aa1e1124c9e8981d6809c370d35ca15c9c78390626d9649b881daf3b33739e6e",
+        "promptSha256": "57092c73d75936cc722a2c39cda5b66841f80800ff7980d58e35470a17a0f1ac",
+        "generationPromptSha256": "1d83b991741593c32250e1761d1d3d195483e7f6b7bf52d2d9eda39b082005e2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "aa1e1124c9e8981d6809c370d35ca15c9c78390626d9649b881daf3b33739e6e",
+          "promptSha256": "57092c73d75936cc722a2c39cda5b66841f80800ff7980d58e35470a17a0f1ac",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/plain closed memory box and soft cream folded stack beside box on SAME table. Actual CLOSED garden ending gate BEHIND pair; welcoming ordinary neighboring homes and MID flowers behind furniture, no event spill. Root also opened read-only magnified cloth diagnostic: soft creases/wavy folded layers without bindings or writing, not rigid page stacks. New lateral settled doorway framing vs memory parent; no required mugs for OWN memory branch."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 218180,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--routes--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--scene-1-c30d091c9b16.png",
+        "sha256": "c30d091c9b1636cc49269fb85772713c59b665be950cf4f5fd7ca9b9d4859e9e",
+        "promptSha256": "02fd953a2a139860495b1ca0e4decdcba8dbcc1770652864e73b0d387dd35cc5",
+        "generationPromptSha256": "2af322d3f4b919c0fdcba59715eeca3ef663bdb77a22b727b301760da8fd4717",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c30d091c9b1636cc49269fb85772713c59b665be950cf4f5fd7ca9b9d4859e9e",
+          "promptSha256": "02fd953a2a139860495b1ca0e4decdcba8dbcc1770652864e73b0d387dd35cc5",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: SIX full LEFT chairs/three paired nooks and physical Y floor lanes, A closed brown memory box/B TWO closed books single layer/Ctwo upright open mugs and hanging cream cloth. Prepared untouched first meeting, welcoming garden neighbor views and MID flower dividers behind near A furniture; bare near foreground. New side-on staged room vs diagonal parent. All full backs/seats/branch props before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 164247,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--routes--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--episode-1-dbe63ccd16b2.png",
+        "sha256": "dbe63ccd16b2f08cf6655c5e88c94291d168443bfc999bf96cdae0b59d752427",
+        "promptSha256": "ade10c535aaf9c1558f1ee783342c6b34eebef3f81b3b191019ce57f1afb13f3",
+        "generationPromptSha256": "041965782807f1c58432ee1526860c987119bb5afcc69b4e3370256fded7c7c4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "dbe63ccd16b2f08cf6655c5e88c94291d168443bfc999bf96cdae0b59d752427",
+          "promptSha256": "ade10c535aaf9c1558f1ee783342c6b34eebef3f81b3b191019ce57f1afb13f3",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six complete LEFT chairs/Y lanes; A closed BOX plus tipped white event cup/red spill/separate white drying cloth; B TWO closed books/Ctwo upright mugs+hanging cream cloth. However tall flower-filled planter along near A right edge reaches foreground y90-100 immediately alongside/in front of pair, contradicting OWN no-near-camera-plants and MID flowers only. Composition fails; event/counts and actual control visibility otherwise correct."
+          ],
+          "notes": "Native original: six complete LEFT chairs/Y lanes; A closed BOX plus tipped white event cup/red spill/separate white drying cloth; B TWO closed books/Ctwo upright mugs+hanging cream cloth. However tall flower-filled planter along near A right edge reaches foreground y90-100 immediately alongside/in front of pair, contradicting OWN no-near-camera-plants and MID flowers only. Composition fails; event/counts and actual control visibility otherwise correct."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 222301,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--episode-2-1adc43fef576.png",
+        "sha256": "1adc43fef57691a03f69cf0876fa6dc4c25d0802b484644e02e9d1e7ffc539bc",
+        "promptSha256": "ade10c535aaf9c1558f1ee783342c6b34eebef3f81b3b191019ce57f1afb13f3",
+        "generationPromptSha256": "c1dc766d433f424dd61c48a7ccd28a38199769f1147149864cbe926d87c833c3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "1adc43fef57691a03f69cf0876fa6dc4c25d0802b484644e02e9d1e7ffc539bc",
+          "promptSha256": "ade10c535aaf9c1558f1ee783342c6b34eebef3f81b3b191019ce57f1afb13f3",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: six complete LEFT chairs/three real internalY nooks around BARE LOW STONE walls. A prominent memoryBOX+ONE tippedWHITEcup/REDspill/separateWHITEdryingcloth, BexactTWOclosedbooks one layer/Ctwo uprightmugs+hangingcreamcloth. No indoor plants/foreground flower planter; freshflowers only behind all furniture through upperLEFTwindow. New sandstone stepped room and overhead oblique event framing vs140bad foregroundflowers and diagonal parent; all core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 139666,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--routes--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--short-1-35d92cbdc6d5.png",
+        "sha256": "35d92cbdc6d57b2c6a51ab1a89ff3c0ff37a6e150b78be44867b6e601d562bc8",
+        "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+        "generationPromptSha256": "b64168d056d98cb3b5fc651f8000ce0ce46e3ba0a8a9424960ed4b36da501651",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "35d92cbdc6d57b2c6a51ab1a89ff3c0ff37a6e150b78be44867b6e601d562bc8",
+          "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: six complete LEFT chairs/Y lanes; A BOX+soft cream folded stack SAME table before actual CLOSED ending gate; B TWO closed books/Ctwo mugs+hanging cream cloth. However flower hedge/planter extends down near-left foreground x0-7,y66-88 beside/in front of near A pair, contrary to OWN no-near-camera-plants/MID flowers behind furniture only. Composition fails; selected ending/counts correct, no fictional controls concealment."
+          ],
+          "notes": "Native original: six complete LEFT chairs/Y lanes; A BOX+soft cream folded stack SAME table before actual CLOSED ending gate; B TWO closed books/Ctwo mugs+hanging cream cloth. However flower hedge/planter extends down near-left foreground x0-7,y66-88 beside/in front of near A pair, contrary to OWN no-near-camera-plants/MID flowers behind furniture only. Composition fails; selected ending/counts correct, no fictional controls concealment."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 277230,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--short-2-93564abff616.png",
+        "sha256": "93564abff616cd7b6ec1703c10d807751f237fb93af05eb29d2e1838dceec690",
+        "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+        "generationPromptSha256": "7f02ff8b26be41dfb335bde9eddf25192888a709800902545a437db2b09bc16f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "93564abff616cd7b6ec1703c10d807751f237fb93af05eb29d2e1838dceec690",
+          "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original: SIX complete LEFT chairs/Y lanes, ABOX+softcreamfoldedSTACK SAMEtable/B TWOclosedbooks/Ctwo mugs+hangingcreamcloth; welcoming garden behind glazedLEFTwindow. Root magnified read-only doorway diagnostic shows actual leaf ajar with clear outdoor strip/open aperture along RIGHT edge. OWN selected ending requires actual CLOSED garden door/gate BEHIND SAMEpair, so latest choice fails. No foregroundplant or writing/count failure."
+          ],
+          "notes": "Native original: SIX complete LEFT chairs/Y lanes, ABOX+softcreamfoldedSTACK SAMEtable/B TWOclosedbooks/Ctwo mugs+hangingcreamcloth; welcoming garden behind glazedLEFTwindow. Root magnified read-only doorway diagnostic shows actual leaf ajar with clear outdoor strip/open aperture along RIGHT edge. OWN selected ending requires actual CLOSED garden door/gate BEHIND SAMEpair, so latest choice fails. No foregroundplant or writing/count failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 160000,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes--short-3-2fd5702b3fa3.png",
+        "sha256": "2fd5702b3fa38e67dc8a75835b948bb528c5dfd622fa0a320defdaea3843b03e",
+        "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+        "generationPromptSha256": "fe3631cc3a17c767a64b0cc84147ac9c6e1e2155719ff349a1acf55a5a3e85a1",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "2fd5702b3fa38e67dc8a75835b948bb528c5dfd622fa0a320defdaea3843b03e",
+          "promptSha256": "b9083287c3efc47f2d13987766709c7712d681552a35e3f1ea17bef48bb64c97",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "SIX full LEFT chairs/real Y-linked nooks around bare low stone walls. A box and separate soft cream folded cloth stack SAME table before solid CLOSED flush backLEFT ending door; B TWO closed books; C TWO upright mugs/hanging cream cloth. No indoor plants; daylight flowers only beyond LEFT window behind ALL furniture. Fresh overhead reversed-depth shot; full backs and seats before actual controls, low wall covers only legs."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 120322,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--perspectives--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--perspectives--scene-1-87ade39dbf88.png",
+        "sha256": "87ade39dbf88e4dc4401efd5a35890f2fd8d80952c5895a4a4399cd8b3bd7f53",
+        "promptSha256": "04af13040b36f62d517255417cc9e35ca84f90b8f7b63cd474c96463c985b42c",
+        "generationPromptSha256": "49e7148724d43a82be1c8a6cda8f12ae98f531e9f585fa60fff9daee46c86e13",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "87ade39dbf88e4dc4401efd5a35890f2fd8d80952c5895a4a4399cd8b3bd7f53",
+          "promptSha256": "04af13040b36f62d517255417cc9e35ca84f90b8f7b63cd474c96463c985b42c",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/plain closed memory BOX on shared table, complete glazed LEFT window and distinct OPEN LEFT house door around SAME welcoming ordinary neighbor garden. Prepared first meeting; no event spill/ending stack or required mugs. Closed domestic bookcase behind pair is not a trust-door alternative, glyph, or protagonist identity. New diagonal shallow alcove versus parent small square-table room; all required core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 165036,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--perspectives--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--perspectives--episode-1-9f455af311ca.png",
+        "sha256": "9f455af311cafacbff3da62ff8664decd85afb7f5ad712eabe327240c359c360",
+        "promptSha256": "45a2139af0d9466e763b78cc370acb34258860cddfe46d3da45396511b283f48",
+        "generationPromptSha256": "47b2447cdd65a23c21440cc6d7bb356dbd33269c47a4083ada02908a8ff35b22",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9f455af311cafacbff3da62ff8664decd85afb7f5ad712eabe327240c359c360",
+          "promptSha256": "45a2139af0d9466e763b78cc370acb34258860cddfe46d3da45396511b283f48",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/plain closed memory BOX PLUS one tipped white event cup/RED spill/separate SOFT WHITE drying cloth on SAME table. OWN memory request requires no upright conversation mugs. Complete glazed LEFT window and distinct OPEN LEFT house door around SAME ordinary garden; MID flowers behind pair. New side-on interrupted table versus parent, no ending stack or writing/identity. All core before actual controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 169778,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm--perspectives--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--perspectives--short-1-d2163e217822.png",
+        "sha256": "d2163e2178229803fef0925e29ea25451417c5e69f8babf7487a0641ef024ef7",
+        "promptSha256": "5ef2ba3217a7ad77d153e37b4039a105c7ab1db015137c2eb2b7c325f160268e",
+        "generationPromptSha256": "72b526fef5b96e04a1fdd4ea5f74e086aee1a7cb41a064d787556b18e371a025",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d2163e2178229803fef0925e29ea25451417c5e69f8babf7487a0641ef024ef7",
+          "promptSha256": "5ef2ba3217a7ad77d153e37b4039a105c7ab1db015137c2eb2b7c325f160268e",
+          "reviewer": "Codex direct original visual inspection: v2-production-140",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/plain closed memory BOX with clearly soft cream folded stack BESIDE box on SAME table. Glazed LEFT window plus distinct OPEN LEFT house door/view, actual CLOSED garden ending gate BEHIND same pair. No event spill/mugs required; actual cream cloth wavy folds are not page lines. New overhead settled shot vs parent; welcoming ordinary garden daylight/MID flowers behind pair, full core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 175823,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--single--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--single--scene-1-2204a65d1f4d.png",
+        "sha256": "2204a65d1f4d0be273c8e103dcc7ef916940483c765944bb107844e9a79ae84b",
+        "promptSha256": "a3d269a8c726dd381306a7f24034a17926277e06b3a3e5268656784933bd4c88",
+        "generationPromptSha256": "d0557adff4eb05253b29ff5552ada68cdbac4ef92a1b063025be03ca5bee2ba3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2204a65d1f4d0be273c8e103dcc7ef916940483c765944bb107844e9a79ae84b",
+          "promptSha256": "a3d269a8c726dd381306a7f24034a17926277e06b3a3e5268656784933bd4c88",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: two complete LEFT chairs/raised plain closed memoryBOX, GRAYcloth coversTOP/downSIDE leaving brownfront/latch exposed. Actual OPENLEFTprivatehouse passage/neighbor nightgate behind SAMEpair, untouched prepared firstmeeting; no eventcup/endingstack/mugs required. New front-on thinner table and left aperture vs parent diagonal pair. Entirecore before controls; cloth is onBOX not under-table cover."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 162617,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--single--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--single--episode-1-af5d3940f1fb.png",
+        "sha256": "af5d3940f1fb6343ec2f5816ae24c62bab5319021f5b2a876f4a4027c7178ac6",
+        "promptSha256": "44d34dca2ce5956c8a3ffe5da615b0189157d44ecd9a9987ce61052843dddc63",
+        "generationPromptSha256": "01ea5e4102e442c8176239daba46db92cb9bbb3ef2dddfbe241476a26ceed5c6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "af5d3940f1fb6343ec2f5816ae24c62bab5319021f5b2a876f4a4027c7178ac6",
+          "promptSha256": "44d34dca2ce5956c8a3ffe5da615b0189157d44ecd9a9987ce61052843dddc63",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: complete LEFT pair/raised closedBOXwith GRAYoverTOP/downSIDE on barebrownTABLE PLUS one tippedWHITEeventcup/REDspill/separateWHITEdryingcloth SAMEtable. OWN memory request does not require conversation mugs. Actual OPENLEFTprivatepassage and NIGHTneighbor garden beyond; fresh side-diagonal interrupted table vs parent. Closeddomesticbooks on rear cabinet are ordinary props, no competing route alternatives or glyphs. No core hidden."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 166326,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--single--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--single--short-1-82f05b783fed.png",
+        "sha256": "82f05b783fedad6da0929347eaa75fc75993d4ad73aba73b3067015ea0973bc8",
+        "promptSha256": "78832c2814caf39eac0f27494ecdfe226d4880ebd8eb498c9fff48d1ad729bc6",
+        "generationPromptSha256": "757ca217a732e92ea1c23baf6fbfd7d6a5851ccb1c0ac8744022978546a0b62a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "82f05b783fedad6da0929347eaa75fc75993d4ad73aba73b3067015ea0973bc8",
+          "promptSha256": "78832c2814caf39eac0f27494ecdfe226d4880ebd8eb498c9fff48d1ad729bc6",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: full LEFT pair/raisedBOXwithGRAYcloth coveringTOP/downSIDE PLUS separate SOFTCREAMfoldedSTACK BESIDEbox SAMEtable. Actual CLOSED garden ending gate fills passage behind SAMEpair; open house aperture/window remain ordinary architecture, not an open endinggate. PrivateNIGHTneighbor view, no event/mugs required. Higher front distant ending shot vs parent; allcore before controls/no writing/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 135177,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--routes--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--routes--scene-1-96a23bc27ebe.png",
+        "sha256": "96a23bc27ebeadc9ea73040d7fe04929f01968f4a0438402b15f1114ebd5db94",
+        "promptSha256": "d7a11bdc36ea5efc3b8cd8b06e282626542a0567ec9afa507180040bc6fa1461",
+        "generationPromptSha256": "e5938565b9717ea87457c9bd34fb104bb89a54f698ef04b4f26de147fa236f66",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "96a23bc27ebeadc9ea73040d7fe04929f01968f4a0438402b15f1114ebd5db94",
+          "promptSha256": "d7a11bdc36ea5efc3b8cd8b06e282626542a0567ec9afa507180040bc6fa1461",
+          "reviewer": "Codex direct original visual inspection: v2-production-141",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: SIX full LEFTchairs/three compact pairednooks and real INTERNALYlanes around barelowstonewalls, A raisedBOXproperGRAYcoverTOP/downSIDE, BexactTWOclosedbooks singlelayer, Ctwo uprightmugs+hangingCREAMcloth. PrivateNIGHTinsideentryhall, actual ordinaryneighbor garden LEFTexit. Untouched firstmeeting. New highside steppedlayout vs parent ring-dividers/tableclothfailure. All core before controls; withhold until actual routes parent passes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 147436,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--routes--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--routes--episode-1-43567fc8cc1e.png",
+        "sha256": "43567fc8cc1e3f8b594133a5a5c7e78ee21dbb5c2d08ae69c008e50fff955b07",
+        "promptSha256": "06a9f68d3f4679521a7cb127524efd55918a04dd733b140f1a6cceb089232a2b",
+        "generationPromptSha256": "a8ea313e3540a6ab8fc5f92dfd1e946ff7c1bee11465604d467827863d2be066",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "43567fc8cc1e3f8b594133a5a5c7e78ee21dbb5c2d08ae69c008e50fff955b07",
+          "promptSha256": "06a9f68d3f4679521a7cb127524efd55918a04dd733b140f1a6cceb089232a2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Native original and read-only rear-books diagnostic: A gray cloth correctly covers raised box TOP/SIDE, ONE tipped WHITE cup/RED spill/separate WHITE drying cloth SAME table; C two upright mugs/hanging cream cloth/full pair correct, internal Y/night/LEFT neighbor exit. B books table has ONLY ONE backed chair: second opposed chair missing. FIVE chairs total versus OWN SIX/two per nook. Only allChoices fails; no invented FOUR-book, text, event or concealed-core finding."
+          ],
+          "notes": "Native original and read-only rear-books diagnostic: A gray cloth correctly covers raised box TOP/SIDE, ONE tipped WHITE cup/RED spill/separate WHITE drying cloth SAME table; C two upright mugs/hanging cream cloth/full pair correct, internal Y/night/LEFT neighbor exit. B books table has ONLY ONE backed chair: second opposed chair missing. FIVE chairs total versus OWN SIX/two per nook. Only allChoices fails; no invented FOUR-book, text, event or concealed-core finding."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 157636,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--routes--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--routes--short-1-8167bf1b4f54.png",
+        "sha256": "8167bf1b4f54b8c86a46119594786ba1546a960a81df8e314d48f7c37305311b",
+        "promptSha256": "b02e1d06f519181d61736082955733247529d2a192ed0ca72816347b257cc805",
+        "generationPromptSha256": "7ab16edec12b1981148542526a525cc2a230a1d93ca79ecc09e06d9bf51a3d05",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8167bf1b4f54b8c86a46119594786ba1546a960a81df8e314d48f7c37305311b",
+          "promptSha256": "b02e1d06f519181d61736082955733247529d2a192ed0ca72816347b257cc805",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "SIX complete LEFT chairs/internal Y nooks. Raised A box with GRAY cloth OVER TOP/down SIDE plus separate SOFT CREAM folded cloth stack BESIDE box SAME bare table before actual solid CLOSED backLEFT ending door filling frame. B TWO closed books with normal cover/page bands; C TWO upright mugs/hanging cream cloth. NIGHT neighbors LEFT window; fresh reversed-depth camera preserves all three physical nooks/lanes. All core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 103226,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--perspectives--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--perspectives--scene-1-3ab2dc0fc28d.png",
+        "sha256": "3ab2dc0fc28d540250a2008aa5f02c3c3959aaf7e9a5a54923a1357c4fef2c43",
+        "promptSha256": "8d209dc80afa4b4809bf447be1327b571500304f09c9164f297c4e64d31f24bb",
+        "generationPromptSha256": "d79393815c8f50b3eb647a51ae458c768196a242014b569b2b5223419320c44e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3ab2dc0fc28d540250a2008aa5f02c3c3959aaf7e9a5a54923a1357c4fef2c43",
+          "promptSha256": "8d209dc80afa4b4809bf447be1327b571500304f09c9164f297c4e64d31f24bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "TWO complete LEFT chairs/raised closed box with GRAY cloth over TOP/down SIDE on bare BROWN table, exposed front latch. Complete GLAZED LEFT window and distinct OPEN LEFT house doorway onto SAME private NIGHT neighbor garden. Prepared untouched first meeting; no event, ending stack or conversation mugs required. Fresh side-diagonal room versus parent frontal pair; sharp pixel clusters/all core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 150555,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--perspectives--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--perspectives--episode-1-8ecf979e75ad.png",
+        "sha256": "8ecf979e75ad06bebb04a040a4c52a42cbe4cb501527f96f5799ba2f6079c4dd",
+        "promptSha256": "96dee2df7fdfb88c4010a40eabb91b63a14777be7be111bcf36e6b5f4ca26562",
+        "generationPromptSha256": "56f91d2394999ba72853736abe9e0940ba64f10b6738be1afbc77585c19ab3b9",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8ecf979e75ad06bebb04a040a4c52a42cbe4cb501527f96f5799ba2f6079c4dd",
+          "promptSha256": "96dee2df7fdfb88c4010a40eabb91b63a14777be7be111bcf36e6b5f4ca26562",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "TWO complete LEFT chairs/raised box with proper GRAY TOP/SIDE cloth and bare supporting table. ONE tipped WHITE event cup/RED spill/separate SOFT WHITE drying cloth SAME table. Complete LEFT glazed window and distinct OPEN LEFT doorway onto SAME private NIGHT garden. No conversation mugs required. Fresh near-overhead interrupted-table staging versus frontal parent, full core before controls, front latch is functional hardware not glyph."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 168192,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret--perspectives--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret--perspectives--short-1-99e9e0e21a5b.png",
+        "sha256": "99e9e0e21a5b0870e82a15588af45ad6e12267fc07dcfde61fbd66e46dc3a95b",
+        "promptSha256": "e82b82f6671996f81177017a19b687d47ceabf2f39fbe9f9f15d905f5839b4f0",
+        "generationPromptSha256": "f273c14462ca5ecf13945c4c5bac703e78ff5d6a767053d6d2cdbe5ac798b19d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "99e9e0e21a5b0870e82a15588af45ad6e12267fc07dcfde61fbd66e46dc3a95b",
+          "promptSha256": "e82b82f6671996f81177017a19b687d47ceabf2f39fbe9f9f15d905f5839b4f0",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "TWO full LEFT chairs/raised box with GRAY TOP/SIDE cover plus separate SOFT CREAM folded cloth stack BESIDE box SAME bare table. LEFT glazed window and distinct OPEN LEFT house doorway preserve perspective views; separate solid CLOSED garden-exit backLEFT door BEHIND SAME pair fills frame. Open perspective house doorway and closed ending exit coexist as required, not competing trust routes. NIGHT/no event or mugs required/fresh high angled ending shot; all core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 169584,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--bittersweet--single--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet--single--scene-1-f24814e18fb4.png",
+        "sha256": "f24814e18fb462c821cd86ad654f6f0830eb9003ef29c883c817b8bbccca7ef0",
+        "promptSha256": "3ae001b1ab468f38e9222ee01dac9be209073dab5dfece21196e19c6d8c640f3",
+        "generationPromptSha256": "bf7aa965f945e2e14ac7679b269b964ff74ff77501aa286fa63012c00da3e180",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f24814e18fb462c821cd86ad654f6f0830eb9003ef29c883c817b8bbccca7ef0",
+          "promptSha256": "3ae001b1ab468f38e9222ee01dac9be209073dab5dfece21196e19c6d8c640f3",
+          "reviewer": "Codex direct original visual inspection: v2-production-142",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "TWO full LEFT chairs/plain closed brown memory box/small table; no conversation mugs required. Actual OPEN LEFT intimate house/garden passage behind SAME pair, wet gray autumn neighbors and brown spent leaves. Prepared untouched first meeting/no event or ending. Ordinary closed books/bookcase behind pair are domestic props without writing or competing trust alternatives. Fresh frontal wider garden aperture versus high-diagonal parent; all core before controls."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 135509,
           "findings": []
         }
       }

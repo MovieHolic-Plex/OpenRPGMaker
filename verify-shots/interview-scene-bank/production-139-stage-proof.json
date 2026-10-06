@@ -1,0 +1,84 @@
+{
+  "receipts": [
+    {
+      "batch": "v2-production-139",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T06:10:21.031416+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-import-batch.log"
+    },
+    {
+      "batch": "v2-production-139",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T06:10:48.623673+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-review-batch.log"
+    },
+    {
+      "batch": "v2-production-139",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T06:14:37.929402+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-gate.log"
+    },
+    {
+      "batch": "v2-production-139",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T06:18:43.126679+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-139-build.log"
+    },
+    {
+      "batch": "v2-production-139",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-139"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T06:18:43.569742+00:00"
+    }
+  ],
+  "published": 640,
+  "remaining": 817,
+  "rootOriginalsSeen": 10,
+  "pass": 9,
+  "fail": 1,
+  "exactReviewsMatch": 10
+}

@@ -1,0 +1,28 @@
+{
+  "officialExit": 0,
+  "exactLedgerVerdictMatches": true,
+  "records": [
+    {
+      "key": "romance--town--talk--bittersweet--single",
+      "sha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+      "review": {
+        "sourceSha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+        "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+        "reviewer": "Codex actual OLD original/OWN request/right-controls inspection continuation137",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+        ],
+        "notes": "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+[
+  {
+    "key": "romance--town--talk--bittersweet--routes",
+    "before": {
+      "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--routes-1-36a286cb6c29.png",
+      "sha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+      "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+      "generationPromptSha256": "d15a441f937e694abde885ae016895918270388170cf59b8ecf5ad844e8b1591",
+      "attempt": 1,
+      "review": {
+        "sourceSha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+        "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+        "reviewer": "Codex direct original visual inspection: v2-production-032",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Native original: elevated oblique real path fork links three spatially distinct two-chair meeting nooks with varied cups/closed-book/keep arrangements. Ordinary neighboring rural homes, wet stone and spent brown leaves, departure mood. Fresh forked staging relative to single-table parent; sharp cluster shading."
+      },
+      "gate": {
+        "ok": true,
+        "width": 1672,
+        "height": 941,
+        "colors": 549833,
+        "findings": []
+      }
+    },
+    "ownRequestSha256": "d15a441f937e694abde885ae016895918270388170cf59b8ecf5ad844e8b1591",
+    "newReview": {
+      "sourceSha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+      "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+      "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+      ],
+      "notes": "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+    },
+    "rootOpenedOwnSourceAndRequest": true
+  },
+  {
+    "key": "romance--town--talk--bittersweet--perspectives",
+    "before": {
+      "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--perspectives-1-40f477215a8c.png",
+      "sha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+      "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+      "generationPromptSha256": "e10c112dfa6c58d45d6776d560e9db73c95854024ad1662bff1e42681b20f1c0",
+      "attempt": 1,
+      "review": {
+        "sourceSha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+        "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+        "reviewer": "Codex direct original visual inspection: v2-production-032",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Native original: unique closed common box between fully visible opposed seats in one sheltered rural alcove, real side window and differently framed doorway toward neighboring homes around same event. Autumn wet lane/brown leaves and subdued evening preserve bittersweet; fresh internal high-oblique camera relative to exposed parent."
+      },
+      "gate": {
+        "ok": true,
+        "width": 1672,
+        "height": 941,
+        "colors": 356495,
+        "findings": []
+      }
+    },
+    "ownRequestSha256": "e10c112dfa6c58d45d6776d560e9db73c95854024ad1662bff1e42681b20f1c0",
+    "newReview": {
+      "sourceSha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+      "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+      "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+      ],
+      "notes": "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+    },
+    "rootOpenedOwnSourceAndRequest": true
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "returncode": 0,
+  "exactReviewsMatch": 2,
+  "records": [
+    {
+      "key": "romance--town--memory--warm--routes",
+      "sha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
+      "review": {
+        "sourceSha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
+        "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
+        "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation140",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Native original and OWN exact request directly opened: entire third paired nook BOTH chairs/backs/seats at x70-90 and its required physical branch are hidden behind actual right controls x60.3. OWN request explicitly requires THREE paired meeting nooks and real connecting branches. Only composition changed; no retro TWO-books/mug/gray/left-third requirement."
+        ],
+        "notes": "Native original and OWN exact request directly opened: entire third paired nook BOTH chairs/backs/seats at x70-90 and its required physical branch are hidden behind actual right controls x60.3. OWN request explicitly requires THREE paired meeting nooks and real connecting branches. Only composition changed; no retro TWO-books/mug/gray/left-third requirement."
+      }
+    },
+    {
+      "key": "romance--town--memory--warm--perspectives",
+      "sha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
+      "review": {
+        "sourceSha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
+        "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
+        "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation140",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Native original and OWN exact request directly opened: entire required OPEN house doorway/garden view x79-100 and primary RIGHT chair back x65-74 are hidden behind actual controls x60.3. OWN request requires two opposed seats and actual side window plus differently framed doorway around SAME keepsake/event. Only composition changed; no retro two-mug/gray/left-third requirement."
+        ],
+        "notes": "Native original and OWN exact request directly opened: entire required OPEN house doorway/garden view x79-100 and primary RIGHT chair back x65-74 are hidden behind actual controls x60.3. OWN request requires two opposed seats and actual side window plus differently framed doorway around SAME keepsake/event. Only composition changed; no retro two-mug/gray/left-third requirement."
+      }
+    }
+  ]
+}

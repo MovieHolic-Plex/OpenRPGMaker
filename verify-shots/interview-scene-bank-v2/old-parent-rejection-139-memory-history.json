@@ -1,0 +1,30 @@
+{
+  "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--single-1-594c345f6a7f.png",
+  "sha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
+  "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
+  "generationPromptSha256": "3110b3871c14aa93929606e12c2df9c7fbe08138d790d9feff57935b04bc3533",
+  "attempt": 1,
+  "review": {
+    "sourceSha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
+    "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
+    "reviewer": "Codex direct original visual inspection: v2-production-033",
+    "checks": {
+      "pixelArt": true,
+      "composition": true,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [],
+    "notes": "Direct native view: paired fully visible vacant chairs around prominent closed memory box, ordinary neighbor gates and continuous sheltered private passage; inviting fresh flowers/warm light. New side-staged near pair replaces parent low chest at left foreground and distant loose stools. No text/figures or defocus."
+  },
+  "gate": {
+    "ok": true,
+    "width": 1672,
+    "height": 941,
+    "colors": 435969,
+    "findings": []
+  }
+}

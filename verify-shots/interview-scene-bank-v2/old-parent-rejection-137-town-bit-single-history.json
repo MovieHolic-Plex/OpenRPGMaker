@@ -1,0 +1,53 @@
+{
+  "key": "romance--town--talk--bittersweet--single",
+  "before": {
+    "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet--single-1-5490671a78f4.png",
+    "sha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+    "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+    "generationPromptSha256": "973514c3a5183b348ade3d29cb2e044e6ed812985dc6e1397ae049f68a53eab5",
+    "attempt": 1,
+    "review": {
+      "sourceSha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+      "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+      "reviewer": "Codex direct original visual inspection: v2-production-032",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Native original compared to actual bittersweet parent: sheltered near-left porch pair with fully visible chairs around closed shared keep, one continuous private passage to neighboring gates. Wet ground/brown autumn leaves/quiet vacated threshold. Smaller side-staged pair and covered vestibule differ from parent large central exposed table."
+    },
+    "gate": {
+      "ok": true,
+      "width": 1672,
+      "height": 941,
+      "colors": 394789,
+      "findings": []
+    }
+  },
+  "newReview": {
+    "sourceSha256": "5490671a78f48225bdf53c316ab65ff2cab97ed9ff6896822a6db89aada589da",
+    "promptSha256": "e88063a6ddd3c2b9bd0b579992835226915a15002af2a1165a268db7d0faf0b1",
+    "reviewer": "Codex actual OLD original/OWN request/right-controls inspection continuation137",
+    "checks": {
+      "pixelArt": true,
+      "composition": false,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [
+      "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+    ],
+    "notes": "Required continuous intimate PRIVATE passage connecting this paired meeting place is the actual right-side town walkway/garden-gate corridor at approx x61-97, entirely behind right controls starting x60.3. Both full chairs/sharedkeepsake are LEFT and native sharp autumn art otherwise correct. Only composition changed; no retro mug counts, left-third staging, gray fabric or later ending cloth requirements. Own old request explicitly requires one private continuous passage alongside visible pair."
+  },
+  "ownRequestSha256": "973514c3a5183b348ade3d29cb2e044e6ed812985dc6e1397ae049f68a53eab5",
+  "rootOpenedOwnRequestAndNative": true
+}

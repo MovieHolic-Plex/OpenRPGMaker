@@ -1,0 +1,30 @@
+{
+  "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet--single-1-9abc8086ab2c.png",
+  "sha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
+  "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
+  "generationPromptSha256": "423fececb71b0d336350c69b2ba7d22f39f99f1ea7d1d7eb43f66db55bdec627",
+  "attempt": 1,
+  "review": {
+    "sourceSha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
+    "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
+    "reviewer": "Codex direct original visual inspection: v2-production-033",
+    "checks": {
+      "pixelArt": true,
+      "composition": true,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [],
+    "notes": "Direct native view: two entirely visible empty facing chairs around one shared closed memory keep, sheltered intimate private passage toward neighbor gates. Wet stone/brown autumn leaves/vacated thresholds express departure; near side-staged paired place differs from parent chest/lane without main pair. Hard pixel clusters across whole frame."
+  },
+  "gate": {
+    "ok": true,
+    "width": 1672,
+    "height": 941,
+    "colors": 383671,
+    "findings": []
+  }
+}

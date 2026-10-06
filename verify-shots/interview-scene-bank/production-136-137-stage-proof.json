@@ -1,0 +1,139 @@
+{
+  "v2-production-136": {
+    "receipts": [
+      {
+        "batch": "v2-production-136",
+        "stage": "import-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "import-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-136-import.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:19:36.219880+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-136-import-batch.log"
+      },
+      {
+        "batch": "v2-production-136",
+        "stage": "review-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-136-reviews.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:20:04.523466+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-136-review-batch.log"
+      },
+      {
+        "batch": "v2-production-136",
+        "command": [
+          "/usr/bin/python3",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+          "v2-production-136",
+          "--defer-build"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:20:04.563850+00:00"
+      }
+    ],
+    "exactReviewsMatch": 10,
+    "rootOriginalsSeen": 10,
+    "passed": 3,
+    "failed": 7,
+    "gateBuildDeferred": true
+  },
+  "v2-production-137": {
+    "receipts": [
+      {
+        "batch": "v2-production-137",
+        "stage": "import-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "import-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-import.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:38:38.311920+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-import-batch.log"
+      },
+      {
+        "batch": "v2-production-137",
+        "stage": "review-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-reviews.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:39:00.921115+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-review-batch.log"
+      },
+      {
+        "batch": "v2-production-137",
+        "command": [
+          "/usr/bin/python3",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+          "v2-production-137"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:47:01.046434+00:00"
+      },
+      {
+        "batch": "v2-production-137",
+        "stage": "gate",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "gate"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:43:02.252431+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-gate.log"
+      },
+      {
+        "batch": "v2-production-137",
+        "stage": "build",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "build"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T05:47:00.488325+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-137-build.log"
+      }
+    ],
+    "exactReviewsMatch": 10,
+    "rootOriginalsSeen": 10,
+    "passed": 7,
+    "failed": 3,
+    "gateBuildDeferred": false
+  }
+}

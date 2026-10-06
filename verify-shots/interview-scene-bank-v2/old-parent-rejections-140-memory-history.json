@@ -1,0 +1,62 @@
+[
+  {
+    "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--routes-1-d6213dcd920a.png",
+    "sha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
+    "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
+    "generationPromptSha256": "71a42360ba8742b96c50d2fa33f57dd234a3c2a3dd4ff909dddd302392427060",
+    "attempt": 1,
+    "review": {
+      "sourceSha256": "d6213dcd920ab7f962ad95e17e6ddf16500d6a00e3c3f20d54ee745b4adbffa8",
+      "promptSha256": "1547bbb6cafb6556999312e321176654350003187dce178aaf50d58d0243f814",
+      "reviewer": "Codex direct original visual inspection: v2-production-033",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Direct native view: actual fork connecting three spatially separate paired vacant places with distinct closed ordinary book/box/cup arrangements; near closed personal object, warm neighbor village preparations. Elevated branching camera differs from parent single chest/lane; all planes hard square-pixel shading."
+    },
+    "gate": {
+      "ok": true,
+      "width": 1672,
+      "height": 941,
+      "colors": 489935,
+      "findings": []
+    }
+  },
+  {
+    "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm--perspectives-1-907059027c5e.png",
+    "sha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
+    "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
+    "generationPromptSha256": "f43f5acc2c04cf5cfd1fd4197b0b74ae80a68701476bfae2e33b7f69af61699f",
+    "attempt": 1,
+    "review": {
+      "sourceSha256": "907059027c5e6f0072254da5c08726f30462202e5982bc59e65d6211a66a25cd",
+      "promptSha256": "e025e51f8c614dd0538ba9e9d39769e90c183185cf90018e4f102e62d0bbc81f",
+      "reviewer": "Codex direct original visual inspection: v2-production-033",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Direct native view: one prominent closed common keep between opposed empty chairs in sheltered rural alcove; real side window and different door frame views around same-event keep, neighboring gates outside, warm flowers in midground. High oblique interior camera differs from parent outdoor chest/lane; sharp pixels, no humans/text."
+    },
+    "gate": {
+      "ok": true,
+      "width": 1672,
+      "height": 941,
+      "colors": 349171,
+      "findings": []
+    }
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "key": "romance--town--talk--secret--perspectives",
+  "before": {
+    "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--perspectives-1-865ab6a2e45b.png",
+    "sha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+    "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+    "generationPromptSha256": "4850f4b4caf07f0a0459ce0758d4b18812e6bf4998bb6d19b337e80384f07b7b",
+    "attempt": 1,
+    "review": {
+      "sourceSha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+      "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+      "reviewer": "Codex direct original visual inspection: v2-production-032",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Native original: new near-overhead alcove, unique common closed box between two opposed vacant chairs; actual side window and different door reveal contrasting views of neighbor gates around same-event object. Night private room, hard moon shadows across box/floor, restrained light, no text/people."
+    },
+    "gate": {
+      "ok": true,
+      "width": 1672,
+      "height": 941,
+      "colors": 171985,
+      "findings": []
+    }
+  },
+  "ownGenerationPromptSha256": "4850f4b4caf07f0a0459ce0758d4b18812e6bf4998bb6d19b337e80384f07b7b",
+  "ownRequestPath": "harness-data/interview-scene-bank/requests/4850f4b4caf07f0a0459ce0758d4b18812e6bf4998bb6d19b337e80384f07b7b.txt",
+  "newReview": {
+    "sourceSha256": "865ab6a2e45be0fc12d7b34d5a7c4b7ad3259bce3c9ae99d06a082a2faedefe1",
+    "promptSha256": "26ea7bdfaa6d52bab0f4288884c2973d31eaa69312f272ed370cf159165d878f",
+    "reviewer": "Codex direct OLD original and OWN exact request inspection, continuation136",
+    "checks": {
+      "pixelArt": true,
+      "composition": false,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [
+      "ROOT opened full original and OWN archived request. Required right-hand primary chair whole BACK/SEAT at approx x80-100 and required glazed-window view approx x65-99 are hidden behind actual right controls starting at x60.3. Own request requires two opposed seats and side-window/open-door views of SAME event. Only composition is changed; no retro two-mug, gray-fabric, left-half staging or forbidden-future foreground rules."
+    ],
+    "notes": "ROOT opened full original and OWN archived request. Required right-hand primary chair whole BACK/SEAT at approx x80-100 and required glazed-window view approx x65-99 are hidden behind actual right controls starting at x60.3. Own request requires two opposed seats and side-window/open-door views of SAME event. Only composition is changed; no retro two-mug, gray-fabric, left-half staging or forbidden-future foreground rules."
+  },
+  "rootViewedOwnSourceAndRequest": true,
+  "officiallyApplied": false
+}

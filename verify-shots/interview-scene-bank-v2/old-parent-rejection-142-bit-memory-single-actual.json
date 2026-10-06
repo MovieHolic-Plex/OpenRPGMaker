@@ -1,0 +1,39 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "harness",
+    "--",
+    "interview-scene-bank",
+    "review-batch",
+    "--records",
+    "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-142-bit-memory-single-pending.json"
+  ],
+  "returncode": 0,
+  "exactCurrentLedgerMatches": true,
+  "finishedAt": "2026-10-06T06:45:00.969519+00:00",
+  "records": [
+    {
+      "key": "romance--town--memory--bittersweet--single",
+      "sha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
+      "review": {
+        "sourceSha256": "9abc8086ab2c9bd684160c925f290cbb2019b4f3a523e40cd4ea88a401914ebb",
+        "promptSha256": "230ff7325c3d1d8bba02f30f9ba6c2d670e951e1a292841bd9f837dbb6faf13e",
+        "reviewer": "Codex OLD native/OWN exact request/actual control edge audit continuation142",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Native original and OWN exact request directly opened: complete pair and BOX are visible LEFT, but entire required intimate private passage is actual RIGHT garden/descending street x61-98, hidden behind actual controls x60.3. LEFThouse-door is closed and no alternate OPENprivatepassage LEFT. OWN original request requires ONE continuous intimate privatepassage linked to primarypair. Only composition changed, no retro TWO-mug/GRAY/overcast or no-sunset rule; original quiet autumn dusk is judged by OWN mood request."
+        ],
+        "notes": "Native original and OWN exact request directly opened: complete pair and BOX are visible LEFT, but entire required intimate private passage is actual RIGHT garden/descending street x61-98, hidden behind actual controls x60.3. LEFThouse-door is closed and no alternate OPENprivatepassage LEFT. OWN original request requires ONE continuous intimate privatepassage linked to primarypair. Only composition changed, no retro TWO-mug/GRAY/overcast or no-sunset rule; original quiet autumn dusk is judged by OWN mood request."
+      }
+    }
+  ]
+}

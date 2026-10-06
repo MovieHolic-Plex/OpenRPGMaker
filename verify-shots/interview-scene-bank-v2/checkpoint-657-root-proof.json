@@ -1,0 +1,83 @@
+{
+  "published": 657,
+  "remaining": 800,
+  "rootSelectedScreens": [
+    {
+      "key": "romance--town--talk--bittersweet--routes--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--talk--bittersweet--routes--short.png",
+      "sha256": "035dc99993c81dd700ba6ff566bf657749aabaaec5ba5ec486aba028e0cc501e",
+      "rootPersonallyOpened": true
+    },
+    {
+      "key": "romance--town--memory--warm--routes--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--memory--warm--routes--short.png",
+      "sha256": "f3a728abfc9c35ed1f6143aad8d19def85ba77a2fee3767ecdfebe7b68fbb2b1",
+      "rootPersonallyOpened": true
+    },
+    {
+      "key": "romance--town--memory--secret--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--memory--secret--single--episode.png",
+      "sha256": "c0fe785fc043d3170ec3d70ce4d641046e91e9cdede2211bd5a0fb93bd59547c",
+      "rootPersonallyOpened": true
+    },
+    {
+      "key": "romance--town--memory--secret--routes--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--memory--secret--routes--scene.png",
+      "sha256": "f84d2d68684b9488e9feda7a28dd5957cd96ce4e98aa2b4418eb5c7c2037affb",
+      "rootPersonallyOpened": true
+    },
+    {
+      "key": "romance--town--memory--secret--perspectives--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--memory--secret--perspectives--episode.png",
+      "sha256": "9f320bdf058fcb77b1e211466f0dff6ee164b1865adb4c127630ac3df3639016",
+      "rootPersonallyOpened": true
+    },
+    {
+      "key": "romance--town--memory--bittersweet--single--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-selected-romance--town--memory--bittersweet--single--scene.png",
+      "sha256": "324505696efc75f2b3ffb227ef9983eb512b5722bfcba2528b2abae9ecc144f3",
+      "rootPersonallyOpened": true
+    }
+  ],
+  "actualSelectedPaths": 6,
+  "actualButtonClicks": 36,
+  "generatedRequests": 0,
+  "browserErrors": 0,
+  "galleryScreens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-gallery-320.png",
+      "sha256": "7543a82aa7b4b530602eb7230e87d29c17efb6f64ed756224a89c67a5af32a10",
+      "rootPersonallyOpened": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-gallery-latest-320.png",
+      "sha256": "09de5d2953f98cc1aa885af0805b713e4f971beaa80d4e3c95801820801d9d8f",
+      "rootPersonallyOpened": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-gallery-736.png",
+      "sha256": "6e5d0cf37a2548225bbfe372623766145be39d9ffcea92db27fc9cc2d0842718",
+      "rootPersonallyOpened": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-657-gallery-latest-736.png",
+      "sha256": "1fc2697e439033afeed2378088f293685a1ae3af7b20b0604314c34d15c1c5ef",
+      "rootPersonallyOpened": true
+    }
+  ],
+  "scope": "All657 byte/request/review/ancestor integrity; only six specified real production-dialog paths clicked and six settled screenshots personally opened. Gallery eight representative originals at320/736, four screenshots personally opened. Caption overlaps some chair legs/edges; do not claim zero occlusion. Isolated production component, not all657 visual QA or full app boot/AI handoff/whole1457 completion.",
+  "supervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0
+  }
+}

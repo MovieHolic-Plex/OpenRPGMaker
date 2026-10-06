@@ -1,0 +1,28 @@
+{
+  "returncode": 0,
+  "exactReviewsMatch": 1,
+  "records": [
+    {
+      "key": "romance--town--memory--warm--single",
+      "sha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
+      "review": {
+        "sourceSha256": "594c345f6a7f03c46de76d707f94ab42f4c7b118d8d34635dacfcfb1edb3d551",
+        "promptSha256": "1aca6858771552d85c59b7ee2231df9ee7087d174510d93c946eff48833cb766",
+        "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation139",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Native original and OWN actual request directly opened: required entire RIGHT chair back is substantially behind actual controls x60.3 (back x60-67), and actual intimate private passage/view lies in right x70-99 controls region. Own request explicitly requires BOTH complete chair backs/seats and continuous private passage visible. Only composition changed; no retro two-mug, gray cloth, left-third or ending requirement."
+        ],
+        "notes": "Native original and OWN actual request directly opened: required entire RIGHT chair back is substantially behind actual controls x60.3 (back x60-67), and actual intimate private passage/view lies in right x70-99 controls region. Own request explicitly requires BOTH complete chair backs/seats and continuous private passage visible. Only composition changed; no retro two-mug, gray cloth, left-third or ending requirement."
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "returncode": 0,
+  "reviewsMatch": true,
+  "records": [
+    {
+      "key": "romance--town--talk--bittersweet--routes",
+      "sha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+      "review": {
+        "sourceSha256": "36a286cb6c296b8e4e439350a901d8fc4ae595de58e765624ba2e97e1250bfba",
+        "promptSha256": "3ca3f5ae45d78b26dd43aed13668bb0b5add2f50d8d975cb271ca0fa9a38dced",
+        "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+        ],
+        "notes": "Entire required third paired-nook BOTH chairs/backs/seats and its real branch at approx x74-99 are hidden by actual right controls starting x60.3. Own original request requires THREE paired meeting nooks and connecting real branches. Only composition changed; no retro exact mug/books count, gray fabric, left-third placement or foreground foliage constraints."
+      }
+    },
+    {
+      "key": "romance--town--talk--bittersweet--perspectives",
+      "sha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+      "review": {
+        "sourceSha256": "40f477215a8ce16779b8eeea41c61c0a1aaa250576d879ab3fb33b122e7c6bee",
+        "promptSha256": "f7f49d145da95c99fa32f207bda02d295e66b8818807b12eeb465799a01e2abb",
+        "reviewer": "Codex OLD native/OWN exact request/actual control-edge audit continuation138",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+        ],
+        "notes": "Required actual OPEN doorway/view onto SAME event at approx x68-99 is entirely behind right controls starting x60.3; primary RIGHT chair back/seat approx x64-76 is also concealed. Own original request requires two opposed places plus differently framed window AND doorway views. Only composition changed; no retro two-mug, plain-box color, gray cloth, left-third or ending constraints."
+      }
+    }
+  ]
+}

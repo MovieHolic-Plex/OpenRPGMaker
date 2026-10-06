@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "romance--town--talk--bittersweet--routes--short,romance--town--memory--warm--routes--short,romance--town--memory--secret--routes--scene,romance--town--memory--secret--single--episode,romance--town--memory--secret--perspectives--episode,romance--town--memory--bittersweet--single--scene"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 657,
+  "manifestSha256": "f535947c1cfdaa94a85b83cd42b3d13c60526e137cdd299d25a1cffce50cdc45",
+  "finishedAt": "2026-10-06T06:57:23.175926+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-657-click-proof.json",
+  "completeWholePlan": false
+}
