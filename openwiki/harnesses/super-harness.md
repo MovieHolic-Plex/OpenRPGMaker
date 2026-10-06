@@ -853,3 +853,11 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 걷기만 있거나 행동이 미완료/변경되었으면 `art-actors-status.json`에 미완료 사유를 남기고 인물 coverage는 비워 둔다.
 `art_choices`는 두 원본 시트와 근거를 묶고 공간 검수가 필요하다고 표시한다.
 `theme_production`은 이 전용 어댑터가 확인한 nativeSheets만 조립 허용 원본으로 센다.
+
+### 제작 전 바닥 종류 검사 (2026-10-06)
+
+`art_layout.require_ground_kind`는 현재 seed.orders에 포함된 production 묶음 중
+모든 칸이 명시적으로 layer=0/topMin=0인 경우 kind=flat을 요구한다.
+소품 하네스의 floor는 입체 가구이므로 불투명한 지형 타일까지 투명 배경 검사로 반려하는
+준비 오류를 제작 전에 차단한다. 기존 공용 품목과 다른 레이어의 가구에는 적용하지 않는다.
+원본 PNG나 검수 결과를 수정하지 않고 새 준비 입력의 종류/해시를 고친 뒤 독립 검수를 받는다.

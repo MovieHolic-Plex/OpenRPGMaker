@@ -22,6 +22,25 @@ def verified(root, ref):
     return p
 
 
+def require_ground_kind(root, request, sources):
+    """The prop kind `floor` means standing furniture, not ground terrain."""
+    if request.get('harness') != 'interior-props': return
+    seed_path = Path(root) / request['data'] / 'seed.json'
+    if not seed_path.is_file(): return
+    orders = set(json.loads(seed_path.read_text()).get('orders', []))
+    if not orders: return
+    for ref in sources:
+        if not ref['path'].endswith('/tiledata/hand-interior/new/sets.json'): continue
+        for item in json.loads(verified(root, ref).read_text()).get('sets', []):
+            slots = item.get('slots', [])
+            if (item.get('id') in orders and item.get('derive') == 'production' and slots
+                    and all(s.get('layer') == 0 and s.get('topMin') == 0 for s in slots)
+                    and item.get('kind') != 'flat'):
+                raise ValueError(item['id'] + ': 바닥 전용 production 칸은 kind=flat이어야 합니다. '
+                                 'kind=floor는 입체 가구이며 불투명 바닥을 배경 오류로 반려합니다. '
+                                 '새 준비 입력에서 분류를 수정하고 도면 해시를 다시 결합하세요.')
+
+
 def build_input(root, request):
     path = verified(root, request['layout'])
     layout = json.loads(path.read_text())
@@ -38,6 +57,7 @@ def build_input(root, request):
             raise ValueError('모든 도면 칸에 실제 용도와 근거가 필요합니다: ' + repr(symbol))
     sources = layout['sources']
     paths = {str(verified(root, r).relative_to(Path(root).resolve())) for r in sources}
+    require_ground_kind(root, request, sources)
     if layout.get('phase') not in ('calibration', 'scene'):
         raise ValueError('시점 표본(calibration) 또는 공간(scene) 단계 필요')
     camera = layout.get('camera', {})

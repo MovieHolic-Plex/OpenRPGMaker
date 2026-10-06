@@ -85,3 +85,10 @@ planning.json의 승인 기획, art-demo-input.json의 components, art-result.pr
 covered/기존 art-batches 원본을 보존하고 missing만 새 격리 제작 묶음으로 준비한다.
 직전 PASS의 공간 기하·해결된 수정은 유지하고 미제작 재료의 접지·시점·부착 계약만 보완한다.
 art-actors.json에 별도 인물 주문이 있으면 상태/원본을 읽고 중복 생성하지 않는다.
+
+## 바닥 타일의 native 분류
+소품 하네스에서 `kind=floor`는 바닥에 서는 입체 가구다. 지형 바닥이라는 뜻이 아니다.
+production 묶음의 모든 칸이 `layer:0`, `topMin:0`인 바닥/무늬는 `kind:flat`으로 준비한다.
+불투명 석판·목재 타일에 가구의 투명 귀퉁이 검사를 적용하지 않는다. 검사 코드를 약화하거나
+바닥에 투명 구멍을 뚫지 말고 분류를 바로잡는다. 입체 기물/벽은 실제 설치 레이어와 종류를 유지한다.
+변경된 sets.json·시드·코드를 도면 sources에 묶고 독립 도면 검수를 받는다.
