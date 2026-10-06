@@ -80,3 +80,8 @@ planning.json의 승인 기획, art-demo-input.json의 components, art-result.pr
 수정 도면에서 기존 그림을 써서 해결할 수 있음을 구체적으로 명세하고 execution.resumeMode="collect-existing"를
 제출할 수 있다. 완료된 native 후보만 허용되며 감독은 새 도면의 독립 검수 후 수집→데모 재조립→시각 검수를 수행한다.
 없는 PASS를 만들거나 완료 후보를 queued로 바꾸지 않는다. 실제 그림 결함/필수 조각 누락은 기존 제작 경로를 따른다.
+
+`theme-material-feedback.json.kind=missing-production`이면 이전 승인 도면의 결함을 다시 만들라는 뜻이 아니다.
+covered/기존 art-batches 원본을 보존하고 missing만 새 격리 제작 묶음으로 준비한다.
+직전 PASS의 공간 기하·해결된 수정은 유지하고 미제작 재료의 접지·시점·부착 계약만 보완한다.
+art-actors.json에 별도 인물 주문이 있으면 상태/원본을 읽고 중복 생성하지 않는다.
