@@ -7,6 +7,7 @@ import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { TRUNK_ONLY_FOREST_GROUPS, TRUNK_ONLY_FOREST_GUIDANCE } from "@/project/defaults/forestTrunkOnlyParts";
 import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
+import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { ToolError, type ToolDefinition } from "./types";
 
 type Layers = "both" | "lower" | "upper";
@@ -100,6 +101,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
     run(project, args) {
       const objectId = String(args.objectId);
       const map = project.maps[String(args.mapId)] ?? fail(`맵을 찾을 수 없습니다: ${String(args.mapId)}`);
+      rejectSettlementPropOnRoute(map, objectId);
       const resolved = resolveObject(project, objectId);
       if (isRetiredInteriorTileset(resolved.source.id, resolved.source)) throw new ToolError(retiredInteriorMessage(resolved.source.id), { code: "retired-interior-tileset" });
       const layers = (args.layers as Layers | undefined) ?? resolved.defaultLayers;

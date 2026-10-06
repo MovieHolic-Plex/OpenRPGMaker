@@ -677,6 +677,16 @@ def start_art(c):
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_LAYOUT_MODULE=os.path.join(HERE, 'art_layout.py'),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
+    # Art worktrees can predate a repaired review contract. Give preparation a
+    # frozen current protocol without mutating any already-running native job.
+    protocol = Path(ROOT) / 'src/harnesses/interior-props/review.md'
+    protocol_copy = Path(wt) / 'art-output/protocols' / gates.digest(protocol) / 'native-review.md'
+    protocol_copy.parent.mkdir(parents=True, exist_ok=True)
+    if not protocol_copy.exists(): shutil.copyfile(protocol, protocol_copy)
+    prompt += ('\n소품 하네스를 준비하는 경우 현재 감독의 검수 프로토콜을 읽고 실제 native 검수 경로에 반영한다: '
+               + str(protocol_copy) + '\n칸별 topMin/비율보다 가구 예시 3행을 우선하는 옛 검수 문구를 유지하지 않는다. '
+               '커스텀 장면 검수와 역할 경계는 보존한다. 실제 검수 템플릿/코드의 변경을 새 layout.sources에 결합하고 '
+               '독립 검수를 받는다. 기존 PNG나 판정을 변경하지 않는다.\n')
     prompt += art_choices.example_feedback_prompt(c)
     acceptance = art_acceptance.contract(cdir(cid))
     if acceptance:

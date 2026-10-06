@@ -89,6 +89,51 @@ function routePath(map: GameMap, from: Point, to: Point, noise: (x: number, y: n
   return out.reverse();
 }
 
+/**
+ * 꺾임 비용을 준 경로 — 버들항 도로용(2026-10-06). 잡음 경로는 대각선으로 갈 때 한 칸씩 꺾여 계단이 됐다.
+ * 포켓몬 도로처럼 곧게 뻗다가 직각으로 꺾이게 방향을 상태에 넣고 꺾일 때마다 turnCost 를 더한다. 잡음은 약하게만 섞는다.
+ */
+function routePathStraight(map: GameMap, from: Point, to: Point, noise: (x: number, y: number) => number, turnCost = 6): Point[] {
+  const w = map.width, h = map.height;
+  const allowed = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= w || y >= h) return false;
+    const near = (p: Point) => Math.abs(p.x - x) + Math.abs(p.y - y) <= 2;
+    if (near(from) || near(to)) return true;
+    return x >= 2 && y >= 2 && x < w - 2 && y < h - 2;
+  };
+  const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  // 상태 = 칸 × 들어온 방향(4) + 출발 상태(방향 없음, 4번).
+  const states = w * h * 5;
+  const dist = new Float64Array(states).fill(Infinity);
+  const prev = new Int32Array(states).fill(-1);
+  const start = (from.y * w + from.x) * 5 + 4;
+  dist[start] = 0;
+  const open = new Set<number>([start]);
+  let goalState = -1;
+  while (open.size) {
+    let current = -1, best = Infinity;
+    for (const state of open) if (dist[state]! < best) { best = dist[state]!; current = state; }
+    open.delete(current);
+    const cell = Math.floor(current / 5), dir = current % 5;
+    const cx = cell % w, cy = Math.floor(cell / w);
+    if (cx === to.x && cy === to.y) { goalState = current; break; }
+    dirs.forEach(([dx, dy], d) => {
+      const nx = cx + dx, ny = cy + dy;
+      if (!allowed(nx, ny)) return;
+      const next = (ny * w + nx) * 5 + d;
+      const cost = best + 1 + noise(nx, ny) * 1.5 + (dir !== 4 && dir !== d ? turnCost : 0);
+      if (cost < dist[next]!) { dist[next] = cost; prev[next] = current; open.add(next); }
+    });
+  }
+  if (goalState === -1) throw new ToolError("두 출구를 잇는 길을 찾지 못했습니다.", { code: "wild-route-no-path", mapId: map.id });
+  const out: Point[] = [];
+  for (let state = goalState; state !== -1; state = prev[state]!) {
+    const cell = Math.floor(state / 5);
+    out.push({ x: cell % w, y: Math.floor(cell / w) });
+  }
+  return out.reverse();
+}
+
 function rectCells(map: GameMap, rect: Rect): number[] {
   const out: number[] = [];
   for (let y = rect.y; y < rect.y + rect.h; y++) for (let x = rect.x; x < rect.x + rect.w; x++) {
@@ -166,7 +211,8 @@ interface RouteCorridor { path: Point[]; road: Set<number>; patches: Rect[]; gra
  * 합본 마을(흙길·키큰 풀 오토타일)과 버들항(포석·짙은 풀, wildRouteBeodeul.ts)이 같은 계획을 쓴다.
  */
 function planRouteCorridor(map: GameMap, exits: readonly Point[], patchCount: number, rng: Rng, noise: (x: number, y: number) => number,
-  relayDoors: readonly GameEvent[], warnings: string[]): RouteCorridor {
+  relayDoors: readonly GameEvent[], warnings: string[],
+  route: (from: Point, to: Point) => Point[] = (from, to) => routePath(map, from, to, noise), pruneLoops = false): RouteCorridor {
   const path: Point[] = [];
   // 출구 사이에 옆으로 비낀 경유점 둘을 두어 길이 S자로 굽게 한다(곧은 복도 방지).
   const clampInner = (p: Point): Point => ({ x: Math.max(3, Math.min(map.width - 4, Math.round(p.x))), y: Math.max(3, Math.min(map.height - 4, Math.round(p.y))) });
@@ -181,8 +227,16 @@ function planRouteCorridor(map: GameMap, exits: readonly Point[], patchCount: nu
     stops.push(b);
   }
   for (let i = 0; i + 1 < stops.length; i++) {
-    const segment = routePath(map, stops[i]!, stops[i + 1]!, noise);
+    const segment = route(stops[i]!, stops[i + 1]!);
     path.push(...(i === 0 ? segment : segment.slice(1)));
+  }
+  // 직선 경로(버들항)는 경유점까지 갔다가 같은 칸으로 되돌아와 막다른 가지를 남긴다 — 다시 밟은 칸 사이 고리를 잘라 낸다.
+  if (pruneLoops) {
+    for (let i = 0; i < path.length; i++) {
+      let last = -1;
+      for (let j = path.length - 1; j > i; j--) if (path[j]!.x === path[i]!.x && path[j]!.y === path[i]!.y) { last = j; break; }
+      if (last > i) path.splice(i + 1, last - i);
+    }
   }
   // 폭 2 길: 세로로 가는 칸은 오른쪽, 가로로 가는 칸은 아래 칸을 붙인다.
   const road = new Set<number>();
@@ -205,7 +259,7 @@ function planRouteCorridor(map: GameMap, exits: readonly Point[], patchCount: nu
     }
     if (nearestDistance === 0) continue;
     try {
-      for (const p of routePath(map, { x: door.x, y: door.y }, nearest, noise)) road.add(p.y * map.width + p.x);
+      for (const p of route({ x: door.x, y: door.y }, nearest)) road.add(p.y * map.width + p.x);
       road.add(door.y * map.width + door.x);
     } catch {
       warnings.push(`기존 문 (${door.x},${door.y})${door.name ? ` '${door.name}'` : ""} 까지 길을 끌 수 없습니다 — 출구와 문이 이어지도록 지형을 확인하세요.`);
@@ -239,7 +293,7 @@ const authorWildRoute: ToolDefinition = {
   description:
     "몬스터 수집(포켓몬풍) 도로·필드 맵을 시공한다: 출구와 출구를 잇는 흙길, 양옆 숲, 길을 가로지르는 키큰 풀숲 패치, "
     + "그리고 풀숲 안에서만 나오는 야생 조우(encounters → 풀숲마다 로케이션 「풀숲 N」 + encounterTable locationId 조건). "
-    + "create_map 으로 만든 빈 잔디 맵에 쓴다(숲마을 forest_harmony·combined_town 계열·버들항 beodeul_city — 버들항은 포석 길·짙은 잎 풀숲·버들항 나무). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
+    + "create_map 으로 만든 빈 잔디 맵에 쓴다(숲마을 forest_harmony·combined_town 계열·버들항 beodeul_city — 버들항은 곧게 뻗다 직각으로 꺾이는 모랫길·짙은 잎 풀숲·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
     + "exits 는 가장자리 칸 — 다음에 create_transfer_pair 로 그 칸에 문을 단다. 결과 data.trainerSpots 는 길가 트레이너 자리 후보다(place_npc 로 배치). "
     + "이미 타일이 칠해진 맵은 replace:true 일 때만 다시 깐다(이벤트는 보존). "
     + "숲마을(forest_harmony) 맵은 숲마을 흙길(8방향 이음)·다듬은 키큰 풀 덩이·길에서 물러난 굽이숲을 깔고 빈 풀밭은 나무·덤불 덩이로 줄인다 — 남은 풀밭을 더 채우려면 arrange_tall_grass.",
@@ -299,6 +353,8 @@ const authorWildRoute: ToolDefinition = {
       throw new ToolError(`이 맵에는 이미 칠한 칸이 ${painted}개 있습니다. 다시 깔려면 replace:true 를 주세요(이벤트는 보존). 새 도로라면 create_map 으로 빈 맵을 먼저 만드세요.`, { code: "wild-route-map-not-blank", mapId: map.id });
     }
     const warnings: string[] = [];
+    // 도로는 필드 맵이다 — stamp_object 가 이 표시를 보고 마을·항구 소품을 거른다(routePropPolicy.ts).
+    map.mapRole ??= "field";
     const size = map.width * map.height;
     map.lowerTiles = Array.from({ length: size }, () => ground);
     map.upperTiles = Array.from({ length: size }, () => TILE.EMPTY);
@@ -319,11 +375,12 @@ const authorWildRoute: ToolDefinition = {
       fillNote = `, 덩이 ${forest.fill.clumps}곳·관목/바위 ${forest.fill.dressing}칸`;
     } else if (beodeul) {
       // 버들항: 같은 길 계획을 포석·짙은 잎 풀·버들항 나무 키트로 칠한다(wildRouteBeodeul.ts).
-      ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings));
+      ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings,
+        (from, to) => routePathStraight(map, from, to, noise), true));
       const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, rng });
       roadCellCount = laid.roadCells;
       treeCells = laid.treeCells;
-      fillNote = ", 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)";
+      fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;
     } else {
       ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings));
 
