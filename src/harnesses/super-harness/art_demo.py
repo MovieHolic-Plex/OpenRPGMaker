@@ -113,6 +113,10 @@ def validate_preserved_sources(data, cid, layout, result):
             try:
                 receipt = choices.read(choices.verified(root, batch['receipt']))
                 native_refs.update((r['path'], r['sha256']) for r in receipt.get('candidateImages', []))
+                # Actor receipts deliver walk/action sheets instead of candidate images.
+                if receipt.get('harness') == 'charset-actor' and receipt.get('scope') == 'theme-actors':
+                    native_refs.update((r['path'], r['sha256']) for actor in receipt.get('actors', [])
+                                       for r in actor.get('sheets', []))
             except (OSError, ValueError, KeyError, TypeError):
                 continue
         for requirement, refs in previous.get('themeCoverage', {}).items():
