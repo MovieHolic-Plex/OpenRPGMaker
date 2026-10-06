@@ -18,8 +18,10 @@ openrpgmaker.com 소개 페이지와 api.openrpgmaker.com(텔레메트리, 포�
 - **nginx**: `/etc/nginx/sites-available/store.openrpgmaker.com` (이 폴더의 `nginx-store.conf`).
   - 인증서는 certbot webroot(`/var/www/html`)로 받고 자동 갱신된다.
 - **로그인**:
-  - Google 로그인은 아직 꺼져 있다(자격 증명 없음). 그래서 일반 사용자는 둘러보기·받기만 할 수 있다.
-  - 운영자는 일회용 링크로 들어온다(아래).
+  - Google 로그인이 켜져 있다(2026-10-06). OAuth 클라이언트는 Google Cloud 프로젝트 `nlp-project-295820` 의 웹 클라이언트다.
+    - 외부 공개(Production) 상태이고, 승인된 리디렉션 URI 는 `https://store.openrpgmaker.com/auth/google/callback` 하나다.
+    - state 쿠키 확인 + PKCE(S256) + 확인된 이메일(`email_verified`)만 받는다.
+  - 운영자는 Google 로 들어와도 되고, 일회용 링크로도 들어올 수 있다(아래).
   - 개발 로그인은 https 주소에서 서버가 거부한다.
 - **첫 진열**: 스테이징의 4종(blob + `store_*` 행)을 그대로 옮겼다. slug 도 같다.
 
@@ -38,11 +40,16 @@ rsync -a --delete --exclude esbuild --exclude @esbuild --exclude typescript --ex
 ssh seogo 'chown -R root:root /opt/oprn-store && systemctl restart oprn-store && sleep 2 && curl -fs http://127.0.0.1:8794/healthz'
 ```
 
-## Google 로그인 열기
+## Google 로그인 자격 증명
 
-1. Google Cloud 콘솔 → OAuth 동의 화면(외부, `openid email profile`) → OAuth 클라이언트 ID(웹 애플리케이션)를 만든다.
-2. 승인된 리디렉션 URI 에 `https://store.openrpgmaker.com/auth/google/callback` 을 넣는다.
-3. `/etc/oprn-store/store.env` 에 `STORE_GOOGLE_CLIENT_ID`, `STORE_GOOGLE_CLIENT_SECRET` 를 넣고 `systemctl restart oprn-store` 를 실행한다.
+- 비밀 정본은 seogo `/etc/oprn-store/store.env` 의 `STORE_GOOGLE_CLIENT_ID`, `STORE_GOOGLE_CLIENT_SECRET` 뿐이다.
+  - 전달용 JSON(mdc-server `~/.local/share/oprn-secrets/google-oauth.json`)은 서버에 넣은 뒤 지웠다.
+  - 잃어버리면 Google Cloud 콘솔에서 비밀을 새로 발급한다.
+- 바꿀 때는 값을 화면·로그에 찍지 않는다. 프로그램으로 읽어 ssh 표준입력으로 넘기고,
+  서버 쪽에서 파일을 원자적으로 다시 쓴다(소유 root:oprn-store, 640). 그다음 `systemctl restart oprn-store` 만 한다.
+- 비밀이 맞는지는 실제 계정 없이도 확인할 수 있다. 서버 env 로 가짜 code 를 토큰 주소에 보낸다:
+  - 비밀이 맞으면 400 `invalid_grant`
+  - 틀리면 401 `invalid_client`
 
 ## 백업
 

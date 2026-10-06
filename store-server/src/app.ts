@@ -255,20 +255,22 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const google = config.google;
     if (!google) throw new HttpError(404, "Google 로그인이 설정되지 않았습니다.", "google_disabled");
     const state = randomBytes(16).toString("base64url");
+    // PKCE(S256): 가로챈 code 만으로는 토큰을 바꿀 수 없게 한다. verifier 는 state 와 함께 HttpOnly 쿠키에만 둔다.
+    const verifier = randomBytes(32).toString("base64url");
+    const challenge = createHash("sha256").update(verifier).digest("base64url");
     const next = safeNext(ctx.url.searchParams.get("next"));
     const url = new URL(google.authUrl);
-    url.search = new URLSearchParams({ client_id: google.clientId, redirect_uri: `${config.publicUrl}/auth/google/callback`, response_type: "code", scope: "openid email profile", state, prompt: "select_account" }).toString();
+    url.search = new URLSearchParams({ client_id: google.clientId, redirect_uri: `${config.publicUrl}/auth/google/callback`, response_type: "code", scope: "openid email profile", state, code_challenge: challenge, code_challenge_method: "S256", prompt: "select_account" }).toString();
     const secure = config.publicUrl.startsWith("https://") ? "; Secure" : "";
-    redirect(ctx.res, url.toString(), { "set-cookie": `oprn_store_oauth=${state}.${encodeURIComponent(next)}; Path=/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${secure}` });
+    redirect(ctx.res, url.toString(), { "set-cookie": `oprn_store_oauth=${state}.${verifier}.${encodeURIComponent(next)}; Path=/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${secure}` });
   });
   router.get("/auth/google/callback", async (ctx) => {
     limit(limits.login, ctx);
     const cookie = ctx.cookies.oprn_store_oauth ?? "";
-    const dot = cookie.indexOf(".");
-    const [state, nextRaw] = dot > 0 ? [cookie.slice(0, dot), cookie.slice(dot + 1)] : [cookie, "/"];
+    const [, state = "", verifier = "", nextRaw = "/"] = /^([\w-]+)\.([\w-]+)\.(.*)$/s.exec(cookie) ?? [];
     const code = ctx.url.searchParams.get("code");
-    if (!state || state !== ctx.url.searchParams.get("state") || !code) throw new HttpError(400, "로그인 요청이 만료되었습니다. 다시 시도해 주세요.", "oauth_state");
-    const info = await googleUser(config, code);
+    if (!state || !verifier || state !== ctx.url.searchParams.get("state") || !code) throw new HttpError(400, "로그인 요청이 만료되었습니다. 다시 시도해 주세요.", "oauth_state");
+    const info = await googleUser(config, code, verifier);
     const user = await upsertUser(db, config, { email: info.email, displayName: info.name, googleSub: info.sub });
     const session = await createSession(db, user.id);
     redirect(ctx.res, safeNext(decodeURIComponent(nextRaw ?? "/")), { "set-cookie": [sessionCookie(config, session.token), "oprn_store_oauth=; Path=/auth/google; Max-Age=0"] });
