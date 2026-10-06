@@ -1,0 +1,25 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the four actual PNGs, including the native 64px portrait and the native/nearest 3x cells on light, dark and checker backgrounds. The 53px standing silhouette reads as a right-facing adult woman: black hair and gold pin, plum jacket, blue skirt and cream/red fan remain recognizable. Left-side hair, sleeve and skirt highlights give coherent volume; gold edging separates the hem. No obvious accidental enclosed transparent holes or broken neck/shoulder connections are visible. Hands visibly meet the fan pivot, and standing/lunge shoes share the ground baseline. Windup brings the fan inward, move/attack expose the stepping legs, recovery lowers the tool, hit recoils, and dead has a low reclined silhouette with closed eyes. The skill has a gold preparation core, fan-rim-connected red wind branches and a folded-fan recovery with short residual lights. Poison uses a lowered posture and abdominal hand change, stun uses a slack posture and moving hand/star, and sleep uses closed eyes and a seated silhouette; these are authored state changes rather than palette tints. Idle_c has a minor fan-shape continuity concern. Static previews cannot establish animation timing, actual battle readability, original palette-index authorship or runtime alpha behavior. This recommendation is advisory; user selection remains pending.",
+  "issues": [
+    {
+      "pose": "idle_c",
+      "x": 46,
+      "y": 29,
+      "message": "The open fan becomes noticeably narrower than idle_a/idle_b while its pivot stays near (45,36) and the wrist barely turns. At native size this can read as the fan changing shape. Keep the outer red rim and cream blade breadth closer to the other idle frames, or add a clear wrist turn and consistently compressed rib clusters around x43-51, y24-35 so the narrowing reads as intentional rotation."
+    }
+  ],
+  "binding": "aa09d08970012f264891bd241f34c1c51d0dc571f6676cdc3844785c4cc0b68f",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "89f7b0535ec51a9532eccc824357156f39511b678d3750a28eb55e3fef6de4a5",
+    "preview/suite/light.png": "4412e47c6602645dd59d6347cf335a5fabbb0e99e056d6fb576c7385e24ebd2b",
+    "preview/suite/dark.png": "e9420611aceb96717bace3bcc6708f7d4db6db480b989cbe4ad0a4261a3da63f",
+    "preview/suite/checker.png": "bfe4145e8f2c4e921d8ef5f98c98995351f30b99b959b2ecaf6cc79321a6e9a1"
+  },
+  "jobId": "1182f0fd-b8a7-4e9c-b10b-6d2eec02ec33",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T10:40:55.390472+00:00",
+  "userApproved": false
+}

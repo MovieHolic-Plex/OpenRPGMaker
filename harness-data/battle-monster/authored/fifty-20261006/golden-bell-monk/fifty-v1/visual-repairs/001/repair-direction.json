@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "2dd475a000045033606614b4ccf8f687fee4ee959d1dac3bcd2a79c8349cea6b",
+  "priorReviewJob": "157eaaaf-2b98-41f4-9f89-b42869ab9d99",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 43,
+      "y": 33,
+      "message": "The extended sleeve/hand/bell and split-leg stance closely repeat move; the small reach and head shift do not give the bell strike a strong separate silhouette at 1x. Redraw the elbow-to-wrist clusters around (40–49, 30–36) and bell around (49–59, 34–44) into a visibly different contact angle or swing endpoint. Keep the grip physically joined and preserve the sandals on y=60."
+    },
+    {
+      "pose": "dead",
+      "x": 22,
+      "y": 46,
+      "message": "The body lies horizontally, but the bald head and facial plane retain the upright standing orientation above a long diagonal neck, giving the collapse a reclining, head-raised appearance. Hand-author a tilted/slumped head and compressed neck connection around (8–32, 36–54), with relaxed closed eyelid clusters near (18–25, 46). Join the jaw to the robe shoulder continuously so the head reads as resting with the fallen body."
+    }
+  ],
+  "startedAt": "2026-10-06T10:33:49.384636+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-06T03:35:29.558483+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "4da65ca6-9980-4b3d-bf28-db41cdabab1a",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T10:25:32.085899+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "e918fc14e50e7e589e29e2ca697acc6c0902c716cd8b38cea1b902bfcca5e354",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T10:42:54.434675+00:00"
+    },
+    {
+      "id": "e36010ed-08df-4c64-9869-e0b9cfab9e90",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T10:42:56.346343+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/jobs/e36010ed-08df-4c64-9869-e0b9cfab9e90",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/white-hair-saber-master/fifty-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "309555be33f9dd4d90481ab6119033b7b17f2787c1c1d6dfcf29b31f9aa03118",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "70e7247e1228321d951f42c91ad3c2fe54e84d43665028e294060e6ea9dfe020",
+        "preview/suite/light.png": "33d6675818faec3af19f642d38baf9e6b4a6907aeee69b7ab556da2430ae83f0",
+        "preview/suite/dark.png": "d38c9c29d50664f741ac04129047ce27943eb4096156ff4ac750732a611db78a",
+        "preview/suite/checker.png": "7c9a15a4238a110e616e9bec821593074a5d73941c10ec555a2f489365888a21"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T10:45:07.384051+00:00"
+    }
+  ]
+}

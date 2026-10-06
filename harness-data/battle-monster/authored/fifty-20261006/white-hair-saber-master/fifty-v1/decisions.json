@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "white-hair-saber-master/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "1ec93ce6ba376d52ac9fe8968fd5160a279cf051aad9ed56dc94ca474c742693",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T10:46:43.694058+00:00",
+    "requestId": "d3eee642-4131-5cd7-8a01-6eb49f4792bb",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "white-hair-saber-master/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "0dd1f13fda53a5e5db9698199bda975235812adedea413529dd6409620c9172b",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T10:46:43.694058+00:00",
+    "requestId": "d3eee642-4131-5cd7-8a01-6eb49f4792bb",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "white-hair-saber-master/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "5770dc7bb5efde6d9a928ec89dd0e4956e64a071c01c553c048195a3592d1d6b",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T10:46:43.694058+00:00",
+    "requestId": "d3eee642-4131-5cd7-8a01-6eb49f4792bb",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

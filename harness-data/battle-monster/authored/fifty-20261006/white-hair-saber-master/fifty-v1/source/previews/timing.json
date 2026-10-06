@@ -1,0 +1,102 @@
+{
+  "idle": [
+    [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    [
+      240,
+      240,
+      240,
+      240
+    ]
+  ],
+  "attack": [
+    [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    [
+      260,
+      240,
+      100,
+      170,
+      250,
+      320
+    ]
+  ],
+  "hit": [
+    [
+      "idle_a",
+      "hit",
+      "recover",
+      "idle_a"
+    ],
+    [
+      320,
+      260,
+      240,
+      360
+    ]
+  ],
+  "dead": [
+    [
+      "hit",
+      "dead"
+    ],
+    [
+      220,
+      1500
+    ]
+  ],
+  "skill": [
+    [
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    [
+      360,
+      280,
+      380,
+      400
+    ]
+  ],
+  "poison": [
+    [
+      "poison_a",
+      "poison_b"
+    ],
+    [
+      460,
+      460
+    ]
+  ],
+  "stun": [
+    [
+      "stun_a",
+      "stun_b"
+    ],
+    [
+      480,
+      480
+    ]
+  ],
+  "sleep": [
+    [
+      "sleep_a",
+      "sleep_b"
+    ],
+    [
+      850,
+      850
+    ]
+  ]
+}

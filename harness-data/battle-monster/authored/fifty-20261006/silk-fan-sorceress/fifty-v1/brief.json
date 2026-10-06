@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "silk-fan-sorceress",
+    "name": "비단선술사",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "성인 여성 조선/무협 SD 적. 머리18~21px/피부 얼굴12~14px, 실제 키50~54px, 우향3/4 차분한 눈과 눈썹. 긴 검은 머리/금 비녀, 자주 저고리와 금테 남청 치마, 손에 큰 미백/주홍 부채, 작은 우향 얼굴. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "부채를 가슴으로 당김 → 치마 밑 발 내딛기 → 연결된 부채손 휘두르기 → 부채/소매 회수.",
+    "skill": "비단풍: 부채 안 금빛 핵 → 실제 부챗살 끝부터 두 굽은 주홍 바람 → 부채 접고 짧은 실빛 잔기.",
+    "resourceId": "jf-enemy-silk-fan-sorceress",
+    "kind": "human",
+    "reviewActions": true,
+    "gender": "female",
+    "role": "shaman",
+    "age": "adult"
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

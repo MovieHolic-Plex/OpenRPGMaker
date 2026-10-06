@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-06T10:47:53.005528+00:00",
+  "passed": true,
+  "key": "white-hair-saber-master/fifty-v1",
+  "binding": "1ec93ce6ba376d52ac9fe8968fd5160a279cf051aad9ed56dc94ca474c742693",
+  "actualIndependentReviewJob": "e36010ed-08df-4c64-9869-e0b9cfab9e90",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "70e7247e1228321d951f42c91ad3c2fe54e84d43665028e294060e6ea9dfe020",
+    "preview/suite/light.png": "33d6675818faec3af19f642d38baf9e6b4a6907aeee69b7ab556da2430ae83f0",
+    "preview/suite/dark.png": "d38c9c29d50664f741ac04129047ce27943eb4096156ff4ac750732a611db78a",
+    "preview/suite/checker.png": "7c9a15a4238a110e616e9bec821593074a5d73941c10ec555a2f489365888a21"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-white-hair-saber-master.png",
+  "nativeContactPngSha256": "392474d44541ebf592af307d3e30b71d1af5d7965c8d79266cb781323f0846de",
+  "actualUnresizedDarkContact": "verify-shots/battle-monster-fifty/native-contact-white-hair-saber-master-dark.png",
+  "nativeDarkContactPngSha256": "51c22b7d316edcbdc478c1833d6188ee9aba0907b2575a537fde6cd6438a1cca",
+  "nativeWriterFilesRead": {
+    "author.py": "cf3faa548b6e16d5d847be8b6e656fdf975c906ca45f3aeae357d27a86d0691c"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened final18native1x/nearest2x864x696 light/dark unresized. Olderadult/whiteboundhair+shortbeard/smallquietright3/4face/charcoalvest/broadwhitegray sleeves/brownbelt/attachedlongsilverdo. Blade drawnbehindhead/forwardsteppedadvance/downwardcut/retract, hunchedhand/shoulderhit andlowrightslumpedhorizontaldead distinct fromclosedeye kneelingsleep. Silverbladecore/two curvedsilverwhite rays fromactualbladeend/downwardblade andtworesidualfragments. Sickhunchedpoisonwithgreenparticles, slackknees+blade stunwithstars, lowerfoldedclosedeyesleep withsmallhead/shoulder changes. Read complete author.frame/repair bodies/allmoduleflow andallcallnames; blank64canvases withindividual literal y/x/pixelstrings, thenonlyexplicitselectedrowpatches. No geometry/automaticwholeframe transforms. Render calls onlynativePNG/GIF/diagnosticboards/readback. All18nativePNG exactlymatch ASCII/palette. Initialactualkeeper0formalissues retains lowdarkpants/shoecontrast; pale bladeedges lessdistinctonlight thanondark butcontinuousbladebody visible. Actualbattlecontact/timingnotclaimed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

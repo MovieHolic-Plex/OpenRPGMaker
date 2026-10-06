@@ -1,0 +1,16 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>백발도객 · 18자세 / 8동작</title>
+<style>body{margin:24px;background:#e9e3d7;color:#20242c;font:16px system-ui}h1{font-size:24px}.controls{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}figure{margin:0;padding:14px;background:#d8dbe0;border-radius:8px}figcaption{margin-bottom:12px}.stage{height:210px;display:grid;place-items:center;background:#ede4d1}.stage img{image-rendering:pixelated;width:192px;height:192px}.dark .stage{background:#1e222c}.checker .stage{background:repeating-conic-gradient(#a5acb7 0 25%,#dadce0 0 50%) 0/16px 16px}.one .stage img{width:64px;height:64px}.six .stage{height:400px}.six .stage img{width:384px;height:384px}.sheet{max-width:100%;image-rendering:pixelated}a{color:#3c5871}</style>
+<h1>백발도객 · 18자세 / 8동작</h1><p>직접 저작 후보. 독립 검수·사용자 선택은 하네스에서 진행합니다.</p>
+<div class="controls"><label>배경 <select id="bg"><option value="light">밝게</option><option value="dark">어둡게</option><option value="checker">체커</option></select></label><label>배율 <select id="scale"><option value="three">3배</option><option value="one">1배</option><option value="six">6배</option></select></label><button id="pause">일시 정지</button></div>
+<div class="grid">
+<figure><figcaption>대기</figcaption><div class="stage"><img src="idle.gif" data-motion="idle" data-still="idle_a"></div></figure>
+<figure><figcaption>공격</figcaption><div class="stage"><img src="attack.gif" data-motion="attack" data-still="attack"></div></figure>
+<figure><figcaption>피격</figcaption><div class="stage"><img src="hit.gif" data-motion="hit" data-still="hit"></div></figure>
+<figure><figcaption>쓰러짐</figcaption><div class="stage"><img src="dead.gif" data-motion="dead" data-still="dead"></div></figure>
+<figure><figcaption>백인절</figcaption><div class="stage"><img src="skill.gif" data-motion="skill" data-still="skill_b"></div></figure>
+<figure><figcaption>독</figcaption><div class="stage"><img src="poison.gif" data-motion="poison" data-still="poison_a"></div></figure>
+<figure><figcaption>기절</figcaption><div class="stage"><img src="stun.gif" data-motion="stun" data-still="stun_a"></div></figure>
+<figure><figcaption>수면</figcaption><div class="stage"><img src="sleep.gif" data-motion="sleep" data-still="sleep_a"></div></figure>
+</div><h2>원본 1배 / 전체 18자세</h2><img class="sheet" src="sheet-native.png" alt="18자세 원본1배"><h2>확대 비교</h2><img class="sheet" src="sheet-checker.png" alt="체커 배경 3배 비교">
+<p><a href="../AUTHORING.md">저작·수정 기록</a> · <a href="../TIMING.md">시간표</a> · <a href="readback.json">GIF 재읽기 기록</a></p>
+<script>const bg=document.getElementById('bg'),scale=document.getElementById('scale');function style(){document.body.className=bg.value+' '+scale.value}bg.onchange=style;scale.onchange=style;let paused=false;document.getElementById('pause').onclick=e=>{paused=!paused;document.querySelectorAll('[data-motion]').forEach(i=>i.src=(paused?i.dataset.still+'.png':i.dataset.motion+'.gif'));e.target.textContent=paused?'재생':'일시 정지'};</script></html>

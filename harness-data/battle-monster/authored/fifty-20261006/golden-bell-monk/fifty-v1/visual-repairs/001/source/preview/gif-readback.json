@@ -1,0 +1,170 @@
+[
+  {
+    "motion": "idle",
+    "frame": 0,
+    "pose": "idle_a",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "idle",
+    "frame": 1,
+    "pose": "idle_b",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "idle",
+    "frame": 2,
+    "pose": "idle_c",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 0,
+    "pose": "idle_a",
+    "hold_ms": 260,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 1,
+    "pose": "windup",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 2,
+    "pose": "move",
+    "hold_ms": 100,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 3,
+    "pose": "attack",
+    "hold_ms": 150,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 4,
+    "pose": "recover",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "attack",
+    "frame": 5,
+    "pose": "idle_a",
+    "hold_ms": 300,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "hit",
+    "frame": 0,
+    "pose": "idle_a",
+    "hold_ms": 300,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "hit",
+    "frame": 1,
+    "pose": "hit",
+    "hold_ms": 260,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "hit",
+    "frame": 2,
+    "pose": "recover",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "dead",
+    "frame": 0,
+    "pose": "hit",
+    "hold_ms": 240,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "dead",
+    "frame": 1,
+    "pose": "dead",
+    "hold_ms": 1400,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "skill",
+    "frame": 0,
+    "pose": "skill_a",
+    "hold_ms": 360,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "skill",
+    "frame": 1,
+    "pose": "skill_b",
+    "hold_ms": 320,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "skill",
+    "frame": 2,
+    "pose": "skill_c",
+    "hold_ms": 360,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "skill",
+    "frame": 3,
+    "pose": "idle_a",
+    "hold_ms": 400,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "poison",
+    "frame": 0,
+    "pose": "poison_a",
+    "hold_ms": 420,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "poison",
+    "frame": 1,
+    "pose": "poison_b",
+    "hold_ms": 420,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "stun",
+    "frame": 0,
+    "pose": "stun_a",
+    "hold_ms": 460,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "stun",
+    "frame": 1,
+    "pose": "stun_b",
+    "hold_ms": 460,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "sleep",
+    "frame": 0,
+    "pose": "sleep_a",
+    "hold_ms": 700,
+    "pixels": "exact opaque RGBA and alpha"
+  },
+  {
+    "motion": "sleep",
+    "frame": 1,
+    "pose": "sleep_b",
+    "hold_ms": 850,
+    "pixels": "exact opaque RGBA and alpha"
+  }
+]

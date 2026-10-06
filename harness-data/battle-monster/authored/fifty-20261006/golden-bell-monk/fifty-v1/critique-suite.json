@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "실제 portrait/light/dark/checker PNG 네 장의 native 1배와 최근접 3배를 확인했다. 민머리·우향 3/4 얼굴·회갈 승복·붉은 염주·작은 금속 종으로 승려 실루엣이 읽힌다. 왼쪽 위의 두피/어깨 밝은 면과 오른쪽 승복 그림자, 종의 금빛 면이 재질과 부피를 구분한다. 목·소매·손·종은 이어져 보이며 밝은 배경과 체커에서 수리할 만한 내부 투명 구멍이나 끊긴 윤곽은 발견하지 못했다. 준비 자세는 종손을 화면 왼쪽으로 당기고, 이동/공격은 보폭을 넓혀 종을 오른쪽으로 내밀며, 회수는 좁은 자세로 돌아온다. 피격은 머리와 몸을 낮추고 얼굴을 찡그리며, 쓰러짐은 연결된 머리·몸통을 바닥에 눕힌다. 서 있는 자세의 짚신은 바닥선에 닿는다. skill_a는 들어 올린 종 입구의 밝은 핵, skill_b는 실제 종 입구에 이어지는 두 금빛 파문, skill_c는 내려간 종과 세 잔광으로 단계가 구분된다. 독은 가슴을 감싸는 팔과 움츠린 자세/표정, 기절은 낮아진 몸과 흔들리는 자세 및 별, 수면은 감긴 눈과 접힌 다리로 읽히며 단순 색 변경만으로 상태를 대신하지 않는다. 피격과 기절의 표정 차이는 1배에서 작지만 몸 자세가 보완한다. 프리뷰의 native 칸에서 배경을 제외한 RGB는 18색이다. 이 추천은 사용자 선택이 아니다. 정지 자세 프리뷰이므로 GIF 재생 타이밍·실제 전투에서의 돌격/접촉·연속 동작 품질은 확인하지 못했고, PNG만으로 literal pxgrid 저작 방식이나 자동 변형 사용 여부는 증명할 수 없다.",
+  "issues": [],
+  "binding": "d9dbb8062edbe7878659e8ba28bbca497080ed48e7c90983478ee1c556adfb34",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "e4dadfb5ec557e432e3c690025f5f981044fd668ccaa9db105c6705016f075cb",
+    "preview/suite/light.png": "424e82520ab9c86d07f138a2e8acf39353113d7e7b7119137301001aad9d2234",
+    "preview/suite/dark.png": "f100e6b1763350f411fcd49fd1b417e60c46d0f6b72789d648b88736dec328f6",
+    "preview/suite/checker.png": "25ac53c200bcd635e3682b97ec1095134d991c825cc84a87c1fac26865ab3726"
+  },
+  "jobId": "c3e6c373-e5e6-4b0d-aa29-b1b1d15244dc",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T10:42:10.333752+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the actual portrait and light/dark/checker PNGs, including native 1x and nearest 3x pose panels. The bald monk, red beads, ochre-gray robe and bronze bell are readable; head/body scale is credible for the specified SD silhouette. Broad upper-left highlights distinguish skin, cloth and metal. Standing sandals share the ground line, and sleeve-hand-bell connections remain readable; no obvious accidental transparent hole was visible. Idle breathing, backward bell preparation, recovery and the lowered/recoiling hit preserve identity. Skill preparation exposes a bright bell-mouth cluster, contact emits two gold arcs connected to the bell, and recovery lowers it with three separate afterglow fragments. Poison, star-marked stun and closed-eye seated sleep are distinguishable states with posture/cluster changes rather than whole-body tints. Rework is recommended for the weak move-to-attack distinction and the upright head in the fallen pose. Dark contours have low contrast on the dark panel but remain visible on light/checker. These static pose previews cannot establish animation timing, dash contact in battle, runtime integration, exact alpha compliance or literal-grid authorship. This is a reviewer recommendation, not the user's selection.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 43,
+      "y": 33,
+      "message": "The extended sleeve/hand/bell and split-leg stance closely repeat move; the small reach and head shift do not give the bell strike a strong separate silhouette at 1x. Redraw the elbow-to-wrist clusters around (40–49, 30–36) and bell around (49–59, 34–44) into a visibly different contact angle or swing endpoint. Keep the grip physically joined and preserve the sandals on y=60."
+    },
+    {
+      "pose": "dead",
+      "x": 22,
+      "y": 46,
+      "message": "The body lies horizontally, but the bald head and facial plane retain the upright standing orientation above a long diagonal neck, giving the collapse a reclining, head-raised appearance. Hand-author a tilted/slumped head and compressed neck connection around (8–32, 36–54), with relaxed closed eyelid clusters near (18–25, 46). Join the jaw to the robe shoulder continuously so the head reads as resting with the fallen body."
+    }
+  ]
+}

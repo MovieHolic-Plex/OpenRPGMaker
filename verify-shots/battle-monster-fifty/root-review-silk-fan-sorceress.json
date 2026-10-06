@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-06T10:44:01.709022+00:00",
+  "passed": true,
+  "key": "silk-fan-sorceress/fifty-v1",
+  "binding": "aa09d08970012f264891bd241f34c1c51d0dc571f6676cdc3844785c4cc0b68f",
+  "actualIndependentReviewJob": "1182f0fd-b8a7-4e9c-b10b-6d2eec02ec33",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "89f7b0535ec51a9532eccc824357156f39511b678d3750a28eb55e3fef6de4a5",
+    "preview/suite/light.png": "4412e47c6602645dd59d6347cf335a5fabbb0e99e056d6fb576c7385e24ebd2b",
+    "preview/suite/dark.png": "e9420611aceb96717bace3bcc6708f7d4db6db480b989cbe4ad0a4261a3da63f",
+    "preview/suite/checker.png": "bfe4145e8f2c4e921d8ef5f98c98995351f30b99b959b2ecaf6cc79321a6e9a1"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "idle_c",
+      "x": 46,
+      "y": 29,
+      "message": "The open fan becomes noticeably narrower than idle_a/idle_b while its pivot stays near (45,36) and the wrist barely turns. At native size this can read as the fan changing shape. Keep the outer red rim and cream blade breadth closer to the other idle frames, or add a clear wrist turn and consistently compressed rib clusters around x43-51, y24-35 so the narrowing reads as intentional rotation."
+    }
+  ],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-silk-fan-sorceress.png",
+  "nativeContactPngSha256": "983762b6b379ad5604bfff202506ca626a4b0ab82e35c56a5888d3472675b484",
+  "nativeWriterFilesRead": {
+    "cluster-edits.py": "67a39588511b2c594606d7b96f584fa9a7bea40f65329aa2f4ab0b9705eaefc0",
+    "final-adjustments.py": "ff40f33e2f206975f3a8dc3cdea31e883d68467055d651517314367792029da2",
+    "render.py": "c936a71915614febcd1d0699bc1700599b6db156da9f0a1d946e7f2aa3243db2"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened all18 native1x/nearest2x864x696 unresized. Adultwoman/quietsmallrightface/longdarkhair/goldhairpin/plumjacket/goldnavyskirt/twolittleshoes/attachedcreamvermilionfan. Fandrawnacrosschest/wideadvancestep/forwardfanstrike/recovery, backleanhit andlowfoldedhorizontaldead distinct from closed-eye seatedsleep. Goldenfancore/two curvedvermilionwind paths rootedinfanrim thenfoldedfan/threadfragments. Poisonhunchedfoldedarm/greenparticles, slackfoldedfanstun/goldstars, seatedclosed-eye sleeve/headpairchange modest. Read complete cluster-edits.main/final-adjustments.main and render.transcribe/load/backgrounds/render bodies/allmoduleflow/calls. Explicit manuscript rowstrings+selected per-frame y/x/strings only; render.transcribe genuinely writes grids and is counted asnativewriter. No generatedbodygeometry/wholeframe transforms. Inspection onlyPNG/GIF/readbackdiagnostics. All18nativePNG RGBA exactlymatch ASCII/palette.  Actual initialkeeper retains one minor idle_c fanbreadth/pivot continuity concern; this is preserved and not claimedfixed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

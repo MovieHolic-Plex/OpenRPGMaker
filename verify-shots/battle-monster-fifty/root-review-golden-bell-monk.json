@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-06T10:44:01.712044+00:00",
+  "passed": true,
+  "key": "golden-bell-monk/fifty-v1",
+  "binding": "d9dbb8062edbe7878659e8ba28bbca497080ed48e7c90983478ee1c556adfb34",
+  "actualIndependentReviewJob": "c3e6c373-e5e6-4b0d-aa29-b1b1d15244dc",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "e4dadfb5ec557e432e3c690025f5f981044fd668ccaa9db105c6705016f075cb",
+    "preview/suite/light.png": "424e82520ab9c86d07f138a2e8acf39353113d7e7b7119137301001aad9d2234",
+    "preview/suite/dark.png": "f100e6b1763350f411fcd49fd1b417e60c46d0f6b72789d648b88736dec328f6",
+    "preview/suite/checker.png": "25ac53c200bcd635e3682b97ec1095134d991c825cc84a87c1fac26865ab3726"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-golden-bell-monk.png",
+  "nativeContactPngSha256": "aa55fa6879084ee9ee85156cfff9571e90d0505807e90e0382c7ed6c82d7af74",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "1f7dc1211969737118eb787c4f606b8d7d3a285773fdeb6b755ef157d5868a06",
+    "rework_pixels.py": "cd74a54dd738d9eb687ec490c635d1a71bc8ed3776ce7db03e15f452116cbc43"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened final18native1x/nearest2x864x696 unresized after first real repair. Baldadultsmallrightface/grayochrerobes/redbeads/attachedgoldbronzehandbell/strawsandals. Windupdrawsbellback/advancestep/strikeanglesforearmandbelllowerforward distinctlyfrommove/retract. Loweredbackheadhit, deadheadnowtiltedslumped withcompressedcontinuousjaw/neck/robeshoulder nearfallenbody, distinctfoldedclosedeyesleep. Goldenbellmouthcore/two layeredgoldripplepaths andthree recoveryfragments; sickhandchestpoison, droopedstunbodywithstars, seatedclosedeyesleep. Read full author.write_grids body/currentcalls/moduleflow and rework_pixels.apply completebody/moduleflow: literal selected ATTACK/DEAD rows inserted in theiroriginal canvases, saved andsamefullliteral author records updatedviaregexp. No inferredgeometry/wholeframe transforms. Render/compare onlynativePNG/GIF/diagnosticreadback. All18nativePNG exactlymatch ASCII/palette. Actualfirstrepair keeper0formalissues retains subtle hit/stunfacialdetail at1x, helpedbydifferentbodypostures; not runtimecontact/timingapproval.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

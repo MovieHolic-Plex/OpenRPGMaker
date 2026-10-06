@@ -1,0 +1,383 @@
+{
+  "paletteColors": 18,
+  "frames": {
+    "idle_a": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        53,
+        60
+      ],
+      "sha256": "00087acdbe1d4f8196bc7266a5bcae101ef4e2e13fdef04d8c6e90a779aeae21"
+    },
+    "idle_b": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        52,
+        60
+      ],
+      "sha256": "645971d1d73c138c783b0007fd45d8547344d1ef87a74416f87571f2d375fc18"
+    },
+    "idle_c": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        51,
+        60
+      ],
+      "sha256": "844b0c9f1d803756be1efea69a7c397a7ba513ee51e6531cefaf6c1038ba79ee"
+    },
+    "windup": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        44,
+        60
+      ],
+      "sha256": "b831946da9b492ed597c71e4e85c6d20f813355202a006690cad6f9a6df4bcd0"
+    },
+    "move": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        13,
+        10,
+        54,
+        60
+      ],
+      "sha256": "454beb95050cd50eba13e51e1ca6f6d0c80458304aa80de64c671a582ad9d7b5"
+    },
+    "attack": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        12,
+        10,
+        55,
+        60
+      ],
+      "sha256": "c8fe5e30bad3e6523f4c10f99629cd6c7ce6d785f55207103e376ea88d6b5bbc"
+    },
+    "recover": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        47,
+        60
+      ],
+      "sha256": "c53f12aa77f01b147d428a7406db6831962b50a86f785cad5855e71ad434c5b1"
+    },
+    "hit": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        12,
+        12,
+        44,
+        60
+      ],
+      "sha256": "4ff3c8e5bacad73f1fb17d8b2861717dee704dcc2b2c4eab2a077f08dd34fcb4"
+    },
+    "dead": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        12,
+        36,
+        51,
+        60
+      ],
+      "sha256": "8a5dcfafade4600727598ac73eb78d3ab5bbfe4b519a0ec540107d710a3a5d86"
+    },
+    "skill_a": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        50,
+        60
+      ],
+      "sha256": "3d47a9236278af52015d90aa3b95698138ac9f7fcb0e91a9ef85b9e15bb5df4b"
+    },
+    "skill_b": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        13,
+        8,
+        59,
+        60
+      ],
+      "sha256": "08f65dbef2ae0f2b1f24c3f2a0d07ecf40c85f512e8d05d8034648c2896401af"
+    },
+    "skill_c": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        17,
+        8,
+        51,
+        60
+      ],
+      "sha256": "708b45bebf7cbe875f18f92d1606f07b67df51cec06b336d57c5306d1896e1f1"
+    },
+    "poison_a": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        10,
+        12,
+        51,
+        60
+      ],
+      "sha256": "95d0adb5e46f0a6c6df9bb777358f3db87b4f2da24e0470844daede00d67423e"
+    },
+    "poison_b": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        10,
+        13,
+        52,
+        60
+      ],
+      "sha256": "1b18afb19f05f4534024efd4ee67c646435df9f33a5160daf51fd20a94678849"
+    },
+    "stun_a": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        16,
+        15,
+        50,
+        60
+      ],
+      "sha256": "3d5ee70a045b73df2a8358d00729c1ea6bad872d7d5b1278c6378f3c55a1bcf8"
+    },
+    "stun_b": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        16,
+        15,
+        52,
+        60
+      ],
+      "sha256": "28db7ccd32c6637065d53c05b1d85f74a6f48fb93b02396783872d7dbf9e6386"
+    },
+    "sleep_a": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        19,
+        22,
+        46,
+        60
+      ],
+      "sha256": "aac1ad7d8126eec019e6a5b8cc66adb958374ebb9cb95c6e9c8269c0e1c3648f"
+    },
+    "sleep_b": {
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "inkBounds": [
+        19,
+        22,
+        46,
+        60
+      ],
+      "sha256": "e03a8dbb4db3a84ce2a20f0856612d6bf75d8e995cdbc5b07ca3f5287216546f"
+    }
+  },
+  "motions": {
+    "idle": {
+      "frames": 4,
+      "holdsMs": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "attack": {
+      "frames": 6,
+      "holdsMs": [
+        300,
+        200,
+        100,
+        170,
+        220,
+        300
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "hit": {
+      "frames": 4,
+      "holdsMs": [
+        350,
+        260,
+        200,
+        400
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "dead": {
+      "frames": 2,
+      "holdsMs": [
+        180,
+        1100
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0
+      ]
+    },
+    "skill": {
+      "frames": 5,
+      "holdsMs": [
+        300,
+        330,
+        250,
+        320,
+        300
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "poison": {
+      "frames": 2,
+      "holdsMs": [
+        400,
+        400
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0
+      ]
+    },
+    "stun": {
+      "frames": 2,
+      "holdsMs": [
+        380,
+        380
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0
+      ]
+    },
+    "sleep": {
+      "frames": 2,
+      "holdsMs": [
+        650,
+        750
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "pixelDifferencesFromPNG": [
+        0,
+        0
+      ]
+    }
+  }
+}

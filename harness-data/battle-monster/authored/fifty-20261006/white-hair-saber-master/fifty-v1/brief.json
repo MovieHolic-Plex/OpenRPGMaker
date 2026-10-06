@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "white-hair-saber-master",
+    "name": "백발도객",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "성인 남성 조선/무협 SD 적. 머리18~21px/피부 얼굴12~14px, 실제 키50~54px, 우향3/4 차분한 눈과 눈썹. 성인 장년, 은백 묶은 머리/짧은 수염, 먹색 쾌자와 회백 넓은 소매, 갈색 허리띠, 넓은 은도. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "도를 어깨 뒤로 모음 → 넓게 내딛기 → 연결된 도손의 내려 베기 → 도/소매 회수.",
+    "skill": "백인절: 도날 은빛 핵 → 실제 도끝부터 두 굽은 은백 칼빛 → 도 낮추고 두 잔빛.",
+    "resourceId": "jf-enemy-white-hair-saber-master",
+    "kind": "human",
+    "reviewActions": true,
+    "gender": "male",
+    "role": "warrior",
+    "age": "adult"
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "silk-fan-sorceress",
+    "source": "qa-runs/harnesses/battle-monster/silk-fan-sorceress/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "08f65dbef2ae0f2b1f24c3f2a0d07ecf40c85f512e8d05d8034648c2896401af",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:47:50.624865+00:00",
+    "binding": "aa09d08970012f264891bd241f34c1c51d0dc571f6676cdc3844785c4cc0b68f",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "golden-bell-monk",
+    "source": "qa-runs/harnesses/battle-monster/golden-bell-monk/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "b4ca6ceffa127eee8317f83facc628662267278de52df626a1cd9c10020bdee6",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:47:50.624865+00:00",
+    "binding": "d9dbb8062edbe7878659e8ba28bbca497080ed48e7c90983478ee1c556adfb34",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "white-hair-saber-master",
+    "source": "qa-runs/harnesses/battle-monster/white-hair-saber-master/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "79d24dc02bc8a13a72b35c3180b386fdd7eaf7704ee355ea751403f27a231de5",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:47:50.624865+00:00",
+    "binding": "1ec93ce6ba376d52ac9fe8968fd5160a279cf051aad9ed56dc94ca474c742693",
+    "entireGoalCompleteClaim": false
+  }
+]

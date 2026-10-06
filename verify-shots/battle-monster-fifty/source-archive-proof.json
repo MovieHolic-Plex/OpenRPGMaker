@@ -330,6 +330,39 @@
     "selectedPackSha256": "7f6123f34fae92958eda04108f7c7eece55fa1212b332b24f90b67c6a30620d2"
   },
   {
+    "key": "silk-fan-sorceress/fifty-v1",
+    "binding": "aa09d08970012f264891bd241f34c1c51d0dc571f6676cdc3844785c4cc0b68f",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "f5fd0d4aaffc946d8389950ccab9aef438fbed60dc73cae893474c2268f35987"
+  },
+  {
+    "key": "golden-bell-monk/fifty-v1",
+    "binding": "d9dbb8062edbe7878659e8ba28bbca497080ed48e7c90983478ee1c556adfb34",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "e9209286162d5ea45379615ebf91359223a25c3a21dd4f770a123960b8adcf71"
+  },
+  {
+    "key": "white-hair-saber-master/fifty-v1",
+    "binding": "1ec93ce6ba376d52ac9fe8968fd5160a279cf051aad9ed56dc94ca474c742693",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "e9857deb9d6a82b12fb42720c3e6972740e6ec9f362e639d2ea888c7fd69c917"
+  },
+  {
     "key": "sun-gold-phoenix/fifty-v1",
     "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
     "nativeCell": 128,

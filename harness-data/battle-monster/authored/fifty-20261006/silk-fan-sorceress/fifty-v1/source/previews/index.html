@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>비단선술사 — 후보 그림</title>
+<style>
+:root{color-scheme:dark;--scale:3;--surface:#252631}*{box-sizing:border-box}body{margin:0;padding:24px;background:#15151e;color:#eee9dc;font:15px system-ui,sans-serif}main{max-width:1100px;margin:auto}h1{font-size:24px}p{color:#bbb5b0}nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}button,select{font:inherit;padding:8px 12px;border:1px solid #605964;border-radius:5px;background:#302936;color:inherit}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}article{border:1px solid #45404c;border-radius:8px;padding:14px}h2{font-size:16px;margin:0 0 10px}.stage{display:flex;align-items:center;justify-content:center;min-height:260px;background:var(--surface)}.stage img{image-rendering:pixelated;width:calc(64px * var(--scale));height:calc(64px * var(--scale))}body.checker .stage{background-color:#d3d7da;background-image:conic-gradient(#aeb4ba 25%,transparent 0 50%,#aeb4ba 0 75%,transparent 0);background-size:32px 32px}a{color:#e5b966}details{margin-top:24px}details img{max-width:100%;image-rendering:pixelated}.notes{font-size:13px;line-height:1.6}
+</style>
+<main>
+<h1>비단선술사</h1>
+<p>원본 64px · 18자세 · 8동작</p>
+<nav aria-label="그림 표시">
+<label>배경 <select id="bg"><option value="dark">어두움</option><option value="light">밝음</option><option value="checker">체커</option></select></label>
+<label>배율 <select id="scale"><option value="3">3배</option><option value="1">1배</option><option value="4">4배</option></select></label>
+<button id="toggle" type="button">정지 그림</button>
+</nav>
+<section>
+<article><h2>대기</h2><div class="stage"><img src="idle.gif" data-motion="idle" data-still="idle_a" alt="대기"></div></article>
+<article><h2>공격</h2><div class="stage"><img src="attack.gif" data-motion="attack" data-still="attack" alt="공격"></div></article>
+<article><h2>피격</h2><div class="stage"><img src="hit.gif" data-motion="hit" data-still="hit" alt="피격"></div></article>
+<article><h2>쓰러짐</h2><div class="stage"><img src="dead.gif" data-motion="dead" data-still="dead" alt="쓰러짐"></div></article>
+<article><h2>비단풍</h2><div class="stage"><img src="skill.gif" data-motion="skill" data-still="skill_b" alt="비단풍"></div></article>
+<article><h2>독</h2><div class="stage"><img src="poison.gif" data-motion="poison" data-still="poison_a" alt="독"></div></article>
+<article><h2>기절</h2><div class="stage"><img src="stun.gif" data-motion="stun" data-still="stun_a" alt="기절"></div></article>
+<article><h2>수면</h2><div class="stage"><img src="sleep.gif" data-motion="sleep" data-still="sleep_a" alt="수면"></div></article>
+</section>
+<details><summary>18자세 원본 크기</summary><img src="sheet-checker-1x.png" alt="18자세 1배"></details>
+<details><summary>기본 동작의 저장 GIF 프레임</summary><img src="gif-readback-1-3x.png" alt="대기 공격 피격 쓰러짐 GIF에서 읽은 프레임"></details>
+<details><summary>기술과 상태의 저장 GIF 프레임</summary><img src="gif-readback-2-3x.png" alt="기술 독 기절 수면 GIF에서 읽은 프레임"></details>
+<p class="notes"><a href="../AUTHORING.md">저작 기록과 표현 한계</a> · <a href="../TIMING.md">시간표</a><br>사용자 선택과 독립 검수는 하네스에서 진행합니다.</p>
+</main>
+<script>
+const bg=document.getElementById('bg'), scale=document.getElementById('scale'),toggle=document.getElementById('toggle');
+bg.addEventListener('change',()=>{document.body.classList.toggle('checker',bg.value==='checker');document.documentElement.style.setProperty('--surface',bg.value==='light'?'#efe8d9':'#252631')});
+scale.addEventListener('change',()=>document.documentElement.style.setProperty('--scale',scale.value));
+let paused=false;toggle.addEventListener('click',()=>{paused=!paused;for(const img of document.querySelectorAll('[data-motion]'))img.src=paused?img.dataset.still+'.png':img.dataset.motion+'.gif';toggle.textContent=paused?'GIF 재생':'정지 그림'});
+</script>
+</html>
