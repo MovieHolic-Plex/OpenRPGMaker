@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "40c0433d2f217c88e7eef98db803a7bc4b64a866d8ff6afcb7ed5383ba44d2a5",
+  "priorReviewJob": "7d59022d-a92c-41ed-8200-e9063d192665",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 43,
+      "y": 70,
+      "message": "The shoulder/arm region becomes an uninterrupted zigzag trunk; neither established branch arm is readable. Draw attached branches folded against the trunk with dark overlap seams and retained branch tips, and add a closed-eye cluster near the retained face so the pose reads as sleeping rather than melting."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 82,
+      "message": "The lower body becomes a broad continuous wavy wedge, merging the two root legs. Preserve two bent root feet with a short dark separation and visible leg-to-trunk joins while keeping their contact at y=92; carry the same anatomy into sleep_a."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 35,
+      "message": "The broad, multilobed idle pine crown becomes a narrow diagonal slab, with the hanging right bough disappearing. Redraw compact overlapping pine-bough clusters connected to the trunk, retaining the recognizable crown mass and upper-left light planes in both sleep frames."
+    }
+  ],
+  "startedAt": "2026-10-06T09:17:16.590679+00:00"
+}

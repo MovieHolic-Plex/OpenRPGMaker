@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재26/50 통과
+# 신규50종 제작 · 현재28/50 통과
 
 ## 최초 두 종 확인
 
@@ -339,3 +339,29 @@ blank/rows/replace/save/standing 전체 쓰기 본문·호출 목록·모듈 제
 화린독사·매화정의 작은 지적 각1개를 유지한다. 남은24종까지 목표는 동일하며 전체 완료나 게임
 설치를 주장하지 않는다. 근거:twenty-six-passed-proof.json,root-review-soul-drum-dokkaebi.json,
 native-contact-soul-drum-dokkaebi.*,browser-proof-soul-drum-dokkaebi.json,지속 출처26종.
+
+## 적송목령·황금이삭귀 통과 · 실제28/50
+
+적송목령은 세 차례 실제 좌표 교정 후 독립 keep0지적이다. 감독이 현재18자세 native1배/최근접2배
+시트를 직접 열고 author_pixels/repair_sleep/repair_requested/repair_root_arms 네 writer의 전체 쓰기
+본문과 모듈 흐름을 읽었다. 겹친 수관·매달린 가지와 나무 얼굴, 같은 타격 가지의 준비/전진/끝으로
+가늘어진 공격·회수, 붙은 수면 두 팔·분리된 굽은 뿌리·감긴 눈·작은 머리 안정 변화, 둥근 알갱이
+대신 끊어진 대각 솔잎 조각을 확인했다. 실제 keep 관찰의 자세 사이 가지 분기 연속성 불확실성은
+그대로 보존한다. 이전 실제 rework/초기·첫 교정 draft(false) 근거를 합격 기록으로 바꾸지 않는다.
+
+황금이삭귀는 최초 실제 독립 keep0지적이다. 감독이 현재18자세 native1배/최근접2배 시트를 직접
+열고 author.py의 세 모듈 루프 및 모든 호출을 읽었다. native.rows/corrections.rows의 직접 지정
+좌표·문자열을 새96격자에 쓰고 원본을 저장한다. render/inspect는 PNG/GIF·진단만 담당한다.
+큰 금빛 모자·어깨 짚·작은 우향 눈·붉은 허리띠, 연결된 이삭 도구와 파지, 뒤로 모은 준비·벌린
+전진·뻗은 타격·회수, 기운 피격·낮은 쓰러짐과 무릎 꿇은 수면, 올린 도구 끝의 세 이삭 빛과
+돌아오는 파편을 확인했다. 짚이 묶인 나무처럼 보이는 면과 작은 상태 쌍 변화는 실제 keep 관찰로
+유지한다. 두 종18PNG는 실제 ASCII/팔레트와 정확히 같으며 형상 생성/몸 전체 변환은 없다.
+
+현재28/50/504자세/224GIF/전체false다. 같은28종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/직접 저작 방식을 확인했다. 원래52판정/8선택 보존, 신규84행은 목표에 따른
+위임 Allow다. 화린독사·매화정의 작은 지적 각1개를 유지한다. 청포창객·옥적무인·흑련자객의 실제
+별도 원본 저작 세 체인이 진행 중이며 남은22종까지 목표는 같다. 전체 완료나 게임 설치를 주장하지
+않는다. 근거:twenty-eight-passed-proof.json,root-review-red-pine-guardian.json,
+root-review-golden-grain-spirit.json,native-contact 두 종,현재 browser-proof 두 종,
+progress-skill_b-red-pine-guardian-golden-grain-spirit.*,지속 출처28종.

@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the four supplied PNGs at native 1x and their nearest-neighbor 3x previews. The oversized golden straw hat, shoulder tufts, brown body, small dark eye and red waist cord form a recognizable, consistently right-facing creature. Broad light planes on the upper-left hat/shoulder and darker lower/right planes give readable volume; straw detail is restrained, with the body reading somewhat like bundled wood. No conspicuous accidental interior transparency, broken body contours or detached hand/tool is visible across the three backgrounds. Standing soles share the ground line; the low dead silhouette and folded sleep legs remain connected. Windup gathers the grain hand behind the torso, move/attack widen the stance and extend the connected tool, recover retracts it, and hit leans back distinctly. Skill preparation brightens the actual grain tip; the release shows three gold grain heads with trails originating at the raised stalk, followed by a lowered hand and separated grains. Poison bends the body with purple motes, stun drops the tool with overhead stars, and sleep kneels with a closed horizontal eyelid; these are authored pose changes, not whole-sprite tints. Idle and paired status changes are subtle but coherent in the static comparisons. This is a visual keep recommendation, not a user selection or geometry-based approval. Static pose previews cannot establish animated timing, actual battle readability, runtime hop behavior or literal palette-index authorship.",
+  "issues": [],
+  "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "a3fae0dbdbff7a3aff2001231283397d095d679508e69f1967ede51f42ef719e",
+    "preview/suite/light.png": "94f522d73782657e21596100d5f0988262b3fc546eb3da291812fb898380c270",
+    "preview/suite/dark.png": "bc6c85479e6920976ff96a8afe5d86610d4c1902169dd5e71432061d0f03a021",
+    "preview/suite/checker.png": "e498a77812dc20a5e734717af777e7281f2716b44200831ea00e8e8497f3665a"
+  },
+  "jobId": "4579383c-f169-4cc1-9e42-fce5d9f31213",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:46:35.297222+00:00",
+  "userApproved": false
+}

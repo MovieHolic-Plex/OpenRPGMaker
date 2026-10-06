@@ -242,6 +242,17 @@
     "selectedPackSha256": "bed41f91533b4a817f2a7e2ec4dd26bd338083c568f4539a724d6fe311114107"
   },
   {
+    "key": "red-pine-guardian/fifty-v1",
+    "binding": "6e0c2ebf70c4f952fc5c0268a420dccbe20173c2fb86ba3235d5aa6f1c3ec6e3",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "08d9a0a637c5b38b3d971a16b0a609ff5e89080abe8eb8dcdbd5d98945f77237"
+  },
+  {
     "key": "dusk-paper-falcon/fifty-v1",
     "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
     "nativeCell": 96,
@@ -262,6 +273,17 @@
     "currentAllow": true,
     "sourceArchiveReread": true,
     "selectedPackSha256": "1d1b28b207884e28373388025f7449f8ee856a7c8f9b35aac09230f6170a7ede"
+  },
+  {
+    "key": "golden-grain-spirit/fifty-v1",
+    "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "16eb08d4edc99fd1ad5c7d436dd89c866b07f0f4a2073178836d7974a2d86de6"
   },
   {
     "key": "red-tassel-swordswoman/fifty-v1",

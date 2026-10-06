@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs at native 1x and their nearest-neighbor 3x previews. The broad pine crown, split brown trunk, right-facing idle face and upper-left highlights establish the tree spirit well. Main limbs appear connected; the open spaces between branches and limbs generally read as intentional negative space. Standing poses retain ground contact, move lifts one root, and dead rests on the baseline. Windup, raised move arm, downward attack and recovery are distinguishable, but the striking branch becomes an oversized blunt mass beside the front root at 1x. Skill_b visibly launches three green fans from the actual branch tip. Poison clutches the body, stun droops its arms, and sleep crouches, so these are pose changes rather than tints; sleep loses the recognizable face and its pair has very little readable change. Skill_c debris looks like round green pellets rather than broken pine needles. These are visual repair recommendations, not a user selection. Static pose previews cannot establish actual battle timing, hop travel, contact with a target, animation playback, or literal pxgrid authorship; no geometry PASS is treated as visual approval.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 67,
+      "y": 79,
+      "message": "The screen-right striking branch ends in a broad square lump beside the planted front root. At 1x the arm tip and root compete as one lower-right mass. Taper the branch terminal into connected jagged wooden prongs, carry the upper-left highlight and darker underside through the bend, and make the arm/root separation clearer while preserving the planted foot."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 46,
+      "y": 53,
+      "message": "The crouched trunk has no clearly readable right-facing eye/brow landmark, so the accordion-like body can read as bracing rather than sleeping. Restore a small closed-eye and brow cluster on this upper trunk segment, retaining the bent roots and connected arms. Carry the same facial landmark into sleep_b and give that frame a readable small head or upper-trunk settling change; its present differences are mainly interior arm pixels."
+    },
+    {
+      "pose": "skill_c",
+      "x": 76,
+      "y": 65,
+      "message": "The recovery debris consists of compact round/diamond green pellets. Replace these right-side particles with short broken diagonal needle segments, preserving the direction established by skill_b and the folded connected branch. Keep detached recovery fragments distinct from the attached emission origin in skill_a and skill_b."
+    }
+  ],
+  "binding": "a1012f3a9c63d63f76c4639d2b5d638777d44c80684b28b8af752e189b457e03",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "93fc0b28ce1fe8c205c8d520fc4eee15c978bb4069cc1da38ef32aef2bb30b63",
+    "preview/suite/light.png": "2ddf65b501be58abdfefce9f0d7d35e22b619b9f0ec4e2afb4cfc23f1ed918df",
+    "preview/suite/dark.png": "7268043dc1a78d873dde51ff8b113f86afcea1753ffa0577a8dc6c87ccf20342",
+    "preview/suite/checker.png": "86d5e7c27b211cff4908c581ba62318ce9aa28edc71ed951e701d64b756a0e54"
+  },
+  "jobId": "e2a1cd16-e636-4898-a272-c1d0654703dc",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:29:12.348312+00:00",
+  "userApproved": false
+}

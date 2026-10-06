@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the four supplied PNGs, including native 1x thumbnails and nearest-neighbor 3x panels. The broad pine crown, right-facing trunk face, connected branch arms and bent root feet read clearly; warm upper-left bark highlights and darker right planes hold up on light, dark and checker backgrounds. No obvious accidental internal transparent holes or detached hands are visible. Standing poses reach the same ground line. Windup, raised stepping pose, downward branch strike, recovery and recoil are distinguishable. The three skill frames show preparation, three needle fans originating at the actual branch tip, and scattered recovery fragments. Poison uses a hunched body and purple bubbles; stun uses hanging arms and stars, so these are readable states rather than recolors. Sleep needs revision: both frames replace the established limbs and layered crown with a nearly identical zigzag trunk and flattened canopy, weakening anatomy, material continuity and sleep recognition. This is a pose preview: playback timing, hop motion, battle contact and literal-grid authorship cannot be established from these PNGs. Recommendation is advisory; user selection remains separate.",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 43,
+      "y": 70,
+      "message": "The shoulder/arm region becomes an uninterrupted zigzag trunk; neither established branch arm is readable. Draw attached branches folded against the trunk with dark overlap seams and retained branch tips, and add a closed-eye cluster near the retained face so the pose reads as sleeping rather than melting."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 82,
+      "message": "The lower body becomes a broad continuous wavy wedge, merging the two root legs. Preserve two bent root feet with a short dark separation and visible leg-to-trunk joins while keeping their contact at y=92; carry the same anatomy into sleep_a."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 35,
+      "message": "The broad, multilobed idle pine crown becomes a narrow diagonal slab, with the hanging right bough disappearing. Redraw compact overlapping pine-bough clusters connected to the trunk, retaining the recognizable crown mass and upper-left light planes in both sleep frames."
+    }
+  ],
+  "binding": "40c0433d2f217c88e7eef98db803a7bc4b64a866d8ff6afcb7ed5383ba44d2a5",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "93fc0b28ce1fe8c205c8d520fc4eee15c978bb4069cc1da38ef32aef2bb30b63",
+    "preview/suite/light.png": "aa2816ceb6facc9edc556543ffd457977fb7051aa9f5b659059074b74449ba1e",
+    "preview/suite/dark.png": "649d72c4a56ddd089fbb9a82712fbdc934251fc45b17c49b91b5cd236f51c587",
+    "preview/suite/checker.png": "04ec611795186c4a2bca1efb43b8e56a1078b4af5b82916d92437026531ba76d"
+  },
+  "jobId": "7d59022d-a92c-41ed-8200-e9063d192665",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:17:16.531194+00:00",
+  "userApproved": false
+}

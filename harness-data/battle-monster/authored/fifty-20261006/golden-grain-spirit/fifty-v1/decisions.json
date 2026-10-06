@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "golden-grain-spirit/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T09:47:21.759871+00:00",
+    "requestId": "d9d79c59-8a6c-5404-8c47-7b5288468ab2",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "golden-grain-spirit/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "ba06da44accd28c3735c397703a7c80d2b08a45e1a2b7e875c7c4073478fd6c3",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T09:47:21.759871+00:00",
+    "requestId": "d9d79c59-8a6c-5404-8c47-7b5288468ab2",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "golden-grain-spirit/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "bc08058ce3435b749c0ba5d5c70d098246b8b7462be99c992ef199a203589e25",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T09:47:21.759871+00:00",
+    "requestId": "d9d79c59-8a6c-5404-8c47-7b5288468ab2",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-06T09:54:04.918949+00:00",
+  "passed": true,
+  "key": "red-pine-guardian/fifty-v1",
+  "binding": "6e0c2ebf70c4f952fc5c0268a420dccbe20173c2fb86ba3235d5aa6f1c3ec6e3",
+  "actualIndependentReviewJob": "3132aec8-0f36-4ccc-9604-e80406f3886e",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "93fc0b28ce1fe8c205c8d520fc4eee15c978bb4069cc1da38ef32aef2bb30b63",
+    "preview/suite/light.png": "ecb8e5953f920916fda9cbbaefbd9e4a503e6ccbb5f6459d3691c6b14a767250",
+    "preview/suite/dark.png": "5170701c504e6ce35d69226260984f2b47543d0925b80e3df2495e5f1e9802b4",
+    "preview/suite/checker.png": "04282babc3ab1fd739eddc098f31ed85a36b5fcf9fb5af969f2bcd7f866f7aa1"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-red-pine-guardian.png",
+  "nativeContactPngSha256": "96d979cab4de46dc5e5109ed06234a727074f3ea80e8a0b1b10c420ecdbd6d37",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "4eb7dbe04356660eb3f433b02c7bd5d57f51ce113ee0d9a98796cfb3e81983f5",
+    "repair_sleep.py": "262c3cf32442f854854c67bd3aca9472c824dccd39009ee0c97cd5b08709f33f",
+    "repair_requested.py": "267589d8cf1a4199837c1aaaef8361f49e0734f52be79bfe5d9cb467e5942689",
+    "repair_root_arms.py": "fb9e74ec1277aa315053ea15528eaf10f8541a8d5be6a1cdff7089152572d3ea"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened final18pose native1x/nearest2x1248x984 unresized after3actualrepairs. Broadlayeredpinecrown/hangingrightbough/warmbrowntrunkface/brancharms/bentroots. Shoulderconnectedstrikingbranch contractedwindup/raisedmove/taperedprongattack/foldrecover, forwardmove rootnowdistinct, tensebackwardhit/horizontalrestingdead. Closedeyebrow/rightfacingface andbothfoldedarms/bentroots insleep with smalluppertrunksettling, actualbroken diagonalneedlesinskillrecovery ratherthanroundpellets. Threegreenneedlefans originatefromforehandtip. Actualkeeper0issues retains uncertainforkshapecontinuity betweenstills. Read all4nativewriters completeapplicationbodies/callnames/moduleflows: explicitselectedy/x/strings andindividualfullrowreplacements, blank96sleepcanvases, no geometricbody/wholeframetransforms. Diagnostics BFS/scales/readback do not modify sourcegrids. All18PNG exactlymatch currentASCII/palette.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

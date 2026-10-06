@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four actual PNGs at native resolution and the nearest-neighbor 3x panels; also viewed the portrait at nearest 3x. The broad pine crown, split brown trunk, right-facing bark face, branch arms and bent root feet remain recognizable at 1x. Warm upper-left trunk highlights, darker right surfaces and layered green foliage give readable wood and needle volume on light, dark and checker backgrounds. No obvious accidental outline breaks, isolated body parts or unintended transparent holes are visible; the openings beneath the crown and between bent arms and trunk read as negative space. Ground-contact roots remain at native y=92, and the dead pose rests on the same baseline. Windup draws the striking branch back across the trunk, move raises that branch and one root, attack lowers a thick connected branch, and recover folds it back. The branch-tip fork changes shape between these poses, so its continuity is less certain than the shoulder connection when judged from stills. Skill preparation has green energy at the branch tip; release fans three needle bundles from the actual extended branch; recovery folds the arm and leaves scattered broken needles. Poison uses a contracted torso and abdominal arm placement with purple bubbles; stun uses hanging arms and yellow orbiting marks; sleep lowers the crown, bends the roots and closes the eyelids. Their pairs contain visible local pose or particle changes rather than simple recoloring. No specific blocking pixel repair was identified. This is a pose-preview review, not battle footage: playback timing, hop flight, impact strength and transitions remain unverified. PNGs alone cannot establish literal pxgrid authorship or whether source poses were synthesized; the flattened preview backgrounds also do not independently certify every source frame's alpha.",
+  "issues": [],
+  "binding": "6e0c2ebf70c4f952fc5c0268a420dccbe20173c2fb86ba3235d5aa6f1c3ec6e3",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "93fc0b28ce1fe8c205c8d520fc4eee15c978bb4069cc1da38ef32aef2bb30b63",
+    "preview/suite/light.png": "ecb8e5953f920916fda9cbbaefbd9e4a503e6ccbb5f6459d3691c6b14a767250",
+    "preview/suite/dark.png": "5170701c504e6ce35d69226260984f2b47543d0925b80e3df2495e5f1e9802b4",
+    "preview/suite/checker.png": "04282babc3ab1fd739eddc098f31ed85a36b5fcf9fb5af969f2bcd7f866f7aa1"
+  },
+  "jobId": "3132aec8-0f36-4ccc-9604-e80406f3886e",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:48:17.123754+00:00",
+  "userApproved": false
+}

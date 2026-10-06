@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "a1012f3a9c63d63f76c4639d2b5d638777d44c80684b28b8af752e189b457e03",
+  "priorReviewJob": "e2a1cd16-e636-4898-a272-c1d0654703dc",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 67,
+      "y": 79,
+      "message": "The screen-right striking branch ends in a broad square lump beside the planted front root. At 1x the arm tip and root compete as one lower-right mass. Taper the branch terminal into connected jagged wooden prongs, carry the upper-left highlight and darker underside through the bend, and make the arm/root separation clearer while preserving the planted foot."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 46,
+      "y": 53,
+      "message": "The crouched trunk has no clearly readable right-facing eye/brow landmark, so the accordion-like body can read as bracing rather than sleeping. Restore a small closed-eye and brow cluster on this upper trunk segment, retaining the bent roots and connected arms. Carry the same facial landmark into sleep_b and give that frame a readable small head or upper-trunk settling change; its present differences are mainly interior arm pixels."
+    },
+    {
+      "pose": "skill_c",
+      "x": 76,
+      "y": 65,
+      "message": "The recovery debris consists of compact round/diamond green pellets. Replace these right-side particles with short broken diagonal needle segments, preserving the direction established by skill_b and the folded connected branch. Keep detached recovery fragments distinct from the attached emission origin in skill_a and skill_b."
+    }
+  ],
+  "startedAt": "2026-10-06T09:29:12.365869+00:00"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "695c30ce-ff05-4e7f-aa3d-df85d1af144b",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T09:29:12.367431+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/red-pine-guardian/fifty-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/red-pine-guardian/fifty-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/red-pine-guardian/fifty-v1/references/human-size.png",
+    "-"
+  ],
+  "promptSha256": "fb402432b87df3d93a55ae11bfc092769427710dd8e539d57ccacf6d403eda22",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "reference.png": "86d5e7c27b211cff4908c581ba62318ce9aa28edc71ed951e701d64b756a0e54",
+    "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T09:35:58.888257+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-06T03:35:29.545307+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "afe22deb-104e-4672-bd03-4ad99731188e",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T09:21:57.179665+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "21401138c000efa0198321034ae7bc9264a32e096d174799424ea1ad27130f7a",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T09:44:18.029441+00:00"
+    },
+    {
+      "id": "4579383c-f169-4cc1-9e42-fce5d9f31213",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T09:44:21.784484+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/jobs/4579383c-f169-4cc1-9e42-fce5d9f31213",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-grain-spirit/fifty-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "5f71315c181db98089ee9b19dc555c567cacc65dc2b077d2df997c32795e7bfb",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "a3fae0dbdbff7a3aff2001231283397d095d679508e69f1967ede51f42ef719e",
+        "preview/suite/light.png": "94f522d73782657e21596100d5f0988262b3fc546eb3da291812fb898380c270",
+        "preview/suite/dark.png": "bc6c85479e6920976ff96a8afe5d86610d4c1902169dd5e71432061d0f03a021",
+        "preview/suite/checker.png": "e498a77812dc20a5e734717af777e7281f2716b44200831ea00e8e8497f3665a"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T09:46:34.905548+00:00"
+    }
+  ]
+}

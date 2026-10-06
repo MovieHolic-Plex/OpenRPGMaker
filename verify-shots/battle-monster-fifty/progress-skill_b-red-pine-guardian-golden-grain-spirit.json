@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "red-pine-guardian",
+    "source": "qa-runs/harnesses/battle-monster/red-pine-guardian/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "f5d6ea89370c23546f2146e9e0fbd87bff234ec944a7a8552b4b52a0510d3892",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T09:52:27.174161+00:00",
+    "binding": "6e0c2ebf70c4f952fc5c0268a420dccbe20173c2fb86ba3235d5aa6f1c3ec6e3",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "golden-grain-spirit",
+    "source": "qa-runs/harnesses/battle-monster/golden-grain-spirit/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "8e3b55ff34885f24f51f70569d18f04b1dfec23ecea2bb24bee2a50c4f302714",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T09:52:27.174161+00:00",
+    "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+    "entireGoalCompleteClaim": false
+  }
+]

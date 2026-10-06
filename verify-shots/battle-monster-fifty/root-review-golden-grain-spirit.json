@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T09:54:04.920591+00:00",
+  "passed": true,
+  "key": "golden-grain-spirit/fifty-v1",
+  "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+  "actualIndependentReviewJob": "4579383c-f169-4cc1-9e42-fce5d9f31213",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "a3fae0dbdbff7a3aff2001231283397d095d679508e69f1967ede51f42ef719e",
+    "preview/suite/light.png": "94f522d73782657e21596100d5f0988262b3fc546eb3da291812fb898380c270",
+    "preview/suite/dark.png": "bc6c85479e6920976ff96a8afe5d86610d4c1902169dd5e71432061d0f03a021",
+    "preview/suite/checker.png": "e498a77812dc20a5e734717af777e7281f2716b44200831ea00e8e8497f3665a"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-golden-grain-spirit.png",
+  "nativeContactPngSha256": "9bdfb9f32442c0075684aa4b8aa2cd377b8c343bc47cb8fa73f37a604bf5ec7d",
+  "nativeWriterFilesRead": {
+    "author.py": "5ed3e92e50afa6a3451b36adf98bd260020822e2d61e889b8bfd165d3c34b0b3"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened final18pose native1x/nearest2x1248x984 unresized. Oversizedgoldhat/shoulderstrawtufts/brownbody/rightsmallquieteye/redwaistcord andattachedgrip/grainstalk. Gatherbackwindup/advancingwidelegmove/extendedstalkstrike/retract, distinctbackleanhit/lowdead vsfoldedclosedeye kneelingsleep. Brightgraintip/threegoldheads withtrailsrootedinraisedstalk/returnedseparatedgrains. Poisonhunch purplemotes/slacktoolstun stars/closedeyesleep withsubtlepairchanges. Actualinitialkeeper0issues retains bundledwoodappearance ofstrawbody andsubtlepairedmotions. Read author.py full3moduleloops/allcallnames: independentlyheaded native.rows blank96canvases plusexplicitcorrections.rows y/x/string spans, validationandfullgridwritingonly. No geometricbody/automaticwholeframe transformations. Render/inspect calls encode/readPNG/GIF/diagnosticboards only. All18PNG exactlymatch canonicalASCII/palette.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}
