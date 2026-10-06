@@ -79,6 +79,8 @@ for(const entry of cases){
       if(!proof.status.turnBusy&&proof.events.some(e=>['stream_closed','error'].includes(e.type)))break;
       if(Date.now()>deadline){await page.evaluate(()=>window.__oprnAiBridge.abort());throw Error('Actual assistant deadline');}
     }
+    // 「더 다듬을 곳 (N)」 접은 칸의 실제 지적 — 사용자가 보는 남은 문제를 증거로 남긴다(접혀 있어도 textContent 로).
+    proof.refine=await page.evaluate(()=>[...document.querySelectorAll('[data-testid="ai-refine-summary"]')].map(s=>s.closest('details')?.textContent??'').join('\n---\n')||null);
     await saveUi(page);const applied=stored(projectDir);save(resolve(dir,'after.json'),applied.project);
     proof.newMaps=Object.keys(applied.project.maps).filter(id=>!before.project.maps[id]);
     proof.atlases=applied.project.worldAtlases??[];
