@@ -140,6 +140,21 @@ function canonicalizeBattleCommand(command: RecordValue): string | undefined {
       fixes.push(`battleProcessing.${alias} 를 troopId:${JSON.stringify(command.troopId)} 로 옮겼습니다(전투 명령은 부대 ID 를 troopId 로 받는다).`);
     }
   }
+  // 전투 설정을 같은 이름 칸 안에 한 번 더 감싼 사례(2026-10-06 몬스터 r2: `{kind:"battleProcessing",…,battleProcessing:{troopId,canLose}}`)
+  // — 런타임은 무시하고 검사는 모르는 필드로만 남긴다. 바깥에 없는 값만 옮기고 지운다.
+  if (isRecordValue(command.battleProcessing)) {
+    const nested = command.battleProcessing;
+    const moved = Object.keys(nested).filter(key => key !== "kind" && command[key] === undefined);
+    for (const key of moved) command[key] = nested[key];
+    delete command.battleProcessing;
+    fixes.push(`battleProcessing 안의 battleProcessing 객체를 풀었습니다${moved.length ? `(${moved.join(", ")} 옮김)` : ""}.`);
+  }
+  // 결과 분기를 써 놓고 branchOnResult 를 빠뜨린 사례(같은 r2: 첫 관장의 승리 분기에 배지·엔딩) — 런타임은 branchOnResult 가
+  // 참일 때만 분기를 돌려 배지도 엔딩도 나오지 않았다. 분기에 명령이 있으면 분기하려는 뜻이다.
+  if (command.branchOnResult === undefined && (["victoryBranch", "defeatBranch", "escapeBranch"] as const).some(key => Array.isArray(command[key]) && (command[key] as unknown[]).length > 0)) {
+    command.branchOnResult = true;
+    fixes.push("battleProcessing 에 결과 분기가 있어 branchOnResult:true 를 채웠습니다.");
+  }
   const filled = (Object.keys(BATTLE_FLAG_DEFAULTS) as (keyof typeof BATTLE_FLAG_DEFAULTS)[]).filter(key => command[key] === undefined);
   for (const key of filled) command[key] = BATTLE_FLAG_DEFAULTS[key];
   if (filled.length > 0) fixes.push(`battleProcessing 에 빠진 ${filled.map(key => `${key}:${BATTLE_FLAG_DEFAULTS[key]}`).join(", ")} 기본값을 채웠습니다.`);

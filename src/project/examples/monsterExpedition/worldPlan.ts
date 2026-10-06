@@ -5,7 +5,7 @@ export const EXPEDITION_TOWNS = [
   { key: "harbor", name: "물결 항구", template: "coast/port", x: 4, y: 6, flavor: "파도를 읽는 선원들이 별빛섬의 소식을 옮긴다.", music: "coast" },
   { key: "ember", name: "잿빛 온천", template: "climate/ash_town", x: 6, y: 5, flavor: "땅속의 열을 빌리되 산의 잠을 깨우지는 않는다.", music: "town" },
   { key: "prism", name: "프리즘 시티", template: "coast/city", x: 7, y: 3, flavor: "아홉 색 창문 아래에서 서로 다른 생각들이 만난다.", music: "town" },
-  { key: "dune", name: "모래종 마을", template: "overworld/map", x: 5, y: 2, flavor: "모래바람이 불면 오래된 종이 여행자의 길을 알려 준다.", music: "route" },
+  { key: "dune", name: "모래종 마을", template: "climate/desert", x: 5, y: 2, flavor: "모래바람이 불면 오래된 종이 여행자의 길을 알려 준다.", music: "route" },
   { key: "frost", name: "서리꽃 마을", template: "climate/snow_town", x: 3, y: 1, flavor: "춥고 긴 밤에도 창가의 불빛은 이웃을 기다린다.", music: "snow" },
   { key: "moon", name: "달그림자 마을", template: "overworld/map", x: 1, y: 2, flavor: "돌아오지 않는 이를 기억하며 등불을 물가에 띄운다.", music: "cave" },
   { key: "summit", name: "용마루 시티", template: "coast/city", x: 4, y: 3, flavor: "여덟 빛의 약속을 모은 여행자가 마지막 산길에 오른다.", music: "league" },

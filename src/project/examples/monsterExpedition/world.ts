@@ -9,6 +9,9 @@ import { EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from 
 import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as routes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
+import { composeTown, TOWN_SKETCHES } from "./townLayouts";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { repairExpeditionResidents } from './residents';
@@ -49,6 +52,15 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
   const sources = new Map<string, Template>();
   const entries = new Map<string, Point>();
   const reserved = new Map<string, Set<string>>();
+  const doorSpots = new Map<string, Point>();
+  const exitHints = new Map<string, Point>();
+  function drawnExit(map: GameMap, t: Template): Point | undefined {
+    const exits = new Set(Object.entries(t.names).filter(([n]) => /_exit$|_mat(_|$)/.test(n) && !/edge_mat/.test(n)).map(([, v]) => v));
+    for (let y = map.height - 1; y >= map.height - 3; y--) for (let x = 0; x < map.width; x++) {
+      if (exits.has(map.lowerTiles[y * map.width + x]!)) return { x, y };
+    }
+    return undefined;
+  }
   const speciesById = new Map((project.database.monsterSpecies ?? []).map(s => [s.id, s]));
   const coord = (p: Point) => `${p.x},${p.y}`;
   const reserve = (map: GameMap, p: Point) => reserved.get(map.id)!.add(coord(p));
@@ -74,16 +86,34 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       map.width += insert; map.lowerTiles = lower; map.upperTiles = upper;
       stamp(map, t.buildings.find(b => b.name === "mart")!, 3, 4);
     }
-    if (["grove", "dune", "moon"].includes(key)) {
-      const alternatives = key === "grove" ? ["house_b", "house_e"] : key === "dune" ? ["house_d", "house_f"] : ["house_g", "house_c"];
-      stamp(map, t.buildings.find(b => b.name === alternatives[0])!, 4, 3);
-      stamp(map, t.buildings.find(b => b.name === alternatives[1])!, 14, 3);
+    // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
+    if (role === "town" && TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
+    // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
+    // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
+    // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
+    if (source === "overworld/cave") {
+      // 쓰지 않는 아래층 구멍도 길처럼 읽히므로 함께 바닥으로.
+      const sand = new Set([...Object.entries(t.names).filter(([n]) => n.startsWith("cave_sand")).map(([, v]) => v), t.names.hole_down!]);
+      const floor = ["cave_floor0", "cave_floor1", "cave_floor2", "cave_floor3"].map(n => t.names[n]!);
+      map.lowerTiles.forEach((tile, i) => { if (sand.has(tile)) map.lowerTiles[i] = floor[(i * 7 + (i >> 3)) % floor.length]!; });
+      const ladder = map.lowerTiles.indexOf(t.names.ladder_up!);
+      if (ladder >= 0) doorSpots.set(map.id, { x: ladder % map.width, y: Math.floor(ladder / map.width) });
+    }
+    if (source === "overworld/route") {
+      const clearing = autotileGroupsForTileset(project.tilesets[map.tilesetId]).find(g => g.id === "clearing")!;
+      const sand = new Set(Object.entries(t.names).filter(([n]) => n.startsWith("sand_at")).map(([, v]) => v));
+      const changed: Point[] = [];
+      map.lowerTiles.forEach((tile, i) => { if (sand.has(tile)) { map.lowerTiles[i] = clearing.variantMap["255"]!; changed.push({ x: i % map.width, y: Math.floor(i / map.width) }); } });
+      shapeAllAutotileGroupsAround(map, [clearing], changed);
     }
     project.maps[map.id] = map;
     sources.set(map.id, t);
     reserved.set(map.id, new Set());
     const gymStart = source.startsWith("gyms/") ? { x: ["grass", "ice", "dojo", "ghost"].some(k => source.endsWith(k)) ? 8 : 9, y: source.endsWith("grass") || source.endsWith("ice") ? 19 : source.endsWith("dojo") ? 18 : 17 } : undefined;
-    const p = gymStart ?? nearest(map, { x: map.width >> 1, y: map.height - 2 });
+    // 템플릿이 그려 둔 출구(「…_exit」·문 앞 매트)에 드나든다 — 가운데로 셈하면 유적·탑에서 그린 출구 옆 칸에 문이 섰다(2026-10-06).
+    const drawn = drawnExit(map, t);
+    if (drawn) exitHints.set(map.id, drawn);
+    const p = gymStart ?? anchor(map, drawn ?? { x: map.width >> 1, y: map.height - 2 });
     entries.set(map.id, p);
     reserve(map, p);
     manifest.maps.push({ id: map.id, name, template: source, entry: p, role });
@@ -100,6 +130,16 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
         if (tile >= 0 || layer === "upper") (layer === "lower" ? map.lowerTiles : map.upperTiles)[cell] = tile;
       }
     }
+  }
+
+  // 드나드는 칸은 가까운 길 위로 — 맵 가운데 아래를 그대로 쓰면 1번길 남쪽 문이 길 옆 풀숲 속에 섰다(2026-10-06 실플레이).
+  function anchor(map: GameMap, wanted: Point, component?: Point[]): Point {
+    const walkway = new Set(autotileGroupsForTileset(project.tilesets[map.tilesetId])
+      .filter(g => ["clearing", "path", "snowpath", "ashpath"].includes(g.id)).flatMap(g => g.memberTileIds));
+    const near = (component ?? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) })))
+      .filter(p => walkway.has(map.lowerTiles[p.y * map.width + p.x]!) && Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) <= 4
+        && !reserved.get(map.id)?.has(coord(p)) && !map.events.some(e => e.x === p.x && e.y === p.y));
+    return near.length ? nearest(map, wanted, near, true) : nearest(map, wanted, component, component !== undefined);
   }
 
   function connected(map: GameMap, start = entries.get(map.id) ?? mid(map)): Point[] {
@@ -153,19 +193,62 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: landing, ...(required ? { required } : {}) });
   }
 
+  // 입구에서 걸어 닿는 칸 — 막는 사람·표지판 칸은 지나지 못하고, 이동 칸(문)은 닿기만 하고 넘어가지 않는다.
+  function walkable(map: GameMap, extraBlock?: Point): Set<string> {
+    const solid = new Set(map.events.filter(e => e.pages?.[0]?.overlapForbidden).map(e => coord(e)));
+    if (extraBlock) solid.add(coord(extraBlock));
+    const doors = new Set(map.events.filter(e => e.id.includes("_to_")).map(e => coord(e)));
+    const start = entries.get(map.id)!;
+    const queue = [start], seen = new Set([coord(start)]);
+    for (let n = 0; n < queue.length; n++) {
+      const p = queue[n]!;
+      if (n > 0 && doors.has(coord(p))) continue;
+      for (const [dx, dy] of directions) {
+        const q = { x: p.x + dx, y: p.y + dy };
+        if (!seen.has(coord(q)) && !solid.has(coord(q)) && canMove(project, map, p.x, p.y, q.x, q.y)) { seen.add(coord(q)); queue.push(q); }
+      }
+    }
+    return seen;
+  }
+
+  // 트레이너가 설 자리 — 풀숲(조우)·계단·턱·출구 판 위나 문 곁, 길목에는 세우지 않는다. 시각 QA(2026-10-06)에서
+  // 트레이너가 풀숲 한가운데·산길 돌계단·유적 출구 판 위에 서 있었다. 그런 칸이 없으면 예전처럼 가장 가까운 칸.
+  function standSpot(map: GameMap, wanted: Point): Point {
+    const meta = project.tilesets[map.tilesetId]?.tileMeta ?? [];
+    const busy = (tile: number | undefined) => tile !== undefined && tile >= 0 && /키 큰 풀|계단|stairs|턱|출구|매트|mat\(/i.test(meta[tile]?.label ?? "");
+    const doors = map.events.filter(e => e.id.includes("_to_"));
+    const before = walkable(map).size;
+    const fits = (p: Point) => !busy(map.lowerTiles[p.y * map.width + p.x]) && !busy(map.upperTiles[p.y * map.width + p.x])
+      && doors.every(d => Math.max(Math.abs(d.x - p.x), Math.abs(d.y - p.y)) > 2)
+      && !reserved.get(map.id)!.has(coord(p)) && !map.events.some(e => e.x === p.x && e.y === p.y);
+    const candidates = connected(map).filter(fits)
+      .sort((a, b) => Math.abs(a.x - wanted.x) + Math.abs(a.y - wanted.y) - Math.abs(b.x - wanted.x) - Math.abs(b.y - wanted.y));
+    return candidates.find(p => walkable(map, p).size === before - 1) ?? nearest(map, wanted, connected(map), true);
+  }
+
   function connect(a: GameMap, b: GameMap, required?: string): void {
-    const ca = connected(a), cb = connected(b);
+    // 이미 선 표지판·사람 뒤로 문을 두지 않는다 — 새순·달그림자 마을에서 둘째 북쪽 문이 첫 표지판에 막혔다(2026-10-06).
+    const reachA = walkable(a);
+    const ca = connected(a).filter(p => reachA.has(coord(p))), cb = connected(b);
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
-    const atA = harborExit ?? nearest(a, { x: a.width >> 1, y: 2 }, ca, true);
-    const atB = nearest(b, { x: b.width >> 1, y: b.height - 2 }, cb, true);
+    const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
+    const drawnDoor = doorSpots.get(b.id);
+    const atB = drawnDoor ?? anchor(b, exitHints.get(b.id) ?? { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);
     const landA = harborExit ? { x: harborExit.x, y: harborExit.y + (b.id === id("river") ? 1 : -1) } : nearest(a, { x: atA.x, y: atA.y + 1 }, ca, true);
     reserve(a, landA);
-    const landB = nearest(b, { x: atB.x, y: atB.y - 1 }, cb, true);
+    const landB = nearest(b, { x: atB.x, y: atB.y + (drawnDoor ? 1 : -1) }, cb, true);
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
     // Visible, inspectable signposts explain interior route entrances.
-    npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, { x: atA.x + 1, y: atA.y + 1 }, [], 4);
+    // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
+    const before = walkable(a).size;
+    const wide = connected(a).filter(p => directions.every(([dx, dy]) => canMove(project, a, p.x, p.y, p.x + dx, p.y + dy)))
+      .filter(p => !reserved.get(a.id)!.has(coord(p)) && !a.events.some(e => e.x === p.x && e.y === p.y));
+    const wanted = { x: atA.x + 1, y: atA.y + 1 };
+    wide.sort((p, q) => Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) - Math.abs(q.x - wanted.x) - Math.abs(q.y - wanted.y));
+    const spot = wide.find(p => walkable(a, p).size === before - 1) ?? wanted;
+    npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, spot, [], 4);
   }
 
   function doorways(map: GameMap): { x: number; y: number; name: string }[] {
@@ -234,19 +317,26 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     return parents.length ? Math.max(...parents.map(p => Math.max(minimumLevel(p.species), p.level))) : 1;
   }
 
+  // 스타터 계통은 초반 풀숲·트레이너에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
+  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
+
   function pickSpecies(habitat: string, level: number, type?: string, count = 3): string[] {
-    let pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat));
+    // 초반 트레이너·관장도 스타터 계통을 내보내지 않는다(1번길 트레이너가 새싹토로 거울전을 걸었다, 2026-10-06 실플레이).
+    const early = (s: (typeof EXPEDITION_SPECIES)[number]) => level >= 20 || !starterFamilies.has(s.family);
+    let pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat) && early(s));
+    // 그 타입이 스타터 계통뿐이면(1관 풀 타입 Lv9) 스타터 계통을 쓴다 — 이르게 진화한 2단계(콩등충)는 Lv14 스타터도 못 이겼다(2026-10-06 실플레이).
+    if (!pool.length) pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)) && (!habitat || s.habitat === habitat));
     if (!pool.length) pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)));
     if (!pool.length) throw Error(`No roster habitat/type ${habitat}/${type}`);
     const representatives = [...pool].sort((a, b) => b.stage - a.stage).filter((s, i, all) => all.findIndex(other => other.family === s.family) === i);
-    return Array.from({ length: count }, (_, i) => representatives[i % representatives.length]!.id);
+    // 계통이 모자라면 같은 계통의 앞 단계로 채운다 — 7관과 사천왕이 같은 장막인형만 셋·넷 내보냈다(2026-10-06 시각 QA).
+    const roster = [...representatives, ...[...pool].sort((a, b) => b.stage - a.stage).filter(s => !representatives.includes(s))];
+    return Array.from({ length: count }, (_, i) => roster[i % roster.length]!.id);
   }
 
-  // 스타터 계통은 초반 풀숲에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
-  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
 
-  function wild(map: GameMap, habitat: string, level: number): void {
+  function wild(map: GameMap, habitat: string, level: number): string[] {
     const fits = (s: (typeof EXPEDITION_SPECIES)[number]) => s.stage > 0 && minimumLevel(s.id) <= level - 2 && (level >= 20 || !starterFamilies.has(s.family));
     let pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && fits(s)).map(s => s.id);
     // 스타터를 빼고 한 종만 남으면 이웃 서식지의 첫 단계 종을 빌려 온다(풀숲에 벌레가 섞이듯).
@@ -259,6 +349,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const wildLevel = (i: number) => level <= 6 ? Math.max(2, level - (i === 0 ? 1 : 2)) : Math.max(3, level - i % 3);
     map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], wildLevel(i), false),
       weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
+    return pool;
   }
 
   function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track: string = audio.trainerBattle): GameEvent {
@@ -307,7 +398,10 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const doors = doorways(map);
     const centerDoor = doors.find(d => /center|centre/.test(d.name));
     const martDoor = doors.find(d => /mart|shop/.test(d.name));
-    const residential = doors.filter(d => d !== centerDoor && d !== martDoor);
+    const others = doors.filter(d => d !== centerDoor && d !== martDoor);
+    // 체육관 건물 킷이 있으면 그 문이 체육관이다 — 없으면(옛 판) 두 번째 집.
+    const gymDoor = others.find(d => /^gym_/.test(d.name)) ?? others[1];
+    const residential = [others.find(d => d !== gymDoor), gymDoor].filter((d): d is NonNullable<typeof d> => d !== undefined);
     if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Current references lack four public building entrances in ${map.id}: ${JSON.stringify(doors)}`);
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
     attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)!, residential[1]!);
@@ -326,12 +420,15 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
 
   for (const r of routes) {
     const map = make(r.key, r.name, r.template, r.music, "field");
-    wild(map, r.habitat, r.level);
+    const wildPool = wild(map, r.habitat, r.level);
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
-      const at = nearest(map, { x: 3 + i * 7, y: 6 + i * 8 }, connected(map), true);
-      battle(map, `trainer_${i}`, ["산책하는 소년", "연구원", "길을 걷는 조련사"][i]!, at, pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1), r.level + i,
+      const at = standSpot(map, { x: 3 + i * 7, y: 6 + i * 8 });
+      // 첫 길의 트레이너는 그 길 풀숲의 종을 한두 레벨 아래로 — 스타터 한 마리로 넘을 수 있어야 한다(Lv4~6 바람삐가 풀 스타터를 이겼다).
+      const first = r.level <= 6;
+      const team = first ? Array.from({ length: i === 2 ? 2 : 1 }, (_, k) => wildPool[(i + k) % wildPool.length]!) : pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1);
+      battle(map, `trainer_${i}`, ["산책하는 소년", "연구원", "길을 걷는 조련사"][i]!, at, team, first ? Math.max(2, r.level - 1 + (i >> 1)) : r.level + i,
         `${map.id}_trainer_${i}_won`, ["우리 동료들이 자라는 모습을 봐 줘!", "타입 상성만큼 기술 횟수도 중요하지.", "먼 길을 걸었으니 서로 실력을 확인하자."][i]!, [gain("item_potion", 1), text("여행에 쓰라고 회복약 하나를 건네받았다.")]);
     }
     npc(map, "trail_sign", "지역 안내", `${r.name}. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.`, { x: 3, y: map.height - 4 }, [], 4);

@@ -31,7 +31,7 @@ import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { useItemFromMenu } from "@/player/playerItemUse";
-import { restoreSessionCheckpoint } from "@/player/checkpoints";
+import { getSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
 import type { AutonomousMover } from "@/player/playSceneTypes";
@@ -650,6 +650,10 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
 
 export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof, runnerOptions: SceneRunnerOptions = {}): SceneTestResult {
   const session = runnerOptions.initialSession ? structuredClone(runnerOptions.initialSession) : startSession(project, 1);
+  // 체크포인트(회복 센터의 checkpointSave)는 세션 객체에 붙어 있어 복제하면 사라진다 — 실제 PlayScene 처럼 옮겨 둔다.
+  // 빠뜨리면 쓰러질 때마다 마지막 센터가 아니라 시작 맵에서 깨어났다(2026-10-06 몬스터 원정 8번길).
+  const carried = runnerOptions.initialSession ? getSessionCheckpoint(runnerOptions.initialSession) : undefined;
+  if (carried) setSessionCheckpoint(session, carried);
   const inputProblem = sceneTestInputProblem(input);
   if (inputProblem) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
@@ -2576,6 +2580,8 @@ function runHeadlessBattle(
     }
   }
   const final = headlessBattleSnapshot(runtime);
+  // 수를 두지 못해 끝나지 않은 전투도 패배로 친다 — 그 사실은 로그에 남긴다(진 이유를 「레벨 부족」으로 오판하지 않게).
+  if (!final.result) state.log.push(`battle ${step.troopId}: stalled in ${final.phase} (${final.actors.map((actor) => `${actor.name} ${actor.hp}hp`).join(", ")} vs ${final.enemies.filter((enemy) => !enemy.defeated).map((enemy) => `${enemy.name} ${enemy.hp}hp`).join(", ")})`);
   const result = final.result ?? "defeat";
   const terminalDefeat = result === "defeat" && (!step.canLose || !!final.eventState.gameOverRequest);
   applyBattleRewardsToSession(state.session, {
@@ -2658,8 +2664,15 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     ? project.database.items.filter((item) => item.captureProfile && (snapshot.eventState.inventory[item.id] ?? 0) > 0).sort((a, b) => a.price - b.price)[0]
     : undefined;
   const throwBall: ActorCommand[] = ball && target ? [{ kind: "capture", captureItemId: ball.id, targetEnemyId: target.id }] : [];
+  // 이길 수 없는 야생에게서는 도망친다(플레이어가 하듯) — 8번길의 벌레/에스퍼 야생이 풀/에스퍼 Lv52 리더를
+  // 매번 한 방에 눕혀 수련하러 가는 길에서 세 번 쓰러졌다(2026-10-06). 다음 한 방에 쓰러지고 먼저 눕히지 못할 때만.
+  const threat = active && target ? Math.max(0, ...(target.skillIds ?? [])
+    .map((skillId) => skills.get(skillId))
+    .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
+    .map((skill) => predictSkillDamageFor(project, target, skill, active).amount)) : 0;
+  const run: ActorCommand[] = tactics?.catchable && active && target && threat >= active.hp && bestDamage(active) < target.hp ? [{ kind: "escape" }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
-    ? [...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    ? [...run, ...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);

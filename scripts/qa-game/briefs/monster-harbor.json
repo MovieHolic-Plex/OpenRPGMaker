@@ -1,0 +1,42 @@
+{
+  "title": "등대섬 몬스터 탐험기",
+  "presetId": "monster-collect",
+  "screenSize": "standard",
+  "brief": {
+    "version": 1,
+    "presetId": "monster-collect",
+    "summary": "분위기: 바다 냄새 나는 느긋한 모험\n중심 재미: 바다·해안 몬스터 도감 채우기\n진행 구조: 마을 → 도전장 → 다음 마을\n성장의 의미: 강한 상대에게 도전\n첫 제작 범위: 첫 도전장을 완료하는 구간\n추가 요청: 바닷가 항구 마을 「갈매기 항구」에서 해양학자 「파도박사」가 첫 파트너(불·물·풀 중 하나)를 건넨다. 「해안 1번길」의 풀숲에서 몬스터를 포획하고 트레이너와 겨룬다. 첫 체육관 「등대 체육관」의 관장 「마린」을 이기면 「등대 배지」를 받는다. 섬 이름은 「등대섬」.",
+    "answers": {
+      "experience": {
+        "question": "어떤 분위기의 수집 여정을 원하나요?",
+        "label": "분위기",
+        "text": "바다 냄새 나는 느긋한 모험",
+        "source": "user"
+      },
+      "activity": {
+        "question": "수집 게임에서 가장 중요한 재미는 무엇인가요?",
+        "label": "핵심 행동",
+        "text": "바다·해안 몬스터 도감 채우기",
+        "source": "user"
+      },
+      "progression": {
+        "question": "게임은 어떤 흐름으로 이어지면 좋을까요?",
+        "label": "진행 구조",
+        "text": "마을 → 도전장 → 다음 마을",
+        "source": "user"
+      },
+      "detail": {
+        "question": "다음 지역으로 나아갈 동력은 무엇인가요?",
+        "label": "성장의 의미",
+        "text": "강한 상대에게 도전",
+        "source": "user"
+      },
+      "scope": {
+        "question": "첫 초안은 어느 순간까지 만들까요?",
+        "label": "첫 제작 범위",
+        "text": "첫 도전장을 완료하는 구간",
+        "source": "user"
+      }
+    }
+  }
+}
