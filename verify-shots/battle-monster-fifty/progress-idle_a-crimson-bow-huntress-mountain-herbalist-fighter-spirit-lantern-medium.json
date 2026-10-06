@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "crimson-bow-huntress",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "bfc8bc14f6a5a2ea7ef0c9a2cb56855257ee617329f2900b08cab62a6c1c60c1",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T10:49:43.812937+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "mountain-herbalist-fighter",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "f97218ca00ee24f948bb6b20b376eb760141ce6899be5739a6514eaf6b129f5c",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 14,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T10:49:43.812937+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "spirit-lantern-medium",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/spirit-lantern-medium/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "510240d49683e8e6502579ebd16f6c55a11413d34598e2ec1a83097f0c378ef8",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T10:49:43.812937+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
