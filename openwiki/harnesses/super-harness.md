@@ -953,3 +953,15 @@ legacy layout 없는 관찰만 이전 seed 경로를 사용하며 시각 미리�
 전체 보존/동선/정체성 의무는 `art-demo → art-context-review`에 유지한다.
 기존 FAIL을 수정하거나 그림 결함을 면제하지 않는다. 원본이 정상인 경우 재도색 없이
 현재 승인 입력에 묶은 새 검수로 복구한다.
+
+### 부분 교체 후 보존할 원본 (2026-10-06)
+
+동일 품목의 최신 후보가 양옆 선반만 교체할 때 이전 북쪽 선반까지 사라지던 경로를 분리했다.
+`layout.preservedSources`의 path/sha256/requirement/reason과 `layout.sources`를 새 도면 승인에 묶는다.
+`art_demo.preserved_sources`는 동일 테마의 보존된 batch 영수증 candidateImages 및 themeCoverage를 확인한다.
+조립 입력은 이 원본만 추가 허용하며, 매 상태 recipe에서 비어 있지 않은 crop으로 실제 사용해야 한다.
+기존 FAIL 판정은 보존하고 독립 공간 검수에서 배치·보존 구간을 다시 판정한다. 임의의 옛 그림 사용 허가는 아니다.
+
+준비 단계의 native rounds.brief는 `brief.md` 본문이 아닌 폴더 경로다. `set_brief`와 실행 전 검사에서 경로를 검증한다.
+설명문 오입력으로 검수 pack 경로가 파일명 상한을 넘던 장애는 그림을 다시 그리는 사유가 아니다.
+원문이 승인된 brief.md와 동일한지 확인하고 경로만 복구한 뒤 native 기술 재검사·독립 검수를 재개한다.

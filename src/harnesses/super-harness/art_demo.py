@@ -61,6 +61,41 @@ def component_requirements(data, cid, manifest, layout, result):
     return [gid for gid in groups if gid not in retired], retired
 
 
+def preserved_sources(data, cid, layout, result):
+    """Carry only explicitly approved, receipt-backed parts of a superseded sheet."""
+    preserved = layout.get('layout', {}).get('preservedSources', [])
+    if not preserved: return []
+    import art_layout
+    folder = Path(data) / 'concepts' / cid
+    root = Path(data) / 'art-worktrees' / cid
+    art_layout.require_completed(root, choices.read(folder / 'art-execution.json'), layout)
+    bound = {(r['path'], r['sha256']) for r in layout['layout']['sources']}
+    evidence = set()
+    for path in (folder / 'art-batches').glob('*.json'):
+        previous = choices.read(path)['result']
+        if any((previous.get('theme') or {}).get(k) != (result.get('theme') or {}).get(k)
+               for k in ('policyHash', 'briefSha256')): continue
+        native_refs = set()
+        for batch in previous.get('candidates', []):
+            try:
+                receipt = choices.read(choices.verified(root, batch['receipt']))
+                native_refs.update((r['path'], r['sha256']) for r in receipt.get('candidateImages', []))
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+        for requirement, refs in previous.get('themeCoverage', {}).items():
+            for ref in refs:
+                key = (ref['path'], ref['sha256'])
+                if key in native_refs: evidence.add((requirement, *key))
+    for ref in preserved:
+        key = (ref['path'], ref['sha256'])
+        if (key not in bound or (ref.get('requirement'), *key) not in evidence
+                or not ref['path'].lower().endswith('.png')
+                or len(str(ref.get('reason', '')).strip()) < 12):
+            raise ValueError('보존 부품의 승인 도면·동일 테마 원본 영수증·보존 사유가 필요합니다.')
+        choices.verified(root, ref)
+    return preserved
+
+
 def prepare(data, cid):
     folder = Path(data) / 'concepts' / cid
     root = Path(data) / 'art-worktrees' / cid
@@ -79,6 +114,8 @@ def prepare(data, cid):
     inputs['layout'] = choices.read(layout) if layout.exists() else {}
     inputs['requiredGroups'], inputs['retiredComponents'] = component_requirements(
         data, cid, manifest, inputs['layout'], choices.read(folder / 'art-result.json'))
+    inputs['preservedSources'] = preserved_sources(data, cid, inputs['layout'], choices.read(folder / 'art-result.json'))
+    if theme_sources is not None: theme_sources.update(r['sha256'] for r in inputs['preservedSources'])
     inputs['themeAllowedSources']=sorted(theme_sources) if theme_sources is not None else None
     inputs['planningPath'] = str(folder / 'planning.json')
     inputs['outputDirectory'] = 'art-output/space-demos/' + generation[:16]
@@ -140,6 +177,10 @@ def accept(data, cid, result):
     if (inputs.get('requiredGroups', list(originals)) != required_groups
             or inputs.get('retiredComponents', {}) != retired):
         raise ValueError('부품 교체의 승인 입력이 변경되었습니다.')
+    preserved = preserved_sources(data, cid, inputs.get('layout', {}), choices.read(folder / 'art-result.json'))
+    if inputs.get('preservedSources', []) != preserved:
+        raise ValueError('보존 부품의 승인 입력이 변경되었습니다.')
+    if theme_sources is not None: theme_sources.update(r['sha256'] for r in preserved)
     candidates = []
     for number, demo in enumerate(demos, 1):
         if not isinstance(demo, dict): raise ValueError('데모 객체 필요')
@@ -150,7 +191,8 @@ def accept(data, cid, result):
         import re
         required_images = [{c['sheet']['sha256']} | {r['sha256'] for r in c.get('nativeSheets', [])} | {r['sha256'] for r in c['sources']
             if re.search(r'/h[0-9]+-[A-Z]\.png$', r['path'])} for c in selected]
-        refs = [r for c in selected for r in c['sources'] + [c['sheet']]]
+        required_images.extend({r['sha256']} for r in preserved)
+        refs = [r for c in selected for r in c['sources'] + [c['sheet']]] + preserved
         for ref in refs: choices.verified(root, ref)
         recipes = demo.get('recipes', [])
         if not 1 <= len(recipes) <= 4: raise ValueError('전체 공간 및 필요한 문 상태의 조립 배치표가 필요합니다.')

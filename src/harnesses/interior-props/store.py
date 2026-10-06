@@ -73,6 +73,9 @@ def new_round(item, n, directions, note='', base='', model='', effort='', root='
 
 
 def set_brief(rid, path):
+    # This column stores a folder, never the prose inside brief.md.
+    if not isinstance(path, str) or '\n' in path or not os.path.isfile(os.path.join(path, 'brief.md')):
+        raise ValueError('brief는 brief.md가 있는 폴더 경로여야 합니다.')
     x('UPDATE rounds SET brief=? WHERE id=?', (path, rid))
 
 

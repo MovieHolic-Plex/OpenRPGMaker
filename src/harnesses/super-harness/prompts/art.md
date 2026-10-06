@@ -168,3 +168,11 @@ art-context-review에서 필수로 확인한다. 이를 native 부품 PASS에 �
 전체 검수 의무는 layout/completionRepairs에 보존하며 최종 공간 PASS 전에 해소한다.
 기존 FAIL 판정이나 원본을 덮어 PASS로 바꾸지 않는다. 새로 승인받은 검수 입력과 범위로
 별도 검수 영수증을 남기고, 실제 픽셀 결함이 없는 품목은 원본을 보존한다.
+
+## 같은 품목을 부분 수정할 때 원본 보존
+새 후보가 이전 후보의 일부만 바꾸면 보존할 나머지 조각을 누락시키지 않는다.
+layout.preservedSources에 {path,sha256,requirement,reason}를 기록하고 layout.sources에도 같은 원본을 묶는다.
+requirement는 기존 themeCoverage의 재료 ID, reason은 보존할 부분과 배치 사유다.
+원본은 동일 테마 art-batches의 native 영수증 candidateImages와 themeCoverage 양쪽에서 확인돼야 한다.
+예: 양옆 낮은 선반을 새로 그려도 기존 북쪽 선반 crop은 보존 원본으로 명시한다.
+도면 독립 승인 이후에만 사용 가능하다. 실행 중인 승인 도면을 직접 수정하지 않는다.
