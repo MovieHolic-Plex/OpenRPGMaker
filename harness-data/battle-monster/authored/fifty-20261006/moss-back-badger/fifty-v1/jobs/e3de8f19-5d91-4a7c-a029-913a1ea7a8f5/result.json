@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected all four supplied actual PNGs, including the native 64px views and their verified nearest-neighbor 3x counterparts. The low brown body, short tail, cream face marking and clustered moss establish the creature clearly. Broad brown shadow planes and upper-left highlights give coherent volume; the moss reads separately from the fur. No obvious accidental transparent holes or missing outer contour are visible across the three backgrounds. The idle foreleg is connected, but its thin diagonal construction reads less convincingly than the substantial paws in the other poses. Windup, advance, recovery, recoil and flattened death are distinguishable; the attack reads primarily as an extended planted step rather than a forceful forepaw pound. The three skill states show gathering energy, three ground spikes rooted at the contacting forepaw, and a raised paw with breaking debris; the effect has a visible bodily source. Poison and stun pairs change the body as well as their particles, and the prone sleep pair changes body/head contours rather than merely tinting the sprite. However, the sleep eye remains the same open dark cluster, weakening the sleeping expression. Visible supporting feet share the drawn ground line, with the skill paw intentionally lifted. Static pose previews cannot establish animation timing, sliding during playback, actual battle contact, or palette-index authorship. This recommendation is advisory and records no user selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 44,
+      "y": 49,
+      "message": "The rightmost foreleg branches into a narrow diagonal strip and a small dangling foot, making the shoulder-to-paw anatomy hard to read at 1x. Widen the brown upper-foreleg cluster around (43-46,47-51), carry a readable elbow into the forearm, and give its paw a short distinct claw edge near (48-52,56-58). Preserve the intentional gap between the two forelegs. Carry the same anatomical repair through idle_b and idle_c."
+    },
+    {
+      "pose": "attack",
+      "x": 38,
+      "y": 55,
+      "message": "The striking forepaw spreads into a long flat shoe-like wedge ending near x=48, while the arm reads as a weight-bearing leg. Recluster (34-48,52-60) into a visibly enlarged forepaw beneath a compressed wrist, with a distinct toe/claw front and a clear shoulder-to-wrist path. Keep a separate planted support foot so the contact pose reads as the specified heavy paw pound rather than another stride."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 43,
+      "y": 48,
+      "message": "The three dark eye pixels around (42-44,48) retain the open-eye expression seen in active poses. Replace this open cluster with a short closed eyelid and surrounding cream/shadow pixels, keeping the black nose distinct. Apply the matching closed-eye treatment around (42-44,47) in sleep_b while retaining the existing small breathing changes."
+    }
+  ]
+}

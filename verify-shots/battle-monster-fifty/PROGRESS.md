@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재8/50 통과
+# 신규50종 제작 · 현재9/50 통과
 
 ## 최초 두 종 확인
 
@@ -97,3 +97,16 @@ observer도 재시작했다. 현재 후속42종과 실제 작가3명이 계속 �
 기존 숲은 변경하지 않았다. 게임 DB 설치나 실전 전투 검증은 이 출처/팩 확인에서 추론하지 않는다.
 근거:eight-passed-proof.json,root-review-mist-tail-lynx.json,root-review-red-tassel-swordswoman.json,
 browser-proof-mist-tail-lynx.json,browser-proof-red-tassel-swordswoman.json.
+
+## 이끼등오소리 교정 후 통과 · 실제9/50
+
+오소리의 얇은 먼 앞다리/긴 타격 발/수면 열린 눈 세 실제 독립 지적을 직접 고친 뒤
+새 별도 keep0지적을 받았다. 감독이 현재18자세1배/3배 PNG 및 리터럴 xy 문자열
+교정 함수 본문을 읽었다. 현재9/50/162자세/72GIF/전체false이며 같은9종의 현재 Allow/
+선택 ZIP의 실제 native PNG/GIF 픽셀·시간, 출처 동일 binding 재로드, 브라우저8GIF와
+정지/재생·1440/375/320 화면 오류/넘침0을 확인했다. 기존52판정/8선택을 보존했다.
+늑대는 실제 수면/쓰러짐 접힌 발·꼬리 세 지적을 교정 후 새 독립 검수 중이고, 부엉이는
+실제 공격 발톱의 갈고리·날개 끝 세 번째 얼음 깃 발원점 두 지적을 직접 교정 중이다.
+원본54자세 초안/실제 keeper 전 임시 관찰은 통과로 세지 않는다. 각 실제 지적은 다음
+작가 note-file에도 반영했다. 실제 빈 자리에서 화린독사가 시작됐고 전체 목표50종은 유지된다.
+근거:nine-passed-proof.json,root-review-moss-back-badger.json,browser-proof-moss-back-badger.json.

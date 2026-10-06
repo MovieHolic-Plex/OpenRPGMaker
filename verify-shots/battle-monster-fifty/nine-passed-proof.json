@@ -1,0 +1,792 @@
+{
+  "at": "2026-10-06T06:10:40.880382+00:00",
+  "expectedSpecies": 50,
+  "passedSpecies": 9,
+  "allSpeciesComplete": false,
+  "posesVerified": 162,
+  "motionGifsVerified": 72,
+  "audit": {
+    "at": "2026-10-06T06:08:38.508408+00:00",
+    "expectedSpecies": 50,
+    "passedSpecies": 9,
+    "posesVerified": 162,
+    "motionGifsVerified": 72,
+    "duplicateIdleImages": false,
+    "passed": false,
+    "items": [
+      {
+        "key": "golden-antler-deer/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+        "sourceHashes": {
+          "brief.json": "a2476fdaeed433740c99e1db7d75e2a5801631cfb5d2b2f7c17c0b8ab7f729b2",
+          "source/palette.json": "e3449c24dadbb59b1d7ea6df0d37d44bae319737d01c93dfe563d35193d62160",
+          "source/poses/idle_a.pxgrid": "58f13aa18697808363299f79e31c8b62023f29916d4b9b66cafa8839e2d1dbd7",
+          "source/poses/idle_b.pxgrid": "f2f158a7dbffde2a077ef92f9c61fefc3fa0efe371568fba9ad6ea6bb9b14911",
+          "source/poses/idle_c.pxgrid": "58375b0c9f7e9a9af6088463a808904fd5721b9450016a265853c8b7103a90af",
+          "source/poses/windup.pxgrid": "2062f08504275095834ac135058e91fcdefa72b657a46e4e634ee01c8b34d5c5",
+          "source/poses/move.pxgrid": "b4f910ab0d221605069578b467ed7d283929bdb2820926d00aa850720413c59e",
+          "source/poses/attack.pxgrid": "03f6635ae59d00b83997c22372742245315bb19d245186e23690e52ac9c74c05",
+          "source/poses/recover.pxgrid": "b6a9d813cb8ce174dc7953494ea96ad6133d73e4728c3bcb8d270490d1ca31b7",
+          "source/poses/hit.pxgrid": "fa1e8e0a40bfdd90dfd55375238277bfaa7eaf1968f2a9670b738257dd534d3f",
+          "source/poses/dead.pxgrid": "f786d5ab713325002e02228ae13cb148528e974f6b8f29e6f902646bf2dd7d06",
+          "source/actions/skill_a.pxgrid": "e26c33673a332c844825b2865774241a4efa1b43a962a3349645ad445b1046be",
+          "source/actions/skill_b.pxgrid": "d1ef13c96df6860786a1339a7796038122e2d4d31e3559a8a4fc454952f8b7d6",
+          "source/actions/skill_c.pxgrid": "028bbe2f7f05c45b17326a02eb785fb392a646573f294370be2d5f86e9511e58",
+          "source/actions/poison_a.pxgrid": "0c3b12a08a637d0ed75ac39abcf15ddd8cecd5b3132f9ffe68edab8b8548e8fd",
+          "source/actions/poison_b.pxgrid": "e1cc58b7b783f0ba71a6d5faaab1f97702a6471b17f1907037075458cfa36535",
+          "source/actions/stun_a.pxgrid": "1501060d7e89746d3ff302d08898f49bd923bc0161091c4295d36e3f270d7e6b",
+          "source/actions/stun_b.pxgrid": "8ae08094f2cb449e388476d3f6bad3c62beffaae6d88ec983e87b802598dad85",
+          "source/actions/sleep_a.pxgrid": "9188739b8dad07e77a8f0388ae66233e38fcf77e1080c8f3295269bbc284aee9",
+          "source/actions/sleep_b.pxgrid": "7de93d0ee36c94ae6894e880b5e7a2264a31557a8c61e97cd28bf280b4cbb2f1"
+        },
+        "idleRgbaSha256": "29d5a8da3535c7f2fe4a6cad39cb1404c7fbb00c61030ba8e52ddc186ce2c2e4",
+        "idleAlphaSha256": "98eac99e4076164de1efc12ec4de1730d48d5403fa5fb38e8bf36799b07f3342",
+        "review": {
+          "jobId": "29701e7e-bebe-49b4-99d1-a2f0891ac247",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "b1d2fa0dedef64e58e851b07780193043203b7d7a41953f161ded6e34d3aeba1",
+            "by": "user-delegated-goal",
+            "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "afc596b82fca8e198a8ae14de2f0fcb1950493e242efc6126e10111d5911b14c",
+            "by": "user-delegated-goal",
+            "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+            "by": "user-delegated-goal",
+            "requestId": "a7b237ff-379e-5d5f-8b1f-f4c4b951171c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/a7b237ff-379e-5d5f-8b1f-f4c4b951171c.zip",
+        "packSha256": "295398f19dfcbb27e695263a692d8acf5b057a9b5dae980896a5341274d97aef",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "jade-mantis/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+        "sourceHashes": {
+          "brief.json": "0cdbef6b8f22acbf374071edde4bcff2fe57148ff83fb7a78d98431c3dfcb054",
+          "source/palette.json": "a972133e7a438664e1d6774a2a69e8b5b4da9b7d2e032568fd9f08bcf6f3d731",
+          "source/poses/idle_a.pxgrid": "4bee0db5cbd22a78c15f17b8047804d6b210c35f98bbc03df86bf89436504220",
+          "source/poses/idle_b.pxgrid": "e5e9c9d3dda3141794ac0d4e25b523987a601e830d36f4f1ad1373874951e927",
+          "source/poses/idle_c.pxgrid": "c34ddacae13f887e00b41b0bde580079a68f93625ba9f9973a945f4447da9621",
+          "source/poses/windup.pxgrid": "d926e75c0976249abc09743b16df73e4f037876cb285a921154d1aa5853b3982",
+          "source/poses/move.pxgrid": "731cbaecdb7d472ab2f325effd5c070af2ee738daceb56654ede38e98f9a7c4f",
+          "source/poses/attack.pxgrid": "79db2c0fbe6e3fedd46cdf4fe7c1d5d99c199b0897b084870cfda19f09e725ef",
+          "source/poses/recover.pxgrid": "ad7d7f52baaaa3eef6b517bd2cd2d8cb21c6ba778a26756db52ebf5136417e27",
+          "source/poses/hit.pxgrid": "0508bdcc08e522703127d9ad1ca0b57f6b22f21e4c8bbc00f431dc2e4601692a",
+          "source/poses/dead.pxgrid": "9fcb229c0467a918fcb9536fa96887939ff118bd3d852b5ca1c726934bb3c2b0",
+          "source/actions/skill_a.pxgrid": "17f4c9f7eec03821011884035c6cb6ea9bddf97f48b94e00fc35f88dc3d5c33a",
+          "source/actions/skill_b.pxgrid": "7a16e9d25d5d0d123fd1e31789c9f41fccefb30f1515c25c987b8e533bc0081c",
+          "source/actions/skill_c.pxgrid": "dbee5ec4f3982f17a324fa069c5b654abdab1c7f0d327e208cb4452f90b84204",
+          "source/actions/poison_a.pxgrid": "1bfe806bb3fb964dbea04c579e05b30015424ad5d69fe9c9de600307fb2b5819",
+          "source/actions/poison_b.pxgrid": "0819e497f66f238faa9dd1cf3767a4d6de8acfcb395c3a72836e46158ff54c6d",
+          "source/actions/stun_a.pxgrid": "61c8d0fd9dd71c6a7387b34001fe046d5830b4c1d6a99021679f6bbeb61087fc",
+          "source/actions/stun_b.pxgrid": "80872b1a1ab412f9ade22b82fb9c7a9456a4a414a06434f0b499c90df554cc03",
+          "source/actions/sleep_a.pxgrid": "58fd99df394f47da8774e1309ac72ccc9748fbd6a856e9f1a3164d3bc83b1fee",
+          "source/actions/sleep_b.pxgrid": "2740a7eb8990aaa3c6721f59701e9033988dbdab65776f695b240604d81864c4"
+        },
+        "idleRgbaSha256": "25d88bde66a5203cadf03911ebbcd28ec79680b302dfe9a154659e6e2790cc28",
+        "idleAlphaSha256": "13b51a30b44cbd8b99db86c000b7a5dfbc2d6673fad59511cf270e7daca8ea15",
+        "review": {
+          "jobId": "9184f906-e1b0-49d1-bea6-f930aa37075b",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "3b83c5676b76bb068fbe1ad10d63c5bc86ff63c8896a7113cdac691dd85ceabe",
+            "by": "user-delegated-goal",
+            "requestId": "33991ec5-1d56-5600-9e0e-0eb72c3e478b",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "cb2fc6d9e0897df9db5f86c4d4acc402761dcd4551d7b3b3fed5c405dac45069",
+            "by": "user-delegated-goal",
+            "requestId": "33991ec5-1d56-5600-9e0e-0eb72c3e478b",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+            "by": "user-delegated-goal",
+            "requestId": "33991ec5-1d56-5600-9e0e-0eb72c3e478b",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/33991ec5-1d56-5600-9e0e-0eb72c3e478b.zip",
+        "packSha256": "e719f87139c357dc90fcc4b1765a4bc303d19afd34a6769fc2b183ab15527f0a",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "iron-beak-crane/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+        "sourceHashes": {
+          "brief.json": "7fe95f34af2120e7bb0685ac1cb4fbf1d7e66a803d0f1de879dbadaecbc64f8a",
+          "source/palette.json": "497e5962dc6ce802aca7d0af9a9a3df25e50204b25be4d4a25dbafe9b8cfff61",
+          "source/poses/idle_a.pxgrid": "b97619a2b89699f5a3daa2f84992387a7029c6977549a3f8934701ebaaecf51b",
+          "source/poses/idle_b.pxgrid": "2d5cf97321842b53a4a5793a0c9cf529aa34739adcc1e8dfe8668dcf8abde131",
+          "source/poses/idle_c.pxgrid": "77778662fca3163a5af3073ded664ee8c524a92d896718bea1741f24b1ec0028",
+          "source/poses/windup.pxgrid": "eb80dad35c7997817275c7cfab933fb019b47caddea8da1fe35902d376f3f0e6",
+          "source/poses/move.pxgrid": "55545ab69e08380c9495022890845ea2d4caa886a62733808df0bbfd7b604332",
+          "source/poses/attack.pxgrid": "74d85e41018af9ff476152d5246d32acc8a26e943fcc81550eabc153f21f4ae5",
+          "source/poses/recover.pxgrid": "2a0f3d575e01aa1bc649ae7e48cc058a8cc6c9a0486de92432d261b5df5f1809",
+          "source/poses/hit.pxgrid": "b073174c9470bf026bf8121f301d8ce56258573cd616cbb1890bf421f151d202",
+          "source/poses/dead.pxgrid": "5b193e157b8b24cc374be83878c5371beb31b2ccd6db955c26aae088ea53406c",
+          "source/actions/skill_a.pxgrid": "e9983d9fab7a1c41aa44f6479ee7328f89a184a4ad1df256619e56c0d33398e6",
+          "source/actions/skill_b.pxgrid": "ee829d7efaa6cac4948ec85ef90264930455be4cc330cfb9349121a884ae3ff0",
+          "source/actions/skill_c.pxgrid": "1a86257bfc12fcd4daf621407360cf32a5137df08b2c44a8bb954e0f619bcd20",
+          "source/actions/poison_a.pxgrid": "db2eb55ffa366d10857077b574eb5c9cd1c682f6836c1b74fd3b4930df88067b",
+          "source/actions/poison_b.pxgrid": "911d7061315705c61c3964764c7f8391a92fdfcb941175241dd9d16e89ad37a6",
+          "source/actions/stun_a.pxgrid": "cb831a1fc818493615e090db2d902048f2fc1cca7357825ab68bb2e972b3196f",
+          "source/actions/stun_b.pxgrid": "5b701d5f27f3945d732b1adfb9776a435cf10603569aae678f6b608dbe6009d2",
+          "source/actions/sleep_a.pxgrid": "9f550e81dca2bf25fe67071a27f4b75a820e79242a4d132b902a8956f7887778",
+          "source/actions/sleep_b.pxgrid": "35b255f0b2306bb00e34b1f123c78950bc20668bb32e8260b7150d4e2411d2c0"
+        },
+        "idleRgbaSha256": "e79bcfc8ba8c5eb62fbc1d31d3296fa89dd56c338f9f45ee736c2336b4844ef6",
+        "idleAlphaSha256": "b5168b516a1a9bf5e0eff3d935600b217b9041920f78b8e023f5effd72ab3d06",
+        "review": {
+          "jobId": "8c9d69e3-574a-4efa-a5c2-e2e99596f88d",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "24e1b9688a5c42b9420fa6eed18b6c9158ee9edcb5570fbf07c085b3be1a697c",
+            "by": "user-delegated-goal",
+            "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "bb4775864a287456099d209cd594f278121ef166d71e2629a421b9952a0a054c",
+            "by": "user-delegated-goal",
+            "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+            "by": "user-delegated-goal",
+            "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/f51f4b14-601b-5f24-8129-f2edac0a7a3a.zip",
+        "packSha256": "50593c4cffa5d6d7397e1f2565e81ab08339a52bfa94d45659b8357855467c5d",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "mist-tail-lynx/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+        "sourceHashes": {
+          "brief.json": "1fd81cd3bd69e783bab67ff41437c78c5ad7f6bd20f3c73eabbc9865a8f17429",
+          "source/palette.json": "1c44fcbe9601cc95a580367039179a8c7b793f566ad5eb969a7ddf3682b0d233",
+          "source/poses/idle_a.pxgrid": "83ad7c6b1c93e6a4ddf4836d43416c0de6e71544592f249ed762c29f1a345562",
+          "source/poses/idle_b.pxgrid": "895f84b8bc4722606741ee26954b69c0d8a8bd63b2eea9ef9cd793047af53edb",
+          "source/poses/idle_c.pxgrid": "c89cdc06bc36037a434a28225b6d1fa9ca0ef69527e3dec5f271b44c6a939c0d",
+          "source/poses/windup.pxgrid": "5c3cdcd7ffb2e8764d1072629c7fd2320f861f499903bc4ee0ff716f2b7cf59c",
+          "source/poses/move.pxgrid": "ff20675b122bfe66f60c4f1c895aaac9fed62399a815c458f29659c409745cd6",
+          "source/poses/attack.pxgrid": "77bc566ceafa0fca0fbaf0ee82deca368ec7e6b5f27ce8f3d51efe5ace14e6a3",
+          "source/poses/recover.pxgrid": "4c7f010881011a61636aecaf3a4208dfd75155af0db14714d549c1f487d6c311",
+          "source/poses/hit.pxgrid": "cf085d640cda78c57ab03dd3a78fbde1cf98d37aa117147f74a72368a6581728",
+          "source/poses/dead.pxgrid": "73ce3660069bd713d1b48b607e2bcdd4be9f321dd4de428e5c0d1d5a30530c11",
+          "source/actions/skill_a.pxgrid": "c505da6ba9ec9c0a07dca41a9a629199d05c92e3c9de3ab708c7f2bebbcbb7d3",
+          "source/actions/skill_b.pxgrid": "dc26ee7d7ed355a2b0b614ff3414657530e153e5a391a53260ea14fdbab3e6fb",
+          "source/actions/skill_c.pxgrid": "0941bd9aad01a52b9ad699813028d4ffab0cf64192655ed696d7bcf24bd37734",
+          "source/actions/poison_a.pxgrid": "c8bf7d26d03aa61628fd560af213bf3777dbd5afb57202058f2f634070078f1c",
+          "source/actions/poison_b.pxgrid": "97a156df054dab9b8afc73b45eeb3d2cef5bc0f5bab38e2daa0992a851069dd2",
+          "source/actions/stun_a.pxgrid": "d7ebb6551ea256afa60789cddffe06af4dda13cf7a4e628c639a5241b7437c0f",
+          "source/actions/stun_b.pxgrid": "6f73898c060916e1e3ef06b4555467f1cabe9d364bd8f2b8e24c20024aa0ee85",
+          "source/actions/sleep_a.pxgrid": "9b96e0ec5efa099c0995c5ff9de3c2442cf763baf152fd7604c98faf65274cce",
+          "source/actions/sleep_b.pxgrid": "105cbabe5719e327cadcf8735ca0c8307764a6e23b68c3114898a2609a0968f3"
+        },
+        "idleRgbaSha256": "f497b880cf82c538aedf3392ddf7a4776baac4ace30f050230a2d8674de7de42",
+        "idleAlphaSha256": "6e023c2b7c7a3bd65d997cf64c07bd7c13b286c40d278d27725eab4736f8693c",
+        "review": {
+          "jobId": "f99d570d-a4c7-406c-b4ed-a98e61be83ac",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "3c92755a23c9cc539a121063be51fe9907738224740a0e39a5a9ce6335a0c0dc",
+            "by": "user-delegated-goal",
+            "requestId": "927e03d5-7b45-5e6f-913d-fd72afcbb22c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "e1e7167ede7e0e205b42b05ca81dd989de321fb4e53dc5a5645785ebe886ad89",
+            "by": "user-delegated-goal",
+            "requestId": "927e03d5-7b45-5e6f-913d-fd72afcbb22c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+            "by": "user-delegated-goal",
+            "requestId": "927e03d5-7b45-5e6f-913d-fd72afcbb22c",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/927e03d5-7b45-5e6f-913d-fd72afcbb22c.zip",
+        "packSha256": "e9357bfdf5d3298ab3b0a41a39d36d3b070e17386b9fa68c921b9c15dddede85",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "red-jawed-wolf/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moss-back-badger/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+        "sourceHashes": {
+          "brief.json": "3b47e276872bc3b83de1ec098f3b3f7f822c332256f914045c35d62b94ab8446",
+          "source/palette.json": "9ae3a73cbfcf7ce53bc6b1845b8f150b59039d8a8ce9292ab6f24ee1df9567d6",
+          "source/poses/idle_a.pxgrid": "8fe14f63e52e9becf5e3e769172149e0cc3144e84c6aaab6347d60df831c18e0",
+          "source/poses/idle_b.pxgrid": "52b48025a68a57638aadbc6600df40a1ea74574a0d281c086f1dcd104cd13d19",
+          "source/poses/idle_c.pxgrid": "36fb607857b1ca69c5f75ed0eca77db3860addf7b91ffeb666414b543b3f982c",
+          "source/poses/windup.pxgrid": "5c055f7881a295853484e660be99409be6ad06d28602e50cfe165f0b38d87cb2",
+          "source/poses/move.pxgrid": "6648f302105b8e169550d029c091b8f8538c88fb78091398720524c571c6347f",
+          "source/poses/attack.pxgrid": "1a093947407f9789d8c8a61d3f8dd986baf46d2b181d681986368be0e7752a84",
+          "source/poses/recover.pxgrid": "92b76f1ab40eeb46bc7eb2299d5f561a48931f5f85d6d930511972808183d4af",
+          "source/poses/hit.pxgrid": "739071d935c115eac5fb2142201b5ae27fe0c057fe10a16dd47d43695869c898",
+          "source/poses/dead.pxgrid": "4b75eab4faf17df3511e6320b1cabf7cf67642af688f9086309c469e6d90e828",
+          "source/actions/skill_a.pxgrid": "e0be3635c27a937f24bc20bfd1b191ac1c97bb4db1ec745ed808871c1b655fe2",
+          "source/actions/skill_b.pxgrid": "eb0e0c11dd9513f1aab4facb785134ee9db2ccbfdbd12da0b1f858ba13a3ee33",
+          "source/actions/skill_c.pxgrid": "6a98890b025048df8511ed2bd4b9ef6db4c8b31bccad3852d0fc31ffca8e4116",
+          "source/actions/poison_a.pxgrid": "b694ff2168117559e8365402bf10243d04596c8aff5b38f761b69ebdbf0f181b",
+          "source/actions/poison_b.pxgrid": "2bdb6b999ef7064c98eb84a6e65dc278996b33160bb169dc88c617fb528d4f6d",
+          "source/actions/stun_a.pxgrid": "2f4c9702f89a3e63a0fea49d2bbe217e342ea2ba86d4555e610ab2d1039cbce8",
+          "source/actions/stun_b.pxgrid": "4e298d89a644b64c3cfbd807ece009c6af995dd0af90d173878aecf0afb389e2",
+          "source/actions/sleep_a.pxgrid": "9c2efba33c4bceff53bd3761a14ba4dac6b7cbf50ec7594d002178a4745c8e44",
+          "source/actions/sleep_b.pxgrid": "01a85834032309155f2cc8e0e9f0b1aa9b29ac1327fba02b21e8e78e112f4370"
+        },
+        "idleRgbaSha256": "6be16216fc18ce2326f4c9e3e9f9c418bc030afc60e6a52d4c4461c830253f97",
+        "idleAlphaSha256": "77290898cffb584a8b87e02853c06d74d5dbff9e4cbf95d70084a6421f726454",
+        "review": {
+          "jobId": "588e627f-39f1-40fe-8281-2a17025080fd",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "c9bc4cfe1a52bb1c118553fb4a97aadb9a844c8e162cc4e68e25bad4b1646949",
+            "by": "user-delegated-goal",
+            "requestId": "ebe45bbc-51b5-5bbf-b226-a79300b7cd0e",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "325418034b65b1c3acb55fa2695ffa69e4e01e560c7d58dd02debca67a427543",
+            "by": "user-delegated-goal",
+            "requestId": "ebe45bbc-51b5-5bbf-b226-a79300b7cd0e",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+            "by": "user-delegated-goal",
+            "requestId": "ebe45bbc-51b5-5bbf-b226-a79300b7cd0e",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/ebe45bbc-51b5-5bbf-b226-a79300b7cd0e.zip",
+        "packSha256": "1c5dddb5c6523cf53d0fbbca7d280d0f214aec79d6d367d49e5c2848871d0d2c",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "snow-wing-owl/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "fire-scale-viper/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "stone-shell-tortoise/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "reed-blade-weasel/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "lantern-goblin/fifty-v1",
+        "passed": true,
+        "nativeCell": 96,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+        "sourceHashes": {
+          "brief.json": "5ae8ae65b3c96e50eb954c47a1c370d613b0bda9988846a174a2e1711b8ce423",
+          "source/palette.json": "48011f5f7c48b70deb67e778ae036b5dcfdc52a5f84993343827b3a2d7461d97",
+          "source/poses/idle_a.pxgrid": "7bc59337ab7cb69d6f209b376f85ec64714cbad723aac6e6e82102ae797ae039",
+          "source/poses/idle_b.pxgrid": "a4269722312aa856bdee4c90e63b93d42965bf4bb819dbe0cb09c6d847688465",
+          "source/poses/idle_c.pxgrid": "382d6e2726edeeb9b81122bcbcbce88e6756f7383688f05f1d6fae1c4d5b9e05",
+          "source/poses/windup.pxgrid": "25444c7491e5daa866907e81544a1139e47f8f7a6ad873e015464e0b4264f0ff",
+          "source/poses/move.pxgrid": "87864c1e0f360bd3e6c6d5f6318a0d0a12de8347905591dfa3706a5e32b4f0d8",
+          "source/poses/attack.pxgrid": "a3a5dff9eea5d8d791fc1514678855fb631d4e81cfb606ff99fb808e0334ff52",
+          "source/poses/recover.pxgrid": "7b7c131760702b5e9e7ab0ad0effee7fa8da6bf1944bd9d25ad50f68d7acceb2",
+          "source/poses/hit.pxgrid": "c8e4470f27a5a454fe72253a49e4a78a9fef932a7a7951eb2a80f06b79ebdcd6",
+          "source/poses/dead.pxgrid": "37375822e408e2cc03bf62cecc6e08007c72ced1627b83c589373a8973ae8501",
+          "source/actions/skill_a.pxgrid": "bf67c5e2753b3e853c293535b291be64a8861664c5fbd564fcfbacb6b1f95ad4",
+          "source/actions/skill_b.pxgrid": "74050fee997b6c88010ab456077f7650911a0709d7f9ce5656279b9f664aafa7",
+          "source/actions/skill_c.pxgrid": "8b2c03a5c07548f3e8b7f7cf7ac96b66ba338f0451613099b9988e88625c5f0c",
+          "source/actions/poison_a.pxgrid": "2994fcab4e57c550604a66cc154a8950c9d8e7fe436a7f63fb5c3b3c76b3b49d",
+          "source/actions/poison_b.pxgrid": "78529c3855da7ba9f3b4440407ed077e53ca31b0bf4353c6e7c66bee9528ab18",
+          "source/actions/stun_a.pxgrid": "b009d23699226696345bdc77672acd7e176e5d802d8abc5c80affd0350c31ac3",
+          "source/actions/stun_b.pxgrid": "10aa04ce5bc21677f930ab15d846e439f0637e0028a9402e681bd7e6b63db166",
+          "source/actions/sleep_a.pxgrid": "b30f21695b085ff203ff4db806e60bcbac2fec14cec8036e26e97f6c599f4e84",
+          "source/actions/sleep_b.pxgrid": "0d52e4671f04a063a0b90ff8eafd1ea0a108d3e03db96f4a45aaf190dbe77740"
+        },
+        "idleRgbaSha256": "11737b062140ce8f67985d7b7a58e37257d7a56acde69961ea432150eda22282",
+        "idleAlphaSha256": "d5e757ea4582f7b566205039d1e56c9a9f1b28c5a9fa92f73325800f7ef2c4fd",
+        "review": {
+          "jobId": "2a5f2d39-811f-4374-bc85-7d16252b9d2d",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "55c0f4cfbf7ec7bb57aad4cae4475473045b3be69d5054ae474d25e7ee091681",
+            "by": "user-delegated-goal",
+            "requestId": "27efad8c-8f0f-59d7-b297-7a9b0fc9dfdd",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "608d46d57bfe51ec5271c432f3601b43f5e72281773f23e2761798069208d748",
+            "by": "user-delegated-goal",
+            "requestId": "27efad8c-8f0f-59d7-b297-7a9b0fc9dfdd",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+            "by": "user-delegated-goal",
+            "requestId": "27efad8c-8f0f-59d7-b297-7a9b0fc9dfdd",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/27efad8c-8f0f-59d7-b297-7a9b0fc9dfdd.zip",
+        "packSha256": "7a5dd36451f0161da67e963d106d6fc5ca77a0b0208f6fc041aae73a9f987a19",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "bronze-bell-wraith/fifty-v1",
+        "passed": true,
+        "nativeCell": 96,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+        "sourceHashes": {
+          "brief.json": "954042c2a27c99003fb005e4e57db31bb6a7f1a0de0472ec71de998a38719c23",
+          "source/palette.json": "d9ac5520be320181b4a70c5aae550cee6db7b4e209e41771ca07d322f4a8c52b",
+          "source/poses/idle_a.pxgrid": "c6e778bd7038d6d27b0c24f701633eece5b49542fbe7c7490cf65774325bb47c",
+          "source/poses/idle_b.pxgrid": "eb76d74b88e640b4f6def3310abf44882d9ac97ac2d9cc11801fa31dc4fc26cc",
+          "source/poses/idle_c.pxgrid": "ebc762d8f6a0bee6f23a3dd5fb389cb3b8ed96c2f51316a335b04bf717cb1db6",
+          "source/poses/windup.pxgrid": "044b20b24e5fa89b94fcabd130dccc45a5c9ed167cf949c1aa80eb77c7bcede4",
+          "source/poses/move.pxgrid": "9fcfb9fcd5843765b14929f623a668a8ec8df95dcc1a58359645784e3acc6dc8",
+          "source/poses/attack.pxgrid": "b097499c4b72cee99e730d3bfdea44dd77275863c3d7ecf4eb61397b21366ca1",
+          "source/poses/recover.pxgrid": "1ee3dc1436ccab57e495f99eb9d7c32e14a1a588e51c18a5612dc8656c8485b2",
+          "source/poses/hit.pxgrid": "25a0c964ad3b01821717014003fd43f1e250ddf412aa8f84e86067a0017db9f5",
+          "source/poses/dead.pxgrid": "c54b5c3ea78fa74f41b1fc55897dd567f3593596519e55aa42b7a0b9e0197e07",
+          "source/actions/skill_a.pxgrid": "2dd38437befdaab2b84fec046dd7f56585535f062ae247b4206b87b827435455",
+          "source/actions/skill_b.pxgrid": "581dc7489d440d8d93b68bf1af7a89b0c7c24e90c9293b690edd5ebc4db6e9ec",
+          "source/actions/skill_c.pxgrid": "4b7b296fa97359c02af6a3c2ac40e64e4d7c2d08302cf4556c67b492a7e262a8",
+          "source/actions/poison_a.pxgrid": "177d4bd061fc2f2e8f555eb091e2e8c1822e255ee424d67d9cefb397699c815b",
+          "source/actions/poison_b.pxgrid": "f5183bc900add3b56cd0633ca2f67c1e8bdedf11e441ea57e68b445f53c263e2",
+          "source/actions/stun_a.pxgrid": "8f633730250140d0249f05db5511f26d70bc8ccb6dd8f8e354b5d757f6734e66",
+          "source/actions/stun_b.pxgrid": "a8c9447fafc19dba371e7b575b27b5444162d5ada2f67ccc1b9be521a209688b",
+          "source/actions/sleep_a.pxgrid": "3153042f952811a883dcc97208361f9aa5e5f503692c61cdc80e47f8b3daa123",
+          "source/actions/sleep_b.pxgrid": "3f27586e36d24c04dbd1284ab55720cdc99baa5a41368a3ffe1d5bb24cdfd01c"
+        },
+        "idleRgbaSha256": "e7ca0a39cca98889f8aaf312ad40d23b113cbd42885de6c366ba2015eb25e0b2",
+        "idleAlphaSha256": "5a42cd01171228ebddece3a6babef5716c5b4be0aab5e02ee1490c71b7969d48",
+        "review": {
+          "jobId": "203ee414-169f-4c9a-a944-f8cdd101afd0",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "83a230bd63513aebbe6adf0bff2531c8658cd8f3faacc7d8c482daf5b79dc9b8",
+            "by": "user-delegated-goal",
+            "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "a6cea36b1a0b102d2b168fd197f41c53070c3d415629f0dafebf252cd1c4ac8f",
+            "by": "user-delegated-goal",
+            "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+            "by": "user-delegated-goal",
+            "requestId": "37dbed33-59e6-5ccb-883a-0454edd06f53",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/37dbed33-59e6-5ccb-883a-0454edd06f53.zip",
+        "packSha256": "5bf5c538b858e79ba4e44d764b664858cf5d13f9eac7ab4bd5e89bb8f87730ae",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "silk-loom-specter/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "lotus-marsh-wraith/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "ink-brush-oni/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moon-disk-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "plum-blossom-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-lantern-serpent/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "ember-mask-goblin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "frost-ribbon-maiden/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "storm-kite-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "thorn-crown-demon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-pine-guardian/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "dusk-paper-falcon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "soul-drum-dokkaebi/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-grain-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-tassel-swordswoman/fifty-v1",
+        "passed": true,
+        "nativeCell": 64,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+        "sourceHashes": {
+          "brief.json": "8e44abcc86311891c9b5c730ec8dadfb40a6401253aaf276765dbbfda79cd0d8",
+          "source/palette.json": "69bc9d0fa27167589248b0afb3d68a62a8e72a25b92dd48682524cd2c77e40ff",
+          "source/poses/idle_a.pxgrid": "a005b235b36e255c45948580692f7b149e8f8e8e5a2cd779cfb3e183f069e8b5",
+          "source/poses/idle_b.pxgrid": "802d1e7c09f3ea7ba6278bbd15fb525d956d8715bfc68e400bb74aa3ac7f69d3",
+          "source/poses/idle_c.pxgrid": "f83e040e9c8096587f7be8fcf344db8cf0b1de28bef0bb9ca39339e1a1cc6f9d",
+          "source/poses/windup.pxgrid": "e78e69e669536a2ce67de117844c18d1975065aea337209383197a0431a158d0",
+          "source/poses/move.pxgrid": "eb7192d20af6e2743700c4328bcb9be231913e3ecce970dc9df065d4024ba714",
+          "source/poses/attack.pxgrid": "649127590547d397384067ff27944e82084651ac5024589aea5c51e9e44eb1f4",
+          "source/poses/recover.pxgrid": "ebf1d308c31525890828986a3aea3caf4ed855c240ef32c834cd7b63d1b484e4",
+          "source/poses/hit.pxgrid": "577ab2de11b08e4c7acdfa7a0a3c71f1d3b99b878c344a205164ad0c2e2b4a6c",
+          "source/poses/dead.pxgrid": "82a951d24e1f2449687581776d38922b1d866aa32d90f3223a6041b07968288d",
+          "source/actions/skill_a.pxgrid": "bb2fa964ddcf52b58839d168f1122405cf0d7fcf7f4acfd65356e14f3513fafa",
+          "source/actions/skill_b.pxgrid": "a7de39df03729d4c7140a2748550f8726d3ec7c1762d5abcb22bc46507b19ab0",
+          "source/actions/skill_c.pxgrid": "771f1a3fc8e9ad59db2151a88da7882478c2b6fb3d7bd77671800e9687d1b427",
+          "source/actions/poison_a.pxgrid": "6521cf5eaef03ee5b043a406549c361c0e2afd4bc67e4d06367a74f7f837e2a1",
+          "source/actions/poison_b.pxgrid": "435e0baceb15a5c7d7a31f5ff41ab73518780af1a2ab587387baee2523c3c556",
+          "source/actions/stun_a.pxgrid": "44c24298d8a5a831fd47830281c379aa061208be07dc03f972cc2bd27016e2df",
+          "source/actions/stun_b.pxgrid": "f95bd6293cb7a62cbfdc3fe45870b1b3c7ee78191eaab60c32e4ac5a7f11f0c7",
+          "source/actions/sleep_a.pxgrid": "e91b93107ea00a392dacf3aca80b070aecc77d6b7519b2691fdeafc99eb02376",
+          "source/actions/sleep_b.pxgrid": "e9c07c08af8dacafddc0ca939eed34938ed4a770bfe0b2cfb19695757075d9e0"
+        },
+        "idleRgbaSha256": "25025169c7ef4460beb4986501ff0ca774991f1ebba142847118a206ab4d058c",
+        "idleAlphaSha256": "6fd11aa269022897faae628a3f49ab17d39f156c49d066f7d3cfbf74b59ced14",
+        "review": {
+          "jobId": "d864f94e-2462-4468-a02f-051d6457412e",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "d5f2ad49c7cd063d6ffb1d45bebadfdcc7eebf8509532d3cf898d77be0f1c265",
+            "by": "user-delegated-goal",
+            "requestId": "ac0de51d-55f7-55a0-8e4f-9f597a9f66a7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "7f428257f2db1140c37415e6be9d1e93b780464e5a67520f63d42b739ef34062",
+            "by": "user-delegated-goal",
+            "requestId": "ac0de51d-55f7-55a0-8e4f-9f597a9f66a7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+            "by": "user-delegated-goal",
+            "requestId": "ac0de51d-55f7-55a0-8e4f-9f597a9f66a7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/ac0de51d-55f7-55a0-8e4f-9f597a9f66a7.zip",
+        "packSha256": "e3292398919bbcecbdb8fe92a24738ae81b5f62b66c063710b54d0cad5d6cc90",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "blue-robe-spear-master/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-flute-martial-artist/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "black-lotus-assassin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "silk-fan-sorceress/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-bell-monk/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "white-hair-saber-master/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "crimson-bow-huntress/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "mountain-herbalist-fighter/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "spirit-lantern-medium/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "iron-gauntlet-brawler/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "silver-sword-matron/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "sun-gold-phoenix/fifty-v1",
+        "passed": true,
+        "nativeCell": 128,
+        "poses": 18,
+        "motionGifs": 8,
+        "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+        "sourceHashes": {
+          "brief.json": "d6cf6f392bbb9a51a79bfa975360fa62c66a86734275597badddbe4db4f7aaff",
+          "source/palette.json": "a2bd3054da866f75454c8beb232e6a7e17305353ce0a39d73eda14230fb29c6e",
+          "source/poses/idle_a.pxgrid": "5b724acbb0c69413a4ad8779b8248e11228e24d3b74a6bfddf2101e90aa7a671",
+          "source/poses/idle_b.pxgrid": "e295ad709ce4e4b440a1d9ec9db3bcd60988ba3cc843bf36196aaf941dd695a7",
+          "source/poses/idle_c.pxgrid": "f08122887d7fa4ab9da3c75f484e26d9b0d2adf58a1e42e57cad037d5d605252",
+          "source/poses/windup.pxgrid": "48da649a5d092e4026060185ce8864395f72bd6d42fccc10ce8784d80b06a95f",
+          "source/poses/move.pxgrid": "4c9a8f651180fc7bcde1288cd6cf1a5d8156045ea5719c2a92d8078333f401e8",
+          "source/poses/attack.pxgrid": "d416c9690ce2c15a25257e7eac7155f0ceca1f9aa8d5b81f74046785132abe77",
+          "source/poses/recover.pxgrid": "a968b14adba65e80e010265a03dfb0315a520a8465bae042df25dfc0f0d256da",
+          "source/poses/hit.pxgrid": "3ad20e3648f9473beb465f75d2bd790e4d5d1f84d5db0dd89ae1f72850978135",
+          "source/poses/dead.pxgrid": "2a74fd37a8fceb024095d8d12914028032c21dab082e5795ddfaa9ee8d1250c6",
+          "source/actions/skill_a.pxgrid": "15611d8518a6cc0a9230c97965f5d81ffecf32f46d7235696d15d71a728dd81d",
+          "source/actions/skill_b.pxgrid": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+          "source/actions/skill_c.pxgrid": "b3540768d62b3693fc979eed5a1ec34920b555cce7495ea7b0906870564ebfe5",
+          "source/actions/poison_a.pxgrid": "ce6ea3c9142922704d85e46ef3a307b6e1940998af686f5d08df3c8b722e5113",
+          "source/actions/poison_b.pxgrid": "184351a6b8b8a98c4f2ed4592293ce2e5c9b762d8d05826010aeed943d760eff",
+          "source/actions/stun_a.pxgrid": "7071ab317450480633119baaecc9fc61b79072191e2473c2a69ecfef19b934d2",
+          "source/actions/stun_b.pxgrid": "e1280e7b58b2df7ba4a214d18aecb414791c2e9dcb6ced1fe66a3940ddded67d",
+          "source/actions/sleep_a.pxgrid": "005133a1cc92d05a60946eaf13212076c132bed2f124b5ab0b61acfd4c74c623",
+          "source/actions/sleep_b.pxgrid": "0bce21ac416cc66660026e8c725a229d6da363e14d1496a3854d5f081db63fc1"
+        },
+        "idleRgbaSha256": "b477bf57a6440f4e09a7f3ea182a79e146ffe1f7b12379d173a2ac225bf4a59a",
+        "idleAlphaSha256": "e3643959f6895166d889aa52acf2120ac35d09606d22af971637615b67520aa4",
+        "review": {
+          "jobId": "d86e8b1a-5960-4442-b8fe-aa031420972e",
+          "recommendation": "keep",
+          "issues": [],
+          "userApproved": false
+        },
+        "decisions": {
+          "idle": {
+            "binding": "09de326f51c47eeec8d2b8ad9ab685ca71f1dac8b440592832f6746b4adbfe21",
+            "by": "user-delegated-goal",
+            "requestId": "c9ecbf70-e84e-5011-b30a-a88022f03ed7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "poses": {
+            "binding": "2279bb02eda306fd66ee7c7102aa22425e4fb40ca1ab9074aa99267cc76683af",
+            "by": "user-delegated-goal",
+            "requestId": "c9ecbf70-e84e-5011-b30a-a88022f03ed7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          },
+          "suite": {
+            "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+            "by": "user-delegated-goal",
+            "requestId": "c9ecbf70-e84e-5011-b30a-a88022f03ed7",
+            "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음."
+          }
+        },
+        "pack": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster/packs/c9ecbf70-e84e-5011-b30a-a88022f03ed7.zip",
+        "packSha256": "6190b19ea5f6b4f8f3c52564475dd4ac1df41f2e9da4bb16f38bfda2dc6d0392",
+        "nativePngAndGifReread": true
+      },
+      {
+        "key": "abyss-jade-turtle/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "storm-horn-kirin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moon-frost-dragon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-armor-gatekeeper/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "thousand-year-pine-king/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "abyss-nine-eye-spider/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "bronze-cauldron-demon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "snow-mane-lion/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-armor-scorpion/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "sea-pearl-serpent/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-feather-garuda/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      }
+    ]
+  },
+  "sourceArchiveRereadSpecies": 9,
+  "actualRootReviewSpecies": 9,
+  "actualBrowserVerifiedSpecies": 9,
+  "browserEvidenceFiles": [
+    "verify-shots/battle-monster-fifty/browser-proof-bronze-bell-wraith-golden-antler-deer.json",
+    "verify-shots/battle-monster-fifty/browser-proof-bronze-bell-wraith.json",
+    "verify-shots/battle-monster-fifty/browser-proof-iron-beak-crane.json",
+    "verify-shots/battle-monster-fifty/browser-proof-jade-mantis.json",
+    "verify-shots/battle-monster-fifty/browser-proof-lantern-goblin.json",
+    "verify-shots/battle-monster-fifty/browser-proof-mist-tail-lynx.json",
+    "verify-shots/battle-monster-fifty/browser-proof-moss-back-badger.json",
+    "verify-shots/battle-monster-fifty/browser-proof-red-tassel-swordswoman.json",
+    "verify-shots/battle-monster-fifty/browser-proof-sun-gold-phoenix.json"
+  ],
+  "originalDecisionPrefixPreserved": true,
+  "originalSelectionBindingsPreserved": true,
+  "newDelegatedDecisionRows": 27,
+  "totalDecisionRows": 79,
+  "humanMouseClickClaim": false
+}

@@ -44,6 +44,17 @@
     "selectedPackSha256": "e9357bfdf5d3298ab3b0a41a39d36d3b070e17386b9fa68c921b9c15dddede85"
   },
   {
+    "key": "moss-back-badger/fifty-v1",
+    "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "1c5dddb5c6523cf53d0fbbca7d280d0f214aec79d6d367d49e5c2848871d0d2c"
+  },
+  {
     "key": "lantern-goblin/fifty-v1",
     "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
     "nativeCell": 96,

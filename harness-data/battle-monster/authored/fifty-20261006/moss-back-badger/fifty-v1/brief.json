@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "moss-back-badger",
+    "name": "이끼등오소리",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "낮고 묵직한 갈색 오소리, 흰 얼굴 줄과 검은 코, 등 위 이끼 덩어리, 큰 앞발/발톱과 짧은 꼬리. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "등을 웅크림 → 뒤발로 낮게 전진 → 연결된 큰 앞발 두들기기 → 지지발 다시 놓기.",
+    "skill": "지근타: 앞발에 황토 기를 모음 → 발바닥에서 세 갈래 돌 파편이 앞쪽으로 솟음 → 발을 들어 부서지는 흙 파편.",
+    "resourceId": "jf-enemy-moss-back-badger",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

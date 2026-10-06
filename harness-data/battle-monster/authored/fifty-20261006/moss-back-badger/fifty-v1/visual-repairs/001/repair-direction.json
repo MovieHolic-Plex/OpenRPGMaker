@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "e558701cf4d699f6c33862e8c15a3ba12e86c20b754413b0a104a56a4562ff63",
+  "priorReviewJob": "e3de8f19-5d91-4a7c-a029-913a1ea7a8f5",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 44,
+      "y": 49,
+      "message": "The rightmost foreleg branches into a narrow diagonal strip and a small dangling foot, making the shoulder-to-paw anatomy hard to read at 1x. Widen the brown upper-foreleg cluster around (43-46,47-51), carry a readable elbow into the forearm, and give its paw a short distinct claw edge near (48-52,56-58). Preserve the intentional gap between the two forelegs. Carry the same anatomical repair through idle_b and idle_c."
+    },
+    {
+      "pose": "attack",
+      "x": 38,
+      "y": 55,
+      "message": "The striking forepaw spreads into a long flat shoe-like wedge ending near x=48, while the arm reads as a weight-bearing leg. Recluster (34-48,52-60) into a visibly enlarged forepaw beneath a compressed wrist, with a distinct toe/claw front and a clear shoulder-to-wrist path. Keep a separate planted support foot so the contact pose reads as the specified heavy paw pound rather than another stride."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 43,
+      "y": 48,
+      "message": "The three dark eye pixels around (42-44,48) retain the open-eye expression seen in active poses. Replace this open cluster with a short closed eyelid and surrounding cream/shadow pixels, keeping the black nose distinct. Apply the matching closed-eye treatment around (42-44,47) in sleep_b while retaining the existing small breathing changes."
+    }
+  ],
+  "startedAt": "2026-10-06T05:58:36.153726+00:00"
+}

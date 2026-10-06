@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T06:07:23.796124+00:00",
+  "passed": true,
+  "key": "moss-back-badger/fifty-v1",
+  "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+  "actualIndependentReviewJob": "588e627f-39f1-40fe-8281-2a17025080fd",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "a3e279ce2834c42c66ae8c6f532e5887544d839652df7be5f5b2ab22e06f7957",
+    "preview/suite/light.png": "696c208627a0aafa9cbc1733ebe381f82ffaefb750369b54a69ecf950493dd1b",
+    "preview/suite/dark.png": "ec11ee2c388eb6b8f211292623e94636f6cc7745f1a19ed51adaf1df13974c2b",
+    "preview/suite/checker.png": "96ef95a33f6f379ebac09bc90760dd33d204eb8c7245457d9111a96c30cf1ad4"
+  },
+  "nativePoses": 18,
+  "rootVisualAndSourceMethodObservations": "Root opened actual current harness18-pose light PNG native1x/nearest3x after real repair. Idle upper foreleg/elbow wider with connected claw paw distinct from other foreleg; attack compressed wrist/large rounded striking paw separate from support foot; sleep closed eyelid separated from nose and existing breath changes retained. Broad brown/moss volume, low stride/windup/recoil/flatdead vs closed sleep, forepaw-origin earth spikes/breakup. Read initial literal block/patch/write and repair_pixels.repair fixedxy string assignments; no body geometry/transforms. Current real keeper0issues/current technical/source and previewhashes match.",
+  "claimScope": "Actual native/source/current18pose images. Native8GIF/selectedZIP/archive/browser governed by separate current audit; gameplay contact not inferred. Full goal50 remains incomplete."
+}
