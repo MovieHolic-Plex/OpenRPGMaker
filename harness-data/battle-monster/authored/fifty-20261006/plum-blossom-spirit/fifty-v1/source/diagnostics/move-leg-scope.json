@@ -1,0 +1,58 @@
+{
+  "note": "Measured file differences only; no independent verdict or user approval.",
+  "changes": [
+    {
+      "x": 46,
+      "y": 81,
+      "before": ".",
+      "after": "C"
+    }
+  ],
+  "changedSourceFiles": [
+    "poses/move.pxgrid"
+  ],
+  "beforeSourceSha256": {
+    "palette.json": "2b0eb021f44bfcdcff443780536680b19a4d2531372b95edf3e2c0c9c7022e82",
+    "poses/attack.pxgrid": "717c425973bb23d0b54605ed4ec9d9b11be671a7381bd89709c216e9af7435c8",
+    "poses/dead.pxgrid": "627951d25495abaaf0f063d4f6dc91a4a67dac744549f4d87d045d27b9a7db1e",
+    "poses/hit.pxgrid": "2b23cb2c16fc8a6f8cb81b6d1ee56f987d6cec8d333916fbe6bb1c5137accfc6",
+    "poses/idle_a.pxgrid": "5707b1f50dd3886c9c5e93fe6c081b8fca51fc4f8564b35d9689eee4c57b378b",
+    "poses/idle_b.pxgrid": "13b2ed56a633e83a3162ce2ac608e29be80b1f908ee34e9b8298c4b63267d3ed",
+    "poses/idle_c.pxgrid": "618378ba152431f88ed2f571405076ff3df1e6748a63f40e640a8b3245143466",
+    "poses/move.pxgrid": "a91cca486f2720b6c19988ff775e567dc2cfff09c66a6edbb20408498feefb3b",
+    "poses/recover.pxgrid": "09b385852ce92c066042c62d6e80078c76d9f5ba896e4d7d08dc6d4a487c9d76",
+    "poses/windup.pxgrid": "8a4f0706016f946f5b7835ec860bbfef7bbd502e2e44f6b79f43289672647688",
+    "actions/poison_a.pxgrid": "4da75ed3f141a7d8aaa488ebfed552e366f24dad42fa8cfc77c97aabf9da432e",
+    "actions/poison_b.pxgrid": "67edba4b8ed1d01b2c5a48bac55166625a87f52a640523efc20ef5b384a55bc5",
+    "actions/skill_a.pxgrid": "e97d8f345a118f94f89497a3d21ad1a95f355806500d3c4728f076bbe57b5203",
+    "actions/skill_b.pxgrid": "f6ffada6cd02ff51e9bd1a73c49abb4aa09b6eee73697f8302c2fa3f0dcb41e0",
+    "actions/skill_c.pxgrid": "8d6bb0826ffa46b7c86cbf62e53f46cac23bc3d3453ef3d02e3e2b61526ae911",
+    "actions/sleep_a.pxgrid": "ddc36fc86845da758e1bdd250484d17b3af619e6c987232b7bce9a9f7b976aef",
+    "actions/sleep_b.pxgrid": "4c5eb8803808ebeb8484aaae1595c8ef3dbb9f1684edb1a0015468b00318d5a6",
+    "actions/stun_a.pxgrid": "2059bdd617c16ed069d049a1daee785446c5c6576203d8b722ad309150909a81",
+    "actions/stun_b.pxgrid": "cd861c8b72fa9eb58a89b0ea03771566d92d8f5de116669a17d0b7ba10e759d4"
+  },
+  "currentSourceSha256": {
+    "palette.json": "2b0eb021f44bfcdcff443780536680b19a4d2531372b95edf3e2c0c9c7022e82",
+    "poses/attack.pxgrid": "717c425973bb23d0b54605ed4ec9d9b11be671a7381bd89709c216e9af7435c8",
+    "poses/dead.pxgrid": "627951d25495abaaf0f063d4f6dc91a4a67dac744549f4d87d045d27b9a7db1e",
+    "poses/hit.pxgrid": "2b23cb2c16fc8a6f8cb81b6d1ee56f987d6cec8d333916fbe6bb1c5137accfc6",
+    "poses/idle_a.pxgrid": "5707b1f50dd3886c9c5e93fe6c081b8fca51fc4f8564b35d9689eee4c57b378b",
+    "poses/idle_b.pxgrid": "13b2ed56a633e83a3162ce2ac608e29be80b1f908ee34e9b8298c4b63267d3ed",
+    "poses/idle_c.pxgrid": "618378ba152431f88ed2f571405076ff3df1e6748a63f40e640a8b3245143466",
+    "poses/move.pxgrid": "0ab2d0b837afe14b08dd96feacc3e6d7f4e82535701a5aecc68eca5b07ff2eb3",
+    "poses/recover.pxgrid": "09b385852ce92c066042c62d6e80078c76d9f5ba896e4d7d08dc6d4a487c9d76",
+    "poses/windup.pxgrid": "8a4f0706016f946f5b7835ec860bbfef7bbd502e2e44f6b79f43289672647688",
+    "actions/poison_a.pxgrid": "4da75ed3f141a7d8aaa488ebfed552e366f24dad42fa8cfc77c97aabf9da432e",
+    "actions/poison_b.pxgrid": "67edba4b8ed1d01b2c5a48bac55166625a87f52a640523efc20ef5b384a55bc5",
+    "actions/skill_a.pxgrid": "e97d8f345a118f94f89497a3d21ad1a95f355806500d3c4728f076bbe57b5203",
+    "actions/skill_b.pxgrid": "f6ffada6cd02ff51e9bd1a73c49abb4aa09b6eee73697f8302c2fa3f0dcb41e0",
+    "actions/skill_c.pxgrid": "8d6bb0826ffa46b7c86cbf62e53f46cac23bc3d3453ef3d02e3e2b61526ae911",
+    "actions/sleep_a.pxgrid": "ddc36fc86845da758e1bdd250484d17b3af619e6c987232b7bce9a9f7b976aef",
+    "actions/sleep_b.pxgrid": "4c5eb8803808ebeb8484aaae1595c8ef3dbb9f1684edb1a0015468b00318d5a6",
+    "actions/stun_a.pxgrid": "2059bdd617c16ed069d049a1daee785446c5c6576203d8b722ad309150909a81",
+    "actions/stun_b.pxgrid": "cd861c8b72fa9eb58a89b0ea03771566d92d8f5de116669a17d0b7ba10e759d4"
+  },
+  "movePngSha256": "b3b1e030464d30045f3f1e3463de53ea9815ee16ec09aef4b1cec7ebf0a37ae5",
+  "attackGifSha256": "b74d15901ced55fd4a9b8b2077586059ff30cac9f5f18045b09d0d05536f003e"
+}

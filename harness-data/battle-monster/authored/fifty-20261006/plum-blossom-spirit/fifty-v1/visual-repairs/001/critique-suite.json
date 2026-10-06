@@ -1,0 +1,25 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the actual portrait and all three background sheets at native 1x and nearest 3x. The adult flower spirit silhouette, ivory jacket, layered crimson skirt and rear blossom branch read clearly. Broad upper-left highlights and right-side shadows give the skirt and sleeves volume. Neck, shoulders, arms and flower stems appear connected; no obvious accidental interior transparency was visible. Standing soles maintain the ground line, and the fallen pose reads as a collapsed body with a dropped branch. Windup gathers the flower at the waist, move exposes stepping legs, attack extends the connected flower branch, and recover retracts it. Skill preparation, three petal rays and scattered-petal recovery form a distinct sequence; the rays originate at the actual flower in the hand. Poison has a hand-to-mouth gesture and green bubbles; stun has closed eyes, slack arms and overhead stars; sleep has closed eyes, folded arms and a seated skirt, with the flower stem continuing across the lap. These are readable authored states rather than simple tints. The main weakness is hit: its upright head, calm open-eyed face and lowered flower arm are too similar to recover to communicate impact at 1x. This is an advisory rework recommendation, not a user selection. Static pose previews cannot establish animation timing, hop trajectory, actual battle presentation or the claimed source authorship; geometry alone does not establish visual approval.",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 38,
+      "message": "Re-pixel the head/neck/shoulder cluster into a visible backward recoil, carrying the bend into the torso around (46,55), and change the calm open-eyed face to a tense or closed-eye impact expression around (51,30). Preserve connected neck and sleeve pixels and grounded soles at y=92. The current upright head and lowered flower arm read almost like recover; the narrower skirt alone does not make the hit state clear at native 1x."
+    }
+  ],
+  "binding": "41cc662321b569bc4830dc752722523892d44ea44f3ca8b5c28fe56a79179d21",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7cdff30722f6f0953c1ac08025e5ebf31c3722e8ef5f2616d6f7fb1915418d63",
+    "preview/suite/light.png": "d822b06735e5c8b9df1676a573ec2769f4e0edd1b1de17ef2c2ed661a2b58d35",
+    "preview/suite/dark.png": "15af8c74e3dd628a572cb6a82a8b5f8dd121d393fe56a9932ba61fa83f0d1ab3",
+    "preview/suite/checker.png": "d8598340b380ea1a4db5a5ac0c965d298c871a3a24dce599a84aa7aabc8d323e"
+  },
+  "jobId": "d3b96986-638f-421b-8aea-c46db80ad1d5",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:34:06.921692+00:00",
+  "userApproved": false
+}

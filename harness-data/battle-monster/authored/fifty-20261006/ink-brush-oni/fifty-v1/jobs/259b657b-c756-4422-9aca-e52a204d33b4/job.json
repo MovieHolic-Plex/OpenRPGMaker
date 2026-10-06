@@ -1,0 +1,43 @@
+{
+  "id": "259b657b-c756-4422-9aca-e52a204d33b4",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T07:23:35.884166+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/jobs/259b657b-c756-4422-9aca-e52a204d33b4",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "49d2f98721fda8887862dab5de9c1df536f49d8bd13ff322d672be34026eaadc",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "77285f66daadffd7d90722ec8463a858a6933523405487edd9a0fe68debedb0a",
+    "preview/suite/light.png": "b32ab919511c7f96a0a4b13a6cb8099f79d36b5f138990943bac015ed2e4ff31",
+    "preview/suite/dark.png": "479141d0f85a21c0b62bce695f7526666b6277040ab6219c3f9983c8a1a83cb8",
+    "preview/suite/checker.png": "b0bfbd42eefa56df8c0e287312d25dd256f6df1221c23dbfc62d26cbebc0019c"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T07:26:13.500313+00:00"
+}

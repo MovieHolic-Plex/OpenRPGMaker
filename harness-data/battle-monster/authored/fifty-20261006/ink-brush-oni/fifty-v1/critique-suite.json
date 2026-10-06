@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the four supplied actual PNGs at native 1x and the sheets' nearest 3x. The tall ink-dark gat, short pale beard, bulky grey-brown robe, small shoes and separate wooden shaft/black bristles read clearly. Broad upper-left highlights and right-side shadows give the cloth, hat and brush volume; dark-background contrast is weakest at the hat underside, soles and small ink droplets, but the main forms remain readable. No obvious unintended transparent holes or missing connections at the neck, shoulders, limbs or gripping hand were visible on the checker preview. Windup places the brush behind the body, move widens the stance, attack swings the connected brush diagonally down toward the right, and recover draws it back across the waist. Hit has a modest head/hat recoil and guarded arm; dead is a distinct grounded collapse with the dropped hat and brush. Standing soles share the ground line; move and skill contact lift slightly, consistent with the specified hop. Skill preparation raises the loaded bristles, contact sends three unequal ink masses from the actual held brush, and recovery raises the brush with broken droplets. The contact effect crowds the right margin but retains an outline and a clear hand/shaft connection. Poison uses a hand-to-face sick posture, stun slumps with closed eyes and stars, and sleep crouches with closed eyes and the brush lowered; these are distinct drawn states, not palette tints. Pair changes are subtle posture/particle changes suitable for short loops. This is a visual recommendation only; static pose previews cannot establish animation timing, in-battle readability, hop landing continuity, runtime state behavior or the claimed source authorship. Final selection remains with the user.",
+  "issues": [],
+  "binding": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "999a7189786eeace2ae94f7c3a33f621ad50b2107caae506b70169b8c92693e0",
+    "preview/suite/light.png": "c8ff0909eb21883df1c07e1338094813786a6bc6848e7a9dcc5bd9b9e7ba2263",
+    "preview/suite/dark.png": "6b71f548243d4b495c694aa7f3e77546ee502948bf4df42f65b8cf8f7755650f",
+    "preview/suite/checker.png": "423aaa247dd58e420933a4dde7a7ac03ea6dceadc027581bfa67f60efe8a11bd"
+  },
+  "jobId": "89f6611a-d008-4725-a1e8-4e0d577970a8",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:55:37.267983+00:00",
+  "userApproved": false
+}

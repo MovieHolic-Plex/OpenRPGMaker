@@ -1,0 +1,241 @@
+{
+  "cell": 96,
+  "paletteColors": 18,
+  "frames": {
+    "idle_a": {
+      "gridSha256": "5707b1f50dd3886c9c5e93fe6c081b8fca51fc4f8564b35d9689eee4c57b378b",
+      "rgbaSha256": "7d41bfbd743ee4113940b61cdb7885676e858fd44cef6b2320dd64053d3b6935",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "idle_b": {
+      "gridSha256": "13b2ed56a633e83a3162ce2ac608e29be80b1f908ee34e9b8298c4b63267d3ed",
+      "rgbaSha256": "0feb87e376b34b446a578d4e85a28bfdffd33672da028004145389ecda2b00b6",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "idle_c": {
+      "gridSha256": "618378ba152431f88ed2f571405076ff3df1e6748a63f40e640a8b3245143466",
+      "rgbaSha256": "6a84a5ea385398f01e0bc62ee2d1c29b003b0250813e2fa296e44efa5f1ad557",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "windup": {
+      "gridSha256": "8a4f0706016f946f5b7835ec860bbfef7bbd502e2e44f6b79f43289672647688",
+      "rgbaSha256": "442aa9a6522fd6b85365a80dc51076e6685b472580745c55a1191f29ade673de",
+      "lowestInkY": 92,
+      "colorsUsed": 16
+    },
+    "move": {
+      "gridSha256": "a91cca486f2720b6c19988ff775e567dc2cfff09c66a6edbb20408498feefb3b",
+      "rgbaSha256": "fc46f59aa70956be9b55dfaafdcde8032daed95d8ff1469616a12bdd85bd0482",
+      "lowestInkY": 92,
+      "colorsUsed": 16
+    },
+    "attack": {
+      "gridSha256": "717c425973bb23d0b54605ed4ec9d9b11be671a7381bd89709c216e9af7435c8",
+      "rgbaSha256": "61e2a1f5599be10ab7edda82f491f490397ba869f3ef415695bd867e8b170428",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "recover": {
+      "gridSha256": "09b385852ce92c066042c62d6e80078c76d9f5ba896e4d7d08dc6d4a487c9d76",
+      "rgbaSha256": "265b7ea9c5586e11bd2af7714daeaa1d20cfac0c18395f17f8a68d16f4c2477f",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "hit": {
+      "gridSha256": "b0e0c974a35b3eeb6c101c769f88ee340ea9f21f9c8d6803551dcfc93f64fd0b",
+      "rgbaSha256": "31c1289a1163e8c386fdb5a149fa852aa56bf0f560cb6dce9e0697cab622d012",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "dead": {
+      "gridSha256": "08b14b1338393f1a052ba23e65a08a554ca5107b3a01661f831e04a04248b0d9",
+      "rgbaSha256": "a001f1683ed84b18cbe3e8fa9a1ed131ce8eb29021c15c5f27034da7d511cf79",
+      "lowestInkY": 92,
+      "colorsUsed": 16
+    },
+    "skill_a": {
+      "gridSha256": "e97d8f345a118f94f89497a3d21ad1a95f355806500d3c4728f076bbe57b5203",
+      "rgbaSha256": "4db948501150af1dc73c9dac725286d084feb784fab0d484681555f5b163ffe6",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "skill_b": {
+      "gridSha256": "fcffda589450d77d4974c5952ebc6535bc35b1ab470c0878738b26740ecea65e",
+      "rgbaSha256": "b1a7a5dfd355adfc79ccab870246786cdd36acd431ca91cf615053a7a4c6bbdd",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "skill_c": {
+      "gridSha256": "8d6bb0826ffa46b7c86cbf62e53f46cac23bc3d3453ef3d02e3e2b61526ae911",
+      "rgbaSha256": "6a4089a473ad0f51851db62cb389dd797740d6d60f45bfebaab3741fbb05a36c",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "poison_a": {
+      "gridSha256": "4da75ed3f141a7d8aaa488ebfed552e366f24dad42fa8cfc77c97aabf9da432e",
+      "rgbaSha256": "d20138e12243f6af361f13cabcb440a9034df3b97f80d6c810a6afa78f7d6549",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "poison_b": {
+      "gridSha256": "67edba4b8ed1d01b2c5a48bac55166625a87f52a640523efc20ef5b384a55bc5",
+      "rgbaSha256": "dd6038e0e8d4b8152c235cf0719eeae0ea6f65a4a92ca788ea10ae11ade0b1ce",
+      "lowestInkY": 92,
+      "colorsUsed": 18
+    },
+    "stun_a": {
+      "gridSha256": "2059bdd617c16ed069d049a1daee785446c5c6576203d8b722ad309150909a81",
+      "rgbaSha256": "4ed7294f3e6316fb7c8ba939188f6e4a7adceb1f5c4441b1c0d7174f0f5752e9",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "stun_b": {
+      "gridSha256": "cd861c8b72fa9eb58a89b0ea03771566d92d8f5de116669a17d0b7ba10e759d4",
+      "rgbaSha256": "f342084b02c1add65d13794562a405ba86eb1a5ecf4eec34f622ef0048581c40",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "sleep_a": {
+      "gridSha256": "ddc36fc86845da758e1bdd250484d17b3af619e6c987232b7bce9a9f7b976aef",
+      "rgbaSha256": "46cefac92ceb0ea7592a4df743a548ffa3ed2244c0bed6d990875ec42966bbd4",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    },
+    "sleep_b": {
+      "gridSha256": "4c5eb8803808ebeb8484aaae1595c8ef3dbb9f1684edb1a0015468b00318d5a6",
+      "rgbaSha256": "02300c4fd5faa51ec2647e881387b8c718e8ea3c81d50f54d68d32114b9273ed",
+      "lowestInkY": 92,
+      "colorsUsed": 17
+    }
+  },
+  "clips": {
+    "idle": [
+      [
+        "idle_a",
+        240
+      ],
+      [
+        "idle_b",
+        240
+      ],
+      [
+        "idle_c",
+        240
+      ]
+    ],
+    "attack": [
+      [
+        "idle_a",
+        240
+      ],
+      [
+        "windup",
+        260
+      ],
+      [
+        "move",
+        140
+      ],
+      [
+        "attack",
+        180
+      ],
+      [
+        "recover",
+        220
+      ],
+      [
+        "idle_a",
+        300
+      ]
+    ],
+    "hit": [
+      [
+        "idle_a",
+        240
+      ],
+      [
+        "hit",
+        260
+      ],
+      [
+        "recover",
+        220
+      ],
+      [
+        "idle_a",
+        300
+      ]
+    ],
+    "dead": [
+      [
+        "idle_a",
+        240
+      ],
+      [
+        "hit",
+        200
+      ],
+      [
+        "dead",
+        1100
+      ]
+    ],
+    "skill": [
+      [
+        "idle_a",
+        240
+      ],
+      [
+        "skill_a",
+        420
+      ],
+      [
+        "skill_b",
+        260
+      ],
+      [
+        "skill_c",
+        380
+      ],
+      [
+        "idle_a",
+        300
+      ]
+    ],
+    "poison": [
+      [
+        "poison_a",
+        380
+      ],
+      [
+        "poison_b",
+        380
+      ]
+    ],
+    "stun": [
+      [
+        "stun_a",
+        440
+      ],
+      [
+        "stun_b",
+        440
+      ]
+    ],
+    "sleep": [
+      [
+        "sleep_a",
+        600
+      ],
+      [
+        "sleep_b",
+        600
+      ]
+    ]
+  },
+  "note": "Format and export diagnostics only. No independent visual verdict or user selection."
+}

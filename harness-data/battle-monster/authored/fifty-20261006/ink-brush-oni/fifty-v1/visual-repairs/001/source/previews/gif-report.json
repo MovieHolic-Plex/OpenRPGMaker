@@ -1,0 +1,78 @@
+{
+  "idle": {
+    "frame_count": 4,
+    "durations_ms": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "gif_sha256": "b4e2532e558f726859eedad6f25b5b614e54af55575b86c9171bc0db3f72836e"
+  },
+  "attack": {
+    "frame_count": 6,
+    "durations_ms": [
+      320,
+      280,
+      120,
+      100,
+      220,
+      320
+    ],
+    "gif_sha256": "b6f2a99b137b08a3320e48426bcb8b40d44983c2a0be4583b993604a27fa9dea"
+  },
+  "hit": {
+    "frame_count": 4,
+    "durations_ms": [
+      400,
+      200,
+      240,
+      400
+    ],
+    "gif_sha256": "8c596c7f3f5139fb43af3afd78438c878eb0e920211af0069c88f197fa91963d"
+  },
+  "dead": {
+    "frame_count": 3,
+    "durations_ms": [
+      360,
+      180,
+      1400
+    ],
+    "gif_sha256": "9d4bcf6175b239612aefe96a71f3d0c1434283840df020ace058ed5b200085f9"
+  },
+  "skill": {
+    "frame_count": 5,
+    "durations_ms": [
+      320,
+      400,
+      180,
+      320,
+      400
+    ],
+    "gif_sha256": "6e9a24a48a13425fcebfe0f7a110ae0aad5639eacc36baeccee03c17e2dd20a2"
+  },
+  "poison": {
+    "frame_count": 2,
+    "durations_ms": [
+      440,
+      440
+    ],
+    "gif_sha256": "fe458835e3c53889d3b5d2f8adee8255eed16219ada54557d09cf674d04460e3"
+  },
+  "stun": {
+    "frame_count": 2,
+    "durations_ms": [
+      520,
+      520
+    ],
+    "gif_sha256": "6ef4216bec5461c6cafceab7c9cd94b40c7af7c41ae407e9e055df7ae76c940e"
+  },
+  "sleep": {
+    "frame_count": 2,
+    "durations_ms": [
+      800,
+      900
+    ],
+    "gif_sha256": "86fbbd53aa0be205a268fe47f44eb4a186f48654b3c683aff742f3a8bafe6277"
+  }
+}

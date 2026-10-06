@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 1x and nearest 3x pose panels. The gat, short pale beard, broad robe and separate wooden shaft/black bristles form a readable silhouette. Broad shoulder highlights and shaded sleeves support upper-left lighting; the dark brush and shoes lose some definition on the dark background. No obvious unintended transparent body holes or missing limb outlines were visible on the checker panels. Standing soles share the ground line, the stride opens clearly, and the prone death pose is distinct. Windup, stride, diagonal strike and horizontal recovery read as a related brush attack; hit recoil is relatively restrained. The skill has a brush-tip preparation, an attached ink fan with three asymmetric outgoing masses, and raised-brush droplets. Poison uses a hand at the face, stun uses a slack arm and stars, and sleep uses a seated, closed-eye posture; these are authored states rather than tints or unrelated attacks. However, the skill recovery grip and both poison grips do not convincingly hold the visible shaft. Repair those local connections. This is a visual recommendation, not a user selection. Static previews cannot establish animation timing, actual battle contact, runtime hop motion, alpha compliance or literal-grid authorship.",
+  "issues": [
+    {
+      "pose": "skill_c",
+      "x": 67,
+      "y": 51,
+      "message": "The upright shaft at x65-68, y43-49 ends against the sleeve at y50, while the open palm extends to its right at roughly x69-77, y52-55. Continue the wooden shaft through the grip to about y56 and redraw the thumb/finger skin clusters around it. Keep a visible shaft segment below the fist so the raised brush is held by the hand rather than terminating inside the cuff."
+    },
+    {
+      "pose": "poison_a",
+      "x": 46,
+      "y": 72,
+      "message": "The waist hand encloses a short wood-colored stub around x44-47, y69, but the long horizontal brush shaft runs separately at y73-75. Cloth occupies the intervening rows, so the brush appears to float below the fist. Redraw the grip down onto the horizontal shaft, with thumb and fingers wrapping it near x45-49, y73-75, and remove or connect the isolated wooden stub. Preserve the other hand at the face."
+    },
+    {
+      "pose": "poison_b",
+      "x": 46,
+      "y": 72,
+      "message": "The same waist-hand/shaft mismatch remains in this frame: the short wooden stub in the fist ends above the horizontal shaft at y73-75. Apply the corresponding connected grip repair near x45-49, y73-75 while retaining this frame's shifted poison bubbles and subtle posture variation."
+    }
+  ]
+}

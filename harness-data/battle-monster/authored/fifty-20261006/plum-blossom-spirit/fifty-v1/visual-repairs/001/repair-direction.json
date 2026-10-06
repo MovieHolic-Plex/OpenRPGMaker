@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "41cc662321b569bc4830dc752722523892d44ea44f3ca8b5c28fe56a79179d21",
+  "priorReviewJob": "d3b96986-638f-421b-8aea-c46db80ad1d5",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 38,
+      "message": "Re-pixel the head/neck/shoulder cluster into a visible backward recoil, carrying the bend into the torso around (46,55), and change the calm open-eyed face to a tense or closed-eye impact expression around (51,30). Preserve connected neck and sleeve pixels and grounded soles at y=92. The current upright head and lowered flower arm read almost like recover; the narrower skirt alone does not make the hit state clear at native 1x."
+    }
+  ],
+  "startedAt": "2026-10-06T07:34:06.942902+00:00"
+}

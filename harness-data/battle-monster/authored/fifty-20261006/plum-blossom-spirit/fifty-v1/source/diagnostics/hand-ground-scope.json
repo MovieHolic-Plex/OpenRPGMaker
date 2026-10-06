@@ -1,0 +1,31 @@
+{
+  "note": "Observed source differences and file hashes, no approval or review verdict.",
+  "frames": {
+    "skill_b": {
+      "beforeGridSha256": "fcffda589450d77d4974c5952ebc6535bc35b1ab470c0878738b26740ecea65e",
+      "currentGridSha256": "f6ffada6cd02ff51e9bd1a73c49abb4aa09b6eee73697f8302c2fa3f0dcb41e0",
+      "currentPngSha256": "ba9be23a094fef25c4266a6dddd0f0ddb5286aea9c1d32af553d4a42d15f9d40",
+      "changedPixels": 24,
+      "changedBounds": [
+        63,
+        45,
+        70,
+        48
+      ],
+      "bodyGroundRunsY92": ".......................................OHHHHHO.OHHHHHHO........................................."
+    },
+    "dead": {
+      "beforeGridSha256": "08b14b1338393f1a052ba23e65a08a554ca5107b3a01661f831e04a04248b0d9",
+      "currentGridSha256": "627951d25495abaaf0f063d4f6dc91a4a67dac744549f4d87d045d27b9a7db1e",
+      "currentPngSha256": "606e50e2d95e7ce01e09062cdbc83776d2efa6a77c6e9f94dcb01c43ceb38c9d",
+      "changedPixels": 388,
+      "changedBounds": [
+        20,
+        83,
+        72,
+        92
+      ],
+      "bodyGroundRunsY92": "...............................OOOOOOO........OOOOOOOOOOOOOOOOOOOOOOOOOO........................"
+    }
+  }
+}

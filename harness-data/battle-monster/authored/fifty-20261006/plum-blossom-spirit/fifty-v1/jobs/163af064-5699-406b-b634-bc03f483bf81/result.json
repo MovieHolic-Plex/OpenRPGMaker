@@ -1,0 +1,12 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed all four actual PNGs, including native 1x and nearest 3x panels on light, dark and checker backgrounds. The adult flower spirit reads clearly: black swept hair and red pin, ivory crossed jacket, layered crimson skirt, rear plum branch and held blossom. Broad upper-left highlights and right-side shadows give the skirt and sleeves volume; hair highlights preserve its shape on dark backgrounds. Neck, shoulders, wrists and visible legs remain connected, with no conspicuous accidental transparent holes through the main body. Idle feet share a stable ground line; movement and attack show bent legs and displaced skirt folds. Waist-level windup, outward flower-branch strike, lowered recovery, recoil and horizontal collapse are distinguishable. Skill preparation raises the blossom; three pink petal blades originate at the held flower beside the wrist; recovery lowers that hand and releases separate petals. Poison uses a hand-to-mouth posture and green bubbles, stun uses a slack closed-eye stance and stars, and sleep uses a seated closed-eye posture; these are distinct states rather than color tints. Paired states have restrained changes. One minor sleeve-edge cleanup is listed. Static pose previews cannot establish hop timing, ground contact throughout playback, attack impact, actual battle readability, or literal pxgrid authorship. This recommendation is advisory and does not record a user selection.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 58,
+      "y": 52,
+      "message": "Minor cleanup: the lower edge of the extended upper sleeve trails downward as a one-pixel strand around x=58, y=51–55, ending in an isolated-looking flesh/outline tip beneath the elbow. Shorten this spur to the sleeve underside, or give an intentional hanging sleeve flap a small filled cloth cluster and a closed taper, so it does not read as a dangling extra limb or loose thread. Preserve the intended transparent gap between arm and torso."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-06T08:00:42.252196+00:00",
+  "passed": true,
+  "key": "ink-brush-oni/fifty-v1",
+  "binding": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+  "actualIndependentReviewJob": "89f6611a-d008-4725-a1e8-4e0d577970a8",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "999a7189786eeace2ae94f7c3a33f621ad50b2107caae506b70169b8c92693e0",
+    "preview/suite/light.png": "c8ff0909eb21883df1c07e1338094813786a6bc6848e7a9dcc5bd9b9e7ba2263",
+    "preview/suite/dark.png": "6b71f548243d4b495c694aa7f3e77546ee502948bf4df42f65b8cf8f7755650f",
+    "preview/suite/checker.png": "423aaa247dd58e420933a4dde7a7ac03ea6dceadc027581bfa67f60efe8a11bd"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContacts": [
+    "verify-shots/battle-monster-fifty/native-contact-ink-brush-oni.png",
+    "verify-shots/battle-monster-fifty/native-contact-ink-brush-oni-dark.png"
+  ],
+  "nativeContactPngSha256": [
+    "298150bfdbad515c062caa5856f10ec859362d43a715225d650b24def5192ade",
+    "31fefc1495648640450582dc16e86e55fb61df5103d422604067a0ce80f62bf6"
+  ],
+  "nativeWriterFilesRead": {
+    "author.py": "6b42fb1092dbc397fed9e7fede8bf28508e8dd39f184b599d34632b9cb4bb65e",
+    "repair.py": "c8acf317c4f9d40fc70b1ad2cc3b25e6e6998079fd81cc808832a45745211311",
+    "repair_reaction_contrast.py": "58499190bda4769d16620cfdd16d12667a603da518ddcdc5cb9e1bcbbddd681f",
+    "repair_status_grips.py": "dcc0005564e6f72250b19663ac17fb3117c5e8016d9226c16e3260aa97377eab",
+    "repair_dark_material.py": "e44e45069db5d65dfbbb2d2cef7e5eadd1a497872f2027c5592846877aaacdb7"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened current actual18pose light+dark compactnative1x/nearest2x1248x984 without resizing. Quietadultbeardedface/widegat/graybrown broadrobe; singlebrushaxis throughidlegrip, raisedrearbrush withreadablecrossbodyhand, forwardlongstride/sweep, tenseclosedeyebackwardfoldedcoat/angledbrush hit differingfromhorizontallowrecover. Flatfallen vsseatedclosedeyesleep. Skillhold/3asymmetricinkdrops frombristletip/recoverypieces; bluegraybristle/drop/shoeplanes readableondark. Recoveryraisedwoodshaft continues belowfist withthumb/fingers around it; poisonwaisthand wraps actualhorizontalshaft and otherhand touchesface. Four real prior reworks and new keeper0issues retained. Read all five nativewriter files/functions including current hooks and repair_dark_material.apply opaque-only guard. Literal perpose y/x runs/HIT_COAT/HIT_TOOL/fixedspanpatches only; no nativegeometry/wholeframetransform. All18 current nativePNG RGBA exactlyequal canonicalASCII/palette.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

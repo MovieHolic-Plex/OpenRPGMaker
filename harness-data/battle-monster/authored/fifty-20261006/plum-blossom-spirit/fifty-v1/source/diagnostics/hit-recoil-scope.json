@@ -1,0 +1,14 @@
+{
+  "changedPaletteOrGridFiles": [
+    "poses/hit.pxgrid"
+  ],
+  "changedHitPixelCount": 783,
+  "changedBoundsXY": [
+    29,
+    17,
+    58,
+    57
+  ],
+  "lowestInkY": 92,
+  "note": "Source scope and coordinates only; no visual verdict or selection."
+}

@@ -154,6 +154,17 @@
     "selectedPackSha256": "9f28271fc028b8b33126e6cbe3b5d1c53574290555a3232bf97940fa511f54c2"
   },
   {
+    "key": "ink-brush-oni/fifty-v1",
+    "binding": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "2764fb6efcc4573addb192663a81daba20b13c452da5b2cf7230a42cb78b3963"
+  },
+  {
     "key": "moon-disk-spirit/fifty-v1",
     "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
     "nativeCell": 96,
@@ -163,6 +174,17 @@
     "currentAllow": true,
     "sourceArchiveReread": true,
     "selectedPackSha256": "fb9289e20bbfad0aa30b276c4c012f886ae9552806cb39686f9dd974635583a3"
+  },
+  {
+    "key": "plum-blossom-spirit/fifty-v1",
+    "binding": "5285ecd41d425d19ad5f852995102a0ad7895cf9336747c7cb4c6323a3f0578d",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "941a234431e661caba6f1f1463930da18a46f59f0580f88cfa2786bc860c4ec0"
   },
   {
     "key": "red-tassel-swordswoman/fifty-v1",

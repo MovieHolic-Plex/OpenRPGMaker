@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "ink-brush-oni",
+    "source": "qa-runs/harnesses/battle-monster/ink-brush-oni/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "3b196a51c5f783fd93a14a3e9081a1dca3e956984508a593b844b3f750e3f6f0",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:00:49.661769+00:00",
+    "binding": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moon-disk-spirit",
+    "source": "qa-runs/harnesses/battle-monster/moon-disk-spirit/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "dcdfe21ddbd3a06ba2c3af57f5df6b1b1c7c3f8b4837ffe8bf82753c679e3c8b",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:00:49.661769+00:00",
+    "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "plum-blossom-spirit",
+    "source": "qa-runs/harnesses/battle-monster/plum-blossom-spirit/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "f6ffada6cd02ff51e9bd1a73c49abb4aa09b6eee73697f8302c2fa3f0dcb41e0",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:00:49.661769+00:00",
+    "binding": "5285ecd41d425d19ad5f852995102a0ad7895cf9336747c7cb4c6323a3f0578d",
+    "entireGoalCompleteClaim": false
+  }
+]

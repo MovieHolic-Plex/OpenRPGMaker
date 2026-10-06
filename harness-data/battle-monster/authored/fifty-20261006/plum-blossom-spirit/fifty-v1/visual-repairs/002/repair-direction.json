@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "59dcbfde39c227789a521ae2cafe3c8f3d044e0a2ffb2a262e145615b9fc83da",
+  "priorReviewJob": "c764bb90-62df-45e6-8823-b4e281ae408b",
+  "issues": [
+    {
+      "pose": "skill_b",
+      "x": 67,
+      "y": 46,
+      "message": "At x65-68, y45-47, a second flesh-colored palm cluster repeats the connected hand at x59-63 without a second anatomical arm. It makes the wrist-to-flower connection read as two hands in series. Remove or recolor this extra skin cluster, retain one continuous cuff/wrist/palm, and connect its grip directly to the flower stem. Keep all three petal rays rooted in the actual blossom core around x64-65, y43-44."
+    },
+    {
+      "pose": "dead",
+      "x": 64,
+      "y": 88,
+      "message": "The fallen body's shoe outline ends at y88, and the torso/skirt contact ends higher, while a detached dropped branch alone reaches baseline y92. The body therefore reads as floating above the floor. Repose or lower the weight-bearing body outline so the fallen body itself contacts y92, keeping the neck, sleeve and skirt continuous; detached branch fragments and petals should not supply its ground contact."
+    }
+  ],
+  "startedAt": "2026-10-06T07:43:30.522898+00:00"
+}

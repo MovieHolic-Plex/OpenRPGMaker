@@ -45,7 +45,8 @@ with (archive / '.archive.lock').open('a') as lock:
         else:
             pilot = read(evidence / 'pilot-root-review.json')
             assert pilot['passed'] and pilot['rootReadActual18PosePngPerSpecies']
-            root = next(r for r in pilot['items'] if r['monster'] == ident)
+            root = next((r for r in pilot['items'] if r['monster'] == ident), None)
+            assert root is not None, 'Actual root native review still pending: ' + key
         assert root['passed'] and root['binding'] == binding
         assert root.get('nativePoses') == 18 or root.get('rootViewedActual18PosePng')
         live = repo / 'qa-runs/harnesses/battle-monster' / key

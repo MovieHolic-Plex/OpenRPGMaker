@@ -1,0 +1,25 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed all four actual PNGs, including native 1x and nearest 3x panels on light, dark and checker backgrounds. The adult flower spirit reads clearly: black swept hair and red pin, ivory crossed jacket, layered crimson skirt, rear plum branch and held blossom. Broad upper-left highlights and right-side shadows give the skirt and sleeves volume; hair highlights preserve its shape on dark backgrounds. Neck, shoulders, wrists and visible legs remain connected, with no conspicuous accidental transparent holes through the main body. Idle feet share a stable ground line; movement and attack show bent legs and displaced skirt folds. Waist-level windup, outward flower-branch strike, lowered recovery, recoil and horizontal collapse are distinguishable. Skill preparation raises the blossom; three pink petal blades originate at the held flower beside the wrist; recovery lowers that hand and releases separate petals. Poison uses a hand-to-mouth posture and green bubbles, stun uses a slack closed-eye stance and stars, and sleep uses a seated closed-eye posture; these are distinct states rather than color tints. Paired states have restrained changes. One minor sleeve-edge cleanup is listed. Static pose previews cannot establish hop timing, ground contact throughout playback, attack impact, actual battle readability, or literal pxgrid authorship. This recommendation is advisory and does not record a user selection.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 58,
+      "y": 52,
+      "message": "Minor cleanup: the lower edge of the extended upper sleeve trails downward as a one-pixel strand around x=58, y=51–55, ending in an isolated-looking flesh/outline tip beneath the elbow. Shorten this spur to the sleeve underside, or give an intentional hanging sleeve flap a small filled cloth cluster and a closed taper, so it does not read as a dangling extra limb or loose thread. Preserve the intended transparent gap between arm and torso."
+    }
+  ],
+  "binding": "5285ecd41d425d19ad5f852995102a0ad7895cf9336747c7cb4c6323a3f0578d",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7cdff30722f6f0953c1ac08025e5ebf31c3722e8ef5f2616d6f7fb1915418d63",
+    "preview/suite/light.png": "580c5c2c353876b0e4f1f09a94e4c3d010a84514a6ae1352dc429441e72eeaa8",
+    "preview/suite/dark.png": "2c34d525561cb9e0e9f153e39b1f821cad19334268b6285058e63d6239247a75",
+    "preview/suite/checker.png": "1b03bfa512d433ce61c905d641980cf0820d746c4f0da614a2a65e171e24c511"
+  },
+  "jobId": "163af064-5699-406b-b634-bc03f483bf81",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:57:15.795623+00:00",
+  "userApproved": false
+}

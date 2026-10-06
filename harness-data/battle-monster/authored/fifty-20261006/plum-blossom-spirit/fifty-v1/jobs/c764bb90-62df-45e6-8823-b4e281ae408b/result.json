@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected all four actual PNGs, including native 1x and nearest 3x views. The adult flower-spirit silhouette, black hair/red pin, ivory jeogori and layered crimson skirt are recognizable and face right. Broad upper-left highlights and right-side shadows give the skirt and sleeves readable volume; the dark hair loses some edge contrast on the dark background. Neck, shoulders, standing legs and most hand/stem connections read continuously, with no obvious enclosed transparent holes in the body. Windup gathers the flower hand at the waist, move/attack expose stepping feet, recover lowers the hand, and hit recoils. Standing soles remain consistent with the baseline. Skill preparation, three-ray release and scattered-petal recovery form a distinct sequence originating around the hand-held blossom, but the release contains an extra hand-like cluster. Poison has a hand-to-mouth posture and bubbles; stun has a tilted head, limp arms and stars; sleep is seated with closed eyes. These are readable posture changes rather than tints or unrelated attacks, although changes within the status pairs are subtle. The fallen body appears suspended above its intended ground line. Recommendation only; no user selection is made. These are static pose previews, not battle footage: animation timing, actual runtime grounding/contact and looping cannot be confirmed. PNGs alone cannot establish literal-grid authorship or model provenance, and geometry PASS would not resolve the visual issues below. Coordinates are zero-based native 96x96 cell coordinates.",
+  "issues": [
+    {
+      "pose": "skill_b",
+      "x": 67,
+      "y": 46,
+      "message": "At x65-68, y45-47, a second flesh-colored palm cluster repeats the connected hand at x59-63 without a second anatomical arm. It makes the wrist-to-flower connection read as two hands in series. Remove or recolor this extra skin cluster, retain one continuous cuff/wrist/palm, and connect its grip directly to the flower stem. Keep all three petal rays rooted in the actual blossom core around x64-65, y43-44."
+    },
+    {
+      "pose": "dead",
+      "x": 64,
+      "y": 88,
+      "message": "The fallen body's shoe outline ends at y88, and the torso/skirt contact ends higher, while a detached dropped branch alone reaches baseline y92. The body therefore reads as floating above the floor. Repose or lower the weight-bearing body outline so the fallen body itself contacts y92, keeping the neck, sleeve and skirt continuous; detached branch fragments and petals should not supply its ground contact."
+    }
+  ]
+}
