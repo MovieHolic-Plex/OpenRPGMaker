@@ -2174,6 +2174,8 @@ assert sorted(EBT['kits']) == sorted(TST), (len(EBT['kits']), len(TST))
 VEH = json.load(open(os.path.join(ROOT, 'src', 'assets', 'jpCityVehicles.json'), encoding='utf-8'))['vehicles']
 _PLAT = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-platform.map.json'), encoding='utf-8'))
 _PLAT_REP = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-platform.report.json'), encoding='utf-8'))
+_TRAM = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'tramstreet.map.json')))
+_TRAM_REP = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'tramstreet.report.json')))
 _CONC = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-concourse.map.json'), encoding='utf-8'))
 assert _PLAT_REP['ok'] and _PLAT_REP['anchors']['allReached'], _PLAT_REP['anchors']
 TRN_GROUPS = [
@@ -2224,8 +2226,11 @@ def doc_trn_rules():
 ## 노면전차 거리 (키트 {len(TRS)}종, 그림 `jp-img-transit-street-scene`)
 - 단면(북→남): 보도 3 · 동쪽행 차로 3 · 동쪽행 레일 2 · 사이 1 · 서쪽행 레일 2 · 서쪽행 안전지대 섬 2(`jp-tram-stop`, 동쪽 끝 導流帯 `jp-tram-stop-zebra`) · 서쪽행 차로 3 · 보도 3. 차로 폭 3칸 = 차 몸 2칸 + 여유.
 - 레일 `jp-tram-rail-h`/`-v` 는 **2층**(투명 덧그림 — 아스팔트 위). 1층에 찍으면 아스팔트가 사라진다.
-- 가선 `jp-tram-wire-h`(2칸 반복)는 **4층**, 동행·서행 궤도 각각 윗행 **−5행**. 센터 전주 `jp-tram-pole-c`(1×9)는 복선 사이 빈 행에 밑동을 두고(키트 윗행 = 동행 궤도 윗행 −6), 16~24칸 간격으로 세운다. 보도에는 전주를 세우지 않는다(출입문·간판 앞을 막는다).
-- 단선 종점은 그 선로 동쪽 끝에 차막이 `jp-tram-rail-end`.
+- 가선 `jp-tram-wire-h`(2칸 반복)는 **4층**, 동행·서행 궤도 각각 윗행 **−2행**(전차 `jp-tram` 팬터그래프 끝이 닿는 높이). 센터 전주 `jp-tram-pole-c`(1×6)는 복선 사이 빈 행에 밑동(키트 윗행 = 동행 궤도 윗행 −3), 16~24칸 간격. 보도에는 전주를 세우지 않는다(출입문·간판 앞을 막는다).
+- 횡단보도는 **보도 → 차로 → 섬 → 두 궤도 → 차로 → 보도** 끝까지 4칸 폭으로 잇고(궤도 위 흰 줄은 레일 사이만), 북쪽 끝 보도에 보행 신호기 `jp-tram-ped-signal`. 지하철 출입구 앞에서 건너오게 둔다.
+- 섬이 없는 방향(동쪽행)의 승강 자리는 보도 맨 아랫행에 `jp-tram-curb-stop`(2층, 노란 점자 띠)을 섬 맞은편에 가로로.
+- 차막이 `jp-tram-rail-end` 는 **단선 종점 전용** — 복선 장면에는 쓰지 않는다(좌측통행 서쪽행 궤도는 동쪽에서 들어온다).
+- 차 흐름: 궤도(2층 레일) 칸은 차도에서 빠지므로 `set_map_transit` auto 가 북쪽 차로 = 동쪽행, 남쪽 차로 = 서쪽행 일방 두 개로 깐다. 차·버스는 레일 위를 달리지 못한다(`off-road`).
 - 지하철 출입구 `jp-subway-entrance` 는 보도 안쪽(연석에서 2칸 이상)에 두고, 입구(anchor) 칸에 지하철역 콘코스로 가는 이동 이벤트를 둔다.
 - 노면전차 노선: `auto.tram` 또는 routes kind `tram` — 정류장은 섬 옆 레일 칸, `at:"center"` 로 섬 가운데 칸을 준다.
 - 버스 정류장: `auto.busStops:[{{x: 정문 가운데 x, y: 그 앞 차선 행, at:"center"}}]` — 버스 문이 정문 앞에 온다.
@@ -2297,6 +2302,13 @@ def doc_trn_ex():
             'events': [[e['id'], e['x'], e['y'], e['pages'][0]['commands'][0]] for e in _PLAT['events']],
             'transit': _PLAT['transit'],
             **{f'layer{k}': to_rows([tnum(t) for t in _PLAT[f]], PW) for k, f in (('1', 'lowerTiles'), ('2', 'lowerOverlayTiles'), ('3', 'upperTiles'), ('4', 'upperOverlayTiles'))}}
+    TW = _TRAM['width']
+    tram = {'name': _TRAM['id'], 'W': TW, 'H': _TRAM['height'], 'start': _TRAM_REP['start'],
+            'placements': [[q['id'], q['x'], q['y'], q['layer']] for q in _TRAM_REP['placedList'] if q['id'] != 'jp-tram-wire-h'],
+            'wires': '4층 jp-tram-wire-h: x 0,2,4,… 마다 두 궤도 윗행 −2(행 13·16)',
+            'events': [[e['id'], e['x'], e['y'], e['pages'][0]['commands'][0]] for e in _TRAM['events']],
+            'transit': _TRAM['transit'],
+            **{f'layer{k}': to_rows([tnum(t) for t in _TRAM[f]], TW) for k, f in (('1', 'lowerTiles'), ('2', 'lowerOverlayTiles'), ('3', 'upperTiles'), ('4', 'upperOverlayTiles'))}}
     return f"""# 일본 도시 — 지하철역 さくら町 예제 맵 전체 배열 (콘코스 {W}×{EBT['H']} · 승강장 {PW}×{_PLAT['height']})
 
 {HEAD}
@@ -2313,6 +2325,12 @@ def doc_trn_ex():
 ## 승강장
 ```json
 {jline(plat)}
+```
+
+## 노면전차 거리 {_TRAM['width']}×{_TRAM['height']} (`scripts/content/jp-city/maps/tramstreet.mjs`, 그림 `jp-img-transit-tramstreet`, 실제 화면 `jp-img-transit-runtime-tram`)
+지하철 출입구 계단 두 칸 → 위 콘코스 출구 계단 앞. `transit` = 조수 도구 `set_map_transit auto {{traffic:true, tram:true, tramStops:[…at:"center"…]}}` 가 깐 결과(차 흐름 일방 둘 + 복선 노면전차).
+```json
+{jline(tram)}
 ```
 """
 
@@ -2348,7 +2366,7 @@ def img_trn():
     sc = Image.open(os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'transit_street', 'scene-street.png')).convert('RGBA')
     for i, x0 in enumerate(range(0, sc.width, 800)):
         save_img(f'transit-street-scene{"" if i == 0 else "-" + str(i + 1)}', sc.crop((x0, 0, min(sc.width, x0 + 800), min(sc.height, 800))),
-                 '노면전차 거리 단면 장면(키트 합성, 원본 해상도): 보도·동행 차로·복선 레일·서행 안전지대 섬+導流帯·서행 차로·보도, 전주 남/북 팔·가선(레일 −5행)·지하철 출입구·건물 줄. 차는 런타임이 그린다.', C_TRN)
+                 '노면전차 거리 단면 장면(키트 합성, 원본 해상도): 보도·동행 차로·복선 레일·센터 전주+당김선·가선(궤도 윗행 −2)·서행 안전지대 섬+導流帯·서행 차로·보도, 4칸 횡단보도+보행 신호기·북 보도 승강 띠·지하철 출입구·건물 줄. 전차 한 대는 확인용 합성(맵에는 런타임이 그린다).', C_TRN)
     W, H = EBT['W'], EBT['H']
     full = render(EBT['good']['layers'], W, H)
     save_img('transit-concourse', full, f'さくら町駅 콘코스 {W}×{H}칸(원본 해상도): 매표기·출구 계단·역무실·개찰구+칸막이·승강장 계단·점자 유도 블록. 배열 `jp-transit-ex`.', C_TRN)
@@ -2356,6 +2374,11 @@ def img_trn():
     save_img('transit-platform', pl, f'さくら町駅 승강장 {_PLAT["width"]}×{_PLAT["height"]}칸(원본 해상도): 뒷벽·선로 2줄·승강장 끝·기둥·LED·매단 역명판·올라가는 계단. 지하철은 런타임이 그린다(`jp-img-transit-runtime`).', C_TRN)
     rt = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 'subway-stop.png')).convert('RGBA')
     rt2 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 't0.png')).convert('RGBA')
+    tm = render({'1': _TRAM['lowerTiles'], '2': _TRAM['lowerOverlayTiles'], '3': _TRAM['upperTiles'], '4': _TRAM['upperOverlayTiles']}, _TRAM['width'], _TRAM['height'])
+    save_img('transit-tramstreet', tm, f'노면전차 거리 {_TRAM["width"]}×{_TRAM["height"]}칸(원본 해상도): 건물·보도·동쪽행 차로·복선 레일+센터 전주+가선·서쪽행 안전지대 섬·서쪽행 차로·보도, 4칸 횡단보도+보행 신호기, 지하철 출입구. 배열 `jp-transit-ex` 맨 아래.', C_TRN)
+    rt3 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'tram-runtime', 'tram-stop.png')).convert('RGBA')
+    save_img('transit-runtime-tram', panels([('안전지대 섬 옆에 선 서쪽행 노면전차(문 연 그림) — 섬 위에서 위를 보고 「조사」로 탄다', rt3.resize((rt3.width * 3 // 4, rt3.height * 3 // 4), Image.NEAREST))]),
+             '출하 플레이어 실제 화면(scripts/content/jp-city/qa/tram-street.probe.mjs): 노면전차 거리. 위는 동쪽행 전차, 아래 차로는 서쪽행 택시, 전차 집전기가 가선에 닿는다.', C_TRN)
     save_img('transit-runtime', panels([('승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다', rt.resize((rt.width * 3 // 4, rt.height * 3 // 4), Image.NEAREST))]),
              '출하 플레이어 실제 화면(scripts/qa/runtime/transit.probe.mjs): 승강장에 선 지하철. 노선은 승강장 맵 `transit`.', C_TRN)
     save_img('transit-runtime-road', panels([('学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스', rt2.resize((rt2.width * 3 // 4, rt2.height * 3 // 4), Image.NEAREST))]),

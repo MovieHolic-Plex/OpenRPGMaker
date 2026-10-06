@@ -1,0 +1,90 @@
+{
+ "stage": "tramstreet",
+ "verdict": "fail",
+ "reviewerVerdict": "fail",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 1,
+ "seconds": 218,
+ "focus": "예제 맵 ⑤ 노면전차 거리(48×27) — 공용 장소로 게시할 맵. 키트 그림 자체는 transit 단계에서 따로 검수한다. 이 맵에서 볼 것: 단면(건물·보도3·동행 차로3·궤도2·전주 행1·궤도2·섬2·서행 차로3·보도2)이 실제 일본 노면전차 길로 읽히는가, 층(레일·횡단보도 2층, 섬·전주·건물 3층, 가선 4층), 횡단보도 연결(북 보도 지하철 출입구 앞 ↔ 섬 ↔ 남 보도), 문·출입구 접근, 빈 바닥, 탈것 배치(조수 도구 planMapTransit: 궤도 칸은 차도에서 빠져 북 차로 동쪽행·남 차로 서쪽행, 복선 전차 두 방향, 전차 정류장 서쪽행=섬 옆·동쪽행=북 보도 승강 띠 앞). 런타임은 출하 player.html 실측(SUMMARY.md 7/7).",
+ "files": {
+  "verify-shots/jp-city/tramstreet-x3.png": "8e481e63a30da325a0d9c53eb20f2fe975b68c9754bb380296eda755ea8778b4",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "9b3c3affe0d3d6a5a63dc091e1fb47f38a371ec87f50793d441905cc99d2bdb4",
+  "verify-shots/jp-city/tram-runtime/flow.png": "5b19aa054493ce23a44e3742b4e549d527c1362e7fceecc4f3f59f3b45735a0f",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "a97da1265030a972fe2bbf40916300043a4ef5cb834f8892c272cfe08076df72",
+  "scripts/content/jp-city/maps/tramstreet.mjs": "1b12b1783491b5409b97e7bb66808c9da23f66f024572d4dbbed7a7411202152",
+  "scripts/content/jp-city/maps/out/tramstreet.report.json": "c8f19e46bc39462690986b8cab6b891a930d483a96560188a4d26f3fc691ef78"
+ },
+ "findings": [
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "횡단보도 CW x18–21, cwRows 에서 15–16·18–19 줄 누락 (flow.png y≈500~600 공백)",
+   "problem": "횡단보도 줄무늬가 두 궤도에서 끊겨 보행 동선이 세 토막으로 읽힌다. 일본 노면전차 횡단보도는 궤도를 가로질러 줄무늬가 이어진다.",
+   "fix": "cwRows 에 15,16,18,19 를 넣어 레일 위에도 L2 줄무늬를 깐다. 레일은 줄무늬 위에 보이게 L2 레일 칸을 줄무늬+레일 합성 칸으로 쓰거나 레일을 L3 선 조각으로 올린다."
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "차도 12–24줄 전역 x0–47",
+   "problem": "차선 구분선·路側帯 흰 선·정지선·軌道敷 구분이 없어 13줄 차도가 무표시 아스팔트 한 판이고, 레일이 가는 회색 선뿐이라 궤도가 보이지 않는다.",
+   "fix": "11/25 줄 경계 안쪽에 路側帯 흰 선, 14/22 줄에 차로-궤도 경계선, 횡단보도 양쪽 x17·x22 에 정지선을 L2 로 깔고, 15–19 궤도 띠는 별도 궤도 포장 타일(돌·콘크리트 결)로 바꾼다."
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "동행 정류장 tramStops (28,15) at:center → 북보도 11줄 x22–33 점자 띠만",
+   "problem": "승객이 차로 3줄(12–14)을 건너야 동행 전차를 탄다. 섬식 승강장·안전지대·정류장 표지가 없고, 동행 승하차는 런타임에서 검증되지 않았다(SUMMARY 는 서행 y18 만).",
+   "fix": "서행처럼 동행 궤도 남쪽(17줄 쪽)에 섬식 승강장을 두거나 13–14 줄에 안전지대(島)와 표지를 깔고, tram-runtime 시나리오에 동행 정차·탑승 검사를 넣는다."
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/out/tramstreet.report.json",
+   "where": "deco placed 4 / skipped 4 — 느티나무 4그루 전부 skip, 남보도 25–26줄 x0–47",
+   "problem": "남보도가 자전거 거치대 2개(x7, x36) 외에 비어 있는 2줄 띠가 되었다. emptiness 가 도로·보도를 빼고 재서 잡히지 않는다.",
+   "fix": "나무 skip 원인(충돌 칸·발판 크기)을 고쳐 가로수를 x≈4,16,28,40 에 실제로 놓거나 가로수 받침·전봇대·자판기 등으로 대체하고, deco skip 을 report 에서 실패로 올린다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "건물 열 0–8줄: 잡거/라멘 x≈6–7, 맨션/이자카야, 이자카야/스시 사이; 0–1줄 지붕 위",
+   "problem": "주석은 '틈 없이'인데 건물 사이로 보도 타일이 보이고, 지붕 위 0–1줄에도 회색 보도 타일이 깔려 있다.",
+   "fix": "건물 폭 합을 48 로 맞춰 틈을 없애거나 틈에 담장·골목 타일을 넣고, 지붕 위 빈 줄은 뒤편 지붕·옥상 타일로 채운다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "보행 신호 (17,9–11) vs (22,24–26)",
+   "problem": "북쪽 신호는 횡단보도 서쪽, 남쪽 신호는 동쪽이라 배치가 엇갈린다.",
+   "fix": "양쪽 다 같은 쪽(예: x17 또는 x22)으로 맞추거나, 건너편에서 보이게 대각 배치 규칙을 문서화하고 일관되게 적용한다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/out/tramstreet.report.json",
+   "where": "poles: [], autotiles rail 0",
+   "problem": "전주 3기가 있는데 poles 가 비었고, 레일 오토타일 검사 대상이 0 칸이라 레일이 한 번도 검사되지 않는다. deco skip 4 도 실패로 표시되지 않는다.",
+   "fix": "리포트가 jp-tram-pole-c 스탬프를 poles 로 집계하고, 스탬프 레일 칸에도 연결 검사를 돌리며, deco skip>0 을 ok:false 로 만든다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "화분 (14,8)·벤치, 오피스 앞마당",
+   "problem": "화분이 건물 벽에 붙어 있고 벤치·화분이 앞마당 한가운데 떠 있어 놓인 이유가 읽히지 않는다.",
+   "fix": "화분은 출입구 양옆 대칭으로, 벤치는 정류장 대기 위치(북보도 x22–33 근처)로 옮긴다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "전주 jp-tram-pole-c x3/24/44, 12–17줄",
+   "problem": "기둥 그림이 동행 차로(12–14줄) 위를 덮어 차량 경로(traffic-ew12)가 x24 등에서 기둥과 겹친다.",
+   "fix": "전주를 궤도 사이 17줄 칸에만 세우고 높이 그림은 위로 뻗는 L4 조각으로 나누거나, 차로 경로를 기둥 칸 밖으로 비킨다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "가선 jp-tram-wire-h 13줄",
+   "problem": "동행 궤도(15–16) 가선이 차로 13줄 위에 그려져 궤도 바로 위로 읽히지 않는다.",
+   "fix": "가선 줄을 궤도 줄−1(14·17)로 옮기거나 3/4 투영 오프셋을 1줄로 줄인다."
+  }
+ ],
+ "report": "## tramstreet 적대 검수 결과: fail (major 4건, minor 6건)\n\n판정 근거는 x3 렌더, 런타임 화면 2장, 생성기, report.json 이다. report.json 의 숫자는 믿지 않고 그림과 대조했다.\n\n### major\n\n1. **횡단보도가 선로에서 끊긴다**\n   - 위치: `scripts/content/jp-city/maps/tramstreet.mjs`. 줄무늬 줄 cwRows = 12–14, 17, 20–24 에서 15–16 줄과 18–19 줄이 빠졌다.\n   - 증거: flow.png 에서 줄무늬가 y≈500~600 px 구간에서 비어 있다. x3 에서도 두 선로 쌍마다 끊긴다.\n   - 문제: 일본 노면전차 횡단보도는 궤도를 가로질러 줄무늬가 이어진다. 지금은 보행 동선이 세 토막으로 읽힌다.\n2. **차로·궤도 표시가 하나도 없다**\n   - 위치: 차도 12–24줄 전체(x 0–47).\n   - 문제: 차선 구분선, 路側帯 흰 선, 횡단보도 앞 정지선, 軌道敷 표시가 모두 없다. 13줄 차도가 한 장의 아스팔트로 보인다. 레일이 가는 회색 선뿐이라 궤도가 차도와 구분되지 않는다.\n3. **동행 정류장이 차로 건너 보도 끝에 점자 띠만 있다**\n   - 위치: 정류장 (28,15) at:\"center\". 실제로 깔린 것은 북보도 11줄 x 22–33 의 노란 띠뿐이다.\n   - 문제: 띠와 동행 궤도(15줄) 사이에 차로 3줄(12–14)이 있다. 섬식 승강장도, 안전지대 표시도, 정류장 표지도 없다.\n   - 런타임: SUMMARY 는 서행 정류장(y18)만 확인했다. 동행 승하차는 검증되지 않았다.\n4. **남보도 가로수가 전부 빠져 2줄이 빈 띠다**\n   - 위치: report.json 의 deco 결과(placed 4, skipped 4). 느티나무 4그루가 모두 skip 됐다.\n   - 문제: 남보도 25–26줄 x 0–47 에 남은 것은 자전거 거치대 2개(x7, x36)뿐이다. emptiness 검사는 도로와 보도를 제외해서 이 빈 띠를 못 잡는다.\n\n### minor\n\n- **건물 사이 틈과 지붕 위 보도 타일**: 생성기 주석은 건물을 \"틈 없이\" 붙인다고 적었지만 x3 에 틈이 보인다. 잡거빌딩/라멘(x≈6–7), 맨션/이자카야, 이자카야/스시 사이로 보도 타일이 드러난다. 0–1줄 지붕 위에도 회색 보도 타일이 깔려 있다.\n- **보행 신호 위치가 남북으로 엇갈린다**: 북쪽 (17,9–11)은 횡단보도 서쪽, 남쪽 (22,24–26)은 동쪽이다.\n- **report.json 이 현실과 다르다**: 전주 3기가 있는데 `poles: []` 다. 레일 오토타일 검사 대상은 0칸이라 레일이 한 번도 검사되지 않는다. deco skip 4건도 실패로 잡히지 않는다.\n- **화분이 건물에 붙어 있다**: (14,8) 화분이 오피스 건물에 붙었고, 벤치·화분이 앞마당에 어색하게 떠 있다.\n- **전주가 차로를 침범한다**: 전주(x3/24/44)는 12–17줄 높이로 서 있어 그림이 동행 차로(12–14줄)를 덮는다. 차량 경로가 x24 를 지날 때 기둥과 겹친다.\n- **가선이 차로 위에 걸린다**: 13줄 가선은 동행 궤도(15–16)가 아니라 차로 위에 그려진다. 투영으로 보면 허용 범위지만, 궤도 바로 위로 읽히지는 않는다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"횡단보도 CW x18–21, cwRows 에서 15–16·18–19 줄 누락 (flow.png y≈500~600 공백)\",\"problem\":\"횡단보도 줄무늬가 두 궤도에서 끊겨 보행 동선이 세 토막으로 읽힌다. 일본 노면전차 횡단보도는 궤도를 가로질러 줄무늬가 이어진다.\",\"fix\":\"cwRows 에 15,16,18,19 를 넣어 레일 위에도 L2 줄무늬를 깐다. 레일은 줄무늬 위에 보이게 L2 레일 칸을 줄무늬+레일 합성 칸으로 쓰거나 레일을 L3 선 조각으로 올린다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"차도 12–24줄 전역 x0–47\",\"problem\":\"차선 구분선·路側帯 흰 선·정지선·軌道敷 구분이 없어 13줄 차도가 무표시 아스팔트 한 판이고, 레일이 가는 회색 선뿐이라 궤도가 보이지 않는다.\",\"fix\":\"11/25 줄 경계 안쪽에 路側帯 흰 선, 14/22 줄에 차로-궤도 경계선, 횡단보도 양쪽 x17·x22 에 정지선을 L2 로 깔고, 15–19 궤도 띠는 별도 궤도 포장 타일(돌·콘크리트 결)로 바꾼다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"동행 정류장 tramStops (28,15) at:center → 북보도 11줄 x22–33 점자 띠만\",\"problem\":\"승객이 차로 3줄(12–14)을 건너야 동행 전차를 탄다. 섬식 승강장·안전지대·정류장 표지가 없고, 동행 승하차는 런타임에서 검증되지 않았다(SUMMARY 는 서행 y18 만).\",\"fix\":\"서행처럼 동행 궤도 남쪽(17줄 쪽)에 섬식 승강장을 두거나 13–14 줄에 안전지대(島)와 표지를 깔고, tram-runtime 시나리오에 동행 정차·탑승 검사를 넣는다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/out/tramstreet.report.json\",\"where\":\"deco placed 4 / skipped 4 — 느티나무 4그루 전부 skip, 남보도 25–26줄 x0–47\",\"problem\":\"남보도가 자전거 거치대 2개(x7, x36) 외에 비어 있는 2줄 띠가 되었다. emptiness 가 도로·보도를 빼고 재서 잡히지 않는다.\",\"fix\":\"나무 skip 원인(충돌 칸·발판 크기)을 고쳐 가로수를 x≈4,16,28,40 에 실제로 놓거나 가로수 받침·전봇대·자판기 등으로 대체하고, deco skip 을 report 에서 실패로 올린다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"건물 열 0–8줄: 잡거/라멘 x≈6–7, 맨션/이자카야, 이자카야/스시 사이; 0–1줄 지붕 위\",\"problem\":\"주석은 '틈 없이'인데 건물 사이로 보도 타일이 보이고, 지붕 위 0–1줄에도 회색 보도 타일이 깔려 있다.\",\"fix\":\"건물 폭 합을 48 로 맞춰 틈을 없애거나 틈에 담장·골목 타일을 넣고, 지붕 위 빈 줄은 뒤편 지붕·옥상 타일로 채운다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"보행 신호 (17,9–11) vs (22,24–26)\",\"problem\":\"북쪽 신호는 횡단보도 서쪽, 남쪽 신호는 동쪽이라 배치가 엇갈린다.\",\"fix\":\"양쪽 다 같은 쪽(예: x17 또는 x22)으로 맞추거나, 건너편에서 보이게 대각 배치 규칙을 문서화하고 일관되게 적용한다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/out/tramstreet.report.json\",\"where\":\"poles: [], autotiles rail 0\",\"problem\":\"전주 3기가 있는데 poles 가 비었고, 레일 오토타일 검사 대상이 0 칸이라 레일이 한 번도 검사되지 않는다. deco skip 4 도 실패로 표시되지 않는다.\",\"fix\":\"리포트가 jp-tram-pole-c 스탬프를 poles 로 집계하고, 스탬프 레일 칸에도 연결 검사를 돌리며, deco skip>0 을 ok:false 로 만든다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"화분 (14,8)·벤치, 오피스 앞마당\",\"problem\":\"화분이 건물 벽에 붙어 있고 벤치·화분이 앞마당 한가운데 떠 있어 놓인 이유가 읽히지 않는다.\",\"fix\":\"화분은 출입구 양옆 대칭으로, 벤치는 정류장 대기 위치(북보도 x22–33 근처)로 옮긴다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"전주 jp-tram-pole-c x3/24/44, 12–17줄\",\"problem\":\"기둥 그림이 동행 차로(12–14줄) 위를 덮어 차량 경로(traffic-ew12)가 x24 등에서 기둥과 겹친다.\",\"fix\":\"전주를 궤도 사이 17줄 칸에만 세우고 높이 그림은 위로 뻗는 L4 조각으로 나누거나, 차로 경로를 기둥 칸 밖으로 비킨다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"가선 jp-tram-wire-h 13줄\",\"problem\":\"동행 궤도(15–16) 가선이 차로 13줄 위에 그려져 궤도 바로 위로 읽히지 않는다.\",\"fix\":\"가선 줄을 궤도 줄−1(14·17)로 옮기거나 3/4 투영 오프셋을 1줄로 줄인다.\"}]}\n```"
+}

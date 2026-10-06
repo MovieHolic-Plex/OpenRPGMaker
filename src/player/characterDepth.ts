@@ -79,7 +79,24 @@ function isWalkableStairTile(tileset: TilesetDef, tile: number): boolean {
   const tags = tileset.tileMeta?.[tile]?.tags ?? [];
   return tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리"));
 }
+/**
+ * 키 큰 기물(노면전차 센터 전주 등)의 위 칸: tileMeta 태그 `foot-dy:N` = 이 칸에서 N행 아래가 밑동.
+ * ★ 칸이어도 고정 상층에 두지 않고 **밑동 줄** 로 캐릭터·탈것과 y 정렬한다 — 밑동보다 남쪽에 선 전차는 기둥을 가리고,
+ * 북쪽 전차는 기둥 뒤로 지나간다(줄마다 따로 정렬하면 한쪽이 틀린다, 2026-10-07 적대적 관문 지적).
+ */
+export function tileFootRowsBelow(tileset: TilesetDef, tile: number): number | null {
+  const tags = tileset.tileMeta?.[tile]?.tags;
+  if (!tags) return null;
+  for (const tag of tags) {
+    const m = /^foot-dy:(\d+)$/.exec(tag);
+    if (m) return Number(m[1]);
+  }
+  return null;
+}
+
 export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: number, tileSize: number = tileset.tileSize): number {
+  const footDy = tileFootRowsBelow(tileset, tile);
+  if (footDy !== null) return characterDepth("same", characterSpriteY(tileY + footDy, tileSize));
   const mark = passageMarkForTile(tileset, tile);
   const walkableStair = mark === "star" && isWalkableStairTile(tileset, tile);
   if (mark === "star" && !walkableStair) return MAP_UPPER_LAYER_DEPTH;
@@ -90,6 +107,7 @@ export function mapUpperTileDepth(tileset: TilesetDef, tile: number, tileY: numb
 /** ★ 수관/꽃 등 — 고정 upper 컨테이너. 솔리드 가구·밟는 계단은 false(y-sort/하위). */
 export function isAlwaysAboveCharacterUpperTile(tileset: TilesetDef, tile: number): boolean {
   if (passageMarkForTile(tileset, tile) !== "star") return false;
+  if (tileFootRowsBelow(tileset, tile) !== null) return false;
   return !isWalkableStairTile(tileset, tile);
 }
 

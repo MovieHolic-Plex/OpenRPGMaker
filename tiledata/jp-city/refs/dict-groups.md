@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (203개)
+# 일본 도시 — 타일 그룹 사전 (207개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8054칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8075칸**, 16px 칸, 시트 768×2704px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 88, roof 17, terrain 28, wall 35, water 3.
+역할별 개수: building 26, fence 6, prop 92, roof 17, terrain 28, wall 35, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -193,8 +193,8 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:school-ground","name":"校庭 흙 바닥","role":"terrain","layer":"lower","n":3,"from":6926,"to":6928},
 {"id":"jp:school-track","name":"운동장 트랙 선","role":"terrain","layer":"upper","n":114,"from":7034,"to":7415},
 {"id":"jp:tram-rail","name":"노면전차 궤도(투명 덧그림)","role":"terrain","layer":"upper","n":6,"from":7794,"to":7799},
-{"id":"jp:tram-stop","name":"노면전차 정류장·가선·전주","role":"prop","layer":"mixed","n":35,"from":7812,"to":8053},
-{"id":"jp:subway-entrance","name":"지하철 출입구","role":"building","layer":"mixed","n":26,"from":7849,"to":8047},
+{"id":"jp:tram-stop","name":"노면전차 정류장·가선·전주","role":"prop","layer":"mixed","n":40,"from":7812,"to":8060},
+{"id":"jp:subway-entrance","name":"지하철 출입구","role":"building","layer":"mixed","n":25,"from":7849,"to":8047},
 {"id":"jp:subway-floor","name":"지하 콘코스 바닥(밝은 회색 대형 타일)","role":"terrain","layer":"lower","n":1,"from":7870,"to":7870},
 {"id":"jp:subway-platform","name":"승강장 바닥(회색 엇갈림 타일)","role":"terrain","layer":"lower","n":1,"from":7871,"to":7871},
 {"id":"jp:subway-edge","name":"승강장 끝(흰 선 + 노란 점자 블록)","role":"terrain","layer":"lower","n":1,"from":7872,"to":7872},
@@ -217,10 +217,14 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:subway-stairs-down","name":"내려가는 계단(승강장으로)","role":"prop","layer":"upper","n":11,"from":7932,"to":7993},
 {"id":"jp:subway-stairs-up","name":"올라가는 계단(지상 출구)","role":"prop","layer":"upper","n":10,"from":7940,"to":7996},
 {"id":"jp:subway-sign-exit","name":"천장 매단 출구 간판 「出口」","role":"prop","layer":"upper","n":6,"from":7947,"to":7952},
+{"id":"jp:subway-sign-exit-up","name":"천장 매단 출구 간판 「出口」(↑ 위쪽)","role":"prop","layer":"upper","n":2,"from":8061,"to":8062},
 {"id":"jp:subway-sign-line","name":"천장 매단 승강장 안내 「のりば」","role":"prop","layer":"upper","n":6,"from":7953,"to":7958},
 {"id":"jp:subway-office","name":"역무실 창구","role":"building","layer":"upper","n":12,"from":7959,"to":7970},
 {"id":"jp:subway-bench","name":"승강장 의자 4석","role":"prop","layer":"upper","n":3,"from":7971,"to":7973},
 {"id":"jp:subway-led","name":"천장 매단 발차 안내 LED판","role":"prop","layer":"upper","n":6,"from":7974,"to":7979},
-{"id":"jp:subway-station-sign-hang","name":"천장 매단 역명판 「さくら町」","role":"prop","layer":"upper","n":12,"from":7997,"to":8008}
+{"id":"jp:subway-station-sign-hang","name":"천장 매단 역명판 「さくら町」","role":"prop","layer":"upper","n":12,"from":7997,"to":8008},
+{"id":"jp:subway-recycle","name":"승강장 분별 쓰레기통 3칸(병·캔/페트/종이)","role":"prop","layer":"upper","n":4,"from":8063,"to":8066},
+{"id":"jp:subway-extinguisher","name":"벽 소화기 상자(빨강)","role":"prop","layer":"upper","n":2,"from":8067,"to":8068},
+{"id":"jp:subway-vending","name":"승강장 음료 자판기","role":"prop","layer":"upper","n":6,"from":8069,"to":8074}
 ]
 ```

@@ -12,8 +12,8 @@ import { kitMap, underTsx } from "./kitmap.mjs";
 underTsx(import.meta.url);
 
 export const CONCOURSE_ID = "jp-city-station-concourse", PLATFORM_ID = "jp-city-station-platform";
-/** 지상 출구(지하철 출입구가 있는 거리 맵) — 예제는 상점가 맵의 길. 실제 게임에서는 출입구 키트 입구 칸으로 바꾼다. */
-const EXIT_TARGET = { mapId: process.env.STATION_EXIT_MAP ?? "jp-city-shopstreet", x: Number(process.env.STATION_EXIT_X ?? 20), y: Number(process.env.STATION_EXIT_Y ?? 30) };
+/** 지상 출구 — 예제는 노면전차 거리(tramstreet.mjs)의 지하철 출입구(x 19~22, 계단 입구 (20,9)(21,9)) 바로 앞 보도. */
+const EXIT_TARGET = { mapId: process.env.STATION_EXIT_MAP ?? "jp-city-tram-street", x: Number(process.env.STATION_EXIT_X ?? 20), y: Number(process.env.STATION_EXIT_Y ?? 10) };
 /** 지하철을 타면 내리는 곳 — 예제는 小学校 앞 길(다음 역 「学校前」 지상). */
 const RIDE_TARGET = { mapId: process.env.STATION_RIDE_MAP ?? "jp-city-school", x: 35, y: 41 };
 
@@ -39,7 +39,7 @@ const transferEvent = (id, name, x, y, to) => ({
   for (const x of range(0, W - 1)) if (!own3[idx(x, 1)] && !own3[idx(x, 2)]) stamp("jp-subway-wall", x, 1, { tag: `wall-${x}` });
   put("jp-subway-pillar-plain", 4, 7, { tag: "pillar-nw" });
   put("jp-subway-pillar-plain", 21, 7, { tag: "pillar-ne" });
-  put("jp-subway-sign-exit", 16, 6, { tag: "sign-exit" });              // 천장에 매단 「出口」(출구 계단 쪽)
+  put("jp-subway-sign-exit-up", 11, 6, { tag: "sign-exit" });          // 천장에 매단 「↑出口」 — 출구 계단(x 11~14) 바로 남쪽, 화살표가 위(계단)
   put("jp-subway-gates", 8, 9, { tag: "gates" });                      // 개찰구 x 8~16, 통로 x 9·11·13·15
   row("jp-subway-fence", 9, [...range(0, 7), ...range(17, W - 1)], "fence");   // 개찰구 양옆 ラチ — 벽까지 막는다
   put("jp-subway-pillar-plain", 4, 12, { tag: "pillar-sw" });
@@ -81,8 +81,10 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-stairs-up", 20, 10, { tag: "stairs-up" });             // 콘코스로 올라가는 계단 x 20~23, 입구 칸 (21,10)(22,10)
   put("jp-subway-bench", 3, 11, { tag: "bench-w" });
   put("jp-subway-bench", 13, 11, { tag: "bench-m" });
-  put("jp-subway-bench", 30, 11, { tag: "bench-e" });
-  put("jp-subway-bench", 38, 11, { tag: "bench-ee" });
+  put("jp-subway-bench", 28, 11, { tag: "bench-e" });
+  put("jp-subway-recycle", 34, 11, { tag: "recycle" });               // 분별 쓰레기통 — 기둥(32) 옆
+  put("jp-subway-vending", 39, 11, { tag: "vending" });               // 음료 자판기 — 기둥 사이 바닥에 홀로
+  stamp("jp-subway-extinguisher", 16, 1, { layer: 4, tag: "extinguisher" });   // 뒷벽 소화기 상자(광고 사이 빈 벽) — 벽이 3층이라 4층 덧그림
   m.groupLineL2("jp-tactile", [...line(24, 7, 24, 11), ...line(21, 11, 23, 11)]);   // 승강장 끝 점자 띠(6줄, 바닥 그림) → 계단 입구(21·22, 10) 앞 11줄
   const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 11, dir: "up" }));
   // 지하철: 서쪽 맵 밖에서 동쪽으로, 머리 x 38 에 서면 몸 x 9~38 이 승강장 앞에 선다. 경로 칸 번호 = 38 − (−36) = 74.

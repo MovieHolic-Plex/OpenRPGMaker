@@ -57,7 +57,8 @@ export function mapRoadBands(project: Project, map: GameMap): { road: RoadBand[]
   const track = trackTileSet(project, map);
   const overlay = map.lowerOverlayTiles as ReadonlyArray<number> | undefined;
   return {
-    road: lane.size ? findRoadBands(map, (x, y) => lane.has(tileAt(map.lowerTiles, map, x, y))) : [],
+    // 노면전차 레일(2층)이 깔린 칸은 차도 띠에서 뺀다 — 궤도를 가운데 둔 간선은 양쪽 일방 차로 둘로 잡힌다.
+    road: lane.size ? findRoadBands(map, (x, y) => lane.has(tileAt(map.lowerTiles, map, x, y)) && !tram.has(tileAt(overlay, map, x, y))) : [],
     tram: tram.size ? findRoadBands(map, (x, y) => tram.has(tileAt(overlay, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
     track: track.size ? findRoadBands(map, (x, y) => track.has(tileAt(map.lowerTiles, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
   };
@@ -73,6 +74,8 @@ function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): A
   const set = route.kind === "road" || route.kind === "bus" ? laneTileSet(project, map) : route.kind === "tram" ? tramTileSet(project, map) : trackTileSet(project, map);
   if (!set.size) return [];
   const layer = onRail ? (map.lowerOverlayTiles as ReadonlyArray<number> | undefined) : map.lowerTiles;
+  const rails = route.kind === "road" || route.kind === "bus" ? tramTileSet(project, map) : new Set<number>();   // 차·버스는 노면전차 궤도 위를 달리지 않는다
+  const overlay = map.lowerOverlayTiles as ReadonlyArray<number> | undefined;
   const cells = expandTransitPath(route.path, route.loop === true) ?? [];
   const bad: Array<{ x: number; y: number }> = [];
   const seen = new Set<string>();
@@ -83,7 +86,7 @@ function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): A
     for (const p of horizontal ? [c, { x: c.x, y: c.y + 1 }] : [c, { x: c.x + 1, y: c.y }]) {
       if (!inMapBounds(map, p.x, p.y)) continue;
       const k = `${p.x},${p.y}`;
-      if (seen.has(k) || set.has(tileAt(layer, map, p.x, p.y))) continue;
+      if (seen.has(k) || (set.has(tileAt(layer, map, p.x, p.y)) && !rails.has(tileAt(overlay, map, p.x, p.y)))) continue;
       seen.add(k); bad.push(p);
       if (bad.length >= 6) return bad;
     }

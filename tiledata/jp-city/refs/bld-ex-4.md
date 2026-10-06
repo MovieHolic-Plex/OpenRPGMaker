@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 · 완성 예제 4/5 (`danchi_flats`, `bar_row`, `office_shutter`, `mansion_veranda`, `office_slide`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8054칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8075칸**, 16px 칸, 시트 768×2704px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 `list_jp_city_building_parts({"example":"<이름>"})` 의 완성 예제 입력을 **실제 `build_jp_city_building` 도구로 지은 결과**다(`tiledata/jp-city/refs/engine_dump.mts` 가 도구를 호출해 맵 배열을 읽었다).
 시험판 맵: 폭 = 건물 폭 + 4, 높이 = 건물 높이 + 5, 1층 전체가 보도(`sw`), 아래 3줄이 도로(`road_c`), 건물 사각형은 맵 (2,1) 에서 시작한다. 좌표는 맵 칸 0 기준.
