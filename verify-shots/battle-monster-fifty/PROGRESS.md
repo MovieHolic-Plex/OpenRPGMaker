@@ -845,3 +845,9 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 현재 **49/50종·882자세·392GIF**. 동물10/요괴16/사람12(성인 여성6)/보스11, root49/source49/browser49이다. 원래 결정52행/선택8건 보존, 새 위임147행/전체199행. 대시보드 Allow57=기존8+신규49. 현재 keep의 정식 optional/minor13건/8종을 실제 현재 검수에서 합산했다. 전체50 완료는 false다.
 - 금익대붕 둘째 수정의 실제18자세를 원본1배/nearest2배로 열고 최종1649행 feather writer 전체/현재 native writer3개 및 readonly3개의 모든 메서드·흐름을 읽었다. 넓은 세 주깃/앞 깃 부채/세 꼬리깃/채운 목-가슴/굵어진 세 칼날/수면 부리 윤곽은 확인했다. 접힌 날개의 각진 형태와 native1x 효과의 좁은 축도 기록했다. 실제 `f203c624-bdb4-44a2-bafd-4167a18803cd` 독립 검수 중이며 아직 keeper/Allow가 아니다. 새 대기 및 기술 원본 중간판을 같은 배율64px 검객과 비교하여 사용자에게 보여 주었다.569행 중간 writer를 완성본 전체 읽기로 대신하지 않고 바뀐1649행 전체를 새로 읽었다.
 - 근거: `forty-nine-passed-proof.json`, `fifty-scope-contract-proof.json`, `root-review-snow-mane-lion.json`, `root-draft-review-snow-mane-lion-after-repair-five.json`, `browser-proof-snow-mane-lion.json`, `source-archive-proof.json`.
+
+
+## 2026-10-06 17:09 UTC — 마지막 금익대붕의 실제 둘째 수정 rework7 보존
+
+- 실제 GPT6.1sol/high 독립 `f203c624-bdb4-44a2-bafd-4167a18803cd`는 rework7이다. body 안 쐐기 투명 틈/얇은 세 꼬리 뿌리/접힌 지그재그 날개/벌어진 준비 발/앞날개 충전 핵/가슴 앞 세 번째 칼날의 출처/날개 접기 없는 기술 회수라는 실제 좌표를 before-third source·terminal 작업·검수4PNG 및 실제 감독18자세/full3 native writer와 동일 binding으로 보존했다. 세 꼬리깃·공격 발톱의 연결은 확인되므로 완전 분리라고 바꾸지 않았다. 실제 셋째 수정 `d9719df2-68df-4c37-9f91-718be25cf585`가 이어간다.
+- 통과49/50·882자세·392GIF와 whole50=false를 유지한다. 마지막 실제 rework를 통과로 세거나 형식 검사로 대체하지 않는다.
