@@ -529,11 +529,11 @@ def _gakkyuen(c):
 
 
 # ─────────────────────────── 수영장 ───────────────────────────
-PW, PH = 29, 18
+PW, PH = 29, 19
 WX0, WY0, WX1, WY1 = 2, 3, 27, 15        # 물 칸 [WX0, WX1) × [WY0, WY1) = 25 × 12 (25m 6코스)
-HUT = (10, 19)                           # 남쪽 탈의동(更衣室) 칸 x [10, 19), 줄 16(지붕)·17(앞벽)
-ENT = (13, 14)                           # 탈의동 앞벽 입구 칸 → 지붕 밑(16) → 샤워(15) → 데크
-SHOWER = (12, 15)                        # 샤워 아치 기둥 칸(줄 15) — 사이 13·14 로 지나간다
+HUT = (10, 19)                           # 남쪽 탈의동(更衣室) 칸 x [10, 19), 줄 17(지붕)·18(앞벽)
+ENT = (13, 14)                           # 탈의동 앞벽 입구 칸 → 지붕 밑(17) → 샤워(16) → 데크(15)
+SHOWER = (12, 15)                        # 샤워 아치 기둥 칸(줄 16) — 사이 13·14 로 지나간다
 
 
 def _pool_ground(c):
@@ -561,19 +561,19 @@ def _pool_ground(c):
         c.R(18, yy, 12, 7, K('shiro', 1)); c.HL(18, yy, 12, K('shiro', 2)); c.HL(18, yy + 6, 12, K('conc', 0)); c.VL(17, yy, 7, OL)
     for xx in (x0 + 40, x1 - 40):                                                                               # 사다리(물 안 손잡이)
         c.VL(xx, y0 - 3, 6, K('tekko', 3)); c.VL(xx + 5, y0 - 3, 6, K('tekko', 3)); c.HL(xx, y0 - 3, 6, OL)
-    c.R(HUT[0] * 16 + 2, 16 * 16, (HUT[1] - HUT[0]) * 16 - 4, 32, K('sora', -1))                               # 탈의동 안 바닥(파란 매트)
-    for x in range(HUT[0] * 16 + 4, HUT[1] * 16 - 4, 6): c.VL(x, 16 * 16 + 2, 28, K('sora', 0))
+    c.R(HUT[0] * 16 + 2, 17 * 16, (HUT[1] - HUT[0]) * 16 - 4, 32, K('sora', -1))                               # 탈의동 안 바닥(파란 매트)
+    for x in range(HUT[0] * 16 + 4, HUT[1] * 16 - 4, 6): c.VL(x, 17 * 16 + 2, 28, K('sora', 0))
 
 
 _POOL_SOLID = ([(x, 0) for x in range(PW)] + [(x, 1) for x in range(PW)] + [(0, y) for y in range(PH)] + [(PW - 1, y) for y in range(PH)]
-               + [(x, PH - 1) for x in range(PW) if x not in ENT] + [(SHOWER[0], 15), (SHOWER[1], 15)])
+               + [(x, PH - 1) for x in range(PW) if x not in ENT] + [(SHOWER[0], 16), (SHOWER[1], 16)])
 
 
 @prop('pool', 'プール 25m 학교 수영장(물 25×12·6코스·탈의동 입구·샤워·철망)', PW, PH,
       solid=_POOL_SOLID,
       ground=_pool_ground, ground_solid=[(x, y) for x in range(WX0, WX1) for y in range(WY0, WY1)],
       tags=['학교', '수영장'], role='building',
-      rules=f'교정 구석(체육관 곁). 남쪽 가운데 탈의동(更衣室)의 앞벽 입구 칸(x {ENT[0]}·{ENT[1]}, 맨 아랫줄)으로 들어가 지붕 밑(탈의실) → 샤워 아치(줄 15) → 데크 순서로 걷는다. 둘레 철망·북쪽 뒤 철망·펌프실은 막힘, 물(1층 solidfloor 25×12칸)은 들어가지 못한다.')
+      rules=f'교정 구석(체육관 곁). 남쪽 가운데 탈의동(更衣室)의 앞벽 입구 칸(x {ENT[0]}·{ENT[1]}, 맨 아랫줄)으로 들어가 지붕 밑(탈의실) → 샤워 아치(줄 16) → 데크(줄 15~16) 순서로 걷는다. 둘레 철망·북쪽 뒤 철망·펌프실은 막힘, 물(1층 solidfloor 25×12칸)은 들어가지 못한다.')
 def _pool(c):
     W, H = PW * 16, PH * 16
     # 북쪽 뒤 철망(위 두 줄) + 북서 구석 펌프실(기계실)
@@ -600,8 +600,8 @@ def _pool(c):
     for x0, x1 in ((0, hx0), (hx1, W)):
         c.HL(x0, H - 27, x1 - x0, K('midori', 1)); c.HL(x0, H - 28, x1 - x0, OL); c.HL(x0, H - 2, x1 - x0, OL)
         for px in range(x0 + 2, x1, 32): pipe_v(c, px, H - 28, H - 2, 'midori', 0, 2)
-    # 탈의동(更衣室): 줄 16 = 지붕 윗면(★, 밑으로 지나감), 줄 17 = 앞벽 + 가운데 입구(暖簾)
-    ry0, wy0 = 16 * 16 - 6, 16 * 16 + 12
+    # 탈의동(更衣室): 줄 17 = 지붕 윗면(★, 밑으로 지나감), 줄 18 = 앞벽 + 가운데 입구(暖簾)
+    ry0, wy0 = 17 * 16 - 6, 17 * 16 + 12
     c.R(hx0, ry0, hx1 - hx0, wy0 - ry0, K('conc', 2)); c.HL(hx0, ry0, hx1 - hx0, K('conc', 3)); c.HL(hx0, wy0 - 2, hx1 - hx0, K('conc', 0))   # 평지붕 윗면
     for x in range(hx0 + 8, hx1 - 8, 24): c.R(x, ry0 + 5, 8, 6, K('conc', 1)); c.HL(x, ry0 + 5, 8, K('conc', 3))                       # 지붕 위 환기통
     c.R(hx0, wy0, hx1 - hx0, H - wy0, K('kinari', 1)); c.VL(hx0, wy0, H - wy0, K('kinari', 2)); c.VL(hx1 - 1, wy0, H - wy0, K('kinari', -1))   # 앞벽
@@ -614,13 +614,13 @@ def _pool(c):
     for x in range(ex0 + 7, ex1 - 4, 6): c.VL(x, wy0, 6, K('kon', -1))
     c.VL(ex0 + 1, wy0, H - wy0, OL); c.VL(ex1 - 2, wy0, H - wy0, OL)
     c.HL(hx0 - 1, ry0 - 1, hx1 - hx0 + 2, OL); c.VL(hx0 - 1, ry0, H - ry0, OL); c.VL(hx1, ry0, H - ry0, OL); c.HL(hx0, wy0 - 1, hx1 - hx0, OL)
-    # 샤워 아치(줄 15): 두 기둥 + 위 관(줄 14 위로 솟음) + 노즐·물방울
+    # 샤워 아치(줄 16, 데크 위): 두 기둥 + 위 관(줄 15 위로 솟음) + 노즐·물방울
     sx0, sx1 = SHOWER[0] * 16 + 8, SHOWER[1] * 16 + 6
-    for px in (sx0, sx1): pipe_v(c, px, 14 * 16 - 2, 16 * 16 - 2, 'tekko', 2, 2)
-    pipe_h(c, sx0, sx1 + 2, 14 * 16 - 3, 'tekko', 3)
+    for px in (sx0, sx1): pipe_v(c, px, 15 * 16 - 2, 17 * 16 - 2, 'tekko', 2, 2)
+    pipe_h(c, sx0, sx1 + 2, 15 * 16 - 3, 'tekko', 3)
     for x in range(sx0 + 6, sx1 - 2, 7):
-        c.R(x, 14 * 16, 3, 2, K('tekko', 1))
-        for k, yy in enumerate(range(14 * 16 + 4, 15 * 16 + 12, 5)): c.P(x + 1 + (k % 2), yy, K('sora', 3))
+        c.R(x, 15 * 16, 3, 2, K('tekko', 1))
+        for k, yy in enumerate(range(15 * 16 + 4, 16 * 16 + 12, 5)): c.P(x + 1 + (k % 2), yy, K('sora', 3))
 
 
 # ─────────────────────────── 굽기 ───────────────────────────

@@ -321,8 +321,14 @@ def _finalize():
         if p['id'] == 'subway-entrance':
             parts = [{"kind": "anchor", "x": 1, "y": 3, "w": 2, "h": 1, "label": "계단 입구(전이 이벤트 자리)"}]
         kits.append(dict(id='jp-' + p['id'], name=p['name'], grid=grid, base=base, parts=parts, ai=ai))
-    groups = [dict(id='tram', name='노면전차', kits=['jp-tram-rail-h', 'jp-tram-rail-v', 'jp-tram-rail-end', 'jp-tram-stop', 'jp-tram-wire-h', 'jp-tram-pole']),
-              dict(id='subway', name='지하철', kits=['jp-subway-entrance'])]
+    def _cells_of(prefixes): return [k for k in cells if k.split('/')[0] in prefixes]
+    groups = [dict(id='jp:tram-rail', name='노면전차 궤도(투명 덧그림)', role='detail', defaultLayer='upper',
+                   cells=_cells_of(('tram-rail-h', 'tram-rail-v', 'tram-rail-end')), desc='아스팔트에 묻힌 노면전차 레일·차막이.', rules='키트 jp-tram-rail-* 로 2층에 찍는다.'),
+              dict(id='jp:tram-stop', name='노면전차 정류장·가선·전주', role='prop', defaultLayer='upper',
+                   cells=_cells_of(('tram-stop', 'tram-wire-h', 'tram-pole')), desc='안전지대 섬·가공 전차선·전주.', rules='키트로 찍는다(가선은 4층).'),
+              dict(id='jp:subway-entrance', name='지하철 출입구', role='building', defaultLayer='upper',
+                   cells=_cells_of(('subway-entrance',)), desc='보도 위 지하철 출입구.', rules='키트 jp-subway-entrance, 계단 입구 anchor 2칸에 전이 이벤트.')]
+    groups = [g for g in groups if g['cells']]
     _CACHE['r'] = (cells, kits, sprites, groups)
     return _CACHE['r']
 

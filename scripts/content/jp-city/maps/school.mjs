@@ -27,17 +27,17 @@ const PATH = [33, 36];                                             // 정문 →
 fillL1(1, 1, W - 2, FENCE_S - 1, ground, "schoolyard");
 fillL1(2, 13, 36, 14, checker, "apron");                           // 교사·체육관 앞 포장(昇降口 앞)
 fillL1(PATH[0], 15, PATH[1], FENCE_S, checker, "gate-path");      // 정문 → 교사 앞
-fillL1(37, 19, 52, 20, checker, "pool-walk");                      // 진입로 → 수영장 탈의동 입구(51·52, 18)
-fillL1(42, 21, 66, 24, gomu, "play-a");                           // 遊具 밑 ゴムチップ: 오르기 봉·운제·철봉·그네·미끄럼틀 줄
-fillL1(38, 25, 48, 29, gomu, "play-b");                           //   정글짐·모래밭·타이어
-fillL1(1, 34, 12, 37, gomu, "play-field");                        //   운동장 남쪽 철봉·타이어
+fillL1(37, 20, 52, 21, checker, "pool-walk");                      // 진입로 → 수영장 탈의동 입구(51·52, 19)
+fillL1(42, 22, 66, 25, gomu, "play-a");                           // 遊具 밑 ゴムチップ: 오르기 봉·운제·철봉·그네·미끄럼틀 줄
+fillL1(38, 26, 48, 30, gomu, "play-b");                           //   정글짐·모래밭·타이어
+fillL1(2, 34, 12, 37, gomu, "play-field");                        //   운동장 남쪽 철봉·타이어
 m.addLane(0, LANE[0], W - 1, LANE[1]);
 m.shapeLanes();
 
 // ── 2. 건물(뒷줄): 교사 · 체육관 · 25m 수영장(물 25×12, 남쪽 탈의동으로 들어간다)
 put("jp-bldg-school", 2, 12);                                      // 昇降口 (12,12)
 put("jp-bldg-school-gym", 23, 12);                                 // 문 (28,12)(31,12)
-put("jp-pool", 38, 18, { tag: "pool" });                           // x 38~66, y 1~18, 입구 (51,18)(52,18)
+put("jp-pool", 38, 19, { tag: "pool" });                           // x 38~66, y 1~19, 입구 (51,19)(52,19)
 m.groupLine("jp-hedge", [...range(1, 22)].flatMap((x) => [[x, 1], [x, 2]]), "hedge-north");   // 교사 뒤 생울타리 두 줄
 for (const [id, x] of [["jp-prop-tree-sakura", 24], ["jp-prop-tree-zelkova", 29], ["jp-prop-tree-sakura", 33]]) tryPut(id, x, 6, `tree-gym-${x}`);
 
@@ -45,13 +45,13 @@ for (const [id, x] of [["jp-prop-tree-sakura", 24], ["jp-prop-tree-zelkova", 29]
 put("jp-flagpoles", 2, 18, { tag: "flagpoles" });
 put("jp-asagao", 6, 16, { tag: "asagao" });
 put("jp-ichirinsha", 6, 18, { tag: "ichirinsha" });
-m.groupLine("jp-hedge", [[13, 15], [14, 15], [15, 15], [16, 15], [17, 15], [18, 15]], "hedge-front");   // 昇降口 옆 植え込み
 put("jp-kadan", 14, 17, { tag: "kadan-front" });
 put("jp-chorei-dai", 18, 18, { tag: "chorei-dai" });               // 트랙 북쪽 가운데, 운동장을 본다
 put("jp-keijiban", 21, 17, { tag: "keijiban" });                   // 학교 게시판
 put("jp-ninomiya", 24, 16, { tag: "ninomiya" });
 put("jp-teaarai", 26, 16, { tag: "teaarai" });                     // 운동장 → 교사 들어가기 전 손 씻는 곳
 put("jp-prop-bench", 27, 18, { tag: "bench-front" });
+for (const [x, f] of [[10, 17], [22, 18], [19, 15]]) tryPut("jp-tsutsuji-3", x, f, `azalea3-front-${x}`);   // 교사 앞 植え込み
 
 // ── 4. 운동장(서): 트랙(2층) · 골대 한 쌍 · 남쪽 띠(철봉·타이어·등나무·수돗가·창고) · 방구망
 stamp("jp-school-track-l", 2, 19, { layer: 2, tag: "track" });   // 트랙 바깥 x 2~31, y 19~33
@@ -66,34 +66,34 @@ put("jp-prop-bench", 29, 36, { tag: "bench-field" });
 for (let x = 2; x + 4 <= 30; x += 4) put("jp-ball-net", x, FENCE_S - 1, { tag: `net-${x}` });
 
 // ── 5. 동쪽 놀이·관찰 구역(진입로 동쪽, 수영장 남쪽) — 네 줄, 줄 사이 1칸
-put("jp-teaarai", 54, 20, { tag: "teaarai-pool" });                // 수영장 나온 곳 손·발 씻기
-put("jp-prop-bench", 59, 20, { tag: "bench-pool" });
-put("jp-kadan", 62, 20, { tag: "kadan-pool" });
-put("jp-souko", 38, 23, { tag: "souko" });                         // ① 창고·오르기 봉·운제·철봉·백엽상·그네·미끄럼틀
-put("jp-noboribou", 43, 23, { tag: "noboribou" });
-put("jp-unte", 47, 23, { tag: "unte" });
-put("jp-tetsubo", 53, 23, { tag: "tetsubo" });
-put("jp-hyakuyoubako", 59, 23, { tag: "hyakuyoubako" });
-put("jp-prop-swing", 61, 23, { tag: "swing" });
-put("jp-prop-slide", 64, 23, { tag: "slide" });
-put("jp-jungle-gym", 38, 28, { tag: "jungle-gym" });              // ② 정글짐·모래밭·타이어·등나무 그늘·비오톱
-put("jp-prop-sandbox", 42, 28, { tag: "sandbox" });
-put("jp-tires", 45, 28, { tag: "tires-2" });
-put("jp-fujidana", 50, 29, { tag: "fujidana" });
-put("jp-biotope", 56, 29, { tag: "biotope" });
-put("jp-gakkyuen", 38, 33, { tag: "gakkyuen-1" });                 // ③ 학급 밭 둘·사육장·화단·나팔꽃
-put("jp-gakkyuen", 44, 33, { tag: "gakkyuen-2" });
-put("jp-shiiku-goya", 50, 33, { tag: "shiiku-goya" });
-put("jp-kadan", 55, 32, { tag: "kadan-shiiku" });
-put("jp-asagao", 55, 33, { tag: "asagao-2" });
+put("jp-teaarai", 54, 21, { tag: "teaarai-pool" });                // 수영장 나온 곳 손·발 씻기
+put("jp-prop-bench", 59, 21, { tag: "bench-pool" });
+put("jp-kadan", 62, 21, { tag: "kadan-pool" });
+put("jp-souko", 38, 24, { tag: "souko" });                         // ① 창고·오르기 봉·운제·철봉·백엽상·그네·미끄럼틀
+put("jp-noboribou", 43, 24, { tag: "noboribou" });
+put("jp-unte", 47, 24, { tag: "unte" });
+put("jp-tetsubo", 53, 24, { tag: "tetsubo" });
+put("jp-hyakuyoubako", 59, 24, { tag: "hyakuyoubako" });
+put("jp-prop-swing", 61, 24, { tag: "swing" });
+put("jp-prop-slide", 64, 24, { tag: "slide" });
+put("jp-jungle-gym", 38, 29, { tag: "jungle-gym" });              // ② 정글짐·모래밭·타이어·등나무 그늘·비오톱
+put("jp-prop-sandbox", 42, 29, { tag: "sandbox" });
+put("jp-tires", 45, 29, { tag: "tires-2" });
+put("jp-fujidana", 50, 30, { tag: "fujidana" });
+put("jp-biotope", 56, 30, { tag: "biotope" });
+put("jp-gakkyuen", 38, 34, { tag: "gakkyuen-1" });                 // ③ 학급 밭 둘·사육장·화단·나팔꽃
+put("jp-gakkyuen", 44, 34, { tag: "gakkyuen-2" });
+put("jp-shiiku-goya", 50, 34, { tag: "shiiku-goya" });
+put("jp-kadan", 55, 33, { tag: "kadan-shiiku" });
+put("jp-asagao", 55, 34, { tag: "asagao-2" });
 put("jp-bike-shelter", 60, 42, { tag: "bike-shelter" });           // 교직원 자전거
-const SOUTH_TREES = [["jp-prop-tree-sakura", 38, 40], ["jp-prop-tree-sakura", 43, 40], ["jp-prop-tree-zelkova", 48, 40], ["jp-prop-tree-sakura", 53, 40]];
-for (const [id, x, f] of [["jp-prop-tree-sakura", 63, 30], ["jp-prop-tree-ginkgo", 61, 36], ...SOUTH_TREES]) tryPut(id, x, f, `tree-${x}-${f}`);   // ④ 담 따라 벚나무 줄
-// ── 6. 植え込み: 진입로 양옆 ツツジ 줄(틈 = 구역 출입구) · 놀이 구역 사이 덤불 덩이
-for (let y = 21; y <= 37; y++) if (![24, 30, 34].includes(y)) put("jp-tsutsuji", 37, y, { tag: `azalea-e-${y}` });
-for (let y = 19; y <= 33; y++) if (![24, 28].includes(y)) put("jp-tsutsuji", 32, y, { tag: `azalea-w-${y}` });
-for (const [x, f] of [[49, 25], [53, 25], [57, 25], [59, 34], [63, 38]]) tryPut("jp-tsutsuji-3", x, f, `azalea3-${x}-${f}`);
-for (let x = 39; x <= 58; x++) tryPut("jp-tsutsuji", x, 42, `azalea-s-${x}`);          // 남쪽 담 밑 벚나무 아래 植え込み
+const SOUTH_TREES = [["jp-prop-tree-sakura", 39, 41], ["jp-prop-tree-sakura", 43, 41], ["jp-prop-tree-zelkova", 47, 41], ["jp-prop-tree-sakura", 51, 41], ["jp-prop-tree-sakura", 55, 41]];
+for (const [id, x, f] of [["jp-prop-tree-sakura", 63, 31], ["jp-prop-tree-ginkgo", 61, 37], ...SOUTH_TREES]) tryPut(id, x, f, `tree-${x}-${f}`);   // ④ 담 따라 벚나무 줄
+// ── 6. 植え込み: 진입로 양옆 ツツジ(덤불·덩이 섞고 틈 = 구역 출입구) · 놀이 구역 사이 덤불 덩이 · 남쪽 담 밑
+for (let y = 22; y <= 37; y++) if (![25, 26, 31, 35].includes(y)) put("jp-tsutsuji", 37, y, { tag: `azalea-e-${y}` });
+for (let y = 19; y <= 33; y++) if (![23, 24, 28, 29].includes(y)) put("jp-tsutsuji", 32, y, { tag: `azalea-w-${y}` });
+for (const [x, f] of [[49, 26], [53, 26], [57, 26], [59, 35], [60, 39], [63, 39], [42, 42], [50, 42], [56, 42]]) tryPut("jp-tsutsuji-3", x, f, `azalea3-${x}-${f}`);
+for (const x of [46, 47, 54, 59]) tryPut("jp-tsutsuji", x, 42, `azalea-s-${x}`);
 put("jp-school-gate-l", GATE_X, FENCE_S, { tag: "school-gate" }); // 열린 칸 x 33~36
 
 // ── 7. 담: 둘레 철망(정문 자리 비움)
@@ -104,10 +104,10 @@ m.fenceLine(fence.filter(([x, y]) => !m.own3[m.idx(x, y)]), "fence");
 
 // ── 8. 앞 생활도로: 가장자리 표시 · 「30」 · 전봇대·전선(남쪽 가장자리, 정문 앞은 비운다)
 m.edgeMarks({ ew: [LANE] });
-m.stampL2("jp-mark-30-e", 8, LANE[0]);                            // 동쪽행 차선(위 두 줄)
-m.stampL2("jp-mark-30-w", 52, LANE[0] + 2);                      // 서쪽행 차선(아래 두 줄)
-const trunkCols = SOUTH_TREES.flatMap(([, x]) => [x, x + 1, x + 2, x + 3]);                  // 나무 줄기 앞에 기둥을 세우지 않는다
-m.poleRow(LANE[1], { forbid: (x) => (x >= GATE_X - 1 && x <= GATE_X + 8) || trunkCols.includes(x), prefer: 15 });
+m.stampL2("jp-mark-30-e", 8, LANE[0] + 1);                            // 동쪽행 차선(위 두 줄)
+m.stampL2("jp-mark-30-w", 52, LANE[0] + 1);                      // 서쪽행 차선(아래 두 줄)
+const trunkCols = SOUTH_TREES.flatMap(([, x]) => [x + 1, x + 2]);                           // 나무 줄기 앞에 기둥을 세우지 않는다
+m.poleRow(LANE[1], { x0: 1, forbid: (x) => (x >= GATE_X - 1 && x <= GATE_X + 8) || trunkCols.includes(x), prefer: 15 });
 
 const { report, MAP } = await m.finish({ id: "jp-city-school", name: "일본 도시 · 小学校", start: START, file: "school",
   emptyIgnore: [{ x: 2, y: 19, w: 30, h: 15 }], emptinessMax: 0.4,   // 트랙(운동장) 사각만 비어 있어야 한다 — 그 밖은 마을 기준 0.4

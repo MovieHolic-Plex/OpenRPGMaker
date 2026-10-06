@@ -219,7 +219,8 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     let worst = 0, worstAt = null;
     // emptyIgnore: 목적상 비어 있어야 하는 사각(운동장 트랙 안 등) — 빈칸으로 세지 않는다. 사각은 보고에 그대로 적는다.
     const ignored = (x, y) => emptyIgnore.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
-    const isBare = (x, y) => !ignored(x, y) && BARE.has(L1[idx(x, y)]) && L2[idx(x, y)] < 0 && L3[idx(x, y)] < 0 && L4[idx(x, y)] < 0;
+    // 4층(전선·전봇대 윗부분)은 땅을 채우지 않는다 — 공중에 걸린 것이라 빈칸 판정에서 보지 않는다(2026-10-07 관문 지적).
+    const isBare = (x, y) => !ignored(x, y) && BARE.has(L1[idx(x, y)]) && L2[idx(x, y)] < 0 && L3[idx(x, y)] < 0;
     // 비율의 분모는 무시 칸을 뺀 칸 수다(무시 칸을 분모에 남기면 비율이 낮게 나온다 — 2026-10-07 관문 지적). 남은 칸이 창의 절반 미만이면 그 창은 재지 않는다.
     for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
       let c = 0, n = 0;

@@ -414,23 +414,17 @@ def _cut(a, R, C, key_of, add):
     return out
 
 
-PARTS = {
-    'subway-gates': [dict(kind='entrance', x=x, y=1) for x in (1, 3, 5, 7)],
-    'subway-stairs-down': [dict(kind='entrance', x=1, y=2), dict(kind='entrance', x=2, y=2), dict(kind='anchor', x=1, y=2)],
-    'subway-stairs-up': [dict(kind='entrance', x=1, y=2), dict(kind='entrance', x=2, y=2), dict(kind='anchor', x=1, y=2)],
-    'subway-sign-exit': [dict(kind='sign', x=0, y=1, w=3, h=1)],
-    'subway-sign-line': [dict(kind='sign', x=0, y=1, w=3, h=1)],
+PARTS = {      # 계약 part 는 x·y·w·h 를 다 적는다. 개찰구 통로는 걸음 칸이라 entrance(막힌 문 칸)가 아니다.
+    'subway-stairs-down': [dict(kind='anchor', x=1, y=2, w=2, h=1, label='계단 입구(전이 이벤트 자리 — 승강장으로)')],
+    'subway-stairs-up': [dict(kind='anchor', x=1, y=2, w=2, h=1, label='계단 입구(전이 이벤트 자리 — 지상 출구로)')],
+    'subway-sign-exit': [dict(kind='sign', x=0, y=0, w=3, h=1)],
+    'subway-sign-line': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-station-sign': [dict(kind='sign', x=0, y=0, w=8, h=3)],
-    'subway-office': [dict(kind='window', x=0, y=0, w=4, h=2), dict(kind='entrance', x=1, y=2)],
+    'subway-office': [dict(kind='window', x=0, y=0, w=4, h=2)],
     'subway-ticket': [dict(kind='sign', x=0, y=0, w=6, h=1)],
 }
-ACCESS = {
-    'subway-gates': ['x=1,3,5,7 세로로 통과'],
-    'subway-stairs-down': ['아래 가운데 2칸에서 위로 걸어 들어간다'],
-    'subway-stairs-up': ['아래 가운데 2칸에서 위로 걸어 들어간다'],
-    'subway-office': ['창구 앞(아래) 한 칸'],
-    'subway-ticket': ['매표기 앞(아래) 한 줄'],
-}
+ACCESS = {}    # 접근칸은 ai.access 형식({dx, dy})만 — 안내 문장은 rules 에 적었다
+
 _CACHE = {}
 
 
@@ -468,8 +462,8 @@ def _finalize():
     groups = []
     for p in P:
         if not gcells[p['id']]: continue
-        layer = 1 if p['ground'] and not p['draw'] else 3
-        groups.append(dict(id='%s-%s' % (BLOCK, p['id']), name=p['name'], role=p['role'], defaultLayer=layer,
+        layer = 'lower' if p['ground'] and not p['draw'] else 'upper'
+        groups.append(dict(id='jp:%s' % p['id'], name=p['name'], role=p['role'], defaultLayer=layer,
                            cells=gcells[p['id']], desc=p['name'], rules=p['rules']))
     _CACHE['r'] = (cells, groups, kits, sprites)
     return _CACHE['r']
