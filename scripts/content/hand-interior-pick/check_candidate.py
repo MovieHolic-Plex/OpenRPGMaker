@@ -33,8 +33,11 @@ def allowed():
         import pxgrid
         pal, _ = pxgrid.load_palette(SHARED_PAL)
         s = {tuple(c) for k, c in pal.items() if k != '#'}
-        a = np.array(v5_atlas())
-        for o in load_meta(include_new=False)['objects']:   # 새 기물은 아틀라스에 그림이 없다
+        objects = load_meta(include_new=False)['objects']
+        # Dedicated sets deliberately have no stock objects or stock atlas.
+        # Their palette is complete; do not require an unused legacy image.
+        a = np.array(v5_atlas()) if objects else None
+        for o in objects:   # 새 기물은 아틀라스에 그림이 없다
             t = o['atlas']; c = a[t['y']:t['y'] + t['h'], t['x']:t['x'] + t['w'] * t['frames']].reshape(-1, 4)
             s |= set(map(tuple, c[c[:, 3] > 0].tolist()))
         _ALLOWED = s
