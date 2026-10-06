@@ -28,5 +28,29 @@
   "actualViewedPngSha256": "afde5be5be754c7f0ef217ab68676a323e3469236fc9b6042b8143dafd07b615",
   "rootObservations": "Actual18-pose light contact sheet opened: blue-black fur, redjaw, supported near/far legs, low windup, extended forward bite, recoil, lower curled sleep/flat fallen forms. Mouth-origin red split cone skill, sick foreleg/head and closed eyes/stars. Literal author_rows.rows writer read; render rectangle only checker background.",
   "technicalPass": true,
-  "binding": "a3bda6d51fe1ca0f711ff6b645c681995beec47246640e50cd70830e9c377b61"
+  "binding": "a3bda6d51fe1ca0f711ff6b645c681995beec47246640e50cd70830e9c377b61",
+  "actualCriticRecommendation": "rework",
+  "actualCriticJob": "1b1e6e11-3f30-4e76-8166-70bb5b202eb6",
+  "actualCriticIssues": [
+    {
+      "pose": "dead",
+      "x": 27,
+      "y": 56,
+      "message": "아래쪽 몸통이 긴 단일 덩어리로 끝나 접힌 앞발과 뒷발이 구분되지 않는다. (25–39, 53–59) 안에 어깨에서 내려오는 접힌 앞다리 경계와 수평으로 놓인 짧은 발끝을 어두운 클러스터로 분리하고, 엉덩이 쪽에는 접힌 뒷발 또는 늘어진 꼬리의 경계를 남겨 쓰러진 사족 몸으로 읽히게 한다. 바닥선 y=60은 유지한다."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 15,
+      "y": 54,
+      "message": "왼쪽 아래부터 배까지 매끈한 파란 타원으로 이어져 꼬리와 접힌 다리가 사라진다. (8–27, 49–58)의 몸 안쪽에 꼬리가 배를 감싸는 곡선 경계와 끝의 털 클러스터를 직접 찍고, (31–43, 54–59)에 턱 아래로 모은 앞발을 작은 별도 면으로 분리한다. 큰 등 광택선만으로 몸과 꼬리를 표시하지 말고 닫힌 눈/쉬는 주둥이와 함께 수면 자세를 명료하게 한다."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 33,
+      "y": 55,
+      "message": "두 번째 수면도 발과 꼬리가 보이지 않는 둥근 몸통을 유지한다. sleep_a에서 정리한 접힌 앞발과 감긴 꼬리의 경계를 같은 해부 위치에 이어서 저작하고, 호흡 변화는 등·가슴 면의 작은 이동으로 표현한다. (30–43, 53–59)의 앞발 덩어리와 (8–27, 49–58)의 꼬리 끝이 호흡 프레임 사이에 사라지지 않게 한다."
+    }
+  ],
+  "pendingRootObservationsCorrection": "Current dead/sleep forms are lower and distinct but the folded feet and curled tail disappear into a single blue rounded mass. Root draft impression of readable curled sleep did not establish anatomical detail. Actual independent critic requires explicit folded fore/hind paws and curled tail boundary; genuine repair1095f63f is live. No pass/Allow claimed.",
+  "lastObservedAt": "2026-10-06T06:04:24.165225+00:00"
 }

@@ -25,5 +25,10 @@
   "actualBadgerRecommendation": "rework",
   "actualBadgerRepairJob": "c0b3bdef-c193-4ddc-b125-13cca831e7de",
   "actualWolfCriticJob": "1b1e6e11-3f30-4e76-8166-70bb5b202eb6",
-  "entireGoalCompleteClaim": false
+  "entireGoalCompleteClaim": false,
+  "lastObservedAt": "2026-10-06T06:05:18.827957+00:00",
+  "actualWolfRecommendation": "rework",
+  "actualWolfRepairJob": "1095f63f-e51a-4a6f-96f1-c181b6766b6f",
+  "actualWolfIssueCount": 3,
+  "actualBadgerIssueCount": 3
 }
