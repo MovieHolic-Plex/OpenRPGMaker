@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T05:45:36.772616+00:00",
+  "passed": true,
+  "key": "mist-tail-lynx/fifty-v1",
+  "binding": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+  "actualIndependentReviewJob": "f99d570d-a4c7-406c-b4ed-a98e61be83ac",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "2face4a38eef260140f62e93f3dae443d5ae1605313ae325b8580688ea6292e5",
+    "preview/suite/light.png": "132228ae0513ff0cfd68c88ad3baaec3b2beaae1102c11e3ddb11ca26ef8e5b5",
+    "preview/suite/dark.png": "df5cd8660383454e20eb3f394f6043cae6ab0127e86ad6886db9a5340c06c6a2",
+    "preview/suite/checker.png": "80cd00e5540955be56b8413896e39249f19a95d8f21b06f17cfd50bebeb01572"
+  },
+  "nativePoses": 18,
+  "rootVisualAndSourceMethodObservations": "Root opened the actual current 18-pose light PNG at native1x and nearest3x. One connected neck/head, supported front paws in stun, three short attack claws, paw-origin mist sequence, separate crouched sleep and flat fallen silhouettes. Inspected literal ASCII author_clusters.txt writer and all five localized coordinate-repair helpers. ImageDraw primitives in render.py are restricted to preview labels/checker background, not native art.",
+  "claimScope": "Actual native source and current pose images reviewed; gameplay contact not inferred. Full goal50 remains incomplete."
+}

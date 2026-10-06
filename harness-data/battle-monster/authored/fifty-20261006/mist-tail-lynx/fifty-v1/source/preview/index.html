@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>안개삵 — 18자세 / 8동작</title>
+<style>
+:root {color-scheme:dark;font-family:system-ui,sans-serif;background:#181c24;color:#eee9de}
+body {margin:24px auto;max-width:1260px;padding:0 20px}
+h1 {font-size:24px;margin-bottom:8px} p {color:#b9b8b2;line-height:1.5}
+a {color:#bfd9df} .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(354px,1fr));gap:16px}
+article {padding:14px;background:#252a33;border:1px solid #3d424c;border-radius:8px}
+h2 {font-size:17px;margin:0 0 10px} .display {display:flex;align-items:flex-end;gap:4px;justify-content:center;overflow:hidden;background:var(--bg)}
+.display img {image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain}
+.native {width:64px;height:64px;flex-shrink:0} .zoom {width:256px;height:256px;flex-shrink:0}
+small {display:block;color:#b9b8b2;margin-top:8px}
+.sheet {width:100%;height:auto;image-rendering:pixelated;border:1px solid #3d424c}
+label {display:inline-block;margin:14px 0 22px} select {padding:6px;margin-left:8px;border-radius:4px}
+.display {--bg:repeating-conic-gradient(#626873 0 25%,#424954 0 50%) 0 / 32px 32px}
+body[data-bg="dark"] .display {--bg:#181c24}
+body[data-bg="light"] .display {--bg:#e9e1ce}
+footer {margin:22px 0;color:#b9b8b2}
+</style>
+<body data-bg="checker">
+<h1>안개삵 · fifty-v1</h1>
+<p>기본 9자세 + 기술·상태 9자세. 원본 64×64 · 18색 · 오른쪽을 보는 사족 동물.<br>각 동작은 실제 GIF를 1배와 최근접 4배로 함께 표시합니다.</p>
+<label>배경 <select onchange="document.body.dataset.bg=this.value"><option value="checker">체커</option><option value="dark">어두움</option><option value="light">밝음</option></select></label>
+<div class="grid">
+<article><h2>대기</h2><div class="display"><img class="native" src="idle.gif" alt="대기 1배"><img class="zoom" src="idle.gif" alt="대기 4배"></div><small>호흡 · 꼬리 · 짧은 눈 감음</small></article>
+<article><h2>공격</h2><div class="display"><img class="native" src="attack.gif" alt="공격 1배"><img class="zoom" src="attack.gif" alt="공격 4배"></div><small>낮춤 → 밀기·전진 → 발톱 → 회수</small></article>
+<article><h2>피격</h2><div class="display"><img class="native" src="hit.gif" alt="피격 1배"><img class="zoom" src="hit.gif" alt="피격 4배"></div><small>눈 감음 · 어깨 반동 · 앞발 지지</small></article>
+<article><h2>쓰러짐</h2><div class="display"><img class="native" src="dead.gif" alt="쓰러짐 1배"><img class="zoom" src="dead.gif" alt="쓰러짐 4배"></div><small>반동 뒤 바닥에 내려온 몸</small></article>
+<article><h2>무영조</h2><div class="display"><img class="native" src="skill.gif" alt="무영조 1배"><img class="zoom" src="skill.gif" alt="무영조 4배"></div><small>앞발의 은빛 기 → 굽은 세 파문 → 잔안개</small></article>
+<article><h2>독</h2><div class="display"><img class="native" src="poison.gif" alt="독 1배"><img class="zoom" src="poison.gif" alt="독 4배"></div><small>아픈 턱 · 접힌 앞발 · 흩어지는 방울</small></article>
+<article><h2>기절</h2><div class="display"><img class="native" src="stun.gif" alt="기절 1배"><img class="zoom" src="stun.gif" alt="기절 4배"></div><small>처진 머리 · 접힌 앞다리 · 바뀌는 별</small></article>
+<article><h2>수면</h2><div class="display"><img class="native" src="sleep.gif" alt="수면 1배"><img class="zoom" src="sleep.gif" alt="수면 4배"></div><small>웅크림 · 닫힌 눈 · 작은 숨</small></article>
+</div>
+<h2 style="margin-top:28px">18자세 확인판</h2>
+<p>이번 교정 전후: <a href="reviewed-clusters-checker.png">체커 1배·3배</a> · <a href="reviewed-clusters-light.png">밝은 배경</a> · <a href="reviewed-clusters-dark.png">어두운 배경</a></p>
+<p><a href="contact-light.png">밝은 배경</a> · <a href="contact-dark.png">어두운 배경</a> · <a href="native-sheet.png">1배 원본</a> · <a href="poses-sheet.png">기본 3×3</a> · <a href="actions-sheet.png">추가 3×3</a></p>
+<img class="sheet" src="contact-checker.png" alt="안개삵 18자세 체커 배경 확인판">
+<footer><a href="../AUTHORING.md">저작·교정 기록</a> · <a href="../TIMING.md">동작 시간표</a> · <a href="export-diagnostics.json">실제 출력 진단</a><p>독립 검수와 사용자 선택은 하네스에서 진행합니다.</p></footer>
+</body>
+</html>

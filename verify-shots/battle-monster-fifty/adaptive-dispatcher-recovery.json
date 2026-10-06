@@ -1,0 +1,54 @@
+{
+  "transition": {
+    "reason": "Introduce one human woman pilot in the free third slot and replace scheduling only after current lynx wave is terminal. Existing two model chains continue.",
+    "oldDispatcherPid": 4087652,
+    "currentWavePid": 518548,
+    "currentSpecies": "mist-tail-lynx",
+    "currentWaveStartTicks": "84564964",
+    "humanPilot": "red-tassel-swordswoman",
+    "modelMaxConcurrency": 3,
+    "goalSpecies": 50,
+    "goalPaused": false,
+    "state": "adaptive-dispatcher-started-by-root",
+    "startedAt": "2026-10-06T05:03:39.990238+00:00",
+    "terminalEvidence": "original wave handle missing",
+    "finishedAt": "2026-10-06T05:42:01.262677+00:00",
+    "restartExitCode": 5,
+    "recovery": "Actual old wave terminal and no active repo model calls verified. Transient service restart returned5 because unloaded; root recreated same rest unit using prepared adaptive controller."
+  },
+  "currentServices": {
+    "rest": {
+      "MainPID": "1474535",
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "observer": {
+      "MainPID": "1476801",
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "running"
+    }
+  },
+  "actualCurrentModelHandles": [
+    {
+      "pid": 1483805,
+      "actualProcCmdlineObserved": true
+    },
+    {
+      "pid": 1483948,
+      "actualProcCmdlineObserved": true
+    },
+    {
+      "pid": 1484056,
+      "actualProcCmdlineObserved": true
+    }
+  ],
+  "actualMaxConcurrency": 3,
+  "goalPaused": false,
+  "expectedSpecies": 50,
+  "qualifiedSpecies": 8,
+  "remainingSpecies": 42,
+  "stoppedOldPlannerIsTerminal": true,
+  "rootKilledLiveModel": false
+}

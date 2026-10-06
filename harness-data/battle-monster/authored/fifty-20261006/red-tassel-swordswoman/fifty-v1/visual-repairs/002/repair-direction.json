@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "071f8e4f8e66f97547adb30d8866ffc5e4620be09e949da8e1aa8a552ddfa7e0",
+  "priorReviewJob": "aef766c9-796c-4336-b601-bbca16f11a27",
+  "issues": [
+    {
+      "pose": "skill_b",
+      "x": 53,
+      "y": 29,
+      "message": "The silver blade ends here after only about eight horizontal pixels from its root near (46,29), whereas skill_a and the ordinary attack sequence show a long sword. The red arcs connect at this endpoint, so the defect is abrupt blade shortening rather than a floating effect. Reposition the gripping hand and arc junction within the cell to preserve the recognizable long steel blade through contact; retain an unbroken hand-to-hilt-to-blade-to-effect connection."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 29,
+      "y": 44,
+      "message": "The outer shoulder contour pixel is red here, replacing the dark outline present at the same coordinate in sleep_a. Restore the dark contour at (29,44) while preserving the neighboring red sleeve highlights, so the shoulder edge remains consistent across the sleep pair."
+    }
+  ],
+  "startedAt": "2026-10-06T05:26:03.497865+00:00"
+}

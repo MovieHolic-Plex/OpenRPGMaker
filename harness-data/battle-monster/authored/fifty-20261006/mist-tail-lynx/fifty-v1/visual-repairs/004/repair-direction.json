@@ -1,0 +1,50 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "8b6f192d2d5022ba9d795347c309a1bb6d0f0c491aff182f894ff22c245cc93b",
+  "priorReviewJob": "1804e11b-6fb6-4e16-bb28-77294d02fcb3",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 31,
+      "y": 55,
+      "message": "The one-pixel dark column at x31, y53-58, with its bottom at x30-31, y59-60, runs beside the already filled far hind leg at x26-29. The background slit at x30 makes this look like a hollow extra leg. Remove the redundant outer column and bottom stub, or redraw one filled, articulated far hind leg with one coherent paw. Preserve the separation from the near hind leg."
+    },
+    {
+      "pose": "skill_a",
+      "x": 31,
+      "y": 36,
+      "message": "A single enclosed background pixel interrupts the upper shoulder at (31,36). Fill it with the adjacent grey-brown body base, RGB (137,123,107). Restore a continuous dorsal outline across the nearby notch at (33,35) so the neck and shoulder read as one fur-covered volume."
+    },
+    {
+      "pose": "skill_b",
+      "x": 49,
+      "y": 40,
+      "message": "The isolated RGB (37,39,43) pixel at (49,40) sits in the transparent gap between the muzzle/chest and silver waves. Remove this dark fleck. Keep the existing silver wave connection to the actual forepaw around x44-48, y43-46."
+    },
+    {
+      "pose": "skill_c",
+      "x": 32,
+      "y": 38,
+      "message": "The dorsal neck join descends through background gaps at x33-37,y35; x31-36,y36; x32-34,y37; and (32,38), then abruptly reconnects at y39. This creates a deep cut into the shoulder rather than a shallow fur contour. Redraw a continuous outlined shoulder-to-neck slope above the body, filling the excessive inward cut with existing body colours. Apply the same contour repair to poison_a, poison_b, stun_a and stun_b at their corresponding shoulder joins; retain each state's head position."
+    },
+    {
+      "pose": "attack",
+      "x": 59,
+      "y": 49,
+      "message": "The extended forepaw ends in a broad pale vertical slab around x58-60,y47-52, which reads as one blunt paddle at 1x. Reshape the existing pale tip into short separated claw points with small dark clefts, and retain a tapered brown wrist connected to the shoulder. This will make the intended claw sweep clearer without enlarging the paw."
+    },
+    {
+      "pose": "stun_a",
+      "x": 43,
+      "y": 58,
+      "message": "Both front paws merge into a clawed bar ending at y58 while the near hind paw stays at baseline y60. The suspended forefeet and otherwise standing torso make the weight support unclear. Lower at least one connected front paw to y60 and bend its elbow so the forequarters visibly sag onto it. Keep the stars and closed-eye expression."
+    },
+    {
+      "pose": "stun_b",
+      "x": 43,
+      "y": 58,
+      "message": "The second stun frame again ends both front paws at y58 with empty rows y59-60 beneath them. Preserve the chosen supporting front paw on y60 across the pair, and put the wobble into the shoulder, head or other foreleg so the front contact does not disappear between grounded status frames."
+    }
+  ],
+  "startedAt": "2026-10-06T05:32:47.107174+00:00"
+}

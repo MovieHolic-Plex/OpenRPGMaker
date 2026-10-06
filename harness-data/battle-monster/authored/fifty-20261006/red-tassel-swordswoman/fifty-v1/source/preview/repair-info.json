@@ -1,0 +1,49 @@
+{
+  "changed_source_files": [
+    "poses/windup.pxgrid"
+  ],
+  "preserved_source_files": [
+    "palette.json",
+    "poses/attack.pxgrid",
+    "poses/dead.pxgrid",
+    "poses/hit.pxgrid",
+    "poses/idle_a.pxgrid",
+    "poses/idle_b.pxgrid",
+    "poses/idle_c.pxgrid",
+    "poses/move.pxgrid",
+    "poses/recover.pxgrid",
+    "actions/poison_a.pxgrid",
+    "actions/poison_b.pxgrid",
+    "actions/skill_a.pxgrid",
+    "actions/skill_b.pxgrid",
+    "actions/skill_c.pxgrid",
+    "actions/sleep_a.pxgrid",
+    "actions/sleep_b.pxgrid",
+    "actions/stun_a.pxgrid",
+    "actions/stun_b.pxgrid"
+  ],
+  "windup_changed_pixels": 171,
+  "windup_changed_bounds": [
+    32,
+    5,
+    54,
+    37
+  ],
+  "windup_feet_y60": [
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ]
+}

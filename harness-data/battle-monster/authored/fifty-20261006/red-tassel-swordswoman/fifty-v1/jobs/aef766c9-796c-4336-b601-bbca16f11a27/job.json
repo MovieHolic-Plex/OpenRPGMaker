@@ -1,0 +1,43 @@
+{
+  "id": "aef766c9-796c-4336-b601-bbca16f11a27",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T05:23:42.130981+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/jobs/aef766c9-796c-4336-b601-bbca16f11a27",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "38381ad9703b17d99970ea9a47aed6344d062a4645dd20f1a676704d9a66e4c2",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "3fe2d2387d726bac690782c8c6e5499cc9a6743d8d24652b297c27c17d41b330",
+    "preview/suite/light.png": "a00aa597018fcf6c79bcf5d25dfbe4bc594ad0409cd529113fc5497a1e211336",
+    "preview/suite/dark.png": "e368a084643e5f7ef67d2498191dc4f70a7fddc4ef0a9438d9a8eaf66fa53686",
+    "preview/suite/checker.png": "f0ceb31d69a8921f4df7bd0da2faf2fd9c8d49738d71bae82928cb6fe74ca467"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T05:26:01.939727+00:00"
+}

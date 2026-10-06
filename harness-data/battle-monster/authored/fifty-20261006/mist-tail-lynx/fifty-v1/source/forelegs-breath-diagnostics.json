@@ -1,0 +1,3237 @@
+{
+  "poses/idle_a.pxgrid": {
+    "changed_pixels": 108,
+    "edits": [
+      {
+        "x": 43,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 45,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 47,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 47,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 47,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 44,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 48,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 48,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 48,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 48,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 42,
+        "y": 49,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 43,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 47,
+        "y": 49,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 49,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 49,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 49,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 49,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 50,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 50,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 50,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 50,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 50,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 50,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 43,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 44,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 45,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 51,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 51,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 39,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 40,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 52,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 52,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 52,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 52,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 52,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 52,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 52,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 53,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 53,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 53,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 48,
+        "y": 53,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 53,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 53,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 53,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 53,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 53,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 54,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 54,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 54,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 54,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 54,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 54,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 55,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 55,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 55,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 55,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 55,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 55,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 56,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 56,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 56,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 56,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 57,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 57,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 57,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 57,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 39,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 58,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 46,
+        "y": 58,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 58,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 50,
+        "y": 58,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 58,
+        "before": "O",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 39,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 59,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 43,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 44,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 45,
+        "y": 59,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 59,
+        "before": "B",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 59,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 59,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 59,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 50,
+        "y": 59,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 59,
+        "before": ".",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 60,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 60,
+        "before": "W",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 60,
+        "before": "O",
+        "after": "W"
+      },
+      {
+        "x": 50,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 60,
+        "before": ".",
+        "after": "W"
+      },
+      {
+        "x": 52,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      }
+    ]
+  },
+  "poses/idle_b.pxgrid": {
+    "changed_pixels": 108,
+    "edits": [
+      {
+        "x": 43,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 45,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 47,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 47,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 47,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 44,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 48,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 48,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 48,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 48,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 42,
+        "y": 49,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 43,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 47,
+        "y": 49,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 49,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 49,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 49,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 49,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 50,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 50,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 50,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 50,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 50,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 50,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 43,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 44,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 45,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 51,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 51,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 39,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 40,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 52,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 52,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 52,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 52,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 52,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 52,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 52,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 53,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 53,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 53,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 48,
+        "y": 53,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 53,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 53,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 53,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 53,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 53,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 54,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 54,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 54,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 54,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 54,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 54,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 55,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 55,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 55,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 55,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 55,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 55,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 56,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 56,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 56,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 56,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 57,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 57,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 57,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 57,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 39,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 58,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 46,
+        "y": 58,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 58,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 50,
+        "y": 58,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 58,
+        "before": "O",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 39,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 59,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 43,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 44,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 45,
+        "y": 59,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 59,
+        "before": "B",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 59,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 59,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 59,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 50,
+        "y": 59,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 59,
+        "before": ".",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 60,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 60,
+        "before": "W",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 60,
+        "before": "O",
+        "after": "W"
+      },
+      {
+        "x": 50,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 60,
+        "before": ".",
+        "after": "W"
+      },
+      {
+        "x": 52,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      }
+    ]
+  },
+  "poses/idle_c.pxgrid": {
+    "changed_pixels": 108,
+    "edits": [
+      {
+        "x": 43,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 45,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 47,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 47,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 47,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 44,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 48,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 48,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 48,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 48,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 42,
+        "y": 49,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 43,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 47,
+        "y": 49,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 49,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 49,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 49,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 49,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 50,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 50,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 50,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 50,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 50,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 50,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 43,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 44,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 45,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 51,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 51,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 39,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 40,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 52,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 52,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 52,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 52,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 52,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 52,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 52,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 53,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 53,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 53,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 48,
+        "y": 53,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 53,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 53,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 53,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 53,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 53,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 54,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 54,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 54,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 54,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 54,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 54,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 55,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 55,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 55,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 55,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 55,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 55,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 56,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 56,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 56,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 56,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 57,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 57,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 57,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 57,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 39,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 58,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 46,
+        "y": 58,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 58,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 50,
+        "y": 58,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 58,
+        "before": "O",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 39,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 59,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 43,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 44,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 45,
+        "y": 59,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 59,
+        "before": "B",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 59,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 59,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 59,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 50,
+        "y": 59,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 59,
+        "before": ".",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 60,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 60,
+        "before": "W",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 60,
+        "before": "O",
+        "after": "W"
+      },
+      {
+        "x": 50,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 60,
+        "before": ".",
+        "after": "W"
+      },
+      {
+        "x": 52,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      }
+    ]
+  },
+  "poses/recover.pxgrid": {
+    "changed_pixels": 108,
+    "edits": [
+      {
+        "x": 43,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 45,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 47,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 47,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 47,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 47,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 47,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 44,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 48,
+        "y": 48,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 48,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 48,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 48,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 48,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 42,
+        "y": 49,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 43,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 47,
+        "y": 49,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 49,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 49,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 49,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 49,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 49,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 50,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 48,
+        "y": 50,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 49,
+        "y": 50,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 50,
+        "y": 50,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 50,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 52,
+        "y": 50,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 40,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 51,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 43,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 44,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 45,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 51,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 51,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 51,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 51,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 51,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 51,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 39,
+        "y": 52,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 40,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 41,
+        "y": 52,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 47,
+        "y": 52,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 52,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 52,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 52,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 52,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 52,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 52,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 38,
+        "y": 53,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 53,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 53,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 48,
+        "y": 53,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 53,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 53,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 53,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 53,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 53,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 54,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 54,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 54,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 54,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 54,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 54,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 48,
+        "y": 55,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 55,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 55,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 55,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 55,
+        "before": "S",
+        "after": "."
+      },
+      {
+        "x": 53,
+        "y": 55,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 56,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 56,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 56,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 56,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 49,
+        "y": 57,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 50,
+        "y": 57,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 51,
+        "y": 57,
+        "before": "S",
+        "after": "O"
+      },
+      {
+        "x": 52,
+        "y": 57,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 39,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 58,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 46,
+        "y": 58,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 58,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 50,
+        "y": 58,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 58,
+        "before": "O",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 58,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 39,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 40,
+        "y": 59,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 41,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 42,
+        "y": 59,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 43,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 44,
+        "y": 59,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 45,
+        "y": 59,
+        "before": "B",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 59,
+        "before": "B",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 59,
+        "before": "M",
+        "after": "O"
+      },
+      {
+        "x": 48,
+        "y": 59,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 49,
+        "y": 59,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 50,
+        "y": 59,
+        "before": "O",
+        "after": "M"
+      },
+      {
+        "x": 51,
+        "y": 59,
+        "before": ".",
+        "after": "S"
+      },
+      {
+        "x": 52,
+        "y": 59,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 46,
+        "y": 60,
+        "before": "O",
+        "after": "."
+      },
+      {
+        "x": 47,
+        "y": 60,
+        "before": "W",
+        "after": "O"
+      },
+      {
+        "x": 49,
+        "y": 60,
+        "before": "O",
+        "after": "W"
+      },
+      {
+        "x": 50,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 51,
+        "y": 60,
+        "before": ".",
+        "after": "W"
+      },
+      {
+        "x": 52,
+        "y": 60,
+        "before": ".",
+        "after": "O"
+      }
+    ]
+  },
+  "actions/sleep_b.pxgrid": {
+    "changed_pixels": 103,
+    "edits": [
+      {
+        "x": 20,
+        "y": 40,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 21,
+        "y": 40,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 22,
+        "y": 40,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 23,
+        "y": 40,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 17,
+        "y": 41,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 18,
+        "y": 41,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 19,
+        "y": 41,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 20,
+        "y": 41,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 21,
+        "y": 41,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 22,
+        "y": 41,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 25,
+        "y": 41,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 26,
+        "y": 41,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 14,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 15,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 16,
+        "y": 42,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 17,
+        "y": 42,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 18,
+        "y": 42,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 19,
+        "y": 42,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 20,
+        "y": 42,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 21,
+        "y": 42,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 22,
+        "y": 42,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 24,
+        "y": 42,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 28,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 29,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 30,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 31,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 32,
+        "y": 42,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 33,
+        "y": 42,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 34,
+        "y": 42,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 14,
+        "y": 43,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 16,
+        "y": 43,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 25,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 26,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 27,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 28,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 29,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 30,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 31,
+        "y": 43,
+        "before": "O",
+        "after": "B"
+      },
+      {
+        "x": 34,
+        "y": 43,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 35,
+        "y": 43,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 13,
+        "y": 44,
+        "before": "O",
+        "after": "L"
+      },
+      {
+        "x": 14,
+        "y": 44,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 23,
+        "y": 44,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 34,
+        "y": 44,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 35,
+        "y": 44,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 36,
+        "y": 44,
+        "before": ".",
+        "after": "O"
+      },
+      {
+        "x": 13,
+        "y": 45,
+        "before": "L",
+        "after": "H"
+      },
+      {
+        "x": 19,
+        "y": 45,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 22,
+        "y": 45,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 24,
+        "y": 45,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 25,
+        "y": 45,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 35,
+        "y": 45,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 36,
+        "y": 45,
+        "before": ".",
+        "after": "B"
+      },
+      {
+        "x": 37,
+        "y": 45,
+        "before": ".",
+        "after": "L"
+      },
+      {
+        "x": 18,
+        "y": 46,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 20,
+        "y": 46,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 21,
+        "y": 46,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 23,
+        "y": 46,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 24,
+        "y": 46,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 25,
+        "y": 46,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 26,
+        "y": 46,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 38,
+        "y": 46,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 13,
+        "y": 47,
+        "before": "H",
+        "after": "B"
+      },
+      {
+        "x": 14,
+        "y": 47,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 20,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 23,
+        "y": 47,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 24,
+        "y": 47,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 25,
+        "y": 47,
+        "before": "S",
+        "after": "M"
+      },
+      {
+        "x": 30,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 31,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 32,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 33,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 39,
+        "y": 47,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 14,
+        "y": 48,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 15,
+        "y": 48,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 16,
+        "y": 48,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 17,
+        "y": 48,
+        "before": "H",
+        "after": "L"
+      },
+      {
+        "x": 23,
+        "y": 48,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 25,
+        "y": 48,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 26,
+        "y": 48,
+        "before": "M",
+        "after": "B"
+      },
+      {
+        "x": 29,
+        "y": 48,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 33,
+        "y": 48,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 34,
+        "y": 48,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 15,
+        "y": 49,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 23,
+        "y": 49,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 24,
+        "y": 49,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 26,
+        "y": 49,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 33,
+        "y": 49,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 34,
+        "y": 49,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 16,
+        "y": 50,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 18,
+        "y": 50,
+        "before": "L",
+        "after": "M"
+      },
+      {
+        "x": 19,
+        "y": 50,
+        "before": "L",
+        "after": "M"
+      },
+      {
+        "x": 20,
+        "y": 50,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 23,
+        "y": 50,
+        "before": "S",
+        "after": "B"
+      },
+      {
+        "x": 25,
+        "y": 50,
+        "before": "B",
+        "after": "S"
+      },
+      {
+        "x": 26,
+        "y": 50,
+        "before": "M",
+        "after": "S"
+      },
+      {
+        "x": 27,
+        "y": 50,
+        "before": "B",
+        "after": "M"
+      },
+      {
+        "x": 29,
+        "y": 50,
+        "before": "L",
+        "after": "B"
+      },
+      {
+        "x": 33,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 34,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 35,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 36,
+        "y": 50,
+        "before": "B",
+        "after": "L"
+      },
+      {
+        "x": 37,
+        "y": 50,
+        "before": "L",
+        "after": "B"
+      }
+    ]
+  }
+}

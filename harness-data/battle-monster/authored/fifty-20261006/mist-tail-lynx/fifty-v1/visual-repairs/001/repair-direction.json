@@ -1,0 +1,32 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "082ce0a14a88b325f4854222a912e070cf18ed049681088340acbe9530b0f39f",
+  "priorReviewJob": "93cf9c13-47c4-42da-9012-e82dc48a65ed",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 29,
+      "y": 36,
+      "message": "Remove the extra face on the back/neck: golden eye pixels at (29,36), (30,36) and (35,36), plus their surrounding facial outline and cream muzzle around x28-39, y34-40. Rebuild this region as connected shoulder/neck fur using the existing broad light and shadow planes. Preserve the actual head's eyes at x42-48, y36."
+    },
+    {
+      "pose": "move",
+      "x": 35,
+      "y": 35,
+      "message": "The upper torso retains a second golden eye cluster at (35,35)-(36,35) and a partial muzzle immediately below it, behind the current head. Replace those facial pixels and their small dark contour with continuous shoulder/neck fur, preserving the current face at x44-50, y35 and the forward stepping foreleg."
+    },
+    {
+      "pose": "attack",
+      "x": 36,
+      "y": 35,
+      "message": "Erase the duplicate face centered on the extra golden eye at (36,35)-(37,35). Repair the associated pale muzzle, facial contour and red mouth pixel at (34,38) as one continuous neck/shoulder mass. Keep the actual attacking head's eyes at x45-51, y35, its mouth near (54,38), and the connected sweeping forepaw."
+    },
+    {
+      "pose": "recover",
+      "x": 38,
+      "y": 34,
+      "message": "Two eye/muzzle fragments overlap at the back of the recovering head: the extra golden cluster at (38,34)-(39,34) creates a second face behind the intended eyes at x43-49, y34. Replace the extra cluster and adjoining facial highlight/outline with neck fur, giving recovery a single clean jaw and connected shoulder that returns consistently toward idle."
+    }
+  ],
+  "startedAt": "2026-10-06T05:07:09.022330+00:00"
+}

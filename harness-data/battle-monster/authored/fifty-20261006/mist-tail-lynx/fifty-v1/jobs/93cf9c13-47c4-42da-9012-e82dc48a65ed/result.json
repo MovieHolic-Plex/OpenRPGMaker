@@ -1,0 +1,30 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs, including native 1x cells and their nearest-neighbor 3x previews on light, dark and checker backgrounds. The quadruped silhouette, black ear tips, golden eyes, grouped flank spots and short blue-gray tail are recognizable; broad back highlights and darker underside generally support the upper-left light. However, windup, move, attack and recover contain a second partial face on the upper torso: extra golden eye pixels, muzzle highlights and facial outlines remain behind the current head. These disrupt neck anatomy and continuity with the single-faced idle frames. The red pixels in attack are mouth colors, not confirmed transparent holes; no definite unintended interior transparency is established from these previews. Supporting paws generally reach a consistent ground line, with lifted paws readable during actions, though the idle forelegs merge into a loop-like silhouette. Skill preparation lifts a connected forepaw, the contact frame's three pale claw trails originate at that paw, and recovery lowers it with residual mist. Poison uses a sick expression and green motes; stun uses closed eyes, a sagging stance and gold stars; sleep uses a grounded tucked body and closed dark eyelids. These are distinguishable states rather than simple tints, although the sleep pair changes only subtly. Dead reads as a flattened collapse. This is a visual rework recommendation, not the user's selection. Static pose previews cannot establish playback timing, actual battle contact, source authorship, absence of synthesized poses, or the complete source palette/alpha contract.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 29,
+      "y": 36,
+      "message": "Remove the extra face on the back/neck: golden eye pixels at (29,36), (30,36) and (35,36), plus their surrounding facial outline and cream muzzle around x28-39, y34-40. Rebuild this region as connected shoulder/neck fur using the existing broad light and shadow planes. Preserve the actual head's eyes at x42-48, y36."
+    },
+    {
+      "pose": "move",
+      "x": 35,
+      "y": 35,
+      "message": "The upper torso retains a second golden eye cluster at (35,35)-(36,35) and a partial muzzle immediately below it, behind the current head. Replace those facial pixels and their small dark contour with continuous shoulder/neck fur, preserving the current face at x44-50, y35 and the forward stepping foreleg."
+    },
+    {
+      "pose": "attack",
+      "x": 36,
+      "y": 35,
+      "message": "Erase the duplicate face centered on the extra golden eye at (36,35)-(37,35). Repair the associated pale muzzle, facial contour and red mouth pixel at (34,38) as one continuous neck/shoulder mass. Keep the actual attacking head's eyes at x45-51, y35, its mouth near (54,38), and the connected sweeping forepaw."
+    },
+    {
+      "pose": "recover",
+      "x": 38,
+      "y": 34,
+      "message": "Two eye/muzzle fragments overlap at the back of the recovering head: the extra golden cluster at (38,34)-(39,34) creates a second face behind the intended eyes at x43-49, y34. Replace the extra cluster and adjoining facial highlight/outline with neck fur, giving recovery a single clean jaw and connected shoulder that returns consistently toward idle."
+    }
+  ]
+}

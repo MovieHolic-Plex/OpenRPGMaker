@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs at native size, including the native 1x and nearest 3x panels on light, dark and checker backgrounds. The adult SD swordswoman reads clearly: right-facing three-quarter face, red tassel, crimson jacket, gold trim, dark trousers and silver blade remain recognizable. Broad hair and clothing clusters give useful volume, with upper-left highlights; dark hair, trousers and sheath have reduced separation on the dark background. Neck, limbs, hands and tools appear connected, with no obvious accidental interior transparency holes in these previews. Standing feet share the visible ground line, and the prone body reads as dead. Windup, wide step, downward slash, recovery and recoil are distinguishable. Skill preparation, contact and recovery, stomach-clutching poison, closed-eye stun with stars, and seated sleep are distinct states rather than whole-body tints or unrelated attacks; paired status frames include small body changes. The skill arcs visibly meet the weapon tip, but the contact frame abruptly shortens the silver blade into a stub, weakening weapon continuity. A shoulder contour pixel also disappears in sleep_b. This is an advisory visual recommendation, not the user selection. Static pose previews cannot establish playback timing, actual battle contact, runtime grounding, literal-grid authorship, source palette count or source alpha compliance; geometry checks do not constitute visual approval. Coordinates below are zero-based native 64x64 cell coordinates.",
+  "issues": [
+    {
+      "pose": "skill_b",
+      "x": 53,
+      "y": 29,
+      "message": "The silver blade ends here after only about eight horizontal pixels from its root near (46,29), whereas skill_a and the ordinary attack sequence show a long sword. The red arcs connect at this endpoint, so the defect is abrupt blade shortening rather than a floating effect. Reposition the gripping hand and arc junction within the cell to preserve the recognizable long steel blade through contact; retain an unbroken hand-to-hilt-to-blade-to-effect connection."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 29,
+      "y": 44,
+      "message": "The outer shoulder contour pixel is red here, replacing the dark outline present at the same coordinate in sleep_a. Restore the dark contour at (29,44) while preserving the neighboring red sleeve highlights, so the shoulder edge remains consistent across the sleep pair."
+    }
+  ]
+}

@@ -1,0 +1,665 @@
+{
+  "purpose": "Native format and export diagnostics; not aesthetic approval or independent review",
+  "palette_colors": 18,
+  "frame_count": 18,
+  "frames": {
+    "idle_a": {
+      "sha256_pxgrid": "83ad7c6b1c93e6a4ddf4836d43416c0de6e71544592f249ed762c29f1a345562",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        22,
+        56,
+        61
+      ]
+    },
+    "idle_b": {
+      "sha256_pxgrid": "895f84b8bc4722606741ee26954b69c0d8a8bd63b2eea9ef9cd793047af53edb",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        22,
+        56,
+        61
+      ]
+    },
+    "idle_c": {
+      "sha256_pxgrid": "c89cdc06bc36037a434a28225b6d1fa9ca0ef69527e3dec5f271b44c6a939c0d",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        22,
+        56,
+        61
+      ]
+    },
+    "windup": {
+      "sha256_pxgrid": "5c3cdcd7ffb2e8764d1072629c7fd2320f861f499903bc4ee0ff716f2b7cf59c",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        28,
+        56,
+        61
+      ]
+    },
+    "move": {
+      "sha256_pxgrid": "ff20675b122bfe66f60c4f1c895aaac9fed62399a815c458f29659c409745cd6",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        25,
+        62,
+        61
+      ]
+    },
+    "attack": {
+      "sha256_pxgrid": "77bc566ceafa0fca0fbaf0ee82deca368ec7e6b5f27ce8f3d51efe5ace14e6a3",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "R",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        26,
+        61,
+        61
+      ]
+    },
+    "recover": {
+      "sha256_pxgrid": "4c7f010881011a61636aecaf3a4208dfd75155af0db14714d549c1f487d6c311",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        23,
+        57,
+        61
+      ]
+    },
+    "hit": {
+      "sha256_pxgrid": "cf085d640cda78c57ab03dd3a78fbde1cf98d37aa117147f74a72368a6581728",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "R",
+        "S",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        22,
+        57,
+        61
+      ]
+    },
+    "dead": {
+      "sha256_pxgrid": "73ce3660069bd713d1b48b607e2bcdd4be9f321dd4de428e5c0d1d5a30530c11",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        7,
+        42,
+        55,
+        61
+      ]
+    },
+    "skill_a": {
+      "sha256_pxgrid": "c505da6ba9ec9c0a07dca41a9a629199d05c92e3c9de3ab708c7f2bebbcbb7d3",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        21,
+        54,
+        61
+      ]
+    },
+    "skill_b": {
+      "sha256_pxgrid": "dc26ee7d7ed355a2b0b614ff3414657530e153e5a391a53260ea14fdbab3e6fb",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        20,
+        63,
+        61
+      ]
+    },
+    "skill_c": {
+      "sha256_pxgrid": "0941bd9aad01a52b9ad699813028d4ffab0cf64192655ed696d7bcf24bd37734",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        23,
+        60,
+        61
+      ]
+    },
+    "poison_a": {
+      "sha256_pxgrid": "c8bf7d26d03aa61628fd560af213bf3777dbd5afb57202058f2f634070078f1c",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        24,
+        62,
+        61
+      ]
+    },
+    "poison_b": {
+      "sha256_pxgrid": "97a156df054dab9b8afc73b45eeb3d2cef5bc0f5bab38e2daa0992a851069dd2",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        3,
+        17,
+        62,
+        61
+      ]
+    },
+    "stun_a": {
+      "sha256_pxgrid": "d7ebb6551ea256afa60789cddffe06af4dda13cf7a4e628c639a5241b7437c0f",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        15,
+        63,
+        61
+      ]
+    },
+    "stun_b": {
+      "sha256_pxgrid": "6f73898c060916e1e3ef06b4555467f1cabe9d364bd8f2b8e24c20024aa0ee85",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W",
+        "Y"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        2,
+        17,
+        59,
+        61
+      ]
+    },
+    "sleep_a": {
+      "sha256_pxgrid": "9b96e0ec5efa099c0995c5ff9de3c2442cf763baf152fd7604c98faf65274cce",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        6,
+        33,
+        56,
+        61
+      ]
+    },
+    "sleep_b": {
+      "sha256_pxgrid": "105cbabe5719e327cadcf8735ca0c8307764a6e23b68c3114898a2609a0968f3",
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "symbols": [
+        "B",
+        "C",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "S",
+        "U",
+        "V",
+        "W"
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "bbox": [
+        6,
+        33,
+        56,
+        61
+      ]
+    }
+  },
+  "motions": {
+    "idle": {
+      "sha256_gif": "54653005bb27648bdea99bea98ebd9f627c87ab03d22f0d85212cd2916540a45",
+      "decoded_frames": 4,
+      "holds_ms": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "attack": {
+      "sha256_gif": "461472fd01d0870a183240ba4991501fabfaff0f15fee078a935c69dd5508e51",
+      "decoded_frames": 6,
+      "holds_ms": [
+        240,
+        180,
+        100,
+        140,
+        180,
+        260
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "hit": {
+      "sha256_gif": "df00cdde1124ffa3fca13a2118399d27b481765e5eb003f735c82f1939cee8b6",
+      "decoded_frames": 4,
+      "holds_ms": [
+        300,
+        220,
+        180,
+        300
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "dead": {
+      "sha256_gif": "550fdc7aa39bac3f43c5e4a69ddd64eb5697b5a867d090397a3b78778eb3ad86",
+      "decoded_frames": 3,
+      "holds_ms": [
+        320,
+        180,
+        1000
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "skill": {
+      "sha256_gif": "99533472dfd8a13e6761003d750d4247ceb5d351168d8c0d9079143b5d22421a",
+      "decoded_frames": 5,
+      "holds_ms": [
+        240,
+        260,
+        200,
+        260,
+        320
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "poison": {
+      "sha256_gif": "3c75d0ceddacedaaa2a10944353f25281c6875775b01b59e8f90bad07567fba0",
+      "decoded_frames": 2,
+      "holds_ms": [
+        400,
+        400
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "stun": {
+      "sha256_gif": "4e86b94342ae0e92907b412c954a184f852693d6bbbe05e09942f560d7d1129a",
+      "decoded_frames": 2,
+      "holds_ms": [
+        440,
+        440
+      ],
+      "visible_rgba_matches_source": true
+    },
+    "sleep": {
+      "sha256_gif": "6866b641ef47273233c005d420cf6a7619bb4b61729348d1d2e3ce9ffc2a7f88",
+      "decoded_frames": 2,
+      "holds_ms": [
+        640,
+        640
+      ],
+      "visible_rgba_matches_source": true
+    }
+  }
+}

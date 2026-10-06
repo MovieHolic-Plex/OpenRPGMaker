@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "fce13a70bed8dc934292f28897440ee05c210a3a02998e098114420a8c85f334",
+  "priorReviewJob": "a8014609-0e4c-4cf6-80c4-a306eb307a00",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 47,
+      "y": 54,
+      "message": "The outer foreleg bows right and joins the near paw below, enclosing a large oval gap. Redraw this region as a readable elbow, descending lower leg and separate planted paw; preserve a narrow open gap between the two legs instead of the closed loop. Carry the anatomy repair through idle_b, idle_c and recover."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 24,
+      "y": 45,
+      "message": "The sleep pair retains the same head, limb and body silhouette while flank shading and spot pixels change. Author a small chest/shoulder contour rise or fall for breathing, keep the folded paws grounded, and move the associated fur clusters coherently instead of changing isolated interior pixels."
+    }
+  ],
+  "startedAt": "2026-10-06T05:12:21.419682+00:00"
+}

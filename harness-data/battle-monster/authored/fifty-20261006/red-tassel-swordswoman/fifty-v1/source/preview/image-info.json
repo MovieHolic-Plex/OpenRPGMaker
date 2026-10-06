@@ -1,0 +1,164 @@
+{
+  "idle_a": {
+    "bbox": [
+      11,
+      8,
+      60,
+      61
+    ],
+    "source_sha256": "a005b235b36e255c45948580692f7b149e8f8e8e5a2cd779cfb3e183f069e8b5"
+  },
+  "idle_b": {
+    "bbox": [
+      10,
+      8,
+      60,
+      61
+    ],
+    "source_sha256": "802d1e7c09f3ea7ba6278bbd15fb525d956d8715bfc68e400bb74aa3ac7f69d3"
+  },
+  "idle_c": {
+    "bbox": [
+      12,
+      8,
+      60,
+      61
+    ],
+    "source_sha256": "f83e040e9c8096587f7be8fcf344db8cf0b1de28bef0bb9ca39339e1a1cc6f9d"
+  },
+  "windup": {
+    "bbox": [
+      11,
+      5,
+      55,
+      61
+    ],
+    "source_sha256": "e78e69e669536a2ce67de117844c18d1975065aea337209383197a0431a158d0"
+  },
+  "move": {
+    "bbox": [
+      7,
+      10,
+      62,
+      61
+    ],
+    "source_sha256": "eb7192d20af6e2743700c4328bcb9be231913e3ecce970dc9df065d4024ba714"
+  },
+  "attack": {
+    "bbox": [
+      6,
+      10,
+      61,
+      61
+    ],
+    "source_sha256": "649127590547d397384067ff27944e82084651ac5024589aea5c51e9e44eb1f4"
+  },
+  "recover": {
+    "bbox": [
+      11,
+      8,
+      57,
+      61
+    ],
+    "source_sha256": "ebf1d308c31525890828986a3aea3caf4ed855c240ef32c834cd7b63d1b484e4"
+  },
+  "hit": {
+    "bbox": [
+      10,
+      9,
+      56,
+      61
+    ],
+    "source_sha256": "577ab2de11b08e4c7acdfa7a0a3c71f1d3b99b878c344a205164ad0c2e2b4a6c"
+  },
+  "dead": {
+    "bbox": [
+      7,
+      39,
+      61,
+      61
+    ],
+    "source_sha256": "82a951d24e1f2449687581776d38922b1d866aa32d90f3223a6041b07968288d"
+  },
+  "skill_a": {
+    "bbox": [
+      11,
+      8,
+      61,
+      61
+    ],
+    "source_sha256": "bb2fa964ddcf52b58839d168f1122405cf0d7fcf7f4acfd65356e14f3513fafa"
+  },
+  "skill_b": {
+    "bbox": [
+      11,
+      3,
+      63,
+      61
+    ],
+    "source_sha256": "a7de39df03729d4c7140a2748550f8726d3ec7c1762d5abcb22bc46507b19ab0"
+  },
+  "skill_c": {
+    "bbox": [
+      11,
+      8,
+      61,
+      61
+    ],
+    "source_sha256": "771f1a3fc8e9ad59db2151a88da7882478c2b6fb3d7bd77671800e9687d1b427"
+  },
+  "poison_a": {
+    "bbox": [
+      9,
+      11,
+      56,
+      61
+    ],
+    "source_sha256": "6521cf5eaef03ee5b043a406549c361c0e2afd4bc67e4d06367a74f7f837e2a1"
+  },
+  "poison_b": {
+    "bbox": [
+      9,
+      8,
+      58,
+      61
+    ],
+    "source_sha256": "435e0baceb15a5c7d7a31f5ff41ab73518780af1a2ab587387baee2523c3c556"
+  },
+  "stun_a": {
+    "bbox": [
+      12,
+      10,
+      55,
+      61
+    ],
+    "source_sha256": "44c24298d8a5a831fd47830281c379aa061208be07dc03f972cc2bd27016e2df"
+  },
+  "stun_b": {
+    "bbox": [
+      12,
+      8,
+      55,
+      61
+    ],
+    "source_sha256": "f95bd6293cb7a62cbfdc3fe45870b1b3c7ee78191eaab60c32e4ac5a7f11f0c7"
+  },
+  "sleep_a": {
+    "bbox": [
+      9,
+      21,
+      57,
+      61
+    ],
+    "source_sha256": "e91b93107ea00a392dacf3aca80b070aecc77d6b7519b2691fdeafc99eb02376"
+  },
+  "sleep_b": {
+    "bbox": [
+      9,
+      21,
+      57,
+      61
+    ],
+    "source_sha256": "e9c07c08af8dacafddc0ca939eed34938ed4a770bfe0b2cfb19695757075d9e0"
+  }
+}

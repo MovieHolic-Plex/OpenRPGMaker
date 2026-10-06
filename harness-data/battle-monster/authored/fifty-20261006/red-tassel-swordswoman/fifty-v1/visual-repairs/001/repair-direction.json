@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "3ffa0a1e37540efc50a2ca27f65b6fcad60123042b2cf28ac1d3de8ea5ba3857",
+  "priorReviewJob": "5e0ef7c6-7684-4dfc-8ef6-d5b8043439e6",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 40,
+      "y": 31,
+      "message": "The gripping hand remains forward of the shoulder around (40,31), and the blade is simply raised more steeply than idle. Redraw the bent forearm and bring the grip/hilt back toward approximately (33,30), beside the shoulder, then reposition the connected blade to make a clear pulled-back preparation silhouette before the wide forward move/attack. Preserve an unbroken shoulder-sleeve-wrist-hand-hilt chain and the grounded feet at y=60."
+    }
+  ],
+  "startedAt": "2026-10-06T05:18:44.280977+00:00"
+}

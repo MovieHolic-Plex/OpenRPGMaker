@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the actual 64x64 portrait and all 18 poses at native 1x and nearest 3x on the supplied light, dark and checker PNGs. The adult SD swordswoman has a consistent right-facing three-quarter face, readable ponytail/red tassel, crimson jacket, gold trim and dark trousers. Crown/upper-left highlights, hair shadow masses, garment folds and the pale silver blade give readable material separation; dark hair and trousers have reduced internal contrast on the dark background but remain identifiable. Neck, shoulders, limbs, gripping hands and sword hilts appear connected; no obvious unintended transparent holes or broken body contours are visible. Standing soles remain aligned near the ground baseline, with convincing wider dash/slash footing; the fallen and seated sleep silhouettes remain grounded. Windup brings the grip toward the shoulder, move extends the stride, attack lowers the blade through a diagonal slash, recover retracts the posture, and hit recoils visibly. Idle changes are restrained native-pixel tassel/cloth/hand adjustments rather than a body jump. The skill sequence shows a red blade accent, two curved red branches originating at the actual raised sword tip, then two residual marks beside the lowered sword. Poison uses a sickened expression, chest/arm tension, lowered sword and shifting green bubbles; stun uses closed eyes, a backward head tilt and shifting gold stars; sleep is a distinct closed-eye seated pose with small cloth/hand changes. These states retain character and equipment continuity and are not simple tints or unrelated attacks. This is a recommendation for human review, not a user selection. Static pose previews cannot establish actual battle readability, playback timing, contact with an opponent or smooth animated transitions. Rendered PNGs alone do not prove literal pxgrid authorship, author model, source palette count or the full source alpha contract.",
+  "issues": [],
+  "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "3fe2d2387d726bac690782c8c6e5499cc9a6743d8d24652b297c27c17d41b330",
+    "preview/suite/light.png": "79340984132b5ddd601558b88c5c43ec087335fc972ea8d77e3759876bfee273",
+    "preview/suite/dark.png": "34d7be7162737e9f3b6597c341508fe492bc05d4ac341ec05c26ec1238b62a68",
+    "preview/suite/checker.png": "271a5abea8ddb8992dbf281b0487b118b0e4e40116ac1050111de20aef40a5ed"
+  },
+  "jobId": "d864f94e-2462-4468-a02f-051d6457412e",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T05:42:30.177632+00:00",
+  "userApproved": false
+}

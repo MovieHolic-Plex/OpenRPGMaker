@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 6,
+  "archivedPassedSpecies": 8,
   "entireGoalComplete": false,
   "items": [
     {
@@ -37,6 +37,17 @@
       "selectedPackSha256": "50593c4cffa5d6d7397e1f2565e81ab08339a52bfa94d45659b8357855467c5d"
     },
     {
+      "key": "mist-tail-lynx/fifty-v1",
+      "binding": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "e9357bfdf5d3298ab3b0a41a39d36d3b070e17386b9fa68c921b9c15dddede85"
+    },
+    {
       "key": "lantern-goblin/fifty-v1",
       "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
       "nativeCell": 96,
@@ -57,6 +68,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "5bf5c538b858e79ba4e44d764b664858cf5d13f9eac7ab4bd5e89bb8f87730ae"
+    },
+    {
+      "key": "red-tassel-swordswoman/fifty-v1",
+      "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "e3292398919bbcecbdb8fe92a24738ae81b5f62b66c063710b54d0cad5d6cc90"
     },
     {
       "key": "sun-gold-phoenix/fifty-v1",

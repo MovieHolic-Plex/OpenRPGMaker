@@ -1,0 +1,12 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the actual portrait and all 18 poses in the supplied light, dark and checker PNGs at native 1x and nearest 3x. The adult SD swordswoman reads consistently: black ponytail/red tassel, crimson jacket with gold trim, dark trousers and silver sword; upper-left highlights and broad hair/clothing shadow planes give readable volume. Hair and trouser contrast is subdued on the dark background. Standing feet consistently meet native y=60, and no obvious unintended interior holes, broken limb outlines or detached hand/hilt connections are visible. Idle changes are subtle; wide move/attack stances, lowered recovery, recoiling hit and horizontal dead silhouette are distinct. The additional states are readable authored poses: sword-core preparation, two curved red energy branches meeting the actual sword tip, lowered sword with two remnants, hunched poison, tilted-head stun and seated closed-eye sleep, with subtle paired-frame changes rather than simple tints. Rework is recommended because windup raises the sword in front of the body instead of pulling it toward the shoulder as specified, weakening the intended preparation-to-strike sequence. These are static pose previews: actual animation timing, battle contact and runtime presentation were not observed, and PNG appearance alone cannot verify literal pxgrid authorship. Geometry compliance does not constitute visual approval.",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 40,
+      "y": 31,
+      "message": "The gripping hand remains forward of the shoulder around (40,31), and the blade is simply raised more steeply than idle. Redraw the bent forearm and bring the grip/hilt back toward approximately (33,30), beside the shoulder, then reposition the connected blade to make a clear pulled-back preparation silhouette before the wide forward move/attack. Preserve an unbroken shoulder-sleeve-wrist-hand-hilt chain and the grounded feet at y=60."
+    }
+  ]
+}

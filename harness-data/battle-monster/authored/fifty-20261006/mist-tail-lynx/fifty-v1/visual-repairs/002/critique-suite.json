@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four actual PNGs at native 1x and the supplied nearest 3x. The right-facing lynx reads clearly: black ear tufts, gold eyes, grey-brown fur, sparse flank spots and a short blue mist tail. Upper-left highlights and broad shadow masses give useful volume; the body occupies the cell well. Dash, forward paw attack, recoil and collapsed death are distinguishable, with supporting feet on the shared ground line. No obvious accidental torso holes or detached limbs were visible across light, dark and checker backgrounds. However, the idle forelegs enclose a conspicuous loop that weakens feline anatomy. Skill preparation, three pale claw trails attached to the raised forepaw, and lowered-paw mist recovery form a coherent sequence. Poison and stun alter posture as well as particles; sleep is a folded, closed-eye state, but its pair mainly changes interior fur pixels rather than breathing volume. Recommendation is advisory; the user retains selection. Static pose previews cannot establish actual battle contact, playback timing, alpha values, palette count or authorship method.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 47,
+      "y": 54,
+      "message": "The outer foreleg bows right and joins the near paw below, enclosing a large oval gap. Redraw this region as a readable elbow, descending lower leg and separate planted paw; preserve a narrow open gap between the two legs instead of the closed loop. Carry the anatomy repair through idle_b, idle_c and recover."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 24,
+      "y": 45,
+      "message": "The sleep pair retains the same head, limb and body silhouette while flank shading and spot pixels change. Author a small chest/shoulder contour rise or fall for breathing, keep the folded paws grounded, and move the associated fur clusters coherently instead of changing isolated interior pixels."
+    }
+  ],
+  "binding": "fce13a70bed8dc934292f28897440ee05c210a3a02998e098114420a8c85f334",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "fd1fa5e127e0a55de8d384e3f0ffdc29286a9ee6357b44132b5a083e32dcf4e0",
+    "preview/suite/light.png": "9ecf8af1dd5c5b0f61a0490ca69500f88e92935320b37f94d04944e10b7ac1f1",
+    "preview/suite/dark.png": "ee96934c44e1ef435b330af34cc273d94315b32936b14e26e0089e1c5238430c",
+    "preview/suite/checker.png": "d79a57c89e5541eb02e2ffca42b38224d73f535ef146b49d2572c7de623337d1"
+  },
+  "jobId": "a8014609-0e4c-4cf6-80c4-a306eb307a00",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T05:12:21.403643+00:00",
+  "userApproved": false
+}

@@ -1,6 +1,8 @@
-# 신규50종 전체 통과 · 현재6/50 완료
+# 신규50종 제작 · 현재8/50 통과
 
-이 기록 시점 실제 전체 감사는 **2/50**,36자세/16GIF이며 exit1/전체 false다.
+## 최초 두 종 확인
+
+첫 기록 시점 실제 전체 감사는 **2/50**,36자세/16GIF이며 exit1/전체 false다.
 금각사슴은 얼굴/가슴3/4 면과 뿔의 전진 방향을 직접 교정한 후 실제 독립 keep를 받았다.
 청동종귀는 초기 실제 독립 keep를 받았다. 두 원본18자세 PNG/저작 helper를 감독이 실제로 읽고
 현재 native 원본/검수 binding을 확인한 뒤 현재 사용자 목표를 근거로 API에 Allow를 반영했다.
@@ -76,3 +78,22 @@ observer 실제 MainPID479830/ActiveState active를 확인했다. 기존 세 모
 wave note-file은 다음 새 저작/교정마다 최신 파일을 읽어 이후 사용자 steering을 반영한다.
 원문/모델/검수 판정을 만들거나 기존 source를 덮어써 배차하지 않는다. 전체50 목표는 동일하다.
 근거:six-passed-proof.json,root-review-jade-mantis.json,browser-proof-jade-mantis.json.
+
+## 안개삵·홍영검희 통과 · 실제8/50
+
+안개삵은 네 번 좌표 교정 뒤 실제 새 독립 keep를 받았다. 홍영검희는 전방 검손과
+칼끝의 두 붉은 검기, 준비 손잡이, 수면 변화를 세 번 교정 뒤 실제 새 독립 keep를 받았다.
+감독이 각 현재18자세의 native1배/최근접3배 PNG를 직접 열고 리터럴 ASCII 저작 및
+교정 helper 본문을 읽었다. 원본 해시와 실제 별도 검수의 binding/PNG 해시가 일치한다.
+현재8/50/144자세/64GIF이며 전체 감사는 false/exit1이다. 각 현재 Allow/선택 ZIP의 실제
+native PNG/GIF 픽셀·시간, 지속 출처8종의 동일 binding 재로드, 브라우저8GIF와 정지/재생,
+1440/375/320px 오류/넘침0을 확인했다. 원래52판정/8선택을 보존했고 신규24판정은
+현재 사용자 목표에 따른 위임 Allow이며 마우스 클릭을 주장하지 않는다.
+
+기존 삵 wave의 실제 종료 뒤 transient unit 재시작이5로 실패했다. 감독이 실제 이전 모델
+핸들이 사라진 것을 확인하고 준비된 후속 배차기를 같은 service 이름으로 새로 시작했다.
+observer도 재시작했다. 현재 후속42종과 실제 작가3명이 계속 돌며 목표50종은 유지된다.
+64px 여성 검객/96px 종귀/128px 봉황을 같은2배로 렌더한 실제 크기·스킬 비교를 공유했다.
+기존 숲은 변경하지 않았다. 게임 DB 설치나 실전 전투 검증은 이 출처/팩 확인에서 추론하지 않는다.
+근거:eight-passed-proof.json,root-review-mist-tail-lynx.json,root-review-red-tassel-swordswoman.json,
+browser-proof-mist-tail-lynx.json,browser-proof-red-tassel-swordswoman.json.
