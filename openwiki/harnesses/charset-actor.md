@@ -83,3 +83,7 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 슈퍼하네스 `theme_actors.py`는 native 프로세스에서 현재 걷기 binding과 행동 receipt를 확인한다.
 두 납품이 모두 있고 전용 테마·팔레트·원본/출력/도구 해시가 맞을 때만 전용 재료 coverage에 연결한다.
 행동이 없는 걷기만으로 전체 인물 요구사항을 완료 처리하지 않는다.
+
+기존 실행의 manifest는 JSON 내용이 같아도 재직렬화하지 않는다. 상위 주문은 파일 SHA에
+묶이므로 끝 개행 하나를 덧붙이는 것도 행동 제작 연결을 끊는다. bulk는 기존 내용이 다르면
+거절하고, 같으면 원래 바이트를 유지하며 새 snapshot일 때만 기록한다.

@@ -427,9 +427,13 @@ def main(args):
             raise ValueError('기존 실행과 다른 묶음 크기')
     write_json(layout, config)
     snapshot = root / 'manifest.json'
-    if snapshot.exists() and json.loads(snapshot.read_text()) != manifest:
-        raise ValueError('기존 실행의 manifest를 변경할 수 없음')
-    write_json(snapshot, manifest)
+    if snapshot.exists():
+        if json.loads(snapshot.read_text()) != manifest:
+            raise ValueError('기존 실행의 manifest를 변경할 수 없음')
+        # Preserve sealed bytes too: reformatting identical JSON invalidates
+        # upstream order hashes even though the production contract is unchanged.
+    else:
+        write_json(snapshot, manifest)
     with H.data_lock('briefs'):
         local = json.loads(H.LOCAL_BRIEFS.read_text()) if H.LOCAL_BRIEFS.exists() else {}
         for row in rows:
