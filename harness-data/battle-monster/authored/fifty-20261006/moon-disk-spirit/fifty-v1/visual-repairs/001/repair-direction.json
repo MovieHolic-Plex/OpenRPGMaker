@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "cd71efd4bb769f896f4e8a342eb43c4cfc6cf485f9817ebf41b5b60f440ab0cf",
+  "priorReviewJob": "46ef5231-f38c-4018-b52d-5bcaa0351ec3",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 18,
+      "y": 45,
+      "message": "The rear blue cuff at approximately x10-22, y42-49 ends in a connected skin hand, but appears to emerge directly from the left moon rim; its shoulder is near x46-51, y42-46. Author a readable blue upper-arm/forearm path from that shoulder to the cuff, with an elbow turn and separated cloth overlap, or bring the cuff inward for the specified short arm. Carry that anatomical join through the other extended-arm poses."
+    },
+    {
+      "pose": "idle_c",
+      "x": 26,
+      "y": 84,
+      "message": "The left scarf end around x22-29, y78-86 forms a broad squared foot after a knee-like zigzag; the right tail has a similar leg silhouette. Reauthor the terminal clusters as tapered or folded silk ends with asymmetric trailing curves, keeping a readable continuous attachment to the shawl. Apply the same cloth-end distinction to idle_a/idle_b and the folded sleep tails; do not add soles or ground contact."
+    }
+  ],
+  "startedAt": "2026-10-06T07:18:57.725065+00:00"
+}

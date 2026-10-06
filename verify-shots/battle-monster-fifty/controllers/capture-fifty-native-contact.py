@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('monsters', nargs='+')
 parser.add_argument('--repo', type=Path, default=Path.cwd())
 parser.add_argument('--source-root', type=Path)
+parser.add_argument('--theme', choices=['light', 'dark'], default='light')
 args = parser.parse_args()
 repo = args.repo.resolve()
 source_root = (args.source_root or repo / 'qa-runs/harnesses/battle-monster').resolve()
@@ -29,7 +30,9 @@ for ident in args.monsters:
     colors = {k: tuple(bytes.fromhex(v[1:])) + (255,) for k, v in palette.items()}
     colors['.'] = (0, 0, 0, 0)
     tw, th = 2 * cell + 16, 3 * cell + 40
-    board = Image.new('RGB', (6 * tw, 3 * th), '#e5e2d7')
+    background = '#e5e2d7' if args.theme == 'light' else '#20222c'
+    foreground = '#263a34' if args.theme == 'light' else '#f4e6ce'
+    board = Image.new('RGB', (6 * tw, 3 * th), background)
     draw = ImageDraw.Draw(board)
     proof = []
     for i, name in enumerate(names):
@@ -43,7 +46,7 @@ for ident in args.monsters:
         expected = bytes(c for r in rows for symbol in r for c in colors[symbol])
         assert image.tobytes() == expected, (ident, name, 'native PNG/source mismatch')
         x, y = (i % 6) * tw, (i // 6) * th
-        draw.text((x + 8, y + 4), name + ' / 1x + 2x', font=font, fill='#263a34')
+        draw.text((x + 8, y + 4), name + ' / 1x + 2x', font=font, fill=foreground)
         board.paste(image, (x + 8, y + 24), image)
         doubled = image.resize((2 * cell, 2 * cell), Image.Resampling.NEAREST)
         board.paste(doubled, (x + 8, y + cell + 32), doubled)
@@ -51,11 +54,12 @@ for ident in args.monsters:
                       'sourceSha256': hashlib.sha256(grid.read_bytes()).hexdigest(),
                       'rgbaMatchesNativeSource': True})
     assert max(board.size) <= 2048, board.size
-    target = out / ('native-contact-' + ident + '.png')
+    theme_suffix = '' if args.theme == 'light' else '-dark'
+    target = out / ('native-contact-' + ident + theme_suffix + '.png')
     board.save(target)
     receipt = {'at': datetime.now(timezone.utc).isoformat(), 'key': ident + '/' + plan['candidate'],
                'binding': check['binding'], 'nativeCell': cell, 'nativePoses': len(proof),
-               'displayScales': [1, 2], 'boardSize': list(board.size),
+               'displayScales': [1, 2], 'boardSize': list(board.size), 'background': background,
                'noSourceWrites': True, 'approvalClaim': False, 'sourceRoot': str(source_root),
                'pngSha256': hashlib.sha256(target.read_bytes()).hexdigest(), 'frames': proof}
     target.with_suffix('.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n')

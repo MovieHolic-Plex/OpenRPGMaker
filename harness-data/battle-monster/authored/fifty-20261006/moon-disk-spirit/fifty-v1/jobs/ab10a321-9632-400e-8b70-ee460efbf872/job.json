@@ -1,0 +1,43 @@
+{
+  "id": "ab10a321-9632-400e-8b70-ee460efbf872",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T07:41:57.460515+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/jobs/ab10a321-9632-400e-8b70-ee460efbf872",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "a33cf629e12c67dcc04a7de209f48e29b7301ab129dd3d8c1d10f05348f2e7e4",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "d16b2387bec5373ca24c1851f390af8bd9a3a92aac54f846121fec9f3aa4eab9",
+    "preview/suite/light.png": "1d2f28851f63b234198974d5ea368f4f4c003228b873cde875c0ce2d5cf04952",
+    "preview/suite/dark.png": "b13b218617fcb33cbad5171fc5a5595f8750e4d7cdf2bf1911c8ccdc4b94716b",
+    "preview/suite/checker.png": "dba2530657fd4539be08f91c5c3fe25fa73c82746f2ca05848a2e3205454cacc"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T07:44:07.567643+00:00"
+}

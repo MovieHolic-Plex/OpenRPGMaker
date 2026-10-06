@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed the actual portrait and all 18 poses in the supplied light, dark and checker PNGs at their embedded native 1x and nearest-neighbor 3x sizes. The large silver-white disk, small adult face, gold forehead ornament and two blue shawl tails form a recognizable floating silhouette facing right. Broad upper-left highlights and darker right edges give the disk thickness; cyan highlight clusters and dark folds give the shawl readable material and volume. The disk's lower edge is somewhat flat beneath the torso, but remains consistent across the upright poses. No obvious accidental transparent holes, detached hands or broken major contours are visible on the checker preview. Shoulder, elbow and wrist connections remain readable, including the extended attack palm. Windup/recover fold the arms and tails, move/attack extend them, hit bends the head and body back, and dead collapses the disk and cloth into a distinct low silhouette. Grounded feet are not required for this airborne design. Skill preparation holds a pale core at the raised hand; the two crescent blades meet the actual extended palm in skill_b, and skill_c folds the arm with smaller departing fragments. Poison adds a slumped, hand-to-face posture and purple motes; stun uses a backward head tilt, dropped hands and orbiting stars; sleep lowers the disk and folds the arms and shawl. These are readable posture changes rather than whole-sprite tints or unrelated attacks. Sleep_a/b share the same head pose and have subtle hand/cloth differences, so their breathing continuity is less evident in stills. Pale skill effects have weaker contrast on the light background but remain legible. This is an advisory visual recommendation, not a human selection. Static pose previews cannot establish GIF timing, actual battle contact, runtime placement, palette compliance or literal-grid authorship; no geometry PASS was treated as visual approval.",
+  "issues": [],
+  "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "d16b2387bec5373ca24c1851f390af8bd9a3a92aac54f846121fec9f3aa4eab9",
+    "preview/suite/light.png": "1d2f28851f63b234198974d5ea368f4f4c003228b873cde875c0ce2d5cf04952",
+    "preview/suite/dark.png": "b13b218617fcb33cbad5171fc5a5595f8750e4d7cdf2bf1911c8ccdc4b94716b",
+    "preview/suite/checker.png": "dba2530657fd4539be08f91c5c3fe25fa73c82746f2ca05848a2e3205454cacc"
+  },
+  "jobId": "ab10a321-9632-400e-8b70-ee460efbf872",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:44:08.055577+00:00",
+  "userApproved": false
+}

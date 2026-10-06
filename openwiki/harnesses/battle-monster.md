@@ -248,6 +248,8 @@ npm run harness -- battle-monster accept-batch \
 이미지 도구의 긴 시트 축소를 피한다. 원본을 고치거나 통과 판정을 만들지 않는다.
 `--source-root qa-runs/battle-monster-fifty-wave/candidates`는 실제18자세/PNG가 준비된
 미게시 초안을 같은 방식으로 관찰한다. receipt에 실제 sourceRoot를 남기며 초안은 통과 수에 넣지 않는다.
+`--theme dark`는 같은 실제 native RGBA를 어두운 배경에 합성한 `-dark` 검사 시트를 별도로
+저장한다. 검수에서 지적된 어두운 재질/효과 대비를 긴 시트 축소 없이 확인하며 원본은 쓰지 않는다.
 `verify-fifty-current-progress.py --out <JSON>`는 현재 감사·저장 출처 해시·실제 감독 기록·
 현재 선택 binding·8GIF/정지/재생/375/320px 브라우저 근거와 기존 판정/선택 보존을 다시 읽는다.
 부분 합격 수는 전체50 완료와 구별하며 원본 그림과 쓰기 함수의 실제 감독 열람은 여전히 필요하다.

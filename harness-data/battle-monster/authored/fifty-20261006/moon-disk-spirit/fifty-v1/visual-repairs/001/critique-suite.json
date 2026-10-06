@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including native 96px views and the nearest-neighbor 3x panels on light, dark and checker backgrounds. The silver disk has a broad upper-left highlight, a cooler right shadow and a continuous thin rim; the gold forehead ornament and small right-facing adult face remain recognizable. The blue cloth has clear light/shadow bands, but its repeated knee-like bends and broad foot-like ends read as two legs more readily than trailing silk. The rear cuff and hand are visible at the opposite disk edge without a readable arm running back to the shoulder. These silhouette/anatomy ambiguities motivate rework. Windup folds the cloth/arms, move leans forward, attack presents a connected enlarged palm, recover folds inward, hit recoils and dead collapses into a cloth heap. The skill is a coherent separate sequence: a raised silver core, two crescent blades visibly originating at the right hand, then folded arms and silver fragments. Poison uses cheek-touching and violet bubbles, stun uses a drooped head/hanging hands and gold stars, and sleep uses a lowered folded body and resting arms; these are distinct states rather than whole-body tints or unrelated attacks. Changes within the poison, stun and sleep pairs are small at 1x. No obvious accidental transparent punctures were visible in the disk, face or forward arm on checker; the open area beneath the disk is outside its lower rim. This floating creature needs no planted feet. Static pose previews cannot establish hop timing, smooth frame transitions, actual battle contact, runtime baseline placement or literal-grid authorship. This is a reviewer recommendation, not the user selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 18,
+      "y": 45,
+      "message": "The rear blue cuff at approximately x10-22, y42-49 ends in a connected skin hand, but appears to emerge directly from the left moon rim; its shoulder is near x46-51, y42-46. Author a readable blue upper-arm/forearm path from that shoulder to the cuff, with an elbow turn and separated cloth overlap, or bring the cuff inward for the specified short arm. Carry that anatomical join through the other extended-arm poses."
+    },
+    {
+      "pose": "idle_c",
+      "x": 26,
+      "y": 84,
+      "message": "The left scarf end around x22-29, y78-86 forms a broad squared foot after a knee-like zigzag; the right tail has a similar leg silhouette. Reauthor the terminal clusters as tapered or folded silk ends with asymmetric trailing curves, keeping a readable continuous attachment to the shawl. Apply the same cloth-end distinction to idle_a/idle_b and the folded sleep tails; do not add soles or ground contact."
+    }
+  ],
+  "binding": "cd71efd4bb769f896f4e8a342eb43c4cfc6cf485f9817ebf41b5b60f440ab0cf",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "f2283d732b28dc834906105e2b06a5b832d953d9881622b96fcacc834b6cf431",
+    "preview/suite/light.png": "205f1d84c7a530ce728f99556f3c48e5282ab965e533b9fbc3c81bd642b5e5a6",
+    "preview/suite/dark.png": "436e90f2103e40173dfd8c92a19fe15301d68e4ca20bce86f0243f95b4acb3c7",
+    "preview/suite/checker.png": "fc6e9deed7c1824c2d5268954c437ded0ff856c60c0f4478060cc21e9f59323e"
+  },
+  "jobId": "46ef5231-f38c-4018-b52d-5bcaa0351ec3",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:18:57.712866+00:00",
+  "userApproved": false
+}

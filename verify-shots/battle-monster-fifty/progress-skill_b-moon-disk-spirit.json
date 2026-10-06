@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "moon-disk-spirit",
+    "source": "qa-runs/harnesses/battle-monster/moon-disk-spirit/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "dcdfe21ddbd3a06ba2c3af57f5df6b1b1c7c3f8b4837ffe8bf82753c679e3c8b",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T07:46:44.273600+00:00",
+    "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+    "entireGoalCompleteClaim": false
+  }
+]

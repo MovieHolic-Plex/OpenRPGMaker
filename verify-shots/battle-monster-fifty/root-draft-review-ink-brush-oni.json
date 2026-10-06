@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-06T07:45:05.028047+00:00",
+  "passed": false,
+  "key": "ink-brush-oni/fifty-v1",
+  "binding": "aed92ae49b7c7661b241b6823691379b3a8a1c9f7a85e9a7b54523cd1fe61905",
+  "actualIndependentReviewJob": "679e9229-dd65-40c1-867d-17aabbeecf68",
+  "actualIndependentRecommendation": "rework",
+  "actualIndependentIssues": [
+    {
+      "pose": "skill_c",
+      "x": 67,
+      "y": 51,
+      "message": "The upright shaft at x65-68, y43-49 ends against the sleeve at y50, while the open palm extends to its right at roughly x69-77, y52-55. Continue the wooden shaft through the grip to about y56 and redraw the thumb/finger skin clusters around it. Keep a visible shaft segment below the fist so the raised brush is held by the hand rather than terminating inside the cuff."
+    },
+    {
+      "pose": "poison_a",
+      "x": 46,
+      "y": 72,
+      "message": "The waist hand encloses a short wood-colored stub around x44-47, y69, but the long horizontal brush shaft runs separately at y73-75. Cloth occupies the intervening rows, so the brush appears to float below the fist. Redraw the grip down onto the horizontal shaft, with thumb and fingers wrapping it near x45-49, y73-75, and remove or connect the isolated wooden stub. Preserve the other hand at the face."
+    },
+    {
+      "pose": "poison_b",
+      "x": 46,
+      "y": 72,
+      "message": "The same waist-hand/shaft mismatch remains in this frame: the short wooden stub in the fist ends above the horizontal shaft at y73-75. Apply the corresponding connected grip repair near x45-49, y73-75 while retaining this frame's shifted poison bubbles and subtle posture variation."
+    }
+  ],
+  "nativePosesViewed": 18,
+  "actualLightContact": "verify-shots/battle-monster-fifty/native-contact-ink-brush-oni-before-grip4.png",
+  "actualDarkContact": "verify-shots/battle-monster-fifty/native-contact-ink-brush-oni-before-grip4-dark.png",
+  "nativeRgbaMatchesSource": true,
+  "rootPreliminaryObservations": "Opened actual18pose light/dark compactnative1x+2x1248x984 without resizing. Oldadultquieteyes/beard/wide darkgat/gray-brown robe; raisedrearbrush connectedcrossbodyhand, longforwardbrushsweep, backward tenseface+foldedcoat+angledbrush hit now differsfromhorizontallow recover. Flatfallenclosedeyes vsseatedfoldedrobesleep. Solidbrushbristles and3separatedasymmetricinkdrops have visible bluegrayplanes onactualdarkbackground. New actual independent rework correctly retains cuff-endingraisedshaft skill_c and fist above separatehorizontalshaft poison_a/b; these require grip4 and a new keeper. Read author.block/write, repair.apply and repair_reaction_contrast.apply full nativewriterbodies: literalperposey/xstrings/explicitHIT_COAT/HIT_TOOL and targetedfixedspanpatches; no nativegeometry/wholeframetransforms. All18 nativeRGBA equal canonicalASCII.",
+  "approvalClaim": false,
+  "full50CompleteClaim": false,
+  "claimScope": "Current pregrip4 native/source visual observation only; not keep/Allow/pack/browser qualification."
+}

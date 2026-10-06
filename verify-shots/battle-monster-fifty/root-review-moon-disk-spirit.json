@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-06T07:51:12.031870+00:00",
+  "passed": true,
+  "key": "moon-disk-spirit/fifty-v1",
+  "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+  "actualIndependentReviewJob": "ab10a321-9632-400e-8b70-ee460efbf872",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "d16b2387bec5373ca24c1851f390af8bd9a3a92aac54f846121fec9f3aa4eab9",
+    "preview/suite/light.png": "1d2f28851f63b234198974d5ea368f4f4c003228b873cde875c0ce2d5cf04952",
+    "preview/suite/dark.png": "b13b218617fcb33cbad5171fc5a5595f8750e4d7cdf2bf1911c8ccdc4b94716b",
+    "preview/suite/checker.png": "dba2530657fd4539be08f91c5c3fe25fa73c82746f2ca05848a2e3205454cacc"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-moon-disk-spirit.png",
+  "nativeContactPngSha256": "f0b92979ccb7883388dc3b878aea7bb347b6c1d43efca372ce967323342baf2b",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "2df9096421621ab024276a828e20a33778add619d9bff081da235e4f8b4e256e",
+    "repair_rows.py": "9e036f019922fb92196ae7c6fc61007ab34296554b61c1128f8c299600c737a0",
+    "contour_breath_rows.py": "a5fedda040051c9be7db7c06de31acbb15d17330b942ac7982359b03f291701e"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actualcurrent18pose compactnative1x/nearest2x1248x984 with no resize. Wide rigid pale moon/coppercrown/quiet3/4 face, smallblue connectedshoulders/elbow/forearm, asymmetric tapered silk ends instead squared feet. Forward floatinglunge/openpalm hit, backwardface/shortfoldedarms recoil, flattenedfallen crescent+face vs loweredclosedeyesleep, pairhas shoulder/arms/clothoutline smallbreath. Poison_b continuousjaw/neckedge and exposedmoonrim retainedwithoutfillingintentionalspace. Palmheldmoon seed/two connected crescentlightcurves/3separatedreturnfragments. Read allnativewriter author_rows.rows/blank/save/foundation, repair_rows.apply and contour_breath_rows.apply full bodies. Explicit y/x/ink spans, originalrows preserved and targeted literal patches; no nativegeometry/wholeframetransform. Actualtwo prior reworks preserved and new keeper0issues. All18 native PNG RGBA exactly equal canonicalASCII/palette.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

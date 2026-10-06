@@ -1,0 +1,152 @@
+[
+  {
+    "motion": "idle",
+    "frames": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "holdsMs": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "attack",
+    "frames": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    "holdsMs": [
+      240,
+      280,
+      140,
+      220,
+      220,
+      360
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "hit",
+    "frames": [
+      "idle_a",
+      "hit",
+      "recover",
+      "idle_a"
+    ],
+    "holdsMs": [
+      300,
+      260,
+      220,
+      440
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "dead",
+    "frames": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "holdsMs": [
+      300,
+      220,
+      1100
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "skill",
+    "frames": [
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "holdsMs": [
+      360,
+      260,
+      300,
+      440
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "poison",
+    "frames": [
+      "poison_a",
+      "poison_b"
+    ],
+    "holdsMs": [
+      420,
+      420
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "stun",
+    "frames": [
+      "stun_a",
+      "stun_b"
+    ],
+    "holdsMs": [
+      480,
+      480
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  },
+  {
+    "motion": "sleep",
+    "frames": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "holdsMs": [
+      720,
+      720
+    ],
+    "nativeSize": [
+      96,
+      96
+    ],
+    "decodedRGBAEqualsSource": true
+  }
+]

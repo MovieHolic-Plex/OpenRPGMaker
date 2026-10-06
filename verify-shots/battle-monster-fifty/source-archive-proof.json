@@ -154,6 +154,17 @@
     "selectedPackSha256": "9f28271fc028b8b33126e6cbe3b5d1c53574290555a3232bf97940fa511f54c2"
   },
   {
+    "key": "moon-disk-spirit/fifty-v1",
+    "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "fb9289e20bbfad0aa30b276c4c012f886ae9552806cb39686f9dd974635583a3"
+  },
+  {
     "key": "red-tassel-swordswoman/fifty-v1",
     "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
     "nativeCell": 64,

@@ -1,0 +1,268 @@
+{
+  "purpose": "Local source/render facts only; not reviewer verdict, model provenance or approval",
+  "paletteUnchanged": true,
+  "frames": [
+    {
+      "frame": "attack",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        4,
+        13,
+        88,
+        81
+      ],
+      "sourceSHA256": "3964f405f7ed6c105255ba7390acf53dcf50c842669ed2d9caa7211e98a748b9",
+      "pngSHA256": "ab15e1e2a43304499c3022f0fe5e5f6269cad96888c9c8315828d91c79669ddb"
+    },
+    {
+      "frame": "dead",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        10,
+        45,
+        78,
+        91
+      ],
+      "sourceSHA256": "f48e2da75af03342746f77f9aedecf5687d27ddfad2c5576e63062c18170b9f3",
+      "pngSHA256": "2bd1927aa3a085df83a037149c31dae35da96844854072c6bc8ecbad056f8fc2"
+    },
+    {
+      "frame": "hit",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        82,
+        84
+      ],
+      "sourceSHA256": "d9064448770c0fc1aedc416c98c603b05ff7f0dbef85a00b766dbc36ef83b9f0",
+      "pngSHA256": "097bda4ee679e0db2b55699769affbd0f246babb2b6e157b94b99229deac6987"
+    },
+    {
+      "frame": "idle_a",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        74,
+        84
+      ],
+      "sourceSHA256": "7abeff9d799cf74f968d54f97eb8834d2f942e32d2a0f9b22b0a68a0b2510d32",
+      "pngSHA256": "d16b2387bec5373ca24c1851f390af8bd9a3a92aac54f846121fec9f3aa4eab9"
+    },
+    {
+      "frame": "idle_b",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        14,
+        12,
+        78,
+        84
+      ],
+      "sourceSHA256": "c5f8a061218a3fd6ada919ed981ccb39494a501e574abd830783965c005230c3",
+      "pngSHA256": "ade78876954a62eb3e4bd2da9cd5bdd52c0ba00126625a4443890e7e091e0aa3"
+    },
+    {
+      "frame": "idle_c",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        74,
+        83
+      ],
+      "sourceSHA256": "1d00a96a9cfb6e8d062d44b59b5dfc2d0c289158710939f00b63814b95c60dbe",
+      "pngSHA256": "abb4b0fd8ff3b3c238fdc71062af52c335818fecc67a56a5509e331b8fdc99c2"
+    },
+    {
+      "frame": "move",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        5,
+        13,
+        77,
+        84
+      ],
+      "sourceSHA256": "b5a353e233b1283f38f544918c01a5a0d393fea40f09c764bb581c691ea72a5e",
+      "pngSHA256": "a5777b4ec01140794cceb049464b67e94f8908f89bbd08e37380b789b9bb1efd"
+    },
+    {
+      "frame": "recover",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        64,
+        79
+      ],
+      "sourceSHA256": "aba108909b5cc5f27a39b7fed1d6370d1fa43265358637f875a665ceb2337a57",
+      "pngSHA256": "6f519411e14726bf543994577f63e85a897de4e27a6ec5bd40f02a2fc473bc9f"
+    },
+    {
+      "frame": "windup",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        61,
+        79
+      ],
+      "sourceSHA256": "83f049282f96c14c7f079c5a68c80bd4876c8ee334f5a90e407e686f0880beb5",
+      "pngSHA256": "e150028f59b714896edd209f6f30a975ba15b13e6f20b8fb80116760565020cd"
+    },
+    {
+      "frame": "poison_a",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        82,
+        78
+      ],
+      "sourceSHA256": "32cf2538a82c2cdeeb45224d4a07656a77eb5db69269aace58a160480d5cb3c1",
+      "pngSHA256": "ad1090430e96763f17791a45d9b0dc7768d367f1330de7b3bb5a5b8d33db81f1"
+    },
+    {
+      "frame": "poison_b",
+      "changedPixels": 20,
+      "changedAlphaPixels": 20,
+      "changedBounds": [
+        53,
+        37,
+        57,
+        41
+      ],
+      "inkBounds": [
+        17,
+        12,
+        85,
+        78
+      ],
+      "sourceSHA256": "e0aa9ab0fa0cc5a841fefae12447adf081a42fdc772cbd0962a6435bccbb746d",
+      "pngSHA256": "1d526f8a599d20ff64208402e17b111a78442572fca36b0f777793d2a61504b9"
+    },
+    {
+      "frame": "skill_a",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        75,
+        79
+      ],
+      "sourceSHA256": "17fc5bc33fa338283162dbf8a8b1414a0ee9fa159912d854fdbcd8f895f3a6b3",
+      "pngSHA256": "605d2d17045ceee4b4abeb178854e886ea8d2649b42ae723793e9e9e825a7876"
+    },
+    {
+      "frame": "skill_b",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        5,
+        12,
+        92,
+        84
+      ],
+      "sourceSHA256": "dcdfe21ddbd3a06ba2c3af57f5df6b1b1c7c3f8b4837ffe8bf82753c679e3c8b",
+      "pngSHA256": "feff734a3349fd72ab383ed30454a67d72842488d0a5a1b5e5983586c35a0606"
+    },
+    {
+      "frame": "skill_c",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        83,
+        83
+      ],
+      "sourceSHA256": "71e0d95a8785671feeccd323ebcd3bca6c70358cc239c22efa7ffd34347d70f3",
+      "pngSHA256": "15f9df5b30652f52e554c45313485596096d3d1eb08cee9c67598c16a27bec0e"
+    },
+    {
+      "frame": "sleep_a",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        16,
+        27,
+        78,
+        90
+      ],
+      "sourceSHA256": "b0de2ba59850298533a39f499672c660c1840030a696ada61ab2508de2d6d536",
+      "pngSHA256": "61220bb3441651e276f56f5c92aae753111f86cc265a8b32527e0fe395ba1aa4"
+    },
+    {
+      "frame": "sleep_b",
+      "changedPixels": 457,
+      "changedAlphaPixels": 113,
+      "changedBounds": [
+        27,
+        54,
+        78,
+        91
+      ],
+      "inkBounds": [
+        16,
+        27,
+        78,
+        91
+      ],
+      "sourceSHA256": "a4b9d3fbf9f1efce93e5dc468030e27bc32129cf25125c323efd3202e8ede042",
+      "pngSHA256": "a989d3d0fc9037213388c381cc41c6fd8204e3bea4bf7ce026c2edf1e77f8848"
+    },
+    {
+      "frame": "stun_a",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        17,
+        12,
+        79,
+        83
+      ],
+      "sourceSHA256": "c82185b9fce44c07cb1d2f0d4c6731927463781f3da35ec55c2d5b73fa9a5d2d",
+      "pngSHA256": "decf334ce1be48e41b835a9f9a76908b4b124ded02391c02c18a0d4c7730c987"
+    },
+    {
+      "frame": "stun_b",
+      "changedPixels": 0,
+      "changedAlphaPixels": 0,
+      "changedBounds": null,
+      "inkBounds": [
+        14,
+        10,
+        76,
+        83
+      ],
+      "sourceSHA256": "7adb634b9a5bcf35c68bb385ed5e685ba830c5f70383c3f584c4dc1af440229b",
+      "pngSHA256": "799c8d63b4bdd74000d74dddc9e80c2be1bb541b20d2c816419ac9c6fed1e3f8"
+    }
+  ]
+}
