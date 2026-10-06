@@ -731,3 +731,9 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 선택된 ZIP/원본 PNG18/디코딩 GIF8/현재 source와 정본 source archive43종을 다시 읽었다. 실제 데스크톱 정지 화면과375/320px 화면도 감독이 열었다. 8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
 - 현재 합격 **43/50종 · 774자세 · 344GIF**. 동물10/요괴16/사람12(여성6)/보스5; 남은7종은128px 보스. 원래 결정52행/선택8건 보존, 새 위임129행/전체181행, 기존 정식 minor11건 유지. 대시보드 Allow51종은 기존8+신규43이다. 전체50 완료는 false다.
 - 천년송왕 첫 수정, 심연구목거미 독립 검수와 청동정마 최초 저작이 실제 고정 모델로 이어진다. 근거: `forty-three-passed-proof.json`, `root-review-red-armor-gatekeeper.json`, `browser-proof-red-armor-gatekeeper.json`, `source-archive-proof.json`.
+
+## 남은 보스의 실제 새 rework · 2026-10-06 14:11 UTC
+
+- 합격43/50종(774자세/344GIF) 유지. 천년송왕 첫 수정 binding `137f82252f27d4a775573041eb8811c09dc440072da659ce1a006f2eb48bb5cc`의 실제 GPT6.1sol/high `3fef1686-4ca5-4666-909f-fc61f6a2a9a7`는 **rework3건**: 정면을 보는 눈/수염의 방향, 피격과 수면의 수관 층/부피 손실. 두 번째 수정 중이다.
+- 심연구목거미 최초 binding `9ceaef75b82a3bb395c39b1fd4a4cfec15fd519e8ad0f0efe45af65c6b1e0fad`의 실제 GPT6.1sol/high `1d2529af-be1f-4d98-83d8-a1190579e13f`는 **rework5건**: 대기 먼 송곳니 길이, 뒷다리 추진, 실제 물기 접촉, 기술 회수의 턱 닫힘, 수면의 앞다리 길이 보존. 첫 수정 중이다.
+- 두 실제 terminal 작업 exit0/model/effort/preparedOnlyFalse와 검수4그림 해시를 다음 수정 전 snapshot에서 확인했다. 원본 source/판정/작업을 보존하되, 이 두 snapshot18자세를 감독이 열었다는 주장은 하지 않는다. 최종 keeper에는 전체 원본·현재 writer·별도 감독 검토가 필요하다. 청동정마 최초 저작도 이어진다. 전체50 완료는 false다.
