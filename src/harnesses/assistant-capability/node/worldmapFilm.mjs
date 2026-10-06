@@ -10,8 +10,12 @@ import { startHost,newEditor,stored,writeRuntimeProject } from './editorDriver.m
 
 const root=resolve(process.argv[2]);
 const selected=(process.argv[3]??'default,pokemon').split(',');
+const mapNamed=(project,text)=>Object.values(project.maps).find(m=>String(m.name??'').includes(text))?.id;
 const cases=[
   {id:'default',label:'기본 대륙 월드맵',prompt:'일반 판타지 RPG용 세계지도를 하나 만들어줘. 이름은 「서녘 대륙」으로 해줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 만든 지도는 실제 프로젝트에 저장해줘.'},
+  // 빈 프로젝트 → 조수 혼자 전체 몬스터 게임. 고유명은 기획서처럼 문장으로만 준다(조수가 build_monster_game names 로 넘겨야 한다).
+  {id:'monster',label:'포켓몬풍 전체 게임',deadlineMs:1800000,names:{startTown:'솔바람 마을',professor:'바람박사',firstGym:'바위 체육관',firstLeader:'단단'},
+    prompt:'포켓몬스터 같은 몬스터 수집 게임을 처음부터 끝까지 만들어줘. 제목은 「바람개비 섬의 수호수」야. 지방은 바람개비 섬, 시작 마을은 솔바람 마을, 첫 동료를 주는 박사는 바람박사, 첫 도로는 1번 도로, 첫 체육관은 바위 체육관, 관장은 단단, 배지는 바위 배지로 해줘. 실제 프로젝트에 저장해줘.'},
   {id:'pokemon',label:'포켓몬풍 마을과 도로',prompt:'포켓몬스터처럼 마을과 도로를 따라 여행하는 지역 월드맵을 만들어줘. 이름은 「솔바람 지방」으로 해줘. 마을·도로·능력 관문을 실제 맵과 이동 이벤트로 만들어줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 실제 프로젝트에 저장해줘.'},
 ].filter(entry=>selected.includes(entry.id));
 const save=(file,value)=>writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -66,7 +70,7 @@ for(const entry of cases){
     console.log(`${entry.id}: submitting native prompt`);
     await page.getByTestId('ai-input').fill(entry.prompt);await page.waitForTimeout(1500);await page.getByTestId('ai-send').click();
     proof.sentAt=Date.now();persist();
-    const deadline=Date.now()+900000;let seen=0;
+    const deadline=Date.now()+(entry.deadlineMs??900000);let seen=0;
     for(;;){
       await page.waitForTimeout(2000);
       proof.events=await page.evaluate(()=>window.__capEvents??[]);proof.status=await page.evaluate(()=>window.__oprnAiBridge.status());persist();
@@ -79,12 +83,22 @@ for(const entry of cases){
     proof.newMaps=Object.keys(applied.project.maps).filter(id=>!before.project.maps[id]);
     proof.atlases=applied.project.worldAtlases??[];
     proof.tools=proof.events.filter(e=>e.type==='tool_end').map(e=>({name:e.name,ok:e.ok,summary:e.summary,args:proof.events.find(s=>s.type==='tool_start'&&s.id===e.id)?.args}));
-    proof.existingMapsPreserved=Object.entries(before.project.maps).every(([id,map])=>isDeepStrictEqual(map,applied.project.maps[id]));
-    proof.startPreserved=before.project.startMapId===applied.project.startMapId&&isDeepStrictEqual(before.project.startPos,applied.project.startPos);
-    proof.correctMode=entry.id==='default'?proof.newMaps.some(id=>applied.project.maps[id].worldmapSource?.theme==='fantasy')&&proof.atlases.length===0:proof.atlases.some(a=>a.structure==='region-routes');
-    const resultMap=entry.id==='default'?proof.newMaps.find(id=>applied.project.maps[id].worldmapSource):proof.atlases[0]?.nodes.find(n=>n.id===proof.atlases[0].startNodeId)?.mapId;
+    const monster=entry.id==='monster';
+    // 빈 프로젝트 교체 생성은 시작 맵을 바꾸는 것이 정상이다 — 보존 검사는 기존 게임이 있는 녹화에만.
+    proof.existingMapsPreserved=monster||Object.entries(before.project.maps).every(([id,map])=>isDeepStrictEqual(map,applied.project.maps[id]));
+    proof.startPreserved=monster||before.project.startMapId===applied.project.startMapId&&isDeepStrictEqual(before.project.startPos,applied.project.startPos);
+    if(monster){
+      const text=JSON.stringify(applied.project);
+      proof.monster={campaign:applied.project.system.monsterCampaign?.id,maps:Object.keys(applied.project.maps).length,
+        startMap:applied.project.maps[applied.project.startMapId]?.name,title:applied.project.meta?.title,
+        namesFound:Object.fromEntries(Object.entries(entry.names).map(([k,v])=>[k,text.includes(v)]))};
+    }
+    proof.correctMode=monster?Boolean(proof.monster.campaign)&&proof.monster.maps>=72&&String(proof.monster.startMap).includes(entry.names.startTown)&&Object.values(proof.monster.namesFound).every(Boolean)
+      :entry.id==='default'?proof.newMaps.some(id=>applied.project.maps[id].worldmapSource?.theme==='fantasy')&&proof.atlases.length===0:proof.atlases.some(a=>a.structure==='region-routes');
+    const resultMap=monster?applied.project.startMapId:entry.id==='default'?proof.newMaps.find(id=>applied.project.maps[id].worldmapSource):proof.atlases[0]?.nodes.find(n=>n.id===proof.atlases[0].startNodeId)?.mapId;
     if(resultMap)await showMap(page,resultMap);
     await page.screenshot({path:resolve(dir,'after.png')});await page.waitForTimeout(4500);
+    if(monster)for(const [kind,id] of [['route',mapNamed(applied.project,'1번 도로')],['gym',mapNamed(applied.project,entry.names.firstGym)]])if(id){await showMap(page,id);await page.screenshot({path:resolve(dir,`${kind}.png`)});await page.waitForTimeout(3000);}
     if(entry.id==='pokemon')for(const node of proof.atlases[0]?.nodes.slice(1,3)??[]){await showMap(page,node.mapId);await page.screenshot({path:resolve(dir,`${node.kind}.png`)});await page.waitForTimeout(3000);}
     await page.reload({waitUntil:'domcontentloaded',timeout:120000});
     await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:180000});await page.waitForFunction(()=>window.__oprnEditReliefStats?.().residentTileCells>0,null,{timeout:120000});
@@ -97,7 +111,7 @@ for(const entry of cases){
     proof.persistence={projectId:before.projectId,afterRevision:applied.revision,reloadedRevision:reloaded.revision,afterSha256:applied.sha256,reloadedSha256:reloaded.sha256,
       sameTarget:before.projectId===reloaded.projectId,sameStoredDocument:applied.sha256===reloaded.sha256,
       newContextLoadedSameMaps:Boolean(loaded)&&isDeepStrictEqual(applied.project.maps,loaded.maps),newContextLoadedSameDatabase:Boolean(loaded)&&isDeepStrictEqual(applied.project.database,loaded.database)};
-    proof.passed=proof.correctMode&&proof.existingMapsPreserved&&proof.startPreserved&&proof.persistence.sameStoredDocument&&proof.persistence.newContextLoadedSameMaps&&proof.persistence.newContextLoadedSameDatabase&&proof.events.some(e=>e.type==='done')&&!proof.events.some(e=>['error','stream_error'].includes(e.type))&&!proof.errors.length;
+    proof.passed=proof.correctMode&&proof.existingMapsPreserved&&proof.startPreserved&&proof.persistence.sameStoredDocument&&proof.persistence.newContextLoadedSameMaps&&proof.persistence.newContextLoadedSameDatabase&&proof.events.some(e=>e.type==='done')&&!/마치지 못했/.test(proof.status?.lastStatus??'')&&!proof.events.some(e=>['error','stream_error'].includes(e.type))&&!proof.errors.length;
     writeRuntimeProject(projectDir,resolve(dir,'live.json'));
     if(proof.passed)successful++;
     console.log(JSON.stringify({case:entry.id,passed:proof.passed,newMaps:proof.newMaps,tools:proof.tools.map(t=>t.name),persistence:proof.persistence}));

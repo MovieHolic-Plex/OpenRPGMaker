@@ -889,7 +889,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
-    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task)) {
+    // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
+    // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
+    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${[...i.problems, ...(i.pack ?? [])].join(", ")}`).join(" / ");
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
       // 팩 세트 맵(check_pack_map)은 좌표가 붙은 확실한 결함이라 한 번 더 권고한다(같은 결과면 멈춘다). 나머지는 한 번뿐.

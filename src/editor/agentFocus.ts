@@ -60,6 +60,12 @@ export function focusAcceptedAgentChanges(before: Project, after: Project, optio
   const target = summarizeAcceptedAgentChanges(before, after);
   if (!target) return null;
   const currentMapId = editorState.get().currentMapId ?? before.startMapId ?? null;
+  // 보던 맵이 사라졌으면(빈 프로젝트를 통째로 바꾸는 생성·맵 삭제) 지킬 시야가 없다 — 팔레트가 「맵을 선택하세요」로
+  // 비지 않게 새 시작 맵으로 옮긴다(2026-10-06 실측: build_monster_game create 뒤 map_blank_start 가 남았다).
+  if (currentMapId && !after.maps[currentMapId]) {
+    selectEditorMap(after.maps[after.startMapId] ? after.startMapId : target.mapId);
+    return target;
+  }
   if (isUiInBackground()) {
     discardConstructionLogs();
     return target;
