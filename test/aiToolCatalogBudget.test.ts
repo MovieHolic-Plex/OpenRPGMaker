@@ -42,7 +42,11 @@ describe("AI 툴 카탈로그 예산", () => {
   it("오프닝 저작 툴 묶음의 몫을 기록한다", () => {
     const opening = toOpenAiTools(allTools()).filter(entry => entry.function.name.includes("opening"));
     expect(opening.map(entry => entry.function.name).sort()).toEqual([
-      "edit_opening", "generate_opening_image", "get_opening", "list_opening_media", "plan_opening", "remove_opening", "review_opening", "set_opening", "show_opening_image",
+      "animate_opening_camera", "animate_opening_layer", "apply_opening_motion", "configure_opening_entry", "configure_opening_portrait_motion",
+      "create_opening_animatic_shot", "edit_opening", "generate_opening_image", "generate_opening_layer", "get_opening", "get_opening_direction",
+      "get_opening_references", "inspect_opening_timeline", "list_opening_media", "make_opening_storybook", "plan_opening", "preview_opening_animatic",
+      "preview_opening_reference", "remove_opening", "remove_opening_audio_cue", "remove_opening_layer", "retime_opening_shot", "review_opening",
+      "set_opening", "set_opening_transition", "show_opening_image", "show_title_opening", "upsert_opening_audio_cue", "upsert_opening_layer",
     ]);
     const openingTokens = estimateContextTokens([{ role: "system", content: JSON.stringify(opening) }]);
     expect(openingTokens).toBeLessThanOrEqual(OPENING_FAMILY_TOKEN_CEILING);
