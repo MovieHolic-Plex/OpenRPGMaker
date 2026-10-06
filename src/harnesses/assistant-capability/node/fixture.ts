@@ -11,11 +11,17 @@ import { initLocalProjectStore } from '../../../../electron/local-store/store';
 export async function prepareWorldmapProof(root: string, selected?: string): Promise<void> {
   if (existsSync(root)) throw Error(`기존 실행 덮어쓰기 거부: ${root}`);
   const ids = selected ? selected.split(',') : ['default', 'pokemon'];
-  if (ids.some(id => !['default', 'pokemon', 'monster', 'monster-desert', 'monster-harbor'].includes(id))) throw Error('지원하는 녹화: default,pokemon,monster,monster-desert,monster-harbor');
+  if (ids.some(id => !['default', 'pokemon', 'monster', 'monster-desert', 'monster-harbor', 'monster-followup'].includes(id))) throw Error('지원하는 녹화: default,pokemon,monster,monster-desert,monster-harbor,monster-followup');
   for (const id of ids) {
     const dir = resolve(root, id), projectDir = resolve(dir, 'project');
     // monster: 빈 프로젝트에서 조수 혼자 전체 몬스터 게임을 만든다(build_monster_game create 는 빈 프로젝트만 받는다).
     const project = id.startsWith('monster') ? createBlankProject() : createEmberQuestProject();
+    // monster-followup: 이미 만든 몬스터 게임에 사용자가 이어서 고쳐 달라는 경우 — 캠페인은 모델 없이 같은 도구로 미리 깐다.
+    if (id === 'monster-followup') {
+      const { runToolAsync } = await import('../../../editor/tools/asyncToolRunner');
+      const built = await runToolAsync({ project, currentMapId: project.startMapId } as never, 'build_monster_game', { mode: 'create' });
+      if (!built.ok) throw Error(`캠페인 준비 실패: ${built.summary}`);
+    }
     project.meta.title = `월드맵 조수 실제 녹화 · ${id}`;
     if (id === 'pokemon') project.system.genre = 'monster-collect';
     if (project.system.opening) project.system.opening.enabled = false;

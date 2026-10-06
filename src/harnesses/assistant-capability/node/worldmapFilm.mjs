@@ -24,6 +24,9 @@ const cases=[
       names:Object.fromEntries(Object.entries({startTown:pick(/마을 「([^」]+)」/)??pick(/「([^」]+(?:마을|항구))」/),firstGym:pick(/체육관[은 ]*「([^」]+)」/)??pick(/「([^」]+체육관)」/),firstLeader:pick(/관장[은 ]*「([^」]+)」/)}).filter(([,v])=>v)),
       prompt:`포켓몬스터 같은 몬스터 수집 게임을 아래 기획서대로 처음부터 끝까지 만들어줘. 제목은 「${brief.title}」. 실제 프로젝트에 저장해줘.\n\n${brief.brief.summary}`};
   }),
+  // 만든 게임을 이어서 고치는 요청 — 서리꽃 마을 왼쪽 아래 공터(실제 조화 검수 지적). 그 맵만, 길·문은 그대로, 판은 덜 비어야 한다.
+  {id:'monster-followup',label:'몬스터 게임 이어 고치기',deadlineMs:1500000,followup:{mapId:'mx_map_frost',region:{x:2,y:9,w:6,h:9}},
+    prompt:'서리꽃 마을 왼쪽 아래 공터가 너무 휑해 보여. 마을에 어울리게 눈 덮인 나무나 소품, 작은 길 같은 걸로 자연스럽게 채워 줘. 건물 입구나 다니는 길은 막지 말고 다른 맵은 건드리지 마. 저장해줘.'},
   {id:'pokemon',label:'포켓몬풍 마을과 도로',prompt:'포켓몬스터처럼 마을과 도로를 따라 여행하는 지역 월드맵을 만들어줘. 이름은 「솔바람 지방」으로 해줘. 마을·도로·능력 관문을 실제 맵과 이동 이벤트로 만들어줘. 현재 있는 맵과 게임 시작 위치는 보존하고, 실제 프로젝트에 저장해줘.'},
 ].filter(entry=>selected.includes(entry.id));
 const save=(file,value)=>writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -99,9 +102,17 @@ for(const entry of cases){
     proof.newMaps=Object.keys(applied.project.maps).filter(id=>!before.project.maps[id]);
     proof.atlases=applied.project.worldAtlases??[];
     proof.tools=proof.events.filter(e=>e.type==='tool_end').map(e=>({name:e.name,ok:e.ok,summary:e.summary,args:proof.events.find(s=>s.type==='tool_start'&&s.id===e.id)?.args}));
-    const monster=entry.id.startsWith('monster');
+    const monster=entry.id.startsWith('monster')&&!entry.followup;
+    if(entry.followup){
+      const {mapId,region:r}=entry.followup,b=before.project.maps[mapId],a=applied.project.maps[mapId];
+      const plain=new Set([448,449,450]);
+      const empties=m=>{let n=0;for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++){const i=y*m.width+x;if(m.upperTiles[i]===-1&&plain.has(m.lowerTiles[i])&&!m.events.some(e=>e.x===x&&e.y===y))n++;}return n;};
+      const changedMaps=Object.keys(applied.project.maps).filter(id=>!isDeepStrictEqual(applied.project.maps[id],before.project.maps[id]));
+      proof.followup={changedMaps,emptyBefore:empties(b),emptyAfter:a?empties(a):null,sizeSame:a?.width===b.width&&a?.height===b.height,
+        eventsSame:isDeepStrictEqual(a?.events,b.events),otherContentSame:isDeepStrictEqual({...applied.project,maps:null},{...before.project,maps:null})};
+    }
     // 빈 프로젝트 교체 생성은 시작 맵을 바꾸는 것이 정상이다 — 보존 검사는 기존 게임이 있는 녹화에만.
-    proof.existingMapsPreserved=monster||Object.entries(before.project.maps).every(([id,map])=>isDeepStrictEqual(map,applied.project.maps[id]));
+    proof.existingMapsPreserved=monster||Boolean(entry.followup)||Object.entries(before.project.maps).every(([id,map])=>isDeepStrictEqual(map,applied.project.maps[id]));
     proof.startPreserved=monster||before.project.startMapId===applied.project.startMapId&&isDeepStrictEqual(before.project.startPos,applied.project.startPos);
     if(monster){
       const text=JSON.stringify(applied.project);
@@ -113,9 +124,10 @@ for(const entry of cases){
           return db.troops.find(t=>t.id===tid)?.members.map(m=>{const e=db.enemies.find(x=>x.id===m.enemyId);const sp=(db.monsterSpecies??[]).find(x=>x.id===e?.monster?.speciesId||x.id===e?.speciesId);return `${e?.name}${sp?.types?`(${sp.types.join('/')})`:''}`;});})(),
         buildArgs:proof.events.filter(e=>e.type==='tool_start'&&e.name==='build_monster_game').map(e=>e.args)};
     }
-    proof.correctMode=monster?Boolean(proof.monster.campaign)&&proof.monster.maps>=72&&String(proof.monster.startMap).includes(entry.names.startTown)&&Object.values(proof.monster.namesFound).every(Boolean)
+    proof.correctMode=entry.followup?proof.followup.changedMaps.length===1&&proof.followup.changedMaps[0]===entry.followup.mapId&&proof.followup.sizeSame&&proof.followup.eventsSame&&proof.followup.emptyAfter<=proof.followup.emptyBefore*0.6
+      :monster?Boolean(proof.monster.campaign)&&proof.monster.maps>=72&&String(proof.monster.startMap).includes(entry.names.startTown)&&Object.values(proof.monster.namesFound).every(Boolean)
       :entry.id==='default'?proof.newMaps.some(id=>applied.project.maps[id].worldmapSource?.theme==='fantasy')&&proof.atlases.length===0:proof.atlases.some(a=>a.structure==='region-routes');
-    const resultMap=monster?applied.project.startMapId:entry.id==='default'?proof.newMaps.find(id=>applied.project.maps[id].worldmapSource):proof.atlases[0]?.nodes.find(n=>n.id===proof.atlases[0].startNodeId)?.mapId;
+    const resultMap=entry.followup?entry.followup.mapId:monster?applied.project.startMapId:entry.id==='default'?proof.newMaps.find(id=>applied.project.maps[id].worldmapSource):proof.atlases[0]?.nodes.find(n=>n.id===proof.atlases[0].startNodeId)?.mapId;
     if(resultMap)await showMap(page,resultMap);
     await page.screenshot({path:resolve(dir,'after.png')});await page.waitForTimeout(4500);
     if(monster)for(const [kind,id] of [['route',applied.project.maps.mx_map_meadow?'mx_map_meadow':undefined],['gym',mapNamed(applied.project,entry.names.firstGym)]])if(id){await showMap(page,id);await page.screenshot({path:resolve(dir,`${kind}.png`)});await page.waitForTimeout(3000);}
