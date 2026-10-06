@@ -104,3 +104,7 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 `proof.refine`에 사용자가 보는 「더 다듬을 곳」 지적 전문을 남긴다. 저장본 플레이는 따로 —
 `live.json`을 `qa:game check`와 `scripts/qa/runtime/monster-journey.mjs`(gen 출력처럼 안 쓰는 업로드를 걷어 낸 사본)로 돌린다.
 여정은 찍을 때마다 전투 문장이 창 안에 있는지 재고 넘치면 `layout:` 단계로 실패한다.
+`--case monster-desert`·`monster-harbor`는 `scripts/qa-game/briefs/*.json` 기획서로 같은 검사를 한다(1관 타입을 `proof.monster.gym1Team`에 남긴다).
+`--case monster-followup`은 bun 으로 만든 캠페인 고정물에 「서리꽃 마을 왼쪽 아래 빈 곳 채워」를 시킨다. 합격은 그 맵만 바뀜·크기/이벤트/다른 콘텐츠 보존·빈칸 60% 이하 —
+숫자보다 `render.mts`로 서리꽃 마을을 원 크기로 그려 검은 칸·테두리 파괴를 눈으로 본다(2026-10-06~07 r8~r11: 검은 칸 셋·테두리 파괴 원인은 도구였다).
+재로드 때 다른 세션이 공용 DB 에 자료를 게시하면 부팅 정규화가 한 번 더 저장한다 — 맵·DB 가 같고 rev+1·`bootNormalization.lib`만 다르면 `libraryResync`로 허용한다.
