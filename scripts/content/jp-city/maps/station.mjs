@@ -23,9 +23,9 @@ const transferEvent = (id, name, x, y, to) => ({
     movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId: to.mapId, x: to.x, y: to.y, fade: "black", ...(to.dir ? { direction: to.dir } : {}) }] }],
 });
 
-// ── 콘코스 26×15 ───────────────────────────────────────────────
+// ── 콘코스 26×17 ───────────────────────────────────────────────
 {
-  const W = 26, H = 15;
+  const W = 26, H = 17;
   const m0 = await kitMap(W, H, {});
   const FLOOR = m0.KIT["jp-subway-floor"].rows[0].tiles[0];
   const m = await kitMap(W, H, { fill: FLOOR });
@@ -41,17 +41,24 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-pillar-plain", 21, 7, { tag: "pillar-ne" });
   put("jp-subway-sign-exit-up", 11, 6, { tag: "sign-exit" });          // 천장에 매단 「↑出口」 — 출구 계단(x 11~14) 바로 남쪽, 화살표가 위(계단)
   put("jp-subway-gates", 8, 9, { tag: "gates" });                      // 개찰구 x 8~16, 통로 x 9·11·13·15
-  row("jp-subway-fence", 9, [...range(0, 7), ...range(17, W - 1)], "fence");   // 개찰구 양옆 ラチ — 벽까지 막는다
+  // 둘레 벽: 서·동 열(북 벽 아래 3행부터) · 남쪽 맨 아랫행 · 아래 두 모서리 — 지하 대합실이 맵 끝에서 잘리지 않게
+  for (const y of range(3, H - 2)) { if (!own3[idx(0, y)]) stamp("jp-subway-wall-w", 0, y, { tag: `wall-w-${y}` }); if (!own3[idx(W - 1, y)]) stamp("jp-subway-wall-e", W - 1, y, { tag: `wall-e-${y}` }); }
+  for (const x of range(1, W - 2)) stamp("jp-subway-wall-s", x, H - 1, { tag: `wall-s-${x}` });
+  stamp("jp-subway-wall-sw", 0, H - 1, { tag: "wall-sw" });
+  stamp("jp-subway-wall-se", W - 1, H - 1, { tag: "wall-se" });
+  row("jp-subway-fence", 9, [...range(1, 7), ...range(17, W - 2)], "fence");   // 개찰구 양옆 ラチ — 옆 벽까지 막는다
   put("jp-subway-pillar-plain", 4, 12, { tag: "pillar-sw" });
   put("jp-subway-pillar-plain", 21, 12, { tag: "pillar-se" });
-  put("jp-subway-sign-line", 6, 11, { tag: "sign-line" });              // 「のりば」
-  put("jp-subway-stairs-down", 11, 13, { tag: "platform-stairs" });     // 승강장 계단 x 11~14(11~13행, 머리벽 북쪽), 입구 = 남쪽 끝 칸 (12,13)(13,13) — 14행에서 들어선다
-  // 점자 유도 블록(2층): 매표기 앞 ― 출구 계단 앞 ― 역무실 앞(4줄), 출구 계단 앞에서 개찰 통로(x 13)를 지나 계단 동쪽(15열)으로 돌아 남쪽 입구 앞(14행)까지
+  put("jp-subway-sign-line-down", 10, 11, { tag: "sign-line" });         // 「↓のりば」 — 승강장 계단 바로 북쪽 통로(10~11행) 위 천장, 점자(15열)와 떨어진 x 10~12
+  put("jp-subway-stairs-down", 11, 14, { tag: "platform-stairs" });     // 승강장 계단 x 11~14(12~14행, 머리벽 북쪽), 입구 = 남쪽 끝 칸 (12,14)(13,14) — 15행에서 들어선다
+  // 점자 유도 블록(2층): 매표기 앞 ― 출구 계단 앞 ― 역무실 앞(4줄), 개찰 통로 15열로 곧장 내려(간판 밑을 피함) 승강장 계단 남쪽 입구 앞(15행)까지.
+  // 계단 입구 앞 칸은 칸 가득 점형 경고 블록(jp-subway-tactile-warn)으로 바꿔 찍는다 — 출구 계단 (12,4)(13,4) · 승강장 계단 (12,15)(13,15).
   const line = (x0, y0, x1, y1) => { const out = []; for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) out.push([x, y]); return out; };
-  m.groupLineL2("jp-tactile", [...line(2, 4, 22, 4), ...line(13, 5, 13, 10), ...line(14, 10, 15, 10), ...line(15, 11, 15, 14), ...line(12, 14, 14, 14)]);   // 4줄 = 매표기(x 2~7) 앞부터 역무실(x 19~22) 앞까지(끝·꺾임 = 점형), 13열 = 개찰 통로 → 10행 동쪽 → 15열 계단 옆 → 14행 입구 앞 (12,14)(13,14) 끝 = 경고 블록
+  m.groupLineL2("jp-tactile", [...line(2, 4, 22, 4), ...line(15, 5, 15, 15), ...line(12, 15, 14, 15)], { edgeConnects: false });
+  for (const [x, y] of [[12, 4], [13, 4], [12, 15], [13, 15]]) m.stampL2("jp-subway-tactile-warn", x, y);
   const events = [
     ...[12, 13].map((x) => transferEvent(`ev_exit_${x}`, "출구 계단(지상)", x, 3, EXIT_TARGET)),
-    ...[12, 13].map((x) => transferEvent(`ev_down_${x}`, "승강장으로", x, 13, { mapId: PLATFORM_ID, x: x + 9, y: 11, dir: "down" })),
+    ...[12, 13].map((x) => transferEvent(`ev_down_${x}`, "승강장으로", x, 14, { mapId: PLATFORM_ID, x: x + 9, y: 11, dir: "down" })),
   ];
   const { report } = await m.finish({ id: CONCOURSE_ID, name: "さくら町駅 · 콘코스", start: [12, 5], file: "station-concourse", bare: [], events });
   console.log(JSON.stringify({ map: CONCOURSE_ID, ok: report.ok, anchors: report.anchors, issues: report.layers?.issues, solidOpen: report.solid.open }));
@@ -87,8 +94,9 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-recycle", 34, 11, { tag: "recycle" });               // 분별 쓰레기통 — 기둥(32) 옆
   put("jp-subway-vending", 41, 11, { tag: "vending" });               // 음료 자판기 — 기둥 사이 바닥에 홀로
   stamp("jp-subway-extinguisher", 16, 1, { layer: 4, tag: "extinguisher" });   // 뒷벽 소화기 상자(광고 사이 빈 벽) — 벽이 3층이라 4층 덧그림
-  m.groupLineL2("jp-tactile", [...line(24, 7, 24, 11), ...line(21, 11, 23, 11)]);   // 승강장 끝 점자 띠(6줄, 바닥 그림) → 계단 입구(21·22, 10) 앞 11줄
-  const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 14, dir: "down" }));
+  m.groupLineL2("jp-tactile", [...line(24, 7, 24, 11), ...line(21, 11, 23, 11)], { masks: [[24, 7, 5]] });   // 승강장 끝 점자 띠(6줄, 바닥 그림) → 계단 입구(21·22, 10) 앞 11줄 — 위끝은 세로 곧은 칸(승강장 끝 띠에 맞닿음)
+  for (const x of [21, 22]) m.stampL2("jp-subway-tactile-warn", x, 11);   // 올라가는 계단 입구(21·22, 10) 앞 경고 블록
+  const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 15, dir: "down" }));
   // 지하철: 서쪽 맵 밖에서 동쪽으로, 머리 x 38 에 서면 몸 x 9~38 이 승강장 앞에 선다. 경로 칸 번호 = 38 − (−36) = 74.
   const transit = { routes: [{ id: "subway-sakura-east", name: "地下鉄 さくら線", kind: "subway", path: [{ x: -36, y: 4 }, { x: W - 1 + 36, y: 4 }], vehicles: ["jp-subway"], headwaySec: 40, speed: 6,
     stops: [{ index: 74, name: "さくら町", waitSec: 12, board: { ...RIDE_TARGET } }] }] };

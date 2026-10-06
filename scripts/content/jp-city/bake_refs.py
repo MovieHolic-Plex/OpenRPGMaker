@@ -2224,7 +2224,7 @@ def doc_trn_rules():
 버스·노면전차·전철·지하철의 문은 **차의 왼쪽 면**에만 있다(좌측통행 승강) — 화면에 보이는 남쪽 면은 서쪽으로 갈 때의 왼쪽 면이다. 동쪽으로 가는 차의 `right_open` 은 `right` 와 같은 그림(문이 반대쪽)이다.
 
 ## 노면전차 거리 (키트 {len(TRS)}종, 그림 = 실제 예제 맵 `jp-img-transit-tramstreet`, 실제 게임 화면 `jp-img-transit-runtime-tram`)
-- 단면(북→남, 예제 맵 행): 보도 3(9~11) · 동쪽행 차로 3(12~14) · 동쪽행 궤도 2(15~16) · **가운데 띠 3(17~19)**: 동쪽행 섬 `jp-tram-stop`(x 6~17, 17~18행) + 그 밖 軌道敷 · 센터 전주 밑동 행(19) · 서쪽행 궤도 2(20~21) · 서쪽행 섬 `jp-tram-stop`/軌道敷 2(22~23) · 서쪽행 차로 3(24~26) · 보도 3(27~29: 연석 쪽 27행에 가드레일·가로수·가로등, 28~29행은 걷는 줄로 비운다). 가운데 띠가 3행인 까닭: 서쪽행 가선(서쪽행 궤도 윗행 −2)이 동쪽행 섬 위 승객 몸(섬 윗줄·그 위 줄)이 아니라 섬 난간 줄(18행)을 지나가게 하려고. **섬은 둘 다 각 궤도의 남쪽**: 전차 그림 `jp-tram` 은 양 끝 운전대·문이 보이는 남쪽 면에 있고(`right_open`·`left_open` 모두 남쪽 면 문이 열림), 3/4 에서 정차한 전차 그림이 궤도 바로 북쪽 칸을 가려 북쪽 섬 위 주인공이 사라진다. 두 섬은 횡단보도 양쪽에 엇갈려 붙고, 섬 상류 끝에 導流帯(`jp-tram-stop-zebra-e` 동쪽행 섬 서쪽 끝 / `jp-tram-stop-zebra` 서쪽행 섬 동쪽 끝). 궤도·가운데 띠·섬 밖 칸 1층은 軌道敷 `jp-tram-trackbed`(-b) — 생활도로 오토타일과 섞지 않는다(차도 띠가 갈라져야 차 흐름이 일방 둘로 잡힌다). 차로 3칸 = 차 몸 2칸 + 여유(일방 1차로).
+- 단면(북→남, 예제 맵 행): 보도 3(9~11) · 동쪽행 차로 3(12~14) · 동쪽행 궤도 2(15~16) · **가운데 띠 3(17~19)**: 동쪽행 섬 `jp-tram-stop`(x 6~17, 17~18행) + 그 밖 軌道敷 · 센터 전주 밑동 행(19) · 서쪽행 궤도 2(20~21) · 서쪽행 섬 `jp-tram-stop`/軌道敷 2(22~23) · 서쪽행 차로 3(24~26) · 보도 3(27~29: 연석 쪽 27행에 가드레일·가로수·가로등, 28~29행은 걷는 줄로 비운다). 가운데 띠가 3행인 까닭: 서쪽행 가선(서쪽행 궤도 윗행 −2)이 동쪽행 섬 위 승객 몸(섬 윗줄·그 위 줄)이 아니라 섬 난간 줄(18행)을 지나가게 하려고. (3/4 투영이라 가선은 궤도보다 2행 북쪽에 그려지고, 섬 아랫줄 난간·표지 허리를 지나가 보이는 것은 의도다.) 동쪽행은 3/4 에서 문이 보이는 남쪽 면을 쓰려고 **진행 방향 오른쪽 문**으로 승강한다(실제 좌측통행 안전지대는 보통 왼쪽 — 화면 타협, 전차는 양쪽 문). **섬은 둘 다 각 궤도의 남쪽**: 전차 그림 `jp-tram` 은 양 끝 운전대·문이 보이는 남쪽 면에 있고(`right_open`·`left_open` 모두 남쪽 면 문이 열림), 3/4 에서 정차한 전차 그림이 궤도 바로 북쪽 칸을 가려 북쪽 섬 위 주인공이 사라진다. 두 섬은 횡단보도 양쪽에 엇갈려 붙고, 섬 상류 끝에 導流帯(`jp-tram-stop-zebra-e` 동쪽행 섬 서쪽 끝 / `jp-tram-stop-zebra` 서쪽행 섬 동쪽 끝). 궤도·가운데 띠·섬 밖 칸 1층은 軌道敷 `jp-tram-trackbed`(-b) — 생활도로 오토타일과 섞지 않는다(차도 띠가 갈라져야 차 흐름이 일방 둘로 잡힌다). 차로 3칸 = 차 몸 2칸 + 여유(일방 1차로).
 - 레일 `jp-tram-rail-h`/`-v` 는 **2층**(투명 덧그림 — 아스팔트 위). 1층에 찍으면 아스팔트가 사라진다.
 - 가선 `jp-tram-wire-h`(2칸 반복)는 **4층**, 동행·서행 궤도 각각 윗행 **−2행**(전차 `jp-tram` 팬터그래프 끝이 닿는 높이). 센터 전주 `jp-tram-pole-c`(1×8)는 가운데 띠 아랫행에 밑동(밑동 = 동행 궤도 윗행 +4, 키트 윗행 = 동행 궤도 윗행 −3), 16~24칸 간격. 섬 위 승객 몸 칸(섬 윗줄과 그 위 줄)에는 4층(가선)이 지나가지 않는다. 보도에는 전주를 세우지 않는다(출입문·간판 앞을 막는다).
 - 횡단보도는 **보도 → 차로 → 軌道敷·두 궤도·전주 행 → 차로 → 보도** 끝까지 4칸 폭(오토타일 `jp-crosswalk-ns`, 궤도 칸은 레일+줄무늬 합성 `jp-tram-rail-h-xwalk`). 보행 신호기 `jp-tram-ped-signal` 은 양 끝 보도에 대각 한 쌍(빨강 켜짐 그림). 각 차로 횡단보도 상류 바로 앞 열에 정지선 `jp-mark-stopline-v`, 차로|軌道敷 경계에 `jp-tram-lane-line-s`(동쪽행 차로 맨 아랫행)·`jp-tram-lane-line-n`(서쪽행 차로 맨 윗행).
@@ -2237,9 +2237,9 @@ def doc_trn_rules():
 - 버스 정류장: `auto.busStops:[{{x: 정문 가운데 x, y: 그 앞 차선 행, at:"center"}}]` — 버스 문이 정문 앞에 온다.
 
 ## 지하철역 (키트 {len(TST)}종, 예제 맵 さくら町駅)
-- 콘코스(맨 위부터): 천장 보 `jp-subway-ceiling` 1줄 → 흰 타일 벽 2줄(매표기·출구 계단·역무실이 벽에 붙는다) → 바닥 → 개찰구 `jp-subway-gates`(9칸, 통로 = 홀수 열) — **양옆은 칸막이 `jp-subway-fence` 로 벽·기둥까지 막는다** → 승강장 계단 `jp-subway-stairs-down`.
+- 콘코스(맨 위부터): 천장 보 `jp-subway-ceiling` 1줄 → 흰 타일 벽 2줄(매표기·출구 계단·역무실이 벽에 붙는다) → 바닥 → 개찰구 `jp-subway-gates`(9칸, 통로 = 홀수 열) — **양옆은 칸막이 `jp-subway-fence` 로 벽·기둥까지 막는다** → 승강장 계단 `jp-subway-stairs-down`(입구 = 남쪽 끝 줄 가운데 두 칸, 맨 윗줄은 머리벽이라 막힘 — 입구 앞 칸에서만 들어간다). 「↓のりば」 `jp-subway-sign-line-down` 은 계단 바로 북쪽 통로 위에 매단다. **둘레 벽**: 서·동 끝 열 `jp-subway-wall-w`/`-e`(북 벽 아래 행부터), 남쪽 맨 아랫행 `jp-subway-wall-s`, 아래 두 모서리 `-sw`/`-se` — 지하 대합실이 맵 끝에서 잘려 보이지 않게(개찰 옆 칸막이는 옆 벽까지).
 - 승강장(맨 위부터): 천장 보 → 뒷벽 3줄(광고·역명판) → 선로 `jp-subway-track` 2줄(1층, 막힘) → 승강장 끝 `jp-subway-edge` 1줄(점자 블록, 걸음) → 바닥(기둥·의자·LED·매단 역명판·올라가는 계단).
-- 점자 유도 블록은 2층 오토타일 `jp-tactile` 선: 출구 계단 → 매표기 / 개찰 통로 → 승강장 계단, 승강장은 끝 줄에서 계단 쪽 갈래.
+- 점자 유도 블록은 2층 오토타일 `jp-tactile` 선: 출구 계단 앞 → 매표기·역무실 / 개찰 통로 한 열로 곧장 → 승강장 계단 입구 앞 행, 승강장은 끝 줄에서 계단 쪽 갈래. **계단 입구 바로 앞 칸(입구 폭 전체)은 칸 가득 점형 경고 블록 `jp-subway-tactile-warn`(2층)으로 바꿔 찍는다** — 오토타일 끝·꺾임 점은 칸 가운데 작은 점이라 입구 폭을 못 덮는다. 매단 간판(出口·のりば) 밑으로 점자를 지나게 두지 않는다(위에서 보면 선이 끊겨 보인다).
 - 지하철 노선: `set_map_transit` 의 `auto.subway:{{board:{{mapId,x,y}}, stopName, centerX}}` 하나로 깐다 — 1층 선로를 찾아 30칸 열차가 맵 밖에서 들어와 몸 가운데가 `centerX`(기본 맵 가운데, 보통 승강장 계단 앞)에 서서 문을 연다. 직접 줄 때는 routes kind `subway`, 머리 행 = 선로 윗줄, 정류장은 `at:"center"` + 몸 가운데 칸. 결과 요약의 「서면 몸 x a~b」 로 확인한다.
 - 이동: 계단 입구(anchor) 칸에 `transfer` 이벤트(playerTouch). 예제는 콘코스 승강장 계단 ↔ 승강장 올라가는 계단, 출구 계단 → 지상.
 
@@ -2304,9 +2304,16 @@ def doc_trn_ex():
             'transit': _PLAT['transit'],
             **{f'layer{k}': to_rows([tnum(t) for t in _PLAT[f]], PW) for k, f in (('1', 'lowerTiles'), ('2', 'lowerOverlayTiles'), ('3', 'upperTiles'), ('4', 'upperOverlayTiles'))}}
     TW = _TRAM['width']
+    def _tram_wires():
+        """가선 줄 = 맵 4층 jp-tram-wire-h 배치에서 직접 읽는다(행 번호를 손으로 적지 않는다 — 관문 tramstreet 6회차)."""
+        ws = [q for q in _TRAM_REP['placedList'] if q['id'] == 'jp-tram-wire-h']
+        rows = sorted({q['y'] for q in ws}); xs = sorted({q['x'] for q in ws})
+        rails = sorted({r['path'][0]['y'] for r in _TRAM['transit']['routes'] if r['kind'] == 'tram'})   # 전차 노선 머리 행 = 레일 윗행
+        assert len(rows) == 2 and len(rails) == 2 and all(r == t - 2 for r, t in zip(rows, rails)), (rows, rails)
+        return f"4층 jp-tram-wire-h: x {xs[0]},{xs[1]},{xs[2]},… 마다(2칸 반복) 행 {rows[0]}·{rows[1]} = 각 궤도 레일 윗행 {rails[0]}·{rails[1]} −2"
     tram = {'name': _TRAM['id'], 'W': TW, 'H': _TRAM['height'], 'start': _TRAM_REP['start'],
             'placements': [[q['id'], q['x'], q['y'], q['layer']] for q in _TRAM_REP['placedList'] if q['id'] != 'jp-tram-wire-h'],
-            'wires': '4층 jp-tram-wire-h: x 0,2,4,… 마다 두 궤도 윗행 −2(행 13·16)',
+            'wires': _tram_wires(),
             'events': [[e['id'], e['x'], e['y'], e['pages'][0]['commands'][0]] for e in _TRAM['events']],
             'transit': _TRAM['transit'],
             **{f'layer{k}': to_rows([tnum(t) for t in _TRAM[f]], TW) for k, f in (('1', 'lowerTiles'), ('2', 'lowerOverlayTiles'), ('3', 'upperTiles'), ('4', 'upperOverlayTiles'))}}
@@ -2427,7 +2434,7 @@ _LM_UP = [t for v in _LM_UP_BY.values() for t in v]
 _LM_LO = [t for v in _LM_LO_BY.values() for t in v]
 assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
 _STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
-assert len(_STAIR_STAR) == 63, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 5·올라가는 4)
+assert len(_STAIR_STAR) == 62, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘)
 
 
 def n_issue(lst): return len(lst)

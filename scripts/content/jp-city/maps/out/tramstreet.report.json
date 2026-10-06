@@ -10,7 +10,17 @@
   20,
   11
  ],
- "poles": [],
+ "poles": [
+  {
+   "row": 19,
+   "xs": [
+    2,
+    22,
+    44
+   ],
+   "kind": "jp-tram-pole-c"
+  }
+ ],
  "deco": {
   "placed": 10,
   "skipped": 0
@@ -57,7 +67,7 @@
   "issues": [],
   "l2": 414,
   "l3": 544,
-  "l4": 148
+  "l4": 147
  },
  "emptiness": {
   "worst17x13": 0.262,
@@ -82,20 +92,6 @@
   "railGaps": [],
   "crosswalkGaps": [],
   "railCells": 192,
-  "poles": [
-   [
-    2,
-    19
-   ],
-   [
-    25,
-    19
-   ],
-   [
-    44,
-    19
-   ]
-  ],
   "note": "레일은 키트(2층)라 오토타일 검사(autotiles.rail, 지상 선로 jp-rail-track 전용)는 0칸이다 — 이음은 railGaps 로 본다"
  },
  "ok": true,
@@ -206,7 +202,7 @@
   },
   {
    "id": "jp-tram-ped-signal",
-   "x": 17,
+   "x": 16,
    "y": 9,
    "w": 1,
    "h": 3,
@@ -214,7 +210,7 @@
   },
   {
    "id": "jp-tram-ped-signal",
-   "x": 22,
+   "x": 23,
    "y": 25,
    "w": 1,
    "h": 3,
@@ -230,7 +226,7 @@
   },
   {
    "id": "jp-tram-pole-c",
-   "x": 25,
+   "x": 22,
    "y": 12,
    "w": 1,
    "h": 8,
@@ -661,7 +657,7 @@
    "layer": 3
   },
   {
-   "id": "jp-prop-tree-zelkova",
+   "id": "jp-prop-tree-ginkgo",
    "x": 6,
    "y": 22,
    "w": 4,
@@ -670,7 +666,7 @@
   },
   {
    "id": "jp-prop-tree-zelkova",
-   "x": 39,
+   "x": 40,
    "y": 22,
    "w": 4,
    "h": 6,
@@ -685,11 +681,11 @@
    "layer": 4
   },
   {
-   "id": "jp-prop-lamp-post",
-   "x": 45,
-   "y": 24,
+   "id": "jp-prop-street-flag",
+   "x": 46,
+   "y": 25,
    "w": 1,
-   "h": 4,
+   "h": 3,
    "layer": 4
   }
  ],

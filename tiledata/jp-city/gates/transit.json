@@ -1,62 +1,77 @@
 {
  "stage": "transit",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 7,
- "seconds": 184,
- "focus": "노면전차·지하철역 키트 — 7회차. 6회차 지적 반영: (major) 콘코스 점자: 승강장 계단(jp-subway-stairs-down)은 남쪽 입구 — 점자를 개찰 통로 13열 → 10행 동쪽 → 15열 계단 옆 → 14행 입구 앞 (12,14)(13,14)까지 내리고 끝(경고 블록), 콘코스 26×15 로 한 행 늘림, 승강장→콘코스 도착은 입구 앞 14행(아래를 봄). 참고 장면 scene-concourse 와 같은 꼴. (major) tram-stop.png 의 횡단보도 위 택시 → 정차 사진은 횡단보도 열 위에 차가 없을 때 찍는다(probe 가 확인, SUMMARY 에 기록). (minor) 서쪽행 → 동네 역 앞(駅前), 동쪽행 → 학교 앞(学校前) — 행선지 다름. 전주는 가운데 띠 3행의 아랫행(동행 궤도 윗행 +4) 밑동, 1×8, 서쪽행 가선은 동쪽행 섬 난간 줄을 지난다(섬 위 승객 얼굴을 긋지 않음).",
+ "rounds": 11,
+ "seconds": 151,
+ "focus": "노면전차·지하철역 키트 — 11회차. 10회차는 통과(minor 5). 그 뒤 바뀐 것: 노면전차 거리 쪽(가로수 종·센터 전주 x2·22·44·깃발 기둥)과 참고문서 다시 굽기만 — 키트·역 맵은 그대로, 런타임 사진은 다시 찍음(probe 15/15). 10회차 minor(콘코스 남쪽 빈 바닥, のりば 간판·계단 머리 겹침, 서쪽행 가선이 섬 아랫줄을 지남, 계단 초록 ↑ 표지, 북쪽 차 앞범퍼)는 남은 minor 로 둔다.",
  "files": {
   "tiledata/jp-city/blocks/transit_street/_all-x2.png": "b2427ea4b8f0356d88bf4c873b1e460895e38ae98873775fb5f4ca4869c363bd",
-  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "65c0d77ce792a60b56daa2213725a6bd6a203714fed43dfdaf176755e63b80bb",
-  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "e5bd2481b5ee07e54f5392faaf1342a3355422474291e58040771c0c90878b88",
-  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "195eb2711311701e306b51b64880e74e032fdbe4307768da49efe1dfceb198c8",
-  "verify-shots/jp-city/station-concourse-x3.png": "e8b8c649429571687172f140271846e531dd06c2a556e8dfbe49cdb04804255b",
-  "verify-shots/jp-city/station-platform-x3.png": "168cd3efd6c038a7cfb2bfd18170bcfd30a6d2476ebcb642ac5e63388097d482",
-  "verify-shots/jp-city/transit-runtime/subway-stop.png": "a8b3d7acc3b732b5c2fafbc60b2883639398b17454990280a8944bc115b57f7b",
-  "verify-shots/jp-city/tram-runtime/tram-stop.png": "6c8f519a0d7305c2865585fb97cafd8bc8be355cba090ab60fdebab30f6de82b",
-  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "27f43d0fbab31cba1fd5e2fb731bef012e06efcef41738a33fe30f0b2fe0511e",
-  "scripts/content/jp-city/blocks/transit_street.py": "1f9ea2a49168dc84f5cc50009cfab1594170f0b81c1b3796f43366fdbe38b7d2",
-  "scripts/content/jp-city/blocks/transit_station.py": "67c4874889ed792d2f42fde615d2fddafbfc52891e4cd83e04faaa27c7f6306f",
-  "scripts/content/jp-city/maps/station.mjs": "5a62b92257f76e3261b24abe329a0007a206b58f80d3fd2f14d189151c25627a",
-  "src/player/characterDepth.ts": "46e74d5cd958699067eed49442ea4a2992d579f5002eb1468b53736aa91082a5"
+  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "f731f4c7ec6e821cb3d97a1ffea81441cdbe3dafb1bf191f9e4d0fecb827125f",
+  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "e0e0861859102373ccd368dc40b4c14fc416a48e1856600c361c9cda174aa9b7",
+  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "290fbbb0814d1d891195ba73ce52932e9135870b9c2aafaa7982a9abbf6fb988",
+  "verify-shots/jp-city/station-concourse-x3.png": "36c62ac582d0582ad2c6425d1657e52ea8ad74ff0b06eb060648d72388f7df95",
+  "verify-shots/jp-city/station-platform-x3.png": "4f7090bee0771786621711efe429d77114edb26f6d07d250fcd3e5d11633d428",
+  "verify-shots/jp-city/transit-runtime/subway-stop.png": "74556cf77de78be11bfaaf949e18ae4701f3f734990aa531aa6b14a0e60d5942",
+  "verify-shots/jp-city/transit-runtime/SUMMARY.md": "50e3b4bf85c26fb595e91a21f2ee36573686bf26a8998e742e8219db823e27c2",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "ed9320aaba0355c81eecc42f3819faca2263f904750dccf4bde354c9e0f5fee9",
+  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "9c7416f4328fdb8092251d44e49766f451737295b6f1af2a307fa961e0202625",
+  "verify-shots/jp-city/tram-runtime/concourse-stairs.png": "d02804a89059c0123c26e660e9aafc8540bdb39c86280a2049bc3bb4548fa616",
+  "verify-shots/jp-city/tram-runtime/platform-arrive.png": "4b1820219df13e6112227c12a17ffb918ae89463536358f36b6571fc1e772cae",
+  "verify-shots/jp-city/tram-runtime/concourse-return.png": "3a2740fe5acce6b2a1bca9ef0100b34f5d5e0947791c09351d147fa2c3796b49",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "0e8698be8ffd9701e513c89ce0903d37dead6c5312ad17c1a6d8b2497fb46fb5",
+  "scripts/content/jp-city/blocks/transit_street.py": "5668f525d9f7690759bb12ec0dfea7fe96548e317388d36befa2c46864bf4067",
+  "scripts/content/jp-city/blocks/transit_station.py": "222cdf79720aacc8e0360605d4c461d8d33fa3c444d0cd7c814b65e704191950",
+  "scripts/content/jp-city/maps/station.mjs": "478087844f91ccf7ccb71ee2f3b6ffd2b1c85b2e64bfafa3130ba999267fffda",
+  "scripts/content/jp-city/maps/kitmap.mjs": "1a34440fc0b9420dad7fae66d37cd3bf4532a356c399cf559b6237b60f03014b",
+  "scripts/content/jp-city/qa/tram-street.probe.mjs": "f80d876b9191d65aed9890195e3e81d0014c08232e7cb36d43c1f9e09e2f63e1",
+  "src/player/characterDepth.ts": "46e74d5cd958699067eed49442ea4a2992d579f5002eb1468b53736aa91082a5",
+  "tiledata/jp-city/refs/transit-rules.md": "97852a5336fb08a13237bc35fb7819a5df639464b93f6ea38dbe72190234f8a6"
  },
  "findings": [
   {
-   "severity": "major",
+   "severity": "minor",
    "file": "scripts/content/jp-city/maps/station.mjs",
-   "where": "L51 groupLineL2 jp-tactile 끝 line(12,14,14,14)+col15 → 대합실 (12~15,14), station-concourse-x3 y≈700~720; scene-concourse-x3 맨 아래 줄 y≈635~660",
-   "problem": "경고 블록 줄이 맵의 마지막 줄이라 자동 타일이 맵 밖을 이어짐으로 본다. 네 칸 모두 남쪽 꼬리가 나고 (13,14)(14,14)는 T자 갈림으로 그려져, 계단 앞 끝맺음이 아니라 맵 밖으로 이어지는 길로 읽힌다. 끝 패드도 입구 두 칸이 아니라 12~15열 네 칸으로 퍼졌다.",
-   "fix": "groupLineL2 자동 타일이 맵 밖을 비연결로 처리하게 한다. 또는 H=16으로 늘려 15줄에 남쪽 벽을 둔다. 경고 블록은 (12,14)(13,14) 두 칸만 두고, 15열 경로는 (14,14)에서 꺾여 들어오게 한 뒤 참고 장면을 다시 굽는다."
-  },
-  {
-   "severity": "major",
-   "file": "scripts/content/jp-city/maps/station.mjs",
-   "where": "대합실 서·동·남 가장자리(col 0, col 25, row 14); L91 승강장→대합실 도착 (x-9,14) dir down",
-   "problem": "지하 대합실 세 면에 벽이 없어 바닥이 맵 가장자리에서 잘린다. 승강장에서 올라온 플레이어는 마지막 줄에서 아래(허공)를 보고 선다.",
-   "fix": "서·동·남 둘레에 지하 벽(jp-subway-backwall 계열 또는 남쪽 벽 조각)을 두른다. 도착은 계단 입구 앞 칸에서 계단 반대쪽(위)을 보게 하거나, 남쪽 벽을 둔 뒤 도착 줄을 그 안쪽으로 옮긴다."
-  },
-  {
-   "severity": "major",
-   "file": "verify-shots/jp-city/transit-runtime/SUMMARY.md",
-   "where": "subway-stop.png·SUMMARY.md 05:34, tiledata/jp-city/blocks/transit_station/*.png·_all-x2.png 05:15 vs 대합실 맵 재생성 06:13",
-   "problem": "대합실 26×15 확장과 승강장→대합실 도착 (x-9,14)이 출하 플레이어로 검증되지 않았다. PASS 보고는 옛 맵 기준이고, transit_station 키트 시트도 이번 회차에 다시 굽지 않았다.",
-   "fix": "transit_station 블록·장면을 다시 굽고, 런타임 QA로 거리 입구→대합실→개찰→승강장→승차→하차, 승강장→대합실 복귀 도착 칸·방향까지 다시 찍어 SUMMARY를 갱신한다."
+   "where": "station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460",
+   "problem": "The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.",
+   "fix": "Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge."
   },
   {
    "severity": "minor",
    "file": "scripts/content/jp-city/maps/station.mjs",
-   "where": "대합실 「のりば」 매단 표지 cols≈6~9 rows 10~11",
-   "problem": "방향 화살표가 없고 승강장 계단(11~14열) 위가 아니라 떨어진 곳에 매달려 있어 안내가 읽히지 않는다.",
-   "fix": "표지를 계단 바로 위(cols 11~14, row 10)로 옮기거나, 계단 쪽을 가리키는 화살표가 든 변형을 쓴다."
+   "where": "station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half",
+   "problem": "(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.",
+   "fix": "Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/blocks/transit_street.py",
-   "where": "tram-stop-e.png y≈365 — 서행 전차선이 동쪽 섬 난간·포스트 위를 가로지름",
-   "problem": "전차선이 승객 섬 난간 높이에 겹쳐 그려져 난간과 엉킨 줄로 읽힌다.",
-   "fix": "서행 전차선을 섬 북쪽 가장자리 위 또는 섬 앞면 아래로 비켜 그리거나, 섬 구간에서는 난간 뒤 층에 그린다."
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475",
+   "problem": "(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.",
+   "fix": "Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png",
+   "problem": "(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.",
+   "fix": "Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/blocks/transit_station.py",
+   "where": "Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475",
+   "problem": "(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.",
+   "fix": "Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/tram-runtime/tram-stop-e.png",
+   "where": "North-side car on the eastbound lane, row 12, front bumper",
+   "problem": "(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.",
+   "fix": "Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap."
   }
  ],
- "report": "운영 기록만 남긴다: 이번 회차는 반려(fail)다. 실측 근거는 아래와 같다.\n\n**지난 회차 지적 재확인**\n- (b) 노면전차 정류장 장면: `tram-stop.png`·`tram-stop-e.png` 둘 다 횡단보도 위에 차가 없다. 레일도 횡단보도 줄무늬 사이로 끊기지 않고 이어진다(`flow.png` 확대로 확인). 해소됐다.\n- (a) 지하철 대합실 점자블록 끝: 맵 데이터상 경로는 계단 남쪽 입구 앞까지 갔다. 다만 끝맺음이 새 결함으로 바뀌었다(아래 1).\n\n**발견**\n\n1. **[major] 점자블록 끝이 맵 밖으로 이어지는 갈림길로 그려진다.** `station.mjs` L51\n   - 경고 블록 줄이 맵의 마지막 줄(14)에 놓였다. 자동 타일이 맵 밖을 「이어짐」으로 본다.\n   - 그래서 (12~15,14) 네 칸 모두 아래로 꼬리가 나고, (13,14)(14,14)는 T자 갈림 무늬로 나온다(x3 그림 y≈700~720).\n   - 끝 패드도 입구 두 칸(12,13)(13,13)의 폭이 아니라 12~15 네 칸으로 퍼졌다.\n   - 참고 장면 `scene-concourse-x3.png`도 맨 아래 줄에서 같은 꼬리가 난다.\n\n2. **[major] 대합실의 서·동·남 세 면에 벽이 없다.** `station-concourse` 맵\n   - 바닥이 맵 가장자리에서 그냥 잘린다.\n   - 승강장에서 올라오면 마지막 줄(14)에 아래를 보고 도착한다. 즉 허공을 보고 선다.\n   - 지하 공간이라 사방이 닫혀 있어야 한다.\n\n3. **[major] 이번 회차 런타임 근거가 낡았다.**\n   - `transit-runtime/subway-stop.png`·`SUMMARY.md`는 05:34, `transit_station/*.png` 전부와 `_all-x2.png`는 05:15다.\n   - 대합실 26×15 재생성(06:13)보다 앞선다.\n   - 승강장→대합실 도착 (x-9,14)·아래 방향은 출하 플레이어로 한 번도 실행되지 않았다. 보고서의 PASS는 옛 맵 기준이다.\n\n4. **[minor] 「のりば」 매단 표지에 방향 화살표가 없다.** 대합실 cols≈6~9, rows 10~11\n   - 승강장 계단(11~14열)과도 떨어져 있어, 어디로 가라는 표지인지 읽히지 않는다.\n\n5. **[minor] 서행 전차선이 동쪽 섬의 승객 면을 가로지른다.** `tram-stop-e.png` y≈365\n   - 선이 난간과 포스트 위를 그대로 가로지른다. 높이 투영이라 해도 난간 높이에 겹쳐 그려져, 난간과 엉킨 줄로 읽힌다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/station.mjs\",\"where\":\"L51 groupLineL2 jp-tactile 끝 line(12,14,14,14)+col15 → 대합실 (12~15,14), station-concourse-x3 y≈700~720; scene-concourse-x3 맨 아래 줄 y≈635~660\",\"problem\":\"경고 블록 줄이 맵의 마지막 줄이라 자동 타일이 맵 밖을 이어짐으로 본다. 네 칸 모두 남쪽 꼬리가 나고 (13,14)(14,14)는 T자 갈림으로 그려져, 계단 앞 끝맺음이 아니라 맵 밖으로 이어지는 길로 읽힌다. 끝 패드도 입구 두 칸이 아니라 12~15열 네 칸으로 퍼졌다.\",\"fix\":\"groupLineL2 자동 타일이 맵 밖을 비연결로 처리하게 한다. 또는 H=16으로 늘려 15줄에 남쪽 벽을 둔다. 경고 블록은 (12,14)(13,14) 두 칸만 두고, 15열 경로는 (14,14)에서 꺾여 들어오게 한 뒤 참고 장면을 다시 굽는다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/station.mjs\",\"where\":\"대합실 서·동·남 가장자리(col 0, col 25, row 14); L91 승강장→대합실 도착 (x-9,14) dir down\",\"problem\":\"지하 대합실 세 면에 벽이 없어 바닥이 맵 가장자리에서 잘린다. 승강장에서 올라온 플레이어는 마지막 줄에서 아래(허공)를 보고 선다.\",\"fix\":\"서·동·남 둘레에 지하 벽(jp-subway-backwall 계열 또는 남쪽 벽 조각)을 두른다. 도착은 계단 입구 앞 칸에서 계단 반대쪽(위)을 보게 하거나, 남쪽 벽을 둔 뒤 도착 줄을 그 안쪽으로 옮긴다.\"},{\"severity\":\"major\",\"file\":\"verify-shots/jp-city/transit-runtime/SUMMARY.md\",\"where\":\"subway-stop.png·SUMMARY.md 05:34, tiledata/jp-city/blocks/transit_station/*.png·_all-x2.png 05:15 vs 대합실 맵 재생성 06:13\",\"problem\":\"대합실 26×15 확장과 승강장→대합실 도착 (x-9,14)이 출하 플레이어로 검증되지 않았다. PASS 보고는 옛 맵 기준이고, transit_station 키트 시트도 이번 회차에 다시 굽지 않았다.\",\"fix\":\"transit_station 블록·장면을 다시 굽고, 런타임 QA로 거리 입구→대합실→개찰→승강장→승차→하차, 승강장→대합실 복귀 도착 칸·방향까지 다시 찍어 SUMMARY를 갱신한다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/station.mjs\",\"where\":\"대합실 「のりば」 매단 표지 cols≈6~9 rows 10~11\",\"problem\":\"방향 화살표가 없고 승강장 계단(11~14열) 위가 아니라 떨어진 곳에 매달려 있어 안내가 읽히지 않는다.\",\"fix\":\"표지를 계단 바로 위(cols 11~14, row 10)로 옮기거나, 계단 쪽을 가리키는 화살표가 든 변형을 쓴다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/blocks/transit_street.py\",\"where\":\"tram-stop-e.png y≈365 — 서행 전차선이 동쪽 섬 난간·포스트 위를 가로지름\",\"problem\":\"전차선이 승객 섬 난간 높이에 겹쳐 그려져 난간과 엉킨 줄로 읽힌다.\",\"fix\":\"서행 전차선을 섬 북쪽 가장자리 위 또는 섬 앞면 아래로 비켜 그리거나, 섬 구간에서는 난간 뒤 층에 그린다.\"}]}\n```"
+ "report": "Round 11 passes with no blocker or major findings; there are 6 minors. The 5 minors from round 10 are not fixed and are listed again. There is one new minor: the platform pillars, which are unchanged since round 10 but were not flagged then.\n\nChecked this round:\n- **Centre poles at x2·22·44:** gaps are 20 and 22, inside the 16–24 rule. None stands on the crosswalk, and their bases are on the bottom row of the centre band.\n- **Ginkgo at x6 and zelkova at x40:** different species, spaced unevenly, so not mechanical repetition. The trunks sit on the row-27 curb. The canopies hang over the westbound lane, and cars on row 25 are drawn under them, which is correct for a tree in front of the lane.\n- **Flag pole at x46:** the banner is vertical, which the research README requires (horizontal nobori is listed as a common mistake). It stands in a gap of the guardrail and leaves the walking strip on rows 28–29 clear.\n- **Runtime photos:** they match the probe results.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460\", \"problem\": \"The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.\", \"fix\": \"Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half\", \"problem\": \"(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.\", \"fix\": \"Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475\", \"problem\": \"(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.\", \"fix\": \"Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png\", \"problem\": \"(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.\", \"fix\": \"Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475\", \"problem\": \"(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.\", \"fix\": \"Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/tram-runtime/tram-stop-e.png\", \"where\": \"North-side car on the eastbound lane, row 12, front bumper\", \"problem\": \"(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.\", \"fix\": \"Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap.\"}\n]}\n```"
 }

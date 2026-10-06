@@ -706,7 +706,7 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
         { key: "fenceGap", code: "fare-gate-bypass", title: "개찰구 서쪽 칸막이(ラチ)를 뺌 — 개찰 통로를 안 지나고 승강장 계단에 간다",
           apply: (map) => { for (let x = 0; x <= 7; x++) map.upperTiles[9 * map.width + x] = -1; } },
         { key: "stairsBench", code: "anchor-blocked", title: "승강장 계단 앞에 의자 — 계단 입구(anchor)에 못 간다",
-          apply: (map) => putUpper(map, "jp-subway-bench", 11, 10) },
+          apply: (map) => putUpper(map, "jp-subway-bench", 11, 15) },
       ],
     },
   };

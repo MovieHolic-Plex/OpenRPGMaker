@@ -21,7 +21,7 @@ const ISE = 6;                     // 동쪽행 섬 x 6~17(가운데 띠 — 동
 const ISW = 22;                    // 서쪽행 섬 x 22~33(서쪽행 궤도 남쪽), 導流帯 34~36
 const CW = [18, 21];               // 횡단보도 x 18~21(4칸) — 두 섬 사이, 지하철 출입구(x 19~22) 앞
 const WIRE_UP = 2;                 // 가선 = 궤도 윗행 −2(전차 팬터그래프 높이, transit_street.py WIRE_RULE)
-const POLES = [2, 25, 44];         // 센터 전주(밑동 = 가운데 띠 아랫줄 19행, 16~24칸 간격) — 횡단보도 칸은 피한다
+const POLES = [2, 22, 44];         // 센터 전주(밑동 = 가운데 띠 아랫줄 19행, 16~24칸 간격) — 횡단보도 칸은 피한다
 /** 이 맵의 전차를 타면 가는 곳 — 동네 한 장의 역 앞. */
 const RIDE_W = { mapId: process.env.TRAM_RIDE_MAP ?? "jp-city-town", x: 41, y: 12 };      // 서쪽행 → 駅前(동네 한 장 역 앞)
 const RIDE_E = { mapId: process.env.TRAM_RIDE_MAP_E ?? "jp-city-school", x: 35, y: 41 };  // 동쪽행 → 学校前
@@ -68,8 +68,8 @@ for (const y of range(R.laneW, R.laneW + 2)) stampL2("jp-mark-stopline-v", CW[1]
 for (const x of range(0, W - 1)) if (x < CW[0] - 1 || x > CW[1]) stampL2("jp-tram-lane-line-s", x, R.laneE + 2);
 for (const x of range(0, W - 1)) if (x < CW[0] || x > CW[1] + 1) stampL2("jp-tram-lane-line-n", x, R.laneW);
 m.edgeMarks({ ew: [[R.laneE, R.laneW + 2]], skip: (x, y) => (x >= CW[0] && x <= CW[1]) || (y > R.laneE && y < R.laneW + 2) });
-put("jp-tram-ped-signal", CW[0] - 1, R.walkN + 2, { tag: "ped-signal-n" });   // 양 끝 대각 한 쌍
-put("jp-tram-ped-signal", CW[1] + 1, R.walkS, { tag: "ped-signal-s" });   // 연석 쪽 줄(가드레일 줄)의 횡단보도 끝
+put("jp-tram-ped-signal", CW[0] - 2, R.walkN + 2, { tag: "ped-signal-n" });   // 양 끝 대각 한 쌍 — 동쪽행 정지선(x 17) 바깥 한 칸(남쪽과 거울)
+put("jp-tram-ped-signal", CW[1] + 2, R.walkS, { tag: "ped-signal-s" });   // 연석 쪽 줄(가드레일 줄), 서쪽행 정지선(x 22) 바깥 한 칸 — 정지선 흰 선이 등주에 꽂혀 보이지 않게
 
 // ── 4. 센터 전주(3층, 칸 태그 foot-dy 로 밑동 줄 y 정렬) · 가선(4층)
 for (const x of POLES) put("jp-tram-pole-c", x, R.mid + 2, { tag: `tram-pole-${x}` });
@@ -80,12 +80,13 @@ tryPut("jp-prop-vend-pair", 9, R.walkN + 1, "vend-n");
 tryPut("jp-prop-bike-rack", 24, R.walkN, "bike-n");                  // 맨션 정문(x 27~29) 앞은 비운다
 tryPut("jp-prop-bike-rack", 31, R.walkN, "bike-n2");
 tryPut("jp-prop-post-box", 40, R.walkN + 1, "post-n");
-const TREES = [6, 39], LAMPS = [15, 45];
-const underTall = (x) => TREES.some((t) => x >= t && x < t + 4) || LAMPS.includes(x);
+const TREES = [[6, "jp-prop-tree-ginkgo"], [40, "jp-prop-tree-zelkova"]], LAMPS = [15], FLAGS = [46];   // 가로수 둘은 다른 종·비대칭 간격, 가로등 하나 + 상점가 깃발 기둥
+const underTall = (x) => TREES.some(([t]) => x >= t && x < t + 4) || LAMPS.includes(x) || FLAGS.includes(x);
 m.groupLine("jp-guardrail", range(0, W - 1).filter((x) => (x < CW[0] - 2 || x > CW[1] + 2) && !underTall(x)).map((x) => [x, R.walkS]), "guardrail-s");
 // 가로수·가로등은 가드레일 줄(연석 쪽 27행)의 틈에 선다 — 28~29행은 걷는 줄로 비운다(자전거 거치대는 남쪽 보도에 두지 않는다)
-for (const x of TREES) tryPut("jp-prop-tree-zelkova", x, R.walkS, `tree-s-${x}`, { layer: 4, onLane: true });
+for (const [x, id] of TREES) tryPut(id, x, R.walkS, `tree-s-${x}`, { layer: 4, onLane: true });
 for (const x of LAMPS) tryPut("jp-prop-lamp-post", x, R.walkS, `lamp-s-${x}`, { layer: 4, onLane: true });
+for (const x of FLAGS) tryPut("jp-prop-street-flag", x, R.walkS, `flag-s-${x}`, { layer: 4, onLane: true });
 
 // ── 6. 이동: 지하철 출입구 계단 → 콘코스. 탈것: 차 흐름(양쪽 일방 차로) + 노면전차 복선 + 정류장 두 곳
 const transfer = (id, name, x, y, to) => ({
@@ -119,9 +120,9 @@ const extraLayersCheck = ({ pass }) => {
   const railGaps = [], cwGaps = [];
   for (const ty of [R.trackN, R.trackS]) for (const y of [ty, ty + 1]) for (let x = 0; x < W; x++) if (!railTiles.has(m.L2[m.idx(x, y)])) railGaps.push([x, y]);
   for (let x = CW[0]; x <= CW[1]; x++) for (let y = R.laneE; y <= R.laneW + 2; y++) { const t = m.L2[m.idx(x, y)]; if (!cwG.has(t) && !xwalkRail.has(t)) cwGaps.push([x, y]); }
-  return { ok: railGaps.length === 0 && cwGaps.length === 0 && sidewalks.north && sidewalks.south, sidewalks, railGaps: railGaps.slice(0, 6), crosswalkGaps: cwGaps.slice(0, 6), railCells: 4 * W - railGaps.length, poles: POLES.map((x) => [x, R.mid + 2]), note: "레일은 키트(2층)라 오토타일 검사(autotiles.rail, 지상 선로 jp-rail-track 전용)는 0칸이다 — 이음은 railGaps 로 본다" };
+  return { ok: railGaps.length === 0 && cwGaps.length === 0 && sidewalks.north && sidewalks.south, sidewalks, railGaps: railGaps.slice(0, 6), crosswalkGaps: cwGaps.slice(0, 6), railCells: 4 * W - railGaps.length, note: "레일은 키트(2층)라 오토타일 검사(autotiles.rail, 지상 선로 jp-rail-track 전용)는 0칸이다 — 이음은 railGaps 로 본다" };
 };
-const { report, MAP } = await m.finish({ id: "jp-city-tram-street", name: "일본 도시 · 노면전차 거리", start: [20, 11], file: "tramstreet", events, transit: plan.next, emptinessMax: 0.4, extraLayersCheck });
+const { report, MAP } = await m.finish({ id: "jp-city-tram-street", name: "일본 도시 · 노면전차 거리", start: [20, 11], file: "tramstreet", events, transit: plan.next, emptinessMax: 0.4, extraLayersCheck, extraPoles: [{ row: R.mid + 2, xs: POLES, kind: "jp-tram-pole-c" }] });
 const skippedDeco = report.deco?.skipped ?? 0;
 if (skippedDeco > 0) { report.ok = false; console.error(`꾸밈 소품 ${skippedDeco}개를 못 놓았다 — 자리를 고친다`); }
 report.transit = { routes: plan.routes.map((r) => r.id), notes: plan.notes, warnings: plan.warnings };

@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 거리 시설 정답 조립(주택 앞 담·생활도로·전봇대 줄, 전체 1~4층 배열)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8115칸**, 16px 칸, 시트 768×2720px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8126칸**, 16px 칸, 시트 768×2720px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 입력 = `placements`([키트, 왼쪽 위 x, 왼쪽 위 y, 층] — 층 "3" 은 `stamp_object`, "2"·"4" 는 `stamp_layer_block`), 1층 바닥 = 보도 + y 13~16 생활도로.
 출력 = 엔진이 찍은 뒤의 **전체 배열** `layer1`~`layer4`(행 우선, -1 빈 칸). 그림 `jp-img-street-hand-scene`(원본 해상도).

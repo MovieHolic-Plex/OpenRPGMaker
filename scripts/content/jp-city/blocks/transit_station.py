@@ -146,6 +146,68 @@ def d_wall(c):
     white_wall(c, 0, 0, 16, 32)
 
 
+def wall_top_h(c, y0):
+    """남쪽 둘레 벽 윗면(두께) 가로 띠: y0 윤곽 · 4px 윗면 · 윤곽 · 바깥 그늘."""
+    c.R(0, y0 + 6, 16, 16 - y0 - 6, K('yoru', -3)); c.HL(0, y0 + 6, 16, K('sumi', 0))
+    c.HL(0, y0, 16, OL); c.HL(0, y0 + 1, 16, K('conc', 3)); c.R(0, y0 + 2, 16, 2, K('conc', 2)); c.HL(0, y0 + 4, 16, K('conc', 0))
+    c.HL(0, y0 + 5, 16, OL)
+    c.VL(7, y0 + 1, 4, K('conc', 0)); c.P(8, y0 + 1, K('conc', 3))           # 덮개 타일 이음
+
+
+def wall_top_v(c, x0):
+    """서·동 둘레 벽 윗면 세로 띠(x0 = 띠 왼쪽 윤곽). 빛은 왼쪽 위 — 띠 왼쪽 단이 밝다."""
+    c.VL(x0, 0, 16, OL); c.VL(x0 + 1, 0, 16, K('conc', 3)); c.R(x0 + 2, 0, 2, 16, K('conc', 2))
+    c.VL(x0 + 4, 0, 16, K('conc', 0)); c.VL(x0 + 5, 0, 16, OL)
+    c.HL(x0 + 1, 7, 4, K('conc', 0)); c.P(x0 + 1, 8, K('conc', 3))           # 덮개 타일 이음
+
+
+@prop('subway-wall-s', '콘코스 남쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='x',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 아래 줄에 가로 반복. 화면에 등을 보이는 벽이라 윗면 띠와 바깥 그늘만 보인다. 양끝은 jp-subway-wall-sw / jp-subway-wall-se.')
+def d_wall_s(c):
+    wall_top_h(c, 0)
+
+
+@prop('subway-wall-w', '콘코스 서쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='y',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 왼쪽 열에 세로 반복. 북쪽 흰 타일 벽(jp-subway-wall 2줄) 바로 아래 줄부터 남쪽 벽 바로 위 줄까지. 아래 끝은 jp-subway-wall-sw.')
+def d_wall_w(c):
+    c.R(0, 0, 10, 16, K('yoru', -3)); c.VL(9, 0, 16, K('sumi', 0))
+    wall_top_v(c, 10)
+
+
+@prop('subway-wall-e', '콘코스 동쪽 둘레 벽(윗면 띠)', 1, 1, solid=((0, 0),), role='wall', repeat='y',
+      tags=('지하철', '역', '벽', '둘레'),
+      rules='콘코스 맨 오른쪽 열에 세로 반복. 북쪽 흰 타일 벽(jp-subway-wall 2줄) 바로 아래 줄부터 남쪽 벽 바로 위 줄까지. 아래 끝은 jp-subway-wall-se.')
+def d_wall_e(c):
+    c.R(6, 0, 10, 16, K('yoru', -3)); c.VL(6, 0, 16, K('sumi', 0))
+    wall_top_v(c, 0)
+
+
+@prop('subway-wall-sw', '콘코스 남서 모서리 벽(윗면 ㄴ)', 1, 1, solid=((0, 0),), role='wall',
+      tags=('지하철', '역', '벽', '둘레', '모서리'),
+      rules='콘코스 왼쪽 아래 모서리 한 칸. 위로 jp-subway-wall-w, 오른쪽으로 jp-subway-wall-s 가 이어진다.')
+def d_wall_sw(c):
+    c.R(0, 0, 16, 16, K('yoru', -3))
+    wall_top_v(c, 10); c.R(0, 6, 16, 10, K('yoru', -3))                      # 서쪽 띠는 남쪽 띠 아래로 내려가지 않는다
+    c.HL(0, 6, 16, K('sumi', 0)); c.VL(9, 0, 6, K('sumi', 0))
+    c.R(11, 1, 5, 4, K('conc', 2)); c.HL(11, 1, 5, K('conc', 3)); c.HL(11, 4, 5, K('conc', 0))   # 꺾임: 남쪽 띠가 오른쪽으로 이어짐
+    c.P(15, 0, OL); c.HL(10, 5, 6, OL); c.VL(10, 0, 6, OL)
+    c.VL(11, 1, 4, K('conc', 3)); c.P(14, 0, K('conc', 2))
+
+
+@prop('subway-wall-se', '콘코스 남동 모서리 벽(윗면 ㄱ 거울)', 1, 1, solid=((0, 0),), role='wall',
+      tags=('지하철', '역', '벽', '둘레', '모서리'),
+      rules='콘코스 오른쪽 아래 모서리 한 칸. 위로 jp-subway-wall-e, 왼쪽으로 jp-subway-wall-s 가 이어진다.')
+def d_wall_se(c):
+    c.R(0, 0, 16, 16, K('yoru', -3))
+    wall_top_v(c, 0); c.R(0, 6, 16, 10, K('yoru', -3))
+    c.HL(0, 6, 16, K('sumi', 0)); c.VL(6, 0, 6, K('sumi', 0))
+    c.R(0, 1, 5, 4, K('conc', 2)); c.HL(0, 1, 5, K('conc', 3)); c.HL(0, 4, 5, K('conc', 0))
+    c.P(0, 0, OL); c.HL(0, 5, 6, OL); c.VL(5, 0, 6, OL)
+    c.VL(1, 1, 3, K('conc', 3)); c.P(1, 0, K('conc', 3))
+
+
 def back_wall(c, x0, y0, w):
     """승강장 뒷벽 3칸(48px): 상아색 타일 · 노선색 띠 · 아래는 짙은 콘크리트 + 케이블 덕트."""
     c.R(x0, y0, w, 48, K('kinari', 1))
@@ -398,9 +460,9 @@ def stair_sides(c, y_top, north):
         c.HL(10, 4, 44, OL); c.VL(10, 0, 5, OL); c.VL(53, 0, 5, OL)
 
 
-@prop('subway-stairs-down', '내려가는 계단(승강장으로)', 4, 3, solid=[(0, y) for y in range(3)] + [(3, y) for y in range(3)],
+@prop('subway-stairs-down', '내려가는 계단(승강장으로)', 4, 3, solid=[(0, y) for y in range(3)] + [(3, y) for y in range(3)] + [(1, 0), (2, 0)],   # 맨 윗줄 가운데 = 머리벽(북쪽에서는 못 들어온다)
       ground=lambda c: floor_tiles(c, 0, 0, 64, 48), tags=('지하철', '역', '계단', '입구'),
-      rules='콘코스 바닥 한가운데 놓는다. 가운데 2열(1·2)로 걸어 내려간다. 맨 아래 가운데가 입구(anchor).')
+      rules='콘코스 바닥 한가운데 놓는다. 가운데 2열(1·2)로 걸어 내려간다. 맨 아래 가운데가 입구(anchor), 맨 윗줄은 머리벽(막힘) — 입구 앞(남쪽) 칸에서만 들어간다.')
 def d_stairs_down(c):
     c.R(16, 0, 32, 48, K('yoru', -3))
     for k in range(7):                                                         # 디딤판: 남(앞)일수록 밝고 높다
@@ -445,6 +507,17 @@ def d_boarding_mark(c):
         c.R(x, 11, 3, 3, K('kii', 2)); c.P(x, 11, K('kii', 3)); c.HL(x, 14, 3, K('kii', -1))
 
 
+@prop('subway-tactile-warn', '점형 경고 블록(칸 가득, 바닥 칠)', 1, 1, other='flat',
+      tags=('지하철', '역', '점자블록', '경고', '바닥표시'),
+      rules='투명 덧칠(2층). 계단 입구 바로 앞 행에 입구 폭 전체(입구 칸마다 하나), 유도선(jp-tactile)이 지나는 칸이면 그 칸을 이것으로 바꿔 찍는다 — 선 블록 팔이 칸 가장자리에서 맞닿는다. 걸을 수 있다.')
+def d_tactile_warn(c):
+    c.R(0, 1, 16, 14, K('kii', 1))                                             # 노란 판(가로 끝까지 — 옆 칸 판·선 팔과 이어짐)
+    c.HL(0, 1, 16, K('kii', 0)); c.HL(0, 14, 16, K('kii', -1))                 # 위 빛·아래 그늘 단
+    for dx in (1, 5, 9, 13):                                                   # 점 4×3(볼록 점: 밝은 3px + 그늘 1px)
+        for dy in (3, 7, 11):
+            c.P(dx, dy, K('kii', 3)); c.P(dx + 1, dy, K('kii', 2)); c.P(dx, dy + 1, K('kii', 2)); c.P(dx + 1, dy + 1, K('kii', -1))
+
+
 # ─────────────────────────── 간판 ───────────────────────────
 def hanger(c, col):
     """천장에서 내려오는 매달이 줄 두 개 + 패널(y 7~30) 틀."""
@@ -476,6 +549,16 @@ def d_sign_exit_up(c):
 def d_sign_line(c):
     hanger(c, (K('kon', 0), K('kon', 1), K('kon', -1)))
     SP.text(c, 1, 11, 'のりば', K('shiro', 3), step=15)
+
+
+@prop('subway-sign-line-down', '천장 매단 승강장 안내 「のりば」(↓ 아래쪽)', 3, 2, tags=('지하철', '역', '간판', 'のりば', '승강장'),
+      rules='승강장 계단(남쪽 입구)이 화면 아래쪽에 있을 때, 그 계단 바로 북쪽 통로(개찰구와 계단 사이) 위 천장에 매단다. 겹침(별) 칸이라 밑으로 걸을 수 있다.')
+def d_sign_line_down(c):
+    hanger(c, (K('kon', 0), K('kon', 1), K('kon', -1)))
+    col = K('shiro', 3)
+    c.VL(3, 12, 8, col); c.HL(1, 18, 5, col); c.HL(2, 19, 3, col); c.P(3, 20, col)   # ↓ 5폭(9폭 화살표는 のりば 와 한 판에 안 들어간다)
+    for ch, x in (('の', 6), ('り', 18), ('ば', 31)):                    # 잉크 폭 14·9·15 를 1px 틈으로 붙여 찍는다
+        SP.text(c, x, 11, ch, col)
 
 
 @prop('subway-office', '역무실 창구', 4, 3, solid=[(x, y) for x in range(4) for y in (1, 2)] + [(x, 0) for x in range(4)],
@@ -632,6 +715,7 @@ PARTS = {      # 계약 part 는 x·y·w·h 를 다 적는다. 개찰구 통로�
     'subway-sign-exit': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-sign-exit-up': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-sign-line': [dict(kind='sign', x=0, y=0, w=3, h=1)],
+    'subway-sign-line-down': [dict(kind='sign', x=0, y=0, w=3, h=1)],
     'subway-station-sign': [dict(kind='sign', x=0, y=0, w=8, h=3)],
     'subway-station-sign-hang': [dict(kind='sign', x=0, y=0, w=6, h=2)],
     'subway-office': [dict(kind='window', x=0, y=0, w=4, h=2)],
@@ -701,16 +785,17 @@ def build():
 def _kit(id_): return next(k for k in _finalize()[2] if k['id'] == 'jp-' + id_)
 
 
-def _tactile(img, path, ghost=()):
+def _tactile(img, path, ghost=(), dots=()):
     """점자 유도 블록 덧칠(장면 합성 때만, 바닥 1층 위·소품 3층 아래). path: 이어진 칸 목록.
     곧은 칸은 선형 블록, 꺾임·갈래·끝은 점형 블록(jp-tactile 모양 재구현)."""
     a = np.array(img); S = set(path) | set(ghost)   # ghost: 이어짐만 세고 그리지 않는 칸(끝 블록 줄 등)
     cyc = [K('kii', n) for n in (0, 2, 1)]
     def put(px, py, col): a[py, px] = ((col >> 16) & 255, (col >> 8) & 255, col & 255, 255)
     for (x, y) in path:
+        if (x, y) in dots: continue                                           # 경고 블록 칸 — jp-subway-tactile-warn 키트가 그린다
         ox, oy = x * 16, y * 16
         nb = {d for d, (dx, dy) in dict(E=(1, 0), W=(-1, 0), N=(0, -1), S=(0, 1)).items() if (x + dx, y + dy) in S}
-        straight = nb in ({'E', 'W'}, {'N', 'S'})
+        straight = nb in ({'E', 'W'}, {'N', 'S'}) and (x, y) not in dots
         for d in nb:
             if d in 'EW':
                 xs = range(0, 16) if straight else (range(12, 16) if d == 'E' else range(0, 4))
@@ -771,16 +856,20 @@ def _compose(W, H, base_fill, places, bg=(0, 0, 0, 255), tactile=None):
 
 
 def scene_concourse():
-    W, H = 20, 14
+    W, H = 20, 16
     places = [('subway-ceiling', x, 0) for x in range(W)] + [('subway-wall', x, 1) for x in range(W)]
+    places += [('subway-wall-w', 0, y) for y in range(3, H - 1)] + [('subway-wall-e', W - 1, y) for y in range(3, H - 1)]
+    places += [('subway-wall-s', x, H - 1) for x in range(1, W - 1)] + [('subway-wall-sw', 0, H - 1), ('subway-wall-se', W - 1, H - 1)]
     places += [('subway-ticket', 1, 1), ('subway-stairs-up', 8, 1), ('subway-office', 15, 1),
-               ('subway-gates', 5, 7), ('subway-stairs-down', 8, 10)]
-    places += [('subway-fence', x, 8) for x in (0, 1, 2, 3, 4, 14, 15, 16, 17, 18, 19)]
+               ('subway-gates', 5, 7), ('subway-stairs-down', 8, 11)]
+    places += [('subway-fence', x, 8) for x in (1, 2, 3, 4, 14, 15, 16, 17, 18)]
     places += [('subway-pillar-plain', 2, 5), ('subway-pillar-plain', 17, 5), ('subway-pillar-plain', 2, 9), ('subway-pillar-plain', 17, 9)]
-    places += [('subway-sign-exit-up', 9, 5), ('subway-sign-line', 4, 10)]
-    # 매표기 앞 → 출구 계단 → 역무실 앞 끝 / 개찰 통로 → 계단 오른쪽(12열)으로 돌아 → 계단 입구(9·10, 12) 앞 13줄 끝 점형
-    path = _line((2, 4), (18, 4)) + _line((10, 5), (10, 9), (12, 9), (12, 13), (10, 13))
-    return _compose(W, H, lambda x, y: 'subway-floor/g0.0', places, tactile=path)
+    places += [('subway-sign-exit-up', 9, 5), ('subway-sign-line-down', 8, 9)]
+    WARN = [(9, 4), (10, 4), (9, 14), (10, 14)]                                # 출구 계단 입구(9·10, 3) 앞 · 승강장 계단 입구(9·10, 13) 앞
+    places += [('subway-tactile-warn', x, y) for x, y in WARN]
+    # 매표기 앞 → 출구 계단 앞(경고) → 역무실 앞 끝 / 개찰 통로 12열로 곧장 내려(간판 밑을 피함) → 계단 입구 앞 14줄 → 입구 두 칸 경고 블록
+    path = _line((2, 4), (18, 4)) + _line((12, 5), (12, 14), (9, 14))
+    return _compose(W, H, lambda x, y: 'subway-floor/g0.0', places, tactile=(path, (), WARN))
 
 
 DOORS = (4, 7, 11, 14, 17, 21, 24, 27, 31)    # 장면 열차(3열부터 30칸)의 문 가운데 열 — 승차 위치 표시를 찍는 자리
@@ -797,7 +886,8 @@ def scene_platform(train=False):
                ('subway-station-sign-hang', 9, 8), ('subway-stairs-up', 12, 10), ('subway-sign-exit-up', 17, 9),
                ('subway-vending', 8, 10), ('subway-recycle', 31, 8), ('subway-extinguisher', 11, 2)]
     # 승강장 끝 점자(6줄) → 계단 옆 16열 세로 → 계단 입구(13·14, 12) 앞 13줄 가로 (맵 station.mjs 승강장과 같은 꼴)
-    path = (_line((16, 7), (16, 13), (13, 13)), [(16, 6)])
+    places += [('subway-tactile-warn', 13, 13), ('subway-tactile-warn', 14, 13)]   # 올라가는 계단 입구(13·14, 12) 앞
+    path = (_line((16, 7), (16, 13), (13, 13)), [(16, 6)], [(13, 13), (14, 13)])
     img = _compose(W, H, lambda x, y: 'subway-platform/g0.0', places, tactile=path)
     if train:
         fr = Image.open(TRAIN).convert('RGBA').crop((0, 0, 480, 64))           # 오른쪽을 보는 프레임(시트 맨 왼쪽)

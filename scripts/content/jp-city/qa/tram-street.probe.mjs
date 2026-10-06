@@ -4,6 +4,7 @@
 // 증거: verify-shots/jp-city/tram-runtime/{SUMMARY.md,*.png}
 import { chromium } from "@playwright/test";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,6 +35,12 @@ const body = await readFile(FIXTURE, "utf8");
   for (const [label, isl] of [["서쪽행 섬", { x0: 22, x1: 33, y: ISLAND_W.y }], ["동쪽행 섬", { x0: 6, x1: 17, y: ISLAND_E.y }]])
     for (let x = isl.x0; x <= isl.x1; x++) for (const y of [isl.y, isl.y - 1]) if (l4(x, y)) hits.push(`${label}(${x},${y})`);
   record(hits.length === 0, "섬 위 승객 몸(발·머리 칸)에 4층 가선이 겹치지 않는다", hits.length ? hits.slice(0, 6).join(" ") : "없음");
+  // 정보: 섬 아랫줄(난간·표지) 3층 시설 위를 지나는 4층 — 3/4 투영(가선 높이)으로 의도한 겹침, 몸 칸 검사와 따로 센다
+  const l3 = (x, y) => (mp.upperTiles?.[y * mp.width + x] ?? -1) >= 0;
+  const below = [];
+  for (const [label, isl] of [["서쪽행 섬", { x0: 22, x1: 33, y: ISLAND_W.y + 1 }], ["동쪽행 섬", { x0: 6, x1: 17, y: ISLAND_E.y + 1 }]])
+    for (let x = isl.x0; x <= isl.x1; x++) if (l4(x, isl.y) && l3(x, isl.y)) below.push(`${label}(${x},${isl.y})`);
+  lines.push(`  (정보 — 섬 아랫줄 시설 위를 지나는 4층 가선 ${below.length}칸${below.length ? `: ${below[0]} … ${below[below.length - 1]}` : ""} · 3/4 투영으로 의도한 겹침, 승객 몸 칸은 위 검사)`);
 }
 const server = await startPlayerQaServer();
 let browser;
@@ -50,6 +57,8 @@ try {
   await page.keyboard.press("Enter");
   await page.waitForSelector("[data-testid='title-screen']", { state: "detached", timeout: 90_000 });
   await page.waitForFunction(() => typeof window.__oprnTransit === "function" && window.__oprnTransit()?.vehicles?.some((v) => v.sprite), undefined, { timeout: 90_000 });
+  // 증거 사진은 필드 HUD(하트) 없이 — 거리·매표기·간판을 가리지 않게
+  await page.addStyleTag({ content: "[data-testid='field-hud']{visibility:hidden!important}" });
   const transit = () => page.evaluate(() => window.__oprnTransit());
   const t0 = await transit();
   record(t0.routes.length === 4, "노선 4개(차 동·서, 전차 동·서)", t0.routes.join(", "));
@@ -112,6 +121,50 @@ try {
   await page.waitForFunction(() => window.__oprnDebug.readState().currentMapId === "jp-city-station-concourse", undefined, { timeout: 10_000 }).catch(() => {});
   const s2 = await page.evaluate(() => window.__oprnDebug.readState());
   record(s2.currentMapId === "jp-city-station-concourse", "지하철 출입구 계단으로 들어가면 콘코스", `${s2.currentMapId} (${s2.x},${s2.y})`);
+  // 콘코스 → 개찰 통로(15열) 걸어서 통과 → 승강장 계단 남쪽 입구로 내려가 승강장 → 승강장 올라가는 계단 → 콘코스 계단 입구 앞(15행)
+  const CONC = "jp-city-station-concourse", PLAT = "jp-city-station-platform";
+  /** 한 칸씩 걷기 — 입력 계층에 방향 탭 하나(키보드와 같은 계약: dir(d)→dir(null) 이 한 걸음), 밟는 이동 이벤트를 칸마다 확인한다. */
+  const DIRS = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
+  const steps = async (key, until, n = 6) => {
+    let st;
+    for (let i = 0; i < n; i++) {
+      await page.evaluate((d) => { window.__oprnInput.dir(d); window.__oprnInput.dir(null); }, DIRS[key]);
+      await page.waitForTimeout(700);
+      st = await page.evaluate(() => window.__oprnDebug.readState());
+      if (until(st)) break;
+    }
+    return st;
+  };
+  // 입력 계층 방향 탭만으로 점자 길을 칸마다 따라간다: →(13…15,4) ↓(15,5…15) ←(14,15)(13,15) ↑ 계단 입구(13,14) = 승강장
+  // 지상 출입구로 들어온 도착 칸(12,4)에서 그대로 걷는다 — 4행 → 꺾임 (15,4) → 15열(개찰 통로) → 15행 → 계단 입구 앞 (13,15)
+  const trail = [`${s2.x},${s2.y}`];
+  const stepTo = async (key, want) => {
+    const st = await steps(key, (q) => q.currentMapId !== CONC || (q.x === want[0] && q.y === want[1]), 2);   // 방향만 바뀌는 첫 탭 대비 2번까지
+    trail.push(`${st.x},${st.y}`);
+    return st.currentMapId === CONC && st.x === want[0] && st.y === want[1];
+  };
+  let okTrail = s2.currentMapId === CONC && s2.x === 12 && s2.y === 4;
+  for (const x of [13, 14, 15]) if (okTrail) okTrail = await stepTo("ArrowRight", [x, 4]);
+  for (let y = 5; y <= 15 && okTrail; y++) okTrail = await stepTo("ArrowDown", [15, y]);   // 9행 = 개찰 통로 15열
+  for (const x of [14, 13]) if (okTrail) okTrail = await stepTo("ArrowLeft", [x, 15]);
+  record(okTrail, "콘코스 점자 길을 방향 입력으로 칸마다 걷는다(출입구 도착 (12,4) → 꺾임 (15,4) → 개찰 통로 15열 → 계단 입구 앞 15행)", trail.join(" → "));
+  await page.evaluate(() => window.__oprnInput.face("up"));
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: join(OUT, "concourse-stairs.png") });   // (13,15) 경고 블록 위, 계단을 본다
+  const d = await steps("ArrowUp", (st) => st.currentMapId === PLAT, 3);
+  record(d.currentMapId === PLAT, "콘코스 계단 남쪽 입구(13,14)를 밟으면 승강장", `${d.currentMapId} (${d.x},${d.y})`);
+  if (d.currentMapId === PLAT) {
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: join(OUT, "platform-arrive.png") });
+    const u = await steps("ArrowUp", (st) => st.currentMapId === CONC, 3);
+    record(u.currentMapId === CONC && u.y === 15 && (u.x === 12 || u.x === 13), "승강장 올라가는 계단 → 콘코스 계단 입구 앞 칸(15행)", `${u.currentMapId} (${u.x},${u.y})`);
+    await page.waitForTimeout(500);
+    const back = await steps("ArrowLeft", (st) => st.x <= (u.x ?? 0) - 1, 1);   // 도착 칸에서 한 걸음 — 도착 사진이 진입 사진과 같은 프레임이 되지 않게
+    lines.push(`  (복귀 뒤 한 걸음: (${back.x},${back.y}))`);
+    await page.screenshot({ path: join(OUT, "concourse-return.png") });
+    const [h1, h2] = await Promise.all(["concourse-stairs.png", "concourse-return.png"].map(async (f) => createHash("sha256").update(await readFile(join(OUT, f))).digest("hex").slice(0, 12)));
+    record(h1 !== h2, "진입 사진과 복귀 사진이 다른 프레임", `${h1} / ${h2}`);
+  }
   if (log.length) lines.push("", "페이지 오류:", ...log.slice(0, 8).map((l) => `- ${l}`));
 } catch (error) {
   record(false, "probe 완주", String(error?.stack ?? error).split("\n").slice(0, 3).join(" | "));
@@ -119,7 +172,7 @@ try {
   await browser?.close();
   await server.close();
 }
-const report = ["# 노면전차 거리 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "", "증거: `flow.png`(차·전차 흐름) · `tram-stop.png`(서쪽행 섬 옆 전차) · `tram-stop-e.png`(동쪽행 섬 옆 전차)"].join("\n");
+const report = ["# 노면전차 거리 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "", "증거: `flow.png`(차·전차 흐름) · `tram-stop.png`(서쪽행 섬 옆 전차) · `tram-stop-e.png`(동쪽행 섬 옆 전차) · `concourse-stairs.png`(점자 길 끝 경고 블록 위에서 계단을 봄) · `platform-arrive.png`(승강장 도착) · `concourse-return.png`(승강장에서 올라와 한 걸음)"].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), report + "\n");
 console.log(report);
 process.exit(failures.length ? 1 : 0);

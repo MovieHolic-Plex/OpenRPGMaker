@@ -9,9 +9,8 @@ for (let i = 2; i < process.argv.length; i += 1) if (process.argv[i] === "--out"
 if (!out) throw new Error("사용법: --out <경로.json>");
 const project = deserialize(readFileSync("test/fixtures/projects/editor-authored-demo-v3.json", "utf8"));
 project.tilesets.jp_city = createJpCityTileset();
-for (const f of ["tramstreet", "town", "school", "station-concourse"]) {
+for (const f of ["tramstreet", "town", "school", "station-concourse", "station-platform"]) {
   const m = JSON.parse(readFileSync(`scripts/content/jp-city/maps/out/${f}.map.json`, "utf8"));
-  if (f === "station-concourse") m.events = [];
   project.maps[m.id] = m;
   project.mapTree = { ...project.mapTree, children: [...(project.mapTree?.children ?? []), { mapId: m.id, children: [] }] } as typeof project.mapTree;
 }
