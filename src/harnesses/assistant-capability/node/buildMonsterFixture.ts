@@ -8,6 +8,9 @@ import { serialize } from '@/project/io';
 const out = process.argv[2];
 if (!out) throw Error('bun buildMonsterFixture.ts <out.json>');
 const project = createBlankProject();
-const built = await runToolAsync({ project, currentMapId: project.startMapId } as never, 'build_monster_game', { mode: 'create' });
+// runToolAsync 는 ctx.project 를 새 문서로 갈아 끼운다 — 넘긴 객체가 아니라 ctx 에서 읽는다.
+const ctx = { project, currentMapId: project.startMapId };
+const built = await runToolAsync(ctx as never, 'build_monster_game', { mode: 'create' });
 if (!built.ok) throw Error(`캠페인 준비 실패: ${built.summary}`);
-writeFileSync(out, serialize((built as { project?: typeof project }).project ?? project));
+if (Object.keys(ctx.project.maps).length < 72) throw Error(`캠페인 맵이 ${Object.keys(ctx.project.maps).length}개뿐입니다`);
+writeFileSync(out, serialize(ctx.project));

@@ -105,6 +105,7 @@ for(const entry of cases){
     const monster=entry.id.startsWith('monster')&&!entry.followup;
     if(entry.followup){
       const {mapId,region:r}=entry.followup,b=before.project.maps[mapId],a=applied.project.maps[mapId];
+      if(!b)throw Error(`이어 고치기 준비본에 ${mapId} 가 없습니다`);
       const plain=new Set([448,449,450]);
       const empties=m=>{let n=0;for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++){const i=y*m.width+x;if(m.upperTiles[i]===-1&&plain.has(m.lowerTiles[i])&&!m.events.some(e=>e.x===x&&e.y===y))n++;}return n;};
       const changedMaps=Object.keys(applied.project.maps).filter(id=>!isDeepStrictEqual(applied.project.maps[id],before.project.maps[id]));
