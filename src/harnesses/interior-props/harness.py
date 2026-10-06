@@ -11,7 +11,7 @@
 고르는 화면: 고르기 서버(scripts/content/hand-interior-pick/pick_server.py) 의 /harness — http://mdc-server:18302/harness
 자세한 것: src/harnesses/interior-props/README.md
 """
-import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
+import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time, traceback
 
 if not __package__:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
@@ -560,7 +560,9 @@ def pool():
             if code is not None:
                 del live[rid_]
                 try: _finish(r, code)
-                except (Exception, SystemExit) as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
+                except (Exception, SystemExit) as e:
+                    traceback.print_exc()
+                    store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
                 print(store.now(), f"h{r['round']}-{r['letter']} 끝({code})", flush=True)
         # 작업지시서가 아직 없는 판(draw 가 new_round 뒤 brief.make 를 쓰는 중)은 건너뛴다 — 집어 가면 brief=None 으로 실패했다(2026-10-03 8차 16장)
         queued = [r for r in store.runs(status=('queued',)) if r.get('brief')]
@@ -570,6 +572,7 @@ def pool():
                 live[r['id']] = (_start(r), r, time.time())
                 print(store.now(), f"h{r['round']}-{r['letter']} 시작 — {r['item']}", flush=True)
             except (Exception, SystemExit) as e:
+                traceback.print_exc()
                 store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
         if not live and not store.runs(status=('queued',)): break
         time.sleep(3)

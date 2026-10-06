@@ -349,8 +349,17 @@ def lock_check(o, png, brief_dir=None):
     s = set_of(o)
     if not s: return []
     d = os.path.join(CAND, slug(o['id'])); im = Image.open(png).convert('RGBA'); errs = []
-    seed = Image.open(os.path.join(d, 'seed.png')).convert('RGBA')
-    if im.size != seed.size: return [f'묶음 캔버스 {im.size} ≠ {seed.size}']
+    # Production sheets author every slot from scratch. Only a locked source
+    # slot requires a seed; canvas and nonempty-slot checks still apply to all.
+    canvas = tuple(s['canvas'])
+    if im.size != canvas: return [f'묶음 캔버스 {im.size} ≠ {canvas}']
+    seed = None
+    if any(x['locked'] for x in s['slots']):
+        seed_path = os.path.join(d, 'seed.png')
+        if not os.path.isfile(seed_path):
+            raise FileNotFoundError(f'고정 칸 검사에 필요한 원본 없음: {seed_path}')
+        seed = Image.open(seed_path).convert('RGBA')
+        if seed.size != canvas: return [f'원본 캔버스 {seed.size} ≠ {canvas}']
     lock = {}
     if brief_dir and os.path.exists(os.path.join(brief_dir, 'lock.json')):
         lock = json.load(open(os.path.join(brief_dir, 'lock.json'), encoding='utf-8'))

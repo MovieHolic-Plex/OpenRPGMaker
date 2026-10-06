@@ -819,3 +819,17 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 돌아왔다. 마법약 교실은 새 기획 A/B 모두 PASS 후 survey가 실제 실행됐다. 사용자 컨셉 decision
 파일은 생성하지 않았다. 실제 /spaces에서 초안 자동 진행 문구와 pageerror 0을 확인했다
 (`verify-shots/theme-draft/desktop.png`). Python/JS 문법 확인만 수행했으며 gates/vitest는 실행하지 않았다.
+
+
+## 전용 세트의 독립 재료 묶음 실행 (2026-10-06)
+
+부분 준비 `preparedExecution`도 일반 execution의 도면/실행 관문을 거쳐 먼저 제작한다.
+미구현 품목과 이유는 `art-pending-materials.json`에 보존하고, 전체 themeCoverage 없이
+데모/완료로 넘어가지 않는다. 준비된 가구가 인물/효과 어댑터 미지원 때문에 그려지지도 않는
+전체 정지를 제거한다. `art_execution.prepare`는 감독이 선택한 실제 Codex의 디렉터리를
+자식 PATH에도 넣어 환경 override를 읽지 않는 오래된 격리 하네스에서도 같은 CLI를 실행한다.
+
+기술 오류로 중단된 기존 픽셀을 재검사한 뒤에는 `execution.resumeMode: review`로
+독립 검수만 재개할 수 있다. 미완료 native 행 모두가 `queued` / `review` 또는 `review2`이고
+기계 검사 `ok`여야 하며, 변경된 검사 코드와 도면 입력은 새 배치 검수를 거친다.
+승인 후 `--resume-review`가 같은 큐를 다시 확인한다. 그리기 횟수와 품질 판정은 초기화하지 않는다.

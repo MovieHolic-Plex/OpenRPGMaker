@@ -688,13 +688,21 @@ def on_art(meta, code, result):
     cid = meta['concept']
     wt = os.path.realpath(os.path.join(DATA, 'art-worktrees', cid))
     result = result if isinstance(result, dict) else {}
+    if code == 0 and result.get('preparedExecution') and not result.get('execution') and meta.get('tag') != 'collect':
+        # Prepared independent native batches can run while other specialized
+        # adapters are being implemented. Full requirement coverage still gates assembly.
+        write_json(cdir(cid,'art-pending-materials.json'),{
+            'reasons':result.get('reasons',[]),'implementationRequired':result.get('implementationRequired'),
+            'themeCoverage':result.get('themeCoverage',{}),'at':store.now()})
+        result=dict(result,execution=result['preparedExecution'])
     if code == 0 and result.get('execution') and meta.get('tag') != 'collect':
         try:
             request = dict(result['execution'])
             # Models are chosen by the user/supervisor, never by a preparation worker.
             request.pop('modelOverride', None)
             request.pop('repairLimits', None)
-            if request.get('resumeMode') != 'collect-existing': request.pop('resumeMode', None)
+            if request.get('resumeMode') not in ('collect-existing', 'review'): request.pop('resumeMode', None)
+            if request.get('resumeMode') == 'review': art_execution.require_review_queue(wt, request)
             if request.get('resumeMode') == 'collect-existing' and art_execution.native_errors(wt, request):
                 raise ValueError('기존 후보 재사용은 완료된 native 검사 근거가 필요합니다.')
             art_layout.freeze_generated_previews(wt, request)
@@ -1020,12 +1028,14 @@ def on_art_layout_review(meta, code, result):
             on_art_native({'concept':cid},0,{'exitCode':0})
             return
         technical = request.get('resumeMode')=='technical'
+        review_resume = request.get('resumeMode')=='review'
+        if review_resume: art_execution.require_review_queue(wt, request)
         if not technical: art_execution.prepare(wt, request)
         native_result = cdir(cid, 'art-execution-result.json')
         if os.path.exists(native_result): os.remove(native_result)
-        if technical: write_json(Path(native_result).with_suffix('.approved.json'), art_layout.require_approval(wt, request))
+        if technical or review_resume: write_json(Path(native_result).with_suffix('.approved.json'), art_layout.require_approval(wt, request))
         start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
-                   wt, cdir(cid, 'art-execution.json'), native_result] + (['--resume-technical'] if technical else []), ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
+                   wt, cdir(cid, 'art-execution.json'), native_result] + (['--resume-technical'] if technical else ['--resume-review'] if review_resume else []), ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
                    {'result': native_result})
         store.update_concept(cid, stage='art', status='running', reasons=[], note='도면 검수 통과 — 후보 제작·독립 검수')
     except (OSError, ValueError, TypeError, KeyError) as error:
