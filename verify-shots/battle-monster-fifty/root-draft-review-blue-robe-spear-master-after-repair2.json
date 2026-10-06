@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:24:57.307221+00:00",
+  "passed": false,
+  "key": "blue-robe-spear-master/fifty-v1",
+  "binding": "2a47781181c6ba4f2962187029f0d7426893efa3cf5752e9de8835fd7d1c8347",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-blue-robe-spear-master-after-repair2.png",
+  "nativeContactPngSha256": "33bb4a4055d6e7ac41cd6e6ffcaac8318349f9658663b19a61894da86538200a",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "0af87426b30c83135eef1f4e048a6b05e68d2b6f4da3296cd6ddc8084aabb5d3"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized after second real repair. Adultquietrightface/navyheadcloth/bluecoat/lightbelt/longgoldtipwoodenspear. Windup/advancelunge/longhorizontalstrike/retract anddistinctgroundedlowpronecollapse/seatedclosedeyesleep withloweredhead/shoulder breath. Attack frontskinpalm nowjoinsbluecuff inonecluster, reargrip separate, continuousspearshaftandblade. Skill_b retainslongshaft bothbehindreargripandinfront andsmallgoldtip, two cyanbranches withgap growforwardfromactualtip ratherthanjoinedverticalbracket. Skill_c longdiagonalshaft retainsbothbehindwaistandinfront andtworesidualparticles. Poisonhandtomouth/slackstun-withstars andsleepknees/feet/groundspear remain. Read export fullbody/revisedrows loops/newapply_grip_branch_runs andcalls/moduleflow. Onlyexplicit perpose rowstrings andnew y/x/run edits; literalcanvas assembly/slice replacement and serialization, no inferredbodygeometry orwholeframe transformations. Render/inspect onlyreadback/diagnostic PNG/GIF. All18nativePNG RGBA exactlymatch canonicalASCII/palette. Newindependentreview pending; noAllow/passclaim."
+}

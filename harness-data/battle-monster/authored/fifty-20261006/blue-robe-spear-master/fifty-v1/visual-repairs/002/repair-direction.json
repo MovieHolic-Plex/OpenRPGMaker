@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "7d3e8f7d866833d1e1ea81547640331b7729139009a882e819f8b64fa6a2620a",
+  "priorReviewJob": "a66ad787-fda6-4a60-b5d4-f55b46ac0c1c",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 48,
+      "y": 38,
+      "message": "The forward sleeve reaches a skin cluster around x40-47/y36-37, while another skin cluster sits at x48-52/y38-39 on the shaft without a readable wrist connection. Together with the rear grip at x23-31/y38-40, this reads as a duplicated or broken leading hand. Redraw x40-52/y36-40 as one compact leading palm wrapping the shaft, connecting it visibly to the blue cuff; remove or incorporate the detached x48-52 cluster so exactly two hands are readable. Preserve the continuous wooden shaft and the existing rear grip."
+    },
+    {
+      "pose": "skill_b",
+      "x": 60,
+      "y": 38,
+      "message": "The effect is attached at the actual spear tip near x59-60/y38, but the long cyan strip at x60-62/y31-40 connects the upper and lower curls into a vertical barrier-like bracket. Reauthor the effect from that tip junction into two visibly separating water-spear branches directed toward the right, with clear transparent space between them and short tapered ends. Pull the tip/body left within this pose if necessary to reserve native pixels for the forward branches, while maintaining the hand/shaft connection and a one-pixel canvas margin."
+    }
+  ],
+  "startedAt": "2026-10-06T10:18:28.722404+00:00"
+}

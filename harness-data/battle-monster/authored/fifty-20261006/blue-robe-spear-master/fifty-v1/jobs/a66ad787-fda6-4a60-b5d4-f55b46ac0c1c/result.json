@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs, including the native 64px portrait and the native 1x/nearest 3x cells on light, dark and checker backgrounds. The right-facing adult SD spear fighter is recognizable: the navy headwrap, broad blue robe, gray-brown trousers and gold spearhead remain consistent across the poses. Upper-left highlights give the sleeves and robe readable volume; the dark shoe outlines lose some contrast on the dark background but the feet retain a consistent ground line. No obvious accidental transparent body holes are visible. Windup lowers the spear, move widens the stance, attack extends the upper body and weapon, recover raises the spear, hit recoils, and dead lies on the ground. The attack's leading grip has an extra disconnected skin cluster, weakening the required two-hand anatomy. Skill preparation places a cyan core on the actual spearhead, and the contact effect does touch the actual tip, but its silhouette is a tall wavy bracket rather than two readable forward water-spear branches. Skill recovery changes the grip and weapon angle with small residual droplets. Poison has a slumped posture and altered mouth with bubbles, stun has a slack lowered spear and overhead stars, and sleep has a seated closed-eye posture; these are distinct authored-looking states rather than simple tints or unrelated attacks. Pair differences are subtle, especially sleep's shoulder change. This is a static pose review, not battle footage: playback timing, animation smoothness, runtime contact, source authorship and model provenance cannot be verified from these PNGs. The recommendation is advisory and does not select the candidate for the user.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 48,
+      "y": 38,
+      "message": "The forward sleeve reaches a skin cluster around x40-47/y36-37, while another skin cluster sits at x48-52/y38-39 on the shaft without a readable wrist connection. Together with the rear grip at x23-31/y38-40, this reads as a duplicated or broken leading hand. Redraw x40-52/y36-40 as one compact leading palm wrapping the shaft, connecting it visibly to the blue cuff; remove or incorporate the detached x48-52 cluster so exactly two hands are readable. Preserve the continuous wooden shaft and the existing rear grip."
+    },
+    {
+      "pose": "skill_b",
+      "x": 60,
+      "y": 38,
+      "message": "The effect is attached at the actual spear tip near x59-60/y38, but the long cyan strip at x60-62/y31-40 connects the upper and lower curls into a vertical barrier-like bracket. Reauthor the effect from that tip junction into two visibly separating water-spear branches directed toward the right, with clear transparent space between them and short tapered ends. Pull the tip/body left within this pose if necessary to reserve native pixels for the forward branches, while maintaining the hand/shaft connection and a one-pixel canvas margin."
+    }
+  ]
+}

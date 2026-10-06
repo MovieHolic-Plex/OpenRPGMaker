@@ -297,6 +297,17 @@
     "selectedPackSha256": "e3292398919bbcecbdb8fe92a24738ae81b5f62b66c063710b54d0cad5d6cc90"
   },
   {
+    "key": "blue-robe-spear-master/fifty-v1",
+    "binding": "2a47781181c6ba4f2962187029f0d7426893efa3cf5752e9de8835fd7d1c8347",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "3dcc3d9cc6fa05b3545c728a39cf635ff0c2e76adc3c004dc1dc55c46c26e72f"
+  },
+  {
     "key": "jade-flute-martial-artist/fifty-v1",
     "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
     "nativeCell": 64,

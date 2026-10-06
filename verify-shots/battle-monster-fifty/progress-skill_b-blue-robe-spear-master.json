@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "blue-robe-spear-master",
+    "source": "qa-runs/harnesses/battle-monster/blue-robe-spear-master/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd940eb20dd60cc511f05af3325f631c4d13d9fc42e56fe49aa4ab34d399784d",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:28:56.204237+00:00",
+    "binding": "2a47781181c6ba4f2962187029f0d7426893efa3cf5752e9de8835fd7d1c8347",
+    "entireGoalCompleteClaim": false
+  }
+]

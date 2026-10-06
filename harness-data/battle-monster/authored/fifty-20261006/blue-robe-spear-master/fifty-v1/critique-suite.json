@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four actual supplied PNGs at original resolution, including the native 64px portrait and the sheets' native 1x and nearest 3x panels. The right-facing three-quarter SD adult silhouette reads consistently: dark headcloth, broad blue sleeves and robe tails, gray-brown trousers, small dark shoes and a long brown spear with a gold blade. Broad sleeve highlights and right-side face shadows support the upper-left light; cloth, skin and metal remain distinguishable. Light and checker backgrounds show continuous body contours without obvious accidental transparent holes; the darkest shoes and headcloth lose some contrast on the dark background but remain identifiable. Standing and lunging feet retain the y=60 ground line. Windup lowers and draws in the spear, move widens the crouched stance, attack extends the forward arm and blade, and recover raises the shaft. The thrust shows two separated grips connected to the shaft. Hit recoils with a hand drawn toward the chest and the spear lowered; dead has a clearly collapsed horizontal body. Idle changes are restrained sleeve/grip changes. Skill preparation places a cyan core on the actual blade; contact branches from the blade tip into two cyan streams, and recovery retracts the spear with small residual ripples. Poison uses a throat-hand gesture, lowered spear and displaced bubbles; stun uses a tilted head/body and displaced gold stars; sleep uses closed horizontal eyelids, a seated folded-leg silhouette and visibly different upper-body/sleeve clusters between frames. These states are readable without relying on a whole-body tint. No specific pixel repair is warranted from these previews. Limits: these are static pose sheets, not actual battle footage or GIF playback; timing, dash travel, interpolation, runtime contact and source authorship cannot be established here. This is an independent visual recommendation, not the user's selection or approval.",
+  "issues": [],
+  "binding": "2a47781181c6ba4f2962187029f0d7426893efa3cf5752e9de8835fd7d1c8347",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "46fc94321e65832f52e9e4f868dd380f2aa0f243b13303cb44668cef261beb68",
+    "preview/suite/light.png": "37b132a9e113d1017a5f5287b6373175801b6eb9b7cd7aa60ba058bb19bd4f64",
+    "preview/suite/dark.png": "091173756c97a0c6f4785c0aab6c2db2f214d4d40c21281c2869df89918cfe69",
+    "preview/suite/checker.png": "bf8433b4270ed11e232a171d76e72e8206bcd8845c6b751460147400fe7a4987"
+  },
+  "jobId": "7fed050d-f7d9-42bd-91b6-421637f8e2bd",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T10:25:31.826819+00:00",
+  "userApproved": false
+}

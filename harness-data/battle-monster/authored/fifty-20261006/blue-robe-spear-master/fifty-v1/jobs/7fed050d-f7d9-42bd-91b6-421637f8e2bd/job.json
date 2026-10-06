@@ -1,0 +1,43 @@
+{
+  "id": "7fed050d-f7d9-42bd-91b6-421637f8e2bd",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T10:23:20.186312+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/jobs/7fed050d-f7d9-42bd-91b6-421637f8e2bd",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "25581acb48c181180b63631839d928723245018c4dfa879aaeb40bb5e60271df",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "46fc94321e65832f52e9e4f868dd380f2aa0f243b13303cb44668cef261beb68",
+    "preview/suite/light.png": "37b132a9e113d1017a5f5287b6373175801b6eb9b7cd7aa60ba058bb19bd4f64",
+    "preview/suite/dark.png": "091173756c97a0c6f4785c0aab6c2db2f214d4d40c21281c2869df89918cfe69",
+    "preview/suite/checker.png": "bf8433b4270ed11e232a171d76e72e8206bcd8845c6b751460147400fe7a4987"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T10:25:31.638759+00:00"
+}
