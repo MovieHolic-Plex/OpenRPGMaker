@@ -7,6 +7,49 @@ draw artwork, assemble rooms, choose candidates, publish a library, or run a gam
 The supervisor supplies current approved selection fingerprints and performs
 independent art and runtime inspection.
 
+## Pure project packet authoring
+
+`src/harnesses/super-harness/node/nativeScene.ts` exports the synchronous function:
+
+```ts
+createNativeSceneProject({
+  title: string,
+  library: SharedContentLibrary,
+  maps: GameMap[],
+  startMapId: string,
+  startPos: { x: number, y: number },
+  switches?: SwitchDef[],
+  playerSprite?: AssetRef,
+}): Project
+```
+
+It starts from `createBlankProject`, replaces the maps/tree/start and native library
+assets/tilesets/sprites, removes the default opening, and returns
+`deserialize(serialize(project))`. Inputs are cloned and no filesystem, catalog
+installation, publication, or canonical save is performed. Built-in sprite definitions
+may remain; previously projected catalog uploads are removed so authored uploads
+belong only to the supplied library.
+
+The library must be `projectDefaults:true`. Maps have unique nonblank IDs, positive
+integer dimensions, library-owned tilesets with matching cell sizes, exact layer
+lengths, and tile IDs in `[-1,count)`. Optional shadow bits have one entry per cell
+in `0..15`. Retired nonempty tile stacks are rejected. Events have nonblank unique
+IDs within each map and integer coordinates inside that map. The start point must
+lie inside its named map. Collision/route feasibility is a separate runtime check.
+
+Switch definitions add or replace baseline slots and start false; duplicate supplied
+IDs are rejected. `playerSprite` selects slot zero of a library-uploaded or built-in
+walking CharSet for the baseline party leader; general action sprites cannot be a
+walking player. An uploaded SpriteDef alias resolves its image ID; define its anchor
+under that actual resource ID for the runtime player resolver. Omit playerSprite to
+retain the built-in baseline player.
+
+Explicit maps/events (including pages/footprints), SpriteDefs (including geometry
+and anchors), images, tree and start must survive normalization unchanged, otherwise
+the helper throws. The schema validator supplies command/reference shape validation;
+this helper authors no events or scene artwork. Pass the returned packet to
+`saveNativeSpaceProject` only after approved common publication and visual review.
+
 ## Preconditions and ownership
 
 - `selections` must be nonempty; every value is a 64-hex fingerprint and every key
