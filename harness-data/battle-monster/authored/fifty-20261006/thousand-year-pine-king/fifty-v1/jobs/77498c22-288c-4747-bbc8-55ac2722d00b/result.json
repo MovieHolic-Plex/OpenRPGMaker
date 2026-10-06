@@ -1,0 +1,12 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the sheets' native 1x and nearest 3x panels. The broad teal pine crown, reddish trunk, white root beard and right-facing face identify the creature clearly; the standing body fills its cell. Upper-left highlights and large dark bark planes give useful volume on both backgrounds. No obvious accidental transparent pinholes were visible in the standing anatomy. Root feet retain a consistent ground line, and raised windup, wide stepping move, connected downward striking arm, recovery and recoil read as a coherent sequence. Skill preparation has a green-gold core at the forward foot; three crooked roots visibly emerge from that foot in contact, followed by a stump and wood fragments. This foot attachment fits the specified root skill. Poison has altered arms and bubbles, stun has a hanging arm and stars, and sleep has a lowered crouch and shorter stance; these are distinct body states rather than recolors. The collapsed pose needs a wooden arm connection repair: its far-right bent limb appears linked to the body through the white beard. Static pose previews cannot establish playback timing, actual battle contact, runtime scale, literal-grid authorship or exact palette/alpha compliance. This recommendation is advisory; user selection remains separate.",
+  "issues": [
+    {
+      "pose": "dead",
+      "x": 95,
+      "y": 107,
+      "message": "The far-right bent brown limb begins beside the beard tip; its visible route back to the central upright wooden mass passes through the white beard, with no readable wooden shoulder/upper-arm bridge. Reauthor the junction around native x81–99, y100–111 as a continuous brown branch from the trunk/head-side shoulder into this limb. Keep the white beard as an overlapping root tuft with its own contour, rather than using it as the limb's structural connection. Preserve the low grounded collapse silhouette."
+    }
+  ]
+}

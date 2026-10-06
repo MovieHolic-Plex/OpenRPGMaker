@@ -1,0 +1,131 @@
+{
+  "note": "Measured source differences, not independent review, approval or selection.",
+  "frames": [
+    {
+      "file": "poses/attack.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "347a0125554c3be434c315ca3599d7b6c32c93076a37143d0c3ecc18e448e397",
+      "previousSha256": "347a0125554c3be434c315ca3599d7b6c32c93076a37143d0c3ecc18e448e397"
+    },
+    {
+      "file": "poses/dead.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "6a22e2839ebce0d327f9608beace98534c003bc7b4576595656e747f65f1eea0",
+      "previousSha256": "6a22e2839ebce0d327f9608beace98534c003bc7b4576595656e747f65f1eea0"
+    },
+    {
+      "file": "poses/hit.pxgrid",
+      "changedPixels": 1484,
+      "currentSha256": "34d85bb461b00b36f78b2a6fdf5237683afe2ab9211b13776c5b4d29b2611bae",
+      "previousSha256": "75e207198e6eb33930eccbc2b098276a1b420f3c1fd1877d8121ff834b6a93c6",
+      "changedBounds": [
+        32,
+        12,
+        89,
+        99
+      ]
+    },
+    {
+      "file": "poses/idle_a.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "36412787bdccb7ae06c49bb093ab7a1a4b391710361f1ba1bb1fa889afd537ab",
+      "previousSha256": "36412787bdccb7ae06c49bb093ab7a1a4b391710361f1ba1bb1fa889afd537ab"
+    },
+    {
+      "file": "poses/idle_b.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "c4e3c254da76b65529d98ee832241f1c4fb3f8feb646e73b82b8b6240dc62983",
+      "previousSha256": "c4e3c254da76b65529d98ee832241f1c4fb3f8feb646e73b82b8b6240dc62983"
+    },
+    {
+      "file": "poses/idle_c.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "e5db11d5eaa447d75b0f74d03d27772fe969acacc0979b8232637704472deb0f",
+      "previousSha256": "e5db11d5eaa447d75b0f74d03d27772fe969acacc0979b8232637704472deb0f"
+    },
+    {
+      "file": "poses/move.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "8192c2e89a1da782f72690fe4a20078892c0d9fa6c5d16d3c01213fa987d4e55",
+      "previousSha256": "8192c2e89a1da782f72690fe4a20078892c0d9fa6c5d16d3c01213fa987d4e55"
+    },
+    {
+      "file": "poses/recover.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "aee9ff30f14f4b562f85c49a7c0d2a6e9cac0eb057cbc9cd44a0eced64329a39",
+      "previousSha256": "aee9ff30f14f4b562f85c49a7c0d2a6e9cac0eb057cbc9cd44a0eced64329a39"
+    },
+    {
+      "file": "poses/windup.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "2296e36d99ec7835720379560ed1ce08882064e016af67aef9f04a2e87033826",
+      "previousSha256": "2296e36d99ec7835720379560ed1ce08882064e016af67aef9f04a2e87033826"
+    },
+    {
+      "file": "actions/poison_a.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "f1f2d035b380f6e6058affcafd9d18a52e63930fae3d55f6b4a71493dab6d83c",
+      "previousSha256": "f1f2d035b380f6e6058affcafd9d18a52e63930fae3d55f6b4a71493dab6d83c"
+    },
+    {
+      "file": "actions/poison_b.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "25247ee9d0230a09294f6d8a1247a7e41eef6e9e7044e509ab2a3fb45cca4183",
+      "previousSha256": "25247ee9d0230a09294f6d8a1247a7e41eef6e9e7044e509ab2a3fb45cca4183"
+    },
+    {
+      "file": "actions/skill_a.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "78e0ab968127a01a082976fe4a52f159aca6727bb1a4922d1dd67b7bc3d46bf4",
+      "previousSha256": "78e0ab968127a01a082976fe4a52f159aca6727bb1a4922d1dd67b7bc3d46bf4"
+    },
+    {
+      "file": "actions/skill_b.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "7c8682304efae6b614ade23229e94c80e7e2c07999564a8f4ce1e3371334a8a5",
+      "previousSha256": "7c8682304efae6b614ade23229e94c80e7e2c07999564a8f4ce1e3371334a8a5"
+    },
+    {
+      "file": "actions/skill_c.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "b496471b472862d74cb52318aca9cfc32b2ceb6bc0c2c54c31da0c56b5cf465a",
+      "previousSha256": "b496471b472862d74cb52318aca9cfc32b2ceb6bc0c2c54c31da0c56b5cf465a"
+    },
+    {
+      "file": "actions/sleep_a.pxgrid",
+      "changedPixels": 235,
+      "currentSha256": "9dd0c94aadfba808af9157b14c8cb92a43fd4a32a042c5c42e836183f4028c18",
+      "previousSha256": "8c37353ff121458e1ef6ce3461e5461000d10f38d47fcfc50db2424231f3ae09",
+      "changedBounds": [
+        50,
+        60,
+        60,
+        98
+      ]
+    },
+    {
+      "file": "actions/sleep_b.pxgrid",
+      "changedPixels": 235,
+      "currentSha256": "a72e4e5ba6348302354ceb731465d179760efd1808edcde0410bb0dd6bc747a8",
+      "previousSha256": "c3cb5dcf82e3e1306ad71ed2709d22623caecece6fd257fd04eff806e7f951d5",
+      "changedBounds": [
+        50,
+        60,
+        60,
+        98
+      ]
+    },
+    {
+      "file": "actions/stun_a.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "dd3b842bc67f2cfadeb38b22cd22b6f1d4145bbd31bfdc91b844d1d7ffb9982a",
+      "previousSha256": "dd3b842bc67f2cfadeb38b22cd22b6f1d4145bbd31bfdc91b844d1d7ffb9982a"
+    },
+    {
+      "file": "actions/stun_b.pxgrid",
+      "changedPixels": 0,
+      "currentSha256": "ede9743fdd191cd4c39ecff72ba8dbb1eac9328e3ab8a8a8da91aa8b821bbdf7",
+      "previousSha256": "ede9743fdd191cd4c39ecff72ba8dbb1eac9328e3ab8a8a8da91aa8b821bbdf7"
+    }
+  ]
+}

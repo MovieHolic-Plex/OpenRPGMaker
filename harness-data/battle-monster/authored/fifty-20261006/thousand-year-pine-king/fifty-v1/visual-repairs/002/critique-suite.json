@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including the native 1x cells and nearest 3x previews. The broad teal crown, gold eyes, white root beard and red-brown trunk identify a pine elder clearly. Large upper-left highlights and dark bark planes give convincing wood volume. Standing root feet share the ground line; the raised, extended and lowered branch arm makes the attack sequence readable. No obvious unintended transparent holes or detached hands are visible across the three backgrounds. The skill core and three rising stems originate at the forward root foot, with a visible connection toward the lowered hand; recovery leaves a stump and wood fragments. Poison uses a hunched pose and bubbles, stun a hanging arm and stars, and sleep a closed-eyed crouch, so these are distinct states rather than tints. Rework is recommended for the frontal gaze and inconsistent crown construction in hit and sleep. This is an advisory visual review, not a user selection or geometry approval. Static pose previews cannot establish animation timing, battle contact, runtime scale, palette-index authorship or the author model.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 62,
+      "y": 55,
+      "message": "The two similarly exposed gold eyes and centered beard read as a face looking at the viewer. Rebuild the face around a screen-right brow/nose projection, narrow the far eye, and offset the beard attachment beneath that turned jaw. Carry that same right-facing three-quarter face through the other awake poses. Preserve the connected trunk and shoulder pixels."
+    },
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 30,
+      "message": "The layered, densely ridged idle crown changes into a few smooth, long blade shapes, while the head and beard become much smaller. Retain the recognizable crown branch tiers and needle-ridge clusters while tilting them with the recoiling trunk; preserve the face/beard mass so this reads as the same boss taking a hit."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 47,
+      "y": 47,
+      "message": "The crown loses much of its layered needle structure and apparent mass, becoming three broad smooth strips above a substantially reduced beard. Crouch the existing tree anatomy while retaining its crown tiers, bark landmarks and beard-root clusters. Apply the same construction to sleep_b and keep its small breathing changes connected to the head and shoulders."
+    }
+  ],
+  "binding": "137f82252f27d4a775573041eb8811c09dc440072da659ce1a006f2eb48bb5cc",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "aef99d43d126b3f87571e3f4bd31ce52c41572693927bbad21a5836236d0b99c",
+    "preview/suite/light.png": "bc968e8eaeb63e1b7c59fbb79202ad4271b0401fe12051392860165cede68595",
+    "preview/suite/dark.png": "83549fafb580eca954bf7767f10a3120d7649d49122d42180cf144a1a06bb86a",
+    "preview/suite/checker.png": "81e7369a0e2dff36bd1697ebfaecb71256581c0fb47fb9be49e56a3eaba4a4a8"
+  },
+  "jobId": "3fef1686-4ca5-4666-909f-fc61f6a2a9a7",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T14:03:44.936704+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,72 @@
+"""Last inspected joint corrections, each pose given its own literal native rows."""
+from repair_pixels import *
+
+def main():
+    a=load('sleep_a',True)
+    put(a,75,68,"""
+KKSSSKK
+KSLHLLBSKK
+KSLHHLLBBSSK
+KSLHHHLLBBSSDK
+KSLHHHLLLBBSSDK
+.KSLHHHLLLBBSSDK
+..KSLHHHLLLBBSSDK
+...KSLHHHLLLBBSSDK
+....KSLHHHLLLLBBSSDK
+.....KSLHHLLLLBBSSDDK
+......KSLHLLLLBBSSDDK
+.......KSLHLLLLBBSSDDK
+""")
+    # Restore the short closed lid in front of the shoulder overlap.
+    put(a,69,72,"""
+LLSSKKDK
+LBBSSDDK
+BBBBSSDK
+""")
+    save('sleep_a',a,True)
+    a=load('sleep_b',True)
+    put(a,75,69,"""
+.KKSSSKK
+KSLHLLBSKK
+KSLHHLLBBSSK
+KSLHHHLLBBSSDK
+KSLHHHLLLLBBSSDK
+KSLHHHLLLLLBBSSDK
+.KSLHHHLLLLLBBSSDK
+..KSLHHHLLLLLBBSSDK
+...KSLHHHLLLLLBBSSDK
+....KSLHHHLLLLLBBSSDK
+.....KSLHHLLLLLBBSSDDK
+......KSLHLLLLLBBSSDDK
+.......KSLHLLLLBBSSDDDK
+""")
+    put(a,69,73,"""
+LLSSKKDK
+LBBSSDDK
+BBBBSSDK
+""")
+    save('sleep_b',a,True)
+    # Wider load-bearing pelvis/root junction; erase flat seam by selected wood.
+    a=load('move')
+    put(a,45,96,"""
+HLLLLBBSSDDDDDDDDBLLLLBBSSDDK
+HLLLBBSSDDDDDDDDDBLLLLBBSSDDK
+HLLBBSSDDDDDDDDDDBLLLLBBSSDDK
+HLLBBSSDDDDDDDDDDBLLLLBBSSDDK
+HLLBBSSDDDDDK...KSLHLLBBSSDDK
+HLLBBSSDDDDK.....KSLHLLBBSSDDK
+LLBBSSDDDDK.......KSLHHLLBBSSDDK
+""")
+    save('move',a)
+    a=load('attack')
+    put(a,45,96,"""
+HLLLLBBSSDDDDDDDDBLLLLBBSSDDK
+HLLLBBSSDDDDDDDDDBLLLLBBSSDDK
+HLLLBBSSDDDDDDDDDBLLLLBBSSDDK
+HLLBBSSDDDDDDDDDDBLLLLBBSSDDK
+HLLBBSSDDDDDK...KSLHLLBBSSDDK
+HLLBBSSDDDDK.....KSLHHLLBBSSDDK
+LLBBSSDDDDK.......KSLHHHLLBBSSDDK
+""")
+    save('attack',a)
+if __name__=='__main__':main()

@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "137f82252f27d4a775573041eb8811c09dc440072da659ce1a006f2eb48bb5cc",
+  "priorReviewJob": "3fef1686-4ca5-4666-909f-fc61f6a2a9a7",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 62,
+      "y": 55,
+      "message": "The two similarly exposed gold eyes and centered beard read as a face looking at the viewer. Rebuild the face around a screen-right brow/nose projection, narrow the far eye, and offset the beard attachment beneath that turned jaw. Carry that same right-facing three-quarter face through the other awake poses. Preserve the connected trunk and shoulder pixels."
+    },
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 30,
+      "message": "The layered, densely ridged idle crown changes into a few smooth, long blade shapes, while the head and beard become much smaller. Retain the recognizable crown branch tiers and needle-ridge clusters while tilting them with the recoiling trunk; preserve the face/beard mass so this reads as the same boss taking a hit."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 47,
+      "y": 47,
+      "message": "The crown loses much of its layered needle structure and apparent mass, becoming three broad smooth strips above a substantially reduced beard. Crouch the existing tree anatomy while retaining its crown tiers, bark landmarks and beard-root clusters. Apply the same construction to sleep_b and keep its small breathing changes connected to the head and shoulders."
+    }
+  ],
+  "startedAt": "2026-10-06T14:03:44.972184+00:00"
+}

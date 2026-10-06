@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-06T14:44:20.828681+00:00",
+  "passed": true,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "binding": "914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b",
+  "actualIndependentReviewJob": "01a9984f-e690-439f-8802-c746279a56a6",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+    "preview/suite/light.png": "26a7f7258e1895a74abdbf61cc7168af06893f30f98d40ceb8e1c7587b1e4d30",
+    "preview/suite/dark.png": "d8139def9346a66bd7caea70d5955e5f879015af4accaecdc68a6f4bc2e3d6c5",
+    "preview/suite/checker.png": "b796b42589127cd8109db06cdbf4c160ff403bf8855fc0d644ddaee044b35824"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "retainedIndependentSummary": "Viewed the four supplied actual PNGs, including the native 128px portrait and all 18 poses at native 1x and nearest 3x on light, dark and checker backgrounds. The broad teal pine crown, reddish split trunk, pale root beard, gold facial accents, two branch arms and two root feet read as the same tree king throughout. Warm upper-left highlights and broad dark trunk planes give readable wooden volume; the crown remains distinguishable on the dark background. No obvious unintended transparent holes, missing limb outlines or floating hands are visible; the open spaces inside bent arms and between legs read as intentional negative space. Standing feet share the ground line, the dash and strike widen the stance, hit bends the trunk, and dead forms a grounded collapsed pile. Windup, move, downward strike and recovery are visually distinct, although the strike hand becomes larger and the static images cannot establish whether that transition feels smooth. The skill progresses from a green-gold core at the front root foot to three rising woody stems connected at that foot, then a retained stump and separated wood fragments; this is a rooted effect consistent with the foot-based brief, with the folded hand adjacent to the inner stem. Poison uses a hunched, mouth-covering pose and purple bubbles; stun uses a slack front arm and stars; sleep uses bent knees, a lowered crown and closed-eye facial marks. These are readable posture changes, not recolors or unrelated attacks; motion within each status pair is restrained. This is a visual keep recommendation for the supplied pose preview, not a user selection or approval of actual battle playback. PNGs alone do not verify literal pixel authorship, model provenance, palette/alpha compliance, animation timing, dash translation or contact with a battle target; geometry PASS would not establish those either.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-thousand-year-pine-king-after-repair-four.png",
+  "nativeContactPngSha256": "a12abb1214e9a4da46322f7b583e649f4ce598965e7e4a5e79f7e25c27b81853",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "2c54f2329b33efd66f786391554699f6af101d5b6bbe2296034535344c3af2a9",
+    "author_motion.py": "78b36b0714a5ca4851d1721c7e66afd94f56bc8ccef167405189eb79397aba81",
+    "author_rest.py": "3f2bd49a65eddf23be479036c13d4d014c853215c76a830bbba24707a2b42c18",
+    "author_actions.py": "678df5baa7204ec93457a9dd9a6bf646fef8f39b6bbb4f3484f57787c3b82997",
+    "repair_pixels.py": "2e57489ed9e1b8fe7735dc01604c871db50fe076976a5d892263be8a863e1a12",
+    "finish_pixels.py": "9d700c17b7eabe9c3d13c27e1b3037c56f0cff63271d042ed1592f586c6eaf00",
+    "repair_review.py": "5185f77f5e496c0597c978b1551e4bbd473f2e717783c9605248a05e26606510",
+    "repair_direction_crown.py": "aa4a8881b5e5b0d89d1141e41e6caf79703240ee457ebe64214d342d0f49e985",
+    "rebuild.py": "b20493fe454a6e27e9e7ac662a1baea92bb03a468f82e30239f410567faa0925",
+    "repair_mass_bark.py": "38de93e3cab4b619ddf7dbb7f51575b731314c29c2cdf71ad3ccf35e755e9fee",
+    "repair_dead_branch.py": "2f3f753975dd8b62deaa6e20e51fa2cf99de69220b13d8c662564d5940ac6096"
+  },
+  "rootVisualAndSourceMethodObservations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Broad layered teal crown, reddish bark, gold screen-right eye/brow/nose and pale root beard retain the tree-elder identity. The dark far arm has limited contrast.",
+    "Actually viewed all18 current native128 poses at original1632x1272 after the successful public capture; the earlier failed private capture only showed the old repair3 board and is not claimed as current. Fallen right bent branch now has a continuous highlighted brown shoulder/upper-arm bridge above the overlapping white root-beard tuft, with a separate dark contour. The other17 grids match the actually viewed repair3 source: broad tiered crown/split-bark hit, crouched bark-cleft sleep, attached branch attack and3 rooted skill stems. Larger strike-hand shape and restrained status-pair motion remain as actual keeper limits. No live combat timing/contact claim.",
+    "Fully read repair_dead_branch.py/main/module guard and all6 literal x/y rows, complete current rebuild, inspect_mass_bark.py and inspect_dead_branch.py. The new writer archives its own grids then edits only dead; rebuild calls it ninth after mass_bark and before native renderer. Prior9 author/repair writer hashes match their complete actual readings; orchestration current hash checked. Diagnostic helpers only read source/old grids and make preview panels/hash facts. No body geometry, whole-frame transform or automatic tween.",
+    "Complete original writer/module reading and subsequent complete repair/diff reading are recorded in the binding-specific root drafts; exact current read writer hashes were rechecked. Native18/source/keeper4PNG/current technical binding all agree. Static pose/source review does not prove live battle contact or timing."
+  ],
+  "actualReadRecord": "verify-shots/battle-monster-fifty/root-draft-review-thousand-year-pine-king-after-repair-four.json",
+  "claimScope": "Actual native18/complete current writers and actual independent keeper binding only. Selected ZIP/native GIF/archive/browser evidence is verified separately; entire50 completion remains pending."
+}

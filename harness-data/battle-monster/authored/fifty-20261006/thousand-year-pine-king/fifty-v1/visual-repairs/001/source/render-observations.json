@@ -1,0 +1,204 @@
+{
+  "paletteColors": 18,
+  "frames": [
+    {
+      "pose": "attack",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        116,
+        124
+      ],
+      "sourceSha256": "2edc733b4c073708aed3097e1b625e50c792d7ea7972ab899013096849c28316"
+    },
+    {
+      "pose": "dead",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        70,
+        113,
+        124
+      ],
+      "sourceSha256": "3648e4ddf6f770897caa47917d09f2d060c717132532919d6106a87b45c9cdda"
+    },
+    {
+      "pose": "idle_a",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "972c647f18f0a0f0b89fd4939205d6556747557cee94a283f91ecfba332ae0cf"
+    },
+    {
+      "pose": "idle_c",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "6d8446cffa6195e1de01d61de9d4e2cad3a22949f9aa342e14030652dcd04bdf"
+    },
+    {
+      "pose": "idle_b",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "795dd5d9bf8e47c52ca0596626451506da90d2ff15a97bce2a6911b413bb35f9"
+    },
+    {
+      "pose": "windup",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        103,
+        124
+      ],
+      "sourceSha256": "90be48ae175dd3aabe24f3dd6466e6e0a4f1da7ab156cbaf7fe7409931fc382b"
+    },
+    {
+      "pose": "hit",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "7eee699833f79b9c9785a057de218eeb3b2e320a5917d1c05e0e4f606802ceb8"
+    },
+    {
+      "pose": "move",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        110,
+        124
+      ],
+      "sourceSha256": "6344d46be35851862e5bd2611fc1426f0b9f55d5797cb26d37ebb99fc73cae8e"
+    },
+    {
+      "pose": "recover",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "a791d86551fb19375ea70d0f70a6f1cb1afb46c7eb8819d665853266fc7034dd"
+    },
+    {
+      "pose": "stun_b",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        107,
+        124
+      ],
+      "sourceSha256": "1b737db7f375d56e47925a3c310145673051a75135e61376a243a6270b4aa700"
+    },
+    {
+      "pose": "sleep_b",
+      "lowestInk": 124,
+      "bounds": [
+        12,
+        30,
+        105,
+        124
+      ],
+      "sourceSha256": "053a2221992fd7dc8192eb68fd099cbb5f8fbed86a063836592f809e70fe41a6"
+    },
+    {
+      "pose": "poison_b",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        123,
+        124
+      ],
+      "sourceSha256": "b573545a02aecf6867584de67e4cc11a488448f0bd0a2447bcee6de9fbd176df"
+    },
+    {
+      "pose": "skill_a",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        103,
+        124
+      ],
+      "sourceSha256": "d7b6afb2ac81422886d7c979e3d4081481d0d21668db37b00b051df7aed97066"
+    },
+    {
+      "pose": "skill_b",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        121,
+        124
+      ],
+      "sourceSha256": "9ff703cb135cd8bf40cb88671f81522b9f7a0ba2ec83c24dd21390001ae2e2ae"
+    },
+    {
+      "pose": "poison_a",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        119,
+        124
+      ],
+      "sourceSha256": "4b9827c8baee3f96dbbfe2d6003cfda01f3a62dec0855876a6db151940e37b4d"
+    },
+    {
+      "pose": "sleep_a",
+      "lowestInk": 124,
+      "bounds": [
+        12,
+        30,
+        105,
+        124
+      ],
+      "sourceSha256": "3cc197530822db24d4c742b439e194b995b7f99eb466fcad62bbec2f34dcf8bf"
+    },
+    {
+      "pose": "skill_c",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        126,
+        124
+      ],
+      "sourceSha256": "2a7380bbbd67a2e4a380aa012561175dbb903b6bfb906bda7b5c7dff6bc089e3"
+    },
+    {
+      "pose": "stun_a",
+      "lowestInk": 124,
+      "bounds": [
+        8,
+        6,
+        109,
+        124
+      ],
+      "sourceSha256": "8d7e20e736f06bf8a3e02870fc2769517c9fc8b01db5d608ba9219761cfa9d1b"
+    }
+  ],
+  "note": "Local format/render observations; not harness review or user approval."
+}

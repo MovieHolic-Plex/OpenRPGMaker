@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 44,
+  "archivedPassedSpecies": 45,
   "entireGoalComplete": false,
   "items": [
     {
@@ -475,6 +475,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "0f9b9f68c6e57d2670ef6acf1ee667ab305f1f3617bac86159728d2dc2a3ad56"
+    },
+    {
+      "key": "thousand-year-pine-king/fifty-v1",
+      "binding": "914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b",
+      "nativeCell": 128,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "c6fa9418ea603a102682ff130a9b88b556e1907ce2f20df095921b38d3c4cd0d"
     },
     {
       "key": "abyss-nine-eye-spider/fifty-v1",

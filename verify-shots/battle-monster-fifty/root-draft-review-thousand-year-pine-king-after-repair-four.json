@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-06T14:44:18.842832+00:00",
+  "passed": false,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "binding": "914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-thousand-year-pine-king-after-repair-four.png",
+  "nativeContactPngSha256": "a12abb1214e9a4da46322f7b583e649f4ce598965e7e4a5e79f7e25c27b81853",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "2c54f2329b33efd66f786391554699f6af101d5b6bbe2296034535344c3af2a9",
+    "author_motion.py": "78b36b0714a5ca4851d1721c7e66afd94f56bc8ccef167405189eb79397aba81",
+    "author_rest.py": "3f2bd49a65eddf23be479036c13d4d014c853215c76a830bbba24707a2b42c18",
+    "author_actions.py": "678df5baa7204ec93457a9dd9a6bf646fef8f39b6bbb4f3484f57787c3b82997",
+    "repair_pixels.py": "2e57489ed9e1b8fe7735dc01604c871db50fe076976a5d892263be8a863e1a12",
+    "finish_pixels.py": "9d700c17b7eabe9c3d13c27e1b3037c56f0cff63271d042ed1592f586c6eaf00",
+    "repair_review.py": "5185f77f5e496c0597c978b1551e4bbd473f2e717783c9605248a05e26606510",
+    "repair_direction_crown.py": "aa4a8881b5e5b0d89d1141e41e6caf79703240ee457ebe64214d342d0f49e985",
+    "rebuild.py": "b20493fe454a6e27e9e7ac662a1baea92bb03a468f82e30239f410567faa0925",
+    "repair_mass_bark.py": "38de93e3cab4b619ddf7dbb7f51575b731314c29c2cdf71ad3ccf35e755e9fee",
+    "repair_dead_branch.py": "2f3f753975dd8b62deaa6e20e51fa2cf99de69220b13d8c662564d5940ac6096"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Broad layered teal crown, reddish bark, gold screen-right eye/brow/nose and pale root beard retain the tree-elder identity. The dark far arm has limited contrast.",
+    "Raised branch hand, spread root stride and branch strike are articulated. Hit bends the connected head/trunk backward and a support root; sleep is a closed-eye crouch with a connected neck and fuller layered crown. Crown/trunk mass and split-bark continuity still vary, as the actual independent rework specifies. Corpse is a wider low needle/log mass.",
+    "Foot-origin charge grows into3 connected curling bark stems, then woody fragments. Poison bows and guards the belly with bubbles; stun hangs the arm with stars. Idle and status pairs have small changes. Static native views do not prove live battle timing/contact.",
+    "Read all methods and module flow in9 native writer/orchestrator files. Six unchanged original files were already fully read and their exact hashes match; fully read both new repair modules and changed rebuild. Repairs archive their own grids, erase selected rectangles, apply literal rows/overlays and load explicit awake_face_rows.txt x/y clusters. Rebuild calls7 author/repair main functions then the read-only renderer. No procedural body geometry, full-frame transform or tween. Fully read unchanged renderer and new diagnostic viewer; background rectangles and nearest enlargement only affect previews.",
+    "Actually viewed all18 current native128 poses. Hit now retains a much wider tiered needle canopy and broad connected split trunk through bent-root recoil. Both crouched sleep frames restore a dark irregular bark cleft and light/shadow ridges; closed eyes and head/beard remain connected. Other15 poses match the prior source. Large angular bark/crown planes and subtle paired changes remain.",
+    "Fully read repair_mass_bark.py read/put/overlay/save/main and complete changed rebuild diff. Explicit chosen x/y/literal rows enlarge hit crown/trunk and replace both sleep bark faces. Rebuild now calls this as the eighth author/repair main after direction_crown, before native render. No whole-frame translation, body geometry or tween.",
+    "Actually viewed all18 current native128 poses at original1632x1272 after the successful public capture; the earlier failed private capture only showed the old repair3 board and is not claimed as current. Fallen right bent branch now has a continuous highlighted brown shoulder/upper-arm bridge above the overlapping white root-beard tuft, with a separate dark contour. The other17 grids match the actually viewed repair3 source: broad tiered crown/split-bark hit, crouched bark-cleft sleep, attached branch attack and3 rooted skill stems. Larger strike-hand shape and restrained status-pair motion remain as actual keeper limits. No live combat timing/contact claim.",
+    "Fully read repair_dead_branch.py/main/module guard and all6 literal x/y rows, complete current rebuild, inspect_mass_bark.py and inspect_dead_branch.py. The new writer archives its own grids then edits only dead; rebuild calls it ninth after mass_bark and before native renderer. Prior9 author/repair writer hashes match their complete actual readings; orchestration current hash checked. Diagnostic helpers only read source/old grids and make preview panels/hash facts. No body geometry, whole-frame transform or automatic tween."
+  ],
+  "actualIndependentRecommendation": "pending-bind-verification",
+  "claimScope": "Actual current native18 and complete native writers viewed/read; keeper binding verification is separate. No Allow/selected/archive/browser/species completion claim."
+}

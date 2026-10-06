@@ -1,0 +1,407 @@
+"""Pose-specific literal clusters. Unchanged wood/foliage retained from baseline;
+all changed anatomy is explicitly selected below. No frame transforms.
+"""
+from author_pixels import *
+
+def erase(a,x,y,w,h):
+    # Transparent rectangular editing workspace; creates no ink.
+    for row in a[y:y+h]:row[x:x+w]=list('.'*w)
+
+def core():
+    a=blank();grafts(a);crown(a);right_crown(a);trunk(a);feet(a);heavy_roots(a);return a
+
+def shoulder_graft(a):
+    put(a,75,47,"""
+...KKSSSKK
+..KSLHLLBSK
+.KSLHHLLBSSK
+KSLHHHLLBSSDK
+SLHHHLLBBSSDDK
+LHHHLLBBSSDDDK
+HHHLLBBSSDDDDK
+HHLLBBSSDDDDDK
+HLLBBSSDDDDDK
+LLBBSSDDDDDK
+LBBSSDDDDDK
+BBSSDDDDDK
+BSSDDDDDK
+""")
+
+def guard(a):
+    put(a,14,49,"""
+......................KKSSKK
+....................KKSLHLLBSK
+..................KKSLHHLLBBSSK
+................KKSLHHLLBBSSDDK
+..............KKSLHHLLBBSSDDDK
+............KKSLHHLLBBSSDDDDK
+..........KKSLHHLLBBSSDDDDKK
+.........KSLHHLLBBSSDDDDKK
+........KSLHHLLBBSSDDDDK
+.......KSLHHLLBBSSDDDDK
+......KSLHHLLBBSSDDDDK
+.....KSLHHLLBBSSDDDDK
+....KSLHHLLBBSSDDDDK
+...KSLHHLLBBSSDDDDK
+..KSLHHLLBBSSDDDDK
+.KSLHHLLBBSSDDDDK
+KSLHHHLLBBSSDDDDK
+KSLHHHLLLBBSSDDDK
+KSLHHHHLLLBBSSDDDKK
+.KSLHHHHLLLLBBSSDDDSKK
+..KSLHHHHLLLLLBBSSSSDDKK
+...KSLHHHHLLLLLLLBBSSSSDDK
+....KSLHHHHLLLLLLLLBBSSSSDK
+.....KSLHHHHLLLLLLLLBBSSDDK
+......KSLHHHHLLLKKSLBBSSDDK
+.......KSLHHHLLK..KSLBSSDDK
+........KSLHHLLK...KSLBSDDK
+.........KSLHLLK....KSLBDDK
+..........KSLBK.....KSDDK
+...........KDK.......KK
+............K
+""")
+
+def raised(a):
+    put(a,68,18,"""
+.............KKK........KK
+............KHLK......KKHLK
+............KHLBK....KHLBBK
+............KLHBK...KHLBBSSK
+.............KLHBKKKHLBBSSDK
+..............KLHHHHHLBBSSDK
+.............KKLHHHHLLBBSSDK
+............KSLHHHHLLBBSSDDK
+...........KSLHHHHLLBBSSDDDDK
+..........KSLHHHLLLBBSSDDDDDK
+.........KSLHHHLLLBBSSDDDDDDK
+.........KSLHHLLLBBSSDDDDDDK
+..........KSLHHLLBBSSDDDDDK
+...........KSLHHLLBBSSDDDDK
+............KSLHHLLBBSSDDDK
+.............KSLHHLLBBSSDDK
+..............KSLHHLLBBSSDK
+...............KSLHHLLBBSSK
+................KSLHHLLBSSK
+.................KSLHHLLBSSK
+..................KSLHHLLBSSK
+...................KSLHHLLBSSK
+....................KSLHHLLBSSK
+.....................KSLHHLLBSSK
+....................KSLHHHLLBSSK
+...................KSLHHHLLBBSSK
+..................KSLHHHLLBBSSDK
+.................KSLHHHLLBBSSDDK
+................KSLHHHLLBBSSDDDK
+...............KSLHHHLLBBSSDDDDK
+..............KSLHHHLLBBSSDDDDK
+.............KSLHHHLLBBSSDDDDK
+............KSLHHHLLBBSSDDDDK
+...........KSLHHHLLBBSSDDDDK
+..........KSLHHHLLBBSSDDDDK
+.........KSLHHHLLBBSSDDDDK
+........KSLHHHLLBBSSDDDDK
+.......KSLHHHLLBBSSDDDDK
+......KSLHHHLLBBSSDDDDK
+.....KSLHHHLLBBSSDDDDK
+......KSLHHLLBBSSDDK
+.......KSLHLLBBSSDK
+........KSLBBSSDK
+.........KKSSKK
+""")
+
+def advancing(a):
+    put(a,75,41,"""
+.............KKSSKK
+............KSLHLLBSKK
+...........KSLHHLLBBSSKK
+..........KSLHHHLLBBSSDDKK
+.........KSLHHHHLLLBBSSDDDKK
+........KSLHHHHHLLLBBSSDDDDDKK
+.......KSLHHHHHHLLLBBSSDDDDDDDK
+......KSLHHHHHLLLLBBSSDDDDDDDDDK
+.....KSLHHHHHLLLLBBSSDDDDDDDDDK
+....KSLHHHHHLLLLBBSSDDDDDDDDDK
+...KSLHHHHHLLLLBBSSDDDDDDDDDK
+..KSLHHHHHLLLLBBSSDDDDDDDDDK
+.KSLHHHHHLLLLBBSSDDDDDDDDDK
+KSLHHHHHLLLLBBSSDDDDDDDDDK
+KSLHHHHLLLLBBSSDDDDDDDDDK
+.KSLHHHLLLBBSSDDDDDDDDDK
+..KSLHHLLLBBSSDDDDDDDDK
+...KSLHLLLBBSSDDDDDDDK
+....KSLHLLLBBSSDDDDDK
+.....KSLHLLLBBSSDDDDK
+......KSLHLLLBBSSDDDK
+.......KSLHLLLBBSSDDDK
+........KSLHLLLBBSSDDDK
+.........KSLHLLLBBSSDDDK
+..........KSLHLLLBBSSDDDK
+...........KSLHLLLBBSSDDDK
+............KSLHLLLBBSSDDDK
+.............KSLHLLLBBSSDDDK
+..............KSLHLLLBBSSDDDK
+...............KSLHLLLBBSSDDDK
+................KSLHLLLBBSSDDDK
+.................KSLHLLLBBSSDDDK
+..................KSLHLLLBBSSDDDK
+...................KSLHLLLBBSSDDDK
+....................KSLHLLLBBSSDDDK
+.....................KSLHHLLBBSSDDDK
+......................KSLHHLLBBSSDDK
+.......................KSLHHLLBBSSDK
+.......................KSLHHLLBBSSDK
+......................KSLHHLLLBBSSDK
+.....................KSLHHHLLLBBSSDK
+....................KSLHHHHLLLBBSSDK
+...................KSLHHHHLLLBBSSDDK
+..................KSLHHHHLLLBBSSDDDK
+..................KSLHHHLLLBBSSDDDDK
+...................KSLHHLLLBBSSDDDK
+....................KSLHLLLBBSSDDK
+.....................KSLHLLBBSSDK
+......................KSLBBSSDK
+.......................KKDDKK
+""")
+
+def hammer(a):
+    put(a,77,49,"""
+....KKSSKK
+...KSLHLLBSK
+..KSLHHLLBBSSK
+.KSLHHHLLBBSSDK
+KSLHHHHLLLBBSSDDK
+KSLHHHHLLLLBBSSDDK
+KSLHHHLLLLLBBSSDDDK
+KSLHHLLLLLBBBSSDDDDK
+.KSLHLLLLLBBBSSDDDDDK
+..KSLHLLLLLBBBSSDDDDDK
+...KSLHLLLLLBBBSSDDDDDK
+....KSLHLLLLLBBBSSDDDDDK
+.....KSLHLLLLLBBBSSDDDDDK
+......KSLHLLLLLBBBSSDDDDDK
+.......KSLHLLLLLBBBSSDDDDDK
+........KSLHLLLLLBBBSSDDDDDK
+.........KSLHLLLLLBBBSSDDDDDK
+..........KSLHLLLLLBBBSSDDDDDK
+...........KSLHLLLLLBBBSSDDDDDK
+............KSLHLLLLLBBBSSDDDDDK
+.............KSLHLLLLLBBBSSDDDDDK
+..............KSLHLLLLLBBBSSDDDDDK
+...............KSLHLLLLLBBBSSDDDDDK
+................KSLHLLLLLBBBSSDDDDDK
+.................KSLHLLLLLBBBSSDDDDDK
+..................KSLHLLLLLBBBSSDDDDDK
+...................KSLHLLLLLBBBSSDDDDDK
+....................KSLHLLLLBBBSSDDDDDK
+.....................KSLHLLLBBBSSDDDDDK
+......................KSLHLLBBBSSDDDDDK
+.......................KSLHLBBBSSDDDDK
+.......................KSLHLBBBSSDDDDK
+.......................KSLHLBBBSSDDDDK
+.......................KSLHLLBBSSDDDDK
+.......................KSLHLLBBSSDDDDK
+.......................KSLHLLBBSSDDDDK
+.......................KSLHLLBBSSDDDDK
+.......................KSLHHLLBBSSDDDK
+.......................KSLHHLLBBSSDDDK
+.......................KSLHHLLBBSSDDDK
+.......................KSLHHHLLBBSSDDK
+.......................KSLHHHLLBBSSDDK
+......................KSLHHHHLLLBBSSDK
+.....................KSLHHHHHLLLBBSSDK
+....................KSLHHHHHHLLLLBBSSDK
+...................KSLHHHHHHHLLLLLBBSSDK
+..................KSLHHHHHHHHLLLLLBBSSDK
+.................KSLHHHHHHHHHLLLLLBBSSDK
+................KSLHHHHHHHHHHLLLLLBBSSDK
+................KSLHHHHHHHHHHLLLLLBBSSDK
+................KSLHHHHHHHHHLLLLLLBBSSDK
+................KSLHHHHHHHHLLLLLLBBSSDDK
+................KSLHHHHHHHLLLLLLBBSSDDDK
+................KSLHHHHHHLLLLLLBBSSDDDDK
+................KSLHHHHHLLLLLLBBSSDDDDDK
+.................KSLHHHHLLLLLLBBSSDDDDDK
+..................KSLHHLLLLLLBBSSDDDDDK
+..................KSLHLLLLLLBBSSDDDDDDK
+..................KSLHLLLLLBBSSDDDDDDDK
+..................KSLHLLLBBSKDDKSSDDDDK
+..................KSLHLLBBSK.DDK.SDDDDK
+...................KSLHBBSK..DDK..SDDDK
+...................KSLBBSK...DDK...SDDK
+....................KSSK....KDK....KDK
+.....................KK......K......K
+""")
+
+def stride_feet(a):
+    erase(a,16,100,99,25)
+    put(a,16,100,"""
+.....................KSLHHLLLBBSSDDK............KSLHLLBBSSDDDDK
+....................KSLHHHLLLBBSSDDK.............KSLHLLLBBSSDDDDK
+...................KSLHHHHLLLBBSSDDK..............KSLHHLLLBBSSDDDDK
+..................KSLHHHHLLLLBBSSDDK...............KSLHHLLLBBSSDDDDK
+.................KSLHHHHLLLLBBSSDDDK................KSLHHLLLBBSSDDDDK
+................KSLHHHHLLLLBBSSDDDK..................KSLHHLLLBBSSDDDDK
+...............KSLHHHHLLLLBBSSDDDDK....................KSLHHLLLBBSSDDDDK
+..............KSLHHHHLLLLBBSSDDDDK......................KSLHHLLLBBSSDDDDK
+.............KSLHHHHLLLLBBSSDDDDK........................KSLHHLLLBBSSDDDDK
+............KSLHHHHLLLLBBSSDDDDK..........................KSLHHLLLBBSSDDDDK
+...........KSLHHHHLLLLBBSSDDDDK............................KSLHHLLLBBSSDDDDK
+..........KSLHHHHLLLLBBSSDDDDK..............................KSLHHLLLBBSSDDDDK
+.........KSLHHHHLLLLBBSSDDDDK................................KSLHHLLLBBSSDDDDK
+........KSLHHHHLLLLBBSSDDDDK..................................KSLHHLLLBBSSDDDDK
+.......KSLHHHHLLLLBBSSDDDDK....................................KSLHHLLLBBSSDDDDK
+......KSLHHHHLLLLBBSSDDDDK......................................KSLHHLLLBBSSDDDDK
+.....KSLHHHHLLLLBBSSDDDDK........................................KSLHHLLLBBSSDDDDK
+....KSLHHHHLLLLBBSSDDDDK..........................................KSLHHLLLBBSSDDDDK
+...KSLHHHHLLLLBBSSDDDDK............................................KSLHHLLLBBSSDDDDK
+..KSLHHHHLLLLBBSSDDDDK..............................................KSLHHHLLLLBBSSDDDDKK
+.KSLHHHHLLLLBBSSDDDDK................................................KSLHHHHLLLLLBBSSSSDDKK
+KSLHHHHLLLLBBSSDDDDK..................................................KSLHHHHHLLLLLLBBSSSSDDK
+KSLHHHLLLLBBSSDDDDDK..................................................KSLHHHHLLLLBBSSLLBBSSDDK
+.KSLHHLLLBBSSDDDDDK....................................................KSLHLLLBBSSDDDBBSSDDDK
+..KKSSDDDDDKKKKKK......................................................KKDDDDKKKKDDDDKKKK
+""")
+
+def lean_belly(a):
+    # A separate drawn abdominal bend; never translate the trunk.
+    erase(a,39,81,44,19)
+    put(a,40,81,"""
+..KSLHLLLBBSSDDDBLLBBSSDDDDDK
+...KSLHLLLBBSSDDDBLLLBBSSDDDDK
+....KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+.....KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+......KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+.......KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+........KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+.........KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+..........KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+..........KSLHHLLLBBSSDDDBLLLBBSSDDDDK
+.........KSLHHHLLLBBSSDDDBLLLBBSSDDDDK
+........KSLHHHHLLLBBSSDDDBLLLBBSSDDDDK
+.......KSLHHHHLLLLBBSSDDDBLLLLBBSSDDDDK
+......KSLHHHHLLLLBBSSDDDDBLLLLBBSSDDDDK
+.....KSLHHHHLLLLBBSSDDDDDBLLLLLBBSSDDDDK
+....KSLHHHHLLLLBBSSDDDDDDDBLLLLLBBSSDDDDK
+...KSLHHHHLLLLBBSSDDDDDDDDBLLLLLLBBSSDDDDK
+..KSLHHHHLLLLBBSSDDDDDDDDDBLLLLLLBBSSDDDDK
+.KSLHHHHLLLLBBSSDDDDDDDDDDBLLLLLLLBBSSDDDDK
+""")
+
+def main():
+    a=stand();save('idle_a',a)
+    a=stand()
+    put(a,52,69,"""
+WCFFFFFCWWCCFFFFCWK
+WCFFFFFCCWWCFFFFCCWK
+KWCFFFFFCWWWCCFFFFCWK
+KWCFFFFFCCWWWCCFFFCWK
+.KWCFFFFFCWWWWCFFFCWK
+..KWCFFFFCCWWWCCFFCWK
+...KWCFFFFFCWWWCCFCWK
+""")
+    put(a,86,83,"""
+..KSLHHHLLBBSSDDK
+.KSLHHHLLBBSSDDDK
+KSLHHHLLBBSSDDDDK
+KSLHHLLBBSSDDDDK
+.KSLHHLLBBSSDDK
+..KSLHLLBBSSDK
+""")
+    put(a,33,22,"""
+GJJNNJJGGGGVV
+JJNNJJGGGGVVV
+JNNJJGGGGVVVV
+JJJGGGGVVVVVU
+""")
+    save('idle_b',a)
+    a=stand()
+    put(a,58,74,"""
+CFFFFCCWWWCCFCWK
+CFFFFFCWWWCCCWK
+WCFFFFCWKWWCWK
+KWCFFCCWKDWWK
+.KWCFCWKDDDK
+..KWCWKDDDK
+...KKDDDDK
+""")
+    put(a,32,73,"""
+KSLHHLLLLBBSSDDDK
+KSLHHLLLBBSSDDDDK
+KSLHLLLBBSSDDDDK
+.KSLHLLBBSSDDDK
+..KSLHLLBBSSDK
+""")
+    put(a,75,26,"""
+JJJGGGVVVV
+JJGGGVVVVU
+JGGGVVVVUU
+GGGVVVVUUU
+""")
+    save('idle_c',a)
+    a=core();guard(a);raised(a);shoulder_graft(a)
+    put(a,56,51,"""
+KKSSLLLLBBSSSSDDDK
+KOOYYYEOKBBKOOYEOK
+DKOYYEOKBBSSKOYEK
+DDKKOOKLLBBSSKKDK
+""")
+    save('windup',a)
+    a=core();guard(a);lean_belly(a);stride_feet(a);advancing(a);shoulder_graft(a)
+    put(a,62,56,"""
+BLLHHHLLBBSSSSDDK
+BLLLHHHLLBBSSDDDK
+BBLLLHHLLBBSSDDDK
+""")
+    save('move',a)
+    a=core();guard(a);lean_belly(a);stride_feet(a);hammer(a);shoulder_graft(a)
+    put(a,65,52,"""
+SSLLLLBBSSSSDDDK
+OYYEEKBBSSKOYEK
+KOOOKLLBSSDKOK
+""")
+    save('attack',a)
+    a=core();guard(a);right_arm(a);shoulder_graft(a)
+    put(a,88,77,"""
+...KSLHHHLLLBBSSDDDK
+..KSLHHHLLLBBSSDDDDK
+.KSLHHHLLLBBSSDDDDK
+KSLHHHLLLBBSSDDDDK
+KSLHHLLLBBSSDDDDK
+.KSLHHLLLBBSSDDK
+..KSLHLLLBBSSDK
+...KSLHLLBBSSK
+""")
+    put(a,57,76,"""
+WCFFFCCWKDWWWK
+KWCFFCWKDDDDK
+.KWCFCWKDDDK
+..KWCWKDDDK
+...KKDDDDK
+""")
+    save('recover',a)
+    a=core();guard(a);right_arm(a);shoulder_graft(a)
+    # Distinct eyes and compressed face, chin recoiling into the root beard.
+    put(a,60,51,"""
+DKKSSLLLLBBSSSSDDDK
+DDBLLSSDKBBKSSLLSDK
+DDDBLKKKBBSSDKKKDK
+DDDBLLLLBBSSSSDDDK
+DDDBLLLHLLBBSSDDDK
+DDDBBLLHLLBBSSDDDK
+DDDDBBLLBBSSDDDDDK
+DDDDDBLBBSSDDDDDK
+DDDWWCCLLCCWWKDDK
+DDWCFFFCCFFFFCWKK
+DWCFFFCWCFFFFFCWK
+""")
+    put(a,89,51,"""
+KSLHLLBSSK
+KSLHLLBSSDK
+.KSLHLLBSSDK
+..KSLHLLBSSDK
+...KSLHLLBSSDK
+....KSLHLLBSSDK
+""")
+    save('hit',a)
+if __name__=='__main__': main()

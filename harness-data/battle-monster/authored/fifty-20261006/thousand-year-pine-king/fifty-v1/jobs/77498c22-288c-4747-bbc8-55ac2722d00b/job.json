@@ -1,0 +1,43 @@
+{
+  "id": "77498c22-288c-4747-bbc8-55ac2722d00b",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T14:32:54.405988+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/jobs/77498c22-288c-4747-bbc8-55ac2722d00b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "1c0e618e0ede46c4b6591e7e91e4dc2e6975994731732ece49abf8348e3dfff7",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+    "preview/suite/light.png": "979678c2c10c19dd3cd22c5602373cfbf5923440713f985bfe1c19d1171dce09",
+    "preview/suite/dark.png": "dfa035835cc84b71067bded1fe851bfa514b67582154f9cae2d2d33b4c176c2c",
+    "preview/suite/checker.png": "4c9733f7c5032d54c6cdda9fce8aeb561bbd3df07158cd00334eabfd8fbabca9"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T14:36:13.366105+00:00"
+}

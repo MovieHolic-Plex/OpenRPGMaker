@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "08571377eb64c90388df07ae68786d23f926b0b9749738d1e6a86762ca5c2c0d",
+  "priorReviewJob": "77498c22-288c-4747-bbc8-55ac2722d00b",
+  "issues": [
+    {
+      "pose": "dead",
+      "x": 95,
+      "y": 107,
+      "message": "The far-right bent brown limb begins beside the beard tip; its visible route back to the central upright wooden mass passes through the white beard, with no readable wooden shoulder/upper-arm bridge. Reauthor the junction around native x81–99, y100–111 as a continuous brown branch from the trunk/head-side shoulder into this limb. Keep the white beard as an overlapping root tuft with its own contour, rather than using it as the limb's structural connection. Preserve the low grounded collapse silhouette."
+    }
+  ],
+  "startedAt": "2026-10-06T14:36:14.179549+00:00"
+}

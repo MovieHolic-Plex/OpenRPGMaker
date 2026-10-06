@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "0184a1aa716bf6b66efc25fa6aaccd2ced72b9d5c5852baeb757d7709aae892b",
+  "priorReviewJob": "90c1dcf5-d26c-4c8a-8d8f-2ec54381471c",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 52,
+      "y": 23,
+      "message": "The colored crown spans approximately x=9..71 here versus x=9..87 in idle_a, while retaining nearly the same height. Together with the narrowed torso this reads as a smaller version of the monster. Redraw the canopy clusters to retain the idle crown mass, showing recoil through tilt and displaced branch tips rather than this abrupt narrowing."
+    },
+    {
+      "pose": "hit",
+      "x": 51,
+      "y": 74,
+      "message": "The broad split trunk contracts into a narrow waist strip, and its large dark bark cavity loses much of its width. Keep the established trunk thickness and corresponding light/shadow bark planes through the recoil bend; move those connected planes with the body so the king does not appear to lose wood between recover and hit."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 49,
+      "y": 82,
+      "message": "In both sleep_a and sleep_b the left trunk face becomes a smooth tall orange slab with a thin straight highlight, losing the recognizable split-bark clusters seen in idle. Restore the large bark cleft and a few matching angular bark ridges on this face while keeping the closed eyes and bent root legs. Carry those same clusters into sleep_b so the breathing pair retains the pine king material."
+    }
+  ],
+  "startedAt": "2026-10-06T14:23:39.962838+00:00"
+}

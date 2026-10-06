@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재44/50 통과
+# 신규50종 제작 · 현재45/50 통과
 
 ## 최초 두 종 확인
 
@@ -752,3 +752,11 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 현재 합격 **44/50종 · 792자세 · 352GIF**. 동물10/요괴16/사람12(여성6)/보스6; 남은6종128px 보스. 기존 결정52행/선택8건 보존, 새 위임132행/전체184행, 정식 minor11건 유지. 대시보드 Allow52는 기존8+신규44다. 전체50 완료는 false다.
 - 천년송왕 셋째 수정과 청동정마 첫 수정 원본18자세·전체 현재 writer를 실제 열고 읽었다. 천년송왕 새 실제 `77498c22-288c-4747-bbc8-55ac2722d00b` rework1건은 쓰러진 먼 팔의 나무 연결, 청동정마 새 실제 `1eb977bf-b5b7-40c8-90bc-69ec3c647de0` rework3건은 피격 반동/쓰러진 솥 입구·손잡이 구분/준비 기 핵이다. 실제 다음 수정 전 snapshot18·검수4PNG·writer 해시와 terminal 작업을 다시 맞춘 False 초안/판정으로 보존했다. 천년송왕 넷째/청동정마 둘째 수정과 설갈사자왕 최초 저작은 이어진다.
 - 기린/빙룡/구목거미의 실제 현재 공격과 검객을 같은 배율로 나란히 보인 중간판을 제공했다. 근거: `forty-four-passed-proof.json`, `root-review-abyss-nine-eye-spider.json`, `browser-proof-abyss-nine-eye-spider.json`, `source-archive-proof.json`.
+
+## 45번째 신규 몬스터 · 천년송왕 · 2026-10-06 14:47 UTC
+
+- 넷째 직접 수정 뒤 실제 독립 GPT6.1sol/high `01a9984f-e690-439f-8802-c746279a56a6`는 **keep / 정식 issues0건**이다. 현재 binding `914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b`, 기술 PASS와 실제 terminal 작업·검수4그림 해시가 일치한다. 이전 실제 rework5/3/3/1건을 원문·불변 원본으로 보존한다.
+- 감독이 공개된 현재 원본18자세를1632×1272 원본1배/nearest2배로 실제 열고 현재11 writer/orchestrator의 전체 메서드·모듈 순서를 확인했다. 새 repair_dead_branch는 dead의6개 명시적 x/y/문자 행만 수정하며 rebuild의9번째 writer로 실행된다. 쓰러진 먼 팔은 흰 수염 위로 갈라진 나무 어깨/상완이 이어져 별도 윤곽으로 읽힌다. 다른17자세는 실제 열었던 셋째 수정 원본 그대로다. 넓은 층 수관과 갈라진 줄기 피격/수면, 가지팔 강타, 발의3갈래 뿌리 주술을 유지한다. 크게 변하는 공격 손과 절제된 상태 쌍 변화의 keeper 한계도 보존한다.
+- 선택 ZIP/PNG18/디코딩8GIF의 픽셀·노출시간과 현재 source 및 정본 source archive45종을 다시 읽었다. 감독이 실제 데스크톱 정지/375·320px 화면을 열었다.8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
+- 현재 합격 **45/50종 · 810자세 · 360GIF**. 동물10/요괴16/사람12(여성6)/보스7; 남은5종128px 보스. 기존 결정52행/선택8건 보존, 새 위임135행/전체187행, 기존 정식 minor11건 유지. 대시보드 Allow53은 기존8+신규45다. 전체50 완료는 false다.
+- 청동정마 둘째 수정 원본18자세·현재 세 writer의 전체 로직을 실제 열고 읽었다. 피격의 기울어진 입구/다리, 쓰러진 솥의 어두운 입구와 별도 손잡이, 준비 기 핵을 확인했다. 새 실제 `8caeabc2-041f-472e-b8b9-aa27af781de0` rework1건을 terminal 작업·불변 snapshot18/검수4PNG/writer 해시와 함께 보존하고 셋째 수정 중이다. 설갈사자왕/옥갑전갈왕 최초 저작도 실제 고정 모델로 이어진다. 근거: `forty-five-passed-proof.json`, `root-review-thousand-year-pine-king.json`, `browser-proof-thousand-year-pine-king.json`, `source-archive-proof.json`.

@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected the four supplied actual PNGs, including the native 128-pixel portrait and native 1x / nearest 3x panels on light, dark and checker backgrounds. The broad teal pine crown, reddish split bark, pale root beard and right-facing gold eyes establish the pine king clearly; the idle body fills its cell. Broad bark highlights and darker right planes generally support the upper-left light. Feet remain grounded, the branch hands connect to their arms, and no obvious accidental transparent interior holes or broken body outlines were visible. Windup, stride, downward branch strike, recovery and collapse are distinguishable. Skill preparation has a green-gold core at the front foot; contact has three rising root branches joined to that foot, with an upper branch meeting the folded hand; recovery retains a stump and airborne wood fragments. Poison uses a bowed head, folded arm and purple bubbles; stun uses a hanging arm and stars; sleep uses closed eyes and bent root legs. These are distinct posed states, not merely tints or unrelated attacks. The main visual weakness is mass and material continuity: hit abruptly narrows the crown and trunk, and both sleep frames replace the split bark with a much smoother upright slab. Recommendation is advisory; user selection remains pending. This is a static pose preview, not battle footage: playback timing, dash trajectory, opponent contact, runtime boss scale, and literal pxgrid authorship cannot be established from these PNGs. Geometry compliance alone is not visual approval.",
+  "issues": [
+    {
+      "pose": "hit",
+      "x": 52,
+      "y": 23,
+      "message": "The colored crown spans approximately x=9..71 here versus x=9..87 in idle_a, while retaining nearly the same height. Together with the narrowed torso this reads as a smaller version of the monster. Redraw the canopy clusters to retain the idle crown mass, showing recoil through tilt and displaced branch tips rather than this abrupt narrowing."
+    },
+    {
+      "pose": "hit",
+      "x": 51,
+      "y": 74,
+      "message": "The broad split trunk contracts into a narrow waist strip, and its large dark bark cavity loses much of its width. Keep the established trunk thickness and corresponding light/shadow bark planes through the recoil bend; move those connected planes with the body so the king does not appear to lose wood between recover and hit."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 49,
+      "y": 82,
+      "message": "In both sleep_a and sleep_b the left trunk face becomes a smooth tall orange slab with a thin straight highlight, losing the recognizable split-bark clusters seen in idle. Restore the large bark cleft and a few matching angular bark ridges on this face while keeping the closed eyes and bent root legs. Carry those same clusters into sleep_b so the breathing pair retains the pine king material."
+    }
+  ]
+}
