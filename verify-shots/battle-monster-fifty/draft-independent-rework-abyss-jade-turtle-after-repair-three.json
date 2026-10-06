@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-06T12:52:05.469486+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "fbea642424e1078187d7d4a0b62d135e9a819090aee587d17a2d69af943c8bc8",
+  "actualIndependentReview": {
+    "recommendation": "rework",
+    "summary": "제공된 실제 portrait/light/dark/checker PNG의 native 1배와 nearest 3배를 확인했다. 넓은 녹청 갑각, 금 홈, 검푸른 네 다리와 물결 꼬리는 거북 보스로 읽히며 셀 점유도 충분하다. 갑각의 왼쪽 위 밝은 면과 오른쪽 그림자 면, 목과 발의 하이라이트는 세 배경에서 유지된다. 체커에서 큰 의도치 않은 내부 투명 구멍은 보이지 않는다. 가까운 발은 기본 자세에서 y=124 부근에 닿고 먼 발은 원근상 높게 배치되어 있다. 움츠림·이동·밀치기·피격·쓰러짐은 실루엣 변화가 있고, 독의 숙인 목/보라 기포, 기절의 꺾인 목/별, 수면의 낮은 몸/접힌 목은 단순 색 변경이 아닌 구별 가능한 상태다. 수면은 쓰러짐의 뻗은 머리·발과도 구별된다. 스킬 준비의 갑각 앞 청색 기와 회수의 낮아진 목/세 잔기는 읽히지만, 발사 프레임의 두 파문이 이어진 지그재그 띠로 보여 물 파문 형태를 보완할 필요가 있다. 공격의 먼쪽 앞다리 상단도 턱 아래에 매달려 보인다. 이는 검수 추천이며 사용자 선택을 대신하지 않는다. 정지 자세 미리보기이므로 실제 전투의 이동·접지, 240ms 대기 반복과 프레임 사이 타이밍은 확인하지 못했다. PNG만으로 리터럴 격자 저작 방식이나 제작 출처를 증명할 수 없으며 기술 검사 PASS를 시각 승인으로 간주하지 않았다.",
+    "issues": [
+      {
+        "pose": "attack",
+        "x": 112,
+        "y": 99,
+        "message": "먼쪽 앞다리의 세로 기둥 상단이 이 부근에서 아주 가는 연결로 주둥이 아래에 매달려 보여 어깨에서 나온 다리로 읽히지 않는다. 갑각 아래 (103,99) 부근의 어깨에서 이 다리 상단까지 상완 픽셀 덩어리를 이어 주고, 턱선과 상완 사이에는 분리되는 배경 틈을 유지한다. 발끝의 현재 위치는 유지하면서 상단 관절을 몸통 쪽으로 연결한다."
+      },
+      {
+        "pose": "skill_b",
+        "x": 108,
+        "y": 74,
+        "message": "입 앞의 공통 접점에서 위아래 청색 띠가 한 지그재그로 이어져 1배에서 번개처럼 읽힌다. 현재 입에서 나오는 연결은 유지하되, 오른쪽 위와 오른쪽 아래의 두 효과를 각각 곡률과 두께가 있는 둥근 물 파문 호로 저작하고 두 호 사이에 배경 간격을 확보한다. 각 호에 청색 몸통과 밝은 물결 가장자리를 두어 두 물 파문이 독립적으로 읽히게 한다."
+      }
+    ],
+    "binding": "fbea642424e1078187d7d4a0b62d135e9a819090aee587d17a2d69af943c8bc8",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "b269d6a0e2259e954e611fdf30bfb09615b3de4e3919305dba46f374e03a535a",
+      "preview/suite/dark.png": "928e82580e4660f11923cc0d31b651d1ba068f122fe3ff5c8ab318ff2150ca50",
+      "preview/suite/checker.png": "735191ef92dcc9d860da7bbf44f3f1c62fcbada0d1a8e2ffae3278a2007dc0e4"
+    },
+    "jobId": "82d219f7-4880-4dbd-9fcf-7668ba928845",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T12:50:42.664037+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "82d219f7-4880-4dbd-9fcf-7668ba928845",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T12:47:31.838626+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/jobs/82d219f7-4880-4dbd-9fcf-7668ba928845",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "5b4bfafbe1dac6a3221c5003cdff94961f842cfb42c94b9f82f6707c2177d790",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "b269d6a0e2259e954e611fdf30bfb09615b3de4e3919305dba46f374e03a535a",
+      "preview/suite/dark.png": "928e82580e4660f11923cc0d31b651d1ba068f122fe3ff5c8ab318ff2150ca50",
+      "preview/suite/checker.png": "735191ef92dcc9d860da7bbf44f3f1c62fcbada0d1a8e2ffae3278a2007dc0e4"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T12:50:41.833063+00:00"
+  },
+  "rootDraftEvidence": "verify-shots/battle-monster-fifty/root-draft-review-abyss-jade-turtle-after-repair-three.json",
+  "claimScope": "Actual fresh rework2 after third repair. No keeper/Allow claim; next native repair requires a fresh independent review."
+}

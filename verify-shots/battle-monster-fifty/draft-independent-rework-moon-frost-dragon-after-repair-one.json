@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-06T12:50:29.682894+00:00",
+  "passed": false,
+  "key": "moon-frost-dragon/fifty-v1",
+  "binding": "1add3f945e4581f7c2dafd83ebf6df5b26e006ee8ef24f074d9006068c1957bc",
+  "actualIndependentReview": {
+    "recommendation": "rework",
+    "summary": "Viewed all four actual PNGs, including the native 1x cells and supplied nearest-neighbor 3x cells. The wingless coil, long muzzle, whisker and blue dorsal mane identify the dragon; broad silver/cyan planes and darker right-facing surfaces give consistent upper-left lighting. The main body connections look intact, with no obvious accidental transparent body holes; the coil opening is intentional. The coil maintains ground contact even when the paws lift. Windup, lowered advance, open-jaw attack, recoil and collapse are readable. The mouth core, mouth-attached forked ice breath and three recovery shards form a coherent skill; poison hunch, seated stun with stars and closed-eye sleep are distinct authored-looking states rather than body tints. Rework the disproportionately long, boot-shaped forelimbs and weak claw articulation, and make both horns visibly curve backward. Static pose previews cannot establish animation timing, battle contact, runtime grounding, authoring provenance or literal pxgrid compliance. This is an advisory visual review, not a user selection or battle-footage approval.",
+    "issues": [
+      {
+        "pose": "idle_a",
+        "x": 72,
+        "y": 105,
+        "message": "The near forelimb runs from roughly (65,85) to (80,123), nearly the length of the upright neck, and ends in a broad flat boot. Redraw a shorter connected shoulder/elbow/wrist chain with a compact hooked forepaw nearer the torso; separate two or three tapered claw tips instead of lining a rectangular sole with gold dots. Preserve coil contact at y=124 and carry the same limb proportions through idle_b/idle_c, windup, move, attack, recover, hit and the extra states."
+      },
+      {
+        "pose": "idle_a",
+        "x": 55,
+        "y": 17,
+        "message": "The rear horn is a long straight diagonal spike, while the far horn near (73,19) reads mostly as an upright stub. Reshape both into smaller tapering clusters with a visible backward bend toward the left; preserve distinct near/far horn roots and the same horn anatomy in the remaining poses."
+      },
+      {
+        "pose": "sleep_a",
+        "x": 87,
+        "y": 94,
+        "message": "The relaxed far forepaw projects right as a smooth pale paddle with no readable wrist or claw separation. Add a small wrist bend and distinct hooked distal claw pixels while keeping its shoulder connection continuous; repeat the anatomical correction in sleep_b. Check the raised paw near (80,79) in poison_a/poison_b, where the similarly broad rounded endpoint obscures the clawed-hand shape."
+      }
+    ],
+    "binding": "1add3f945e4581f7c2dafd83ebf6df5b26e006ee8ef24f074d9006068c1957bc",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "126faf6906c154ac75ad8265575dce838dc852543b1f0f9cc5d9671d6fa6609a",
+      "preview/suite/light.png": "656049a978a360d7f720a64328e0a6902017fd65fd57382c0700965df269f442",
+      "preview/suite/dark.png": "152a83422a446c6a052602a80df427eb7616098838f577fe73482173f7c4062d",
+      "preview/suite/checker.png": "4c82d49c83b329b0d08bf43799d33f24e9fc3f9a619ceacac25f1b670e0bcf75"
+    },
+    "jobId": "a0435681-9826-4f4e-bd4c-a4e7fd363615",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T12:47:07.510239+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "a0435681-9826-4f4e-bd4c-a4e7fd363615",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T12:44:25.570866+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/jobs/a0435681-9826-4f4e-bd4c-a4e7fd363615",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "5c42c175dad05abdf46ce797093230fc1ea742cd5d792d8099889dd3ba1b8e5b",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "126faf6906c154ac75ad8265575dce838dc852543b1f0f9cc5d9671d6fa6609a",
+      "preview/suite/light.png": "656049a978a360d7f720a64328e0a6902017fd65fd57382c0700965df269f442",
+      "preview/suite/dark.png": "152a83422a446c6a052602a80df427eb7616098838f577fe73482173f7c4062d",
+      "preview/suite/checker.png": "4c82d49c83b329b0d08bf43799d33f24e9fc3f9a619ceacac25f1b670e0bcf75"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T12:47:06.763743+00:00"
+  },
+  "rootDraftEvidence": "verify-shots/battle-monster-fifty/root-draft-review-moon-frost-dragon-after-repair-one.json",
+  "claimScope": "Actual fresh independent rework; no keeper/Allow claim. Next repair must obtain another fresh review."
+}

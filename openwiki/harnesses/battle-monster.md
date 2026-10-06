@@ -258,6 +258,13 @@ npm run harness -- battle-monster accept-batch \
 `--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96/128), grounded, motion,
 idleFrameMs, 실루엣, 공격 자세, 스킬 역할을 적는다. motion은 `pixelEnemySheets.ts`의 7종이다.
 
+접지는 종의 실제 하중 부위를 따른다. 네 발·사람은 지지 발을, 바닥에 감긴 용·뱀은 코일의
+몸통 하중 윤곽을 `cell-4`에 저작한다. brief의 짧은 앞발을 접지 검사 때문에 길게 늘리지 않는다.
+실제 빙룡 검수 `a0435681`은 코일 y=124 접지를 유지하며 앞발을 짧게 고치도록 지적했다.
+장식·분리된 그림자·무관한 점은 실제 신체 접지 근거가 아니다. 이 해석은 baseline/brief/
+현재 검수·선택을 고치지 않으며, 수정 원본은 계속 새 독립 검수를 받아야 한다. 현재50종
+저작 지침의 보존본은 `verify-shots/battle-monster-fifty/controllers/current-direction.txt`다.
+
 ```bash
 npm run harness -- battle-monster init --monster wild-boar --candidate revision-b
 npm run harness -- battle-monster author --monster wild-boar --candidate revision-b --phase idle --note '주둥이를 길게, 네 다리를 분리'

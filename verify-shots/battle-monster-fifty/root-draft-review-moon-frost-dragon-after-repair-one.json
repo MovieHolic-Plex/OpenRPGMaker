@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-06T12:46:08.289474+00:00",
+  "passed": false,
+  "key": "moon-frost-dragon/fifty-v1",
+  "binding": "1add3f945e4581f7c2dafd83ebf6df5b26e006ee8ef24f074d9006068c1957bc",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-moon-frost-dragon-after-repair-one.png",
+  "nativeContactPngSha256": "70c0a5a75b42c434b22d8e7ab0598b0a4f62afb56bd16613e1a6bc3bee9fdc45",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "9fd989392e23579e293a6624bee0b382bf55575fe30cbc7277078903c289c608",
+    "repair_forelegs.py": "5fd7971f2c4fb79816882e8911eb27f5ee14d1b7976cb267f2d0def5b79c87c6"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after first repair. Near/far upright arms now rooted at lower forward chest with rounder upperarm, bent elbow, narrower wrist and readable small claw tips; near idle paw reaches native124 baseline. Windup folds that claw toward chest, move/attack reach with shortened narrow forearm and separated claws, recover/skill use same proportions. Hit throat/chest join is broader continuous icy skin rather than sharp pinched border. Mouth/core/two diverging ice planes and3fragments retained. Poison/sleep/stun source poses retain earlier differently folded arms; consistency across all18 remains under independent review. Low fallen coil and head still distinct. Broad pale/teal planes, angular lower coil bright facet, sparse scales and subtle pairs remain. Read unchanged whole original author_pixels methods/moduleflow previously at exact current9fd hash, and complete new repair_forelegs.main/moduleflow/calls at current5fd hash: saved-before literal grids, explicit selected per-pose x/y/literal rows with transparent right padding, direct grounded idle literal rows and wrist corrections, no body geometry/whole-frame transforms/tweens. Full render/bake_motions/observe/repair_inspect are PNG/GIF/read-only diagnostics. All18 nativePNG/source match. Fresh actual independent reviewa0435681 pending; no keeper/Allow claim.",
+  "actualIndependentReviewJob": "a0435681-9826-4f4e-bd4c-a4e7fd363615",
+  "clarificationAfterActualIndependentReview": "Actual fresh review found remaining defects; draft remains false. Rework3: still boot-shaped long idle forelimb, insufficient backward curvature of both horns, smooth sleep/poison claw endpoints. Coil can supply actual124 support; extending the idle forepaw down to force sole contact compromised the brief short-limb proportions."
+}

@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-06T12:45:04.355767+00:00",
+  "passed": false,
+  "key": "storm-horn-kirin/fifty-v1",
+  "binding": "fb13d072222fe4a23bea64d45366d234820ff2b7613da79e2aa78915b72faf6a",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-storm-horn-kirin-after-repair-two.png",
+  "nativeContactPngSha256": "a5ba8d90e5b7ca07c842f47f1d0e0ede19706371b4d308e5f4dd2e849cbc7b34",
+  "nativeWriterFilesRead": {
+    "author.py": "444e625af9126bca78d5dbb84dfe58b7630c87510c8ffc7d589d05a39e203c17"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after second repair. Small distinct near muzzle/cheek highlights and darker shoulder depth strips added across poses; body still largely side-facing, independent view judgement pending. Attack head/horn now much lower and almost horizontal, connected neck compressed against gold shoulder medallion; broad supported stride retained. Lower lightning zigzag now has visible diverging gold-white fork connected through shared horn-tip origin. Stun head hangs down ahead of shoulder with a visibly buckled near front knee and shifted supporting leg, distinct from higher poison crouch. Sleep lowered face and folded legs retained; subdued idle/hit motion and dark far-hoof contrast remain. Read complete current author.main/moduleflow/calls: literal frame/y/x pixelstrings with ordered depth/contact/ramhead/boltfork/dazed/visualfollowup patch files on explicit128 grids. No geometry/wholeframe transforms/tweens. Read changed repair_diagnostics.main and allmoduleflow plus unchanged render/inspect code: PNG/GIF/read-only comparisons only. All18 current nativePNG matched source/palette. Fresh actual independent review26407bbf pending; no keeper/Allow claim.",
+  "actualIndependentReviewJob": "26407bbf-d703-449d-baac-0cfe4cb4608a",
+  "clarificationAfterActualIndependentReview": "Actual fresh review found remaining defects; draft remains false. Rework8: thin attack horn, tiny leg/hoof/rump transparency holes, hit far hoof, stepped skill_c throat, floating stun outline pixel. Earlier observations of lower attack head, lightning fork and distinct stun did not establish all solid native clusters."
+}

@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T12:50:29.682894+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "fbea642424e1078187d7d4a0b62d135e9a819090aee587d17a2d69af943c8bc8",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-jade-turtle-after-repair-three.png",
+  "nativeContactPngSha256": "39694a3a13510f7049367cce6c1e96fb3c9e06546041cc607f496330be87b1d0",
+  "nativeWriterFilesRead": {
+    "author.py": "01165733235635df42730484b368d664ab7ccdbab371eea7ba64de1ae2d60b56",
+    "repair.py": "d2f00c5bf2f577b791001d0469bddf97bbe77c122cc8952a105b0749f58bcfbb",
+    "apply_native_edits.py": "b716bcf40e4b2c1e5265c71467cd6dec65f79da24167d922cfbdba3c3cba34fe",
+    "apply_round_rim_rest.py": "40815c0553c7add33365c71088a90fb79bba29462d8c6f47efe9a4ad9ef01b0c"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after third repair. Attack front rim now rounded continuous dark carapace band/gold boundary rather than pointed forward plate; short neck/head outlined separately above broad near foreleg with clawed sole and smaller far leg. Stun heads smaller tapering muzzle rather than broad bag, dark closed-lid-intended cluster; head droop/stars retained. Sleep near front paw folded under lowered chin with bent wrist/claws versus limp extended dead limbs; lid readability and pair breathing remain for fresh independent judgement. Waterwave origin/two curves, unbroken resting shell vs cracked dead shell, species identity retained. Broad flat shell highlights, subdued idle/hit and low dark far-limb contrast remain. Read whole original author.put/save/moduleflow, repair.apply/moduleflow and explicit direct row replacement moduleflows apply_native_edits/apply_round_rim_rest. Four actual native writers use only y/x/literal row strings; no geometry or whole-frame transforms/tweens. Changed new inspect_round_rim_rest and unchanged render/compare_revision/diagnostics are read-only art PNG/GIF/before-after comparisons. All18 nativePNG/source match. Fresh independent82d219f7 pending; no keeper/Allow claim.",
+  "actualIndependentReviewJob": "82d219f7-4880-4dbd-9fcf-7668ba928845",
+  "clarificationAfterActualIndependentReview": "Fresh actual review supports distinct sleep/dead and connected state silhouettes. Remaining rework2: far attack upper foreleg appears hung below jaw instead of shoulder, waterwave upper/lower paths join as one zigzag band. Root observations of separated limbs and two curves did not establish anatomically valid upper attachment or independently readable rounded water arcs. Draft remains false."
+}

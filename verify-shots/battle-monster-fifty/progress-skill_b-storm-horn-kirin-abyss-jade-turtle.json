@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "abyss-jade-turtle",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "c2252cf3e6b3aaa344f34477c99b881a887c9b341bda73934beeba17f6f2f5a4",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "22fff7c23ab5fee0416965f9c15d25f58ab34c667154862634f8f1d075dd5820",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "storm-horn-kirin",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/storm-horn-kirin/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "13b4ad8cfd1f1a99b5082f69cccb2c375a59564f86a6376dc4c54960100063af",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "42ea63693408eb733850dc653613a95d29241e96a52193545575eab7c50ab7ea",
+    "entireGoalCompleteClaim": false
+  }
+]
