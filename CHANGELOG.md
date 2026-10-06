@@ -5,6 +5,31 @@
 
 <!-- releases -->
 
+## 0.146.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — store.openrpgmaker.com 운영 가동 — 운영자 일회용 로그인 링크, 배포 절차를 실제 배치에 맞춤 (`9589325`)
+- **asset-store** — 앱 안 스토어 — Electron 중계·설치·프로젝트 넣기·크레딧·편집기 올리기, 첫 진열 팩 4종 (`fd65a33`)
+- **asset-store** — 스토어 서버 — 카탈로그·업로드 검증·자동 공개·신고 숨김·기기 코드 로그인 (`4bb9fc7`)
+- **asset-store** — 팩 형식 oprn-store-pack/1 · 넣기·출처·크레딧 공용 모듈 (`d9c3beb`)
+
+### 수정
+
+- clear missing production instructions after theme collection (#2226) (`f76b275`)
+- reject stale native checks and support dedicated palettes (#2225) (`b19ac5b`)
+- **asset-store** — 보안 검토 반영 — 업로드 용량·고아 blob 청소·신고 남용·판본 바꿔치기·열린 넘김·openExternal 출처·응답 상한 (`7c300dc`)
+
+### 문서
+
+- **asset-store** — openwiki 쪽·운영 배포 절차·테일스케일 스테이징 설치 스크립트 (`4124198`)
+
+### 테스트
+
+- **asset-store** — 왼쪽 막대 목록에 공방·스토어 반영, 운영 스토어 실제 넣기 화면 증거 (`35d0177`)
+- **asset-store** — 타이틀 크레딧 창에 스토어 크레딧이 붙는다 (`3b36080`)
+- **asset-store** — 실제 Electron e2e — 둘러보기·넣기·저장 재로드·기기 코드 로그인·편집기 올리기·운영자 승인 (`15b96af`)
+
 ## 0.145.1 — 2026-10-06
 
 ### 수정
