@@ -92,7 +92,10 @@ const SECURITY_HEADERS: Record<string, string> = {
   "referrer-policy": "same-origin",
   "x-frame-options": "DENY",
 };
-const PAGE_CSP = "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'";
+/** 파일을 R2 에서 내보내면 그림·소리가 그 주소로 돌려보내진다 — img·media 에 그 출처를 더한다. */
+let fileOrigin = "";
+export function setFileOrigin(origin: string): void { fileOrigin = origin ? ` ${origin}` : ""; }
+const pageCsp = () => `default-src 'self'; img-src 'self' data:${fileOrigin}; media-src 'self'${fileOrigin}; script-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'`;
 
 export function sendJson(res: ServerResponse, status: number, value: unknown, headers: Record<string, string> = {}): void {
   const body = JSON.stringify(value);
@@ -101,7 +104,7 @@ export function sendJson(res: ServerResponse, status: number, value: unknown, he
 }
 
 export function sendHtml(res: ServerResponse, status: number, html: string, headers: Record<string, string> = {}): void {
-  res.writeHead(status, { ...SECURITY_HEADERS, "content-type": "text/html; charset=utf-8", "content-security-policy": PAGE_CSP, "cache-control": "no-store", ...headers });
+  res.writeHead(status, { ...SECURITY_HEADERS, "content-type": "text/html; charset=utf-8", "content-security-policy": pageCsp(), "cache-control": "no-store", ...headers });
   res.end(html);
 }
 
