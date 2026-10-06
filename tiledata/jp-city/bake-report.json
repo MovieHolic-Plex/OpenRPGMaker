@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 7980,
+  "count": 7983,
   "tilesPerRow": 48,
   "rows": 167,
   "sheetPx": [
@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 4649,
-  "legacy": 194,
+  "block_cells": 4646,
+  "legacy": 200,
   "legacy_ids": [
    5137,
    5275,
@@ -26,14 +26,14 @@
    6608,
    6645,
    6653,
+   6686,
+   6688,
    6707,
    6929,
    6930,
    6931,
    6932,
-   6933,
-   6934,
-   6935
+   6933
   ],
   "unused_source": 110,
   "people_reserved": 155,
@@ -45,7 +45,7 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 4649
+   "block": 4646
   }
  },
  "pc_counts": {
@@ -53,7 +53,7 @@
   "solid": 1668,
   "floor": 456,
   "solidfloor": 330,
-  "flat": 432,
+  "flat": 429,
   "blank": 155
  },
  "kits": {
@@ -161,7 +161,7 @@
    },
    {
     "name": "street_hand",
-    "cells": 456,
+    "cells": 453,
     "autotiles": 0,
     "groups": 1,
     "kits": 62,
@@ -260,7 +260,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 7980,
+  "tiles_checked": 7983,
   "kits_checked": 412,
   "groups_checked": 199,
   "autotiles_checked": 17
@@ -277,7 +277,7 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "b8622369a9b5c5453c642e7b3fbcd238ce410bf6",
+ "sheet_hash": "b98bb8084725e8a48556d994e1f11303a4931c93",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 412,
@@ -346,7 +346,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 7980,
+  "tiles_checked": 7983,
   "kits_checked": 412,
   "groups_checked": 199,
   "autotiles_checked": 17

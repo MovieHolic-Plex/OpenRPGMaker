@@ -119,12 +119,23 @@ export function tryBoardTransit(scene: Pick<PlaySceneContext, "map" | "running">
   return true;
 }
 
-/** QA·시험용 현재 상태(탈것 id·머리 칸·방향·정차·막힌 초). */
-export function transitDebugState(scene: PlaySceneContext): { routes: string[]; vehicles: { id: string; route: string; rect: { x: number; y: number; w: number; h: number }; dir: string; open: boolean; blockedSec: number; stopAt: number | null }[] } | null {
-  const sim = (scene as TransitScene).transitSim;
+/** QA·시험용 현재 상태(탈것 key·id·머리 칸·방향·정차·막힌 초, 그려진 스프라이트 프레임). */
+export function transitDebugState(scene: PlaySceneContext): {
+  routes: string[];
+  vehicles: { key: number; id: string; route: string; rect: { x: number; y: number; w: number; h: number }; dir: string; open: boolean; blockedSec: number; stopAt: number | null; sprite: { frame: string; x: number; y: number; visible: boolean } | null }[];
+} | null {
+  const s = scene as TransitScene;
+  const sim = s.transitSim;
   if (!sim) return null;
   return {
     routes: sim.routes.map((r) => r.id),
-    vehicles: sim.vehicles.map((v) => { const p = transitPose(sim, v); return { id: v.def.id, route: sim.routes[v.routeIndex]!.id, rect: p.rect, dir: p.dir, open: p.open, blockedSec: +v.blockedSec.toFixed(2), stopAt: v.stopAt }; }),
+    vehicles: sim.vehicles.map((v) => {
+      const p = transitPose(sim, v);
+      const sp = s.transitSprites?.get(v.key);
+      return {
+        key: v.key, id: v.def.id, route: sim.routes[v.routeIndex]!.id, rect: p.rect, dir: p.dir, open: p.open, blockedSec: +v.blockedSec.toFixed(2), stopAt: v.stopAt,
+        sprite: sp ? { frame: String(sp.frame.name), x: sp.x, y: sp.y, visible: sp.visible } : null,
+      };
+    }),
   };
 }

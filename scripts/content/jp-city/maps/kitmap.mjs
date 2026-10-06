@@ -216,7 +216,7 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     report.autotiles = { lane: maskAudit(laneG, L1, [...kitLaneIds]), rail: maskAudit(railG, L1, []), fence: maskAudit(fenceG, L3, []), ...Object.fromEntries(Object.keys(lineCells).map((g) => [g, maskAudit(GRP[g], L3, [])])) };
     report.layers = { overlaps: issues.length, issues: issues.slice(0, 12), l2: L2.filter((t) => t >= 0).length, l3: L3.filter((t) => t >= 0).length, l4: L4.filter((t) => t >= 0).length };
     const BARE = new Set(bare);
-    let worst = 0, worstAt = null;
+    let worst = 0, worstAt = null, skippedWin = 0;
     // emptyIgnore: 목적상 비어 있어야 하는 사각(운동장 트랙 안 등) — 빈칸으로 세지 않는다. 사각은 보고에 그대로 적는다.
     const ignored = (x, y) => emptyIgnore.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
     // 4층(전선·전봇대 윗부분)은 땅을 채우지 않는다 — 공중에 걸린 것이라 빈칸 판정에서 보지 않는다(2026-10-07 관문 지적).
@@ -225,10 +225,10 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
       let c = 0, n = 0;
       for (let y = y0; y < y0 + 13; y++) for (let x = x0; x < x0 + 17; x++) { if (ignored(x, y)) continue; n++; if (isBare(x, y)) c++; }
-      if (n < 111) continue;
+      if (n < 111) { skippedWin++; continue; }
       if (c / n > worst) { worst = c / n; worstAt = [x0, y0]; }
     }
-    report.emptiness = { worst17x13: +worst.toFixed(3), worstAt, ignore: emptyIgnore, max: emptinessMax };
+    report.emptiness = { worst17x13: +worst.toFixed(3), worstAt, ignore: emptyIgnore, max: emptinessMax, skippedWindows: skippedWin };
     report.reach = { reachable: reach.size };
     report.placed = placed.length;
     if (extraLayersCheck) report.extra = extraLayersCheck({ project, MAP, pass, reach, idx });

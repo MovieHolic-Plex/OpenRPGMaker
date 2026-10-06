@@ -58,7 +58,7 @@
    "ex": []
   },
   "jp-hedge": {
-   "cells": 44,
+   "cells": 50,
    "mismatch": 0,
    "ex": []
   }
@@ -66,8 +66,8 @@
  "layers": {
   "overlaps": 0,
   "issues": [],
-  "l2": 303,
-  "l3": 1468,
+  "l2": 295,
+  "l3": 1474,
   "l4": 210
  },
  "emptiness": {
@@ -84,10 +84,11 @@
     "h": 15
    }
   ],
-  "max": 0.4
+  "max": 0.4,
+  "skippedWindows": 314
  },
  "reach": {
-  "reachable": 2251
+  "reachable": 2245
  },
  "placed": 101,
  "ok": true,

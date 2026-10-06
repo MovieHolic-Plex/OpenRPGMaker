@@ -237,6 +237,8 @@ export interface TransitVehicleState {
   served: number[];
   /** 막혀 멈춘 누적 초(QA·보고용). */
   blockedSec: number;
+  /** 다른 탈것에 막혀 연달아 멈춘 초 — 교차로 교착을 푸는 데 쓴다. */
+  stuckSec?: number;
 }
 
 export interface TransitSim {
@@ -255,6 +257,9 @@ export interface TransitPose {
   rect: { x: number; y: number; w: number; h: number };
   open: boolean;
 }
+
+/** 다른 탈것에만 이만큼 연달아 막히면 교착으로 보고 지나간다(초). */
+export const STUCK_RELEASE_SEC = 6;
 
 const DIR_VEC: Record<TransitDir, TransitPoint> = { right: { x: 1, y: 0 }, left: { x: -1, y: 0 }, down: { x: 0, y: 1 }, up: { x: 0, y: -1 } };
 
@@ -297,15 +302,17 @@ export function transitRectCells(rect: { x: number; y: number; w: number; h: num
 
 const cellKey = (x: number, y: number): string => `${x},${y}`;
 
-/** 다른 탈것들이 차지한 칸(자기 자신 제외). */
-function occupied(sim: TransitSim, except?: TransitVehicleState): Set<string> {
-  const s = new Set<string>();
+/** 다른 탈것들이 차지한 칸 → 그 탈것(자기 자신 제외). */
+function occupied(sim: TransitSim, except?: TransitVehicleState): Map<string, TransitVehicleState> {
+  const s = new Map<string, TransitVehicleState>();
   for (const v of sim.vehicles) {
     if (v === except) continue;
-    for (const c of transitRectCells(transitPose(sim, v).rect)) s.add(cellKey(c.x, c.y));
+    for (const c of transitRectCells(transitPose(sim, v).rect)) s.set(cellKey(c.x, c.y), v);
   }
   return s;
 }
+
+const isHorizontal = (d: TransitDir): boolean => d === "left" || d === "right";
 
 export function createTransitSim(transit: MapTransit | undefined | null, mapSize?: { width: number; height: number }, warmupSec = 90): TransitSim {
   const { routes } = normalizeMapTransit(transit, mapSize);
@@ -368,8 +375,18 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     const ahead = transitHeadAt(r, next + 1);
     const aheadCells = transitRectCells(transitFootprintRect(ahead.head, ahead.dir, 1));
     const enter = transitRectCells(nextPose.rect).filter((c) => !cur.has(cellKey(c.x, c.y)));
-    const hit = enter.some((c) => isBlocked(c.x, c.y) || occ.has(cellKey(c.x, c.y))) || aheadCells.some((c) => occ.has(cellKey(c.x, c.y)));
-    if (hit) { v.blockedSec += dtSec; continue; }
+    const byPlayer = enter.some((c) => isBlocked(c.x, c.y));
+    const blockers = new Set<TransitVehicleState>();
+    for (const c of [...enter, ...aheadCells]) { const o = occ.get(cellKey(c.x, c.y)); if (o) blockers.add(o); }
+    // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린 방향**이고 STUCK_RELEASE_SEC 넘게
+    // 연달아 막혔으면 겹쳐서라도 지나간다. 같은 방향 줄(정류장 버스 뒤 등)과 주인공 앞에서는 끝까지 선다.
+    const crossOnly = blockers.size > 0 && [...blockers].every((o) => isHorizontal(transitPose(sim, o).dir) !== isHorizontal(nextPose.dir));
+    if (byPlayer || (blockers.size > 0 && !(crossOnly && (v.stuckSec ?? 0) >= STUCK_RELEASE_SEC))) {
+      v.blockedSec += dtSec;
+      v.stuckSec = byPlayer || !crossOnly ? 0 : (v.stuckSec ?? 0) + dtSec;
+      continue;
+    }
+    v.stuckSec = 0;
     v.pos = next;
     if (reached) { v.wait = reached.waitSec; v.stopAt = reached.index; v.served.push(reached.index); }
     if (r.loop && v.pos >= n) { v.pos -= n; v.served = []; }

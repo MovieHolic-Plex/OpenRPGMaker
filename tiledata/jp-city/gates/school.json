@@ -3,77 +3,51 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 4,
- "seconds": 361,
- "focus": "小学校 교정 예제 맵(68×48)과 교정 키트 33종 — 4회차. 빈칸 판정은 사용자 규칙(map-emptiness-gate: 바탕 타일만 plain, 길·포장은 바탕이 아님)을 따른다: 바탕 = 교정 흙 A·B·C, 트랙 사각만 무시(분모에서 뺌), 상한 0.4. 고무 칩(遊具 밑 ゴムチップ)·ツツジ 植え込み 는 research 03 근거. 수영장은 남쪽 탈의동 앞벽 입구 → 탈의실(지붕 밑) → 샤워 아치 → 데크. 축척: 교사·트랙은 의도된 압축 축척, 수영장은 실제 25m. 전선은 생활도로 위(화면 앞쪽)라 교정 안 나무보다 앞에 그려지는 것이 맞는 층 순서.",
+ "rounds": 6,
+ "seconds": 118,
+ "focus": "小学校 교정 예제 맵(68×48)과 교정 키트 33종 — 6회차. 5회차 major(「30」 두 개가 길 가운데에 같은 높이로 걸침)를 고쳤다: jp-mark-30-e/-w 를 차선 안에 들어가는 좁은 글자로 다시 그리고 키트에 側溝·흰 선을 넣어, 동쪽행은 위 두 줄 y44~45, 서쪽행은 아래 두 줄 y46~47 에 찍는다(sw 크롭). 규칙 문구 좌표를 코드와 맞췄다(수영장 길 y20~21, 입구 (51,19)(52,19)). 체육관 뒤까지 생울타리를 이었다. 빈칸: 바탕 = 교정 흙 A·B·C 만, 1~3층만, 트랙 사각은 분모 제외, 상한 0.4 — 보고 0.397, 건너뛴 창 수를 report.emptiness.skippedWindows 로 보고. 축척: 교사·트랙은 의도된 압축 축척, 수영장은 실제 25m.",
  "files": {
-  "verify-shots/jp-city/school-1x.png": "04b10f81280e0b99cd506a80e4959fb27aa95e85550907a0a33d7b5b9cdf298d",
-  "verify-shots/jp-city/school-crop-nw.png": "033ebf2c0b8ea5aaa604913a99300f345b2f34a782de29d5ba4a85ff4fa7c598",
-  "verify-shots/jp-city/school-crop-ne.png": "b7d709bd5b63dceab81ed5deb20eb02bb0846ee6051abc6e30ee4f1bb5d7bd6d",
-  "verify-shots/jp-city/school-crop-sw.png": "7fc346f90a03f5e5e69c040149c939f68d4fb2afc1e57d567d8e541a134e8156",
-  "verify-shots/jp-city/school-crop-e.png": "1eb7d339a18b7825fb3e607cfa08aa095213f98557edc1419be3e5f284283b1e",
-  "tiledata/jp-city/blocks/school/_all-x2.png": "d949b8243f061fc03008ebe27ae89f3caea257f732ce7802788010b37cc8bf0e",
-  "scripts/content/jp-city/maps/out/school.report.json": "15fa770cc6c15b827c02cb4ef66a324c7a6ddc6e6319737702df62b6c113b560",
-  "scripts/content/jp-city/maps/school.mjs": "4d8e1b2c737fcb0739891721a8cc75b3227ad9262434e5b3191d8ffe9065ac85",
+  "verify-shots/jp-city/school-1x.png": "8afa79044abca2b752ac4c63659e3e4d4fba65f4908a881955f8c9b8e1c70ebb",
+  "verify-shots/jp-city/school-crop-nw.png": "b17a10d52035fb106da50e11b6a1d320eaa645dc422499af190ad4113e6da827",
+  "verify-shots/jp-city/school-crop-ne.png": "31b5d7a98e4432a604f22e6708926ac4717067f394cf32d202899c7368ca1b21",
+  "verify-shots/jp-city/school-crop-sw.png": "fbd212b23f8589e29bb3b6f97991065470de15dd632d9037efb4086964d5b6c5",
+  "verify-shots/jp-city/school-crop-e.png": "32cd14791715ff3a70aec45f8c7c4b4ada79c582c4f42e20e89d534c703e0ca9",
+  "tiledata/jp-city/blocks/school/_all-x2.png": "1c557fb610a643c9e31bffcf8f4d7915ad5bc47e094fe4eecde5ad04b939869a",
+  "scripts/content/jp-city/maps/out/school.report.json": "0773db18af4cf83f8d046a3e7f977a5a103ee64c7657f7d9bc6e7e232f58ef46",
+  "scripts/content/jp-city/maps/school.mjs": "3b977f4ebd276744b355cc16a582d2cf7b2ae6f20d45d1a9d440df208ded2675",
+  "scripts/content/jp-city/maps/kitmap.mjs": "6b5ff331cb8a38915e8d7d1c228ce7be1f0e95f140865b7b0e896a76ea047d0d",
+  "scripts/content/jp-city/blocks/street_hand.py": "76c8bd4ec896645d5c8024d2d2e36a96ad7b9cff4616c0484bde8fb3367fdc85",
   "tiledata/jp-city/research/03-building-types-dimensions.md": "60696e94efc6bae856734151e4bd06adc0842942e27655167cf6b32d956265ec"
  },
  "findings": [
   {
    "severity": "major",
-   "file": "scripts/content/jp-city/maps/kitmap.mjs (빈칸 계산 ~218–230) / scripts/content/jp-city/maps/out/school.report.json",
-   "where": "isBare 조건의 L4(upperOverlayTiles) 검사, 최악 창 [46,29]",
-   "problem": "공중 전선(L4)이 놓인 칸을 채워짐으로 세어 아래 맨흙이 빈칸에서 빠진다. 전선을 빈칸으로 다시 세면 최악 0.507로 상한 0.4를 넘는다. 리포트 0.389는 전선에 가려진 값이다.",
-   "fix": "isBare에서 L4 조건을 빼고 L1·L2·L3만 본다. 그다음 동쪽 마당 x45–62, y29–41에 실제 용도(화단·사육장·자전거 거치대·鉄棒)를 넣거나 구역을 줄인다."
-  },
-  {
-   "severity": "minor",
    "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "수영장 스탬프 (38,18)와 탈의동 지붕 사이, 샤워 아치",
-   "problem": "지붕선(y≈16.6)과 물가(y16.0) 사이 데크가 약 0.6칸뿐이다. 샤워 아치 다리는 지붕선에, 윗 막대는 물 위에 걸려 탈의실→샤워→데크 동선이 그림으로 읽히지 않는다.",
-   "fix": "탈의동 북쪽에 2칸 데크 줄을 열거나 물 영역을 한 줄 북쪽으로 올린다."
+   "where": "43행 hedge-gym, 그림 school-1x.png x≈28·x≈37 칸, y1~2 (px≈452~462, 596~608 / y16~48)",
+   "problem": "체육관 뒤에 생울타리를 이었다고 했지만, 나무가 차지한 칸을 빼는 필터(!m.own3) 때문에 1칸 폭 세로 조각 두 개만 남았다. 줄로 이어지지 않고, 담쟁이나 오토타일 결함처럼 보인다. 설명과 그림이 다르다.",
+   "fix": "나무 세 그루(24·29·33, y1)를 한 줄 아래(y3 이상)로 내리고 울타리를 y1~2에 23~36 연속으로 깔거나, 울타리를 나무 그늘보다 아래 층에 깔아 나무 사이로 이어 보이게 한다. 이을 수 없다면 고립 조각을 지우고 설명에서 '체육관 뒤까지'를 뺀다. 고립 1칸 폭 울타리 조각을 잡는 검사(연속 길이 ≥3)도 보고서에 더한다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "y42 x39–58, x37·x32 세로줄의 ツツジ",
-   "problem": "같은 단일 덤불 19개가 일렬로 놓여 기계적으로 반복된다.",
-   "fix": "tsutsuji-3 덩이를 섞고 간격과 끊김을 다르게 준다."
+   "file": "scripts/content/jp-city/maps/out/school.report.json",
+   "where": "emptiness.worst17x13 0.397 / max 0.4 / skippedWindows 314",
+   "problem": "상한에 0.003 차이로 붙어 있고, 전체 창 1,872개 중 314개를 건너뛴 값이다. 최악 창 (17,27)은 트랙 동쪽 끝 흙밭이다.",
+   "fix": "트랙 동쪽 x31~33, y20~33 흙 띠에 동선과 맞는 것(조회대·스탠드 계단 등)을 두거나, 그 띠만큼 트랙 키트 폭을 넓혀 여유를 0.35 아래로 만든다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "x13–18, y15 생울타리",
-   "problem": "어디에도 붙지 않은 고립 생울타리가 앞마당에 떠 있다.",
-   "fix": "건물 앞 화단 경계로 붙이거나 지운다."
+   "file": "scripts/content/jp-city/blocks/street_hand.py",
+   "where": "jp-mark-30-e / jp-mark-30-w 의 「3」 글자",
+   "problem": "「3」 가운데 획이 1~2px짜리 돌기뿐이라 글자가 ⊔나 괄호로 읽힌다.",
+   "fix": "가운데 획을 글자 폭의 절반쯤(3~4px)으로 늘려 「3」으로 읽히게 한다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "전주 x0(47행), x65(41행 부근)",
-   "problem": "x0 전주가 서쪽 경계 벽 열과 겹치고, x65 전주가 tsutsuji-3 덩이(60–62,41) 가장자리를 침범한다.",
-   "fix": "전주를 경계 안쪽 길 가장자리로 한 칸 옮기고 덤불과 떨어뜨린다."
-  },
-  {
-   "severity": "minor",
-   "file": "운동장 키트 시트 (축구 골대)",
-   "where": "축구 골대 조각",
-   "problem": "옆 실루엣 한 장으로만 보여 앞뒤 기둥 한 쌍과 크로스바 윗면이 없다. 3/4 시점이 약하다.",
-   "fix": "기둥 두 개를 그리고 크로스바를 원근이 줄어든 윗선으로, 그물 윗면을 면으로 보이게 다시 찍는다."
-  },
-  {
-   "severity": "minor",
-   "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "고무 칩 놀이 구역 (1,34)–(12,37)",
-   "problem": "테두리 없는 각진 사각형이고 서쪽 벽에 그대로 맞닿는다.",
-   "fix": "경계석이나 테두리 띠를 두르고 벽과 1칸 띄운다."
-  },
-  {
-   "severity": "minor",
-   "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "노면 「30」 (8,44), (52,46)",
-   "problem": "표시가 외측선 밖 연석·측구 띠까지 걸친다.",
-   "fix": "차로 안쪽으로 한 칸 옮긴다."
+   "file": "tiledata/jp-city/blocks/school/_all-x2.png",
+   "where": "jp-goal 좌·우 (시트 중단 700~880px, 맵 x≈6, x≈26, y≈25)",
+   "problem": "골대 옆면이 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.",
+   "fix": "정면 3/4 규약에 맞게 골대 옆틀을 수직으로 세우고, 깊이는 윗면 크로스바 띠로만 보이게 한다."
   }
  ],
- "report": "## jp_city 학교 4회차 적대 검수: 불합격\n\n### 지난 회차 지적 재확인\n\n**[major] 빈칸 상한 0.75, 무시 칸이 분모에 남음 → 구조는 고쳤지만 다른 구멍으로 다시 넘는다**\n- 고친 부분: 상한은 0.4로 내려갔다. 무시 사각형(x2–31, y19–33)은 분모에서 빠진다. 바탕도 흙 A·B·C만 센다(`school.mjs`의 finish 호출, kitmap.mjs 빈칸 계산).\n- 남은 문제: `isBare`가 L4(전주·전선) 칸까지 \"채워짐\"으로 센다. 전선은 공중에 걸린 선이라 그 아래 흙은 사실상 맨땅인데도 빈칸에서 빠진다.\n- 직접 다시 계산한 값(17×13 창, 무시 칸 제외, n≥111):\n\n| 계산 방식 | 최악 창 | 빈칸 비율 |\n|---|---|---|\n| L4를 채워짐으로 셈(현재 리포트) | [46,25] | 0.389 |\n| L4 전선을 빈칸으로 셈 | [46,29] | **0.507** |\n\n- 0.507은 상한 0.4를 넘는다. 전선 띠(y38–40, x30–37·x57–65)와 그 북쪽 동쪽 마당(y29–41, x45–62) 맨흙이 상한을 가리고 있다.\n- 리포트의 0.389는 상한에 아슬아슬하게 걸친 값이고, 전선을 빼면 무너진다.\n\n**[major] 탈의동과 발 씻기를 건너뛰는 수영장 우회로 → 해소**\n- 탈의동 남쪽 출입구(51·52, 18)가 수영장 길 포장과 맞물린다.\n- 동 양옆 펜스는 끊김 없이 이어진다. 남쪽 문 부근도 격자 펜스가 x30.56까지, 문기둥이 x31부터라 틈이 없다.\n- 물 폭을 픽셀로 쟀다: x40–64.94, 정확히 25.0칸이다. 실제 25m 주장이 맞다.\n\n### 이번 회차 결함\n\n1. **[major] 빈칸 판정에 공중 전선(L4)이 섞여 있다** (위 재확인 1)\n   - 파일: `scripts/content/jp-city/maps/kitmap.mjs` 빈칸 계산(약 218–230행), 결과는 `out/school.report.json`\n   - 고칠 것: `isBare`에서 L4 조건을 빼고 L1·L2·L3만 본다. 그다음 동쪽 마당(x45–62, y29–41)에 실제 용도를 넣는다. 예: 화단, 사육장, 자전거 거치대, 鉄棒 줄.\n   - 단순히 메우기보다, 남는 띠라면 그 구역을 줄이는 쪽이 낫다.\n\n2. **[minor] 샤워 아치가 데크가 아니라 수영장 가장자리에 서 있다**\n   - 위치: `school.mjs` 수영장 스탬프(38,18)와 탈의동 지붕 사이\n   - 탈의동 지붕선(y≈16.6)과 물가(y16.0) 사이 데크가 약 0.6칸뿐이다.\n   - 아치 다리는 지붕선에 붙어 있고, 윗 막대는 물 위(14.8–16행)에 걸린다. 그래서 「탈의실 → 샤워 → 데크」 동선이 그림으로 읽히지 않는다.\n   - 고칠 것: 탈의동 북쪽에 2칸 데크 줄을 연다. 또는 물 영역을 한 줄 북쪽으로 올린다.\n\n3. **[minor] ツツジ가 기계적으로 반복된다**\n   - 위치: y42 x39–58에 같은 단일 덤불 19개가 일렬로 놓였다. x37·x32 단일 덤불 세로줄도 같은 패턴이다.\n   - 고칠 것: tsutsuji-3 덩이를 섞고 간격과 끊김을 다르게 준다.\n\n4. **[minor] 고립 생울타리**\n   - 위치: 앞마당 x13–18, y15. 건물·펜스·길 어디에도 붙지 않고 떠 있다.\n   - 고칠 것: 건물 앞 화단 경계로 붙이거나 지운다.\n\n5. **[minor] 전주가 다른 것과 겹친다**\n   - x0(47행) 전주가 서쪽 경계 벽 열과 겹친다.\n   - x65 전주가 tsutsuji-3 덩이(60–62, 41) 가장자리를 침범한다.\n   - 고칠 것: 전주를 경계 안쪽 길 가장자리로 한 칸 옮기고, 덤불과 떨어뜨린다.\n\n6. **[minor] 축구 골대의 3/4 시점이 약하다**\n   - 파일: 운동장 키트 시트, 축구 골대\n   - 옆 실루엣 한 장으로만 보인다. 앞뒤 기둥 한 쌍과 크로스바 윗면이 보이지 않는다.\n   - 고칠 것: 기둥 두 개를 그리고, 크로스바를 원근이 줄어든 윗선으로, 그물 윗면을 면으로 보이게 한다.\n\n7. **[minor] 고무 칩 구역이 각진 사각형이고 테두리가 없다**\n   - 위치: 놀이 구역 (1,34)–(12,37). 서쪽 벽에 그대로 맞닿는다.\n   - 고칠 것: 경계석이나 테두리 띠를 두르고, 벽과 1칸 띄운다.\n\n8. **[minor] 노면 「30」 표시가 외측선 밖으로 나간다**\n   - 위치: (8,44), (52,46). 연석·측구 띠까지 걸친다. 좌측통행 방향 자체는 맞다.\n   - 고칠 것: 차로 안쪽으로 한 칸 옮긴다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/maps/kitmap.mjs (빈칸 계산 ~218–230) / scripts/content/jp-city/maps/out/school.report.json\", \"where\": \"isBare 조건의 L4(upperOverlayTiles) 검사, 최악 창 [46,29]\", \"problem\": \"공중 전선(L4)이 놓인 칸을 채워짐으로 세어 아래 맨흙이 빈칸에서 빠진다. 전선을 빈칸으로 다시 세면 최악 0.507로 상한 0.4를 넘는다. 리포트 0.389는 전선에 가려진 값이다.\", \"fix\": \"isBare에서 L4 조건을 빼고 L1·L2·L3만 본다. 그다음 동쪽 마당 x45–62, y29–41에 실제 용도(화단·사육장·자전거 거치대·鉄棒)를 넣거나 구역을 줄인다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"수영장 스탬프 (38,18)와 탈의동 지붕 사이, 샤워 아치\", \"problem\": \"지붕선(y≈16.6)과 물가(y16.0) 사이 데크가 약 0.6칸뿐이다. 샤워 아치 다리는 지붕선에, 윗 막대는 물 위에 걸려 탈의실→샤워→데크 동선이 그림으로 읽히지 않는다.\", \"fix\": \"탈의동 북쪽에 2칸 데크 줄을 열거나 물 영역을 한 줄 북쪽으로 올린다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"y42 x39–58, x37·x32 세로줄의 ツツジ\", \"problem\": \"같은 단일 덤불 19개가 일렬로 놓여 기계적으로 반복된다.\", \"fix\": \"tsutsuji-3 덩이를 섞고 간격과 끊김을 다르게 준다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"x13–18, y15 생울타리\", \"problem\": \"어디에도 붙지 않은 고립 생울타리가 앞마당에 떠 있다.\", \"fix\": \"건물 앞 화단 경계로 붙이거나 지운다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"전주 x0(47행), x65(41행 부근)\", \"problem\": \"x0 전주가 서쪽 경계 벽 열과 겹치고, x65 전주가 tsutsuji-3 덩이(60–62,41) 가장자리를 침범한다.\", \"fix\": \"전주를 경계 안쪽 길 가장자리로 한 칸 옮기고 덤불과 떨어뜨린다.\"},\n{\"severity\": \"minor\", \"file\": \"운동장 키트 시트 (축구 골대)\", \"where\": \"축구 골대 조각\", \"problem\": \"옆 실루엣 한 장으로만 보여 앞뒤 기둥 한 쌍과 크로스바 윗면이 없다. 3/4 시점이 약하다.\", \"fix\": \"기둥 두 개를 그리고 크로스바를 원근이 줄어든 윗선으로, 그물 윗면을 면으로 보이게 다시 찍는다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"고무 칩 놀이 구역 (1,34)–(12,37)\", \"problem\": \"테두리 없는 각진 사각형이고 서쪽 벽에 그대로 맞닿는다.\", \"fix\": \"경계석이나 테두리 띠를 두르고 벽과 1칸 띄운다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"노면 「30」 (8,44), (52,46)\", \"problem\": \"표시가 외측선 밖 연석·측구 띠까지 걸친다.\", \"fix\": \"차로 안쪽으로 한 칸 옮긴다.\"}\n]}\n```"
+ "report": "## school 6회차 검수: 불합격\n\n**지난 회차 major(「30」 표시)는 고쳐졌다.** 1배 그림을 8배로 키워 칸 단위로 확인했다.\n- 동쪽행 `jp-mark-30-e`(x8)는 위 차선 안에 있다. 그림 기준 y≈719~734px, 길 중앙(≈736px)보다 위다.\n- 서쪽행 `jp-mark-30-w`(x52)는 아래 차선 안에 있다. y≈737~752px.\n- 좌측통행 기준으로 운전자 쪽에서 읽히는 방향도 맞다. 동쪽행은 「3」이 북쪽, 서쪽행은 「3」이 남쪽에 온다. 숫자는 진행 방향으로 길쭉하게 늘어나 있다.\n- 규칙 문구 좌표(수영장 앞 포장 y20~21, 탈의동 입구 (51,19)(52,19))도 그림과 맞다.\n\n**새 major가 하나 있다. 체육관 뒤 생울타리가 실제로는 이어지지 않았다.** 「체육관 뒤까지 생울타리를 이었다」는 설명과 그림이 다르다.\n- `school.mjs:43`은 `!m.own3[...]`로 나무가 차지한 칸을 뺀다.\n- 그 결과 남은 것은 x≈28과 x≈37(y1~2)의 1칸 폭 세로 조각 두 개뿐이다. 그 사이에는 벚나무·느티나무 그늘 아래 맨흙만 있다.\n- 이 조각들은 담쟁이나 오토타일 오류처럼 보이고, 울타리로 읽히지 않는다.\n- `autotiles.jp-hedge.mismatch: 0`은 오토타일 모양만 맞는지 본 수치라서 이 결함을 잡지 못한다.\n\n**minor는 세 가지다.**\n- **빈칸 비율:** 0.397은 상한 0.4에 거의 붙어 있다. 그런데 17×13 창 1,872개 중 314개를 건너뛰고 낸 값이다.\n- **「3」 글자:** 가운데 획이 1~2px짜리 돌기뿐이라 숫자보다 괄호(⊔)처럼 읽힌다.\n- **골대:** 트랙 골대 두 개(`jp-goal-*`)가 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"43행 hedge-gym, 그림 school-1x.png x≈28·x≈37 칸, y1~2 (px≈452~462, 596~608 / y16~48)\", \"problem\": \"체육관 뒤에 생울타리를 이었다고 했지만, 나무가 차지한 칸을 빼는 필터(!m.own3) 때문에 1칸 폭 세로 조각 두 개만 남았다. 줄로 이어지지 않고, 담쟁이나 오토타일 결함처럼 보인다. 설명과 그림이 다르다.\", \"fix\": \"나무 세 그루(24·29·33, y1)를 한 줄 아래(y3 이상)로 내리고 울타리를 y1~2에 23~36 연속으로 깔거나, 울타리를 나무 그늘보다 아래 층에 깔아 나무 사이로 이어 보이게 한다. 이을 수 없다면 고립 조각을 지우고 설명에서 '체육관 뒤까지'를 뺀다. 고립 1칸 폭 울타리 조각을 잡는 검사(연속 길이 ≥3)도 보고서에 더한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/school.report.json\", \"where\": \"emptiness.worst17x13 0.397 / max 0.4 / skippedWindows 314\", \"problem\": \"상한에 0.003 차이로 붙어 있고, 전체 창 1,872개 중 314개를 건너뛴 값이다. 최악 창 (17,27)은 트랙 동쪽 끝 흙밭이다.\", \"fix\": \"트랙 동쪽 x31~33, y20~33 흙 띠에 동선과 맞는 것(조회대·스탠드 계단 등)을 두거나, 그 띠만큼 트랙 키트 폭을 넓혀 여유를 0.35 아래로 만든다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/street_hand.py\", \"where\": \"jp-mark-30-e / jp-mark-30-w 의 「3」 글자\", \"problem\": \"「3」 가운데 획이 1~2px짜리 돌기뿐이라 글자가 ⊔나 괄호로 읽힌다.\", \"fix\": \"가운데 획을 글자 폭의 절반쯤(3~4px)으로 늘려 「3」으로 읽히게 한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/school/_all-x2.png\", \"where\": \"jp-goal 좌·우 (시트 중단 700~880px, 맵 x≈6, x≈26, y≈25)\", \"problem\": \"골대 옆면이 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.\", \"fix\": \"정면 3/4 규약에 맞게 골대 옆틀을 수직으로 세우고, 깊이는 윗면 크로스바 띠로만 보이게 한다.\"}\n]}\n```"
 }
