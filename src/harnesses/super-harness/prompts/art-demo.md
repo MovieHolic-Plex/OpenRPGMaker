@@ -22,7 +22,10 @@ canvas 16px 단위 64~2048px. rect는 원본의 x,y,w,h, at은 장면의 x,y. �
 
 {{OUTPUT}}에:
 {"fingerprint":"INPUT.fingerprint 그대로","demos":[{"title":"실제 공간 예시","components":{"원본 그룹 id":"그 그룹의 후보 id"},"recipes":[{"path":"recipe 상대 경로","sha256":"..."}]}]}
-components는 모든 원본 그룹을 포함한다. 데모 1~3개. json 저장 후 원본 참조/해시/좌표를 확인한다.
+components는 INPUT.requiredGroups의 모든 그룹을 포함한다(필드가 없으면 모든 원본 그룹).
+INPUT.retiredComponents는 승인된 같은 재료의 교체 기록이다. 그 옛 부품은 원본/영수증으로 보존하며,
+화면에 억지로 배치하지 않는다. 예를 들어 새 E/W 문이 정면 문을 대체했다면 옛 문을 북벽에 추가하지 않는다.
+임의로 그룹을 생략하거나 교체 명세를 수정하지 않는다. 데모 1~3개. 원본 참조/해시/좌표를 확인한다.
 
 타일 배치 전 현재 타일셋 참고문서/조립 계약을 확인한다. 원본 칩과 실제 데모 PNG를 직접 열어 확인한다.
 감독 renderer: `python3 {{RENDERER}} ROOT RECIPE DEST`

@@ -20,6 +20,47 @@ def required(data, cid):
     return bool(manifest.get('groups')) and not any(c.get('phase') == 'calibration' for g in manifest['groups'] for c in g['candidates'])
 
 
+def component_requirements(data, cid, manifest, layout, result):
+    """Retire a replaced component only through the approved scene specification.
+
+    Keeping an old source for audit does not require placing a second obsolete
+    door in the room. Both sides must belong to the same planned material.
+    """
+    groups = {g['id']: g for g in manifest['groups']}
+    replacements = layout.get('layout', {}).get('componentReplacements', [])
+    if not replacements: return list(groups), {}
+    import art_layout
+    folder = Path(data) / 'concepts' / cid
+    review = choices.read(folder / 'art-layout-review.json')
+    if review.get('verdict') != 'PASS' or review.get('fingerprint') != layout.get('fingerprint'):
+        raise ValueError('부품 교체 명세를 포함한 현재 도면의 독립 승인이 필요합니다.')
+    art_layout.require_completed(Path(data) / 'art-worktrees' / cid,
+        choices.read(folder / 'art-execution.json'), layout)
+    retired = {}
+    archive = Path(data) / 'concepts' / cid / 'art-batches'
+    previous = [choices.read(p)['result'] for p in archive.glob('*.json')]
+    for replacement in replacements:
+        old, new, requirement = (replacement[k] for k in ('from', 'to', 'requirement'))
+        if (old not in groups or new not in groups or old == new or old in retired
+                or len(str(replacement.get('reason', '')).strip()) < 12
+                or any(c.get('nativeHarness') == 'charset-actor'
+                       for gid in (old, new) for c in groups[gid]['candidates'])):
+            raise ValueError('승인된 동일 재료의 부품 교체 명세가 필요합니다.')
+        old_hashes = {c['sheet']['sha256'] for c in groups[old]['candidates']}
+        new_hashes = {c['sheet']['sha256'] for c in groups[new]['candidates']}
+        current_refs = result.get('themeCoverage', {}).get(requirement, [])
+        prior_refs = [ref for batch in previous if all((batch.get('theme') or {}).get(k)
+                      == (result.get('theme') or {}).get(k) for k in ('policyHash', 'briefSha256'))
+                      for ref in batch.get('themeCoverage', {}).get(requirement, [])]
+        if (not old_hashes.intersection(ref['sha256'] for ref in prior_refs)
+                or not new_hashes.intersection(ref['sha256'] for ref in current_refs)):
+            raise ValueError('교체 전후 부품이 같은 기획 재료에 연결되지 않았습니다: '+requirement)
+        retired[old] = dict(replacement)
+    if any(r['to'] in retired for r in retired.values()):
+        raise ValueError('교체 부품이 다시 폐기되는 연쇄/순환 명세는 허용하지 않습니다.')
+    return [gid for gid in groups if gid not in retired], retired
+
+
 def prepare(data, cid):
     folder = Path(data) / 'concepts' / cid
     root = Path(data) / 'art-worktrees' / cid
@@ -36,6 +77,8 @@ def prepare(data, cid):
                   selections=choices.selections(cid), title=store.concept(cid)['title'])
     layout = folder / 'art-layout-input.json'
     inputs['layout'] = choices.read(layout) if layout.exists() else {}
+    inputs['requiredGroups'], inputs['retiredComponents'] = component_requirements(
+        data, cid, manifest, inputs['layout'], choices.read(folder / 'art-result.json'))
     inputs['themeAllowedSources']=sorted(theme_sources) if theme_sources is not None else None
     inputs['planningPath'] = str(folder / 'planning.json')
     inputs['outputDirectory'] = 'art-output/space-demos/' + generation[:16]
@@ -92,12 +135,17 @@ def accept(data, cid, result):
     import theme_production
     theme_sources=theme_production.demo_sources(cid,choices.read(folder/'art-result.json'),inputs['components'])
     originals = {g['id']: {c['id']: c for c in g['candidates']} for g in inputs['components']['groups']}
+    required_groups, retired = component_requirements(data, cid, inputs['components'],
+        inputs.get('layout', {}), choices.read(folder / 'art-result.json'))
+    if (inputs.get('requiredGroups', list(originals)) != required_groups
+            or inputs.get('retiredComponents', {}) != retired):
+        raise ValueError('부품 교체의 승인 입력이 변경되었습니다.')
     candidates = []
     for number, demo in enumerate(demos, 1):
         if not isinstance(demo, dict): raise ValueError('데모 객체 필요')
         components = demo.get('components', {})
         if not isinstance(components, dict): raise ValueError('데모 품목 목록 필요')
-        if set(components) != set(originals): raise ValueError('모든 필수 품목을 포함한 데모가 필요합니다.')
+        if set(components) != set(required_groups): raise ValueError('현재 승인된 모든 필수 품목을 포함한 데모가 필요합니다.')
         selected = [originals[g][c] for g,c in components.items()]
         import re
         required_images = [{c['sheet']['sha256']} | {r['sha256'] for r in c.get('nativeSheets', [])} | {r['sha256'] for r in c['sources']
@@ -151,7 +199,7 @@ def accept(data, cid, result):
             reasons=[str(r) for c in selected if not c['passed'] for r in c['reasons']],
             repairFixes=[f for c in selected for f in c.get('repairFixes', [])],
             sources=list({r['path']:r for r in refs}.values()), images=previews, sheet=previews[0],
-            components=components, generation=inputs['generation'], phase='scene',
+            components=components, retiredComponents=retired, generation=inputs['generation'], phase='scene',
             caution='실제 타일을 조립한 공간 데모입니다. 플레이·프로젝트 설치 완료를 뜻하지 않습니다.'))
     manifest = dict(inputs['components'], demoVersion=1, groups=[dict(id='space-demo', title=inputs['title']+' · 공간 데모',
         description='이 타일로 만든 공간 전체를 보고 평가해 주세요.', requiresContextReview=True, candidates=candidates)])
