@@ -4,6 +4,7 @@ import hashlib
 import os
 from pathlib import Path
 import signal
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -29,13 +30,22 @@ def prepare(root, request, resume=False):
     work_base = Path(os.environ.get('SUPER_HARNESS_DATA', Path.home()/'.local/share/oprn/super-harness')) / 'work' / 'native'
     work = work_base / (root.name + '-' + hashlib.sha256(str(request.get('data', '')).encode()).hexdigest()[:12])
     work.mkdir(parents=True, exist_ok=True)
+    # Isolated/older native worktrees may resolve the CLI using PATH instead
+    # of the newer override variable. Make both resolve the same executable.
+    cli=os.environ.get('SUPER_HARNESS_CODEX_BIN') or shutil.which('codex')
+    if not cli:
+        candidate=Path.home()/'.npm-global/bin/codex'
+        if candidate.is_file():cli=str(candidate)
+    if not cli or not Path(cli).is_file():raise ValueError('설치된 Codex 실행 파일을 찾지 못했습니다.')
+    env['PATH']=str(Path(cli).parent)+os.pathsep+env.get('PATH','')
+    env['SUPER_HARNESS_CODEX_BIN']=cli
     env.update(PROP_HARNESS_WORK=str(work), VEH_HARNESS_WORK=str(work),
-               VEH_CODEX_BIN=os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex'))
+               VEH_CODEX_BIN=cli)
     harness = request.get('harness')
     if harness == 'interior-props':
         env.update(PROP_HARNESS_DATA=local('data'), HIP_DATA=local('picks'), HIP_PICK=local('picks'))
         # Use the same installed CLI selected by the supervisor, not a shell shim.
-        env['PROP_HARNESS_CODEX_BIN'] = os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex')
+        env['PROP_HARNESS_CODEX_BIN'] = cli
         # Prepared content can live below art-output. Resolve its approved seed,
         # never inherit the unrelated global prop picker's content directory.
         import art_layout
@@ -82,10 +92,21 @@ def prepare(root, request, resume=False):
         env['VEH_HARNESS_BACKEND'] = override['backend']
         if override['backend'] == 'codex':
             env.update(VEH_CODEX_MODEL=override['model'], VEH_CODEX_EFFORT=override['effort'],
-                       VEH_CODEX_BIN=os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex'))
+                       VEH_CODEX_BIN=cli)
         else:
             env.update(VEH_HARNESS_MODEL=override['model'], VEH_HARNESS_EFFORT=override['effort'])
     return [sys.executable, *command], env
+
+
+def require_review_queue(root, request):
+    """Recovery may resume independently checked pixels, never another draw."""
+    if request['harness'] != 'interior-props': raise ValueError('소품 검수 재개만 허용')
+    database = Path(root) / request['data'] / 'harness.sqlite'
+    with sqlite3.connect(database.as_uri() + '?mode=ro', uri=True) as db:
+        rows = db.execute("SELECT status,phase,ok FROM runs WHERE status!='done'").fetchall()
+    if not rows or any(status != 'queued' or phase not in ('review', 'review2') or not ok
+                       for status, phase, ok in rows):
+        raise ValueError('재검사를 통과한 검수 대기열만 재개할 수 있습니다.')
 
 
 def native_errors(root, request):
@@ -171,11 +192,7 @@ def main():
         approved=json.loads(snapshot.read_text())
         art_layout.require_completed(root, request, approved)
         if review_resume and '--resume-technical' not in sys.argv[4:]:
-            if request['harness'] != 'interior-props': raise ValueError('소품 검수 재개만 허용')
-            with sqlite3.connect(root/request['data']/'harness.sqlite') as db:
-                rows = db.execute("SELECT status,phase FROM runs WHERE status!='done'").fetchall()
-            if not rows or any(status!='queued' or phase not in ('review','review2') for status,phase in rows):
-                raise ValueError('재검사를 통과한 검수 대기열만 재개할 수 있습니다.')
+            require_review_queue(root, request)
         else:
             import native_retry
             native_retry.reset(root, request)
