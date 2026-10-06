@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>설익부엉이 · 18자세 / 8동작</title>
+<style>
+body{margin:0;background:#14222e;color:#e3edf0;font:16px/1.5 system-ui,sans-serif;padding:24px}
+main{max-width:1180px;margin:auto}h1{font-size:26px;margin:0 0 4px}p{color:#b4cbd9}
+a{color:#bde9eb}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+figure{margin:0;border:1px solid #415d76;border-radius:8px;padding:12px;background:#243340}
+figcaption{margin-bottom:10px;font-weight:600}.art{display:flex;align-items:end;gap:12px;background:#eee9df;padding:8px;min-height:256px;border-radius:4px}
+.art img{image-rendering:pixelated}.large{width:256px;height:256px;max-width:80%;object-fit:contain}.native{width:64px;height:64px}
+.overview{max-width:100%;height:auto;image-rendering:pixelated;border:1px solid #415d76}
+small{display:block;color:#b4cbd9;margin-top:8px}footer{margin:24px 0}
+</style>
+<main>
+<h1>설익부엉이 · fifty-v1</h1>
+<p>18자세 / native64 / 18색 · 공격 발톱·기절 두 자세 수정 · 독립 재검수 대기</p>
+<div class="grid">
+<figure><figcaption>대기</figcaption><div class="art"><img class="large" src="gifs/idle.gif" alt="대기 확대"><img class="native" src="gifs/idle.gif" alt="대기 원본"></div><small>240ms · 가슴 숨 / 눈 깜박임</small></figure>
+<figure><figcaption>공격</figcaption><div class="art"><img class="large" src="gifs/attack.gif" alt="공격 확대"><img class="native" src="gifs/attack.gif" alt="공격 원본"></div><small>웅크림 → 낮은 도약 → 움켜쥔 두 발톱 → 회수</small></figure>
+<figure><figcaption>피격</figcaption><div class="art"><img class="large" src="gifs/hit.gif" alt="피격 확대"><img class="native" src="gifs/hit.gif" alt="피격 원본"></div><small>눈 감김 / 비대칭 어깨</small></figure>
+<figure><figcaption>쓰러짐</figcaption><div class="art"><img class="large" src="gifs/dead.gif" alt="쓰러짐 확대"><img class="native" src="gifs/dead.gif" alt="쓰러짐 원본"></div><small>옆으로 내려온 몸 / 마지막 자세 1000ms</small></figure>
+<figure><figcaption>설익진</figcaption><div class="art"><img class="large" src="gifs/skill.gif" alt="설익진 확대"><img class="native" src="gifs/skill.gif" alt="설익진 원본"></div><small>날개 아래 냉기 → 세 얼음 깃털 → 파편</small></figure>
+<figure><figcaption>독</figcaption><div class="art"><img class="large" src="gifs/poison.gif" alt="독 확대"><img class="native" src="gifs/poison.gif" alt="독 원본"></div><small>340ms × 2 · 아픈 목과 독 방울</small></figure>
+<figure><figcaption>기절</figcaption><div class="art"><img class="large" src="gifs/stun.gif" alt="기절 확대"><img class="native" src="gifs/stun.gif" alt="기절 원본"></div><small>380ms × 2 · 둥근 배 / 짧은 접힌 날개 / 무게 중심 변화 / 금색 별</small></figure>
+<figure><figcaption>수면</figcaption><div class="art"><img class="large" src="gifs/sleep.gif" alt="수면 확대"><img class="native" src="gifs/sleep.gif" alt="수면 원본"></div><small>600ms × 2 · 앉아 웅크린 숨</small></figure>
+</div>
+<h2>원본 크기와 확대 시트</h2>
+<img class="overview" src="inspection/native.png" alt="18자세 원본 크기">
+<img class="overview" src="inspection/light.png" alt="18자세 밝은 배경 확대">
+<h2>공격·기절 수정 전후</h2>
+<img class="overview" src="inspection/contact-stun-checker.png" alt="공격과 기절 두 자세의 수정 전후 1배 및 최근접 3배">
+<footer><a href="AUTHORING.md">저작 기록</a> · <a href="TIMING.md">시간표</a> · <a href="sheet.png">native 3×6 PNG</a> · <a href="inspection/contact-stun-light.png">밝은 배경 비교</a> · <a href="inspection/contact-stun-dark.png">어두운 배경 비교</a></footer>
+</main>
+</html>

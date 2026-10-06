@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-06T06:39:05.288358+00:00",
+  "passed": true,
+  "key": "red-jawed-wolf/fifty-v1",
+  "binding": "d692062ca446fc036db7279c3bf7e42cd563b0ffdd09efd4831e104914e155f0",
+  "actualIndependentReviewJob": "a1185996-61a7-4a3b-810a-ed68291b63a6",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "a5c105afeb6c88961936983e487cf4a4647a506c52ad9178f3ffb667a682d569",
+    "preview/suite/light.png": "6d1c06a5c6e09c8c96a428f7300be3ccbc2abbb23b6174ba6a6a931c4a05de87",
+    "preview/suite/dark.png": "d0ef758b224f4ccf672a99c5b6786670b7bd64f29a093f53fa8e5cacef43da50",
+    "preview/suite/checker.png": "f29a0ad5359f03da2501a5e1ce0014a1d26e0d010e59b35e87609803003c294d"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "rootVisualAndSourceMethodObservations": "Root opened actual current18pose harnesslight PNG native1x/3x after all4 actual coordinate repairs. Blue-black slimwolf/redjaw, dark continuous tail-root/back outline including skill_b; short rounded lifted move paw, separate tucked paws/curledtail and haunch/flank planes in sleep; lower flatdead separate from curledclosedeyesleep. Brightest split roar root is inside readable darkmouth, lowerjaw contour retained. Read initial author_rows.rows, repair_anatomy.apply, repair_move_paw top-level fixedxy3strings, repair_roar_sleep_notch.apply, repair_skill_back_outline.main. All explicit literal rows/coordinates, no body geometry/transforms.",
+  "claimScope": "Actual current native source/18pose images and literal method verified. Native8GIF/selectedZIP/archive/browser require separate current audit; game collision not inferred. Full50 incomplete."
+}

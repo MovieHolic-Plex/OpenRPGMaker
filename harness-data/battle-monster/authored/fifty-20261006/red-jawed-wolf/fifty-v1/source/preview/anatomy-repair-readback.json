@@ -1,0 +1,186 @@
+{
+  "scope": "Local source artifact readback; no reviewer verdict or user approval",
+  "changed_frames": {
+    "poses/dead.pxgrid": {
+      "changed_pixels": 103,
+      "bounds_inclusive": [
+        12,
+        51,
+        39,
+        59
+      ],
+      "before_sha256": "570639f6d188489352208d99412efba690c82d14f23904570ad5f8f858b14ab7",
+      "after_sha256": "4f226d06c8c0c2b5f7c6ef3d766c051c5a1b86e22a46c20a29992ee34f81b8fd"
+    },
+    "actions/sleep_a.pxgrid": {
+      "changed_pixels": 138,
+      "bounds_inclusive": [
+        8,
+        42,
+        42,
+        59
+      ],
+      "before_sha256": "24bd0288773b213dc635e15b28e53d1f82d147cdf99426a547d907bfd2aca8d7",
+      "after_sha256": "35bf1afef70b0b79df1e3f667af7bc3ef7a71e61b794a403c05abb5110afece9"
+    },
+    "actions/sleep_b.pxgrid": {
+      "changed_pixels": 136,
+      "bounds_inclusive": [
+        8,
+        42,
+        42,
+        59
+      ],
+      "before_sha256": "5dd616f4daf1a49c425570c35a44570a6ab2cb335182ab5f45065828a094375d",
+      "after_sha256": "1e5deb912be3cd04a262cf4d256d8ddd405e066bd18812a0ee6ea4e4f1b485c1"
+    }
+  },
+  "unchanged_frames": 15,
+  "palette_unchanged": true,
+  "frame_facts": {
+    "poses/attack.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 59
+    },
+    "poses/dead.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/hit.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/idle_a.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/idle_b.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/idle_c.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/move.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/recover.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "poses/windup.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/poison_a.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/poison_b.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/skill_a.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/skill_b.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/skill_c.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/sleep_a.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/sleep_b.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/stun_a.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    },
+    "actions/stun_b.pxgrid": {
+      "rows": 64,
+      "row_widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60
+    }
+  }
+}

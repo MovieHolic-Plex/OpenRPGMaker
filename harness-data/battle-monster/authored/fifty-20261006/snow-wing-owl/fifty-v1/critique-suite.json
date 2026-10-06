@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "실제 portrait/light/dark/checker PNG를 열고 native 1× 및 프리뷰의 nearest 3×를 검토했다. 둥근 얼굴·금색 두 눈·흰 깃털·검푸른 우측 그림자가 작은 크기에서도 읽히며, 머리와 몸의 비율 및 왼쪽 위의 밝은 면이 일관된다. 날개·목·몸·다리·발톱은 이어져 있고, 세 배경에서 몸 내부의 뚜렷한 투명 구멍이나 끊어진 윤곽은 보이지 않는다. 대기는 접지한 두 발을 유지하고, 준비는 몸을 낮추며, 이동/공격은 날개를 벌린 낮은 도약과 연결된 굽은 발톱으로 구별된다. 회복·피격·옆으로 쓰러짐도 읽힌다. 스킬은 날개 아래 청빛 준비, 실제 우측 날개에서 이어지는 위/가운데/아래 방향의 서로 다른 세 얼음 깃털, 접은 날개와 짧은 부스러기 회복으로 구별된다. 독은 기운 몸과 보라 기포, 기절은 낮아진 자세와 금색 별, 수면은 닫힌 눈과 주저앉은 몸으로 읽히며 단순 색 변경이 아니다. 상태 쌍의 변화는 작지만 기포·별의 위치 변화와 수면의 미세한 몸 변화가 확인된다. 정지 자세 프리뷰에 대한 유지 추천이며 사용자 선택을 대신하지 않는다. 실제 전투 영상과 GIF를 보지 않았으므로 재생 타이밍·전환의 매끄러움·적중 위치는 확인하지 못했다. PNG만으로 원본 격자 저작 방식이나 저작 모델을 증명할 수 없다.",
+  "issues": [],
+  "binding": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "fc2b0ef81fd002d8db96b8550d3a8800f4e61d132b02325db0e631a203bca4a8",
+    "preview/suite/light.png": "55d44cb10d592acb02a3c27c4eb76029d2f7c68222d96583c4e1a8277914cb5a",
+    "preview/suite/dark.png": "63e447ac5b18b6276c7dcfbc33ec0a822ddd0e36587da09a776a7ad1293fb2cd",
+    "preview/suite/checker.png": "19eb34cab67d9ad59aa58065cbeeb6cd1e5f8e4d0921da1f0d2994ab5c800074"
+  },
+  "jobId": "9e2527dc-103f-423c-84d4-afc7c43febc6",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T06:32:29.980787+00:00",
+  "userApproved": false
+}

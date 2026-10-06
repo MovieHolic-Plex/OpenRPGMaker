@@ -1,0 +1,164 @@
+{
+  "idle_a": {
+    "bounds": [
+      5,
+      9,
+      51,
+      60
+    ],
+    "source_sha256": "37e80eab9c4c300f42d866afa57e3bfe5f97c74e4568c88d8d394f1829a6e822"
+  },
+  "idle_b": {
+    "bounds": [
+      5,
+      9,
+      51,
+      60
+    ],
+    "source_sha256": "28907f13538804400313320302a71c1474add535c07cda77be0f61109bccdbb5"
+  },
+  "idle_c": {
+    "bounds": [
+      5,
+      9,
+      51,
+      60
+    ],
+    "source_sha256": "dc33e828e2b279345c201d1a9e4c25e94f7e6f905817e13cc46c45176785d098"
+  },
+  "windup": {
+    "bounds": [
+      5,
+      16,
+      43,
+      60
+    ],
+    "source_sha256": "d124a8e33d0fe882e96db3a50f7db58765916b863116467de7adc13018105be0"
+  },
+  "move": {
+    "bounds": [
+      7,
+      14,
+      56,
+      60
+    ],
+    "source_sha256": "7ea08c025bd28b249f164e61690092f5a13eecc15d7af592e7fef4a3fabe9715"
+  },
+  "attack": {
+    "bounds": [
+      8,
+      21,
+      56,
+      60
+    ],
+    "source_sha256": "22226c428a19e713dfac2370649e13d19803d0b6ad08882b5d6a4a334c2b166a"
+  },
+  "recover": {
+    "bounds": [
+      6,
+      10,
+      55,
+      60
+    ],
+    "source_sha256": "8c22ec5eb0a7cbfedc799ac9d37cccb42276474b679fd0bc4672dff8e3b4bf25"
+  },
+  "hit": {
+    "bounds": [
+      6,
+      17,
+      44,
+      60
+    ],
+    "source_sha256": "de8110e271718aa51549dfa0fcc6fc7f7be53575b4d2e38673c15b5957acd2f4"
+  },
+  "dead": {
+    "bounds": [
+      5,
+      37,
+      50,
+      60
+    ],
+    "source_sha256": "650d02ff9f5595180ffa3a95648ab5d13a367b27ed5f83353a75eb4ccd40328b"
+  },
+  "skill_a": {
+    "bounds": [
+      5,
+      11,
+      45,
+      60
+    ],
+    "source_sha256": "650525724a3615165e14710332379a0d3237b871e6f7321c0fc10f539af37ff2"
+  },
+  "skill_b": {
+    "bounds": [
+      5,
+      14,
+      62,
+      60
+    ],
+    "source_sha256": "f6aa8964f78eae2e98cf4a1e248ad7f28cafc1cb6d21579f8625eeaa506676fc"
+  },
+  "skill_c": {
+    "bounds": [
+      5,
+      12,
+      61,
+      60
+    ],
+    "source_sha256": "677d458286f6ce12676669e46b76fd0bda77e315ca7c04f2a0f7b4549ecb99f5"
+  },
+  "poison_a": {
+    "bounds": [
+      5,
+      18,
+      59,
+      60
+    ],
+    "source_sha256": "86b0a43383499ef368b9a089bb3ee5f099fcbf370aeb89d0f40541932bab2d89"
+  },
+  "poison_b": {
+    "bounds": [
+      5,
+      14,
+      57,
+      60
+    ],
+    "source_sha256": "bb47db409fdc6970ac43576ffb5c1695c2d7d2ed404ac048722abbc8fab94d6e"
+  },
+  "stun_a": {
+    "bounds": [
+      5,
+      13,
+      49,
+      60
+    ],
+    "source_sha256": "c7dc9a5b0e72f4d50c25685f195959d7db568eef9e686cdad82eacf8db6654e2"
+  },
+  "stun_b": {
+    "bounds": [
+      5,
+      13,
+      44,
+      60
+    ],
+    "source_sha256": "73f4f6add99ca3b7e7d867a30794caa8486ad45ac75d74174b330ac52deaeaae"
+  },
+  "sleep_a": {
+    "bounds": [
+      6,
+      34,
+      48,
+      60
+    ],
+    "source_sha256": "3f4074609ad1927e8d55fc8e0001bfa990490520b7e4592403e4a22e2651fe46"
+  },
+  "sleep_b": {
+    "bounds": [
+      6,
+      34,
+      48,
+      60
+    ],
+    "source_sha256": "d18aeef8f1cc219d6629d4fb46b4eab5e2b9a9c8c92fb900cec3a4a84d629d47"
+  }
+}

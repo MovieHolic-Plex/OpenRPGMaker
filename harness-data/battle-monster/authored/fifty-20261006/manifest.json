@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 9,
+  "archivedPassedSpecies": 13,
   "entireGoalComplete": false,
   "items": [
     {
@@ -48,6 +48,17 @@
       "selectedPackSha256": "e9357bfdf5d3298ab3b0a41a39d36d3b070e17386b9fa68c921b9c15dddede85"
     },
     {
+      "key": "red-jawed-wolf/fifty-v1",
+      "binding": "d692062ca446fc036db7279c3bf7e42cd563b0ffdd09efd4831e104914e155f0",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "b2da3a873848fccefe2d8f8f3ad2feaf77dc66e10fafa320fd02566a6de85ae2"
+    },
+    {
       "key": "moss-back-badger/fifty-v1",
       "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
       "nativeCell": 64,
@@ -57,6 +68,39 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "1c5dddb5c6523cf53d0fbbca7d280d0f214aec79d6d367d49e5c2848871d0d2c"
+    },
+    {
+      "key": "snow-wing-owl/fifty-v1",
+      "binding": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "062e20e904687f9f61ba03037d60389ebe90cc3bbde83615d6042bb7118444e8"
+    },
+    {
+      "key": "fire-scale-viper/fifty-v1",
+      "binding": "92d75b075ef71b1882eeaba3e3e8356c4a43d04fcba7000c0ea343f84e2cd81f",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "44e430b12208c9563bd8d2bfa937efb2d02c8b634da8c895bce48bc1766006af"
+    },
+    {
+      "key": "stone-shell-tortoise/fifty-v1",
+      "binding": "73bca5d310d84ebbe91ac1b8358edae59db4915db843bb22c6ea291d7af9a80d",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "4d6ead62173bc1fc147f490279e8e766df6b1744ea50c7ee5b8aef6d2037874d"
     },
     {
       "key": "lantern-goblin/fifty-v1",

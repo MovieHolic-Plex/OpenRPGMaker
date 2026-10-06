@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 1x cells and nearest-neighbor 3x cells on light, dark and checker backgrounds. The rounded white owl, gold eyes, blue feather shadows and upper-left light are readable; head/body proportions are reasonable. Body, folded wings and feet appear connected, with no obvious interior transparent holes. Resting feet share the ground line; move/attack lift them for the hop. Windup lowers the body, hit closes the eyes, and dead collapses into a connected horizontal silhouette. Poison bubbles, stun stars and the seated closed-eye sleep poses are distinct authored-looking states rather than simple tints. Skill preparation has blue clusters beneath the wings, contact has connected cyan projections, and recovery lowers the wing with sparse debris. Rework the attack talon gesture and the feather identity of the skill projections. These are static pose previews: animation timing, actual battle contact, runtime scale, exact alpha/palette compliance and the claimed authoring method cannot be established from these PNGs. This recommendation records review advice, not user selection.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 49,
+      "y": 54,
+      "message": "Around x=40–61, y=52–56, both feet still read as spread landing toes beneath the belly. Redraw the connected ankle-to-toe clusters into two visibly hooked grasping talons reaching toward the right: establish each toe root, bend the distal claws inward, and retain a small open gap inside each hook. The attack needs an explicit claw-closing silhouette after the open-wing hop."
+    },
+    {
+      "pose": "skill_b",
+      "x": 55,
+      "y": 21,
+      "message": "The three cyan projections at roughly x=49–62, y=10–43 read primarily as a long ice blade and two triangular shards. Preserve their visible connection to the actual right wing tip around x=48–51, y=31–36, but author a pale central quill and stepped barb clusters on each projection. Give the middle and lower feathers separate visible roots and different contour rhythms so all three read as distinct ice feathers at native 1x."
+    }
+  ]
+}

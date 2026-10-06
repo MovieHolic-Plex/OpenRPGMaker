@@ -1,0 +1,125 @@
+{
+  "idle_a": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "40166304b9caa2fa5c7c4bc79b9bd0bbcc2371feed2d08ae92070ca70ef06cb8",
+    "sameFileBytes": true
+  },
+  "idle_b": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "9ebbb64ee43a510ab52be3293116b6519621f896e1710bcb4d2c36ecf7bc67e7",
+    "sameFileBytes": true
+  },
+  "idle_c": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "e422f96e6499d2c9c1daa9be6a491d836d0ee5459a7f76eaeb4a91201e762456",
+    "sameFileBytes": true
+  },
+  "windup": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "73379d6f06564f2783ca88d2dceac13cf25515ed8d8e5584c984139750a8bf6e",
+    "sameFileBytes": true
+  },
+  "move": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "98d1aa89587ae68a03bf43b08baf72fdcdbbcbe8dde876c6ca450f560623d64e",
+    "sameFileBytes": true
+  },
+  "attack": {
+    "changedPixels": 73,
+    "changedBounds": [
+      39,
+      53,
+      62,
+      56
+    ],
+    "currentGridSha256": "e35a28231f90babcd620ea5e8a4839e60b0ff825548c606ae18f201fc2f48927",
+    "sameFileBytes": false
+  },
+  "recover": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "d536ac74b5e0f8602b558becd0156b176c60dc741a2145ee99927c4d28c988bf",
+    "sameFileBytes": true
+  },
+  "hit": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "ab40c7a3dff8c804b56063b03acbe9587f1b0e7fa3d50ecb68522a67ff6273cd",
+    "sameFileBytes": true
+  },
+  "dead": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "ce42032089f1d1f090b04b8e6ccb756fe2ae7bb5e381caf28f0e0b191d665566",
+    "sameFileBytes": true
+  },
+  "skill_a": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "3086a8a7a7bffcba04d4f43fb7071c8704acd2f4301f44338bb71c534b3a323f",
+    "sameFileBytes": true
+  },
+  "skill_b": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "c6911b42a71435b156082861cb6a8badedbfb162cca2df946a133deb999c32e9",
+    "sameFileBytes": true
+  },
+  "skill_c": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "2950154519f63e3e85aa0f7a5b0a56e0f0b19028e73f5011f471bce2154b4d4c",
+    "sameFileBytes": true
+  },
+  "poison_a": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "fcead8cf562c9343d30d929f694b567786b45a2ca911d124aab1c97aa492211c",
+    "sameFileBytes": true
+  },
+  "poison_b": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "ff1b46440a79d477e3714f1fbf74c62165fc6ad3e7a1d49bf6b66475afc612fb",
+    "sameFileBytes": true
+  },
+  "stun_a": {
+    "changedPixels": 191,
+    "changedBounds": [
+      24,
+      41,
+      46,
+      58
+    ],
+    "currentGridSha256": "4c477a5aaacb7f7254495c695549a5049001d0ce0f3434132d6cb53765032aa3",
+    "sameFileBytes": false
+  },
+  "stun_b": {
+    "changedPixels": 332,
+    "changedBounds": [
+      10,
+      41,
+      46,
+      60
+    ],
+    "currentGridSha256": "06bb667e74011c9e983ba57c7810f8cbb9742ddc02541386b8c84bd4e1cf7b6d",
+    "sameFileBytes": false
+  },
+  "sleep_a": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "f5871ad5d64e0b95d435e5ce07501f94b9fe4a0b4d1a6294fa7f28603ed3c0e7",
+    "sameFileBytes": true
+  },
+  "sleep_b": {
+    "changedPixels": 0,
+    "changedBounds": null,
+    "currentGridSha256": "8e87a577df4a2638028c1953925291c852d8f4b396b63865cf90a6f8080892c4",
+    "sameFileBytes": true
+  }
+}

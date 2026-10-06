@@ -1,0 +1,152 @@
+{
+  "idle": {
+    "sequence": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "holds_ms": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "decoded_frames": 4,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "attack": {
+    "sequence": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    "holds_ms": [
+      600,
+      200,
+      100,
+      120,
+      220,
+      900
+    ],
+    "decoded_frames": 6,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "hit": {
+    "sequence": [
+      "idle_a",
+      "hit",
+      "idle_a"
+    ],
+    "holds_ms": [
+      700,
+      180,
+      900
+    ],
+    "decoded_frames": 3,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "dead": {
+    "sequence": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "holds_ms": [
+      700,
+      150,
+      1700
+    ],
+    "decoded_frames": 3,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "skill": {
+    "sequence": [
+      "idle_a",
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "holds_ms": [
+      700,
+      260,
+      160,
+      240,
+      900
+    ],
+    "decoded_frames": 5,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "poison": {
+    "sequence": [
+      "poison_a",
+      "poison_b"
+    ],
+    "holds_ms": [
+      420,
+      420
+    ],
+    "decoded_frames": 2,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "stun": {
+    "sequence": [
+      "stun_a",
+      "stun_b"
+    ],
+    "holds_ms": [
+      300,
+      300
+    ],
+    "decoded_frames": 2,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  },
+  "sleep": {
+    "sequence": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "holds_ms": [
+      650,
+      650
+    ],
+    "decoded_frames": 2,
+    "native_size": [
+      64,
+      64
+    ],
+    "rgba_matches_source": true
+  }
+}

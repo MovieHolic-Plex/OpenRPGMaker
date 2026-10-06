@@ -1,0 +1,122 @@
+{
+  "idle": {
+    "frames": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "duration_ms": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "1883af9fd9e3daeec092d2402bccdfbcea573f5722c1ced0c48f46e0a42824d4"
+  },
+  "attack": {
+    "frames": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    "duration_ms": [
+      240,
+      280,
+      100,
+      180,
+      220,
+      320
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "3601bc90a46a4aaf1e945d634fb4d8c5a45c5fd8cc813abece992e65806d03cf"
+  },
+  "hit": {
+    "frames": [
+      "idle_a",
+      "hit",
+      "recover",
+      "idle_a"
+    ],
+    "duration_ms": [
+      300,
+      180,
+      160,
+      400
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "70603f0c8932b54ed7e61c42e67a1c8d2fecdecf4b0a3379ca63fd0e16c15d8c"
+  },
+  "dead": {
+    "frames": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "duration_ms": [
+      300,
+      150,
+      1400
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "29905705ec291bb7d9394e1feff242c620425b4eef292d1f89a1201d2feecf4e"
+  },
+  "skill": {
+    "frames": [
+      "idle_a",
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "duration_ms": [
+      240,
+      360,
+      260,
+      280,
+      320
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "8a94706dbf75e5f2945f5a87461c9b1bb142e1ffb7627a3c6c43c963004aa729"
+  },
+  "poison": {
+    "frames": [
+      "poison_a",
+      "poison_b"
+    ],
+    "duration_ms": [
+      420,
+      420
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "c531a8e7a5882d87cd3d059669e19b978e025ebd90069155393bc89aa4d3d719"
+  },
+  "stun": {
+    "frames": [
+      "stun_a",
+      "stun_b"
+    ],
+    "duration_ms": [
+      440,
+      440
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "08323ec8b59506fd8ca8fb20209e5732723a29a6e5273a995860d1466510d9ee"
+  },
+  "sleep": {
+    "frames": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "duration_ms": [
+      650,
+      650
+    ],
+    "decoded_native_pixels_match": true,
+    "gif_sha256": "06818c3bf02d4110777ecafe9d62927db59672903391dfbd98bed24bcb382457"
+  }
+}

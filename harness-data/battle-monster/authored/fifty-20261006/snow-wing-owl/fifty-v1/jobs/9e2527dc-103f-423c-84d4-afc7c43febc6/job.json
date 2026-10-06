@@ -1,0 +1,43 @@
+{
+  "id": "9e2527dc-103f-423c-84d4-afc7c43febc6",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T06:30:31.669615+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/jobs/9e2527dc-103f-423c-84d4-afc7c43febc6",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "84aa9146c8699e91d6d0230a7e04e7383fac5cd0ed29ab1683a5c118b841badd",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "fc2b0ef81fd002d8db96b8550d3a8800f4e61d132b02325db0e631a203bca4a8",
+    "preview/suite/light.png": "55d44cb10d592acb02a3c27c4eb76029d2f7c68222d96583c4e1a8277914cb5a",
+    "preview/suite/dark.png": "63e447ac5b18b6276c7dcfbc33ec0a822ddd0e36587da09a776a7ad1293fb2cd",
+    "preview/suite/checker.png": "19eb34cab67d9ad59aa58065cbeeb6cd1e5f8e4d0921da1f0d2994ab5c800074"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T06:32:29.765608+00:00"
+}

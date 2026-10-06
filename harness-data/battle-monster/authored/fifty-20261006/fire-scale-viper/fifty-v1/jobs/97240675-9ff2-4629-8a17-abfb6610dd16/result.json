@@ -1,0 +1,12 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the four actual PNGs, including native 1x cells and nearest-neighbor 3x cells on light, dark and checker backgrounds. The right-facing triangular head, scarlet S-shaped body, gold belly and curled tail remain recognizable; there are no horns or legs. Broad upper-left highlights and lower coil shadows give readable volume, although the head reads closer to profile than a strong three-quarter view. Neck, body and tail remain connected. The transparent opening inside the coil is intentional negative space; no accidental body holes or conspicuous broken contours are visible. The lower coil stays at native y=60 across the poses; feet, hands and tools do not apply to this creature. Windup pulls the head back, move advances it, attack opens a distinctly fanged jaw, recover raises the head and hit recoils. Dead collapses the neck and lowers the head. The skill sequence shows a small chin ember, an open-mouth flame with a visibly connected root, then a closed mouth with separated embers. Poison has a lowered head and purple bubbles; stun has a different droop and gold stars; sleep rests the head over the coil with a small closed eye and a subtle change in the upper head between frames. These are readable drawn state changes rather than palette tints. The stun eyelid has weaker contrast than the other facial marks; the listed repair is a minor refinement. This is a visual recommendation, not a user selection. Static pose previews cannot establish animated timing, dash/contact behavior in battle, source authorship, or the source alpha and palette contracts.",
+  "issues": [
+    {
+      "pose": "stun_a",
+      "x": 35,
+      "y": 34,
+      "message": "Minor readability refinement: the dark-red diagonal eyelid around (35,34)-(38,35) blends into the scarlet head at native 1x. Replace its central 2-3 pixels with the existing near-black eye color to make a short closed/slanted lid, preserving the lowered head and gold stars. Keep the corresponding facial mark equally legible in stun_b."
+    }
+  ]
+}

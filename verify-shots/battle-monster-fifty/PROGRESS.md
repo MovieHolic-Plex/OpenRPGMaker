@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재9/50 통과
+# 신규50종 제작 · 현재13/50 통과
 
 ## 최초 두 종 확인
 
@@ -110,3 +110,20 @@ browser-proof-mist-tail-lynx.json,browser-proof-red-tassel-swordswoman.json.
 원본54자세 초안/실제 keeper 전 임시 관찰은 통과로 세지 않는다. 각 실제 지적은 다음
 작가 note-file에도 반영했다. 실제 빈 자리에서 화린독사가 시작됐고 전체 목표50종은 유지된다.
 근거:nine-passed-proof.json,root-review-moss-back-badger.json,browser-proof-moss-back-badger.json.
+
+## 화린독사·늑대·부엉이·바위등거북 통과 · 실제13/50
+
+화린독사는 최초 실제 keep이고 기절 눈 대비의 작은 지적1개를 보존한다. 유지 추천을
+0지적으로 꾸미지 않았다. 늑대는4회, 부엉이는3회 실제 좌표 교정 뒤 새 keep0지적을
+받았다. 바위등거북은 최초 실제 keep0지적이다. 감독이 네 종의 현재18자세1배/3배PNG를
+열고 리터럴 행/좌표 저작 및 모든 교정 함수의 실제 쓰기 본문을 읽었다.
+늑대의 접힌 발/감긴 꼬리·등 외곽·입 발원점, 부엉이의 쥐는 발톱·둥근 기절 몸·날개
+끝 얼음 깃의 깃대와 가지가 실제 최종 그림에서 읽힌다. 바위등거북은 돌껍질의 여러 면,
+큰 지지다리·목 연결, 껍질에서 뜨는 돌3개 기술과 낮은 수면/쓰러짐이 구별된다.
+현재13/50/234자세/104GIF/전체false이고 같은13종의 현재 Allow/선택ZIP의 실제
+native PNG/GIF 픽셀·시간, 출처 동일 binding 재로드, 브라우저8GIF·정지/재생·
+1440/375/320 오류/넘침0을 확인했다. 기존52판정/8선택을 보존했고 신규39판정은
+사용자 목표에 따른 위임 Allow다. 전체50 목표는 유지되며 현재13종을 전체 완료로
+보고하지 않는다. 다음 새 저작/교정에는 같은 부위의 다른 자세에서 실제 같은 결손을
+확인하는 지침을 더했다. 좌표 자동 복사나 빈 공간 자동 메움은 금지한다.
+근거:thirteen-passed-proof.json,root-review-{fire-scale-viper,red-jawed-wolf,snow-wing-owl,stone-shell-tortoise}.json,각 browser-proof.

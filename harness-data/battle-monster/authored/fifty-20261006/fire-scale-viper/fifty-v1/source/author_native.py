@@ -1,0 +1,919 @@
+"""Literal native row authoring. Offsets place selected ASCII runs; no geometry or frame transforms."""
+from pathlib import Path
+import json
+ROOT=Path(__file__).resolve().parent
+PALETTE={
+ 'K':'#281C26','s':'#57242C','r':'#9B302E','R':'#D54B35',
+ 'o':'#F47743','h':'#FFAC69','g':'#9F6130','G':'#D49A43',
+ 'Y':'#F6D57B','w':'#FFF1CA','e':'#100F17','t':'#713044',
+ 'P':'#8E548E','v':'#C7A2BD','f':'#FFEAA0'
+}
+# These are authored native row runs, not outlines, masks, interpolation or shading rules.
+ART={}
+def literal(name,y,rows):
+    grid=['.'*64 for _ in range(64)]
+    for yy,line in enumerate(rows.strip().splitlines(),y):
+        row=list(grid[yy])
+        for run in line.split(';'):
+            x,ink=run.strip().split(':'); x=int(x)
+            if x+len(ink)>63: raise ValueError((name,yy,x,ink))
+            for xx,c in enumerate(ink,x): row[xx]=c
+        grid[yy]=''.join(row)
+    ART[name]=grid
+
+def save():
+    (ROOT/'palette.json').write_text(json.dumps(PALETTE,indent=2)+'\n')
+    for name,grid in ART.items():
+        folder='poses' if name in ('idle_a','idle_b','idle_c','windup','move','attack','recover','hit','dead') else 'actions'
+        (ROOT/folder/f'{name}.pxgrid').write_text('\n'.join(grid)+'\n')
+
+literal('idle_a',9,'''
+33:KKKKKKK
+30:KKohhhhhhoKK
+28:KohhhhhhoooooKK
+27:KohhoooooooooRRKK
+26:KooooooRRooooRRRRKK
+26:KoooooRRRooooRRRRRRKK
+26:KoooRRoRRRRooRReeeRRKK
+27:KooRRRRRRRRRRRReeeRoRKK
+28:KoRRRRRRRRRRRRRRoRRRRRK
+29:KRRRRRRRRRRRRRRRRRRrrrK
+30:KRRRRRRGGGGGGrrrrrrssK
+31:KRRRRGYYYYYYYGGGGGgK
+31:KRRRGYYYGGGGGGGGgKK
+30:KRRRGYYYGGgggggKK
+29:KoRRGYYYGgKKKKK
+28:KooRGYYGgK
+27:KooRGYYGgK
+26:KooRGYYGgK
+25:KhoRGYYGgK
+24:KhoRRGYGgK
+24:KooRRGYGgK
+24:KooRRRGGgK
+25:KoRRRRRGGgK
+26:KRRRRRRRGGgK
+27:KRRRRRRRRGGgKK
+28:KRRRRRRRRRGGGgK
+29:KrRRRRRRRRRGGGgKK
+30:KrrRRRRoRRRRGGGGgK
+7:KKKK;31:KrrRRRooRRRRRGGGgK
+6:KohRK;32:KrrRRRRRRRRRRGGGgK
+5:KohRRK;32:KsrRRRRRRRRRRGGGgK
+5:KoRRrK;31:KsrRRRRRRRRRRGGGgK
+5:KoRRrK;29:KKsrRRRRRRRRRGGGgK
+5:KoRRrK;25:KKKKRRRRRRRRRGGGGgK
+6:KoRRrK;17:KKKKKKKKRRRRRRRRRGGGGgK
+6:KoRRrrKK;13:KKohhhooooRRRRRRRRRGGGGgK
+7:KoRRrrrKKKKohhhooooooRRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+save()
+
+def revised_rows(name,base,edits):
+    """Keep stationary authored clusters and explicitly replace chosen entire native rows."""
+    grid=ART[base].copy()
+    for y,line in edits.items():
+        row=['.']*64
+        for run in line.split(';'):
+            x,ink=run.strip().split(':');x=int(x)
+            if x+len(ink)>63:raise ValueError((name,y,x,ink))
+            row[x:x+len(ink)]=ink
+        grid[y]=''.join(row)
+    ART[name]=grid
+
+revised_rows('idle_b','idle_a',{
+ 14:'26:KoooooRRRooooRRRoRRKK',
+ 15:'26:KoooRRoRRRRooRReeeRRKK',
+ 16:'27:KooRRRRRRRRRRRReeeRoRKK',
+ 17:'28:KoRRRRRRRRRRRRRRoRRRRRK',
+ 26:'26:KhooRGYYGgK',27:'25:KhooRRGYGgK',28:'24:KhooRRGYGgK',
+ 29:'24:KoooRRRGGgK',30:'25:KooRRRRRGGgK',31:'26:KoRRRRRRRGGgK',
+ 32:'27:KRRRRRoRRRGGgKK',33:'28:KRRRRooRRRRGGGgK',
+ 34:'29:KrRRRRRRRRRRGGGgKK',35:'30:KrrRRRRRRRRRRGGGGgK',
+ 38:'6:KohRRK;32:KrrRRRRRRRRRRGGGgK',
+ 39:'6:KoRRrK;31:KsrRRRRRRRRRRGGGgK',
+ 40:'5:KoRRrK;29:KKsrRRRRRRRRRGGGgK',
+})
+revised_rows('idle_c','idle_a',{
+ 9:'33:KKKKKK',10:'30:KKohhhhooKK',11:'28:KohhhhooooooKK',
+ 12:'27:KohhooooooooRRKK',13:'26:KooooooRRoooRRRRKK',
+ 14:'26:KoooooRRRoooRRRRRRKK',15:'26:KoooRRoRRRRooRReeeRRKK',
+ 16:'27:KooRRRRRRRRRRRReeRRoRKK',
+ 23:'29:KoRRGYYGgK',24:'28:KooRGYYGgK',25:'27:KooRGYYGgK',
+ 26:'26:KoRRGYYGgK',27:'25:KoRRRGYGgK',28:'25:KoRRRGYGgK',
+ 29:'25:KoRRRRGGgK',30:'26:KRRRRRRRGGgK',31:'27:KRRRRRRRRGGgK',
+ 32:'28:KRRRRRoRRRGGgK',33:'29:KRRRRooRRRRGGGgK',
+ 34:'30:KrRRRRRRRRRRGGGgK',35:'31:KrrRRRRRRRRRRGGGgK',
+ 37:'6:KohRK;32:KrrRRRRRRRRRRGGGgK',38:'5:KohRRK;32:KsrRRRRRRRRRRGGGgK'
+})
+
+literal('windup',16,'''
+22:KKKKKK
+19:KKohhhhhKK
+17:KohhhhhooooKK
+16:KohhooooooRRRKK
+15:KooooRRooooRRRRKK
+15:KoooRRRooooRRRRRRKK
+15:KooRoRRRRoooReeeRRKK
+16:KoRRRRRRRRRRReeeRoRRKK
+17:KRRRRRRRRRRRRRRRRRRRRK
+18:KRRRRRRRRRRRRRrrrrrrK
+19:KRRRRRGGGGGGrrrrssK
+20:KRRRGYYYYYYGGGGgK
+19:KRRRGYYGGGGGggKK
+18:KoRRGYYGggKKKK
+17:KooRGYYGgK
+16:KhoRGYYGgK
+15:KhoRGYYGgK
+15:KooRRGYGgK
+16:KooRRRGGgK
+17:KoRRRRRGGgKK
+18:KRRRRRRRGGGgKK
+6:KKK;19:KrRRRRRRRGGGGgKK
+5:KoRK;20:KrrRRRRRRRRGGGGGgKK
+5:KhoRK;21:KsrRRRRRooRRRGGGGGgKK
+5:KoRRK;22:KssrRRRooRRRRRGGGGGgK
+5:KoRRrK;23:KssrRRRRRRRRRRGGGGGgK
+6:KoRRrK;22:KKsrRRRRRRRRRRGGGGGgK
+6:KooRRrKK;17:KKKKKRRRRRRRRRRRGGGGgK
+7:KooRRrrKKKKKKohhhooooRRRRRRRRRGGGgK
+8:KooRRrrrrRoooooooRRRRRRRRRRRRGGGGgK
+8:KoooRRRRooooRRrrKKKKKKrrRRRRRGGGGgK
+7:KohhoRRooooRRrK......KrrRRRRRRGGGgK
+6:KohhoRRRooRRrK........KrrRRRRRGGGgK
+6:KoooRRRRRRRrK..........KrrRRRRGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGgK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+
+literal('move',14,'''
+40:KKKKKK
+37:KKohhhhooKK
+35:KohhhhhooooKK
+34:KohhooooooRRRKK
+33:KoooooRRooooRRRRKK
+33:KooooRRRoooRRRRRRKK
+33:KooRoRRRRooRReeeRRKK
+34:KoRRRRRRRRRRReeeRoRRKK
+35:KRRRRRRRRRRRRRRRoRRRRK
+36:KRRRRRRRRRRRRRrrrrrrK
+36:KRRRRRGGGGGGrrrrssK
+35:KRRRGYYYYYYGGGGgK
+34:KRRRGYYGGGGGggKK
+33:KoRRGYYGggKKKK
+32:KooRGYYGgK
+31:KhoRGYYGgK
+30:KhoRGYYGgK
+29:KhoRRGYGgK
+29:KooRRGYGgK
+30:KoRRRRGGgK
+31:KRRRRRRGGgK
+32:KRRRRoRRGGgK
+33:KRRRooRRRGGgK
+34:KrRRRRRRRRGGgK
+8:KKK;35:KrrRRRRRRRGGGgK
+7:KoRK;35:KsrRRRRRRRRGGGgK
+7:KhoRK;34:KsrRRRRRRRRGGGGgK
+8:KoRRK;32:KKsrRRRRRRRRGGGGgK
+8:KoRRrK;29:KKKsrRRRRRRRGGGGGgK
+9:KoRRrK;25:KKKKRRRRRRRRRGGGGGgK
+9:KooRRrKK;18:KKKKKKKRRRRRRRRRRGGGGgK
+10:KooRRrrKKKKKKohhhooooRRRRRRRRRGGGgK
+11:KooRRrrrrRoooooooRRRRRRRRRRRRGGGGgK
+12:KoooRRRRooooRRrrKKKKrrRRRRRRRGGGGgK
+12:KohhoRRooooRRrK....KrrRRRRRRRGGGGgK
+13:KohhoRRRooRRrK......KrrRRRRRRGGGGgK
+13:KoooRRRRRRRrK........KrrRRRRRGGGGgK
+14:KooRRRRRRRRrKK.......KrrRRRRRGGGGgK
+14:KRRRRRRRRRRRrrKKKKKKrrRRRRRGGGGgK
+14:KRRRRRRRRRRRRrrrrrrrRRRRRRGGGGggK
+15:KRRRRRRRRRRRRRRRRRRRRRRGGGGGggK
+16:KrrRRRRRRRRRRRRRRRRRGGGGGGggK
+17:KssrrRRRRRRRRRRRRRGGGGGgggK
+18:KKssrrrrRRRRRRRRGGGGgggKK
+19:KKssssrrrrrrrrggggggKK
+20:KKKKssssssssssssKKKK
+21:KKKKKKKKKKKKKKKK
+''')
+
+literal('attack',21,'''
+43:KKKKKKKK
+39:KKKKohhhhhhooKK
+36:KKohhhhhhoooooRRKK
+34:KohhhhooooooRRRRRRKK
+33:KoooooRRRooooRRRRRRRRKK
+32:KooooRRRRooooRRRReeeRRRKK
+31:KoooRoRRRRRRRRRRReeeRoRRRK
+30:KooRRRRRRRRRRRRRRRRRRRRrrK
+29:KooRRRRRRRRRRRRRRrrrrrrrKK
+28:KooRRRRRRRRRRRRrrttttKKwK
+27:KooRRRRRRRrrrrrtttttK.wK
+26:KooRRRRRRrrttttttttK..wK
+25:KooRRRRRrrttttttttK...K
+24:KooRRRRRrtttttttKK
+23:KooRRRRRrtttttKK;48:KKwwK
+22:KooRRRRRrtttKK;46:KGGwwGK
+21:KooRRRRRrttKK;43:KKGGGGGgK
+20:KooRRRRRGGGKK;38:KKKKGGGGGggK
+20:KooRRRRRGYYYYKKKKKKGGGGGGggK
+20:KooRRRRRGYYYYYYYYGGGGGgggKK
+9:KKKK;20:KooRRRRRRGYYYYGGGGGgggKK
+8:KohRK;21:KoRRRRRRRRGGGGggggKK
+8:KoRRK;22:KRRRRRRRRRRGGGgKKKK
+8:KoRRrK;22:KrrRRRRRRRRRGGGgK
+9:KoRRrK;21:KKrrRRRRRRRRRGGGgK
+10:KoRRrrKK;17:KKKKRRRRRRRRRGGGGgK
+11:KooRRrrKKKKKohhhooooRRRRRRRRGGGGgK
+12:KooRRrrrrRoooooooRRRRRRRRRRRGGGGgK
+13:KoooRRRRooooRRrrKKKKrrRRRRRRGGGGgK
+14:KohhoRRoooRRrK....KrrRRRRRRGGGGgK
+15:KohhoRRRooRRrK.....KrrRRRRRGGGGgK
+15:KoooRRRRRRRrK.......KrrRRRRGGGGgK
+16:KooRRRRRRRRrKK......KrrRRRRGGGGgK
+16:KRRRRRRRRRRRrrKKKKKKrrRRRGGGGgK
+16:KRRRRRRRRRRRRrrrrrrrRRRRGGGGggK
+17:KRRRRRRRRRRRRRRRRRRRRGGGGGggK
+18:KrrRRRRRRRRRRRRRRRGGGGGGggK
+19:KssrrRRRRRRRRRRRGGGGGgggK
+20:KKssrrrrRRRRRRGGGGgggKK
+21:KKKKssssssssssggggKKKK
+''')
+
+literal('recover',10,'''
+39:KKKKKK
+36:KKohhhhooKK
+34:KohhhhhooooKK
+33:KohhooooooRRRKK
+32:KoooooRRooooRRRRKK
+32:KooooRRRoooRRRRRRKK
+32:KooRoRRRRooRReeeRRKK
+33:KoRRRRRRRRRRReeeRoRRKK
+34:KRRRRRRRRRRRRRRRoRRRRK
+35:KRRRRRRRRRRRRRrrrrrrK
+35:KRRRRRGGGGGGrrrrssK
+34:KRRRGYYYYYYGGGGgK
+33:KRRRGYYGGGGGggKK
+32:KoRRGYYGggKKKK
+31:KooRGYYGgK
+30:KhoRGYYGgK
+29:KhoRGYYGgK
+28:KhoRRGYGgK
+27:KooRRGYGgK
+27:KooRRRGGgK
+28:KoRRRRRGGgK
+29:KRRRRRRRGGgK
+30:KRRRRRoRRGGgK
+31:KRRRRooRRRGGgK
+32:KrRRRRRRRRRGGgK
+33:KrrRRRRRRRRGGGgK
+34:KsrRRRRRRRRRGGGgK
+8:KKKK;34:KsrRRRRRRRRRGGGgK
+7:KohRK;34:KsrRRRRRRRRRGGGgK
+6:KohRRK;33:KsrRRRRRRRRRGGGGgK
+6:KoRRrK;31:KKsrRRRRRRRRGGGGGgK
+6:KoRRrK;27:KKKKRRRRRRRRRGGGGgK
+7:KoRRrK;19:KKKKKKKKRRRRRRRRRGGGGgK
+7:KoRRrrKK;14:KKohhhooooRRRRRRRRRGGGGgK
+8:KoRRrrrKKKKohhhooooooRRRRRRRRRGGGGgK
+9:KoRRrrrrRRooooRRRrrrRRRRRRRRRGGGGgK
+9:KooRRrrRRooooRRrKKKKKKrrRRRRRGGGGgK
+8:KoooRRRRooooRRrK......KrrRRRRRGGGGgK
+7:KohhoRRooooRRrK........KrrRRRRGGGGgK
+7:KohhoRRRooRRrK..........KrrRRRGGGGgK
+7:KoooRRRRRRRrK...........KrrRRRGGGGgK
+8:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+9:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+10:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+11:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+12:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+13:KssrrRRRRRRRRRRRRRGGGGGgggK
+15:KKssrrrrRRRRRRRRGGGGgggKK
+17:KKssssrrrrrrrrggggggKK
+19:KKKKssssssssssssKKKK
+''')
+
+literal('hit',17,'''
+20:KKKKKKK
+17:KKohhhhooKK
+15:KohhhhoooooKK
+14:KohhoooooooRRKK
+13:KoooooRRoooRRRRKK
+13:KooooRRRoooRRRRRRKK
+13:KooRoRRRRRRRRReeRRKK
+14:KoRRRRRRRRRRReeRRoRRKK
+15:KRRRRRRRRRRRRRoRRRRRRK
+16:KRRRRRRRRRRRRRRrrrrrK
+17:KRRRRRGGGGGrrrrrssK
+18:KRRRGYYYYYGGGGGgK
+19:KRRRGYYGGGGgggKK
+20:KoRRGYYGggKKKK
+20:KooRGYYGgK
+21:KooRGYYGgK
+22:KhoRGYYGgK
+23:KhoRRGYGgK
+24:KooRRGYGgK
+25:KooRRRGGgK
+8:KKK;26:KoRRRRRGGgK
+7:KoRK;27:KRRRRRRRGGgKK
+6:KhoRK;28:KRRRRoRRRGGGgKK
+6:KoRRK;28:KRRRooRRRRRGGGgK
+6:KoRRrK;27:KrrRRRRRRRRRGGGGgK
+7:KoRRrK;25:KKsrRRRRRRRRRGGGGgK
+7:KooRRrKK;18:KKKKKKKRRRRRRRRRGGGGgK
+8:KooRRrrKKKKKKohhhooooRRRRRRRRRGGGgK
+9:KooRRrrrrRoooooooRRRRRRRRRRRRGGGGgK
+9:KoooRRRRooooRRrrKKKKKKrrRRRRRGGGGgK
+8:KohhoRRooooRRrK......KrrRRRRRRGGGgK
+7:KohhoRRRooRRrK........KrrRRRRRGGGgK
+7:KoooRRRRRRRrK..........KrrRRRRGGGgK
+8:KooRRRRRRRRrKK.........KrrRRRRGGGgK
+9:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGgK
+10:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+11:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+12:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+13:KssrrRRRRRRRRRRRRRGGGGGgggK
+15:KKssrrrrRRRRRRRRGGGGgggKK
+17:KKssssrrrrrrrrggggggKK
+19:KKKKssssssssssssKKKK
+''')
+
+literal('dead',37,'''
+9:KKKKK
+7:KKohhoKK;24:KKKKKKKKKK
+6:KohhRRrK;20:KKohhhhhooooKKKK
+5:KohRRrrK;17:KKohhhooooooRRRRKK
+5:KoRRrKK;15:KohhoooooRRRRRRRRRKK
+5:KoRRrK;14:KoRRRRRRoRRRRRRRRRRRK
+6:KoRRrK;13:KRRRRRRRRRRRRRRRRRRrrK
+6:KoRRrrKK;13:KRRRRRRRRRRRRRsssrrrssKKKKK
+7:KoRRrrrrKKKKKRRRRRRRRRRRRRGGgggggRRRKKKK
+8:KoRRRRRRRooooRRRRRRRRRRRRGGGGGgggRRRRRRKK
+9:KoooRRRooooRRrrKKKKKKrrRGGGGGgggRRRRRRRRRK
+8:KohhoRRoooRRrK......KrrRGGGGgggRRRoRRRReeRK
+7:KohhoRRRooRRrK........KrrRGGGgggRRRRRRRRRRrK
+7:KoooRRRRRRRrK..........KrrRGGgggRRRRRRRRRrrK
+8:KooRRRRRRRRrKK.........KrrRGGgggRRRRrrrrrrK
+9:KRRRRRRRRRRRrrKKKKKKKKrrRRRGGGGgggGGGGggK
+10:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggggggggK
+11:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggKKKKKKKK
+12:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+13:KssrrRRRRRRRRRRRRRGGGGGgggK
+15:KKssrrrrRRRRRRRRGGGGgggKK
+17:KKssssrrrrrrrrggggggKK
+19:KKKKssssssssssssKKKK
+''')
+save()
+
+literal('skill_a',11,'''
+29:KKKKKK
+26:KKohhhhhKK
+24:KohhhhhooooKK
+23:KohhooooooRRRKK
+22:KooooRRooooRRRRKK
+22:KoooRRRooooRRRRRRKK
+22:KooRoRRRRoooReeeRRKK
+23:KoRRRRRRRRRRReeeRoRRKK
+24:KRRRRRRRRRRRRRRRoRRRRK
+25:KRRRRRRRRRRRRRrrrrrrK
+26:KRRRRRGGGGGGrrrrssK
+26:KRRRGYYYYYYGGGGgK
+25:KRRRGYYGGGGGggKK
+24:KoRRGYYGggKKKK;44:o
+23:KooRGYYGgK;43:ofo
+22:KhoRGYYGgK;42:oYffo
+21:KhoRGYYGgK;42:oYffo
+20:KhoRRGYGgK;43:oYo
+20:KooRRGYGgK;44:o
+21:KoRRRRGGgK
+22:KRRRRRRGGgK
+23:KRRRRoRRGGgK
+24:KRRRooRRRGGgK
+25:KrRRRRRRRRGGgKK
+26:KrrRRRRRRRGGGgKK
+27:KsrRRRRRRRRGGGGgK
+7:KKKK;28:KsrRRRRRRRRRGGGgK
+6:KohRK;28:KsrRRRRRRRRRGGGgK
+5:KohRRK;28:KsrRRRRRRRRRGGGgK
+5:KoRRrK;27:KsrRRRRRRRRRGGGGgK
+5:KoRRrK;25:KKsrRRRRRRRRGGGGGgK
+6:KoRRrK;21:KKKKRRRRRRRRRGGGGgK
+6:KoRRrrKK;15:KKKKKKRRRRRRRRRRRGGGGgK
+7:KoRRrrrKKKKohhhooooooRRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+
+literal('skill_b',14,'''
+58:o
+29:KKKKK;57:oo
+26:KKohhhhoKK;56:oYo
+24:KohhhhhoooKK;54:ooYYo
+23:KohhooooRRRRKK;52:ooYYYRo
+22:KooooRRooooRRRKK;51:oYffYo
+22:KoooRRRoooRRRRRRK;50:oYffYo;60:o
+22:KooRoRRRRRRReeeRRK;49:oYffYo;59:oo
+23:KoRRRRRRRRRReeeRoRK;48:oYffYo;57:ooYo
+24:KRRRRRRRRRRRRRRRRrrK;47:oYfffYo;55:ooYYo
+25:KRRRRRRRRRrrrrrrrrKK;46:oYffffYoooYYYRo
+25:KRRRRRrrtttttttttK;45:oYfffffffYYYRo
+24:KRRRRrrtttttttwwKooYffffffffYYRo
+23:KRRRRrttttttttwKoYfffffffYYoo
+22:KooRRrttttttttKoYfffYoooYYRo
+21:KooRRRGGGGGGGKooYffYo;55:oYYRo
+20:KooRRRGYYYYYYYYGKoYfYo;56:oYYRo
+20:KooRRRGYYYGGGGGGgKoYYo;57:oYYRo
+20:KooRRRGYYGgggggKK;45:oo;58:oYYRo
+21:KoRRRRGYYGgKKKK;59:oYYo
+22:KRRRRRGYYGgK;60:oYo
+23:KRRRRoRGYGgK;61:oo
+24:KRRRooRRGGgK;62:o
+25:KrRRRRRRRGGgKK
+7:KKKK;26:KrrRRRRRRRGGGgKK
+6:KohRK;27:KsrRRRRRRRRGGGGgK
+5:KohRRK;28:KsrRRRRRRRRRGGGgK
+5:KoRRrK;28:KsrRRRRRRRRRGGGgK
+5:KoRRrK;27:KsrRRRRRRRRRGGGGgK
+6:KoRRrK;25:KKsrRRRRRRRRGGGGGgK
+6:KoRRrrKK;21:KKKKRRRRRRRRRGGGGgK
+7:KoRRrrrKKKKKKohhhooooRRRRRRRRRGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+
+literal('skill_c',12,'''
+35:KKKKKK
+32:KKohhhhooKK
+30:KohhhhhooooKK;57:o
+29:KohhooooooRRRKK;56:oYo
+28:KoooooRRooooRRRRKK;57:oo
+28:KooooRRRoooRRRRRRKK
+28:KooRoRRRRooRReeeRRKK
+29:KoRRRRRRRRRRReeeRoRRKK;60:o
+30:KRRRRRRRRRRRRRRRoRRRRK;59:oYo
+31:KRRRRRRRRRRRRRrrrrrrK;60:oo
+31:KRRRRRGGGGGGrrrrssK
+30:KRRRGYYYYYYGGGGgK
+29:KRRRGYYGGGGGggKK;53:oYo
+28:KoRRGYYGggKKKK;54:oo
+27:KooRGYYGgK
+26:KhoRGYYGgK;59:o
+25:KhoRGYYGgK;58:oYo
+24:KhoRRGYGgK;58:oo
+23:KooRRGYGgK
+23:KooRRRGGgK
+24:KoRRRRRGGgK
+25:KRRRRRRRGGgK
+26:KRRRRRoRRGGgK
+27:KRRRRooRRRGGgK
+28:KrRRRRRRRRRGGgK
+29:KrrRRRRRRRRGGGgK
+7:KKKK;30:KsrRRRRRRRRRGGGgK
+6:KohRK;30:KsrRRRRRRRRRGGGgK
+5:KohRRK;30:KsrRRRRRRRRRGGGgK
+5:KoRRrK;29:KsrRRRRRRRRRGGGGgK
+5:KoRRrK;27:KKsrRRRRRRRRGGGGGgK
+6:KoRRrK;23:KKKKRRRRRRRRRGGGGgK
+6:KoRRrrKK;17:KKKKKKRRRRRRRRRRRGGGGgK
+7:KoRRrrrKKKKohhhooooooRRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+
+literal('poison_a',18,'''
+51:PP
+50:Pv.P
+50:P..P
+51:PP
+30:KKKKK
+27:KKohhhooKK
+25:KohhhhoooRRKK;57:PP
+24:KohhooooRRRRRKK;56:Pv.P
+23:KooooRRooooRRRRKK;56:P..P
+23:KoooRRRoooRRRRRRKK;57:PP
+23:KooRoRRRRRRRRRRRRKK
+24:KoRRRRRRRRRRRRRRRRRRK
+25:KRRRRRRRRRRRRRRRReeRRK
+26:KRRRRRRRRRRRRRRRRReeRK
+27:KRRRRRRRRRRRRRRrrrrrrK
+27:KRRRRRGGGGGGrrrrrssK
+26:KRRRRGYYYYYGGGGGgK
+25:KRRRRGYYYGGGGgggKK
+24:KooRRGYYGgggKKKK
+23:KhoRRGYYGgKK
+7:KKKK;23:KhoRRGYYGgK
+6:KohRK;24:KooRRRGYGgK
+5:KohRRK;25:KoRRRRRGGgK
+5:KoRRrK;26:KRRRRRRRGGgK;49:PP
+5:KoRRrK;26:KrRRRRRRRGGgK;48:Pv.P
+6:KoRRrK;25:KKrrRRRRRRGGgK;48:P..P
+6:KoRRrrKK;20:KKKKKRRRRRRGGGgKK;49:PP
+7:KoRRrrrKKKKKKohhhooooRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrggggggKK
+18:KKKKsssssssssssKKKK
+''')
+
+literal('poison_b',14,'''
+56:P
+54:P.vP
+55:PP
+1:.
+48:PP
+47:Pv.P
+47:P..P
+48:PP
+28:KKKKK
+25:KKohhhooKK
+23:KohhhhoooRRKK
+22:KohhooooRRRRRKK
+21:KooooRRooooRRRRKK
+21:KoooRRRoooRRRRRRKK
+21:KooRoRRRRRRRRRRRRKK
+22:KoRRRRRRRRRRRRRRRRRRK
+23:KRRRRRRRRRRRRRRRReeRRK
+24:KRRRRRRRRRRRRRRRRReeRK
+25:KRRRRRRRRRRRRRRrrrrrrK
+26:KRRRRRGGGGGGrrrrrssK
+26:KRRRRGYYYYYGGGGGgK
+25:KRRRRGYYYGGGGgggKK
+24:KooRRGYYGgggKKKK
+23:KhoRRGYYGgKK;54:PP
+7:KKKK;22:KhoRRGYYGgK;53:Pv.P
+6:KohRK;23:KooRRRGYGgK;53:P..P
+5:KohRRK;24:KoRRRRRGGgK;54:PP
+5:KoRRrK;25:KRRRRRRRGGgK
+5:KoRRrK;26:KrRRRRRRRGGgK
+6:KoRRrK;25:KKrrRRRRRRGGgK
+6:KoRRrrKK;20:KKKKKRRRRRRGGGgKK
+7:KoRRrrrKKKKKKohhhooooRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrggggggKK
+18:KKKKsssssssssssKKKK
+''')
+
+literal('stun_a',13,'''
+18:G
+18:Y
+16:GYYY G
+18:Y
+18:G
+1:.
+1:.
+1:.
+47:G
+47:Y
+45:GYYY G
+47:Y
+47:G
+24:KKKKK
+21:KKohhhooKK
+19:KohhhhoooRRKK
+18:KohhooooRRRRRKK
+17:KooooRRooooRRRRKK
+17:KoooRRRoooRRRRRRKK
+17:KooRoRRRRRRRRRRRRKK
+18:KoRRRRRRRRRRRRRRRRRRK
+19:KRRRRRRRRRRRRRRRssRRRK
+20:KRRRRRRRRRRRRRRRRssRRK
+21:KRRRRRRRRRRRRRRrrrrrrK
+22:KRRRRRGGGGGGrrrrrssK
+7:KKKK;23:KRRRRGYYYYYGGGGGgK
+6:KohRK;24:KRRRRGYYYGGGGgggKK
+5:KohRRK;25:KooRRGYYGgggKKKK
+5:KoRRrK;26:KhoRRGYYGgKK
+5:KoRRrK;27:KooRRRGYGgK
+6:KoRRrK;27:KoRRRRRGGgK
+6:KoRRrrKK;23:KKKKRRRRRGGGgKK
+7:KoRRrrrKKKKKKohhhooooRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrggggggKK
+18:KKKKsssssssssssKKKK
+'''.replace('GYYY G','GYYYG'))
+
+literal('stun_b',13,'''
+42:G
+42:Y
+40:GYYYG
+42:Y
+42:G
+1:.
+1:.
+1:.
+12:G
+12:Y
+10:GYYYG
+12:Y
+12:G
+25:KKKKK
+22:KKohhhooKK
+20:KohhhhoooRRKK
+19:KohhooooRRRRRKK
+18:KooooRRooooRRRRKK
+18:KoooRRRoooRRRRRRKK
+18:KooRoRRRRRRRRRRRRKK
+19:KoRRRRRRRRRRRRRRRRRRK
+20:KRRRRRRRRRRRRRRRssRRRK
+21:KRRRRRRRRRRRRRRRRssRRK
+22:KRRRRRRRRRRRRRRrrrrrrK
+23:KRRRRRGGGGGGrrrrrssK
+7:KKKK;24:KRRRRGYYYYYGGGGGgK
+6:KohRK;25:KRRRRGYYYGGGGgggKK
+5:KohRRK;26:KooRRGYYGgggKKKK
+5:KoRRrK;27:KhoRRGYYGgKK
+5:KoRRrK;28:KooRRRGYGgK
+6:KoRRrK;28:KoRRRRRGGgK
+6:KoRRrrKK;23:KKKKKRRRRRGGGgKK
+7:KoRRrrrKKKKKKohhhooooRRRRRRRRGGGGgK
+8:KoRRrrrrRRooooRRRrrrRRRRRRRRGGGGgK
+8:KooRRrrRRooooRRrKKKKKKrrRRRRGGGGgK
+7:KoooRRRRooooRRrK......KrrRRRRGGGGgK
+6:KohhoRRooooRRrK........KrrRRRGGGGgK
+6:KohhoRRRooRRrK..........KrrRRGGGGgK
+6:KoooRRRRRRRrK...........KrrRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrggggggKK
+18:KKKKsssssssssssKKKK
+''')
+
+literal('sleep_a',34,'''
+21:KKKKKK
+18:KKohhhhhooKK
+16:KohhhhhoooooKK
+15:KohhoooooooRRRKK
+14:KooooRRooooRRRRRKK
+13:KoooRRRoooRRRRRRRRKK
+12:KooRoRRRRRRRRRRRRRRRKK
+8:KKKK;12:KoRRRRRRRRRRRRRRRRRRRRKK
+7:KohRK;13:KRRRRRRRRRRRRRRRRRRRRRRRKK
+6:KohRRK;14:KRRRRRRRRRRGGGGGGrrRRRRRRRK
+6:KoRRrK;15:KRRRRRRRRRGYYYYYYGGrrRRRRRRRK
+6:KoRRrKK;16:KRRRRRRRGYYYYYGGGGGrrRRRssRRK
+7:KoRRrrrKKKKKKRRRRRRGYYYYGGGGGGGGrrRRRRRRrK
+8:KoRRRRRRRooooRRRRRRGGGGGGGgggggggRRRrrrrK
+8:KoooRRRRooooRRrrKKKKKKrrRRRRRRGGGGgggKKK
+7:KohhoRRooooRRrK......KrrRRRRRRGGGGgKK
+6:KohhoRRRooRRrK........KrrRRRRRGGGGgK
+6:KoooRRRRRRRrK..........KrrRRRRGGGGgK
+7:KooRRRRRRRRrKK.........KrrRRRRGGGGgK
+8:KRRRRRRRRRRRrrKKKKKKKKrrRRRRGGGGggK
+9:KRRRRRRRRRRRRrrrrrrrrrRRRRRGGGGggK
+10:KRRRRRRRRRRRRRRRRRRRRRRRGGGGggK
+11:KrrRRRRRRRRRRRRRRRRRRGGGGGggK
+12:KssrrRRRRRRRRRRRRRGGGGGgggK
+14:KKssrrrrRRRRRRRRGGGGgggKK
+16:KKssssrrrrrrrrggggggKK
+18:KKKKssssssssssssKKKK
+''')
+revised_rows('sleep_b','sleep_a',{
+ 34:'21:KKKKKKK',35:'18:KKohhhhhhooKK',36:'16:KohhhhhhoooooKK',
+ 37:'15:KohhhoooooooRRRKK',38:'14:KooooRRoooooRRRRRKK',
+ 39:'13:KoooRRRooooRRRRRRRRKK',40:'12:KooRoRRRRRRRRRRRRRRRRKK',
+ 41:'8:KKKK;12:KoRRRRRRRRRRRRRRRRRRRRKK',
+ 43:'6:KohRRK;14:KRRRRRRRRRRGYYYYYGrrRRRRRRRK',
+ 44:'6:KoRRrK;15:KRRRRRRRRRGYYYYYYGGrrRRRRRRRK',
+ 45:'6:KoRRrKK;16:KRRRRRRRGYYYYYGGGGGrrRRRssRRK'
+})
+save()
+
+# Visual correction: explicitly selected rows, native coordinates are zero based.
+# Reconnect the curved ventral fold to the weight-bearing lower coil without a square notch.
+revised_rows('poison_a','poison_a',{
+ 41:'5:KoRRrK;26:KRRRRRRRGGGgK;49:PP',
+ 42:'5:KoRRrK;26:KrRRRRRRRGGGgK;48:Pv.P',
+ 43:'6:KoRRrK;25:KKrrRRRRRRGGGGgK;48:P..P',
+ 44:'6:KoRRrrKK;20:KKKKKRRRRRRRRRGGGGGgK;49:PP'
+})
+revised_rows('poison_b','poison_b',{
+ 41:'5:KoRRrK;25:KRRRRRRRGGGgK',
+ 42:'5:KoRRrK;26:KrRRRRRRRGGGgK',
+ 43:'6:KoRRrK;25:KKrrRRRRRRGGGGgK',
+ 44:'6:KoRRrrKK;20:KKKKKRRRRRRRRRGGGGGgK'
+})
+revised_rows('stun_a','stun_a',{
+ 42:'5:KoRRrK;27:KooRRRGYGGgK',
+ 43:'6:KoRRrK;27:KoRRRRRGGGGgK',
+ 44:'6:KoRRrrKK;23:KKKKRRRRRRGGGGGgK'
+})
+revised_rows('stun_b','stun_b',{
+ 42:'5:KoRRrK;28:KooRRRGYGGgK',
+ 43:'6:KoRRrK;28:KoRRRRRGGGgK',
+ 44:'6:KoRRrrKK;23:KKKKKRRRRRRGGGGgK'
+})
+# The warm ember now grows directly from the underside of the closed jaw.
+revised_rows('skill_a','skill_a',{
+ 22:'26:KRRRGYYYYYYGGGGgKo',
+ 23:'25:KRRRGYYGGGGGggKKRfo',
+ 24:'24:KoRRGYYGggKKKK;40:RYffo',
+ 25:'23:KooRGYYGgK;40:RYffYo',
+ 26:'22:KhoRGYYGgK;40:RYYYo',
+ 27:'21:KhoRGYYGgK;41:RYo',
+ 28:'20:KhoRRGYGgK;42:R',
+ 29:'20:KooRRGYGgK'
+})
+# Red/orange exterior and separate unequal upper, middle and downward breath branches.
+revised_rows('skill_b','skill_b',{
+ 14:'58:R',
+ 15:'29:KKKKK;57:Ro',
+ 16:'26:KKohhhhoKK;56:RoR',
+ 17:'24:KohhhhhoooKK;54:RoYoR',
+ 18:'23:KohhooooRRRRKK;52:RoYYRoR',
+ 19:'22:KooooRRooooRRRKK;51:RoYfYoR',
+ 20:'22:KoooRRRoooRRRRRRK;50:RoYffYoR;60:R',
+ 21:'22:KooRoRRRRRRReeeRRK;49:RoYffYoR;59:Ro',
+ 22:'23:KoRRRRRRRRRReeeRoRK;48:RoYffYoR;57:RoYoR',
+ 23:'24:KRRRRRRRRRRRRRRRRrrK;46:RoYfffYoRRoYYoR',
+ 24:'25:KRRRRRRRRRrrrrrrrrKKRoYffffYoooYYYRoR',
+ 25:'25:KRRRRRrrtttttttttKRoYfffffffYYYRoR',
+ 26:'24:KRRRRrrtttttttwwKRoYffffffffYYRoR',
+ 27:'23:KRRRRrttttttttwKRoYfffffffYYooR',
+ 28:'22:KooRRrttttttttKRoYfffYoooYYRoR',
+ 29:'21:KooRRRGGGGGGGKRoYffYoR;54:RoYYRoR',
+ 30:'20:KooRRRGYYYYYYYYGKoYfYoR;56:RoYYRo',
+ 31:'20:KooRRRGYYYGGGGGGgKoYYoR;57:RoYYR',
+ 32:'20:KooRRRGYYGgggggKK;45:RoR;58:RoYR',
+ 33:'21:KoRRRRGYYGgKKKK;59:RoYR',
+ 34:'22:KRRRRRGYYGgK;60:RoR',
+ 35:'23:KRRRRoRGYGgK;61:RR',
+ 36:'24:KRRRooRRGGgK;62:R'
+})
+
+def selected_pixels(name,coords):
+    # No automatic masks or shade propagation: each short run and location is literal.
+    for x,y,ink in coords:
+        row=list(ART[name][y]);row[x:x+len(ink)]=ink;ART[name][y]=''.join(row)
+
+# Short closed eyelids. No copied open-eye 3x2 cluster; warm facial pixels remain around them.
+selected_pixels('sleep_a',[(43,45,'ee'),(42,44,'oR'),(43,46,'RR')])
+selected_pixels('sleep_b',[(43,45,'ee'),(42,44,'oR'),(43,46,'RR')])
+selected_pixels('dead',[(45,48,'ss'),(44,47,'rR')])
+# Sparse broad scale shoulders on the vermilion coil, explicitly chosen for each pose.
+selected_pixels('idle_a',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('idle_b',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('idle_c',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('windup',[(12,50,'rr'),(13,51,'rR'),(19,53,'rr'),(20,54,'rR'),(27,53,'ro')])
+selected_pixels('move',[(18,52,'rr'),(19,53,'rR'),(25,55,'rr'),(26,56,'rR'),(32,55,'ro')])
+selected_pixels('attack',[(20,53,'rr'),(21,54,'rR'),(27,56,'rr'),(28,57,'rR'),(34,55,'ro')])
+selected_pixels('recover',[(13,52,'rr'),(14,53,'rR'),(20,55,'rr'),(21,56,'rR'),(28,55,'ro')])
+selected_pixels('hit',[(13,50,'rr'),(14,51,'rR'),(20,53,'rr'),(21,54,'rR'),(28,53,'ro')])
+selected_pixels('dead',[(13,51,'rr'),(14,52,'rR'),(20,54,'rr'),(21,55,'rR'),(27,54,'ro')])
+selected_pixels('skill_a',[(12,51,'rr'),(13,52,'rR'),(19,54,'rr'),(20,55,'rR'),(27,54,'ro')])
+selected_pixels('skill_b',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('skill_c',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('poison_a',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('poison_b',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('stun_a',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('stun_b',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('sleep_a',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+selected_pixels('sleep_b',[(12,52,'rr'),(13,53,'rR'),(19,55,'rr'),(20,56,'rR'),(27,55,'ro')])
+save()
+
+# Fang tip: remove the isolated diagonal outline pixel and give the taper a connected root.
+revised_rows('attack','attack',{
+ 31:'27:KooRRRRRRRrrrrrtttttK;50:wK',
+ 32:'26:KooRRRRRRrrttttttttK;49:wK',
+ 33:'25:KooRRRRRrrttttttttK;49:K'
+})
+# Connect the downward fire branch to the exhaled mass; remove an unintended loose cast speck.
+selected_pixels('skill_b',[(52,28,'oYR')])
+revised_rows('skill_b','skill_b',{
+ 32:'20:KooRRRGYYGgggggKK;58:RoYR'
+})
+# Preserve support at y=60 by reauthoring only the last rows of the compressed coils.
+revised_rows('windup','windup',{
+ 56:'13:KssrrRRRRRRRRRRRGGGGGgggK',
+ 57:'14:KssrrrRRRRRRRRGGGGGgggK',
+ 58:'15:KssrrrrRRRRRRGGGGggggK',
+ 59:'16:KKssssrrrrrrrrggggggKK',
+ 60:'18:KKKKssssssssssssKKKK'
+})
+revised_rows('hit','hit',{
+ 56:'14:KssrrRRRRRRRRRRRGGGGGgggK',
+ 57:'15:KssrrrRRRRRRRRGGGGGgggK',
+ 58:'16:KssrrrrRRRRRRGGGGggggK',
+ 59:'17:KKssssrrrrrrrrggggggKK',
+ 60:'19:KKKKssssssssssssKKKK'
+})
+revised_rows('recover','recover',{
+ 59:'18:KssssrrrrrrrrgggggggK',
+ 60:'20:KKKKssssssssssKKKK'
+})
+revised_rows('skill_a','skill_a',{
+ 59:'17:KssssrrrrrrrrgggggggK',
+ 60:'19:KKKKssssssssssKKKK'
+})
+revised_rows('dead','dead',{
+ 59:'18:KssssrrrrrrrrgggggggK',
+ 60:'20:KKKKssssssssssKKKK'
+})
+save()
+
+# Final visual correction: taper the compressed lower rim inward instead of a square end tab.
+revised_rows('windup','windup',{
+ 59:'17:KKsssrrrrrrgggggKK',60:'19:KKssssssssssKK'
+})
+revised_rows('hit','hit',{
+ 59:'18:KKsssrrrrrrgggggKK',60:'20:KKssssssssssKK'
+})
+save()

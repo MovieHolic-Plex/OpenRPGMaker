@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-06T06:39:05.289505+00:00",
+  "passed": true,
+  "key": "snow-wing-owl/fifty-v1",
+  "binding": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+  "actualIndependentReviewJob": "9e2527dc-103f-423c-84d4-afc7c43febc6",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "fc2b0ef81fd002d8db96b8550d3a8800f4e61d132b02325db0e631a203bca4a8",
+    "preview/suite/light.png": "55d44cb10d592acb02a3c27c4eb76029d2f7c68222d96583c4e1a8277914cb5a",
+    "preview/suite/dark.png": "63e447ac5b18b6276c7dcfbc33ec0a822ddd0e36587da09a776a7ad1293fb2cd",
+    "preview/suite/checker.png": "19eb34cab67d9ad59aa58065cbeeb6cd1e5f8e4d0921da1f0d2994ab5c800074"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "rootVisualAndSourceMethodObservations": "Root opened actual current18pose harnesslight PNG native1x/3x after3 actual repairs. Goldowl eyes/white layeredfeathers, connected wings, openwing forwardhop attack with both hooked graspingclaws and dark innergaps. Ice3feathers have distinct wing-tip roots/pale quills/steppedbarbs, short residuals. Stun restores rounded belly and short separatelyfolded wing with tilted head/bentknees, retaining two different swayposes. Lowerflatdead differs from closedeyestable folded sleep. Read full render.write_literals parser and all3 repair apply bodies, explicit chosen native row runs with lossless serialization; no body geometry/automatic pose transforms.",
+  "claimScope": "Actual current native source/18pose images and literal method verified. Native8GIF/selectedZIP/archive/browser require separate current audit; game collision not inferred. Full50 incomplete."
+}

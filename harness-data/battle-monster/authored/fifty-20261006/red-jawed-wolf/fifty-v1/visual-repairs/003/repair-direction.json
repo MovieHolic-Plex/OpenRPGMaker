@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "be4c823e82c98841505d33e254e0d62d00001b2263e541d8587195d0acce9fd1",
+  "priorReviewJob": "dced7351-b84b-4788-8668-fb1c315db3af",
+  "issues": [
+    {
+      "pose": "skill_b",
+      "x": 35,
+      "y": 35,
+      "message": "The bright horizontal orange cluster at x34-38/y35-37 merges the lower jaw/throat into the lowest roar stroke, while the upper connection touches the fang line around x40-44/y29-30. At 1x this gives the effect competing origins and makes it resemble overlapping angular chevrons. Preserve a dark open-mouth cavity, narrow the lower tongue/root, and make the brightest shared emission root visibly start inside the mouth around x40/y31 before separating into two outward branches. Keep the lower jaw contour readable beneath it."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 24,
+      "y": 44,
+      "message": "The broad triangular hump from approximately x10-34/y29-51 and long uninterrupted diagonal highlight read as a folded shell or cloak; the slim torso, haunch and bushy tail cease to be individually readable. In both sleep_a and sleep_b, break this plane with a curved haunch-to-flank shadow boundary and a separately contoured tail curl near x12-25/y51-57. Retain the tucked paws and closed eye, and preserve the same body mass across the breathing pair."
+    },
+    {
+      "pose": "idle_a",
+      "x": 17,
+      "y": 32,
+      "message": "At the notch between tail and rump, the pale back cluster at x17/y32-33 is directly exposed to the background and interrupts the dark contour adjoining the back ridge at y31. Trace a one-pixel dark stepped boundary outside this cluster through the tail-root notch, retaining the highlight inside it. Inspect the matching notch in idle_b and idle_c; do not fill the intentional space around the raised tail."
+    }
+  ],
+  "startedAt": "2026-10-06T06:15:47.154523+00:00"
+}

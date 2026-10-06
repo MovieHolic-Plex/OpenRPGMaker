@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "red-jawed-wolf",
+    "source": "qa-runs/harnesses/battle-monster/red-jawed-wolf/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "004dd187a20535f2e7822bdf87c0ec08475c7a3d05dc140697e20b4f1ae8193f",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T06:35:42.958134+00:00",
+    "binding": "d692062ca446fc036db7279c3bf7e42cd563b0ffdd09efd4831e104914e155f0",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "snow-wing-owl",
+    "source": "qa-runs/harnesses/battle-monster/snow-wing-owl/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "78c4cbfedcf38e9fc9d8e8286506c01f9ef4caf902c4e8ad90b818e8dfb9e81d",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T06:35:42.958134+00:00",
+    "binding": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "stone-shell-tortoise",
+    "source": "qa-runs/harnesses/battle-monster/stone-shell-tortoise/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "c3763ef96fcbaa3dd15518468cf5afbf72b20f42cdf1abd10f5ca051b63af457",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T06:35:42.958134+00:00",
+    "binding": "73bca5d310d84ebbe91ac1b8358edae59db4915db843bb22c6ea291d7af9a80d",
+    "entireGoalCompleteClaim": false
+  }
+]

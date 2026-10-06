@@ -1,0 +1,338 @@
+{
+  "changed_frames": {
+    "move": {
+      "count": 24,
+      "pixels": [
+        {
+          "x": 33,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 34,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 35,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 36,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 37,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 38,
+          "y": 54,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 39,
+          "y": 54,
+          "before": "S",
+          "after": "K"
+        },
+        {
+          "x": 32,
+          "y": 55,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 33,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 34,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 35,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 36,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 37,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 38,
+          "y": 55,
+          "before": "S",
+          "after": "."
+        },
+        {
+          "x": 39,
+          "y": 55,
+          "before": "B",
+          "after": "K"
+        },
+        {
+          "x": 40,
+          "y": 55,
+          "before": "B",
+          "after": "S"
+        },
+        {
+          "x": 41,
+          "y": 55,
+          "before": "M",
+          "after": "B"
+        },
+        {
+          "x": 33,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 34,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 35,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 36,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 37,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 38,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        },
+        {
+          "x": 39,
+          "y": 56,
+          "before": "K",
+          "after": "."
+        }
+      ]
+    }
+  },
+  "unchanged_frames": [
+    "attack",
+    "dead",
+    "hit",
+    "idle_a",
+    "idle_b",
+    "idle_c",
+    "recover",
+    "windup",
+    "poison_a",
+    "poison_b",
+    "skill_a",
+    "skill_b",
+    "skill_c",
+    "sleep_a",
+    "sleep_b",
+    "stun_a",
+    "stun_b"
+  ],
+  "frame_contracts": {
+    "attack": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 59,
+      "valid_symbols": true
+    },
+    "dead": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "hit": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "idle_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "idle_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "idle_c": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "move": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "recover": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "windup": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "poison_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "poison_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "skill_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "skill_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "skill_c": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "sleep_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "sleep_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "stun_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    },
+    "stun_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "transparent_border": true,
+      "lowest_ink_y": 60,
+      "valid_symbols": true
+    }
+  },
+  "palette_byte_preserved": true,
+  "current_move_sha256": "e53fb721f224386981bd6b0bbd99f1c8b84d417b513876683137776f3aeffc4a"
+}

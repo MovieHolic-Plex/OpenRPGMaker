@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "0f9b7e65be8d691f13599c219179a95567e1ff9163b1b65222c7a7d13cde164e",
+  "priorReviewJob": "82877395-cb52-4fa8-b37c-8f543c6f86da",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 49,
+      "y": 54,
+      "message": "Around x=40–61, y=52–56, both feet still read as spread landing toes beneath the belly. Redraw the connected ankle-to-toe clusters into two visibly hooked grasping talons reaching toward the right: establish each toe root, bend the distal claws inward, and retain a small open gap inside each hook. The attack needs an explicit claw-closing silhouette after the open-wing hop."
+    },
+    {
+      "pose": "skill_b",
+      "x": 55,
+      "y": 21,
+      "message": "The three cyan projections at roughly x=49–62, y=10–43 read primarily as a long ice blade and two triangular shards. Preserve their visible connection to the actual right wing tip around x=48–51, y=31–36, but author a pale central quill and stepped barb clusters on each projection. Give the middle and lower feathers separate visible roots and different contour rhythms so all three read as distinct ice feathers at native 1x."
+    }
+  ],
+  "startedAt": "2026-10-06T06:23:15.571938+00:00"
+}

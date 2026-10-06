@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-06T06:24:02.569013+00:00",
+  "passed": true,
+  "key": "fire-scale-viper/fifty-v1",
+  "binding": "92d75b075ef71b1882eeaba3e3e8356c4a43d04fcba7000c0ea343f84e2cd81f",
+  "actualIndependentReviewJob": "97240675-9ff2-4629-8a17-abfb6610dd16",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "95916f887bbd66f4a64238e4242ced2094c0f32043dc8d060a3543c38e89ed7b",
+    "preview/suite/light.png": "d969cf4a3a90ffd10c83065b703e9fb57aa5b4a36e3d9ed796938c81ef38f72a",
+    "preview/suite/dark.png": "79b60f398cd836d152b786415516297a1f1fd9a8b62d0dcee0aaa5572955e425",
+    "preview/suite/checker.png": "80313cea7567ef9405ac554a4561fec94cbb67995c3c5ae5739a54be0504343e"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "stun_a",
+      "x": 35,
+      "y": 34,
+      "message": "Minor readability refinement: the dark-red diagonal eyelid around (35,34)-(38,35) blends into the scarlet head at native 1x. Replace its central 2-3 pixels with the existing near-black eye color to make a short closed/slanted lid, preserving the lowered head and gold stars. Keep the corresponding facial mark equally legible in stun_b."
+    }
+  ],
+  "rootVisualAndSourceMethodObservations": "Root opened actual current harness18-pose light PNG native1x/nearest3x. Vermilion coiledbody/gold throat/lefttop light, intentional open coil centers, lower windup/forward open-fang lunge/recoil/low flatdead/closedlid resting coils, sick retracted throat and slumped stun head/gold stars. Flame gather and split mouth-origin burst followed by fragments remain distinct. Stun eyelid contrast is subtle as real keeper notes; lowered head and stars keep state recognizable, and no zero-issue claim is made. Read author_native.literal/revised_rows/selected_pixels/save body writer fixed explicit rows/xy strings; render_preview has no native body geometry/rotation/tween. Current real keeper and source/previewhashes match.",
+  "claimScope": "Actual native source/current pose images. Native8GIF/selectedZIP/archive/browser proven separately by actual current audit. Gameplay collision not inferred; full50 incomplete."
+}

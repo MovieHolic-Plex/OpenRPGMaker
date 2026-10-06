@@ -1,0 +1,164 @@
+{
+  "attack": {
+    "bounds": [
+      1,
+      18,
+      58,
+      60
+    ],
+    "sha256_rgba": "4cd79deb803cfd1170dc2470f7a6442ec103cd1c849ba0ef00bfff9f6ca418a5"
+  },
+  "dead": {
+    "bounds": [
+      2,
+      36,
+      45,
+      61
+    ],
+    "sha256_rgba": "35b3368743839cb62bbd0130710a84acd35735ae1e0a5e2472c8cad66f0a0ff7"
+  },
+  "hit": {
+    "bounds": [
+      2,
+      16,
+      49,
+      61
+    ],
+    "sha256_rgba": "4164db255a909081c8787b38492023f07868f2f7f6a1c656f9b4ef0ed963c77b"
+  },
+  "idle_a": {
+    "bounds": [
+      2,
+      12,
+      56,
+      61
+    ],
+    "sha256_rgba": "1053db5ebf4e4ac58535a480e230b3e690e14209348963aaaded0a49a6d8b7be"
+  },
+  "idle_b": {
+    "bounds": [
+      2,
+      12,
+      56,
+      61
+    ],
+    "sha256_rgba": "da8d3a62c45d5b9386c8a277f4bef9f5d3ac5d166b374fb1adec1e37e4854feb"
+  },
+  "idle_c": {
+    "bounds": [
+      2,
+      12,
+      56,
+      61
+    ],
+    "sha256_rgba": "7136f4d59f869575ebce893350f2bb2d971a14a18401853d784dfae93c696e66"
+  },
+  "move": {
+    "bounds": [
+      1,
+      18,
+      57,
+      61
+    ],
+    "sha256_rgba": "b10bed0707ad70e09494ef0346995b41f0df778f5c5961173a8f906c34bb9d5e"
+  },
+  "recover": {
+    "bounds": [
+      2,
+      16,
+      54,
+      61
+    ],
+    "sha256_rgba": "f9118482167ecf4a0d4e31b84ca318c32a46dc849b501b2fe696066f532a6742"
+  },
+  "windup": {
+    "bounds": [
+      2,
+      20,
+      53,
+      61
+    ],
+    "sha256_rgba": "11e89403f53523afb38decb1d20b6a153b67868ea5e0167e96ebc8552b068533"
+  },
+  "poison_a": {
+    "bounds": [
+      2,
+      22,
+      63,
+      61
+    ],
+    "sha256_rgba": "7054ea46cb5e95e224d0823930ab6df01806aea418a5e60e6ef1b32c0c2742f5"
+  },
+  "poison_b": {
+    "bounds": [
+      2,
+      22,
+      59,
+      61
+    ],
+    "sha256_rgba": "f362c7357f7d704e2dd14b19ba8c68854594eff8cd2a8b1b0bff482af7285905"
+  },
+  "skill_a": {
+    "bounds": [
+      2,
+      10,
+      55,
+      61
+    ],
+    "sha256_rgba": "a7c1eae9f03bc92f461866dd2cae4fb576d34a998cc22c7a678b46848a7f2426"
+  },
+  "skill_b": {
+    "bounds": [
+      2,
+      13,
+      63,
+      61
+    ],
+    "sha256_rgba": "f8985bd17d2fbcebeafd9f8e5d2e270dc2df753dac50cabaf30ac0bb57626cc2"
+  },
+  "skill_c": {
+    "bounds": [
+      2,
+      16,
+      61,
+      61
+    ],
+    "sha256_rgba": "a8abe304d2f21b1ffd18ac5a773053e8fecd73b43f1f6f52742f6511e6ea77c1"
+  },
+  "sleep_a": {
+    "bounds": [
+      2,
+      28,
+      50,
+      61
+    ],
+    "sha256_rgba": "1e9b7c5f48e3c04c859b7c62ddc23e11d30e1204f8679afd93ac0574317a241c"
+  },
+  "sleep_b": {
+    "bounds": [
+      2,
+      27,
+      50,
+      61
+    ],
+    "sha256_rgba": "ebcf85e57602a4c98872498b7bb4736680d08bfcba11d1dd71ef4e9f27dc29be"
+  },
+  "stun_a": {
+    "bounds": [
+      2,
+      12,
+      59,
+      61
+    ],
+    "sha256_rgba": "af42d795245f25b2f28534fdb09e6a805a77d928f1c75472fd90861b503f9085"
+  },
+  "stun_b": {
+    "bounds": [
+      2,
+      12,
+      60,
+      61
+    ],
+    "sha256_rgba": "761d2582ea48a8295d5a70da0d0ca2f3c3a964c50b0a793d126e1fb742dc0e8e"
+  }
+}
