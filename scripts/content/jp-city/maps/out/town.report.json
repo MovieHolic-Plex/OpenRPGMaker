@@ -1,0 +1,1684 @@
+{
+ "map": {
+  "id": "jp-city-town",
+  "size": [
+   96,
+   80
+  ]
+ },
+ "start": [
+  41,
+  12
+ ],
+ "doors": {
+  "n": 46,
+  "allReached": true,
+  "failing": []
+ },
+ "solid": {
+  "cells": 767,
+  "openByEngine": 0,
+  "open": []
+ },
+ "autotiles": {
+  "lane": {
+   "cells": 1904,
+   "mismatch": 0,
+   "ex": []
+  },
+  "rail": {
+   "cells": 96,
+   "mismatch": 0,
+   "ex": []
+  },
+  "fence": {
+   "cells": 130,
+   "mismatch": 0,
+   "ex": []
+  }
+ },
+ "layers": {
+  "overlaps": 0,
+  "issues": [],
+  "l2": 726,
+  "l3": 3089,
+  "l4": 655
+ },
+ "emptiness": {
+  "worst17x13": 0.778,
+  "worstAt": [
+   79,
+   62
+  ]
+ },
+ "reach": {
+  "reachable": 6590,
+  "walkable": 6782
+ },
+ "placed": 145,
+ "ok": true,
+ "placedList": [
+  {
+   "id": "jp-bldg-koban",
+   "x": 1,
+   "y": 6,
+   "w": 6,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-row-ekimae",
+   "x": 8,
+   "y": 4,
+   "w": 25,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-station-small",
+   "x": 34,
+   "y": 6,
+   "w": 14,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-conbini",
+   "x": 49,
+   "y": 6,
+   "w": 10,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-car-white",
+   "x": 61,
+   "y": 8,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-car-silver-r",
+   "x": 66,
+   "y": 8,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-coin-sign",
+   "x": 70,
+   "y": 6,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-post-office",
+   "x": 72,
+   "y": 4,
+   "w": 9,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-clinic",
+   "x": 82,
+   "y": 4,
+   "w": 9,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-vend-pair",
+   "x": 92,
+   "y": 10,
+   "w": 4,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-row-shotengai-b",
+   "x": 0,
+   "y": 21,
+   "w": 23,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-arch-shotengai",
+   "x": 24,
+   "y": 18,
+   "w": 8,
+   "h": 5,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-row-shutter-a",
+   "x": 33,
+   "y": 21,
+   "w": 29,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shop-barber",
+   "x": 62,
+   "y": 21,
+   "w": 6,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-arch-shotengai2",
+   "x": 68,
+   "y": 18,
+   "w": 8,
+   "h": 5,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-row-shotengai-d",
+   "x": 76,
+   "y": 19,
+   "w": 20,
+   "h": 10,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-sento",
+   "x": 0,
+   "y": 34,
+   "w": 11,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-coin-laundry",
+   "x": 12,
+   "y": 36,
+   "w": 8,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-jizo",
+   "x": 21,
+   "y": 40,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-vending-aka",
+   "x": 22,
+   "y": 40,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-mirror2",
+   "x": 24,
+   "y": 39,
+   "w": 2,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-row-shotengai-c",
+   "x": 33,
+   "y": 34,
+   "w": 24,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-machikoba-home",
+   "x": 59,
+   "y": 35,
+   "w": 8,
+   "h": 7,
+   "layer": 3
+  },
+  {
+   "id": "jp-mirror2",
+   "x": 68,
+   "y": 39,
+   "w": 2,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-supermarket",
+   "x": 75,
+   "y": 36,
+   "w": 14,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shop-tabako",
+   "x": 90,
+   "y": 34,
+   "w": 6,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-hip2",
+   "x": 0,
+   "y": 46,
+   "w": 9,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-gatepost",
+   "x": 0,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 2,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 3,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 4,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 5,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-sukashi",
+   "x": 6,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 7,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-r",
+   "x": 8,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-shed-modern",
+   "x": 10,
+   "y": 47,
+   "w": 8,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-end-l",
+   "x": 10,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-end-r",
+   "x": 11,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-end-l",
+   "x": 13,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-plain",
+   "x": 14,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-plain",
+   "x": 15,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-plain",
+   "x": 16,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwallf-end-r",
+   "x": 17,
+   "y": 53,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-apart-wood2",
+   "x": 31,
+   "y": 47,
+   "w": 14,
+   "h": 7,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-tile3",
+   "x": 46,
+   "y": 46,
+   "w": 7,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 46,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 47,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-sukashi",
+   "x": 48,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-gatepost",
+   "x": 49,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 51,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-r",
+   "x": 52,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-gable-garage",
+   "x": 54,
+   "y": 47,
+   "w": 7,
+   "h": 7,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-machiya",
+   "x": 62,
+   "y": 46,
+   "w": 7,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-western",
+   "x": 74,
+   "y": 46,
+   "w": 9,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 74,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 75,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-sukashi",
+   "x": 76,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-gatepost",
+   "x": 77,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 79,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-sukashi",
+   "x": 80,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 81,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-r",
+   "x": 82,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-house-nisetai",
+   "x": 84,
+   "y": 46,
+   "w": 12,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-gatepost",
+   "x": 84,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 86,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 87,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 88,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 89,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-gatepost",
+   "x": 90,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-l",
+   "x": 92,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-plain",
+   "x": 93,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-sukashi",
+   "x": 94,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bwall-end-r",
+   "x": 95,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-car-white-r",
+   "x": 18,
+   "y": 52,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-carport",
+   "x": 19,
+   "y": 52,
+   "w": 4,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-propane",
+   "x": 23,
+   "y": 52,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-pots",
+   "x": 69,
+   "y": 54,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shrine-haiden",
+   "x": 9,
+   "y": 59,
+   "w": 8,
+   "h": 7,
+   "layer": 3
+  },
+  {
+   "id": "jp-torii",
+   "x": 11,
+   "y": 69,
+   "w": 4,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-stone-lantern",
+   "x": 10,
+   "y": 67,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-stone-lantern",
+   "x": 15,
+   "y": 67,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-sakura",
+   "x": 1,
+   "y": 61,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-zelkova",
+   "x": 19,
+   "y": 61,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-zelkova",
+   "x": 2,
+   "y": 68,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-sakura",
+   "x": 19,
+   "y": 69,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-keijiban",
+   "x": 6,
+   "y": 73,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-school",
+   "x": 31,
+   "y": 60,
+   "w": 20,
+   "h": 10,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-school-gym",
+   "x": 54,
+   "y": 64,
+   "w": 14,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-school-gate",
+   "x": 38,
+   "y": 73,
+   "w": 6,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-sakura",
+   "x": 75,
+   "y": 59,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-sakura",
+   "x": 90,
+   "y": 59,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-zelkova",
+   "x": 82,
+   "y": 58,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-swing",
+   "x": 77,
+   "y": 68,
+   "w": 3,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-slide",
+   "x": 82,
+   "y": 68,
+   "w": 3,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-sandbox",
+   "x": 87,
+   "y": 69,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bench",
+   "x": 92,
+   "y": 70,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bench",
+   "x": 79,
+   "y": 74,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-keijiban",
+   "x": 92,
+   "y": 73,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-road-lane-crosswalk-h",
+   "x": 39,
+   "y": 14,
+   "w": 6,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-pole",
+   "x": 3,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 13,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 23,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 33,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 43,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 53,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 63,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 73,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 83,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 6,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 16,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 26,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 36,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 46,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 56,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 66,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 76,
+   "y": 36,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 3,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 13,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 23,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 33,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 43,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 53,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 63,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 73,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 83,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 6,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 16,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 26,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 36,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 46,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 56,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 66,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 76,
+   "y": 49,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole-wood",
+   "x": 4,
+   "y": 70,
+   "w": 3,
+   "h": 9,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole-wood",
+   "x": 46,
+   "y": 70,
+   "w": 3,
+   "h": 9,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole-wood",
+   "x": 80,
+   "y": 70,
+   "w": 3,
+   "h": 9,
+   "layer": 4
+  },
+  {
+   "id": "jp-bus-stop",
+   "x": 33,
+   "y": 11,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-rack",
+   "x": 56,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bus-r",
+   "x": 48,
+   "y": 14,
+   "w": 9,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-car-taxi",
+   "x": 18,
+   "y": 13,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-lamp-post",
+   "x": 6,
+   "y": 16,
+   "w": 1,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-lamp-post",
+   "x": 20,
+   "y": 16,
+   "w": 1,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-lamp-post",
+   "x": 62,
+   "y": 16,
+   "w": 1,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-lamp-post",
+   "x": 86,
+   "y": 16,
+   "w": 1,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-hydrant-sign",
+   "x": 25,
+   "y": 51,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  }
+ ],
+ "doorList": [
+  {
+   "b": "jp-bldg-koban",
+   "x": 4,
+   "y": 11,
+   "ax": 4,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-ekimae",
+   "x": 11,
+   "y": 11,
+   "ax": 11,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-ekimae",
+   "x": 18,
+   "y": 11,
+   "ax": 18,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-ekimae",
+   "x": 22,
+   "y": 11,
+   "ax": 22,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-ekimae",
+   "x": 31,
+   "y": 11,
+   "ax": 31,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-station-small",
+   "x": 41,
+   "y": 11,
+   "ax": 41,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-conbini",
+   "x": 54,
+   "y": 11,
+   "ax": 54,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-post-office",
+   "x": 76,
+   "y": 11,
+   "ax": 76,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-clinic",
+   "x": 86,
+   "y": 11,
+   "ax": 86,
+   "ay": 12,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-b",
+   "x": 3,
+   "y": 28,
+   "ax": 3,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-b",
+   "x": 9,
+   "y": 28,
+   "ax": 9,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-b",
+   "x": 14,
+   "y": 28,
+   "ax": 14,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-b",
+   "x": 17,
+   "y": 28,
+   "ax": 17,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shutter-a",
+   "x": 36,
+   "y": 28,
+   "ax": 36,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shutter-a",
+   "x": 46,
+   "y": 28,
+   "ax": 46,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shutter-a",
+   "x": 58,
+   "y": 28,
+   "ax": 58,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shop-barber",
+   "x": 64,
+   "y": 28,
+   "ax": 64,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-d",
+   "x": 77,
+   "y": 28,
+   "ax": 77,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-d",
+   "x": 84,
+   "y": 28,
+   "ax": 84,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-d",
+   "x": 89,
+   "y": 28,
+   "ax": 89,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-d",
+   "x": 92,
+   "y": 28,
+   "ax": 92,
+   "ay": 29,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-sento",
+   "x": 5,
+   "y": 41,
+   "ax": 5,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-coin-laundry",
+   "x": 18,
+   "y": 41,
+   "ax": 18,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-c",
+   "x": 37,
+   "y": 41,
+   "ax": 37,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-c",
+   "x": 43,
+   "y": 41,
+   "ax": 43,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-c",
+   "x": 50,
+   "y": 41,
+   "ax": 50,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-row-shotengai-c",
+   "x": 51,
+   "y": 41,
+   "ax": 51,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-machikoba-home",
+   "x": 65,
+   "y": 41,
+   "ax": 65,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-supermarket",
+   "x": 82,
+   "y": 41,
+   "ax": 82,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shop-tabako",
+   "x": 93,
+   "y": 41,
+   "ax": 93,
+   "ay": 42,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-hip2",
+   "x": 1,
+   "y": 53,
+   "ax": 1,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-shed-modern",
+   "x": 12,
+   "y": 52,
+   "ax": 12,
+   "ay": 53,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-apart-wood2",
+   "x": 32,
+   "y": 53,
+   "ax": 32,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-apart-wood2",
+   "x": 35,
+   "y": 53,
+   "ax": 35,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-apart-wood2",
+   "x": 38,
+   "y": 53,
+   "ax": 38,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-tile3",
+   "x": 50,
+   "y": 53,
+   "ax": 50,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-gable-garage",
+   "x": 58,
+   "y": 53,
+   "ax": 58,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-machiya",
+   "x": 64,
+   "y": 53,
+   "ax": 64,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-machiya",
+   "x": 66,
+   "y": 53,
+   "ax": 66,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-western",
+   "x": 78,
+   "y": 53,
+   "ax": 78,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-nisetai",
+   "x": 85,
+   "y": 53,
+   "ax": 85,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-house-nisetai",
+   "x": 91,
+   "y": 53,
+   "ax": 91,
+   "ay": 54,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shrine-haiden",
+   "x": 13,
+   "y": 65,
+   "ax": 13,
+   "ay": 66,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-school",
+   "x": 41,
+   "y": 69,
+   "ax": 41,
+   "ay": 70,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-school-gym",
+   "x": 59,
+   "y": 69,
+   "ax": 59,
+   "ay": 70,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-school-gym",
+   "x": 62,
+   "y": 69,
+   "ax": 62,
+   "ay": 70,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  }
+ ]
+}
