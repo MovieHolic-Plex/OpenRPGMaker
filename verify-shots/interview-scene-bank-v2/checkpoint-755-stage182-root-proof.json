@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 755,
+  "remainingAtSnapshot": 702,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T17:28:49.802276+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 755,
+      "manifestSha256": "58ccb48217cc07203294e2eac98d9c590eb6099dcd90f46000334036b7eaa476",
+      "finishedAt": "2026-10-06T17:28:28.207356+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-755-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--collect--warm--route,monster--bond--collect--warm--route--scene,monster--bond--collect--warm--route--episode,monster--bond--collect--warm--route--short,monster--bond--collect--warm--case,monster--bond--collect--warm--case--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 755,
+      "manifestSha256": "58ccb48217cc07203294e2eac98d9c590eb6099dcd90f46000334036b7eaa476",
+      "finishedAt": "2026-10-06T17:28:48.249318+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-755-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--bond--collect--warm--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--route.png",
+      "sha256": "894c5ae8ca349b39a6adcc22b57dc80e4d8dfedf580e308ece60010b1b272e33",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--route--scene.png",
+      "sha256": "b87a31e2e6bc60c3de295fac2ae50682ba853885e097f59f40c123087a5b4a69",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--route--episode.png",
+      "sha256": "c60172bfde15ed3f395b24b1f0b3faa22d50154a6d14f9987d652fae566e4635",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--route--short.png",
+      "sha256": "fab3cbf98fd0ca960d522884e6ccc8054a3fca87340719980a0bd4b522810ffe",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--case.png",
+      "sha256": "dc3ad0f1d93394680323e4249d604a31bec8a031c8723a9cbe519be7859717f7",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-755-stage182-selected-monster--bond--collect--warm--case--episode.png",
+      "sha256": "8d34b7e1424dfe27354b54da2e1eff50f9b847b0a81f209980c3378f6de90b8e",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 34,
+  "scope": "755 file/record integrity and six explicitlyselected production-dialog paths, 34 actualclicks, six settledWHOLEscreens directlyviewed ROOT. Leftcaption overlap remains. Privatelyconfirmed originalTEAM warm/secret MOOD and brightCASE/secretROUTE/secretHAB visibility failures pendingofficialreview AFTERthisfrozenQA/cleanup/commit; no all755freshvisual/fullappboot/AIhandoff claim.",
+  "preservedSnapshotProofs": {
+    "selected-755-stage182-click-proof.json": "verify-shots/interview-scene-bank-v2/selected-755-stage182-click-proof.json",
+    "published-755-stage182-integrity-proof.json": "verify-shots/interview-scene-bank-v2/published-755-stage182-integrity-proof.json"
+  }
+}

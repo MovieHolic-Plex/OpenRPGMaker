@@ -1,0 +1,43 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 749,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--bond--collect--warm",
+      "sourceSha256": "0336c98d46916c3c805799bf3ef0d1702c5abb5c20f57e1f60f539f34d652ca1",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--warm-0336c98d4691.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm-2-0336c98d4691.png",
+      "replacementPublished": true,
+      "replacementSha256": "9fadb0bde568d2cac95844383c1a5432afa0304810151f1f6d0d8afa3e5f435f",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-180"
+    },
+    {
+      "key": "monster--bond--collect--secret--case",
+      "sourceSha256": "f7ca80f68390b5ebfc8f1bc934b75e6d3ca424f899f0d90605efcabb7ad7695c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--secret--case-f7ca80f68390.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case-2-f7ca80f68390.png",
+      "replacementPublished": true,
+      "replacementSha256": "f00a876369ec8edec2f3f7fb7c5d25d3e700f2487f188210896b7669f7012f83",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-180"
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat",
+      "sourceSha256": "99c43c385b9eeb87bffaffe71eb93472cfc25a24f75f6a635068d3c28ff56bf1",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat-99c43c385b9e.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat-1-99c43c385b9e.png",
+      "replacementPublished": true,
+      "replacementSha256": "e861fc8cc4c086c8c75c995fc1674c5765fb2f82c2a78dfe8058ff38ef30b8d2",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-180"
+    }
+  ],
+  "resolvedCumulative": 157
+}

@@ -1,0 +1,31 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 755,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--bond--collect--warm--route",
+      "sourceSha256": "a2a5c7444d4cc2a42c77457d8602f5dabea1e772e64221950383cfc82a283b87",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--warm--route-a2a5c7444d4c.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route-1-a2a5c7444d4c.png",
+      "replacementPublished": true,
+      "replacementSha256": "1b40a0c7c95de55144fc4de3d18747a839d435f83747c1c6d909d9a63944d4f7",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-182"
+    },
+    {
+      "key": "monster--bond--collect--warm--case",
+      "sourceSha256": "1fcb392d755fa2cd99f073825b03d6510631462c621cb06c2b755c35ef753483",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--warm--case-1fcb392d755f.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case-2-1fcb392d755f.png",
+      "replacementPublished": true,
+      "replacementSha256": "d90dda10c65c31456b74dc835ee5d67fd1c0c46d785725c48bc0a3adbe8e4f99",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-182"
+    }
+  ],
+  "resolvedCumulative": 159
+}

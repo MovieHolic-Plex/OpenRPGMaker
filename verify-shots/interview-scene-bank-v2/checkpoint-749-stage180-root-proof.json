@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 749,
+  "remainingAtSnapshot": 708,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T17:00:51.279809+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 749,
+      "manifestSha256": "e1132b57c3c9addee7e7d8539676593e8f69ed5b233f88588336e2fc2572f3b8",
+      "finishedAt": "2026-10-06T17:00:24.929011+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-749-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--collect--secret--case--scene,monster--bond--collect--secret--case--episode,monster--bond--collect--secret--case--short,monster--bond--collect--secret--habitat--short,monster--bond--collect--warm--habitat--scene,monster--wild--partner--warm--route--short"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 749,
+      "manifestSha256": "e1132b57c3c9addee7e7d8539676593e8f69ed5b233f88588336e2fc2572f3b8",
+      "finishedAt": "2026-10-06T17:00:49.834866+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-749-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--partner--warm--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--wild--partner--warm--route--short.png",
+      "sha256": "a48e2bf15e92205ff619f635a5a442192e4dc62950875bcaab53577c858347bb",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--bond--collect--secret--habitat--short.png",
+      "sha256": "85c870e96d46e60fc2b054cfb3084f70444f8063fbb5b62af7013c7508ab73f8",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--bond--collect--secret--case--scene.png",
+      "sha256": "c305b178645d92c4ace8b9b3d2fbd9d5fa6288826e6466a6e2744f124b424c73",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--bond--collect--secret--case--episode.png",
+      "sha256": "1f0a628ca25b3ab7701899ef6d8fbc15befe2153a7dc8ae58cc9219380acf963",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--bond--collect--secret--case--short.png",
+      "sha256": "1f00fc4ef74bab79375ffca8802ae75b1b2972562d4715140f7a00caf89610c0",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-749-stage180-selected-monster--bond--collect--warm--habitat--scene.png",
+      "sha256": "381dac375d0c80d0bc2bc8798e581fe2ea9ae1a7804d8a618466e7955dced6ab",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "749 file/record integrity and six selected production-dialog paths, 36 actual clicks, six settled whole screens directly viewed by root. Left-caption overlap remains. Privately confirmed original bright TEAM HABITAT meaningful ruin inner and core training features hidden behindactual60.3 pending official review after this frozen snapshot/cleanup. Not all749 freshvisual audit/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "selected-749-stage180-click-proof.json": "verify-shots/interview-scene-bank-v2/selected-749-stage180-click-proof.json",
+    "published-749-stage180-integrity-proof.json": "verify-shots/interview-scene-bank-v2/published-749-stage180-integrity-proof.json"
+  }
+}

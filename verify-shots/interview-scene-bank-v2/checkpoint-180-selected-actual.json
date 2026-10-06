@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--bond--collect--secret--case--scene,monster--bond--collect--secret--case--episode,monster--bond--collect--secret--case--short,monster--bond--collect--secret--habitat--short,monster--bond--collect--warm--habitat--scene,monster--wild--partner--warm--route--short"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 749,
+  "manifestSha256": "e1132b57c3c9addee7e7d8539676593e8f69ed5b233f88588336e2fc2572f3b8",
+  "finishedAt": "2026-10-06T17:00:49.834866+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-749-click-proof.json",
+  "completeWholePlan": false
+}

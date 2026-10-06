@@ -1,0 +1,19 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 754,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--bond--collect--secret--habitat",
+      "sourceSha256": "6085d0c2caa6005f649d5cfb8c29c86dd74e33688e7f4fc8e4d3d674a886ca82",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat-6085d0c2caa6.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat-1-6085d0c2caa6.png",
+      "replacementPublished": true,
+      "replacementSha256": "a7f8577531a2809b72057f2c3e103685d4e44cbadd774e7f752b9320aa433f33",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-178"
+    }
+  ],
+  "resolvedCumulative": 154
+}

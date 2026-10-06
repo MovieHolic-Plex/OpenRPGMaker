@@ -1,0 +1,388 @@
+{
+  "batch": "v2-production-181",
+  "passedAttempts": 2,
+  "rejectedAttempts": 8,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-181",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:13:16.571449+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-181",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:13:41.163421+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-181",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-181",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:13:41.211860+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--bond--collect--warm--route--short",
+      "nativeSha256": "569838f57311b4ba5b046e6d29f1a1e8592ea4a775e58f3d90b455a31ee6b175",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e0baf57a6c61a72d705128481513cfd90c9840295d844d719513b23525bdeb23",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--route--short.png",
+          "sha256": "c7e10a02bffe8287411a433bf04b6fc8f53635e32fa2e2b5958be0c19d71ba0b",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/newactual181ROUTEparent1: distinctOPENBLUEwaterbowl nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/fullOPENnearhome roof/chimney/body/EMPTYdoorbase/fulltwoWHOLEdifferentvillage/fullrope/shortbranch/fullDIRTreturnpadstoes/WARM/no growthTEAMcapturegearbodytext beforeactual60.3. UPnearhome/MIDreturntable/LOWvillage reverses parentUPvillage/LOWrockaid. All7 directchecked; leftvillage roof nowfullyinsideframe, no inheritedcrop/waterfailure."
+    },
+    {
+      "key": "monster--bond--collect--warm--route",
+      "nativeSha256": "1b40a0c7c95de55144fc4de3d18747a839d435f83747c1c6d909d9a63944d4f7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b85ff5f516b8a3cefe7184ebd79d6a681610104e2d5b3bb3dc41c25baba51d1d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--route.png",
+          "sha256": "d6b353325299da64dfa2174e0ba3dec7c4b99732b6e8c195cb18376c560238bb",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwaterbowl nowpresent, bothWHOLEdifferentvillagehouse roofs/chimneys/body/doors/bases insideframe, helpercloth/ONEclosedEMPTYjar/rope/wholeSHORTbranch/fullLEFTDIRTpadstoes/WARM/no scopegrowthreturnTEAMcapturegearbodytext before60.3. UPvillage/LOWrockaid differs precedingLOWgroundrestmat/nohouses. All7 directlychecked; no inheritedTOPchimney/waterfailure."
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat--episode",
+      "nativeSha256": "a716654e8092fc5a270c9205ed3d99a1cb27a8af1bfdbcbf039bb12abbb926f1",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "75aec43ee0961c4a27dff62871b4d0a122ad9c82a8f44e3027ecf50f805fa354",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--habitat--episode.png",
+          "sha256": "591bbaddbf750a2863d7d7e8fc50f4f7a5a854d98df66d048bcf0a7b788d1895",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/EMPTYleaflinedHOLLOWnest/plainWHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext correct. UPthreeactualOPENINNERviews/LOWcare reverses parentUPaid/LOWhabs. But meaningfulRUIN INNERrightcolumn/steps x60-64 and finalDIRTpad/toes x62-68 behindactual60.3; composition ONLY F. Outerarchbackground not charged, water omission corrected."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/EMPTYleaflinedHOLLOWnest/plainWHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext correct. UPthreeactualOPENINNERviews/LOWcare reverses parentUPaid/LOWhabs. But meaningfulRUIN INNERrightcolumn/steps x60-64 and finalDIRTpad/toes x62-68 behindactual60.3; composition ONLY F. Outerarchbackground not charged, water omission corrected."
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat--short",
+      "nativeSha256": "2fd5f4357433b7f379841615098b0dfe879ab004fb273cba6341bc84d5bdd4e2",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3ec364599c759e6e1f74f09819101bcde63994ba5c35c47a6ac4bd0d117c6d86",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--habitat--short.png",
+          "sha256": "fec90f0e9cf35670c1d4ccc111855f6c7167c45f1b0b996badacc14f45582098",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/ONEclosedEMPTYjar nowpresent, fullindependentCREAMfoldFLATsameworktopOUTSIDEcontainers/actualOPENEMPTYnearhome/fullthreeUPmeaningfulOPENINNERviews/fullDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMcapturegearbodytext. UPviews/LOWhome/MIDreturntable reverse parentUPaid/LOWhab. Entireprimarynearhome roof stillnativeLEFTcropped; composition ONLY F. No inherited missingwater/ajarjar/clothdrape failure."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/ONEclosedEMPTYjar nowpresent, fullindependentCREAMfoldFLATsameworktopOUTSIDEcontainers/actualOPENEMPTYnearhome/fullthreeUPmeaningfulOPENINNERviews/fullDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMcapturegearbodytext. UPviews/LOWhome/MIDreturntable reverse parentUPaid/LOWhab. Entireprimarynearhome roof stillnativeLEFTcropped; composition ONLY F. No inherited missingwater/ajarjar/clothdrape failure."
+    },
+    {
+      "key": "monster--bond--collect--warm--case",
+      "nativeSha256": "d649e7fc8bb0c61827565aacfe8beaa881d997f92ae46ad37ad27cccf0e8064f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "78bd79ff9193562294542266ec377a647f60d7350b02ee552e3e43ef9a3c8ee4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--case.png",
+          "sha256": "b88af81916363a7cb234baff230c33f1d0d23ea183fee1036aeeee7b15149a1b",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwater nowpresent, wholeOPENlocalrefuge roof/body/EMPTYdoor/base/fulltippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/helpercloth/fullLEFTDIRTpads/WARM/no scopegrowthreturnvillageTEAMcapturegearbodytext. UPaid/LOWhome differs parentLOWgroundrestmat/nohouse. Requiredwholemovedbranch endpoint extends pastactual60.3 to61; read-onlyNEARESTcrop confirms meaningfulselectedcutend/body (composition ONLY F). House itself nowwhole insideframe, no inheritedroofcut/waterfailure."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwater nowpresent, wholeOPENlocalrefuge roof/body/EMPTYdoor/base/fulltippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/helpercloth/fullLEFTDIRTpads/WARM/no scopegrowthreturnvillageTEAMcapturegearbodytext. UPaid/LOWhome differs parentLOWgroundrestmat/nohouse. Requiredwholemovedbranch endpoint extends pastactual60.3 to61; read-onlyNEARESTcrop confirms meaningfulselectedcutend/body (composition ONLY F). House itself nowwhole insideframe, no inheritedroofcut/waterfailure."
+    },
+    {
+      "key": "monster--bond--collect--warm--case--episode",
+      "nativeSha256": "e9a220cda8fc5d9577ce4a5ea13bcd4004e3812bd85f6681c5acffe51b28a20c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3c38d17f22a3a210a6c41e68ed693e1e3915eecab88e614825b63f019be0cb5a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--case--episode.png",
+          "sha256": "ee25da0ab268e8155d8980f22ddae91e9a7d61820ca4cdd3ba6e797b1c11fcfa",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEcarewater nowpresent, UPwholeOPENlocalrefuge/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext. ReverseparentUPaid/LOWhouse. But finalDIRTpad/toes x64-69 hiddenactual60.3; composition ONLY F, no inheritedmissingwater failure."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEcarewater nowpresent, UPwholeOPENlocalrefuge/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext. ReverseparentUPaid/LOWhouse. But finalDIRTpad/toes x64-69 hiddenactual60.3; composition ONLY F, no inheritedmissingwater failure."
+    },
+    {
+      "key": "monster--bond--collect--warm--case--short",
+      "nativeSha256": "11a328337474c3e151e3f0340abcd757fe9273fc98fc238b67c8d453ce85ad05",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "aeb8eb12bf1249537a3b46c712b24e2f4230068471c2e31cd20eca921c2a46d2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-180-monster--bond--collect--warm--case--short.png",
+          "sha256": "c3f1781312f4c0f0454cbf52d9ec1b4e8b3001b05ad0b921f2f03691e1365dbd",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEwater nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/fullphysicalDIRTreturnpads/WARM/no growthvillageTEAMcapturegearbodytext. UPnearhome/LOWreturntable reverse parentUPaid/LOWhouse. Requiredshortbranch endpoint and lastDIRTpadtoe extend pastactual60.3 (composition F), and homefront remains CLOSEDwoodplankdoor without EMPTYOPENinterior/floorthreshold (allChoices/latestChoice F). No invented verticalclothfailure."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEwater nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/fullphysicalDIRTreturnpads/WARM/no growthvillageTEAMcapturegearbodytext. UPnearhome/LOWreturntable reverse parentUPaid/LOWhouse. Requiredshortbranch endpoint and lastDIRTpadtoe extend pastactual60.3 (composition F), and homefront remains CLOSEDwoodplankdoor without EMPTYOPENinterior/floorthreshold (allChoices/latestChoice F). No invented verticalclothfailure."
+    },
+    {
+      "key": "monster--bond--team",
+      "nativeSha256": "d41fe9f3dca6db0feffc4c97ed103600d85872325dc9c3881e8211fc95ab3088",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fc0743d79f2240b1183488d5dc5f6255abf06daa5549c61d14c75db19421c9de",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative/actualoriginalfirstBOND FULLown/native: wholeUPsimpleOPENshelter/EMPTYpaddedmat/plaincloth/OPENBLUEwater/LOWphysicalstonecover+usablewoodrampplatform+woodposts/no chosenmood/progression/return/growth/bodycapturegearjarlabtext. FreshUPaid/LOWcourse differs actualfirstBONDgroundwovenshelter/clearedtrail. But meaningfulwoodmaneuverposts x61-70 hiddenactual60.3; composition ONLY F. No new stationcount/rampcounterrule beyond OWN."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative/actualoriginalfirstBOND FULLown/native: wholeUPsimpleOPENshelter/EMPTYpaddedmat/plaincloth/OPENBLUEwater/LOWphysicalstonecover+usablewoodrampplatform+woodposts/no chosenmood/progression/return/growth/bodycapturegearjarlabtext. FreshUPaid/LOWcourse differs actualfirstBONDgroundwovenshelter/clearedtrail. But meaningfulwoodmaneuverposts x61-70 hiddenactual60.3; composition ONLY F. No new stationcount/rampcounterrule beyond OWN."
+    },
+    {
+      "key": "monster--bond--team--bright",
+      "nativeSha256": "911cf12755b79e396faa8ff730ca5ab78722093d774e63a1f5c8508af9febb0f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4689141e84f3de457c1f0ca856ecfdfed36ed380c07541eba860aa209d72bce4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative/actualnew181TEAM7 FULLown/native: EMPTYplainmat/OPENBLUEwater/stonecover+usablewoodplatformramp+woodposts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn/bodycapturegearjarlabtext. More side-facingraisedramp/UPstoneoverhang/MIDleftaid differs parentfrontfacingramp/LOWstoneblock/smallerUPaid. But wholeOPENshelter roof cutnativeLEFT and meaningfulpostbase x58-61 behind60.3 (composition ONLY F), no unchosenlab inherited."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative/actualnew181TEAM7 FULLown/native: EMPTYplainmat/OPENBLUEwater/stonecover+usablewoodplatformramp+woodposts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn/bodycapturegearjarlabtext. More side-facingraisedramp/UPstoneoverhang/MIDleftaid differs parentfrontfacingramp/LOWstoneblock/smallerUPaid. But wholeOPENshelter roof cutnativeLEFT and meaningfulpostbase x58-61 behind60.3 (composition ONLY F), no unchosenlab inherited."
+    },
+    {
+      "key": "monster--bond--team--bright--route",
+      "nativeSha256": "1988778345931e990c49d35b59453d7787d6af56e0089fcece504348e2bbe8a5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "0089aa48c3e46d82392f036fa2b080a125eda96f29345db0051d250f021fb322",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT FULLexactOWN/WHOLENative/actualnew181brightTEAM8 FULLown/native: wholeUPtwo differentvillage roof/chimney/body/door/base/continuousLEFTtrail/MIDwholeEMPTYhelpermat+plaincloth+OPENBLUEwater/LOWstonecover+usablewoodrampplatform+woodposts/SUNLIT/no scopegrowthreturn/habitat/localcase/bodycapturegearjarlabtext. LayeredterracesUPvillage/MIDnook/LOWcourse differs precedingMIDleftaid/sideplatform/no village. But meaningfullastwoodpostbody/base x58-61 hiddenactual60.3; composition ONLY F. Tinyfenceendpoint background not charged."
+      ],
+      "note": "ROOT FULLexactOWN/WHOLENative/actualnew181brightTEAM8 FULLown/native: wholeUPtwo differentvillage roof/chimney/body/door/base/continuousLEFTtrail/MIDwholeEMPTYhelpermat+plaincloth+OPENBLUEwater/LOWstonecover+usablewoodrampplatform+woodposts/SUNLIT/no scopegrowthreturn/habitat/localcase/bodycapturegearjarlabtext. LayeredterracesUPvillage/MIDnook/LOWcourse differs precedingMIDleftaid/sideplatform/no village. But meaningfullastwoodpostbody/base x58-61 hiddenactual60.3; composition ONLY F. Tinyfenceendpoint background not charged."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

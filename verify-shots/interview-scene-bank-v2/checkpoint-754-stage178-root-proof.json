@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 754,
+  "remainingAtSnapshot": 703,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T16:30:17.632948+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 754,
+      "manifestSha256": "a50a87484241f62d238f6e7c6e078a198964869793242d66090df6f35625166e",
+      "finishedAt": "2026-10-06T16:29:52.965377+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-754-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--collect--secret--habitat,monster--bond--collect--secret--habitat--scene,monster--bond--collect--secret--habitat--episode,monster--bond--collect--secret--habitat--short,monster--bond--collect--secret--route--short,monster--bond--collect--bright--case--scene"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 754,
+      "manifestSha256": "a50a87484241f62d238f6e7c6e078a198964869793242d66090df6f35625166e",
+      "finishedAt": "2026-10-06T16:30:16.047599+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-754-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--bond--collect--bright--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--bright--case--scene.png",
+      "sha256": "93e0f70cc26e147e761edeb8fc44532dacfcdb2375ceefd098ec6d256825e793",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--secret--route--short.png",
+      "sha256": "194ffda131e5c4eb86eb2441410755dadca5a8b86fb14011b9db8deb9d0cbacb",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--secret--habitat.png",
+      "sha256": "10d774c0c04de1dc1103b1f151a10d3724639d1dde6dec7236a1782afde7e235",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--secret--habitat--scene.png",
+      "sha256": "92449f9ceaab60d6c01b1958ed9a6ddb40492575b3e542b2fc6d02a950ba165a",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--secret--habitat--episode.png",
+      "sha256": "698f5599f2850bf3a2c124fbd810ad066de76c808688c051efef6844aec5769c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--secret--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-754-stage178-selected-monster--bond--collect--secret--habitat--short.png",
+      "sha256": "85c870e96d46e60fc2b054cfb3084f70444f8063fbb5b62af7013c7508ab73f8",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "754 file/record integrity and six selected production-dialog paths, 35 actual clicks, six settled screens directly viewed by root. Left-caption overlap remains. Privately confirmed original warm BOND CASE water bowl/broken local threshold visibility failure pending official review after this frozen snapshot/cleanup. Not all754 fresh visual audit/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-754-stage178-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-754-stage178-click-proof.json"
+  }
+}

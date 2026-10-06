@@ -2094,18 +2094,77 @@
         "review": {
           "sourceSha256": "9dcc18645bda42191df8b69dc313a508b10e3f9f8311dd56b05354374a45c2f8",
           "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
-          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "reviewer": "Codex root actualoriginal own/native audit after178 frozenQA/cleanup",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Soft empty refuge bed and bowl beside tactical obstacle course; no logos or visible creature."
+          "findings": [
+            "Original FULL OWN/WHOLEnative actualfirstBONDparent FULL OWN/native: LEFTshelteredEMPTYrestbed/plaincloth/openwater/variousEMPTYunmarkedwoodstoneobstacles/ramp/platform/DAYLIGHT/no bodycapturegeartext semanticallycorrect, freshinsideLOWaid vs firstBONDlowwovenshelter/water/clearedtrail. But coreTEAM stonecover/meaningfulpracticeground/postfeatures x63-99 hiddenactual60.3. composition ONLY false, no laterDIRTpad/rope/twohouse/threecount/newrampcontract imposed. Original review preserved."
+          ],
+          "notes": "Original FULL OWN/WHOLEnative actualfirstBONDparent FULL OWN/native: LEFTshelteredEMPTYrestbed/plaincloth/openwater/variousEMPTYunmarkedwoodstoneobstacles/ramp/platform/DAYLIGHT/no bodycapturegeartext semanticallycorrect, freshinsideLOWaid vs firstBONDlowwovenshelter/water/clearedtrail. But coreTEAM stonecover/meaningfulpracticeground/postfeatures x63-99 hiddenactual60.3. composition ONLY false, no laterDIRTpad/rope/twohouse/threecount/newrampcontract imposed. Original review preserved."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team-3-d41fe9f3dca6.png",
+        "sha256": "d41fe9f3dca6db0feffc4c97ed103600d85872325dc9c3881e8211fc95ab3088",
+        "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+        "generationPromptSha256": "fc0743d79f2240b1183488d5dc5f6255abf06daa5549c61d14c75db19421c9de",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "d41fe9f3dca6db0feffc4c97ed103600d85872325dc9c3881e8211fc95ab3088",
+          "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative/actualoriginalfirstBOND FULLown/native: wholeUPsimpleOPENshelter/EMPTYpaddedmat/plaincloth/OPENBLUEwater/LOWphysicalstonecover+usablewoodrampplatform+woodposts/no chosenmood/progression/return/growth/bodycapturegearjarlabtext. FreshUPaid/LOWcourse differs actualfirstBONDgroundwovenshelter/clearedtrail. But meaningfulwoodmaneuverposts x61-70 hiddenactual60.3; composition ONLY F. No new stationcount/rampcounterrule beyond OWN."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative/actualoriginalfirstBOND FULLown/native: wholeUPsimpleOPENshelter/EMPTYpaddedmat/plaincloth/OPENBLUEwater/LOWphysicalstonecover+usablewoodrampplatform+woodposts/no chosenmood/progression/return/growth/bodycapturegearjarlabtext. FreshUPaid/LOWcourse differs actualfirstBONDgroundwovenshelter/clearedtrail. But meaningfulwoodmaneuverposts x61-70 hiddenactual60.3; composition ONLY F. No new stationcount/rampcounterrule beyond OWN."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team-4-6dea336e069f.png",
+        "sha256": "6dea336e069fed11fc4e4f7fee333ea612c0f58ad1b6caa6655358051ee84f5d",
+        "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+        "generationPromptSha256": "9cff58b5045f88ef7fa26ef385ddfc92035e978dbbf58662340ef139bfbbf82a",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "6dea336e069fed11fc4e4f7fee333ea612c0f58ad1b6caa6655358051ee84f5d",
+          "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/originalfirstBOND actualparent: UPwholeOPENshelter EMPTYmat/plaincloth/openBLUEwater LOWstonecover/usablewoodrampplatform/posts present. UPaid LOWcourse differs firstBONDgroundwovenshelter/clearedtrail. Meaningfulpostbodies/bases x59-67 partlyhiddenactual60.3 (composition F). Unchosen differentvillage x86 despite no progression selected (allChoices F). No later newstationcount or rampcounter invented."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/originalfirstBOND actualparent: UPwholeOPENshelter EMPTYmat/plaincloth/openBLUEwater LOWstonecover/usablewoodrampplatform/posts present. UPaid LOWcourse differs firstBONDgroundwovenshelter/clearedtrail. Meaningfulpostbodies/bases x59-67 partlyhiddenactual60.3 (composition F). Unchosen differentvillage x86 despite no progression selected (allChoices F). No later newstationcount or rampcounter invented."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 585671,
+          "findings": []
         }
       }
     ],
@@ -6006,7 +6065,71 @@
         "review": {
           "sourceSha256": "0336c98d46916c3c805799bf3ef0d1702c5abb5c20f57e1f60f539f34d652ca1",
           "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
-          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "reviewer": "Codex ROOT direct whole original native/FULL OWN corrective177 four parents",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole original native/FULL OWN: required collection observation containers x69-83 and plain closed notebook group x57-78 on mainsharedbench behind actual60.3 controls. composition false ONLY. Original LEFTrepairedrefuge/EMPTYcompanionrestbed/bowl/blanket and LEFT-middlebinoculars/WARM/distinctwetlandwoodlandrockyhabitatentrances present; no netcageeggbodyopenpageswritingheraldry. No later THREEjar/TWObook exactcounts/ONEjar/rope/movedbranch/physicalpaw/progression/scope/x40 requirements retro imposed."
+          ],
+          "notes": "ROOT whole original native/FULL OWN: required collection observation containers x69-83 and plain closed notebook group x57-78 on mainsharedbench behind actual60.3 controls. composition false ONLY. Original LEFTrepairedrefuge/EMPTYcompanionrestbed/bowl/blanket and LEFT-middlebinoculars/WARM/distinctwetlandwoodlandrockyhabitatentrances present; no netcageeggbodyopenpageswritingheraldry. No later THREEjar/TWObook exactcounts/ONEjar/rope/movedbranch/physicalpaw/progression/scope/x40 requirements retro imposed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 643410,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm-3-90ff5de20d54.png",
+        "sha256": "90ff5de20d5406a541f6fb15fb9c4a201aac20e87b9065224cf651d0effe014c",
+        "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+        "generationPromptSha256": "4a883bb2f75e5b7e0bf0e6a7fb6c3ec11d332979c5cac0c7d86eacf0de1da548",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "90ff5de20d5406a541f6fb15fb9c4a201aac20e87b9065224cf651d0effe014c",
+          "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original prefix2 fullOWN/native: EMPTYpaddedrestmat/openwater/plainhelpercloth/ONEclosedEMPTYjar/rope/movedbranch/fullLEFTDIRTpadstoes/WARM and no progressionvillagehubcasegrowthnestreturnfoldbodycapturegearTEAMtext. LOWoutside groundrestnook/denseforest differs preceding sheltered cliff/books-binoculars LOWstump/mountainlake panorama. However required helpercloth and loose rope left edges are cut by nativeLEFTboundary; composition false ONLY. Full last pad before60.3, no false carvedstone/emblem."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original prefix2 fullOWN/native: EMPTYpaddedrestmat/openwater/plainhelpercloth/ONEclosedEMPTYjar/rope/movedbranch/fullLEFTDIRTpadstoes/WARM and no progressionvillagehubcasegrowthnestreturnfoldbodycapturegearTEAMtext. LOWoutside groundrestnook/denseforest differs preceding sheltered cliff/books-binoculars LOWstump/mountainlake panorama. However required helpercloth and loose rope left edges are cut by nativeLEFTboundary; composition false ONLY. Full last pad before60.3, no false carvedstone/emblem."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 586363,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm-4-9fadb0bde568.png",
+        "sha256": "9fadb0bde568d2cac95844383c1a5432afa0304810151f1f6d0d8afa3e5f435f",
+        "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+        "generationPromptSha256": "da08909b884a61ec7d72ed7d0953cb456898e3725369795a02b1280ab339b45f",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "9fadb0bde568d2cac95844383c1a5432afa0304810151f1f6d0d8afa3e5f435f",
+          "promptSha256": "731eb677988fbc28606b37d7478a792d64683209e6a177383756c80c046eaa9f",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -6017,13 +6140,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Repaired trust refuge and empty bed/bowl now retain collection through prominent binoculars, several unopened plain specimen jars and closed notebooks; different empty habitat approaches remain visible."
+          "notes": "ROOT whole native/FULL OWN/actual178 failednative/actualoriginalprefix2fullOWN/native: required helpercloth and rope now WHOLE insideLEFT; fullEMPTYpaddedrestmat/openwater/ONEclosedEMPTYjar/movedbranch/THREEphysicalDIRTpadstoes/WARM/no progressionvillagehubcasegrowthreturnbodycapturegearTEAMtext. LOWoutsidegroundrestnook/denseforest differs original shelteredcliff/books-binoculars LOWstump/mountainlake. All7 directly checked before60.3; no inheritedclothcutfailure, nativepixels unchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 643410,
+          "colors": 611656,
           "findings": []
         }
       }
@@ -6038,24 +6161,83 @@
         "review": {
           "sourceSha256": "08627b590b67baba1d450d6f5ea1bb13e300ef68490004955891e03a5f62a7b4",
           "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
-          "reviewer": "Codex direct original visual inspection: v2-production-011",
+          "reviewer": "Codex root actualoriginal own/native audit after178 frozenQA/cleanup",
           "checks": {
             "pixelArt": true,
-            "composition": true,
-            "allChoices": true,
+            "composition": false,
+            "allChoices": false,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Protected repaired bed/bowl and several distinct empty obstacle stations/arena retain trust and team challenges in bright discovery, with fresh near-corner foreground and no heraldic flags."
+          "findings": [
+            "Original FULL OWN/WHOLEnative with actualoriginalTEAMprefix2 FULL OWN/native: LEFTrepairedEMPTYbed/plaincloth/openwater and SUNLITdiscovery/EMPTYdistinctstonecover+woodhurdle+woodposts+woodrampplay present. Different outdoorLOWstump/UPaid vs precedinginsideLOWaid. But requiredTEAM stations/passage ground x60-90 behindactual60.3 (composition F), prominentbinoculars/closedobservationjars add unchosenCOLLECTIONlab facts despite TEAM selected and followonlychosenbranch requirement (allChoices F). No retroONEjar/physicalpad/rope/rampcount rule imposed. Original review preserved."
+          ],
+          "notes": "Original FULL OWN/WHOLEnative with actualoriginalTEAMprefix2 FULL OWN/native: LEFTrepairedEMPTYbed/plaincloth/openwater and SUNLITdiscovery/EMPTYdistinctstonecover+woodhurdle+woodposts+woodrampplay present. Different outdoorLOWstump/UPaid vs precedinginsideLOWaid. But requiredTEAM stations/passage ground x60-90 behindactual60.3 (composition F), prominentbinoculars/closedobservationjars add unchosenCOLLECTIONlab facts despite TEAM selected and followonlychosenbranch requirement (allChoices F). No retroONEjar/physicalpad/rope/rampcount rule imposed. Original review preserved."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
           "colors": 782993,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright-2-911cf12755b7.png",
+        "sha256": "911cf12755b79e396faa8ff730ca5ab78722093d774e63a1f5c8508af9febb0f",
+        "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+        "generationPromptSha256": "4689141e84f3de457c1f0ca856ecfdfed36ed380c07541eba860aa209d72bce4",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "911cf12755b79e396faa8ff730ca5ab78722093d774e63a1f5c8508af9febb0f",
+          "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative/actualnew181TEAM7 FULLown/native: EMPTYplainmat/OPENBLUEwater/stonecover+usablewoodplatformramp+woodposts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn/bodycapturegearjarlabtext. More side-facingraisedramp/UPstoneoverhang/MIDleftaid differs parentfrontfacingramp/LOWstoneblock/smallerUPaid. But wholeOPENshelter roof cutnativeLEFT and meaningfulpostbase x58-61 behind60.3 (composition ONLY F), no unchosenlab inherited."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative/actualnew181TEAM7 FULLown/native: EMPTYplainmat/OPENBLUEwater/stonecover+usablewoodplatformramp+woodposts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn/bodycapturegearjarlabtext. More side-facingraisedramp/UPstoneoverhang/MIDleftaid differs parentfrontfacingramp/LOWstoneblock/smallerUPaid. But wholeOPENshelter roof cutnativeLEFT and meaningfulpostbase x58-61 behind60.3 (composition ONLY F), no unchosenlab inherited."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright-3-018b93a6cdb1.png",
+        "sha256": "018b93a6cdb180e26438eb21f170a41bedc3874388b046d3c95a739bea94f57e",
+        "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+        "generationPromptSha256": "8dd5b17a76c5199f28ec4e2e8883592e0dcebe89f9cb0840384d4fd657df5f5e",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "018b93a6cdb180e26438eb21f170a41bedc3874388b046d3c95a739bea94f57e",
+          "promptSha256": "c26d876d79179a6f73a597fea1f46e8359cddb95a6d62ae3ba254b9ae28ea97a",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/new182TEAM5 actualparent: EMPTYmat/plaincloth/openBLUEwater/stonecover/usablewoodrampplatform/posts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn correct. MoreSIDEraisedplatform UPstoneoverhang MIDaid differs precedingfrontfacingramp LOWstoneblock UPaid. Whole simpleOPENshelter LEFTroof cropped: composition ONLY F. Posts nowvisible, no inherited post/village/jar failure."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/new182TEAM5 actualparent: EMPTYmat/plaincloth/openBLUEwater/stonecover/usablewoodrampplatform/posts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn correct. MoreSIDEraisedplatform UPstoneoverhang MIDaid differs precedingfrontfacingramp LOWstoneblock UPaid. Whole simpleOPENshelter LEFTroof cropped: composition ONLY F. Posts nowvisible, no inherited post/village/jar failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 652465,
           "findings": []
         }
       }
@@ -22616,6 +22798,61 @@
           "colors": 478327,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat-3-9ca6df3aaff6.png",
+        "sha256": "9ca6df3aaff64f811ff0b14efe303e74239428f0eabad115fa303d83cfcee822",
+        "promptSha256": "efadde5991ee369a4a914465be5264abb44cc9bcf6255daf1b9864b0cfd23c04",
+        "generationPromptSha256": "5e9d3469ce1f452d12cb5a4bcf2bf59bee36030805b25fc130ad14ad1dcc9f36",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "9ca6df3aaff64f811ff0b14efe303e74239428f0eabad115fa303d83cfcee822",
+          "promptSha256": "efadde5991ee369a4a914465be5264abb44cc9bcf6255daf1b9864b0cfd23c04",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual176 failed same-key and secret mood/original secretHAB: missing shallow physical LEFTdirt pads/toes now clearly present beside full UPPERLEFTwater/helpcloth/closed EMPTYjar/rope/movedbranch/actual OPENwetland/forest/ruin innerviews/moonlit/no scopegrowthreturnvillagebodycapturegeartext. Upperaid/LOWhab differs preceding indoor moonlit bed/LOWbooks-binoculars/lake. But meaningful RUIN inner right column/ground steps extend x60-63 behind actual60.3 controls, composition false ONLY; outer support alone not failure. No inherited absentpaw failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual176 failed same-key and secret mood/original secretHAB: missing shallow physical LEFTdirt pads/toes now clearly present beside full UPPERLEFTwater/helpcloth/closed EMPTYjar/rope/movedbranch/actual OPENwetland/forest/ruin innerviews/moonlit/no scopegrowthreturnvillagebodycapturegeartext. Upperaid/LOWhab differs preceding indoor moonlit bed/LOWbooks-binoculars/lake. But meaningful RUIN inner right column/ground steps extend x60-63 behind actual60.3 controls, composition false ONLY; outer support alone not failure. No inherited absentpaw failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat-4-a7f8577531a2.png",
+        "sha256": "a7f8577531a2809b72057f2c3e103685d4e44cbadd774e7f752b9320aa433f33",
+        "promptSha256": "efadde5991ee369a4a914465be5264abb44cc9bcf6255daf1b9864b0cfd23c04",
+        "generationPromptSha256": "31f6ccc45569cb193923b04eaad4c9455c9a6ffd0e039d36a3941ba778a878e6",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "a7f8577531a2809b72057f2c3e103685d4e44cbadd774e7f752b9320aa433f33",
+          "promptSha256": "efadde5991ee369a4a914465be5264abb44cc9bcf6255daf1b9864b0cfd23c04",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual177 same-key failed native and actual original secretMOOD fullOWN/native: complete meaningful LOWERLEFT wetland/forest/ruin innerviews now before60.3, all ruin columns/steps visible; full upperLEFT water/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/full physical dirtpads/toes/MOONLIT/no scopegrowthreturnvillagebodycapturegeartext. UPaid/LOWhabs reverses preceding indoorrestbed/LOWbooks-binoculars/lake. Actual seven independently checked, not inherited missingpaw/ruin failure. Outer support beyond principal inner view is background."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 471731,
+          "findings": []
+        }
       }
     ],
     "monster--bond--collect--secret--case": [
@@ -22660,7 +22897,71 @@
         "review": {
           "sourceSha256": "f7ca80f68390b5ebfc8f1bc934b75e6d3ca424f899f0d90605efcabb7ad7695c",
           "promptSha256": "abe14b24a225e0db70d4d33e8bbe6dc4d97618371e2c3ef579f54c6ab64d9ac8",
-          "reviewer": "Codex direct original visual inspection: v2-production-042",
+          "reviewer": "Codex ROOT direct whole original native/FULL OWN corrective177 four parents",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole original native/FULL OWN: selected damaged hidden doorway meaningful INNERopening x53-73 and local muddy environmental trace x60-84/bottom behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls/overturnedordinarybag/spilledplainrope/vacatedbedroll/moonlit/localcase all present; no differentvillage/capturegear/egg/body/writing. No later ONEjar/woodpail/movedbranch/fullphysicalpad/scope/x40 requirements retro imposed."
+          ],
+          "notes": "ROOT whole original native/FULL OWN: selected damaged hidden doorway meaningful INNERopening x53-73 and local muddy environmental trace x60-84/bottom behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls/overturnedordinarybag/spilledplainrope/vacatedbedroll/moonlit/localcase all present; no differentvillage/capturegear/egg/body/writing. No later ONEjar/woodpail/movedbranch/fullphysicalpad/scope/x40 requirements retro imposed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 325167,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case-3-d6f649c702be.png",
+        "sha256": "d6f649c702be8ba9a54f3d39060db70c7432d589dbe2c3e9bab19817dbef3383",
+        "promptSha256": "abe14b24a225e0db70d4d33e8bbe6dc4d97618371e2c3ef579f54c6ab64d9ac8",
+        "generationPromptSha256": "0bf6e3a5b16b75a276813d3b1fb05b47d73e5b2daaed07abc055c7d1aeccaf74",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "d6f649c702be8ba9a54f3d39060db70c7432d589dbe2c3e9bab19817dbef3383",
+          "promptSha256": "abe14b24a225e0db70d4d33e8bbe6dc4d97618371e2c3ef579f54c6ab64d9ac8",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original secretMOOD fullOWN/native and originalCASE: whole small OPENlocalrefuge roof/body/door/base/full tippedhollowEMPTYwoodstavepail/rope/physicalDIRTpadstoes/openwater/helpercloth/ONEclosedEMPTYjar/MOONLIT/no scopegrowthreturnvillagebodycapturegearTEAMtext. Steep diagonal exteriorhome/mid-depth aid differs preceding insidebed/LOWbooks/lake and old giantLOWworkbench/RIGHTdamagedcave. However selected movedbranch distal body/end reaches x61-63 behind actual60.3 while OWN requires all chosen props wholly visible; composition false ONLY. Actual darkbranch end confirmed by read-only NEARESTdiagnostic, no modification of productionnative."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original secretMOOD fullOWN/native and originalCASE: whole small OPENlocalrefuge roof/body/door/base/full tippedhollowEMPTYwoodstavepail/rope/physicalDIRTpadstoes/openwater/helpercloth/ONEclosedEMPTYjar/MOONLIT/no scopegrowthreturnvillagebodycapturegearTEAMtext. Steep diagonal exteriorhome/mid-depth aid differs preceding insidebed/LOWbooks/lake and old giantLOWworkbench/RIGHTdamagedcave. However selected movedbranch distal body/end reaches x61-63 behind actual60.3 while OWN requires all chosen props wholly visible; composition false ONLY. Actual darkbranch end confirmed by read-only NEARESTdiagnostic, no modification of productionnative."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 353052,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case-4-f00a876369ec.png",
+        "sha256": "f00a876369ec8edec2f3f7fb7c5d25d3e700f2487f188210896b7669f7012f83",
+        "promptSha256": "abe14b24a225e0db70d4d33e8bbe6dc4d97618371e2c3ef579f54c6ab64d9ac8",
+        "generationPromptSha256": "c7942e5dae9620e6b8f2a4f96c865e0d51952c052a51f13752063a33ccff23d6",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "f00a876369ec8edec2f3f7fb7c5d25d3e700f2487f188210896b7669f7012f83",
+          "promptSha256": "abe14b24a225e0db70d4d33e8bbe6dc4d97618371e2c3ef579f54c6ab64d9ac8",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -22671,13 +22972,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native moonlit local EMPTY damaged refuge has overturned plain bag/spilled rope and muddy trace to local concealed cave; vacated padded companion rest, plain folded cloth/BOTH food-water bowls. Near binoculars/THREE CLOSED EMPTY transparent jars/TWO CLOSED plain books, no capture gear/egg/body/text/flag/blur. New close interrupted refuge camera versus old exposed cliff parent."
+          "notes": "ROOT whole native/FULL OWN/actual178 failednative/actualoriginalsecretMOODfullOWN/native: selectedmovedbranch now whollybefore60.3; wholeOPENlocalrefuge roof/body/door/base/fulltippedhollowEMPTYwoodstavepail/rope/fullphysicalDIRTpadstoes/openwater/helpercloth/ONEclosedEMPTYjar/MOONLIT/no scopegrowthreturnvillagebodycapturegearTEAMtext. Steepdiagonalexteriorhouse/MIDtinyrockaid differs preceding indoorrestbed/LOWbooks-binoculars/lake and originalgiantLOWbench/RIGHTdamagedcave. All7 actualROOTchecked; actual1773/4 and1783 children independently rechecked separately."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 325167,
+          "colors": 352021,
           "findings": []
         }
       }
@@ -22692,7 +22993,128 @@
         "review": {
           "sourceSha256": "a2a5c7444d4cc2a42c77457d8602f5dabea1e772e64221950383cfc82a283b87",
           "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
-          "reviewer": "Codex direct original visual inspection: v2-production-041",
+          "reviewer": "Codex ROOT direct whole original native/FULL OWN corrective177 four parents",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole original native/FULL OWN: required different village destination x78-99 and meaningful route/bridge leadingthere x73-99 behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/repairedrefuge/EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls/WARM continuousscene/allchoices present; no arena/capturegear/egg/body/writing. No later ONEjar/rope/movedbranch/physicalpaw/scope/x40 requirements retro imposed."
+          ],
+          "notes": "ROOT whole original native/FULL OWN: required different village destination x78-99 and meaningful route/bridge leadingthere x73-99 behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/repairedrefuge/EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls/WARM continuousscene/allchoices present; no arena/capturegear/egg/body/writing. No later ONEjar/rope/movedbranch/physicalpaw/scope/x40 requirements retro imposed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 438882,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route-2-240cb88effa1.png",
+        "sha256": "240cb88effa1ab3ba45a61edd149c2a061be06b5714f0a79f63bf13a1afbe360",
+        "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+        "generationPromptSha256": "a70576a70736a6d874ba6e5638546b4bad286a4fb2b53df5b2ec2e658fae4ac6",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "240cb88effa1ab3ba45a61edd149c2a061be06b5714f0a79f63bf13a1afbe360",
+          "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual new178warmMOOD6 and original warmMOOD/ROUTE: whole two UPLEFTdifferent villagehouses/continuouswalkable trail/full OPENwater/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes/WARM/no scopegrowthreturnbodycapturegearTEAMtext. Steeper downward village approach/rock-levelLOWaid with stacked houses differs MOODoutsidegroundrestmat/no village and original indoorLOWbooks/RIGHTvillage. But required helpercloth cut nativeLEFT, last meaningfulDIRTpad/toes extend x57-63 behind60.3; composition false ONLY. No inheritedpass from failedparent6."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual new178warmMOOD6 and original warmMOOD/ROUTE: whole two UPLEFTdifferent villagehouses/continuouswalkable trail/full OPENwater/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes/WARM/no scopegrowthreturnbodycapturegearTEAMtext. Steeper downward village approach/rock-levelLOWaid with stacked houses differs MOODoutsidegroundrestmat/no village and original indoorLOWbooks/RIGHTvillage. But required helpercloth cut nativeLEFT, last meaningfulDIRTpad/toes extend x57-63 behind60.3; composition false ONLY. No inheritedpass from failedparent6."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 567728,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route-3-42af94bad440.png",
+        "sha256": "42af94bad440759d70b5746ed02791055791fc2375b641be83c7f30bd7e66a9e",
+        "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+        "generationPromptSha256": "20b651f4bf6dcd5cfc1149d7722bfa09427fb30af7bfa8fabce8a7c309eafdce",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "42af94bad440759d70b5746ed02791055791fc2375b641be83c7f30bd7e66a9e",
+          "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual178 failednative/actualnew179warmMOOD3: wholeUPLEFTtwo differentvillagehouses/continuousroute/openwater/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes/WARM/no scopegrowthreturnbodycapturegearTEAMtext. Steepervillageapproach/rock-levelLOWkit/stackedhouses differs MOODgroundrestmat/no village. But required helpfulcloth still cut nativeLEFT and lastmeaningfulDIRTpad/toes x57-63 behind60.3; composition false ONLY, allselected semantics present. Do not mechanically enforce idealx48 alone."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual178 failednative/actualnew179warmMOOD3: wholeUPLEFTtwo differentvillagehouses/continuousroute/openwater/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes/WARM/no scopegrowthreturnbodycapturegearTEAMtext. Steepervillageapproach/rock-levelLOWkit/stackedhouses differs MOODgroundrestmat/no village. But required helpfulcloth still cut nativeLEFT and lastmeaningfulDIRTpad/toes x57-63 behind60.3; composition false ONLY, allselected semantics present. Do not mechanically enforce idealx48 alone."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route-4-d6b353325299.png",
+        "sha256": "d6b353325299da64dfa2174e0ba3dec7c4b99732b6e8c195cb18376c560238bb",
+        "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+        "generationPromptSha256": "d5569ac46c525f4ab35371289a16612964ad28105ce17a8bbf610c9f3f333070",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "d6b353325299da64dfa2174e0ba3dec7c4b99732b6e8c195cb18376c560238bb",
+          "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual179warmMOOD fullOWN/native: UPdifferentvillage/LOWrockhelperkit differs parent LOWgroundrestmat/nohouse. WARM/closedEMPTYjar/helpercloth/rope/shortwholemovedbranch/fullLEFTDIRTpads/no scopegrowthreturnTEAMbodycapturegeartext correct. Required OPENwaterbowl absent (allChoices F), primaryvillagehouse chimney nativeTOPcut (composition F); no imagined routegap."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual179warmMOOD fullOWN/native: UPdifferentvillage/LOWrockhelperkit differs parent LOWgroundrestmat/nohouse. WARM/closedEMPTYjar/helpercloth/rope/shortwholemovedbranch/fullLEFTDIRTpads/no scopegrowthreturnTEAMbodycapturegeartext correct. Required OPENwaterbowl absent (allChoices F), primaryvillagehouse chimney nativeTOPcut (composition F); no imagined routegap. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 517733,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route-5-1b40a0c7c95d.png",
+        "sha256": "1b40a0c7c95de55144fc4de3d18747a839d435f83747c1c6d909d9a63944d4f7",
+        "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+        "generationPromptSha256": "b85ff5f516b8a3cefe7184ebd79d6a681610104e2d5b3bb3dc41c25baba51d1d",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "1b40a0c7c95de55144fc4de3d18747a839d435f83747c1c6d909d9a63944d4f7",
+          "promptSha256": "894d7d47646f802663c1d04d439e7a7378b19d7d1712e01675848917e6e15046",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -22703,13 +23125,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native inviting protected woodland refuge with EMPTY padded resting bed/clean cloth/two food-water bowls, near binoculars/THREE CLOSED EMPTY transparent jars/TWO CLOSED plain books, continuous traversable path to distinct empty settlement. Fresh sheltered pathway camera versus parent open worktable; no capture gear/egg/body/text/flag/blur."
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwaterbowl nowpresent, bothWHOLEdifferentvillagehouse roofs/chimneys/body/doors/bases insideframe, helpercloth/ONEclosedEMPTYjar/rope/wholeSHORTbranch/fullLEFTDIRTpadstoes/WARM/no scopegrowthreturnTEAMcapturegearbodytext before60.3. UPvillage/LOWrockaid differs precedingLOWgroundrestmat/nohouses. All7 directlychecked; no inheritedTOPchimney/waterfailure."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 438882,
+          "colors": 525343,
           "findings": []
         }
       }
@@ -22724,7 +23146,71 @@
         "review": {
           "sourceSha256": "99c43c385b9eeb87bffaffe71eb93472cfc25a24f75f6a635068d3c28ff56bf1",
           "promptSha256": "3f2fbf1749b9eb78e6d36f6248983a2d648de9c777776b71dc5d96757015659b",
-          "reviewer": "Codex direct original visual inspection: v2-production-041",
+          "reviewer": "Codex ROOT direct whole original native/FULL OWN corrective177 four parents",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole original native/FULL OWN: required RUIN actualINNERview x74-96 and selected EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls x70-96 behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/continuouswetlandandforestinnerviews/WARM/repairedrefuge correct; no village/capturegear/egg/body/writing. No later ONEjar/rope/movedbranch/physicalpaw/scope/x40 requirements retro imposed."
+          ],
+          "notes": "ROOT whole original native/FULL OWN: required RUIN actualINNERview x74-96 and selected EMPTYpaddedrestplace/foldedcloth/BOTHfood-water bowls x70-96 behind actual60.3 controls. composition false ONLY. Original LEFT binoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/continuouswetlandandforestinnerviews/WARM/repairedrefuge correct; no village/capturegear/egg/body/writing. No later ONEjar/rope/movedbranch/physicalpaw/scope/x40 requirements retro imposed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 415872,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat-2-339f169cb21a.png",
+        "sha256": "339f169cb21ae8e576942e55b8f0a99ff8da9375d0997dc36acbe5da06c04753",
+        "promptSha256": "3f2fbf1749b9eb78e6d36f6248983a2d648de9c777776b71dc5d96757015659b",
+        "generationPromptSha256": "e502715d0b198f08fb796feac87e632fbcabe15e202a243545926d014955b006",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "339f169cb21ae8e576942e55b8f0a99ff8da9375d0997dc36acbe5da06c04753",
+          "promptSha256": "3f2fbf1749b9eb78e6d36f6248983a2d648de9c777776b71dc5d96757015659b",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual new178warmMOOD6 and original warmHAB: upperLEFT full water/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes, three actualOPENLOWwetland/forest/ruin innerviews/WARM/no scopegrowthreturnvillagebodycapturegearTEAMtext. UPaid/LOWhab reverse MOODLOWgroundrestmat/forest and old insideLOWbench/fullwidtharches/RIGHTcarebed. But meaningful RUIN INNER rightcolumn/groundsteps reach x60-64 behind actual60.3; composition false ONLY. Outer support endpoint alone not failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual new178warmMOOD6 and original warmHAB: upperLEFT full water/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/physicalDIRTpadstoes, three actualOPENLOWwetland/forest/ruin innerviews/WARM/no scopegrowthreturnvillagebodycapturegearTEAMtext. UPaid/LOWhab reverse MOODLOWgroundrestmat/forest and old insideLOWbench/fullwidtharches/RIGHTcarebed. But meaningful RUIN INNER rightcolumn/groundsteps reach x60-64 behind actual60.3; composition false ONLY. Outer support endpoint alone not failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 644459,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat-3-e861fc8cc4c0.png",
+        "sha256": "e861fc8cc4c086c8c75c995fc1674c5765fb2f82c2a78dfe8058ff38ef30b8d2",
+        "promptSha256": "3f2fbf1749b9eb78e6d36f6248983a2d648de9c777776b71dc5d96757015659b",
+        "generationPromptSha256": "9aa85e49f6b9d009c1afa233985bf2db9cf6cc356e0befab23acd2cf0e2255b4",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "e861fc8cc4c086c8c75c995fc1674c5765fb2f82c2a78dfe8058ff38ef30b8d2",
+          "promptSha256": "3f2fbf1749b9eb78e6d36f6248983a2d648de9c777776b71dc5d96757015659b",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -22735,13 +23221,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native warm protected repaired refuge with EMPTY padded resting bed/plain cloth/TWO separate food-water bowls, near binoculars/THREE CLOSED EMPTY transparent jars/TWO CLOSED books. Three real continuous openings to wetland/forest/ruins; fresh vaulted refuge composition versus lake-worktable parent. No capture gear/egg/body/text/flag/blur."
+          "notes": "ROOT whole native/FULL OWN/actual178 failednative/actualnew179warmMOOD3: complete meaningful RUIN INNER columns/steps now before60.3; allthreeactualwholeOPENLOWwetland/forest/ruin innerviews/fullUPLEFTwater/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/fullphysicalDIRTpadstoes/WARM/no scopegrowthreturnvillagebodycapturegearTEAMtext. UPaid/LOWhab reverse MOODLOWgroundrestmat/forest and oldinsideLOWbench/fullwidtharches/RIGHTcarebed. All7 directchecked; outerarchsupport endpoint beyondinner is background, no inheritedruinfailure."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 415872,
+          "colors": 632414,
           "findings": []
         }
       }
@@ -22788,7 +23274,96 @@
         "review": {
           "sourceSha256": "1fcb392d755fa2cd99f073825b03d6510631462c621cb06c2b755c35ef753483",
           "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
-          "reviewer": "Codex direct original visual inspection: v2-production-042",
+          "reviewer": "Codex root original OWN/native visibility audit after frozen178 snapshot",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT actualoriginal WHOLEnative/FULL exactOWN rechecked with actualnew179warmMOOD fullOWN/native. Original LEFTbinoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/EMPTYpaddedcompanionrest/foldcleancloth/FOODbowl/overturnedplainbag/spilledrope/vacatedbedroll/WARM/localmudtrace/brokenlocalthreshold/no differentvillageNETbodyeggtext correct. But required WATERbowl x59-67 partlyhidden and required BROKENLOCALTHRESHOLD/meaningfulmudtrail x71-99 hidden behindactual60.3; composition false ONLY. No newONEjar/woodpail/physicalpaw/OPENnearhouse/scope/camera-x40 retroimposed. Native actualprefixcamera differs new179outsideLOWrestmat; not a distinctShotfailure. Original review preserved; official correction ONLYafter178frozenQA/cleanup."
+          ],
+          "notes": "ROOT actualoriginal WHOLEnative/FULL exactOWN rechecked with actualnew179warmMOOD fullOWN/native. Original LEFTbinoculars/THREEclosedEMPTYtransparentjars/TWOclosedplainbooks/EMPTYpaddedcompanionrest/foldcleancloth/FOODbowl/overturnedplainbag/spilledrope/vacatedbedroll/WARM/localmudtrace/brokenlocalthreshold/no differentvillageNETbodyeggtext correct. But required WATERbowl x59-67 partlyhidden and required BROKENLOCALTHRESHOLD/meaningfulmudtrail x71-99 hidden behindactual60.3; composition false ONLY. No newONEjar/woodpail/physicalpaw/OPENnearhouse/scope/camera-x40 retroimposed. Native actualprefixcamera differs new179outsideLOWrestmat; not a distinctShotfailure. Original review preserved; official correction ONLYafter178frozenQA/cleanup."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 340383,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case-3-b88af8191636.png",
+        "sha256": "b88af81916363a7cb234baff230c33f1d0d23ea183fee1036aeeee7b15149a1b",
+        "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+        "generationPromptSha256": "696d0150b4844f0e53077f7636429129a92acbc61b27f48024b0f6522a97873a",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "b88af81916363a7cb234baff230c33f1d0d23ea183fee1036aeeee7b15149a1b",
+          "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual179warmMOOD3 fullOWN/native: UPhelpercloth/LOWOPENlocalrefuge/tippedEMPTYhollowwoodpail/rope/fullLEFTDIRTpads/ONEclosedEMPTYjar/WARM/no scopegrowthreturnvillageTEAMbodycapturegeartext. ActualUPshelf/LOWhouse differs parentgroundrestmat/nohouse. Required OPENwater absent (allChoices F); entirelocalrefugeroof nativeLEFTcropped (composition F). No new padcount/lid/jarcount requirement beyond OWN."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual179warmMOOD3 fullOWN/native: UPhelpercloth/LOWOPENlocalrefuge/tippedEMPTYhollowwoodpail/rope/fullLEFTDIRTpads/ONEclosedEMPTYjar/WARM/no scopegrowthreturnvillageTEAMbodycapturegeartext. ActualUPshelf/LOWhouse differs parentgroundrestmat/nohouse. Required OPENwater absent (allChoices F); entirelocalrefugeroof nativeLEFTcropped (composition F). No new padcount/lid/jarcount requirement beyond OWN. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 594156,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case-4-d649e7fc8bb0.png",
+        "sha256": "d649e7fc8bb0c61827565aacfe8beaa881d997f92ae46ad37ad27cccf0e8064f",
+        "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+        "generationPromptSha256": "78bd79ff9193562294542266ec377a647f60d7350b02ee552e3e43ef9a3c8ee4",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "d649e7fc8bb0c61827565aacfe8beaa881d997f92ae46ad37ad27cccf0e8064f",
+          "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwater nowpresent, wholeOPENlocalrefuge roof/body/EMPTYdoor/base/fulltippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/helpercloth/fullLEFTDIRTpads/WARM/no scopegrowthreturnvillageTEAMcapturegearbodytext. UPaid/LOWhome differs parentLOWgroundrestmat/nohouse. Requiredwholemovedbranch endpoint extends pastactual60.3 to61; read-onlyNEARESTcrop confirms meaningfulselectedcutend/body (composition ONLY F). House itself nowwhole insideframe, no inheritedroofcut/waterfailure."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmMOOD FULLown/native: OPENBLUEwater nowpresent, wholeOPENlocalrefuge roof/body/EMPTYdoor/base/fulltippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/helpercloth/fullLEFTDIRTpads/WARM/no scopegrowthreturnvillageTEAMcapturegearbodytext. UPaid/LOWhome differs parentLOWgroundrestmat/nohouse. Requiredwholemovedbranch endpoint extends pastactual60.3 to61; read-onlyNEARESTcrop confirms meaningfulselectedcutend/body (composition ONLY F). House itself nowwhole insideframe, no inheritedroofcut/waterfailure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case-5-d90dda10c65c.png",
+        "sha256": "d90dda10c65c31456b74dc835ee5d67fd1c0c46d785725c48bc0a3adbe8e4f99",
+        "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+        "generationPromptSha256": "44166ecbe339c5f37fd854ea5013e123aa226c6a68e446eee08f118caf15027a",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "d90dda10c65c31456b74dc835ee5d67fd1c0c46d785725c48bc0a3adbe8e4f99",
+          "promptSha256": "4d8b6642b5401b40638e0c9ec549360476ab0c660ce4fa2b7419114f76c037fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -22799,13 +23374,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native warm local EMPTY repaired refuge with overturned bag/spilled rope and actual muddy trace at broken nearby threshold. EMPTY padded companion rest/folded cloth/BOTH food-water bowls and near binoculars/THREE CLOSED EMPTY transparent jars/TWO CLOSED books. New damaged refuge camera versus old open lake workbench; no forced journey/capture/egg/body/text/flags/blur."
+          "notes": "ActualROOT FULL OWN/whole native/179MOOD actualparent: whole OPENlocalrefuge roof/body/EMPTYdoor/floor/base/tipped EMPTYhollowwoodpail/rope/UPhelpercloth and separateOPENBLUEwater/ONEclosedEMPTYjar/wholebranch and ALLcutends/fullDIRTpadstoes/WARM correct. UPshelf LOWhouse differs parentgroundrestmat/nohouse. Allselected beforeactual60.3; coarse native squarepixels, no identity/body/capturegear/text/growthreturnvillageTEAM. Allseven direct P, branch nowwhole."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 340383,
+          "colors": 609831,
           "findings": []
         }
       }
@@ -22852,7 +23427,64 @@
         "review": {
           "sourceSha256": "a4e80e4630a7b543b236baec822212d147301e83fec2e2e83b3e861874a9c60f",
           "promptSha256": "286f755775987bd2c3669f1e13a8449dfc2134a28244fe3c982cb522f595cfbf",
-          "reviewer": "Codex direct original visual inspection: v2-production-042",
+          "reviewer": "Codex root actualoriginal own/native audit after178 frozenQA/cleanup",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Original FULL OWN/WHOLEnative with actualoriginalbrightTEAMMOOD FULL OWN/native: repairedEMPTYpaddedcarebed/plaincloth/TWOfood-waterbowls/fullstonecover+woodhurdleplatform+maneuverposts/continuousroute/distinctdistantsettlement/SUNLIT/no capturegearbodyjartext correct. Fresh shelterapproach/LOWbed versus precedingoutdoorstump aid. But selecteddifferentvillage x75-96 entirelyhiddenactual60.3, meaningfulmaneuverpostbody x61-66 hidden and requiredcarebed cutnativeLEFT (composition ONLY F). No laterphysicalDIRTpad/rope/twohouse/newwalkover-ramp requirement imposed. Original review preserved."
+          ],
+          "notes": "Original FULL OWN/WHOLEnative with actualoriginalbrightTEAMMOOD FULL OWN/native: repairedEMPTYpaddedcarebed/plaincloth/TWOfood-waterbowls/fullstonecover+woodhurdleplatform+maneuverposts/continuousroute/distinctdistantsettlement/SUNLIT/no capturegearbodyjartext correct. Fresh shelterapproach/LOWbed versus precedingoutdoorstump aid. But selecteddifferentvillage x75-96 entirelyhiddenactual60.3, meaningfulmaneuverpostbody x61-66 hidden and requiredcarebed cutnativeLEFT (composition ONLY F). No laterphysicalDIRTpad/rope/twohouse/newwalkover-ramp requirement imposed. Original review preserved."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 608255,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route-3-198877834593.png",
+        "sha256": "1988778345931e990c49d35b59453d7787d6af56e0089fcece504348e2bbe8a5",
+        "promptSha256": "286f755775987bd2c3669f1e13a8449dfc2134a28244fe3c982cb522f595cfbf",
+        "generationPromptSha256": "0089aa48c3e46d82392f036fa2b080a125eda96f29345db0051d250f021fb322",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "1988778345931e990c49d35b59453d7787d6af56e0089fcece504348e2bbe8a5",
+          "promptSha256": "286f755775987bd2c3669f1e13a8449dfc2134a28244fe3c982cb522f595cfbf",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative/actualnew181brightTEAM8 FULLown/native: wholeUPtwo differentvillage roof/chimney/body/door/base/continuousLEFTtrail/MIDwholeEMPTYhelpermat+plaincloth+OPENBLUEwater/LOWstonecover+usablewoodrampplatform+woodposts/SUNLIT/no scopegrowthreturn/habitat/localcase/bodycapturegearjarlabtext. LayeredterracesUPvillage/MIDnook/LOWcourse differs precedingMIDleftaid/sideplatform/no village. But meaningfullastwoodpostbody/base x58-61 hiddenactual60.3; composition ONLY F. Tinyfenceendpoint background not charged."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative/actualnew181brightTEAM8 FULLown/native: wholeUPtwo differentvillage roof/chimney/body/door/base/continuousLEFTtrail/MIDwholeEMPTYhelpermat+plaincloth+OPENBLUEwater/LOWstonecover+usablewoodrampplatform+woodposts/SUNLIT/no scopegrowthreturn/habitat/localcase/bodycapturegearjarlabtext. LayeredterracesUPvillage/MIDnook/LOWcourse differs precedingMIDleftaid/sideplatform/no village. But meaningfullastwoodpostbody/base x58-61 hiddenactual60.3; composition ONLY F. Tinyfenceendpoint background not charged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route-4-48aea63f3a36.png",
+        "sha256": "48aea63f3a366a1cdccd27ab9d416c0b2505fce7b34ff08da94bd8c876002508",
+        "promptSha256": "286f755775987bd2c3669f1e13a8449dfc2134a28244fe3c982cb522f595cfbf",
+        "generationPromptSha256": "9b6a0fc521d1ebc73d609cf42b8bb96bd9e8cc636a194bdba08c3d35087199d6",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "48aea63f3a366a1cdccd27ab9d416c0b2505fce7b34ff08da94bd8c876002508",
+          "promptSha256": "286f755775987bd2c3669f1e13a8449dfc2134a28244fe3c982cb522f595cfbf",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -22863,13 +23495,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Native bright helping care base retains EMPTY padded bed/clean cloth/BOTH food-water bowls and THREE nearby distinct EMPTY tactical stone-cover/hurdle-platform/maneuver-post stations beside challenge area. Continuous path reaches different empty settlement; fresh shelter approach angle versus parent exposed arena. No capture/egg/collection lab/body/text/flags/blur."
+          "notes": "ActualROOT FULL OWN/whole native/new182brightMOOD6 actualparent: WHOLE UPtwo differentvillage roofs/chimneys/body/door/base continuousLEFTtrail MIDwholeOPENhelpernook EMPTYmat/plaincloth/openBLUEwater LOWwhole stonecover/usablewoodrampplatform/posts SUNLIT correct. Meaningfullastpostbody/base ends59.6 before60.3, tiny fenceendpointbackground allowed. UPvillage MIDnook LOWcourse differs parentMIDleftaid/sideplatform/no village. Allseven actualdirect P, no bodycapturegearjarlabtext/scopegrowthreturn/HABcase. Held until ancestor qualifies."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 608255,
+          "colors": 763691,
           "findings": []
         }
       }
@@ -22884,18 +23516,20 @@
         "review": {
           "sourceSha256": "2c389d2f096b547b86b170759541fb73b47f20f2cc6b1f70c5d3c15fb91ad46d",
           "promptSha256": "24dce85dd1d726314e36f2f964daef72d1a9c2747f52ff920750ca69da431daf",
-          "reviewer": "Codex direct original visual inspection: v2-production-041",
+          "reviewer": "Codex root actualoriginal own/native corrective after180 frozen QA cleanup",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Native repaired woodland refuge: EMPTY padded resting bed/clean care cloth/BOTH food-water bowls, THREE clearly different nearby EMPTY stone-cover/timber-hurdle/maneuvering-post challenge stations and empty round challenge area. Three actual continuous openings to wetland/forest/ruins, new vaulted habitat camera versus exposed cliff arena parent. No capture/egg/collection lab/body/text/flags/blur."
+          "findings": [
+            "ROOT actualFULL ORIGINAL OWN/whole ORIGINAL native and actualoriginal/newMOOD parent: EMPTYrestbed/plaincarecloth/TWOfood-waterbowls/differentEMPTYwoodhurdle stonecover maneuverposts challengearena/SUNLIT/threeactualOPENwetland forest RUINviews semantically present. FreshinsideLOWbed UPfullwidtharches RIGHTcourse differs precedingoriginaloutdoorUPbed LOWstump and new182MOOD MIDaid SIDEplatform. Meaningful RUININNER x78-98, woodhurdle x53-67 partlyhidden and maneuverposts/corearena x60-98 behindactual60.3: composition ONLY F. No later rope/DIRTpad/jarcount/twohouse/newwalkover-ramp rule applied. Original review and exact OWN/hash preserved. Official corrective only AFTER180 frozen749 QA36 ROOTsixscreens and guardedcleanup actualcomplete."
+          ],
+          "notes": "ROOT actualFULL ORIGINAL OWN/whole ORIGINAL native and actualoriginal/newMOOD parent: EMPTYrestbed/plaincarecloth/TWOfood-waterbowls/differentEMPTYwoodhurdle stonecover maneuverposts challengearena/SUNLIT/threeactualOPENwetland forest RUINviews semantically present. FreshinsideLOWbed UPfullwidtharches RIGHTcourse differs precedingoriginaloutdoorUPbed LOWstump and new182MOOD MIDaid SIDEplatform. Meaningful RUININNER x78-98, woodhurdle x53-67 partlyhidden and maneuverposts/corearena x60-98 behindactual60.3: composition ONLY F. No later rope/DIRTpad/jarcount/twohouse/newwalkover-ramp rule applied. Original review and exact OWN/hash preserved. Official corrective only AFTER180 frozen749 QA36 ROOTsixscreens and guardedcleanup actualcomplete."
         },
         "gate": {
           "ok": true,
@@ -54017,6 +54651,93 @@
           "colors": 580366,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--route--short-3-e5035182755c.png",
+        "sha256": "e5035182755c4f0fdb5c703ec723d71e6f432fece7d16eeaf2ff30f31ce992ca",
+        "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+        "generationPromptSha256": "58197efd3f33726d0ca2edd2f6ef4fffc1cd53638991f1f64288b3f8006fe65f",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "e5035182755c4f0fdb5c703ec723d71e6f432fece7d16eeaf2ff30f31ce992ca",
+          "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual176 failed same-key and passing174 warmPARTNERroute parent: full NETmesh/handle/open EMPTYbasket/OPENwater/plain helpfulcloth+independent CREAMfold FLAT ON SAME lowworktop OUTSIDEbasket/OPENhome/differentvillage/warm/no growthnestTEAMjarbodytext correct; uppernearhome/LOWforegroundkit/midvillage differs parent tinyUPkit/LOWvillage. Physical dirt returnpads entirely absent (allChoices false); primary nearhome roof nativeTOPcropped and seconddifferent village house extends x52-66 behind actual60.3 (composition false). Net handle end visible inside bottom; no false net/endingfold failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual176 failed same-key and passing174 warmPARTNERroute parent: full NETmesh/handle/open EMPTYbasket/OPENwater/plain helpfulcloth+independent CREAMfold FLAT ON SAME lowworktop OUTSIDEbasket/OPENhome/differentvillage/warm/no growthnestTEAMjarbodytext correct; uppernearhome/LOWforegroundkit/midvillage differs parent tinyUPkit/LOWvillage. Physical dirt returnpads entirely absent (allChoices false); primary nearhome roof nativeTOPcropped and seconddifferent village house extends x52-66 behind actual60.3 (composition false). Net handle end visible inside bottom; no false net/endingfold failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--route--short-4-bcdd39865531.png",
+        "sha256": "bcdd39865531c9382ee5e3d3a223709ffa2505c289406158b4198c008f45a2bd",
+        "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+        "generationPromptSha256": "dc4980197f284dfbd38a98ff0b583a5d37275eeae1bdb19a5d2d8401c80be063",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "bcdd39865531c9382ee5e3d3a223709ffa2505c289406158b4198c008f45a2bd",
+          "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual177 failed same-key and actual passing174 warmPARTNERroute fullOWN/native: full wovenround NETmesh and longhandle/open EMPTYbasket/OPENwater/plaincreamfold FLAT ON SAME captureworktop OUTSIDEbasket, three full physicalDIRTreturnpads/two whole different MIDLEFTvillagehouses/WARM/actual OPENhome threshold/no growthnestTEAMjarbodytext. NearUPHOME/LOWlargekit/MIDvillage differs parent tinyUPkit/LOWvillage. However primary nearhome roofpeak touches and is cut by nativeTOPedge; composition false ONLY. Net handleend is whole inside bottom and mesh primaryround complete; do not invent lidlessness or cloth count."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual177 failed same-key and actual passing174 warmPARTNERroute fullOWN/native: full wovenround NETmesh and longhandle/open EMPTYbasket/OPENwater/plaincreamfold FLAT ON SAME captureworktop OUTSIDEbasket, three full physicalDIRTreturnpads/two whole different MIDLEFTvillagehouses/WARM/actual OPENhome threshold/no growthnestTEAMjarbodytext. NearUPHOME/LOWlargekit/MIDvillage differs parent tinyUPkit/LOWvillage. However primary nearhome roofpeak touches and is cut by nativeTOPedge; composition false ONLY. Net handleend is whole inside bottom and mesh primaryround complete; do not invent lidlessness or cloth count."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 543343,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--warm--route--short-5-7069ec46b764.png",
+        "sha256": "7069ec46b764c12a659d2fae9e5b66544ee9f58420173eade2499bb012f4f697",
+        "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+        "generationPromptSha256": "6cf98e6f4ecb45c21b77ca984fc1be6d780b7a36bbce0af2f0e368e6d0d9e640",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "7069ec46b764c12a659d2fae9e5b66544ee9f58420173eade2499bb012f4f697",
+          "promptSha256": "a44627330ae81167e2aba21eb6620b730afded2e827b087819f963b4650e9bb1",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual178 same-key failednative and actual174 passingwarmPARTNERroute fullOWN/native: whole primaryOPENnearhome roofpeak/chimney/body/door/base now inside TOP/LEFT with woods above; fulltwoMIDLEFTdifferentvillagehouses/fullNETwovenroundmesh+longhandle/openEMPTYbasket/openwater/plainCREAMfold FLATsamecaptureworktop OUTSIDEbasket/fullDIRTreturnpads/toes/WARM/no growthTEAMjarbodytext. NearUPHOME/LOWlargekit/MIDvillage differs parent tinyUPkit/LOWvillage. All7 directly checked; primaryroundmesh complete despite extra loosemeshwing at nativecorner, no invented lidlessness/clothcount."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 560242,
+          "findings": []
+        }
       }
     ],
     "monster--wild--partner--warm--habitat--scene": [
@@ -54982,6 +55703,1097 @@
           "width": 1672,
           "height": 941,
           "colors": 438489,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--secret--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat--short-1-107746ffe05e.png",
+        "sha256": "107746ffe05e84044dcec889971a33f806ccd3e6b2a3e28704b1e820c03f6866",
+        "promptSha256": "be9b36eb62d79c93d14f9d471fa63602d1a0f3e4b1b492a7e79d13c77eecbb72",
+        "generationPromptSha256": "1d5bc850ad79ec296c8ebc64ce28a1e589458c0df0775133b84e8e3c8e2f2eb6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "107746ffe05e84044dcec889971a33f806ccd3e6b2a3e28704b1e820c03f6866",
+          "promptSha256": "be9b36eb62d79c93d14f9d471fa63602d1a0f3e4b1b492a7e79d13c77eecbb72",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original secretHAB parent and actual new177 failedparent0: actual three OPENUPPERLEFTwetland/forest/ruin innerviews, fullphysical LEFTreturnpads/toes/full CREAMfold FLAT ON SAME aidworktop OUTSIDEcontainers/water/closedEMPTYjar/rope/movedbranch/OPENnearhome/moonlit/no growthvillagebodycapturegearTEAMtext correct. Upperhab/LOWnearhome+worktop reverses current177 upperaid/LOWhab parent. However primary nearhome roof/body substantially nativeLEFTcropped; composition false ONLY. Meaningful habitats before60.3; small ordinary right woodland stream not invented progression."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original secretHAB parent and actual new177 failedparent0: actual three OPENUPPERLEFTwetland/forest/ruin innerviews, fullphysical LEFTreturnpads/toes/full CREAMfold FLAT ON SAME aidworktop OUTSIDEcontainers/water/closedEMPTYjar/rope/movedbranch/OPENnearhome/moonlit/no growthvillagebodycapturegearTEAMtext correct. Upperhab/LOWnearhome+worktop reverses current177 upperaid/LOWhab parent. However primary nearhome roof/body substantially nativeLEFTcropped; composition false ONLY. Meaningful habitats before60.3; small ordinary right woodland stream not invented progression."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--habitat--short-2-d63aeeb0ff85.png",
+        "sha256": "d63aeeb0ff85b9b1dba2625e506b54ff256de549fa3273c399f7c2e9f7ae1848",
+        "promptSha256": "be9b36eb62d79c93d14f9d471fa63602d1a0f3e4b1b492a7e79d13c77eecbb72",
+        "generationPromptSha256": "4fd0a06f151d9f19a72b8331c6b0d69e19746baa33be16074e28d301a30e54f7",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d63aeeb0ff85b9b1dba2625e506b54ff256de549fa3273c399f7c2e9f7ae1848",
+          "promptSha256": "be9b36eb62d79c93d14f9d471fa63602d1a0f3e4b1b492a7e79d13c77eecbb72",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual177 failed same-key and actual new178secretHABparent0: whole OPENnearhome roof/body/door/base now inside nativeLEFT/top; full UPPERLEFT three actual OPENwetland/forest/ruin INNERviews, full LEFTphysicalDIRTreturnpads/toes, independent CREAMfold FLAT ON SAME worktop OUTSIDEcontainers/openwater/ONEclosedEMPTYjar/rope/movedbranch/MOONLIT/no growthvillagebodycapturegearTEAMtext. UPhabs/LOWOPENhome+worktop reverses new parent UPaid/LOWhab and differs old insideLOWbench/fullwidtharches. Full actualseven checked before60.3; small cloth tip overedge alone not failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 525281,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--secret--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case--scene-1-db178180d9d3.png",
+        "sha256": "db178180d9d38cf475ac03e9a5c077b93fd952ceeefbe9b43c7f0e92d7923417",
+        "promptSha256": "9bedd66793bb8d88d8e3694995ecb3c87a413e027c85eaa284464a0203f23559",
+        "generationPromptSha256": "8d179d7636021f4591ad95d0448b944748fed5d8aa0accc983667560f23f26ab",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "db178180d9d38cf475ac03e9a5c077b93fd952ceeefbe9b43c7f0e92d7923417",
+          "promptSha256": "9bedd66793bb8d88d8e3694995ecb3c87a413e027c85eaa284464a0203f23559",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual original secretCASE and secret mood: full WHOLEOPENlocalrefuge roof/body/door/base/upperLEFTwater/helpercloth/closedEMPTYjar/rope/tipped hollow EMPTYwoodpail/movedbranch/full physical LEFTpads/moonlit/firsttrustready/no growthreturnvillagebodycapturegearTEAMtext correct before60.3. Exterior upperaid/LOWOPENrefuge/curvedtrail differs old inside giantLOWworkbench/RIGHTdamagedcavedoor and moonlit indoorrestbed/LOWbooks/lake. All seven checked; privately found originalparentvisibility failure pending officialreview after176 frozenQA, future newparent directcomparison required."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 425744,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--secret--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case--episode-1-40cbd58f044a.png",
+        "sha256": "40cbd58f044ae3581e095608dbe05c6184d10e04125eed176d3901a6e31952b8",
+        "promptSha256": "6dea1a7da5750a51a987dc333531c9e0a509c076cfae1c092a76421066bdf9b4",
+        "generationPromptSha256": "1039bc200c0f7cd3d46729cdeca101a88d03c973a48c2c1152240650ddc0e486",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "40cbd58f044ae3581e095608dbe05c6184d10e04125eed176d3901a6e31952b8",
+          "promptSha256": "6dea1a7da5750a51a987dc333531c9e0a509c076cfae1c092a76421066bdf9b4",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual original secretCASE and secret mood: WHOLEOPENlocalrefuge roof/body/door/base/rope/tipped hollowEMPTYwoodpail/LOWLEFT EMPTYleaf-lined hollow nest/OPENwater/plainWHITEcloth BESIDEaid/closedEMPTYjar/movedbranch/fullphysical LEFTpads/moonlit/no returnvillagebodycapturegearTEAMtext all correct before60.3. Exterior UPhouse/largeLOWcare differs old giant indoorLOWworkbench/RIGHTdamagedcave and mood indoorrestbed/LOWbooks/lake. Allseven checked; parent privatevisibility failure pending officialreview/newreplacement directcomparison, no inherited futureeligibility."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 487981,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--secret--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case--short-1-e93f0c6216ec.png",
+        "sha256": "e93f0c6216ec5731376c86bad50b7d9af89c507441b81c6d4d0afe704cb56d6a",
+        "promptSha256": "1547e95a63d68ad9b489cd09085ff5c5c3c74588bb09a9946ab36715ff479c89",
+        "generationPromptSha256": "d0e30645faf3a18cc633a613f06cff0a4c2dcbb5480802631064d7f023d32818",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e93f0c6216ec5731376c86bad50b7d9af89c507441b81c6d4d0afe704cb56d6a",
+          "promptSha256": "1547e95a63d68ad9b489cd09085ff5c5c3c74588bb09a9946ab36715ff479c89",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original secretCASE: WHOLEOPENnearhomebase/rope/tipped hollow EMPTYwoodpail/physicalLEFTreturnpads/water/closed EMPTYjar/independent CREAMfold FLAT ON SAME aidworktop OUTSIDEcontainers/movedbranch/moonlit/no growthvillagebodycapturegearTEAMtext present. Exterior UPhouse/LOWforegroundreturnworktop differs old inside giantLOWworkbench/RIGHTdamagedcave. But meaningful CREAMfold LEFTedge is cut by nativeLEFTboundary; composition false ONLY. No false missing endingfold or cropped whole house."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original secretCASE: WHOLEOPENnearhomebase/rope/tipped hollow EMPTYwoodpail/physicalLEFTreturnpads/water/closed EMPTYjar/independent CREAMfold FLAT ON SAME aidworktop OUTSIDEcontainers/movedbranch/moonlit/no growthvillagebodycapturegearTEAMtext present. Exterior UPhouse/LOWforegroundreturnworktop differs old inside giantLOWworkbench/RIGHTdamagedcave. But meaningful CREAMfold LEFTedge is cut by nativeLEFTboundary; composition false ONLY. No false missing endingfold or cropped whole house."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--secret--case--short-2-da8b8dd73d9f.png",
+        "sha256": "da8b8dd73d9fe5023cd24baeffb913f0ef8767c3a9a8bcaa3129a1a2ddfd803c",
+        "promptSha256": "1547e95a63d68ad9b489cd09085ff5c5c3c74588bb09a9946ab36715ff479c89",
+        "generationPromptSha256": "547b4ef1b00c0960a2629d4a965d1888744f1115eb2c38171a706c7fd37dd78e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "da8b8dd73d9fe5023cd24baeffb913f0ef8767c3a9a8bcaa3129a1a2ddfd803c",
+          "promptSha256": "1547e95a63d68ad9b489cd09085ff5c5c3c74588bb09a9946ab36715ff479c89",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual177 failed same-key and actual new178secretCASEparent9 plus originalCASE/MOOD: independent CREAMfold now complete inside nativeLEFT FLAT ON SAME worktop OUTSIDEcontainers, full water/ONEclosedEMPTYjar/rope/tipped hollowEMPTYwoodstavepail/movedbranch/whole OPENlocalhome roof/body/door/base/full physicalDIRTreturnpads/toes/MOONLIT/no growthvillagecapturegearTEAMbodytext. LOWside frontalhome/largeLOWreturnworktop differs new steep bird-eye diagonalhome/mid-depth tiny aid and old indoorLOWbench/RIGHTdamagedcave. Allseven directly checked, parent9 currentcomposition fail keeps child held. Background outer porch canopy at nativecorner is not selected main wholehouse."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 434156,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--scene-1-38b020643021.png",
+        "sha256": "38b020643021d0a1d17154c4d0217afb5cd8ab0d7d67527ce62c6c154a9104a3",
+        "promptSha256": "cc3e3792ed0a3565595735d4aff22a2d23107f61aa431a1a62527c9c94006b2b",
+        "generationPromptSha256": "fd6d9c43c76520e26e1d26fdd880b3b42052ef0e0113fc27a3e5ffbd297a8468",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "38b020643021d0a1d17154c4d0217afb5cd8ab0d7d67527ce62c6c154a9104a3",
+          "promptSha256": "cc3e3792ed0a3565595735d4aff22a2d23107f61aa431a1a62527c9c94006b2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual original warmROUTE and warm mood: whole TWO different LEFTvillage houses/continuouswalkable trail/fullphysical LEFTpads/toes/UPPERLEFT aidwater/helpcloth/closedEMPTYjar/rope/movedbranch/WARM/firsttrustready/no growthreturnbodycapturegearTEAMtext all correct insideframe before60.3. Outside tinyUPaid/LOWleftvillage differs old giant indoorLOWbooks-binoculars/jars/farRIGHTvillage and warmmood indoorLEFTbed/RIGHTobservationbench/lake. All seven checked; privately confirmed original warmMOOD/ROUTE visibility failures pending officialreview after176 frozenQA, newparent directcomparison required."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 633346,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--episode-1-51e89f4f5f50.png",
+        "sha256": "51e89f4f5f50028631696c7ea9124031c36e6d6ffaa9f6ca1b624b127cc0d981",
+        "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+        "generationPromptSha256": "7be93908ce3b7b1349d0cdad9ee4a70571323bd23786f0a4e9134ca5724b44a5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "51e89f4f5f50028631696c7ea9124031c36e6d6ffaa9f6ca1b624b127cc0d981",
+          "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original warmROUTE: full OPENwater/plainWHITEcarecloth BESIDEaid/closedEMPTYjar/rope/movedbranch/WHOLEUPPERLEFTdifferentvillage/continuous trail/WARM/no returnbodycapturegearTEAMtext present; LOWcare/UPhouses differs old indoorLOWworkbench/farRIGHTvillage. But required EMPTYleaf-lined hollow restnest is absent (allChoices/latestChoice false), and required physical trail extends to x64-79 with last pad nativeBOTTOMcropped/behind60.3 (composition false). Plain green grass backing is not a visible leaf-lined hollow nest; carecloth need not be FLAT for BESIDE requirement."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original warmROUTE: full OPENwater/plainWHITEcarecloth BESIDEaid/closedEMPTYjar/rope/movedbranch/WHOLEUPPERLEFTdifferentvillage/continuous trail/WARM/no returnbodycapturegearTEAMtext present; LOWcare/UPhouses differs old indoorLOWworkbench/farRIGHTvillage. But required EMPTYleaf-lined hollow restnest is absent (allChoices/latestChoice false), and required physical trail extends to x64-79 with last pad nativeBOTTOMcropped/behind60.3 (composition false). Plain green grass backing is not a visible leaf-lined hollow nest; carecloth need not be FLAT for BESIDE requirement."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--episode-2-848c9b5e0d54.png",
+        "sha256": "848c9b5e0d54742bd6d33932a9b2bf7d4de5d2c10774f867ead414db7d638fbb",
+        "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+        "generationPromptSha256": "7914b7b9b2646809d152d2d54b749021b786ee0cfb84c44992fc8c6f150b9520",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "848c9b5e0d54742bd6d33932a9b2bf7d4de5d2c10774f867ead414db7d638fbb",
+          "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual177 failed same-key/actual new178warmROUTEparent7: EMPTYleaflinedHOLLOWrestnest now clearly recessed/EMPTY, full water/plainWHITEcloth BESIDEaid/ONEclosedEMPTYjar/rope/movedbranch/wholeUPLEFTdifferentvillage/continuousroute/WARM/no returnfoldbodycapturegearTEAMtext. Ground-level broadLOWcare+horizontalupperhouses differs parent rock-levelLOWaid/verticallystackedhouses/steepervillageapproach. However last meaningful physicalDIRTpad/toes extend x59-65 behindactual60.3; composition false ONLY, no inherited absentnest failure and no forcedFLATcloth."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual177 failed same-key/actual new178warmROUTEparent7: EMPTYleaflinedHOLLOWrestnest now clearly recessed/EMPTY, full water/plainWHITEcloth BESIDEaid/ONEclosedEMPTYjar/rope/movedbranch/wholeUPLEFTdifferentvillage/continuousroute/WARM/no returnfoldbodycapturegearTEAMtext. Ground-level broadLOWcare+horizontalupperhouses differs parent rock-levelLOWaid/verticallystackedhouses/steepervillageapproach. However last meaningful physicalDIRTpad/toes extend x59-65 behindactual60.3; composition false ONLY, no inherited absentnest failure and no forcedFLATcloth."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 625771,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--episode-3-788d85956310.png",
+        "sha256": "788d85956310664b1923d6b1ed289c4c416c031f3c3d09de9c9e2cc334d1525b",
+        "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+        "generationPromptSha256": "9d4b38bd76664b8ce96cc451d588f83c375f63bebf24d6dbc5764e81a60dd957",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "788d85956310664b1923d6b1ed289c4c416c031f3c3d09de9c9e2cc334d1525b",
+          "promptSha256": "3e818420ff60c5823739a6962fea9249b112d802916928b536e39fbe8af04f2b",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual178 same-key failednative and actual179warmROUTEparent4: allphysicalDIRTpadstoes now whole before60.3, lastpad confirmed whole by exactread-only NEARESTcrop ending at60.3. ClearEMPTYleaflinedHOLLOWnest/fullwater/plainWHITEcarecloth BESIDEaid/ONEclosedEMPTYjar/rope/movedbranch/fullUPLEFTtwo differentvillagehouses/continuousWARMroute/no returnbodycapturegearTEAMtext. Ground-levellargecare/horizontalvillage differs parent rock-levelkit/stackedhouses/steeperapproach. All7 checked; currentparent4composition F keeps child held, no inheritedpass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 646888,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--route--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--short-1-6ce3fa77d108.png",
+        "sha256": "6ce3fa77d10868ab4966609543973b653bd6132d70b6a0fb7eab5ebbf6cb77e1",
+        "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+        "generationPromptSha256": "7c559295f7d101c029571bb67ec45350fe2c98e8a517a801baff8a26974dbac6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6ce3fa77d10868ab4966609543973b653bd6132d70b6a0fb7eab5ebbf6cb77e1",
+          "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original warmROUTE: full different LEFTvillage/physical LEFTreturnpads/water/closedEMPTYjar/rope/movedbranch/independent CREAMfold FLAT ON SAME worktop OUTSIDEcontainers/WARM/no growthnestbodycapturegearTEAMtext present; nearleftporch/LOWaid+UPvillage differs old indoorLOWworkbench/farRIGHTvillage. Nearhomebase door is CLOSED with no actual OPENdoorway (allChoices/latestChoice false), and required primary nearhome roof/body cut by nativeLEFTboundary (composition false). No false missing CREAMfold; slight overtableedge fabric tip alone not failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original warmROUTE: full different LEFTvillage/physical LEFTreturnpads/water/closedEMPTYjar/rope/movedbranch/independent CREAMfold FLAT ON SAME worktop OUTSIDEcontainers/WARM/no growthnestbodycapturegearTEAMtext present; nearleftporch/LOWaid+UPvillage differs old indoorLOWworkbench/farRIGHTvillage. Nearhomebase door is CLOSED with no actual OPENdoorway (allChoices/latestChoice false), and required primary nearhome roof/body cut by nativeLEFTboundary (composition false). No false missing CREAMfold; slight overtableedge fabric tip alone not failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--short-2-171e87ccf910.png",
+        "sha256": "171e87ccf910172769841ab8b6b97ebfa775bab417d40d3dfe7a89e3b300f50b",
+        "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+        "generationPromptSha256": "28b8da9b49f7ffa6c5efdb95ac04db49c10ad63bed6d519a31287a7d1fad5fd6",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "171e87ccf910172769841ab8b6b97ebfa775bab417d40d3dfe7a89e3b300f50b",
+          "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+          "reviewer": "Codex direct original visual inspection: v2-production-178",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual177 failed same-key/actual new178warmROUTEparent7: actualnearhome OPENdoor now showsEMPTYdarkinterior/threshold; full UPdifferentvillage/full LEFTDIRTreturnpads/water/ONEclosedEMPTYjar/rope/movedbranch/CREAMfold ON SAME worktop OUTSIDEcontainers/WARM/no growthbodycapturegearTEAMtext. LOWnearporch/midreturnworktop/UPhouses differs parent LOWaid/UPvillage with no nearhome. But primarynearhome wall/roof still nativeLEFTcropped, and meaningful rope/branch continue behind60.3; composition false ONLY. Small fabric tip overtableedge alone not failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual177 failed same-key/actual new178warmROUTEparent7: actualnearhome OPENdoor now showsEMPTYdarkinterior/threshold; full UPdifferentvillage/full LEFTDIRTreturnpads/water/ONEclosedEMPTYjar/rope/movedbranch/CREAMfold ON SAME worktop OUTSIDEcontainers/WARM/no growthbodycapturegearTEAMtext. LOWnearporch/midreturnworktop/UPhouses differs parent LOWaid/UPvillage with no nearhome. But primarynearhome wall/roof still nativeLEFTcropped, and meaningful rope/branch continue behind60.3; composition false ONLY. Small fabric tip overtableedge alone not failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 575315,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--short-3-634f198a3cdf.png",
+        "sha256": "634f198a3cdf427511b5d6a2ccd592461e6de82d0d324a48acc588c913273aeb",
+        "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+        "generationPromptSha256": "97bd07b9760469fa7dfd3f0634124fa1010b93538cf467c4785005b5957e53a6",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "634f198a3cdf427511b5d6a2ccd592461e6de82d0d324a48acc588c913273aeb",
+          "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual178 failednative/actual179warmROUTEparent4: whole actualOPENnearhome now insideLEFT with fullUPdifferentvillage/fullphysicalLEFTDIRTreturnpads/water/ONEclosedEMPTYjar/WARM/no growthbodycapturegearTEAMtext. LOWnearporch/MIDreturnworktop/UPhouses differs parent LOWrockaid/UPstackedvillage. But selected rope and movedbranch mainbodies now extend x57-76 behind60.3 (composition false), and CREAMcloth substantially hangs down FRONT of worktop rather than independent foldedrectangle FLAT ON SAME tabletop (allChoices/latestChoice false). Tiny overedge tip alone would be allowed; this is large vertical drape. No inherited croppedhouse/closeddoor failure."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual178 failednative/actual179warmROUTEparent4: whole actualOPENnearhome now insideLEFT with fullUPdifferentvillage/fullphysicalLEFTDIRTreturnpads/water/ONEclosedEMPTYjar/WARM/no growthbodycapturegearTEAMtext. LOWnearporch/MIDreturnworktop/UPhouses differs parent LOWrockaid/UPstackedvillage. But selected rope and movedbranch mainbodies now extend x57-76 behind60.3 (composition false), and CREAMcloth substantially hangs down FRONT of worktop rather than independent foldedrectangle FLAT ON SAME tabletop (allChoices/latestChoice false). Tiny overedge tip alone would be allowed; this is large vertical drape. No inherited croppedhouse/closeddoor failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--short-4-c7e10a02bffe.png",
+        "sha256": "c7e10a02bffe8287411a433bf04b6fc8f53635e32fa2e2b5958be0c19d71ba0b",
+        "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+        "generationPromptSha256": "e67fe1e083084bd4dcfeb6681cf1cde5491ce416f558d1bc2accfbed8a303848",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "c7e10a02bffe8287411a433bf04b6fc8f53635e32fa2e2b5958be0c19d71ba0b",
+          "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/newactual180ROUTE1: fullflat independentCREAMfold ONsameworktop OUTSIDEcontainers/OPENnearhome/WARM/jar/rope/branch/DIRTreturnpads/no growthTEAMbodycapturegeartext. UPnearhome/MIDreturntable/LOWvillage differs parent UPvillage/LOWrockkit. However required OPENwaterbowl absent; closedbarrels/EMPTYclosedjar not substitute (allChoices F). LEFTdifferentvillagehouse nativeLEFTcropped (composition F). Lastpad ends before actual60.3, no invented idealx50 failure."
+          ],
+          "notes": "Whole native/FULL exactOWN/newactual180ROUTE1: fullflat independentCREAMfold ONsameworktop OUTSIDEcontainers/OPENnearhome/WARM/jar/rope/branch/DIRTreturnpads/no growthTEAMbodycapturegeartext. UPnearhome/MIDreturntable/LOWvillage differs parent UPvillage/LOWrockkit. However required OPENwaterbowl absent; closedbarrels/EMPTYclosedjar not substitute (allChoices F). LEFTdifferentvillagehouse nativeLEFTcropped (composition F). Lastpad ends before actual60.3, no invented idealx50 failure. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 581084,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--route--short-5-569838f57311.png",
+        "sha256": "569838f57311b4ba5b046e6d29f1a1e8592ea4a775e58f3d90b455a31ee6b175",
+        "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+        "generationPromptSha256": "e0baf57a6c61a72d705128481513cfd90c9840295d844d719513b23525bdeb23",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "569838f57311b4ba5b046e6d29f1a1e8592ea4a775e58f3d90b455a31ee6b175",
+          "promptSha256": "a66db4c8bdf80d42965d0572c3d00b5230461343bb3edf0dba5b2838c2338298",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/newactual181ROUTEparent1: distinctOPENBLUEwaterbowl nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/fullOPENnearhome roof/chimney/body/EMPTYdoorbase/fulltwoWHOLEdifferentvillage/fullrope/shortbranch/fullDIRTreturnpadstoes/WARM/no growthTEAMcapturegearbodytext beforeactual60.3. UPnearhome/MIDreturntable/LOWvillage reverses parentUPvillage/LOWrockaid. All7 directchecked; leftvillage roof nowfullyinsideframe, no inheritedcrop/waterfailure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 596584,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--scene-1-621bd48b1a38.png",
+        "sha256": "621bd48b1a38b208d4dabf44e3744a412a93023f861e2d00c1fe3ad5eee97c87",
+        "promptSha256": "91e32bbe9f02a8cb09d5c6ad2c6cd2e643c3b2e0e85ec08755304bfcff826096",
+        "generationPromptSha256": "fd6901068a9f8f2ad7f6af00f3392e7e6b761227fbfbd5ec94e7886dc35dc471",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "621bd48b1a38b208d4dabf44e3744a412a93023f861e2d00c1fe3ad5eee97c87",
+          "promptSha256": "91e32bbe9f02a8cb09d5c6ad2c6cd2e643c3b2e0e85ec08755304bfcff826096",
+          "reviewer": "Codex direct original visual inspection: v2-production-177",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actual original warmHAB and warm mood: full LOWLEFTwater/helpcloth/closedEMPTYjar/rope/movedbranch/three actual WHOLEUPPERLEFTOPENwetland/forest/ruin innerviews/physicalLEFTpads/WARM/firsttrustready/no growthreturnvillagebodycapturegearTEAMtext correct; exterior UPhabitats/LOWaid differs old indoor giantLOWworkbench/fullwidtharches/RIGHTcarebed and mood indoorbed/RIGHTbench. Last meaningful physical trail pad extends x58-62 behind actual60.3 controls (composition false ONLY). Actual innerviews are whole; do not reject arch-support endpoints or falsely omit paw trail."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actual original warmHAB and warm mood: full LOWLEFTwater/helpcloth/closedEMPTYjar/rope/movedbranch/three actual WHOLEUPPERLEFTOPENwetland/forest/ruin innerviews/physicalLEFTpads/WARM/firsttrustready/no growthreturnvillagebodycapturegearTEAMtext correct; exterior UPhabitats/LOWaid differs old indoor giantLOWworkbench/fullwidtharches/RIGHTcarebed and mood indoorbed/RIGHTbench. Last meaningful physical trail pad extends x58-62 behind actual60.3 controls (composition false ONLY). Actual innerviews are whole; do not reject arch-support endpoints or falsely omit paw trail."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 565175,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--scene-2-188e58d61322.png",
+        "sha256": "188e58d613228b5b54a9e84a27c098a6b69ccad76e0fd390f978711fda8eed47",
+        "promptSha256": "91e32bbe9f02a8cb09d5c6ad2c6cd2e643c3b2e0e85ec08755304bfcff826096",
+        "generationPromptSha256": "f73b8cfd1cec66ab32480522b31fc608f6190a4968ca0604b6b387e2504ed954",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "188e58d613228b5b54a9e84a27c098a6b69ccad76e0fd390f978711fda8eed47",
+          "promptSha256": "91e32bbe9f02a8cb09d5c6ad2c6cd2e643c3b2e0e85ec08755304bfcff826096",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT whole native/FULL OWN/actual177 failednative/actualnew179warmHABparent5: allphysicalDIRTpadstoes now whole before60.3; fullactualUPLEFTthreeOPENwetland/forest/ruin INNERviews/fullLOWLEFTwater/helpercloth/ONEclosedEMPTYjar/rope/movedbranch/WARMfirsttrustready/no growthreturnvillagebodycapturegearTEAMtext. UPhabitats/LOWaid reverses newparentUPaid/LOWhabs. All7 directly checked; no inheritedlastpawfailure, no carvedstone/body/text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 608183,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--habitat--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--episode-1-198332ff3db1.png",
+        "sha256": "198332ff3db1c06c97e6a08879b2933cd4592f1871d20aa80f3fc805b9aa7f16",
+        "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+        "generationPromptSha256": "b97044af1e8c61f6cd6d53cbd58e3f8842700c3f5f9cff7fc29161fb2a44033c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "198332ff3db1c06c97e6a08879b2933cd4592f1871d20aa80f3fc805b9aa7f16",
+          "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actualnew179warmHABparent5: actualUPLEFTthreewholeOPENwetland/forest/ruin INNERviews/LOWEMPTYleaflinedHOLLOWrestnest/openwater/plainWHITEcloth BESIDEaid/ONEclosedEMPTYjar/rope/fullLEFTDIRTpadstoes/WARM/no returnvillagebodycapturegearTEAMtext. UPhabs/LOWlargegroundcare reverse newparentUPaid/LOWhabs. But required movedbranch/log is cut at nativeLEFTboundary; composition false ONLY. All innerviews/tracks whole before60.3, no forcedFLATcarecloth."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actualnew179warmHABparent5: actualUPLEFTthreewholeOPENwetland/forest/ruin INNERviews/LOWEMPTYleaflinedHOLLOWrestnest/openwater/plainWHITEcloth BESIDEaid/ONEclosedEMPTYjar/rope/fullLEFTDIRTpadstoes/WARM/no returnvillagebodycapturegearTEAMtext. UPhabs/LOWlargegroundcare reverse newparentUPaid/LOWhabs. But required movedbranch/log is cut at nativeLEFTboundary; composition false ONLY. All innerviews/tracks whole before60.3, no forcedFLATcarecloth."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--episode-2-591bbaddbf75.png",
+        "sha256": "591bbaddbf750a2863d7d7e8fc50f4f7a5a854d98df66d048bcf0a7b788d1895",
+        "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+        "generationPromptSha256": "0c19901b51b0bf0925d4a33c4444a9147ff4f742674f4b74caf7ba41b05ad6cd",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "591bbaddbf750a2863d7d7e8fc50f4f7a5a854d98df66d048bcf0a7b788d1895",
+          "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual179warmHAB5 fullOWN/native: UPthree actualINNERviews/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/fullLEFTDIRTpads/WARM/no returnvillageTEAMbodycapturegeartext. Reverse parent UPaid/LOWhabs. Required OPENcarewater absent (allChoices/latestChoice F). MeaningfulRUIN INNER rightcolumns/steps x60-71 behindactual60.3 (composition F), not merely outerarchsupport."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual179warmHAB5 fullOWN/native: UPthree actualINNERviews/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/fullLEFTDIRTpads/WARM/no returnvillageTEAMbodycapturegeartext. Reverse parent UPaid/LOWhabs. Required OPENcarewater absent (allChoices/latestChoice F). MeaningfulRUIN INNER rightcolumns/steps x60-71 behindactual60.3 (composition F), not merely outerarchsupport. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 594509,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--episode-3-a716654e8092.png",
+        "sha256": "a716654e8092fc5a270c9205ed3d99a1cb27a8af1bfdbcbf039bb12abbb926f1",
+        "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+        "generationPromptSha256": "75aec43ee0961c4a27dff62871b4d0a122ad9c82a8f44e3027ecf50f805fa354",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "a716654e8092fc5a270c9205ed3d99a1cb27a8af1bfdbcbf039bb12abbb926f1",
+          "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/EMPTYleaflinedHOLLOWnest/plainWHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext correct. UPthreeactualOPENINNERviews/LOWcare reverses parentUPaid/LOWhabs. But meaningfulRUIN INNERrightcolumn/steps x60-64 and finalDIRTpad/toes x62-68 behindactual60.3; composition ONLY F. Outerarchbackground not charged, water omission corrected."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/EMPTYleaflinedHOLLOWnest/plainWHITEclothBESIDEaid/ONEclosedEMPTYjar/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext correct. UPthreeactualOPENINNERviews/LOWcare reverses parentUPaid/LOWhabs. But meaningfulRUIN INNERrightcolumn/steps x60-64 and finalDIRTpad/toes x62-68 behindactual60.3; composition ONLY F. Outerarchbackground not charged, water omission corrected."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--episode-4-5781ef66c24d.png",
+        "sha256": "5781ef66c24db3fe7cf0e94f69eb476e34cc8912dd4371d333eb09202c2c4c08",
+        "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+        "generationPromptSha256": "8d85d60b618b220c00cfc4c0b29114414de538c788f54998b912c4aa6220fede",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "5781ef66c24db3fe7cf0e94f69eb476e34cc8912dd4371d333eb09202c2c4c08",
+          "promptSha256": "ac1b8fb5954af19c762b851814877f3117323c9429e4d1c127559274021599cc",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/179HAB actualparent: open BLUEwater/EMPTY leafHOLLOWnest/WHITEcloth BESIDEaid/closedEMPTYjar/rope/wholebranch/fullDIRTpadstoes/WARM correct. UPthreeINNERviews LOWcare reverses parentUPaid LOWhab. MeaningfulRUIN INNERcolumn/steps x60-64 remain behindactual60.3. composition ONLY F; outer arch background not charged, pads nowfullyvisible."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/179HAB actualparent: open BLUEwater/EMPTY leafHOLLOWnest/WHITEcloth BESIDEaid/closedEMPTYjar/rope/wholebranch/fullDIRTpadstoes/WARM correct. UPthreeINNERviews LOWcare reverses parentUPaid LOWhab. MeaningfulRUIN INNERcolumn/steps x60-64 remain behindactual60.3. composition ONLY F; outer arch background not charged, pads nowfullyvisible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 619546,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--short-1-06baeacf5853.png",
+        "sha256": "06baeacf58537b9a296a668f69ce0e7f372374e1fba1abe05ca90fe1cd469998",
+        "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+        "generationPromptSha256": "4553438e9d0c2984eea845382629d7e01c8990d3aef127013f4184e1985e04c2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "06baeacf58537b9a296a668f69ce0e7f372374e1fba1abe05ca90fe1cd469998",
+          "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-179",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT whole native/FULL OWN/actualnew179warmHABparent5: actualOPENnearhome/UPthreeactualOPENwetland/forest/ruin views/fullDIRTreturnpads/openwater/ONEclosedEMPTYjar/rope/movedbranch/WARM/no growthvillagebodycapturegearTEAMtext present. LOWnearporch/MIDreturnworktop/UPhabs differs newparentUPaid/LOWhabs. However primarynearhouse roof/body nativeLEFTcropped, RUIN INNER x59-67 and branchbody x56-69 behind60.3 (composition false); CREAMcloth hangs vertically down FRONT rather than independent foldedrectangle FLAT ON SAME worktop (allChoices/latestChoice false). Small overedge tips alone allowed; not this substantialdrapping."
+          ],
+          "notes": "ROOT whole native/FULL OWN/actualnew179warmHABparent5: actualOPENnearhome/UPthreeactualOPENwetland/forest/ruin views/fullDIRTreturnpads/openwater/ONEclosedEMPTYjar/rope/movedbranch/WARM/no growthvillagebodycapturegearTEAMtext present. LOWnearporch/MIDreturnworktop/UPhabs differs newparentUPaid/LOWhabs. However primarynearhouse roof/body nativeLEFTcropped, RUIN INNER x59-67 and branchbody x56-69 behind60.3 (composition false); CREAMcloth hangs vertically down FRONT rather than independent foldedrectangle FLAT ON SAME worktop (allChoices/latestChoice false). Small overedge tips alone allowed; not this substantialdrapping."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--short-2-fec90f0e9cf3.png",
+        "sha256": "fec90f0e9cf35670c1d4ccc111855f6c7167c45f1b0b996badacc14f45582098",
+        "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+        "generationPromptSha256": "1b5df903e1615c005d4b9993d353e5bf818d74964901ee3216e11663e6c5d39e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "fec90f0e9cf35670c1d4ccc111855f6c7167c45f1b0b996badacc14f45582098",
+          "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual179warmHAB5 fullOWN/native: UPthreeactualOPENINNERviews/LOWactualOPENhome/MIDindependentCREAMfoldFLATsameworktop OUTSIDEcontainers/fullLEFTDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMbodycapturegeartext. Reverses parentUPaid/LOWhabs. Wholeprimaryhome roof/body cutnativeLEFT (composition F). OPENwaterabsent and observationjar appears OPENwithoutclosedlid (allChoices F). No repeatedverticalclothdrape failure; latestreturnfold/home actualOPEN semantics correct."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual179warmHAB5 fullOWN/native: UPthreeactualOPENINNERviews/LOWactualOPENhome/MIDindependentCREAMfoldFLATsameworktop OUTSIDEcontainers/fullLEFTDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMbodycapturegeartext. Reverses parentUPaid/LOWhabs. Wholeprimaryhome roof/body cutnativeLEFT (composition F). OPENwaterabsent and observationjar appears OPENwithoutclosedlid (allChoices F). No repeatedverticalclothdrape failure; latestreturnfold/home actualOPEN semantics correct. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 574536,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--short-3-2fd5f4357433.png",
+        "sha256": "2fd5f4357433b7f379841615098b0dfe879ab004fb273cba6341bc84d5bdd4e2",
+        "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+        "generationPromptSha256": "3ec364599c759e6e1f74f09819101bcde63994ba5c35c47a6ac4bd0d117c6d86",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "2fd5f4357433b7f379841615098b0dfe879ab004fb273cba6341bc84d5bdd4e2",
+          "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/ONEclosedEMPTYjar nowpresent, fullindependentCREAMfoldFLATsameworktopOUTSIDEcontainers/actualOPENEMPTYnearhome/fullthreeUPmeaningfulOPENINNERviews/fullDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMcapturegearbodytext. UPviews/LOWhome/MIDreturntable reverse parentUPaid/LOWhab. Entireprimarynearhome roof stillnativeLEFTcropped; composition ONLY F. No inherited missingwater/ajarjar/clothdrape failure."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actual179warmHAB FULLown/native: OPENBLUEwater/ONEclosedEMPTYjar nowpresent, fullindependentCREAMfoldFLATsameworktopOUTSIDEcontainers/actualOPENEMPTYnearhome/fullthreeUPmeaningfulOPENINNERviews/fullDIRTreturnpads/rope/shortwholebranch/WARM/no growthvillageTEAMcapturegearbodytext. UPviews/LOWhome/MIDreturntable reverse parentUPaid/LOWhab. Entireprimarynearhome roof stillnativeLEFTcropped; composition ONLY F. No inherited missingwater/ajarjar/clothdrape failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--habitat--short-4-f2095c8ee21d.png",
+        "sha256": "f2095c8ee21d63563a2ffd012bd843547c1cce87530bba389e83bc6f83a4e4c5",
+        "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+        "generationPromptSha256": "bb561545da4e97bc5fa439ede7d3ac69428280aa2e2e47ee349f8fea9fccf854",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "f2095c8ee21d63563a2ffd012bd843547c1cce87530bba389e83bc6f83a4e4c5",
+          "promptSha256": "ab491364976625a4c49635a7b8eab2bf2a7e1493e4cc1bb77d6120bb1f5c56ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/179HAB actualparent: openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT entirely sameworktop OUTSIDEcontainers/actualOPENEMPTYnearhome/threeWHOLEUPINNERviews/fullDIRTreturnpads/rope/branch/WARM correct. UPviews LOWhome MIDtable reverseUPaid LOWhab. Entireprimarynearhome LEFTroof cropped; composition ONLY F. No inherited water/jarlid/verticalcloth failure."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/179HAB actualparent: openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT entirely sameworktop OUTSIDEcontainers/actualOPENEMPTYnearhome/threeWHOLEUPINNERviews/fullDIRTreturnpads/rope/branch/WARM correct. UPviews LOWhome MIDtable reverseUPaid LOWhab. Entireprimarynearhome LEFTroof cropped; composition ONLY F. No inherited water/jarlid/verticalcloth failure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 619359,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--scene-1-ce8746b34353.png",
+        "sha256": "ce8746b34353c7594beecf5117229769d4065b24b1b6c396f717aa048e74c615",
+        "promptSha256": "aed6faf121fe6e5804cd323eddb27699d8b24d14781ad3b79d9b998774edd21d",
+        "generationPromptSha256": "e8db127c1abe0e34551093ac3236378ba2e1755c1e93f4654663843be0944947",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ce8746b34353c7594beecf5117229769d4065b24b1b6c396f717aa048e74c615",
+          "promptSha256": "aed6faf121fe6e5804cd323eddb27699d8b24d14781ad3b79d9b998774edd21d",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPwholeOPENlocalrefuge/LOWhelperkit/tippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/wholemovedbranch/WARMfirsttrustready/no growthreturnvillageTEAMbodycapturegeartext. Reverse parentUPshelf/LOWhouse. OPENwater absent (allChoices F); finalDIRTpad/toes x58-63 behindactual60.3 (composition F). House itself insideframe, no invented housecut failure."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPwholeOPENlocalrefuge/LOWhelperkit/tippedEMPTYhollowwoodpail/rope/ONEclosedEMPTYjar/wholemovedbranch/WARMfirsttrustready/no growthreturnvillageTEAMbodycapturegeartext. Reverse parentUPshelf/LOWhouse. OPENwater absent (allChoices F); finalDIRTpad/toes x58-63 behindactual60.3 (composition F). House itself insideframe, no invented housecut failure. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 637641,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--episode-1-ee25da0ab268.png",
+        "sha256": "ee25da0ab268e8155d8980f22ddae91e9a7d61820ca4cdd3ba6e797b1c11fcfa",
+        "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+        "generationPromptSha256": "99750b17b3779ba4812f81f34592248b8a7b0b35776b4745b2370fcfda71bc4c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ee25da0ab268e8155d8980f22ddae91e9a7d61820ca4cdd3ba6e797b1c11fcfa",
+          "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPwholeOPENrefuge/LOWEMPTYleaflinedHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/wholemovedbranch/tippedEMPTYhollowwoodpail/rope/WARM/no returnvillageTEAMbodycapturegeartext. Reverse parentUPshelf/LOWhouse. Required OPENcarewater absent (allChoices/latestChoice F); finalDIRTpad/toes x57-61 crossesactual60.3 (composition F). No forcedFLATwhitecloth."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPwholeOPENrefuge/LOWEMPTYleaflinedHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/wholemovedbranch/tippedEMPTYhollowwoodpail/rope/WARM/no returnvillageTEAMbodycapturegeartext. Reverse parentUPshelf/LOWhouse. Required OPENcarewater absent (allChoices/latestChoice F); finalDIRTpad/toes x57-61 crossesactual60.3 (composition F). No forcedFLATwhitecloth. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 551346,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--episode-2-e9a220cda8fc.png",
+        "sha256": "e9a220cda8fc5d9577ce4a5ea13bcd4004e3812bd85f6681c5acffe51b28a20c",
+        "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+        "generationPromptSha256": "3c38d17f22a3a210a6c41e68ed693e1e3915eecab88e614825b63f019be0cb5a",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e9a220cda8fc5d9577ce4a5ea13bcd4004e3812bd85f6681c5acffe51b28a20c",
+          "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEcarewater nowpresent, UPwholeOPENlocalrefuge/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext. ReverseparentUPaid/LOWhouse. But finalDIRTpad/toes x64-69 hiddenactual60.3; composition ONLY F, no inheritedmissingwater failure."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEcarewater nowpresent, UPwholeOPENlocalrefuge/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDEaid/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/wholeSHORTbranch/WARM/no returnvillageTEAMcapturegearbodytext. ReverseparentUPaid/LOWhouse. But finalDIRTpad/toes x64-69 hiddenactual60.3; composition ONLY F, no inheritedmissingwater failure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--episode-3-11b2a81f1d06.png",
+        "sha256": "11b2a81f1d066dc1c9fc13f344ce74079c9ca2bada0ebc140563d6863ff45c49",
+        "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+        "generationPromptSha256": "1694189bc927a803923f0e38e4a101dc9f5490dd8fb780026ce4e60d869257a3",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "11b2a81f1d066dc1c9fc13f344ce74079c9ca2bada0ebc140563d6863ff45c49",
+          "promptSha256": "f92e8f443690642bcf7566172f35db821d53e01ab8f6adc80218ba2095ae4f31",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: UPwholeOPENlocalrefuge roof/body/EMPTYdoor/floor/base/tippedEMPTYhollowwoodpail/rope/LOWEMPTYleafHOLLOWnest/OPENBLUEwater/WHITEcloth BESIDEaid/ONEclosedEMPTYjar/wholebranch/fullDIRTpadstoes/WARM correct. UPwholeHOUSE LOWcare reverses parentUPshelf LOWhouse. Allselected before60.3; coarse native squarepixels/no bodycapturegeartext/returnvillageTEAM. Allseven direct P, lastpads nowwhole; BESIDEwhitecloth not forcedFLAT."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 634172,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--collect--warm--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--short-1-c3f1781312f4.png",
+        "sha256": "c3f1781312f4c0f0454cbf52d9ec1b4e8b3001b05ad0b921f2f03691e1365dbd",
+        "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+        "generationPromptSha256": "0a9813fc29ef1bb12af8aa26fde76bd6651e4c6d344f6cc4790e2a90da7b178e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c3f1781312f4c0f0454cbf52d9ec1b4e8b3001b05ad0b921f2f03691e1365dbd",
+          "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPnearhome/LOWindependentthickCREAMfold FLAT SAMEworktop OUTSIDEcontainers/closedEMPTYjar/tippedEMPTYhollowwoodpail/rope/physicalDIRTreturnpads/WARM/no growthvillageTEAMbodycapturegeartext. ReverseparentUPshelf/LOWhouse. Primarynearhome LEFTroof cropped; requiredbranch x58-69 and lastpads x66+ hiddenactual60.3 (composition F). OPENwater absent and actualnearhomefront is closedwoodplankdoor not visiblyEMPTYOPENthreshold (allChoices/latestChoice F). Fold itself flat, no falseclothfailure."
+          ],
+          "notes": "Whole native/FULL exactOWN/actual180CASE4 FULL OWN/native: UPnearhome/LOWindependentthickCREAMfold FLAT SAMEworktop OUTSIDEcontainers/closedEMPTYjar/tippedEMPTYhollowwoodpail/rope/physicalDIRTreturnpads/WARM/no growthvillageTEAMbodycapturegeartext. ReverseparentUPshelf/LOWhouse. Primarynearhome LEFTroof cropped; requiredbranch x58-69 and lastpads x66+ hiddenactual60.3 (composition F). OPENwater absent and actualnearhomefront is closedwoodplankdoor not visiblyEMPTYOPENthreshold (allChoices/latestChoice F). Fold itself flat, no falseclothfailure. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 490411,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--short-2-11a328337474.png",
+        "sha256": "11a328337474c3e151e3f0340abcd757fe9273fc98fc238b67c8d453ce85ad05",
+        "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+        "generationPromptSha256": "aeb8eb12bf1249537a3b46c712b24e2f4230068471c2e31cd20eca921c2a46d2",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "11a328337474c3e151e3f0340abcd757fe9273fc98fc238b67c8d453ce85ad05",
+          "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+          "reviewer": "Codex direct original visual inspection: v2-production-181",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEwater nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/fullphysicalDIRTreturnpads/WARM/no growthvillageTEAMcapturegearbodytext. UPnearhome/LOWreturntable reverse parentUPaid/LOWhouse. Requiredshortbranch endpoint and lastDIRTpadtoe extend pastactual60.3 (composition F), and homefront remains CLOSEDwoodplankdoor without EMPTYOPENinterior/floorthreshold (allChoices/latestChoice F). No invented verticalclothfailure."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLENative180same-keyfailure/actualnew181CASE4 FULLown/native: OPENBLUEwater nowpresent, independentthickCREAMfoldFLATsameworktopOUTSIDEcontainers/ONEclosedEMPTYjar/tippedhollowwoodpail/rope/fullphysicalDIRTreturnpads/WARM/no growthvillageTEAMcapturegearbodytext. UPnearhome/LOWreturntable reverse parentUPaid/LOWhouse. Requiredshortbranch endpoint and lastDIRTpadtoe extend pastactual60.3 (composition F), and homefront remains CLOSEDwoodplankdoor without EMPTYOPENinterior/floorthreshold (allChoices/latestChoice F). No invented verticalclothfailure."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect--warm--case--short-3-9001babe2079.png",
+        "sha256": "9001babe207961f14b2924450282ad92ebbb39aba9ec54602523df44b188a4f9",
+        "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+        "generationPromptSha256": "ef998866c2e7b12afefb9bbb798f75398d2b7cba8a721c869df47792e9c4145b",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "9001babe207961f14b2924450282ad92ebbb39aba9ec54602523df44b188a4f9",
+          "promptSha256": "ebc525ec934fb3f6cf03c4864113ce9abef179a9e865b8d012538f58854c2774",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: wholehouse roof/body insideframe/fullDIRTpadstoes/wholebranch/tippedhollowwoodpail/rope/openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/WARM correct, allbefore60.3. UPnearhome LOWtable reverses parentUPshelf LOWhouse. Homefront CLOSEDwoodplankdoor, no requiredOPENEMPTYinterior floor/threshold: allChoices/latestChoice F ONLY; previous composition faults corrected."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: wholehouse roof/body insideframe/fullDIRTpadstoes/wholebranch/tippedhollowwoodpail/rope/openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/WARM correct, allbefore60.3. UPnearhome LOWtable reverses parentUPshelf LOWhouse. Homefront CLOSEDwoodplankdoor, no requiredOPENEMPTYinterior floor/threshold: allChoices/latestChoice F ONLY; previous composition faults corrected."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 531007,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--bright--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route--scene-1-a713676e1437.png",
+        "sha256": "a713676e1437e5cc6f984774f62d879c695c89134cd7a9a39a32a6951936b925",
+        "promptSha256": "094e85213c340b34e0124f6bc2254c7c6b189e0eb0a1b48e345296b7bb224709",
+        "generationPromptSha256": "c05e6d46a706b9e4f57fa27e94eda6e1f9c42a8cf172d96109f1cc196a4bcd2e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a713676e1437e5cc6f984774f62d879c695c89134cd7a9a39a32a6951936b925",
+          "promptSha256": "094e85213c340b34e0124f6bc2254c7c6b189e0eb0a1b48e345296b7bb224709",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actualoriginalbrightTEAMROUTE FULL OWN/native: UPaid/MIDstonecover+usablewoodrampplatform+woodposts/LOWdifferentvillage reverses originalLOWbed/MIDstations/RIGHTdistanttown. Allfullstations/rope/shortwholebranch/fullLEFTDIRTpads/DAYLIGHT/firsttrustready/no growthreturnjarbodycapturegeartext. Required OPENwater absent (allChoices F); primaryLEFTvillage roof nativeLEFTcropped (composition F). Platformramp present, no invented bothsidesramp criterion."
+          ],
+          "notes": "Whole native/FULL exactOWN/actualoriginalbrightTEAMROUTE FULL OWN/native: UPaid/MIDstonecover+usablewoodrampplatform+woodposts/LOWdifferentvillage reverses originalLOWbed/MIDstations/RIGHTdistanttown. Allfullstations/rope/shortwholebranch/fullLEFTDIRTpads/DAYLIGHT/firsttrustready/no growthreturnjarbodycapturegeartext. Required OPENwater absent (allChoices F); primaryLEFTvillage roof nativeLEFTcropped (composition F). Platformramp present, no invented bothsidesramp criterion. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 618227,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--bright--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route--episode-1-afe2b6492fbb.png",
+        "sha256": "afe2b6492fbb4e1fc0cb42dcc2769da86ded57bc380e1dc94de2d12abef4295d",
+        "promptSha256": "821bb99595344bb3a6ffcbf1b582dd2c6c7d5e06b8918a51151fa095c48673b5",
+        "generationPromptSha256": "06dae03246ea874b7e6a1919233896ca656db38f9c12681b91f9cefbf6265c72",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "afe2b6492fbb4e1fc0cb42dcc2769da86ded57bc380e1dc94de2d12abef4295d",
+          "promptSha256": "821bb99595344bb3a6ffcbf1b582dd2c6c7d5e06b8918a51151fa095c48673b5",
+          "reviewer": "Codex direct original visual inspection: v2-production-180",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole native/FULL exactOWN/actualoriginalbrightTEAMROUTE FULL OWN/native: UPwholevillage/MIDstonecover+usablewoodrampplatform+posts/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDErope/shortwholebranch/DAYLIGHT/no returnjarbodycapturegeartext. Differentdepth from originalLOWbed/MIDstations/RIGHTtown. Required OPENcarewater absent (allChoices/latestChoice F). Meaningfulrightpostbody x58-61 and lastDIRTpadtoe beyond60.3 hidden (composition F), tinybackgroundfenceendpoint not charged."
+          ],
+          "notes": "Whole native/FULL exactOWN/actualoriginalbrightTEAMROUTE FULL OWN/native: UPwholevillage/MIDstonecover+usablewoodrampplatform+posts/LOWEMPTYleafHOLLOWnest/WHITEclothBESIDErope/shortwholebranch/DAYLIGHT/no returnjarbodycapturegeartext. Differentdepth from originalLOWbed/MIDstations/RIGHTtown. Required OPENcarewater absent (allChoices/latestChoice F). Meaningfulrightpostbody x58-61 and lastDIRTpadtoe beyond60.3 hidden (composition F), tinybackgroundfenceendpoint not charged. ROOT actualallseven independentchecks; coherentcoarsepixels/identityUnset/noText directlyP, no inherited pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 605429,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--bright--route--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route--short-1-6ccea5fea40b.png",
+        "sha256": "6ccea5fea40b5285825ed070ec897e230765c036556fb652c37b9b94a09b1361",
+        "promptSha256": "a9bf45ad9e9103bfa7f4ef3b7cc2272cad7f16ed641678c6a92f0ca5ac77ac53",
+        "generationPromptSha256": "4e5218a4205f2c906a98ba03a553ce88cd9bb475dc9eb83da16996ae5be7639b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6ccea5fea40b5285825ed070ec897e230765c036556fb652c37b9b94a09b1361",
+          "promptSha256": "a9bf45ad9e9103bfa7f4ef3b7cc2272cad7f16ed641678c6a92f0ca5ac77ac53",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/new182ROUTE7 actualparent: EMPTYOPENnearhome interior/floorthreshold/plaincaremat/openBLUEwater/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/threewhole stonecover/usablewoodrampplatform/posts/twoWHOLELOWvillage/fullDIRTreturnpads SUNLIT correct. Ordinaryropetiedposts meets OWNordinaryrope; no forced loose helperrope. UPnearhome MIDreturntable/course LOWvillage reverses parentUPvillage MIDaid LOWcourse. Wholeprimarynearhome TOP/LEFTroof cropped and selectedbranch x64-73 hidden60.3: composition ONLY F."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/new182ROUTE7 actualparent: EMPTYOPENnearhome interior/floorthreshold/plaincaremat/openBLUEwater/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/threewhole stonecover/usablewoodrampplatform/posts/twoWHOLELOWvillage/fullDIRTreturnpads SUNLIT correct. Ordinaryropetiedposts meets OWNordinaryrope; no forced loose helperrope. UPnearhome MIDreturntable/course LOWvillage reverses parentUPvillage MIDaid LOWcourse. Wholeprimarynearhome TOP/LEFTroof cropped and selectedbranch x64-73 hidden60.3: composition ONLY F."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 499387,
+          "findings": []
+        }
+      }
+    ],
+    "monster--bond--team--bright--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--habitat--scene-1-79462cc37430.png",
+        "sha256": "79462cc374305e92964d74eaf683575423683278a10e720d04547157d5e056cf",
+        "promptSha256": "1b8ca3e69eb1f0533715ac2f70e16869b16cdc74e2ebe378a5e1c3205e83a372",
+        "generationPromptSha256": "aec57792ae475e0108c5935ed884b6c44298a69adc9001d25ca2acf8bfb7cff6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "79462cc374305e92964d74eaf683575423683278a10e720d04547157d5e056cf",
+          "promptSha256": "1b8ca3e69eb1f0533715ac2f70e16869b16cdc74e2ebe378a5e1c3205e83a372",
+          "reviewer": "Codex direct original visual inspection: v2-production-182",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualROOT FULL OWN/whole native/originalbrightTEAMHAB actualparent: UPwholeOPENwetland/forest/RUININNERviews MIDfullstonecover/usablewoodrampplatform/posts LOWopenBLUEwater/EMPTYmat/plaincloth/fullDIRTpadstoes SUNLIT firsttrustready correct. Ordinaryropetiedposts meets OWNordinaryrope. Groundcourt UPHAB LOWcare differs actualparentinsideLOWbed UPfullwidtharches RIGHTcourse. Selectedplainhelpcloth and shortmovedbranch cutnativeLEFT: composition ONLY F. Coarsepixels/no bodycapturegearjarlabtext/growthreturnvillagecase; no invented loose rope rule."
+          ],
+          "notes": "ActualROOT FULL OWN/whole native/originalbrightTEAMHAB actualparent: UPwholeOPENwetland/forest/RUININNERviews MIDfullstonecover/usablewoodrampplatform/posts LOWopenBLUEwater/EMPTYmat/plaincloth/fullDIRTpadstoes SUNLIT firsttrustready correct. Ordinaryropetiedposts meets OWNordinaryrope. Groundcourt UPHAB LOWcare differs actualparentinsideLOWbed UPfullwidtharches RIGHTcourse. Selectedplainhelpcloth and shortmovedbranch cutnativeLEFT: composition ONLY F. Coarsepixels/no bodycapturegearjarlabtext/growthreturnvillagecase; no invented loose rope rule."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 674986,
           "findings": []
         }
       }

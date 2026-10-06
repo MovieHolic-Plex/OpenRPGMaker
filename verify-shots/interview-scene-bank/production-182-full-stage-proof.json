@@ -1,0 +1,409 @@
+{
+  "batch": "v2-production-182",
+  "passedAttempts": 3,
+  "rejectedAttempts": 7,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-182",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:15:02.433588+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-182",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:15:28.932186+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-182",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:20:44.405028+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-182",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:25:27.512331+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-182-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-182",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-182"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T17:25:29.285528+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--bond--collect--warm--habitat--episode",
+      "nativeSha256": "5781ef66c24db3fe7cf0e94f69eb476e34cc8912dd4371d333eb09202c2c4c08",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8d85d60b618b220c00cfc4c0b29114414de538c788f54998b912c4aa6220fede",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--collect--warm--habitat--episode.png",
+          "sha256": "a716654e8092fc5a270c9205ed3d99a1cb27a8af1bfdbcbf039bb12abbb926f1",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/179HAB actualparent: open BLUEwater/EMPTY leafHOLLOWnest/WHITEcloth BESIDEaid/closedEMPTYjar/rope/wholebranch/fullDIRTpadstoes/WARM correct. UPthreeINNERviews LOWcare reverses parentUPaid LOWhab. MeaningfulRUIN INNERcolumn/steps x60-64 remain behindactual60.3. composition ONLY F; outer arch background not charged, pads nowfullyvisible."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/179HAB actualparent: open BLUEwater/EMPTY leafHOLLOWnest/WHITEcloth BESIDEaid/closedEMPTYjar/rope/wholebranch/fullDIRTpadstoes/WARM correct. UPthreeINNERviews LOWcare reverses parentUPaid LOWhab. MeaningfulRUIN INNERcolumn/steps x60-64 remain behindactual60.3. composition ONLY F; outer arch background not charged, pads nowfullyvisible."
+    },
+    {
+      "key": "monster--bond--collect--warm--habitat--short",
+      "nativeSha256": "f2095c8ee21d63563a2ffd012bd843547c1cce87530bba389e83bc6f83a4e4c5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "bb561545da4e97bc5fa439ede7d3ac69428280aa2e2e47ee349f8fea9fccf854",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--collect--warm--habitat--short.png",
+          "sha256": "2fd5f4357433b7f379841615098b0dfe879ab004fb273cba6341bc84d5bdd4e2",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/179HAB actualparent: openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT entirely sameworktop OUTSIDEcontainers/actualOPENEMPTYnearhome/threeWHOLEUPINNERviews/fullDIRTreturnpads/rope/branch/WARM correct. UPviews LOWhome MIDtable reverseUPaid LOWhab. Entireprimarynearhome LEFTroof cropped; composition ONLY F. No inherited water/jarlid/verticalcloth failure."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/179HAB actualparent: openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT entirely sameworktop OUTSIDEcontainers/actualOPENEMPTYnearhome/threeWHOLEUPINNERviews/fullDIRTreturnpads/rope/branch/WARM correct. UPviews LOWhome MIDtable reverseUPaid LOWhab. Entireprimarynearhome LEFTroof cropped; composition ONLY F. No inherited water/jarlid/verticalcloth failure."
+    },
+    {
+      "key": "monster--bond--collect--warm--case",
+      "nativeSha256": "d90dda10c65c31456b74dc835ee5d67fd1c0c46d785725c48bc0a3adbe8e4f99",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "44166ecbe339c5f37fd854ea5013e123aa226c6a68e446eee08f118caf15027a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--collect--warm--case.png",
+          "sha256": "d649e7fc8bb0c61827565aacfe8beaa881d997f92ae46ad37ad27cccf0e8064f",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ActualROOT FULL OWN/whole native/179MOOD actualparent: whole OPENlocalrefuge roof/body/EMPTYdoor/floor/base/tipped EMPTYhollowwoodpail/rope/UPhelpercloth and separateOPENBLUEwater/ONEclosedEMPTYjar/wholebranch and ALLcutends/fullDIRTpadstoes/WARM correct. UPshelf LOWhouse differs parentgroundrestmat/nohouse. Allselected beforeactual60.3; coarse native squarepixels, no identity/body/capturegear/text/growthreturnvillageTEAM. Allseven direct P, branch nowwhole."
+    },
+    {
+      "key": "monster--bond--collect--warm--case--episode",
+      "nativeSha256": "11b2a81f1d066dc1c9fc13f344ce74079c9ca2bada0ebc140563d6863ff45c49",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "1694189bc927a803923f0e38e4a101dc9f5490dd8fb780026ce4e60d869257a3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--collect--warm--case--episode.png",
+          "sha256": "e9a220cda8fc5d9577ce4a5ea13bcd4004e3812bd85f6681c5acffe51b28a20c",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: UPwholeOPENlocalrefuge roof/body/EMPTYdoor/floor/base/tippedEMPTYhollowwoodpail/rope/LOWEMPTYleafHOLLOWnest/OPENBLUEwater/WHITEcloth BESIDEaid/ONEclosedEMPTYjar/wholebranch/fullDIRTpadstoes/WARM correct. UPwholeHOUSE LOWcare reverses parentUPshelf LOWhouse. Allselected before60.3; coarse native squarepixels/no bodycapturegeartext/returnvillageTEAM. Allseven direct P, lastpads nowwhole; BESIDEwhitecloth not forcedFLAT."
+    },
+    {
+      "key": "monster--bond--collect--warm--case--short",
+      "nativeSha256": "9001babe207961f14b2924450282ad92ebbb39aba9ec54602523df44b188a4f9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ef998866c2e7b12afefb9bbb798f75398d2b7cba8a721c869df47792e9c4145b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--collect--warm--case--short.png",
+          "sha256": "11a328337474c3e151e3f0340abcd757fe9273fc98fc238b67c8d453ce85ad05",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: wholehouse roof/body insideframe/fullDIRTpadstoes/wholebranch/tippedhollowwoodpail/rope/openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/WARM correct, allbefore60.3. UPnearhome LOWtable reverses parentUPshelf LOWhouse. Homefront CLOSEDwoodplankdoor, no requiredOPENEMPTYinterior floor/threshold: allChoices/latestChoice F ONLY; previous composition faults corrected."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/new182CASE2 actualparent: wholehouse roof/body insideframe/fullDIRTpadstoes/wholebranch/tippedhollowwoodpail/rope/openBLUEwater/closedEMPTYjar/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/WARM correct, allbefore60.3. UPnearhome LOWtable reverses parentUPshelf LOWhouse. Homefront CLOSEDwoodplankdoor, no requiredOPENEMPTYinterior floor/threshold: allChoices/latestChoice F ONLY; previous composition faults corrected."
+    },
+    {
+      "key": "monster--bond--team",
+      "nativeSha256": "6dea336e069fed11fc4e4f7fee333ea612c0f58ad1b6caa6655358051ee84f5d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "9cff58b5045f88ef7fa26ef385ddfc92035e978dbbf58662340ef139bfbbf82a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--team.png",
+          "sha256": "d41fe9f3dca6db0feffc4c97ed103600d85872325dc9c3881e8211fc95ab3088",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/originalfirstBOND actualparent: UPwholeOPENshelter EMPTYmat/plaincloth/openBLUEwater LOWstonecover/usablewoodrampplatform/posts present. UPaid LOWcourse differs firstBONDgroundwovenshelter/clearedtrail. Meaningfulpostbodies/bases x59-67 partlyhiddenactual60.3 (composition F). Unchosen differentvillage x86 despite no progression selected (allChoices F). No later newstationcount or rampcounter invented."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/originalfirstBOND actualparent: UPwholeOPENshelter EMPTYmat/plaincloth/openBLUEwater LOWstonecover/usablewoodrampplatform/posts present. UPaid LOWcourse differs firstBONDgroundwovenshelter/clearedtrail. Meaningfulpostbodies/bases x59-67 partlyhiddenactual60.3 (composition F). Unchosen differentvillage x86 despite no progression selected (allChoices F). No later newstationcount or rampcounter invented."
+    },
+    {
+      "key": "monster--bond--team--bright",
+      "nativeSha256": "018b93a6cdb180e26438eb21f170a41bedc3874388b046d3c95a739bea94f57e",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8dd5b17a76c5199f28ec4e2e8883592e0dcebe89f9cb0840384d4fd657df5f5e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--team--bright.png",
+          "sha256": "911cf12755b79e396faa8ff730ca5ab78722093d774e63a1f5c8508af9febb0f",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/new182TEAM5 actualparent: EMPTYmat/plaincloth/openBLUEwater/stonecover/usablewoodrampplatform/posts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn correct. MoreSIDEraisedplatform UPstoneoverhang MIDaid differs precedingfrontfacingramp LOWstoneblock UPaid. Whole simpleOPENshelter LEFTroof cropped: composition ONLY F. Posts nowvisible, no inherited post/village/jar failure."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/new182TEAM5 actualparent: EMPTYmat/plaincloth/openBLUEwater/stonecover/usablewoodrampplatform/posts/SUNLIT/no progressionvillage/habitat/localcase/growthreturn correct. MoreSIDEraisedplatform UPstoneoverhang MIDaid differs precedingfrontfacingramp LOWstoneblock UPaid. Whole simpleOPENshelter LEFTroof cropped: composition ONLY F. Posts nowvisible, no inherited post/village/jar failure."
+    },
+    {
+      "key": "monster--bond--team--bright--route",
+      "nativeSha256": "48aea63f3a366a1cdccd27ab9d416c0b2505fce7b34ff08da94bd8c876002508",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "9b6a0fc521d1ebc73d609cf42b8bb96bd9e8cc636a194bdba08c3d35087199d6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-181-monster--bond--team--bright--route.png",
+          "sha256": "1988778345931e990c49d35b59453d7787d6af56e0089fcece504348e2bbe8a5",
+          "role": "actual ROOT-viewed failed native of this SAME KEY editable target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ActualROOT FULL OWN/whole native/new182brightMOOD6 actualparent: WHOLE UPtwo differentvillage roofs/chimneys/body/door/base continuousLEFTtrail MIDwholeOPENhelpernook EMPTYmat/plaincloth/openBLUEwater LOWwhole stonecover/usablewoodrampplatform/posts SUNLIT correct. Meaningfullastpostbody/base ends59.6 before60.3, tiny fenceendpointbackground allowed. UPvillage MIDnook LOWcourse differs parentMIDleftaid/sideplatform/no village. Allseven actualdirect P, no bodycapturegearjarlabtext/scopegrowthreturn/HABcase. Held until ancestor qualifies."
+    },
+    {
+      "key": "monster--bond--team--bright--route--short",
+      "nativeSha256": "6ccea5fea40b5285825ed070ec897e230765c036556fb652c37b9b94a09b1361",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4e5218a4205f2c906a98ba03a553ce88cd9bb475dc9eb83da16996ae5be7639b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/new182ROUTE7 actualparent: EMPTYOPENnearhome interior/floorthreshold/plaincaremat/openBLUEwater/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/threewhole stonecover/usablewoodrampplatform/posts/twoWHOLELOWvillage/fullDIRTreturnpads SUNLIT correct. Ordinaryropetiedposts meets OWNordinaryrope; no forced loose helperrope. UPnearhome MIDreturntable/course LOWvillage reverses parentUPvillage MIDaid LOWcourse. Wholeprimarynearhome TOP/LEFTroof cropped and selectedbranch x64-73 hidden60.3: composition ONLY F."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/new182ROUTE7 actualparent: EMPTYOPENnearhome interior/floorthreshold/plaincaremat/openBLUEwater/independentCREAMfold FLAT sameworktop OUTSIDEcontainers/threewhole stonecover/usablewoodrampplatform/posts/twoWHOLELOWvillage/fullDIRTreturnpads SUNLIT correct. Ordinaryropetiedposts meets OWNordinaryrope; no forced loose helperrope. UPnearhome MIDreturntable/course LOWvillage reverses parentUPvillage MIDaid LOWcourse. Wholeprimarynearhome TOP/LEFTroof cropped and selectedbranch x64-73 hidden60.3: composition ONLY F."
+    },
+    {
+      "key": "monster--bond--team--bright--habitat--scene",
+      "nativeSha256": "79462cc374305e92964d74eaf683575423683278a10e720d04547157d5e056cf",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "aec57792ae475e0108c5935ed884b6c44298a69adc9001d25ca2acf8bfb7cff6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ActualROOT FULL OWN/whole native/originalbrightTEAMHAB actualparent: UPwholeOPENwetland/forest/RUININNERviews MIDfullstonecover/usablewoodrampplatform/posts LOWopenBLUEwater/EMPTYmat/plaincloth/fullDIRTpadstoes SUNLIT firsttrustready correct. Ordinaryropetiedposts meets OWNordinaryrope. Groundcourt UPHAB LOWcare differs actualparentinsideLOWbed UPfullwidtharches RIGHTcourse. Selectedplainhelpcloth and shortmovedbranch cutnativeLEFT: composition ONLY F. Coarsepixels/no bodycapturegearjarlabtext/growthreturnvillagecase; no invented loose rope rule."
+      ],
+      "note": "ActualROOT FULL OWN/whole native/originalbrightTEAMHAB actualparent: UPwholeOPENwetland/forest/RUININNERviews MIDfullstonecover/usablewoodrampplatform/posts LOWopenBLUEwater/EMPTYmat/plaincloth/fullDIRTpadstoes SUNLIT firsttrustready correct. Ordinaryropetiedposts meets OWNordinaryrope. Groundcourt UPHAB LOWcare differs actualparentinsideLOWbed UPfullwidtharches RIGHTcourse. Selectedplainhelpcloth and shortmovedbranch cutnativeLEFT: composition ONLY F. Coarsepixels/no bodycapturegearjarlabtext/growthreturnvillagecase; no invented loose rope rule."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 755,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}
