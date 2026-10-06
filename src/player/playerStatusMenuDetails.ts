@@ -669,9 +669,9 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
   if (detail) return detail;
   if (isEmeraldMonsterStyle(options.project) && view === "party") {
-    const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index) => {
+    const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index): StatusMenuDetailEntry => {
       const raw = options.session.monsterInstances[ids[index] ?? ""];
-      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true" }, disabled: true };
+      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
       const member = monsterUiEntry(options.project, raw);
       return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
         testId: `status-menu-monster-${raw.instanceId}`,

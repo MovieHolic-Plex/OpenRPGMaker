@@ -20,7 +20,7 @@ export function createOpeningAnimaticWorkbench(options: { project: Project; comp
   const host = el('section', { dataset: { testid: 'animatic-workbench' }, children: [el('h4', { text: '애니메틱 · 시간과 레이어' }), canvas, range, el('div', { children: [play, label] }), status, layers, fields, key] });
   const images = loadAnimaticImages(options.project, a, controller.signal);
   const stop = () => { playing = false; cancelAnimationFrame(frame); play.textContent = '무음 재생'; };
-  const controls = () => { const l = a.layers.find(l => l.id === selectedId); for (const [p, control] of input) control.value = String(l ? Number(sampleAnimaticTrack(l.keys?.[p], current, p === 'scaleX' || p === 'scaleY' || p === 'opacity' ? l[p] ?? 1 : l[p] ?? 0).toFixed(3)) : 0); key.disabled = !l; };
+  const controls = () => { const l = a.layers.find(l => l.id === selectedId); for (const [p, control] of input) control.value = String(l ? Number(sampleAnimaticTrack(l.keys?.[p], current, p === 'frame' ? 0 : l[p] ?? (p === 'scaleX' || p === 'scaleY' || p === 'opacity' ? 1 : 0)).toFixed(3)) : 0); key.disabled = !l; };
   const draw = () => { void images.then(loaded => { if (controller.signal.aborted) return; drawAnimaticFrame(canvas, a, loaded, current); label.textContent = `${(current / 1000).toFixed(2)} / ${(durationMs / 1000).toFixed(2)}초`; status.textContent = '무음 미리보기 · 전체 재생 버튼으로 음악과 실제 흐름을 확인할 수 있습니다.'; controls(); }).catch(error => { if (!controller.signal.aborted) { stop(); status.textContent = String(error); } }); };
   const tick = (now: number) => { if (!playing || controller.signal.aborted) return; if (!host.isConnected || !options.usable() || host.closest('[hidden]') || document.hidden || !host.getClientRects().length) { stop(); return; } current = Math.min(durationMs, Math.round(now - baseTime)); range.value = String(current); draw(); if (current >= durationMs) stop(); else frame = requestAnimationFrame(tick); };
   range.addEventListener('input', () => { stop(); current = Number(range.value); draw(); });
@@ -28,7 +28,7 @@ export function createOpeningAnimaticWorkbench(options: { project: Project; comp
   play.addEventListener('click', () => { if (playing) { stop(); return; } if (current >= durationMs) current = 0; playing = true; play.textContent = '일시 정지'; baseTime = performance.now() - current; frame = requestAnimationFrame(tick); });
   key.addEventListener('click', () => {
     if (!options.usable()) return; stop(); const draft = structuredClone(a), l = draft.layers.find(l => l.id === selectedId); if (!l) return;
-    l.keys ??= {}; for (const [p, control] of input) { const value = Number(control.value); l.keys[p] = [...(l.keys[p] ?? []).filter(k => k.atMs !== current), { atMs: current, value, ease: 'ease-in-out' }].sort((a, b) => a.atMs - b.atMs); }
+    l.keys ??= {}; for (const [p, control] of input) { const value = Number(control.value); l.keys[p] = [...(l.keys[p] ?? []).filter(k => k.atMs !== current), { atMs: current, value, ease: 'ease-in-out' as const }].sort((a, b) => a.atMs - b.atMs); }
     try { validateOpeningAnimatic(draft, durationMs); options.commit(draft); } catch (error) { status.textContent = String(error); }
   });
   let mounted = false;

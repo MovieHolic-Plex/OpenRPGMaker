@@ -251,7 +251,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
   }
 
-  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track = audio.trainerBattle): GameEvent {
+  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track: string = audio.trainerBattle): GameEvent {
     const tid = troop(name, `${map.id}_${suffix}`, ids, level, true);
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
@@ -292,7 +292,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const residential = doors.filter(d => d !== centerDoor && d !== martDoor);
     if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Current references lack four public building entrances in ${map.id}: ${JSON.stringify(doors)}`);
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
-    attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key)!, residential[1]!);
+    attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)!, residential[1]!);
     npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
       [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${t.name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
