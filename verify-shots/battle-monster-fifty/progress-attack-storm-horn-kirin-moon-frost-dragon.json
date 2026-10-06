@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "storm-horn-kirin",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/storm-horn-kirin/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "174f4872ecc778792495a256a3550e02cc71fc5622d0aabaee066a3706d2ae71",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "5c2ae9d303fa3ecb7b7db57069492fb73d4f46adeed342ef0088bc69c5ba1132",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moon-frost-dragon",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "7aab8830dd3c5246322577e069098663b4ecae06cb67816550a1eb458f23add0",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
