@@ -28,6 +28,7 @@ import { resolveVillageContract, type VillageContract } from "./villageContract"
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
 
 /**
@@ -167,6 +168,12 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
+      // 키트 시트 야외 맵(몬스터 수집 마을 등)의 빈 터 꾸미기 — 도구를 보이게 하고 노트로 이름을 부른다(2026-10-07 이어 고치기 r8~r11).
+      const kitNote = kitAreaNote(project, noteTargetMapId);
+      if (kitNote) {
+        initialToolNames = [...new Set([...initialToolNames, ...KIT_AREA_EXPOSED_TOOLS])];
+        intentNote = intentNote ? `${intentNote}\n\n${kitNote}` : kitNote;
+      }
     }
   }
   const team = input.piTeam && !plan.readOnly;
