@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed all four actual PNGs, including the suite's native 1x and nearest 3x views. The large right-facing silhouette, segmented raised tail, coral stinger and jade/gold armor are readable; broad upper-left highlights and darker inner claw/tail planes give useful volume on light, dark and checker backgrounds. No obvious accidental interior transparency hole or fully detached major body part is visible. Feet occupy the lower baseline, but the forward support legs appear rooted in the pincers, weakening the six-leg anatomy and changing support when the claws move. Windup narrows the already-open pincers, and attack replaces long tapered fingers with short rounded jaws, so the intended opening-to-closure sequence loses structural continuity. Dead is recognizably collapsed. The last nine frames show a purple stinger charge, an actual stinger-attached forked discharge, folded-tail recovery with three droplets, poison bubbles, stun stars and a lowered sleep pair; these are readable state drawings rather than whole-body tints or unrelated attacks, although poison and stun share a similar lowered-claw stance. This is a review recommendation only; user selection remains separate. Static pose previews cannot establish dash timing, foot sliding, impact contact or actual battle playback, and PNGs alone cannot prove literal-grid authorship or author model.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 84,
+      "y": 110,
+      "message": "The forward diagonal support leg emerges from the underside of the near pincer; the farther forward leg also reads as growing from the other claw. Redraw both proximal leg segments back to distinct sockets on the body underside, with dark separation from the claw arms. Preserve six traceable body-rooted support legs through move and attack rather than moving or losing supports with the pincers."
+    },
+    {
+      "pose": "windup",
+      "x": 99,
+      "y": 88,
+      "message": "The near claw opening is narrower than in idle, so preparation already reads as closing. Swing the movable jaw outward around its visible hinge and leave a larger background wedge between the two fingers than idle. Keep the fixed finger and palm recognizable so move and attack can follow a clear open-then-close sequence."
+    },
+    {
+      "pose": "attack",
+      "x": 101,
+      "y": 70,
+      "message": "The long spear-shaped upper claw finger becomes a short rounded jaw here; the near claw similarly loses its long tapered finger around (109,89). Carry the same palm, hinge and finger lengths forward from move, rotating the movable fingers toward the fixed fingers to show a pinch. Restore tapered tips and narrow contact seams instead of making both claws read as newly shortened mitten shapes."
+    }
+  ],
+  "binding": "3a6ff4773eac9f65c3c753ebfaeaf025c50b787c2023b037c29ca59dabd2f0da",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "87d640524be9d3710232bd2dd9e5c97668b147b21137b648114b5d9b27b312da",
+    "preview/suite/light.png": "41c39905ae515435100a584401598bc6e0af86f4b9a13c707a7d6ea7ae96f83a",
+    "preview/suite/dark.png": "12ffb1110e392e680a16b74c30d04e9b449ee2e91e3625547e94744a117da8ce",
+    "preview/suite/checker.png": "5f49989c87c61c4a3b201428481a5960ee56a1b031494395d62eaf88e7b665e2"
+  },
+  "jobId": "c82c292e-56ad-49b4-b10b-f8b8689249a1",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T15:55:44.205355+00:00",
+  "userApproved": false
+}

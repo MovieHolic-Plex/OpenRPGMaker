@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재47/50 통과
+# 신규50종 제작 · 현재48/50 통과
 
 ## 최초 두 종 확인
 
@@ -816,3 +816,13 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 옥갑전갈왕 셋째 수정18자세를 실제 원본1배/nearest2배로 열었다. 앞 지지 다리를 갑각 아래 소켓으로 연결하고 준비 집게를 더 벌렸으며 공격 손가락 길이를 이어 주었다. 신규 native writer4개와 변경 오케스트레이터/readonly export의 모든 실행 흐름을 읽고 이전 전체 읽기 해시와 맞춰 현재 native writer13개/readonly helper4개를 확인했다. 실제 독립 `46162a99-79cc-48c8-aa8b-b6e87dd062bc` 검수 진행 중이며 아직 keeper/Allow를 주장하지 않는다.
 - 세 보스의 실제 공격 원본18/18 진행 그림을 승인된64px 검객과 동일2배로 비교하여 사용자에게 보여 주었다. 모든 초안은 제작 중으로 표시했다. 전체50 진행을 초안 그림으로 채우지 않는다.
 - 통과 **47/50종 · 846자세 · 376GIF**, 동물10/요괴16/사람12(여성6)/보스9와 전체50 미완료를 유지한다. 현재 독립 rework/source/실제 열람 근거를 추가했으며 기존 선택을 바꾸지 않았다.
+
+
+## 2026-10-06 16:30 UTC — 옥갑전갈왕 현재 원본까지48/50 통과
+
+- 셋째 직접 수정의 실제 GPT6.1sol/high 독립 `46162a99-79cc-48c8-aa8b-b6e87dd062bc`는 keep/정식 issues0건이다. 현재 binding `5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551`/기술PASS/terminal 작업/검수4PNG와 실제 감독18자세·현재 full13 native writer가 일치한다. 앞 지지 다리의 몸통 소켓, 준비 집게 벌림, 긴 손가락의 닫힘과 회수, 침의 자색 핵→두 갈래 독 방출→세 방울을 확인했다. 좁게 겹치는 먼 다리/비슷한 독·기절 반응/작은 대기·수면 변화라는 실제 keeper 한계는 그대로 보존했다.
+- 최초4건/첫 수정5건/둘째 수정3건의 실제 rework/source/terminal 작업/검수4PNG와 감독 열람을 보존했다. 현재 사용자의50종 전체 통과 지시에 따른 위임 Allow3단계이며 사용자 마우스 클릭이라고 기록하지 않는다.
+- 현재 선택 ZIP/18PNG/디코딩8GIF의 픽셀·노출 시간 및 source archive48종을 다시 읽었다. 감독은 실제 전갈 데스크톱pause·375/320px 화면3장을 열었고8GIF·정지/재생·같은 배율 사람 비교·오류0/넘침0·선택 버튼 미클릭을 확인했다.
+- 통과 **48/50종 · 864자세 · 384GIF**. 동물10/요괴16/사람12(성인 여성6)/보스10. 현재 root48/source48/browser48 및 원래 결정52행/선택8건 보존, 새 위임144행/전체196행이다. 대시보드 Allow56는 기존8+신규48. 기존 정식 minor11건 유지. 전체50 완료는 false다.
+- 남은128px 설갈사자왕은 셋째 수정, 금익대붕은 첫 수정이다. 현재 원본을 실제 다시 열고 모든 바뀐 writer를 읽은 뒤 새 실제 독립 keeper가 필요하다. 아직 초안이며 전체50에 넣지 않는다.
+- 근거: `forty-eight-passed-proof.json`, `fifty-scope-contract-proof.json`, `root-review-jade-armor-scorpion.json`, `root-draft-review-jade-armor-scorpion-after-repair-three.json`, `browser-proof-jade-armor-scorpion.json`, `source-archive-proof.json`.

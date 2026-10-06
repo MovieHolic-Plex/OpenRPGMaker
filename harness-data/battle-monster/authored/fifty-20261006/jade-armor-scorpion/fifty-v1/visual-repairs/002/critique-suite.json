@@ -1,0 +1,49 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four actual supplied PNGs, including native 1x and the supplied nearest-neighbor 3x panels on light, dark and checker backgrounds. The large jade shell, gold edging, segmented raised tail and vermilion sting give a recognizable right-facing armored scorpion silhouette. Broad upper-left highlights and darker lower/right claw planes read consistently. Six leg paths are visible, the body fills its standing cell, and supporting feet meet the ground while selected far feet lift. No obvious unintended transparency holes or detached body parts were found; the large attack openings are jaw gaps, not proven alpha defects. The main weakness is anatomical continuity of the pincers: small opposing knobs in idle become long, thin outlined fingers in attack, then elongated parallel strips in hit and the impaired states. The contact frame reads as two hollow loops rather than a convincing forceful pinch. Skill preparation has a purple sting core, the two poison branches visibly originate at the actual sting, and recovery folds the tail with three droplets. Poison bubbles, stun stars and the low sleep stance distinguish the additional states beyond tint changes, although poison/stun largely reuse the hit silhouette. Sleep remains distinguishable from the flatter dead pose. This is a pose preview, not battle footage: dash travel, contact timing, animation smoothness and in-battle scale are unverified. PNGs alone cannot establish literal pxgrid authorship or author-model provenance. Rework is an advisory recommendation, not the user selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 91,
+      "y": 75,
+      "message": "The far pincer has a long blade-like upper finger but its opposing finger reads as a small oval knob; the near pincer repeats this around (111,104). Shape each opposing finger as a distinct hooked, solid finger attached to its palm, with a readable hinge and closing path. Preserve those same finger lengths and masses through idle_b, idle_c and the action frames."
+    },
+    {
+      "pose": "attack",
+      "x": 104,
+      "y": 72,
+      "message": "At the far claw, the idle opposing knob changes into a long, thin triangular outline enclosing a large background gap. Redraw the moving finger with a solid jade/shadow plane and the same palm hinge and finger mass as windup/move; bring the two tips into a clear pinch. The gap between fingers can remain, but the moving finger needs readable thickness."
+    },
+    {
+      "pose": "attack",
+      "x": 118,
+      "y": 96,
+      "message": "The near claw repeats the outline-only finger transformation, and its closing tip merges into the outer gold rim. Give this finger a continuous solid inner face and a distinct tip-contact cluster, retaining its identity from move. Keep the lower palm contour separate from the front support leg."
+    },
+    {
+      "pose": "hit",
+      "x": 105,
+      "y": 111,
+      "message": "The lowered pincers become long parallel green/gold strips with bent ends near (119,120), which read like extra dangling legs. Re-author the recoil with compact palms and two recognizable fingers per claw, rotating or folding at their hinges while preserving their lengths. Carry the same anatomy repair into poison_a, poison_b, stun_a and stun_b."
+    },
+    {
+      "pose": "stun_b",
+      "x": 113,
+      "y": 116,
+      "message": "Both lowered claws are long almost parallel closed bars reaching the ground, visually crowding the front foot and losing their palm/finger structure. Shorten their apparent projection by folding at explicit joints, retain the two finger tips, and leave a visible background channel between claw contours and the support leg. Keep the stars and stunned droop readable."
+    }
+  ],
+  "binding": "96e1d76389a988bfe5d3466fa358d900874ef04d0ef3e68ffa44e4141f9a68f7",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "cbb9d58dc6a39e7692db628a35f0cac02e1861aadf379799a410fec0cd00f97d",
+    "preview/suite/light.png": "a0aad1a855d7b4d9841b66b777f7071fc3e39662beeef822a805eaf8b3fa61b5",
+    "preview/suite/dark.png": "74bbc219393121750af5daef39d580b05f6e52110dfdfdaf733384b7fa8ba985",
+    "preview/suite/checker.png": "6055f8a8885b29751b7f957c40b4cf24793dc1a95e8b3fe814b55a586ade487d"
+  },
+  "jobId": "0d998abe-9c9b-44a1-8b85-6830f07f0ee1",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T15:33:33.834343+00:00",
+  "userApproved": false
+}

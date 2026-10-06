@@ -1,0 +1,43 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected all four supplied PNGs, including the native 128px portrait and every embedded native 1x and nearest 3x pose. The upright segmented tail, broad jade armor, gold trim and right-facing paired claws give a recognizable scorpion silhouette. Upper-left highlights and broad jade shadow planes read on light and dark backgrounds. Standing feet retain a consistent ground line; no obvious accidental torso holes were visible, and the lowered sleep/dead claws retain pixel connections despite their separated appearance. The principal problems are attack fingers becoming hollow outline loops, abrupt carapace elongation during the dash, and the distal tail losing thickness in the hit/status poses. Skill preparation shows a violet stinger core; the forked discharge visibly starts at the actual stinger, followed by a folded tail and three droplets. Poison droplets, stun stars and lowered sleep posture distinguish the additional states without whole-body tinting; the sleep pair has only subtle claw movement. This is a visual rework recommendation, not a user selection. Static pose previews cannot establish battle contact, playback timing, native pxgrid authorship, model provenance or compliance with the palette limit; geometry PASS alone would not resolve these visual concerns.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 108,
+      "y": 70,
+      "message": "The upper pincer's moving finger becomes a thin gold/dark loop around a large transparent interior. Redraw the moving jaw as a solid jade finger with a shaded underside and continuous outline, preserving the windup finger's mass and hinge. Bring its actual tip toward the opposing finger so this frame reads as a pinch contact. Preserve only the intentional gap between the two fingers."
+    },
+    {
+      "pose": "attack",
+      "x": 116,
+      "y": 90,
+      "message": "The foreground pincer likewise replaces its long solid finger with a near-empty outlined arc at approximately x104–124, y83–98. At 1x this reads as a wire loop rather than a heavy closing claw. Author a solid rotating finger from the existing hinge, retain its gold edge and jade volume, and make the two finger tips visibly converge at contact."
+    },
+    {
+      "pose": "move",
+      "x": 73,
+      "y": 80,
+      "message": "The rigid carapace extends from roughly x17–63 in idle/windup to x17–84 in move, while its rear edge and tail root remain essentially fixed. The matching horizontal armor bands make the added length read as body stretching. Preserve the established plate proportions and put the thrust into articulated shoulders, claws and legs; if turning the shell, redraw its planes and band perspective consistently. Carry the correction into attack and skill_b, which share the elongated shell."
+    },
+    {
+      "pose": "hit",
+      "x": 40,
+      "y": 53,
+      "message": "After the thick rear tail curve, the diagonal section toward the orange sting abruptly narrows to a thin cord. Preserve several pixels of shaded, articulated tail volume through this bend before tapering into the sting. Apply the same anatomical correction to poison_a/b and stun_a/b, which repeat this extended tail shape; keep the orange sting and each status particle distinct."
+    }
+  ],
+  "binding": "70a9a39421edbd7a125863e826896f26dc69fdc7d9824a2ec9dbfefc2e7d5f88",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "cbb9d58dc6a39e7692db628a35f0cac02e1861aadf379799a410fec0cd00f97d",
+    "preview/suite/light.png": "3a35c1dec3e577ac6984b50a38bf66e9abcaf21377a6a0ae306d7dd1d688b625",
+    "preview/suite/dark.png": "1ff60c93227b8803091bdf0cc047efe0d8d74568a91dfc8bcda14c187e790cc8",
+    "preview/suite/checker.png": "03f401917f7d27703ad2f0e92afec5dbc25faa8bdc162442678a10dc86eae309"
+  },
+  "jobId": "4d575149-1012-46b1-bb97-7ec2b9bec595",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T15:20:45.565376+00:00",
+  "userApproved": false
+}

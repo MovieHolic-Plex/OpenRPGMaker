@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "3a6ff4773eac9f65c3c753ebfaeaf025c50b787c2023b037c29ca59dabd2f0da",
+  "priorReviewJob": "c82c292e-56ad-49b4-b10b-f8b8689249a1",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 84,
+      "y": 110,
+      "message": "The forward diagonal support leg emerges from the underside of the near pincer; the farther forward leg also reads as growing from the other claw. Redraw both proximal leg segments back to distinct sockets on the body underside, with dark separation from the claw arms. Preserve six traceable body-rooted support legs through move and attack rather than moving or losing supports with the pincers."
+    },
+    {
+      "pose": "windup",
+      "x": 99,
+      "y": 88,
+      "message": "The near claw opening is narrower than in idle, so preparation already reads as closing. Swing the movable jaw outward around its visible hinge and leave a larger background wedge between the two fingers than idle. Keep the fixed finger and palm recognizable so move and attack can follow a clear open-then-close sequence."
+    },
+    {
+      "pose": "attack",
+      "x": 101,
+      "y": 70,
+      "message": "The long spear-shaped upper claw finger becomes a short rounded jaw here; the near claw similarly loses its long tapered finger around (109,89). Carry the same palm, hinge and finger lengths forward from move, rotating the movable fingers toward the fixed fingers to show a pinch. Restore tapered tips and narrow contact seams instead of making both claws read as newly shortened mitten shapes."
+    }
+  ],
+  "startedAt": "2026-10-06T15:55:44.542786+00:00"
+}

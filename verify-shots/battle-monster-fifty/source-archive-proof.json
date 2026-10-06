@@ -506,6 +506,17 @@
     "selectedPackSha256": "31c46d709a8ae772a8b1e30ef2db9efef25ed72a6ad148dab2e9001edccab315"
   },
   {
+    "key": "jade-armor-scorpion/fifty-v1",
+    "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "37477878cb153bdc382c7be75192b6fbcf27807430cae526477b861d77309a8e"
+  },
+  {
     "key": "sea-pearl-serpent/fifty-v1",
     "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
     "nativeCell": 128,

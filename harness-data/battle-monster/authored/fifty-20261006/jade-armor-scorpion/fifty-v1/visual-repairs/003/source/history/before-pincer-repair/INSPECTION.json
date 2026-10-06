@@ -1,0 +1,364 @@
+{
+  "cell": 128,
+  "paletteSymbols": 18,
+  "frames": {
+    "attack": {
+      "sourceSha256": "bb8a1e3def927b68c7e052c3218464a56fe508388f7402eece3281799e182b7b",
+      "boundsInclusive": [
+        7,
+        8,
+        124,
+        124
+      ],
+      "inkPixels": 5467,
+      "pngSha256": "3b6a89d7d6ab8028d35d705564d4fc9962c8a420b041fc9634f95d4e5e2578a1"
+    },
+    "dead": {
+      "sourceSha256": "74e65d89b9075ec7d279e19b7a1728f84b530b07afc0145e098e2d02af680f84",
+      "boundsInclusive": [
+        7,
+        67,
+        115,
+        124
+      ],
+      "inkPixels": 2504,
+      "pngSha256": "f6135df568a7189bdf602593539a5e48a15414ff512057c0e61d2155d201ccdb"
+    },
+    "hit": {
+      "sourceSha256": "a7fd120d0485e1940675045e0255acd70932d3a48f7b7d029a814e69c2a7c136",
+      "boundsInclusive": [
+        4,
+        19,
+        122,
+        124
+      ],
+      "inkPixels": 4687,
+      "pngSha256": "0ddcfa0a16c88b7e611817de92c2dbfeed9932f071681cde0eb852e6dfb074e7"
+    },
+    "idle_a": {
+      "sourceSha256": "fd85d8843d2008d1030fc414ccf365c71214ab3e7c17a630fa6d4a1956033014",
+      "boundsInclusive": [
+        6,
+        8,
+        119,
+        124
+      ],
+      "inkPixels": 5396,
+      "pngSha256": "cbb9d58dc6a39e7692db628a35f0cac02e1861aadf379799a410fec0cd00f97d"
+    },
+    "idle_b": {
+      "sourceSha256": "5c35c6f397a0a8bff3cffc7f7bb3f9b60cf84a7585457b233e4c0b9756f8a9e3",
+      "boundsInclusive": [
+        6,
+        8,
+        119,
+        124
+      ],
+      "inkPixels": 5411,
+      "pngSha256": "3accc8177016cad27ef3985b1d81277c40960f6acbb8e4c2bc9509170da95552"
+    },
+    "idle_c": {
+      "sourceSha256": "49cc8f0c6011743e89ce6666addaa294d901cdd34f887718df884fba6c977559",
+      "boundsInclusive": [
+        6,
+        8,
+        119,
+        124
+      ],
+      "inkPixels": 5428,
+      "pngSha256": "3b9abe555ed0514afa3816025023ac22c8813d54cab8648e3f118360dd93465d"
+    },
+    "move": {
+      "sourceSha256": "7c225837c5b8c061569844339f82e83109aa4a1ef8c98a102e01e3a0b08d83e1",
+      "boundsInclusive": [
+        7,
+        8,
+        123,
+        124
+      ],
+      "inkPixels": 5339,
+      "pngSha256": "9c3ede3dff8b281b0cf64087ef8d070ba895d90ecef1525898dc901b87f0923b"
+    },
+    "recover": {
+      "sourceSha256": "1231c7ffbc371237686a693e1e2364657e43d8b8dfba5a9050a6443ea3985710",
+      "boundsInclusive": [
+        6,
+        8,
+        117,
+        124
+      ],
+      "inkPixels": 5243,
+      "pngSha256": "70b79466bf490cb91e8afa7946ceda1e6e5db5e75614b65bcce1f4ea5c12e2ac"
+    },
+    "windup": {
+      "sourceSha256": "547fcd80c5ffdaa8da667dbee14f0a3c21cdbd32eef6dd7707cb006cc2271a20",
+      "boundsInclusive": [
+        3,
+        8,
+        114,
+        124
+      ],
+      "inkPixels": 5002,
+      "pngSha256": "b265baaa83c0ce67811cebbfe3762a52c8c525d699857ed8701356d6a1cc9a01"
+    },
+    "poison_a": {
+      "sourceSha256": "c35b00675b7d0ed33e09fd3895b02dbb0480e3c21c0d3dc461f0b590aa49ece9",
+      "boundsInclusive": [
+        6,
+        19,
+        122,
+        124
+      ],
+      "inkPixels": 4694,
+      "pngSha256": "d5d9db5007ed10a924dcda76d09418123f1c266cccfb6b255d868dfed34e698a"
+    },
+    "poison_b": {
+      "sourceSha256": "7535b3fe4c2c1d14e12d197d56e7b1ceea0d3469c656ca33b37932ddae56f5bf",
+      "boundsInclusive": [
+        6,
+        19,
+        123,
+        124
+      ],
+      "inkPixels": 4624,
+      "pngSha256": "3da875e1b285d1a5faa0e31dae7d71b4d37e166d88696d97e6b9f730529c4190"
+    },
+    "skill_a": {
+      "sourceSha256": "e64e8d30ec76a505a6063754aa8c50e2ea7ef0a9cb6a747f63dc22672338ad5d",
+      "boundsInclusive": [
+        2,
+        8,
+        114,
+        124
+      ],
+      "inkPixels": 5020,
+      "pngSha256": "09daedd808a4e3c18a8f20d55c804f063c47fb781d4b32b5ab1948b75e8653c6"
+    },
+    "skill_b": {
+      "sourceSha256": "b72f4d6dabbce6793de47f656c0d59f602a4144ea057a4868c9d0c4435451a5f",
+      "boundsInclusive": [
+        6,
+        8,
+        124,
+        124
+      ],
+      "inkPixels": 6140,
+      "pngSha256": "4d8d81b872dac24519e5e9ab497f72f4539e88dfcbf2371a493b8a337c442320"
+    },
+    "skill_c": {
+      "sourceSha256": "f26e38ace660d694e3975a79676eac24240331bc74f8b27f450de9322af0ec6a",
+      "boundsInclusive": [
+        6,
+        39,
+        117,
+        124
+      ],
+      "inkPixels": 4835,
+      "pngSha256": "c640696ac7174a52a2345ec2eaed13dcbd4c23144d6a02f93e87730074c31383"
+    },
+    "sleep_a": {
+      "sourceSha256": "90317bc230c92e7d40356da123457d1768d63855d5e3239258618f2b1b0db460",
+      "boundsInclusive": [
+        7,
+        39,
+        117,
+        124
+      ],
+      "inkPixels": 3639,
+      "pngSha256": "0df2310ee44b2b2269a88d08e0557accf6e79158cb4b60794824584b4168dee6"
+    },
+    "sleep_b": {
+      "sourceSha256": "d3d1000408c316382dcf17552ed7fcd0459a227bb61641746454a794bd48b95a",
+      "boundsInclusive": [
+        7,
+        39,
+        117,
+        124
+      ],
+      "inkPixels": 3590,
+      "pngSha256": "8b3f4232fb6f3ee3d2ded02204d4dc8be01a0310abb67dabaffd2b6f2cd44f27"
+    },
+    "stun_a": {
+      "sourceSha256": "278a055b29360b02b5eedda5aae1a6d46aeaba9632d25e41fb52f9e53b128429",
+      "boundsInclusive": [
+        6,
+        19,
+        123,
+        124
+      ],
+      "inkPixels": 4853,
+      "pngSha256": "53f1006ef734de5482cbec66740cce586503d4fb022aa7690116dc167ca440b4"
+    },
+    "stun_b": {
+      "sourceSha256": "9579e7c695372b9e41544e4d07de897111646325e82cd41804fbb910b441eab5",
+      "boundsInclusive": [
+        6,
+        19,
+        123,
+        124
+      ],
+      "inkPixels": 4825,
+      "pngSha256": "3ea157da33135406c34026a46e41606309c95e81b1a6998d04ca7a19c94f6aaa"
+    }
+  },
+  "gifs": {
+    "idle": {
+      "frames": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "idle_b"
+      ],
+      "actualHoldsMs": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "2028761d994c6ba46f409ecde97e38112ec8edcedf35ae2575a5e2efabb3c969"
+    },
+    "attack": {
+      "frames": [
+        "idle_a",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        650,
+        260,
+        120,
+        160,
+        240,
+        650
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "a3e62a27b5c6db0bf6bb822880fad343d0717a4328425c52d1072028a80e7441"
+    },
+    "hit": {
+      "frames": [
+        "idle_a",
+        "hit",
+        "recover",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        600,
+        280,
+        240,
+        600
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "1ab3661d3a68d5627cd552cf4d3a689c5a4a80b4337975a9a4971daf77e1a9fc"
+    },
+    "dead": {
+      "frames": [
+        "idle_a",
+        "hit",
+        "dead"
+      ],
+      "actualHoldsMs": [
+        650,
+        200,
+        1500
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true
+      ],
+      "sha256": "44cd191eeb9a737f1c5b70e1c8daa696f5264252704b3a650eb027714f2948ac"
+    },
+    "skill": {
+      "frames": [
+        "idle_a",
+        "skill_a",
+        "skill_b",
+        "skill_c",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        700,
+        300,
+        180,
+        340,
+        900
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "93456122460ba72b71dc945ef093c9ac05e5971dbdb10165d2c3f5b108068520"
+    },
+    "poison": {
+      "frames": [
+        "poison_a",
+        "poison_b"
+      ],
+      "actualHoldsMs": [
+        420,
+        420
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "6af9578b438bad5d9313080c44b5210ab219ee77759187eaf0c6db7fe7a7fb50"
+    },
+    "stun": {
+      "frames": [
+        "stun_a",
+        "stun_b"
+      ],
+      "actualHoldsMs": [
+        500,
+        500
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "6d4c6988ea2611fb5a20934db6f6d8382e6a2c74606ec58a548313814c7ce102"
+    },
+    "sleep": {
+      "frames": [
+        "sleep_a",
+        "sleep_b"
+      ],
+      "actualHoldsMs": [
+        650,
+        650
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "df1a34c3c6d51e377766fc2df4770e4577ac4eb55f666f1b514a03072023d161"
+    }
+  },
+  "independentReview": "not performed here",
+  "userApproval": "not recorded"
+}

@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-06T16:05:01.826989+00:00",
+  "at": "2026-10-06T16:29:49.541797+00:00",
   "expectedNewSpecies": 50,
   "originalSpecies": 23,
   "originalSeedRevision": "cb4e0b7d04^",
@@ -46,9 +46,9 @@
     "mountain-herbalist-fighter",
     "iron-gauntlet-brawler"
   ],
-  "actualPublishedContractAndModelVerifiedSpecies": 47,
-  "progressProof": "verify-shots/battle-monster-fifty/forty-seven-passed-proof.json",
-  "progressProofSha256": "2496ae4c3e50b71802f1a20b31db3642a16589a6f354252cdaa33b08f703abbb",
+  "actualPublishedContractAndModelVerifiedSpecies": 48,
+  "progressProof": "verify-shots/battle-monster-fifty/forty-eight-passed-proof.json",
+  "progressProofSha256": "e497a4ebf960b652fc8cda408dfb79873110cf712cc88af499595486908d9327",
   "all50Complete": false,
   "noSourceOrChoiceWrites": true,
   "claimScope": "Scope/brief/model provenance only; actual native art, selected GIFs, archive and browser are proved separately by the bound progress evidence.",
@@ -638,6 +638,20 @@
         "eb0fe8bf-b3ce-410b-89b0-e4bdd9508888"
       ],
       "actualKeeperJob": "71fceaed-f71d-46a1-bd5c-c9017e709b16"
+    },
+    {
+      "key": "jade-armor-scorpion/fifty-v1",
+      "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "a1263737a6da8aba7732aa019e453d8d7bc39c0ba64778b6042abefc83ca346a",
+      "actualSuccessfulAuthorJobs": [
+        "c5aeae4a-01cd-4d66-b197-bfc510bf136c",
+        "601bde2f-ef8d-4651-97ef-33650a452dfa",
+        "c847621c-3ca1-472d-89e8-103f27f07570",
+        "0fd6475c-c667-420f-906c-b54e317041d6"
+      ],
+      "actualKeeperJob": "46162a99-79cc-48c8-aa8b-b6e87dd062bc"
     },
     {
       "key": "sea-pearl-serpent/fifty-v1",

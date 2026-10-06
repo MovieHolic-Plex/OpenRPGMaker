@@ -1,0 +1,514 @@
+{
+  "observationsOnly": true,
+  "baseline": "history/before-body-socket-repair",
+  "paletteUnchanged": true,
+  "all18Distinct": true,
+  "contracts": {
+    "attack": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 41
+    },
+    "dead": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 80
+    },
+    "hit": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 29
+    },
+    "idle_a": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "idle_b": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "idle_c": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "move": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 41
+    },
+    "recover": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "windup": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 29
+    },
+    "poison_a": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "poison_b": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "skill_a": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 29
+    },
+    "skill_b": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "skill_c": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "sleep_a": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 72
+    },
+    "sleep_b": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 72
+    },
+    "stun_a": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    },
+    "stun_b": {
+      "ascii": true,
+      "canvas128": true,
+      "paletteOnly": true,
+      "transparentBorder": true,
+      "lowestInkY": 124,
+      "lowerMargin": true,
+      "inkAtBaseline": 27
+    }
+  },
+  "changes": {
+    "attack": {
+      "sourceSha256": "a308db2fa7ee53b7cc7dcbba8d164c71ebf66ce8b6202644d653468d1220ffda",
+      "beforeSourceSha256": "dca6dcab6e675c21eb74123521bde094a551b7b33bd9f3916dc3a5dcde556866",
+      "changedNativePixels": 2539,
+      "boundsInclusive": [
+        51,
+        47,
+        126,
+        124
+      ]
+    },
+    "dead": {
+      "sourceSha256": "74e65d89b9075ec7d279e19b7a1728f84b530b07afc0145e098e2d02af680f84",
+      "beforeSourceSha256": "74e65d89b9075ec7d279e19b7a1728f84b530b07afc0145e098e2d02af680f84",
+      "changedNativePixels": 0,
+      "boundsInclusive": null
+    },
+    "hit": {
+      "sourceSha256": "2a7b5ba7fa6e56a2f1635ce3f1be487f47796435a9840b05937f9c62c5feb78b",
+      "beforeSourceSha256": "db16db725f98fd5628d0dc2efd0919aa373ae48e66b639b407c900e329cd2674",
+      "changedNativePixels": 663,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "idle_a": {
+      "sourceSha256": "4321c937cfcd5b10eff0032d356179c8eb367348da18166cb613181addc6cdd0",
+      "beforeSourceSha256": "82f757daabab43f55d28ddc3b2e88ebe12c91fd5550f7ef70b0063a6ab0bb078",
+      "changedNativePixels": 858,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "idle_b": {
+      "sourceSha256": "b2853d0683a8a738f73afad96efe03e388d908614829d0d6627b756970b8ea87",
+      "beforeSourceSha256": "1b8115b20113f4768a0973ccc3e0444ea922067f649dcdafb0b67ca80b84c6bb",
+      "changedNativePixels": 874,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "idle_c": {
+      "sourceSha256": "76a69c213ffc97b84043964c08fc82f66aece44477a01856787eed3394bc1fa1",
+      "beforeSourceSha256": "badb3d6054a89b1aa6c74de8ff06fad4d005d1ecc79efae87b1d15003f2b4407",
+      "changedNativePixels": 858,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "move": {
+      "sourceSha256": "14e47f5c7ce092a53f021d68ebaf54d9151238968c68bf4ad7de55f77f22ec58",
+      "beforeSourceSha256": "00e7d1a30d1e143ec35260dbdf7b68af2ab10226c919b68b91b5d29cc3a02730",
+      "changedNativePixels": 592,
+      "boundsInclusive": [
+        51,
+        95,
+        118,
+        124
+      ]
+    },
+    "recover": {
+      "sourceSha256": "4d40d3457937da56c816f0b2a74662fd8fa2861f14f1608698bd13720eb8d4dc",
+      "beforeSourceSha256": "2e82a730efac6a8c6e836af622f5acc93cfcc8a8e7d8ba71406fa1ba1e56db2a",
+      "changedNativePixels": 875,
+      "boundsInclusive": [
+        50,
+        95,
+        115,
+        124
+      ]
+    },
+    "windup": {
+      "sourceSha256": "61ae2779a5264a1b143d2de55905de900c057a0e251f777eb5100ace481fd345",
+      "beforeSourceSha256": "af55cd09959f25d6751a9a4ae2f322f1b56c362980249262dfc2474c9af20cb9",
+      "changedNativePixels": 2467,
+      "boundsInclusive": [
+        50,
+        47,
+        126,
+        124
+      ]
+    },
+    "poison_a": {
+      "sourceSha256": "dadc5a4f3e11996ab5b5499929338183471dc8984b02dcf3d534b7d7bc554923",
+      "beforeSourceSha256": "d474de75c89d1af572c1e051b80926a57e14810d9886f176ca69fd130e9141e8",
+      "changedNativePixels": 663,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "poison_b": {
+      "sourceSha256": "58d9011454018edb8c90edf0086341cfc37892d5ff167ae4c83d2c4327680869",
+      "beforeSourceSha256": "32a2bf3c2cad18b714aa3194e1cd59faafc561ea9991077bdac3193a55f4e008",
+      "changedNativePixels": 663,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "skill_a": {
+      "sourceSha256": "11291aef1e54e3efe0f1f16a92abc9505eff15a5a87bb200e63e7a8a217feeaf",
+      "beforeSourceSha256": "70456d111fa07c45e8a68afd0f2657899a2ccd2765bf98383e566b04ef847738",
+      "changedNativePixels": 653,
+      "boundsInclusive": [
+        50,
+        95,
+        114,
+        124
+      ]
+    },
+    "skill_b": {
+      "sourceSha256": "695c3ef600d46f775e0dc29a8ac624c0ec1bb2b46f2ab7c8499ca8ee7284f6fe",
+      "beforeSourceSha256": "9d1adff0b9bfcd0ff76bdc43dfce5e9c6e141f3804753da626b89c8eef5d9ea8",
+      "changedNativePixels": 785,
+      "boundsInclusive": [
+        50,
+        95,
+        118,
+        124
+      ]
+    },
+    "skill_c": {
+      "sourceSha256": "45c9cf9a4e832df23bc7ae186adb12e8741ad4a7723787a556f5c7fcbe5ce782",
+      "beforeSourceSha256": "0d01107430119955831c1f31f55925c1af913c0a81a92915f665e057c04193d3",
+      "changedNativePixels": 875,
+      "boundsInclusive": [
+        50,
+        95,
+        115,
+        124
+      ]
+    },
+    "sleep_a": {
+      "sourceSha256": "90317bc230c92e7d40356da123457d1768d63855d5e3239258618f2b1b0db460",
+      "beforeSourceSha256": "90317bc230c92e7d40356da123457d1768d63855d5e3239258618f2b1b0db460",
+      "changedNativePixels": 0,
+      "boundsInclusive": null
+    },
+    "sleep_b": {
+      "sourceSha256": "d3d1000408c316382dcf17552ed7fcd0459a227bb61641746454a794bd48b95a",
+      "beforeSourceSha256": "d3d1000408c316382dcf17552ed7fcd0459a227bb61641746454a794bd48b95a",
+      "changedNativePixels": 0,
+      "boundsInclusive": null
+    },
+    "stun_a": {
+      "sourceSha256": "f5404f4a0da80cf492ae140848bb664cd19b441c5b68573850df3b9258070f8b",
+      "beforeSourceSha256": "7a51a8782dba8932972f09ed303713da80e82eb71ec6483f7d11ff653b3bd6e8",
+      "changedNativePixels": 656,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    },
+    "stun_b": {
+      "sourceSha256": "c4687b1f107c16b34ade81215bcdb03c84a4cebcc3761335d2e6b8df1da64264",
+      "beforeSourceSha256": "e3f433111ef727fe4faff933ea1fb67ae81986c3dac30f51dca6f3c4746e0065",
+      "changedNativePixels": 682,
+      "boundsInclusive": [
+        50,
+        95,
+        116,
+        124
+      ]
+    }
+  },
+  "gifs": {
+    "idle": {
+      "frames": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "idle_b"
+      ],
+      "actualHoldsMs": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "898c445c22daea434dd70df9d158cb52061877b8a0c5f2dafb0bfb97ca20420c"
+    },
+    "attack": {
+      "frames": [
+        "idle_a",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        650,
+        260,
+        120,
+        160,
+        240,
+        650
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "7f18115a9686db9438b82ed2c7ff3860dfce29ff212b43808df24eb2056c8a4f"
+    },
+    "hit": {
+      "frames": [
+        "idle_a",
+        "hit",
+        "recover",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        600,
+        280,
+        240,
+        600
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "c782523fde53f422579f1505d87d39aaa78dc6ec8fadaf4337305cc674223ec3"
+    },
+    "dead": {
+      "frames": [
+        "idle_a",
+        "hit",
+        "dead"
+      ],
+      "actualHoldsMs": [
+        650,
+        200,
+        1500
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true
+      ],
+      "sha256": "451d8641af3cf6cb0b31fda07b78a11c902bc1d4069a24b6f0e9d54066118279"
+    },
+    "skill": {
+      "frames": [
+        "idle_a",
+        "skill_a",
+        "skill_b",
+        "skill_c",
+        "idle_a"
+      ],
+      "actualHoldsMs": [
+        700,
+        300,
+        180,
+        340,
+        900
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "sha256": "a5a1fca9b561bb6e6b903205a7625c58ef2ff1498d19ef5170c3447071418b7a"
+    },
+    "poison": {
+      "frames": [
+        "poison_a",
+        "poison_b"
+      ],
+      "actualHoldsMs": [
+        420,
+        420
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "d70d9d288c39a7fba6630eba73dc09e230e02bea01ff2ce5d40bc8194ab22304"
+    },
+    "stun": {
+      "frames": [
+        "stun_a",
+        "stun_b"
+      ],
+      "actualHoldsMs": [
+        500,
+        500
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "7ce39e0114ef5f62b7ea1d515fc12048576abef5f192bf96eae6cc2af0d36394"
+    },
+    "sleep": {
+      "frames": [
+        "sleep_a",
+        "sleep_b"
+      ],
+      "actualHoldsMs": [
+        650,
+        650
+      ],
+      "nativeRgbaEqual": [
+        true,
+        true
+      ],
+      "sha256": "df1a34c3c6d51e377766fc2df4770e4577ac4eb55f666f1b514a03072023d161"
+    }
+  },
+  "limitations": "Native file/export observations only. Artistic acceptance, model provenance and user selection are not established by this report."
+}

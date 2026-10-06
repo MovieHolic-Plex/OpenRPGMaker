@@ -1,0 +1,38 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "96e1d76389a988bfe5d3466fa358d900874ef04d0ef3e68ffa44e4141f9a68f7",
+  "priorReviewJob": "0d998abe-9c9b-44a1-8b85-6830f07f0ee1",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 91,
+      "y": 75,
+      "message": "The far pincer has a long blade-like upper finger but its opposing finger reads as a small oval knob; the near pincer repeats this around (111,104). Shape each opposing finger as a distinct hooked, solid finger attached to its palm, with a readable hinge and closing path. Preserve those same finger lengths and masses through idle_b, idle_c and the action frames."
+    },
+    {
+      "pose": "attack",
+      "x": 104,
+      "y": 72,
+      "message": "At the far claw, the idle opposing knob changes into a long, thin triangular outline enclosing a large background gap. Redraw the moving finger with a solid jade/shadow plane and the same palm hinge and finger mass as windup/move; bring the two tips into a clear pinch. The gap between fingers can remain, but the moving finger needs readable thickness."
+    },
+    {
+      "pose": "attack",
+      "x": 118,
+      "y": 96,
+      "message": "The near claw repeats the outline-only finger transformation, and its closing tip merges into the outer gold rim. Give this finger a continuous solid inner face and a distinct tip-contact cluster, retaining its identity from move. Keep the lower palm contour separate from the front support leg."
+    },
+    {
+      "pose": "hit",
+      "x": 105,
+      "y": 111,
+      "message": "The lowered pincers become long parallel green/gold strips with bent ends near (119,120), which read like extra dangling legs. Re-author the recoil with compact palms and two recognizable fingers per claw, rotating or folding at their hinges while preserving their lengths. Carry the same anatomy repair into poison_a, poison_b, stun_a and stun_b."
+    },
+    {
+      "pose": "stun_b",
+      "x": 113,
+      "y": 116,
+      "message": "Both lowered claws are long almost parallel closed bars reaching the ground, visually crowding the front foot and losing their palm/finger structure. Shorten their apparent projection by folding at explicit joints, retain the two finger tips, and leave a visible background channel between claw contours and the support leg. Keep the stars and stunned droop readable."
+    }
+  ],
+  "startedAt": "2026-10-06T15:33:33.852660+00:00"
+}
