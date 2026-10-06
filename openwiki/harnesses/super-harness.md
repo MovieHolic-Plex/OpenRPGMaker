@@ -965,3 +965,14 @@ legacy layout 없는 관찰만 이전 seed 경로를 사용하며 시각 미리�
 준비 단계의 native rounds.brief는 `brief.md` 본문이 아닌 폴더 경로다. `set_brief`와 실행 전 검사에서 경로를 검증한다.
 설명문 오입력으로 검수 pack 경로가 파일명 상한을 넘던 장애는 그림을 다시 그리는 사유가 아니다.
 원문이 승인된 brief.md와 동일한지 확인하고 경로만 복구한 뒤 native 기술 재검사·독립 검수를 재개한다.
+
+### 전용 인물 런타임 포장 (2026-10-06)
+
+`python3 src/harnesses/super-harness/theme_actors.py --runtime-pack ROOT RECEIPT DESTINATION`은
+현재 native 인물 영수증의 모든 원본 해시를 재확인하고 걷기·행동을 플레이어용으로 포장한다.
+charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 첫 슬롯에 무손실 복사한다.
+나머지 슬롯은 투명이고 up/right/down/left 행 순서를 보존한다. 기존 charset-actor 공용 게시도 같은 함수를 쓴다.
+행동 PNG는 바이트 그대로 복사하며 `runtime-assets.json`에 24×32/48×40 프레임과 각 발 기준점,
+원본 영수증, 행동별 시간·프레임 목록을 남긴다. 걷기 프레임 수는 96, 첫 인물 정지 프레임은 up1/right13/down25/left37.
+산출물은 `prepared-not-approved`이며 선택·공용 게시·프로젝트 저장·플레이 검증을 대신하지 않는다.
+공용 설치 시 이미지 ID와 SpriteDef ID를 일치시키고 두 자료를 함께 게시한다.

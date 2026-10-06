@@ -1377,7 +1377,7 @@ def prepare_shared_library():
             raise ValueError(f"설명이 없는 남김 후보: {item['id']}")
         pal, _, frames = C.parse(raw.decode())
         sprite = C.sheet_rgba(pal, frames)
-        sheet = Image.new('RGBA', (288, 256)); sheet.paste(sprite, (0, 0))
+        sheet = C.pack_single_actor(sprite)
         buf = io.BytesIO(); sheet.save(buf, format='PNG'); image = buf.getvalue()
         if Image.open(io.BytesIO(image)).convert('RGBA').tobytes() != sheet.tobytes():
             raise ValueError('공용 PNG 재읽기 불일치')
