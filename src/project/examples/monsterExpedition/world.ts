@@ -9,7 +9,7 @@ import { EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from 
 import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as routes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
-import { composeTown, TOWN_SKETCHES } from "./townLayouts";
+import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
@@ -44,7 +44,7 @@ export interface ExpeditionManifest {
 }
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
-export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[] } = {}): ExpeditionManifest {
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme } = {}): ExpeditionManifest {
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
@@ -87,7 +87,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       stamp(map, t.buildings.find(b => b.name === "mart")!, 3, 4);
     }
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
-    if (TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
+    const startTown = !options.startTheme ? undefined : key === "home" ? START_TOWNS[options.startTheme] : key === "meadow" ? START_ROUTES[options.startTheme] : undefined;
+    const sketch = startTown?.sketch ?? TOWN_SKETCHES[key];
+    if (sketch) composeTown(project, map, t, sketch);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
@@ -393,7 +395,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: "summit", mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? "summit" : "home"));
   }
 
-  const townMaps = new Map(towns.map(t => [t.key, make(t.key, t.name, t.template, t.music, "town")]));
+  const townMaps = new Map(towns.map(t => [t.key, make(t.key, t.name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : t.template, t.music, "town")]));
   const gymMaps = new Map(gyms.map(g => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${g.key}`, "gym", "interior")]));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");
   const museum = make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior");
@@ -432,7 +434,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   }
 
   for (const r of routes) {
-    const map = make(r.key, r.name, r.template, r.music, "field");
+    const map = make(r.key, r.name, r.key === "meadow" && options.startTheme ? START_ROUTES[options.startTheme]?.template ?? r.template : r.template, r.music, "field");
     const wildPool = wild(map, r.habitat, r.level);
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);

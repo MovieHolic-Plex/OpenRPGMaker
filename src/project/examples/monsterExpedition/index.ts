@@ -4,6 +4,7 @@ import { configureExpeditionRoster } from "./roster";
 import { configureExpeditionAudio } from "./audio";
 import { configureExpeditionOpening } from "./opening";
 import { authorExpeditionWorld } from "./world";
+import type { StartTheme } from "./townLayouts";
 import { deserialize, serialize } from "@/project/io";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { prepareWebExport } from "@/project/webExport";
@@ -14,7 +15,8 @@ import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 /** gymTypes: 기획서의 1~8관 타입(「바위 체육관」→rock) — 관장 동료만 그 타입으로 바꾼다. 맵·장치는 그대로. firstGymType 은 gymTypes[0] 의 옛 이름. */
-export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[] }
+/** startTheme: 기획서의 시작 마을 풍경(사막·눈·바닷가). 생략하면 풀밭 별싹 마을. */
+export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme }
 
 export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   const project = createExpeditionSeed();
