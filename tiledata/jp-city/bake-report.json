@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 6926,
+  "count": 7407,
   "tilesPerRow": 48,
-  "rows": 145,
+  "rows": 155,
   "sheetPx": [
    768,
-   2320
+   2480
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 3770,
+  "block_cells": 4251,
   "legacy": 19,
   "legacy_ids": [
    5137,
@@ -44,40 +44,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 3770
+   "block": 4251
   }
  },
  "pc_counts": {
-  "star": 4477,
-  "solid": 1435,
-  "floor": 384,
-  "solidfloor": 155,
-  "flat": 301,
+  "star": 4559,
+  "solid": 1536,
+  "floor": 402,
+  "solidfloor": 225,
+  "flat": 511,
   "blank": 155
  },
  "kits": {
-  "total": 352,
+  "total": 376,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 176
+   "block-kit": 200
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 176
+  "block_kit": 200
  },
  "groups": {
-  "total": 175,
+  "total": 177,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 22
+   "block": 24
   }
  },
  "autotiles": {
@@ -108,14 +108,16 @@
    "autotiles_lines",
    "roads",
    "buildings",
-   "street_hand"
+   "street_hand",
+   "school"
   ],
   "merged": [
    "autotiles_ground",
    "autotiles_lines",
    "roads",
    "buildings",
-   "street_hand"
+   "street_hand",
+   "school"
   ],
   "missing": [],
   "on_disk_not_in_order": [],
@@ -159,11 +161,19 @@
     "groups": 1,
     "kits": 60,
     "notes": "손 도트 거리 소품 60종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
+   },
+   {
+    "name": "school",
+    "cells": 481,
+    "autotiles": 0,
+    "groups": 2,
+    "kits": 24,
+    "notes": "손 도트 小学校 교정 24종(校庭 흙 바닥·트랙 선·철봉·조례대·게양대·정글짐·운제·타이어·골대·방구망·체육 창고·百葉箱·사육장·화단·나팔꽃·자전거 보관대·二宮金次郎像·수영장). 바닥(흙·수영장 데크·물)은 1층, 트랙 선은 2층 투명 덧그림, 나머지 3층. 한계: 교사 실내 없음, 밤 조명 없음."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 352,
+  "kits_checked": 376,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -194,7 +204,23 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 1
+   "school": 8,
+   "tetsubo": 1,
+   "chorei": 1,
+   "flagpoles": 1,
+   "jungle": 1,
+   "unte": 1,
+   "tires": 1,
+   "goal": 2,
+   "ball": 1,
+   "souko": 1,
+   "hyakuyoubako": 1,
+   "shiiku": 1,
+   "kadan": 1,
+   "asagao": 1,
+   "bike": 1,
+   "ninomiya": 1,
+   "pool": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -204,9 +230,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6926,
-  "kits_checked": 352,
-  "groups_checked": 175,
+  "tiles_checked": 7407,
+  "kits_checked": 376,
+  "groups_checked": 177,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -221,10 +247,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "036ebe52fa7bdcae85bc5718c4a48f48c16b9f75",
+ "sheet_hash": "0cf7de444641422539ebba36988d2bf011038d98",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 352,
+  "kits_checked": 376,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -255,7 +281,23 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 1
+   "school": 8,
+   "tetsubo": 1,
+   "chorei": 1,
+   "flagpoles": 1,
+   "jungle": 1,
+   "unte": 1,
+   "tires": 1,
+   "goal": 2,
+   "ball": 1,
+   "souko": 1,
+   "hyakuyoubako": 1,
+   "shiiku": 1,
+   "kadan": 1,
+   "asagao": 1,
+   "bike": 1,
+   "ninomiya": 1,
+   "pool": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -265,9 +307,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6926,
-  "kits_checked": 352,
-  "groups_checked": 175,
+  "tiles_checked": 7407,
+  "kits_checked": 376,
+  "groups_checked": 177,
   "autotiles_checked": 17
  },
  "files": {
