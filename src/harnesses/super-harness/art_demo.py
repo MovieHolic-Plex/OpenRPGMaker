@@ -108,10 +108,14 @@ def preserved_sources(data, cid, layout, result):
                 if key in native_refs: evidence.add((requirement, *key))
     for ref in preserved:
         key = (ref['path'], ref['sha256'])
-        if (key not in bound or (ref.get('requirement'), *key) not in evidence
-                or not ref['path'].lower().endswith('.png')
-                or len(str(ref.get('reason', '')).strip()) < 12):
-            raise ValueError('보존 부품의 승인 도면·동일 테마 원본 영수증·보존 사유가 필요합니다.')
+        missing = []
+        if key not in bound: missing.append('현재 도면 sources의 경로/해시')
+        if (ref.get('requirement'), *key) not in evidence:
+            missing.append('동일 테마 batch의 재료 ' + str(ref.get('requirement')) + ' 원본 영수증')
+        if not ref['path'].lower().endswith('.png'): missing.append('PNG 원본')
+        if len(str(ref.get('reason', '')).strip()) < 12: missing.append('구체적인 보존 사유')
+        if missing:
+            raise ValueError('보존 부품 근거 누락: ' + ref['path'] + ' — ' + '; '.join(missing))
         choices.verified(root, ref)
     return preserved
 

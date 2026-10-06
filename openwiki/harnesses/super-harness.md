@@ -993,3 +993,23 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 `require_preparation`도 이전 실행의 policy와 layout이 함께 calibration으로 남은 경우를 거부한다.
 완료된 native 결과는 `resumeMode=collect-existing`으로 보존하고, scene 도면을 새로 독립 검수한 뒤
 수집·전체 장면 조립을 재개한다. 과거 부품/도면 판정을 PASS로 바꾸거나 그림 회차를 초기화하지 않는다.
+
+### 선택 DB를 제작 명세에 결합하지 않는다 (2026-10-06)
+
+빈 picks.sqlite도 WAL 체크포인트 뒤 바이트 해시가 달라져 마법약 교실의 준비1166이 멈췄다.
+`art_layout.build_input`은 실행 요청의 picks 폴더에 있는 picks.sqlite/WAL/SHM을 sources로 받지 않는다.
+새 도면에서만 선택 DB 참조를 제거하고 독립 검수를 다시 받는다. 후보 실행 DB·주문서·그림 해시는
+계속 확인하며 과거 승인 해시를 고치거나 선택 기록을 삭제하지 않는다. 해시 오류에는 원본 경로도 표시한다.
+
+### 실행 가능한 초안 노출 (2026-10-06)
+
+개념 폴더 runtime-preview.json은 url, project {path,sha256}, note, checks를 갖는다.
+space_progress는 DATA 내부 프로젝트 파일의 현재 해시와 HTTP(S) 주소를 확인한 경우에만
+공간 카드에 플레이 초안 링크를 표시한다. 초안 실행은 시각 합격·공용 등록·정본 저장 진행률을 올리지 않는다.
+플레이어 전용 진입으로 열며, 벽 수정·외부 계단 미연결 등 남은 문제는 링크 옆에도 표시한다.
+
+보존 원본 검사 오류는 해당 PNG 경로와 누락된 도면 결합/기획 재료/영수증/보존 사유를 구분해 전달한다.
+플레이 초안의 draft-project-proof.sha256은 마지막 개행을 포함한 실제 저장 파일의 바이트 해시다.
+
+새 picks 출력 폴더가 누락되면 격리 워크트리 내부 경로 확인 후 빈 폴더만 만든다.
+기존 선택 DB와 native 실행 입력은 수정하지 않으며 data 등 필수 입력 폴더 누락은 계속 거절한다.

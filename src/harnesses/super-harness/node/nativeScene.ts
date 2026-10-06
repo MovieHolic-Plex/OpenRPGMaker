@@ -127,7 +127,9 @@ export function createNativeSceneProject(input: NativeSceneProjectInput): Projec
     const actor = project.database.actors.find(row => row.id === project.system.startActorIds[0]);
     if (!actor) throw new Error('Baseline player actor is missing');
     actor.characterResourceId = resourceId;
-    actor.characterIndex = 0;
+    // The actor model's canonical representation omits slot zero on load.
+    // Author that representation so a harmless normalization is not a mismatch.
+    delete actor.characterIndex;
     delete actor.appearanceId;
   }
   const normalized = deserialize(serialize(project));
