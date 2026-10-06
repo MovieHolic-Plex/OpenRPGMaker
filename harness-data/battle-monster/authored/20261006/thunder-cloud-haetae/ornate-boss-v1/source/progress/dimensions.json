@@ -1,0 +1,182 @@
+{
+  "idle_a": {
+    "bbox": [
+      4,
+      15,
+      92,
+      92
+    ],
+    "inkPixels": 3997,
+    "colors": 15
+  },
+  "idle_b": {
+    "bbox": [
+      4,
+      15,
+      92,
+      92
+    ],
+    "inkPixels": 4004,
+    "colors": 15
+  },
+  "idle_c": {
+    "bbox": [
+      4,
+      15,
+      92,
+      92
+    ],
+    "inkPixels": 3992,
+    "colors": 15
+  },
+  "windup": {
+    "bbox": [
+      4,
+      19,
+      86,
+      92
+    ],
+    "inkPixels": 3605,
+    "colors": 15
+  },
+  "move": {
+    "bbox": [
+      4,
+      15,
+      94,
+      92
+    ],
+    "inkPixels": 3767,
+    "colors": 15
+  },
+  "attack": {
+    "bbox": [
+      4,
+      33,
+      93,
+      92
+    ],
+    "inkPixels": 3379,
+    "colors": 15
+  },
+  "recover": {
+    "bbox": [
+      4,
+      15,
+      92,
+      92
+    ],
+    "inkPixels": 4004,
+    "colors": 15
+  },
+  "hit": {
+    "bbox": [
+      4,
+      20,
+      86,
+      92
+    ],
+    "inkPixels": 3514,
+    "colors": 14
+  },
+  "dead": {
+    "bbox": [
+      5,
+      54,
+      86,
+      92
+    ],
+    "inkPixels": 2110,
+    "colors": 13
+  },
+  "skill_a": {
+    "bbox": [
+      4,
+      13,
+      93,
+      92
+    ],
+    "inkPixels": 3752,
+    "colors": 16
+  },
+  "skill_b": {
+    "bbox": [
+      4,
+      10,
+      94,
+      92
+    ],
+    "inkPixels": 4051,
+    "colors": 16
+  },
+  "skill_c": {
+    "bbox": [
+      4,
+      15,
+      92,
+      92
+    ],
+    "inkPixels": 4059,
+    "colors": 16
+  },
+  "poison_a": {
+    "bbox": [
+      4,
+      24,
+      93,
+      92
+    ],
+    "inkPixels": 3697,
+    "colors": 16
+  },
+  "poison_b": {
+    "bbox": [
+      4,
+      24,
+      92,
+      92
+    ],
+    "inkPixels": 3696,
+    "colors": 16
+  },
+  "stun_a": {
+    "bbox": [
+      4,
+      23,
+      88,
+      92
+    ],
+    "inkPixels": 3416,
+    "colors": 14
+  },
+  "stun_b": {
+    "bbox": [
+      4,
+      21,
+      86,
+      92
+    ],
+    "inkPixels": 3427,
+    "colors": 14
+  },
+  "sleep_a": {
+    "bbox": [
+      3,
+      43,
+      82,
+      92
+    ],
+    "inkPixels": 2738,
+    "colors": 13
+  },
+  "sleep_b": {
+    "bbox": [
+      3,
+      43,
+      82,
+      92
+    ],
+    "inkPixels": 2743,
+    "colors": 13
+  }
+}

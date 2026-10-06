@@ -1,0 +1,48 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs, including native 1x and nearest 3x views on light, dark and checker backgrounds. The right-facing face, short muzzle, jade mane, blue-gray body, gold plates and clawed feet are readable; upper-left highlights give the rump, mane and metal useful volume. Most planted feet share the baseline, and windup, raised-paw move, lowered-horn attack, recoil and flattened death are distinguishable. However, move has a genuinely detached lower front leg, and enclosed transparency pockets at the body/mane overlap interrupt the anatomy across several poses. The attack lowers the head but leaves the rump and supporting feet almost unchanged, weakening the heavy shoulder ram. Skill preparation, discharge and two residual sparks are distinct, with electricity visibly rooted in the horn and localized foot clouds; the discharge shape reads mostly as an upward horn extension with a long descending fork rather than the specified thick rightward bent main bolt and short branch. Poison crouches, star-marked stun and curled closed-eye sleep are readable authored states with subtle pair changes, not simple tints or unrelated attacks. This is a pose-preview review, not actual battle footage: timing, stomp impact, runtime continuity, palette limits and literal authorship are not established by these PNGs. Recommendation is advisory; user selection remains pending.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 81,
+      "y": 68,
+      "message": "The rightmost lower front leg at approximately x78-94/y69-92 is a separate opaque island, with empty space above its elbow. Draw a continuous far-side upper foreleg from the chest/shoulder to this elbow through approximately x78-86/y64-71, using a dark far-side plane and a complete outline. Keep it separate from the near forepaw that is lifted for the stomp."
+    },
+    {
+      "pose": "idle_a",
+      "x": 41,
+      "y": 57,
+      "message": "Checker background shows through enclosed body/mane seams: x43/y51-54, x42/y55, x40-42/y56-59 and x43/y60. Fill these interior pockets with the existing deep body/neck shadow beneath the jade mane, preserving the mane edge. Apply the equivalent overlap repair to idle_b, idle_c, move and recover; retain the intentional spaces between the legs."
+    },
+    {
+      "pose": "attack",
+      "x": 43,
+      "y": 42,
+      "message": "The lowered mane exposes enclosed transparent wedges inside the shoulder at x42-45/y39-45, x40-44/y51-59 and x42-43/y61-64. Restore the underlying shoulder/neck pixels in existing shadow colors so the lowered head and mane sit over a solid connected body."
+    },
+    {
+      "pose": "attack",
+      "x": 62,
+      "y": 68,
+      "message": "The head tilts down while the rump and hind feet largely retain the idle configuration, so the contact pose reads as a head dip. Redraw the shoulder/chest around x54-70/y60-74 with a forward compressed mass and a braced supporting foreleg; make the raised near forepaw from move visibly land before the horn/shoulder drive."
+    },
+    {
+      "pose": "skill_b",
+      "x": 44,
+      "y": 44,
+      "message": "The discharge mane leaves a large enclosed transparent shoulder seam at x42-46/y40-49 and another at x40-44/y56-61. Fill the missing underlying body/neck shadow, keeping the sculpted jade silhouette and the intentional spaces between the legs."
+    },
+    {
+      "pose": "skill_b",
+      "x": 87,
+      "y": 24,
+      "message": "The dominant electric stroke runs nearly straight upward-right from the horn tip near x80/y26 to x94/y10, while the descending fork extends to about y42. Reserve more right-side space by adjusting this skill pose, then draw a thick bent rightward main current and one clearly shorter fork in the existing bright palette. Keep its root attached to the actual horn tip and preserve the two forefoot cloud masses."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 42,
+      "y": 70,
+      "message": "The curled body has an enclosed background pocket at x39-46/y65-75 between the rump/shoulder and mane. Restore a shadowed tucked neck/chest behind the mane so the sleeping head belongs to a solid curled quadruped. Repair the corresponding pocket in sleep_b, and the smaller body/mane pocket at x39-44/y67-74 in dead, without filling legitimate exterior negative space."
+    }
+  ]
+}

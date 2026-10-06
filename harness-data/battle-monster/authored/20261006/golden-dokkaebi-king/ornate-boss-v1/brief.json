@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "golden-dokkaebi-king",
+    "name": "금갑 도깨비왕",
+    "cell": 128,
+    "grounded": true,
+    "motion": "stomp",
+    "tier": "boss",
+    "idleFrameMs": 300,
+    "silhouette": "128원본의 거대한 도깨비왕. 실제 본체 높이104~116px/어깨폭54~68px/무기 포함폭108~118px로64검객 높이 약두 배. 굵은 비취청록 피부, 큰 네모턱/흰 송곳니 두 개/낮은 눈썹/두 굽은 뿔. 금빛 넓은 어깨갑주와 층진 흉갑, 홍색 두꺼운 망토, 어두운 가죽 허리끈, 굵은 두 다리와 별개의 큰 발. 손에 잡힌 길고 무거운 청동 철퇴의 명확한 자루/금속 머리. 금속 면과 피부 근육의 명암을 구분. 사람 장군의 머리만 크게 복사하지 않는다.",
+    "attack": "철퇴를 뒤로 들어 무릎/어깨를 낮춤 → 큰 앞발을 내딛고 골반을 돌림 → 손/팔/철퇴가 함께 우측으로 내려찍기 → 무거운 철퇴와 망토를 당겨 회수. 이동은 본체 자동 확대/회전 금지.",
+    "skill": "금강뇌쇄: 철퇴 머리의 금빛 틈에 번개를 압축하고 두 손/다리를 버티기, 우측으로 내리치는 철퇴 머리 접촉점에서 황백 번개 두 큰 갈래와 청록 충격파가 갈라짐, 갈라진 금속광/잔전류 두 조각이 무너지며 팔/무기를 회수. 망토/갑주 변화도 직접 선택.",
+    "resourceId": "jf-enemy-golden-dokkaebi-king",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 124,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

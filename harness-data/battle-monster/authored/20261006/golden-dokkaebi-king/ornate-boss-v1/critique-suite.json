@@ -1,0 +1,73 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied actual PNGs, including the native 128px portrait and each sheet's native 1x and nearest 3x panels. The large teal body, gold equipment, red cape, two horns and separate grounded feet are recognizable; upper-left light reads especially on the horns and mace. Attack and status silhouettes change, and poison, stun and seated sleep are readable authored states rather than simple tints. However, rectangular transparent cape cutouts, broken attack arm/hand continuity, a floating idle armor fragment and the missing skill-contact mace head need repair. The face and broad armor remain too flat for the specified massive, square-jawed armored king. The skill charge is attached to the mace, but the contact frame does not preserve that weapon as a readable impact source. This is a static pose-preview review: actual battle scale, playback timing, stomp weight and seamless animated continuity were not observed; authorship cannot be established from PNGs. This recommendation is advisory and does not select or approve the candidate for the user.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 64,
+      "y": 49,
+      "message": "The lower face tapers into a narrow smiling chin. Rebuild the jaw around x56–76, y48–60 as a broad squared mass, with a darker right jaw plane and two separately readable white fang clusters; preserve the right-facing muzzle rather than enlarging the smile."
+    },
+    {
+      "pose": "idle_a",
+      "x": 65,
+      "y": 74,
+      "message": "The chest reads as a mostly flat gold slab with horizontal stripes. Shape the plate highlights around the belly and reserve a coherent darker right side; turn the shoulder and chest edges into overlapping metal thickness so armor volume differs from the long skin highlight strips."
+    },
+    {
+      "pose": "idle_b",
+      "x": 54,
+      "y": 108,
+      "message": "The gold/brown 6x2 cluster at x52–57, y108–109 floats between the shins, absent from adjacent idle frames. Remove this stray fragment or reconnect it to the intended greave with a continuous outlined surface."
+    },
+    {
+      "pose": "idle_b",
+      "x": 51,
+      "y": 57,
+      "message": "Skin-colored horizontal marks protrude left of the neck around x48–55, y56–57 without a matching head outline. Restore a continuous jaw/neck silhouette and relocate the breathing change inside it; check idle_c for the same neck smear."
+    },
+    {
+      "pose": "windup",
+      "x": 26,
+      "y": 85,
+      "message": "The cape contains a large background-colored rectangular opening around x18–36, y84–95, and another opening above it. Rebuild a continuous red cloth mass behind the crossed arms with outlined fold edges. Similar square cutouts in move, attack, hit and skill_b need the same local cloth repair; do not fill the genuine outside gap between arm and torso."
+    },
+    {
+      "pose": "windup",
+      "x": 55,
+      "y": 101,
+      "message": "The crossed two-hand grip reads, but the body remains upright with almost straight knees, so the heavy backswing lacks loading. Lower the shoulder/pelvis and author compressed bent knees while keeping both soles at the ground baseline; carry the loaded weight into the large forward step in move/attack."
+    },
+    {
+      "pose": "attack",
+      "x": 68,
+      "y": 81,
+      "message": "The arm crossing the chest ends before the gold cuff and supporting hand: background separates the forearm from the wrist around x67–72, y78–84. Draw a continuous skin wrist and cuff overlap into the gripping hand. Apply the corresponding repair in skill_b, where the same break remains visible."
+    },
+    {
+      "pose": "skill_b",
+      "x": 109,
+      "y": 104,
+      "message": "The large bronze mace head visible in attack disappears beneath the lightning, leaving a short shaft fragment near x90–94, y92–94. Restore a substantial outlined metal head and uninterrupted shaft from the gripping hands to its ground contact near x108–113, y110–113. Root both yellow-white lightning branches and the teal shockwave at that actual metal contact; retain visible head pixels so this reads as a mace strike."
+    },
+    {
+      "pose": "skill_c",
+      "x": 99,
+      "y": 104,
+      "message": "The recovery has isolated gold sparks and two teal slashes, but the specified collapsing split metal flash and residual current are hard to follow from skill_b. Place two identifiable fading current clusters along the recovering mace head/shaft path and retain its grip, making the contact-to-recovery effect continuity readable at 1x."
+    }
+  ],
+  "binding": "11266e1a6a395c7e5fc23f1f718057fdfa7a65de580980078f03d8fa5a0fc322",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "e87f3a2537635a776f2c55724075367095139305b7bdee1a48be4a83b11b4e51",
+    "preview/suite/light.png": "4b56e23b26be9e20de72de77baa59f96720c7791e4b88d30affee9cc5fe05462",
+    "preview/suite/dark.png": "25d34b917a0a6ba7ef366adf40bd90e044b3592c71e96e88e6a76532e8cfbe3d",
+    "preview/suite/checker.png": "f759ccfc5375fcdb62bddfd9ac99d753ab72402dd8f2bdb22669fd17f81050e0"
+  },
+  "jobId": "4185cdb0-3f50-4587-b800-f16616da2998",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T02:53:06.660597+00:00",
+  "userApproved": false
+}

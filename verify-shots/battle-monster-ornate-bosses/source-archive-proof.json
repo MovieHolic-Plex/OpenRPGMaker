@@ -1,0 +1,110 @@
+[
+  {
+    "key": "crimson-nine-tail-fox/ornate-boss-v1",
+    "cell": 96,
+    "idleBboxExclusive": [
+      3,
+      11,
+      82,
+      93
+    ],
+    "bodyWidth": 79,
+    "bodyHeight": 82,
+    "binding": "d76a43270adb2e6fce6e44fcf3b10533fc9728a04f38ff6bdbfb32ffa009d6b2",
+    "reviewRecommendation": "rework",
+    "reviewJob": "e84f3be9-a08c-44cc-818f-304694bc1cb1",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "thunder-cloud-haetae/ornate-boss-v1",
+    "cell": 96,
+    "idleBboxExclusive": [
+      4,
+      15,
+      93,
+      93
+    ],
+    "bodyWidth": 89,
+    "bodyHeight": 78,
+    "binding": "de6e14958cd242c729b9d1df28fe09b6e2662a9b9bdc5221bb0282045c3f47c2",
+    "reviewRecommendation": "rework",
+    "reviewJob": "c5163004-e624-4e72-b148-8c1fa4ff77d4",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "lotus-flame-spirit/ornate-boss-v1",
+    "cell": 96,
+    "idleBboxExclusive": [
+      17,
+      8,
+      87,
+      92
+    ],
+    "bodyWidth": 70,
+    "bodyHeight": 84,
+    "binding": "7f2fa171e553cc1ed177c8ddba27cfc395497b6304f9fab6b05621eb113cc75d",
+    "reviewRecommendation": "rework",
+    "reviewJob": "ead031be-08fb-4b75-86bc-e2244a92fcf1",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "golden-dokkaebi-king/ornate-boss-v1",
+    "cell": 128,
+    "idleBboxExclusive": [
+      10,
+      13,
+      121,
+      125
+    ],
+    "bodyWidth": 111,
+    "bodyHeight": 112,
+    "binding": "11266e1a6a395c7e5fc23f1f718057fdfa7a65de580980078f03d8fa5a0fc322",
+    "reviewRecommendation": "rework",
+    "reviewJob": "4185cdb0-3f50-4587-b800-f16616da2998",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "azure-scale-imugi/ornate-boss-v1",
+    "cell": 128,
+    "idleBboxExclusive": [
+      9,
+      14,
+      118,
+      125
+    ],
+    "bodyWidth": 109,
+    "bodyHeight": 111,
+    "binding": "1a28a5106c20ac6b6e054b3992c6ef1fedf315149cfaf03e993df208ed6b3f5e",
+    "reviewRecommendation": "rework",
+    "reviewJob": "4206583c-7cc7-45aa-acda-e9f02db57392",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  },
+  {
+    "key": "mountain-white-tiger/ornate-boss-stripes-v2",
+    "cell": 128,
+    "idleBboxExclusive": [
+      7,
+      21,
+      123,
+      125
+    ],
+    "bodyWidth": 116,
+    "bodyHeight": 104,
+    "binding": "7413f5ac81c03f4cdb96b580a2383c92a7955b18fe003f33926ef4f9438bb508",
+    "reviewRecommendation": "rework",
+    "reviewJob": "e74df05d-24bd-40de-a938-b1b6560185ac",
+    "sourceArchiveBindingMatches": true,
+    "motionGifs": 8,
+    "userApprovalCreated": false
+  }
+]

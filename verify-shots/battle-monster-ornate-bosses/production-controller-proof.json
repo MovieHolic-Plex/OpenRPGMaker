@@ -1,0 +1,83 @@
+[
+  {
+    "path": "qa-runs/battle-monster-ornate-boss-wave/pilot-controller.json",
+    "startedAt": "2026-10-06T02:03:49.667209+00:00",
+    "state": "done",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "battle-monster",
+      "wave",
+      "--work",
+      "qa-runs/battle-monster-ornate-boss-wave",
+      "--candidate",
+      "ornate-boss-v1",
+      "--workers",
+      "1",
+      "--note-file",
+      "output/ornate-bosses-direction.txt",
+      "crimson-nine-tail-fox"
+    ],
+    "userChoicesCreated": false,
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T02:26:30.901412+00:00"
+  },
+  {
+    "path": "qa-runs/battle-monster-ornate-boss-wave/remainder-controller.json",
+    "startedAt": "2026-10-06T02:24:13.501040+00:00",
+    "state": "done",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "battle-monster",
+      "wave",
+      "--work",
+      "qa-runs/battle-monster-ornate-boss-wave",
+      "--candidate",
+      "ornate-boss-v1",
+      "--workers",
+      "3",
+      "--note-file",
+      "output/ornate-bosses-direction.txt",
+      "golden-dokkaebi-king",
+      "azure-scale-imugi",
+      "mountain-white-tiger",
+      "thunder-cloud-haetae",
+      "lotus-flame-spirit"
+    ],
+    "userChoicesCreated": false,
+    "productionStartedAt": "2026-10-06T02:26:33.536615+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T03:19:02.610504+00:00"
+  },
+  {
+    "path": "qa-runs/battle-monster-baram-quality-wave/tiger-stripe-controller.json",
+    "startedAt": "2026-10-06T02:45:51.135629+00:00",
+    "state": "done",
+    "userChoicesCreated": false,
+    "productionStartedAt": "2026-10-06T02:54:33.546339+00:00",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "battle-monster",
+      "wave",
+      "--work",
+      "qa-runs/battle-monster-baram-quality-wave",
+      "--candidate",
+      "ornate-boss-stripes-v2",
+      "--workers",
+      "1",
+      "--note-file",
+      "output/white-tiger-stripes-direction.txt",
+      "mountain-white-tiger"
+    ],
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T03:06:44.599622+00:00"
+  }
+]

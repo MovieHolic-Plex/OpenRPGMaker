@@ -1,0 +1,48 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four actual PNGs, including the native 96px views and nearest 3x panels on light, dark and checker backgrounds. The right-facing fox, long muzzle, paired ears, ivory fur, crimson fan and gold knot/red tassel are recognizable. Nine white-tipped tails can be traced in idle, but several read as narrow rigid quills, and the low tail beneath the belly is difficult to trace back to the rump. Upper-left highlights and darker undersides establish some volume; gold and silk are distinguishable, while the torso and tail shafts need stronger rounded fur masses. No obvious accidental enclosed transparent holes or widespread missing outline were visible. Idle paws read as planted; attack opens the jaw and changes the limbs, but windup scarcely lowers the neck and move lacks a convincing rear-leg push. The hit frame loses the recognizable face. Skill preparation, connected mouth flame and two detached recovery embers are readable; the contact flame is attached to the actual mouth. Poison bubbles, stun stars and lowered facial/limb changes distinguish the status states without relying on whole-body tints, although sleep remains close to the dead silhouette. These are still pose previews: animation timing, battle contact, runtime scale and source authorship were not verified. This recommendation is advisory; selection remains with the user.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 43,
+      "y": 35,
+      "message": "The tall central tails have long near-parallel edges and thin red interiors, giving the fan a quill-like appearance. Widen their middle clusters and round the bends with broad lit and shadowed fur planes; keep separate white tips and carry each curved mass toward the rump. Preserve those volumes through idle_b/c and the action frames."
+    },
+    {
+      "pose": "idle_a",
+      "x": 68,
+      "y": 68,
+      "message": "The far foreleg begins as a narrow vertical segment beside the pendant, without a readable fur shoulder above it; the ornament appears to supply its attachment. Add a continuous shaded shoulder/upper-leg cluster behind the knot, then taper into the lower leg. Keep the gold knot and red tassel visibly resting over that anatomy in all three idle frames."
+    },
+    {
+      "pose": "idle_a",
+      "x": 52,
+      "y": 80,
+      "message": "The red-and-white hanging tail between the legs reads like an extra limb or cloth flap because its route from the rump is obscured. Expose a curved red root behind the hindquarter, using a consistent darker overlap band where it passes behind the belly and legs. Maintain that root-to-tip relationship in recover and the skill frames."
+    },
+    {
+      "pose": "windup",
+      "x": 61,
+      "y": 55,
+      "message": "The legs crouch and tails collect, but the muzzle and neck remain high, so the required lowered-neck attack preparation is weak. Lower the head/shoulder clusters, fold the foreleg joints beneath the chest and compress the hind hocks while preserving visibly planted support paws."
+    },
+    {
+      "pose": "move",
+      "x": 25,
+      "y": 82,
+      "message": "The rear support leg reads as a straight rectangular post during the forward stride. Give the upper thigh, backward hock and planted toe separate clusters, with the hind limb extending behind the pelvis to show the push. Keep its paw contact coherent with the windup and attack positions."
+    },
+    {
+      "pose": "hit",
+      "x": 64,
+      "y": 66,
+      "message": "The recoiling head loses a clear eye/nose/muzzle division and merges visually with the long diagonal forelegs. Restore a small closed eyelid and dark nose on a distinct lowered snout, then separate the lower jaw from the nearer foreleg with a readable contour gap. Preserve the two-ear arrangement while compressing the neck."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 35,
+      "y": 75,
+      "message": "The prone body and upright compressed fan remain very close to dead, especially at 1x. Fold more of the tail masses around the resting body, make a tucked forepaw and closed eyelid unambiguous, and use a small chest/neck breathing change in sleep_b so the pair reads as restful sleep."
+    }
+  ]
+}

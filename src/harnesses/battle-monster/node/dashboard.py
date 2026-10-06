@@ -160,7 +160,7 @@ class Dashboard:
                     continue
             making = 0
             if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
-                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave', 'battle-monster-baram-quality-wave'):
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave', 'battle-monster-baram-quality-wave', 'battle-monster-ornate-boss-wave'):
                     for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
                         making += load(task)['state'] in ('queued', 'running')
             selected = {}

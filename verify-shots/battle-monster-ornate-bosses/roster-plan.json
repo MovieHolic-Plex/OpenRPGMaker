@@ -1,0 +1,46 @@
+{
+  "userRequest": "근데 뭐 아무리 조선시대 몬스터라지만 좀 더 화려한 몬스터도 있고 그래야하지않겄냐 대형 몬스터도 필요할테고",
+  "candidate": "ornate-boss-v1",
+  "poses": 18,
+  "motionGifs": 8,
+  "humanChoiceRequired": true,
+  "roster": [
+    {
+      "id": "crimson-nine-tail-fox",
+      "name": "홍련 구미호",
+      "cell": 96,
+      "tier": "elite"
+    },
+    {
+      "id": "thunder-cloud-haetae",
+      "name": "뇌운 해태",
+      "cell": 96,
+      "tier": "elite"
+    },
+    {
+      "id": "lotus-flame-spirit",
+      "name": "연화 화귀",
+      "cell": 96,
+      "tier": "elite"
+    },
+    {
+      "id": "golden-dokkaebi-king",
+      "name": "금갑 도깨비왕",
+      "cell": 128,
+      "tier": "boss"
+    },
+    {
+      "id": "azure-scale-imugi",
+      "name": "청린 이무기",
+      "cell": 128,
+      "tier": "boss"
+    },
+    {
+      "id": "mountain-white-tiger",
+      "name": "산군 백호",
+      "cell": 128,
+      "tier": "boss",
+      "candidate": "ornate-boss-stripes-v2"
+    }
+  ]
+}

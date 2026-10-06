@@ -68,7 +68,7 @@ def produce(args, monster):
                         raise ValueError(error)
                     harness.args.note = (getattr(args, 'note', '') + '\nTechnical correction only: ' + error
                         + '. Preserve the intended design, repair literal row lengths/symbols/contact only. '
-                          'Grounded idle_a feet touch y60. No ink below y60. Do not transform entire frames.')
+                          'Grounded idle_a contact touches y=cell-4. No ink below y=cell-4. Do not transform entire frames.')
             if parent is not None and harness.pixels(directory, 'poses')[2]['binding'] != state['coreBinding']:
                 raise ValueError('Original selected core poses/palette must remain unchanged.')
             report = harness.bake(directory, 'suite')

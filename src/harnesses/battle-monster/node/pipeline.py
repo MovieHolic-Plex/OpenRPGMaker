@@ -85,8 +85,8 @@ class Harness:
             identifier(monster['id'])
             if monster['id'] in self.specs or monster['resourceId'] in resource_ids:
                 raise ValueError('종/resourceId 중복')
-            if monster['cell'] not in (64, 96) or monster['motion'] not in MOTIONS:
-                raise ValueError('native64/96 또는 motion 계약 오류')
+            if monster['cell'] not in (64, 96, 128) or monster['motion'] not in MOTIONS:
+                raise ValueError('native64/96/128 또는 motion 계약 오류')
             if not isinstance(monster['idleFrameMs'], int) or monster['idleFrameMs'] < 50:
                 raise ValueError('idleFrameMs는 50ms 이상의 정수')
             self.specs[monster['id']] = monster

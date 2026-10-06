@@ -1,0 +1,87 @@
+{
+  "createdAt": "2026-10-06T02:03:07.369106+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "cdfaa872-5260-4f14-b54c-5fc885d49852",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T02:27:02.461957+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/references/creature-style.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "d14b3cc0a43cff9578f28de4d584819148c3fd2a4df2ae20bcd9d4f327a32875",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/creature-style.png": "00f7d6f91827920f80e67ae6bc9725bebde277fe0e85f9d1cbabf84fb4131acf",
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T02:43:27.127526+00:00"
+    },
+    {
+      "id": "167ea6a0-daeb-4b37-9dbd-30e97273c89a",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T02:43:34.105614+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/jobs/167ea6a0-daeb-4b37-9dbd-30e97273c89a",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-ornate-boss-wave/candidates/mountain-white-tiger/ornate-boss-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "942b0dc2c851260fc287295b90c3844126e6d4f5dd4ee973ebda364f1fc2fbb6",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "b5017f833b7841d557f75ec8529d262958d33b216ae4d7e96a16291a407ce98e",
+        "preview/suite/light.png": "cc33ac346aa7cee416111f7023b58fc6fa6325a31bce0e93a9ad0a541eafa57b",
+        "preview/suite/dark.png": "59dc9d07764b1c002e868be86219f0b17dfefd15beddacfc2f3000544b992035",
+        "preview/suite/checker.png": "b54e1da4bd6a2dda8c3ffe8011c26bd5810779db79fbdb5aed2cccc8e3f659b5"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T02:46:03.521806+00:00"
+    }
+  ]
+}

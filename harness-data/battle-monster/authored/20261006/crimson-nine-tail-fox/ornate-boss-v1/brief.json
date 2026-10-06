@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "crimson-nine-tail-fox",
+    "name": "홍련 구미호",
+    "cell": 96,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "elite",
+    "idleFrameMs": 230,
+    "silhouette": "거대한 비단털 여우 요괴. 명확한 긴 주둥이와 두 삼각 귀, 차분하고 날카로운 우향 눈, 미백 털의 긴 사족 보행 몸통, 주홍/진홍색 아홉 꼬리의 넓은 부채가 뒤쪽에 층져 벌어짐. 꼬리마다 뿌리에서 끝까지 굽은 큰 면과 흰 끝이 구별되어야 함. 목에 금빛 매듭과 붉은 비단 끈, 어깨/등에 소량의 홍련 불꽃. 몸의 실제 폭 약78~86px, 높이70~82px; 손바닥만 한 여우나 여자 사람으로 그리지 않는다. 털/비단/금의 재질을 구분하고 팔레트18색 내에서 넓은 명암 면을 쓴다.",
+    "attack": "목과 앞다리를 낮추며 꼬리를 모음 → 뒤쪽 발로 밀어 긴 몸을 내딛음 → 크게 벌린 턱/두 앞발의 물어뜯기 → 가슴을 들어 꼬리를 회수. 다리와 어깨가 실제로 움직임.",
+    "skill": "홍련구화: 입 앞에 작은 황금 핵을 모으며 세 갈래 꼬리 끝에 불 붙기, 입에서 시작한 굽은 홍련 불꽃이 우측으로 폭발하고 나머지 꼬리가 넓게 벌어짐, 벌어진 불꽃이 두 덩어리 잔불로 끊기며 턱/꼬리를 닫음. 불꽃은 입과 연결되고 꼬리는 신체로 이어진다.",
+    "resourceId": "jf-enemy-crimson-nine-tail-fox",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 92,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

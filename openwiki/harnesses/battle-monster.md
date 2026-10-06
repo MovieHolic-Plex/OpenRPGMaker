@@ -1,6 +1,6 @@
 # RM2003 전투 몬스터 도트 하네스
 
-일반 JRPG 적의 **native64/96 원본과 3×3의 9개 자세**를 제작한다. 입구는
+일반 JRPG 적의 **native64/96/128 원본과 3×3의 9개 자세**를 제작한다. 입구는
 `src/harnesses/battle-monster/`, 실행기는 `node/pipeline.py`다. Python 3와 Pillow,
 실제 모델 저작/검수에는 로그인된 `codex` CLI가 필요하다.
 
@@ -146,10 +146,39 @@ npm run harness -- battle-monster status
 `--out /absolute/path.html`로 thread visualization 폴더에 출력한 후 OpenCodex의
 `visualize-opencodex/scripts/publish.py`로 게시할 수 있다.
 
+### 화려한 요괴·대형 보스 (2026-10-06)
+
+별도 `ornate-boss-v1`의 홍련 구미호·뇌운 해태·연화 화귀는 native96,
+금갑 도깨비왕·청린 이무기·산군 백호는 native128을 쓴다. 방향은
+`harness-data/battle-monster/ORNATE-BOSSES-DIRECTION.md`에 보존한다.
+기존 종/전역 style/선택은 유지한다. 별도 폴더에서 원본 몸체를 크게 직접 찍고
+각18자세/8GIF를 만든다. 대표 구미호를 먼저 실제로 본 뒤 나머지를 제작한다.
+그림 확대·자동 꼬리/비늘/줄무늬·미감 점수 재시도로 저작을 대신하지 않는다.
+
+크기 허용값에128을 추가한다. 테두리/접지/PNG·GIF 재읽기는 기존 `cell`을
+따르며 기술 오류 재수정 지시의 바닥도 `cell-4`다. 원본/시간표/실제 모델 및
+독립 검수 출처를 저장하고 동일 binding으로 다시 읽는다. 실제 사용자의
+Allow/Modify/Deny를 AI가 만들거나 기존 인간형 선택에서 이관하지 않는다.
+대시보드의 제작 수에는 `battle-monster-ornate-boss-wave/tasks`를 포함한다.
+
+큰 결과의 크기 비교는 현재 검토 가능한64px 인간형 또는 실제 활성 Allow
+인간형의 실제 시트 첫 칸을 사용한다. 몸과 발의 상대 비율을 하나의 canvas에
+동일2배/하단으로 정렬하므로 좁은 화면에서 canvas 전체가 줄어도 상대 크기는 같다.
+원본 시트/기존 선택을 고치지 않으며 인간형 참고가 없으면 비교칸을 숨긴다.
+선택이 비동기 이미지 로딩 중 바뀌면 이전 비교가 새 결과를 덮어쓰지 않는다.
+8동작 GIF는 별도 타일로 모두 보이고 일시 정지/재생 계약을 유지한다.
+
+백호의 최신 검토 후보는 `ornate-boss-stripes-v2`다. 짧은 반점 대신 굽은 털 줄무늬를
+직접 고른2179픽셀에만 저작한 별도 AI 교정이며 사용자 Modify를 만들지 않았다.
+팔레트·18자세 alpha 윤곽·생산 시간표는 원본과 같고 원본 v1도 출처에 보존한다.
+대기 중인 부모는 기존 `reviewSupersededBy` 계약으로 이전 결과에 남으며 자식만 새로 검토한다.
+실제 사용자 Allow/Deny는 그대로 유지한다. 상세 근거는
+`verify-shots/battle-monster-ornate-bosses/stripe-scope-proof.json`에 있다.
+
 ## 새 후보 저작
 
 시드 `harness-data/battle-monster/seed.json`은 사람이 쓴다. 다른 분위기는 같은 형식의
-`--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96), grounded, motion,
+`--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96/128), grounded, motion,
 idleFrameMs, 실루엣, 공격 자세, 스킬 역할을 적는다. motion은 `pixelEnemySheets.ts`의 7종이다.
 
 ```bash
@@ -231,7 +260,7 @@ npm run harness -- battle-monster decide --monster wild-boar --candidate revisio
 
 ```
 source/palette.json            ASCII 1기호 → #RRGGBB, .은 투명이며 팔레트에 넣지 않음
-source/poses/<pose>.pxgrid     native64/96의 정확한 리터럴 행 문자열
+source/poses/<pose>.pxgrid     native64/96/128의 정확한 리터럴 행 문자열
 source/AUTHORING.md            직접 수정 기록과 남은 문제
 
 idle_a  idle_b  idle_c

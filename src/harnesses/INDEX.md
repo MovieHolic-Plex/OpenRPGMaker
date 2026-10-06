@@ -205,7 +205,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 AI가 기본 9자세와 스킬·상태이상 직접 도트 저작·검사·독립 검수·패킹을 맡고 사용자는 8칸 GIF 대시보드에서 Allow/Modify/Deny를 선택한다. 수정 요청은 새 후보 제작으로 이어진다.
 
 **이럴 때 쓴다:**
-- 일반 JRPG/RM2003 적의 native64·96 도트와 돌격·공격·피격·쓰러짐 자세를 만들거나 고칠 때
+- 일반 JRPG/RM2003 적의 native64·96·128 도트와 돌격·공격·피격·쓰러짐 자세를 만들거나 고칠 때
 - 몬스터 수집 앞·뒷모습은 monster-collect-species, 걷는 캐릭터 칩은 charset-actor를 쓴다
 
 **단계** (`npm run harness -- battle-monster <단계>`):

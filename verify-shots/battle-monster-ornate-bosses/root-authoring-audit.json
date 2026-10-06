@@ -1,0 +1,474 @@
+[
+  {
+    "candidate": "azure-scale-imugi/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/azure-scale-imugi/ornate-boss-v1/source/author_pixels.py",
+        "sha256": "8c86d2444c6f538d669d38a5e088014615002943882f75cb57ee39e029afc82f",
+        "definitions": [
+          {
+            "line": 7,
+            "function": "blank"
+          },
+          {
+            "line": 8,
+            "function": "block"
+          },
+          {
+            "line": 12,
+            "function": "patches"
+          },
+          {
+            "line": 16,
+            "function": "save"
+          },
+          {
+            "line": 19,
+            "function": "png"
+          },
+          {
+            "line": 320,
+            "function": "lower"
+          },
+          {
+            "line": 327,
+            "function": "record"
+          },
+          {
+            "line": 1610,
+            "function": "joined"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/azure-scale-imugi/ornate-boss-v1/source/render_sources.py",
+        "sha256": "6034cd89e2c81ab9fdfffc0f8921b30e7d805483437b01b82925ea9fc85b0fd4",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "4206583c-7cc7-45aa-acda-e9f02db57392",
+      "recommendation": "rework",
+      "issues": 11,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "crimson-nine-tail-fox/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/crimson-nine-tail-fox/ornate-boss-v1/source/author.py",
+        "sha256": "cdc40a28a77ab1b92c363bba1cd133c3e9a6d2fff12aee0f466c58174bf5d711",
+        "definitions": [
+          {
+            "line": 7,
+            "function": "canvas"
+          },
+          {
+            "line": 8,
+            "function": "block"
+          },
+          {
+            "line": 13,
+            "function": "save"
+          },
+          {
+            "line": 17,
+            "function": "render"
+          },
+          {
+            "line": 326,
+            "function": "fan"
+          },
+          {
+            "line": 570,
+            "function": "copied"
+          },
+          {
+            "line": 571,
+            "function": "patch"
+          },
+          {
+            "line": 794,
+            "function": "gathered"
+          },
+          {
+            "line": 1517,
+            "function": "folded"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/crimson-nine-tail-fox/ornate-boss-v1/source/inspect.py",
+        "sha256": "7f064bef331f8b8a74ffa7acad47e0a310208e9f3d871f9d821609a3429e6b41",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/crimson-nine-tail-fox/ornate-boss-v1/source/render_previews.py",
+        "sha256": "d397a87a8713d1f6952d3ce575cc5f2ae86b7f9944b9d27d7648a8960112511e",
+        "definitions": [
+          {
+            "line": 10,
+            "function": "get"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "e84f3be9-a08c-44cc-818f-304694bc1cb1",
+      "recommendation": "rework",
+      "issues": 7,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "golden-dokkaebi-king/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/golden-dokkaebi-king/ornate-boss-v1/source/author.py",
+        "sha256": "b606f0344b5a6382799fc931237e12a3d645719e5f50a5b5edd088fc5b8bef99",
+        "definitions": [
+          {
+            "line": 14,
+            "function": "blank"
+          },
+          {
+            "line": 15,
+            "function": "block"
+          },
+          {
+            "line": 22,
+            "function": "runs"
+          },
+          {
+            "line": 24,
+            "function": "save"
+          },
+          {
+            "line": 30,
+            "function": "decode"
+          },
+          {
+            "line": 490,
+            "function": "copy"
+          },
+          {
+            "line": 491,
+            "function": "erase"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/golden-dokkaebi-king/ornate-boss-v1/source/render.py",
+        "sha256": "92bcd812ca1a49c2647434e815b5549b37cebc73b5b003152b4f22091d7d2619",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "4185cdb0-3f50-4587-b800-f16616da2998",
+      "recommendation": "rework",
+      "issues": 9,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "lotus-flame-spirit/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/lotus-flame-spirit/ornate-boss-v1/source/author.py",
+        "sha256": "3c99b3ae09bc5fd23e7323cfd2db165416daf49a49abba13d99b91f58bfccd6e",
+        "definitions": [
+          {
+            "line": 7,
+            "function": "blank"
+          },
+          {
+            "line": 8,
+            "function": "runs"
+          },
+          {
+            "line": 15,
+            "function": "save"
+          },
+          {
+            "line": 18,
+            "function": "decode"
+          },
+          {
+            "line": 302,
+            "function": "variant"
+          },
+          {
+            "line": 303,
+            "function": "replace_rows"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/lotus-flame-spirit/ornate-boss-v1/source/inspect_gifs.py",
+        "sha256": "fa63de80f35c3d7f5bbf43a3ffde7af6b0e81a53f7832269e83cf68106505102",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/lotus-flame-spirit/ornate-boss-v1/source/render.py",
+        "sha256": "59ea2961fd2e127d7709ce0e3ee22a1e09790f5a7cb21d052e931d6773450939",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "ead031be-08fb-4b75-86bc-e2244a92fcf1",
+      "recommendation": "rework",
+      "issues": 7,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "mountain-white-tiger/ornate-boss-stripes-v2",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/mountain-white-tiger/ornate-boss-stripes-v2/source/author.py",
+        "sha256": "3a544a6d78d4f02774686f6ad50a6bd7c3be210c88d3ba084f47f09904775de9",
+        "definitions": [
+          {
+            "line": 7,
+            "function": "blank"
+          },
+          {
+            "line": 8,
+            "function": "rows"
+          },
+          {
+            "line": 14,
+            "function": "patch"
+          },
+          {
+            "line": 18,
+            "function": "save"
+          },
+          {
+            "line": 23,
+            "function": "render"
+          },
+          {
+            "line": 33,
+            "function": "copy"
+          },
+          {
+            "line": 499,
+            "function": "replace"
+          },
+          {
+            "line": 503,
+            "function": "erase"
+          },
+          {
+            "line": 569,
+            "function": "low_front"
+          },
+          {
+            "line": 807,
+            "function": "sheet"
+          },
+          {
+            "line": 896,
+            "function": "sick_posture"
+          },
+          {
+            "line": 1071,
+            "function": "stunned"
+          },
+          {
+            "line": 1608,
+            "function": "roar_posture"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/mountain-white-tiger/ornate-boss-stripes-v2/source/stripe-repair.py",
+        "sha256": "e915bc311060b49725c489588b93bb7c5233b982a01ef72ca57c5f9665d9066a",
+        "definitions": [
+          {
+            "line": 144,
+            "function": "main"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "e74df05d-24bd-40de-a938-b1b6560185ac",
+      "recommendation": "rework",
+      "issues": 8,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "mountain-white-tiger/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/mountain-white-tiger/ornate-boss-v1/source/author.py",
+        "sha256": "3a544a6d78d4f02774686f6ad50a6bd7c3be210c88d3ba084f47f09904775de9",
+        "definitions": [
+          {
+            "line": 7,
+            "function": "blank"
+          },
+          {
+            "line": 8,
+            "function": "rows"
+          },
+          {
+            "line": 14,
+            "function": "patch"
+          },
+          {
+            "line": 18,
+            "function": "save"
+          },
+          {
+            "line": 23,
+            "function": "render"
+          },
+          {
+            "line": 33,
+            "function": "copy"
+          },
+          {
+            "line": 499,
+            "function": "replace"
+          },
+          {
+            "line": 503,
+            "function": "erase"
+          },
+          {
+            "line": 569,
+            "function": "low_front"
+          },
+          {
+            "line": 807,
+            "function": "sheet"
+          },
+          {
+            "line": 896,
+            "function": "sick_posture"
+          },
+          {
+            "line": 1071,
+            "function": "stunned"
+          },
+          {
+            "line": 1608,
+            "function": "roar_posture"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "167ea6a0-daeb-4b37-9dbd-30e97273c89a",
+      "recommendation": "rework",
+      "issues": 12,
+      "userApproved": false
+    }
+  },
+  {
+    "candidate": "thunder-cloud-haetae/ornate-boss-v1",
+    "sourceMethod": "Root read author helper bodies and explicit ASCII/coordinate run examples; unchanged body regions may be copied. Decoding, nearest previews and labeled diagnostic sheets are separate from native authoring. AST scan corroborates no geometry/frame-transform synthesis. This does not certify visual quality.",
+    "nativeGridFiles": 18,
+    "helperFiles": [
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/author.py",
+        "sha256": "fcca4bc4a0437e1dc408de54bb033681658c53af3cf9fb79e3ed56d7f82c563d",
+        "definitions": [
+          {
+            "line": 15,
+            "function": "rows"
+          },
+          {
+            "line": 19,
+            "function": "paint"
+          },
+          {
+            "line": 27,
+            "function": "fresh"
+          },
+          {
+            "line": 30,
+            "function": "write"
+          },
+          {
+            "line": 34,
+            "function": "png"
+          }
+        ],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/design.py",
+        "sha256": "bebda064961504ac96d62851e3ae16cead2d8abc9f4dccd1c2d8c9d18f77294c",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/magic_rows.py",
+        "sha256": "b5df695826b76817da0402df8e7d56a6ce4cc93582dbea3427eb4aac223565b8",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/pose_rows.py",
+        "sha256": "fddf274bec3f9e70a2b49c2d4d202663e77d5e0b75680a63d4c8f26ae281d0ab",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/refinements.py",
+        "sha256": "6d27e90c242234d2c66f091c849f5dac7d8925deda6105716c74a00c9efc1575",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/render.py",
+        "sha256": "e20d12f1c8cdc69876f9307bfde1e3749e176a253f7c7c017956e0ae67c0f566",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      },
+      {
+        "path": "harness-data/battle-monster/authored/20261006/thunder-cloud-haetae/ornate-boss-v1/source/rest_rows.py",
+        "sha256": "ec235fcbe4b74d686250f6b6c6dc53e7e19a4067014ea32976dca9b3bf496db0",
+        "definitions": [],
+        "forbiddenGeometryOrFrameTransformCalls": []
+      }
+    ],
+    "independentReview": {
+      "jobId": "c5163004-e624-4e72-b148-8c1fa4ff77d4",
+      "recommendation": "rework",
+      "issues": 7,
+      "userApproved": false
+    }
+  }
+]

@@ -1,0 +1,117 @@
+[
+  {
+    "group": "idle",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 3,
+    "actualGifHoldsMs": [
+      280,
+      280,
+      280
+    ],
+    "loop": 0
+  },
+  {
+    "group": "attack",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 6,
+    "actualGifHoldsMs": [
+      280,
+      180,
+      100,
+      120,
+      200,
+      280
+    ],
+    "loop": 0
+  },
+  {
+    "group": "hit",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 4,
+    "actualGifHoldsMs": [
+      280,
+      160,
+      220,
+      280
+    ],
+    "loop": 0
+  },
+  {
+    "group": "dead",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 3,
+    "actualGifHoldsMs": [
+      280,
+      200,
+      900
+    ],
+    "loop": 0
+  },
+  {
+    "group": "skill",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 5,
+    "actualGifHoldsMs": [
+      280,
+      240,
+      200,
+      240,
+      280
+    ],
+    "loop": 0
+  },
+  {
+    "group": "poison",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 2,
+    "actualGifHoldsMs": [
+      420,
+      420
+    ],
+    "loop": 0
+  },
+  {
+    "group": "stun",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 2,
+    "actualGifHoldsMs": [
+      360,
+      360
+    ],
+    "loop": 0
+  },
+  {
+    "group": "sleep",
+    "nativeSize": [
+      96,
+      96
+    ],
+    "actualGifFrames": 2,
+    "actualGifHoldsMs": [
+      600,
+      600
+    ],
+    "loop": 0
+  }
+]

@@ -1,0 +1,405 @@
+{
+  "paletteSize": 18,
+  "grids": [
+    {
+      "file": "poses/attack.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        41,
+        125,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "1112c76a5ba7f15d6cb4a28d2d337f0aa19c0ab465c6e75ce5bb045a7840c630"
+    },
+    {
+      "file": "poses/dead.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        10,
+        88,
+        122,
+        124
+      ],
+      "inkAt124": 23,
+      "sha256": "ebc159c3e9108e5fe8f52f060dbada466f6e23f1d57876bb367d70b4dcb1e935"
+    },
+    {
+      "file": "poses/hit.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        34,
+        96,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "2a945405b1c4ee89595222781b8f748d36c48ecb53d467b390230b3f83427aa2"
+    },
+    {
+      "file": "poses/idle_a.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        14,
+        117,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "2ea81e94df68b2929f9ae3d9a3d5473e0ea90ad41bf8f30554474c33561867a1"
+    },
+    {
+      "file": "poses/idle_b.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        14,
+        116,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "681c0690eeb86239e0f4062014eafd0281d3bb4cd44a3c009c04a1bc4b5e069d"
+    },
+    {
+      "file": "poses/idle_c.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        14,
+        117,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "9d8aaf9e13e1aead5e2651e174746d44086a73c4c1fad845cc4c7837a34b62b6"
+    },
+    {
+      "file": "poses/move.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        43,
+        125,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "e169b25fd66202814619380461d3c75300652d3f9150914d0f37acf81ab0d107"
+    },
+    {
+      "file": "poses/recover.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        29,
+        117,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "dab0b44c6fef4c7007c727a78f78112c5939f8bb5b6b74647c2c8b2c7da6fa4d"
+    },
+    {
+      "file": "poses/windup.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 14,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        26,
+        96,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "9fd72d076eca8817c3b8645fbae56df781c032c3b2e505d8a139f1b9dfdaec42"
+    },
+    {
+      "file": "actions/poison_a.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 15,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        44,
+        117,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "028fd016bc8f8138a6b3a74ededa1e5f86c2fcb2305f2bbf46476fc7c8f7545c"
+    },
+    {
+      "file": "actions/poison_b.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 15,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        43,
+        124,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "76d0b175c3fc0c0d792827994a0098a361d646b339bbff7dda020ea5e2ec03d4"
+    },
+    {
+      "file": "actions/skill_a.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 17,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        27,
+        119,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "4247c84ff34cf807a6752bc3fadf7384ed8ec95e1cd584c313d1afcdd7acd112"
+    },
+    {
+      "file": "actions/skill_b.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 17,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        28,
+        126,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "14fa9869725ca30b379a7f7728f140944ec4bca96439c03b92f13793c1187beb"
+    },
+    {
+      "file": "actions/skill_c.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 17,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        29,
+        123,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "8eb5b57c44058c1cce17950b33e4b1ef9270e6531ef244b143f54968ffe3cbc9"
+    },
+    {
+      "file": "actions/sleep_a.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        74,
+        108,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "7d58a6f9536ccddb5dbec5c11eee1c6b25d110a633abeeb05c16942d04f3e3eb"
+    },
+    {
+      "file": "actions/sleep_b.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        74,
+        108,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "07b1953889d710a1b623405d442b7e8ced7200183f7630d22e7b0712fbe97a8d"
+    },
+    {
+      "file": "actions/stun_a.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        29,
+        106,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "435a6140cf0e5b0112fb249f54a715d113c82276c53cdc347a33b4f5d57a1de6"
+    },
+    {
+      "file": "actions/stun_b.pxgrid",
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "colorsUsed": 13,
+      "unknownSymbols": [],
+      "bounds": [
+        9,
+        28,
+        101,
+        124
+      ],
+      "inkAt124": 10,
+      "sha256": "d29963ff9a03611db2543d79de04fc76cd7382ebbf9e0edc75bf0e9356403da3"
+    }
+  ],
+  "gifs": [
+    {
+      "file": "attack-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 6,
+      "holdsMs": [
+        350,
+        280,
+        120,
+        150,
+        240,
+        350
+      ]
+    },
+    {
+      "file": "dead-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 2,
+      "holdsMs": [
+        180,
+        1100
+      ]
+    },
+    {
+      "file": "idle-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 3,
+      "holdsMs": [
+        300,
+        300,
+        300
+      ]
+    },
+    {
+      "file": "poison-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 2,
+      "holdsMs": [
+        420,
+        420
+      ]
+    },
+    {
+      "file": "skill-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 5,
+      "holdsMs": [
+        350,
+        450,
+        180,
+        320,
+        350
+      ]
+    },
+    {
+      "file": "sleep-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 2,
+      "holdsMs": [
+        650,
+        650
+      ]
+    },
+    {
+      "file": "stun-8x.gif",
+      "size": [
+        1024,
+        1024
+      ],
+      "frames": 2,
+      "holdsMs": [
+        360,
+        360
+      ]
+    }
+  ]
+}

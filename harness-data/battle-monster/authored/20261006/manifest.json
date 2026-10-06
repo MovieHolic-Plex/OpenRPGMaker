@@ -1,0 +1,62 @@
+[
+  {
+    "key": "crimson-nine-tail-fox/ornate-boss-v1",
+    "name": "홍련 구미호",
+    "nativeCell": 96,
+    "tier": "elite",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "d76a43270adb2e6fce6e44fcf3b10533fc9728a04f38ff6bdbfb32ffa009d6b2",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "thunder-cloud-haetae/ornate-boss-v1",
+    "name": "뇌운 해태",
+    "nativeCell": 96,
+    "tier": "elite",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "de6e14958cd242c729b9d1df28fe09b6e2662a9b9bdc5221bb0282045c3f47c2",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "lotus-flame-spirit/ornate-boss-v1",
+    "name": "연화 화귀",
+    "nativeCell": 96,
+    "tier": "elite",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "7f2fa171e553cc1ed177c8ddba27cfc395497b6304f9fab6b05621eb113cc75d",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "golden-dokkaebi-king/ornate-boss-v1",
+    "name": "금갑 도깨비왕",
+    "nativeCell": 128,
+    "tier": "boss",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "11266e1a6a395c7e5fc23f1f718057fdfa7a65de580980078f03d8fa5a0fc322",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "azure-scale-imugi/ornate-boss-v1",
+    "name": "청린 이무기",
+    "nativeCell": 128,
+    "tier": "boss",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "1a28a5106c20ac6b6e054b3992c6ef1fedf315149cfaf03e993df208ed6b3f5e",
+    "userChoiceRequired": true
+  },
+  {
+    "key": "mountain-white-tiger/ornate-boss-stripes-v2",
+    "name": "산군 백호",
+    "nativeCell": 128,
+    "tier": "boss",
+    "poses": 18,
+    "phase": "suite",
+    "binding": "7413f5ac81c03f4cdb96b580a2383c92a7955b18fe003f33926ef4f9438bb508",
+    "userChoiceRequired": true
+  }
+]

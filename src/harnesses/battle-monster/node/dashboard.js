@@ -49,6 +49,27 @@ function renderMotions(item) {
     pictures.append(current);tile.append(pictures);gallery.append(tile);
   }
 }
+async function renderSizeComparison(item) {
+  const figure=$('size-comparison');figure.hidden=true;
+  if(item.cell<=64)return;
+  const human=items.find(candidate=>candidate.kind==='human'&&candidate.cell===64
+    &&candidate.choice==='pending'&&!candidate.reviewSupersededBy)
+    ??items.find(candidate=>candidate.kind==='human'&&candidate.cell===64
+      &&candidate.choice==='allow'&&candidate.active!==false);
+  if(!human)return;
+  const [monsterImage,humanImage]=await Promise.all([loadImage(item.image),loadImage(human.image)]);
+  if(selected!==item.key)return;
+  const canvas=$('size-canvas'),scale=2,gap=16;
+  canvas.width=(item.cell+gap+human.cell)*scale;canvas.height=item.cell*scale;
+  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(monsterImage,0,0,item.cell,item.cell,0,0,item.cell*scale,item.cell*scale);
+  ctx.drawImage(humanImage,0,0,human.cell,human.cell,(item.cell+gap)*scale,
+    (item.cell-human.cell)*scale,human.cell*scale,human.cell*scale);
+  $('size-caption').textContent=`사람과 크기 비교 · ${item.name} / ${human.name}`;
+  canvas.setAttribute('aria-label',`${item.name}와 ${human.name}를 같은 비율로 표시한 크기 비교`);
+  figure.hidden=false;
+}
 function toast(message,error=false){
   $('toast').textContent=message;$('toast').setAttribute('role',error?'alert':'status');$('toast').classList.add('visible');
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),4500);
@@ -83,6 +104,7 @@ async function render(){
   $('name').textContent=item.name;$('edition').textContent=item.phase==='idle'?'대기 자세 후보':item.parent?'수정된 결과':'새 결과';$('choice').textContent=stateText(item);$('choice').dataset.choice=item.choice;
   document.querySelector('.motion-tools p').textContent=item.phase==='idle'?'기본 그림을 먼저 골라주세요':'모든 동작을 함께 보기';
   renderMotions(item);$('skill').textContent=item.skill?'스킬 · '+item.skill:'';
+  renderSizeComparison(item).catch(()=>{if(selected===item.key)$('size-comparison').hidden=true;});
   $('note').hidden=!item.note||['allow','deny'].includes(item.note);$('note').textContent=item.note?'수정 요청 · '+item.note:'';
   $('progress').hidden=!item.working&&!item.failed;
   $('progress').textContent=item.failed?'작업 중 문제가 생겼습니다. Modify로 다시 요청할 수 있어요.':item.choice==='modify'?'AI가 새 후보를 만들고 있습니다. 준비되면 검토 대기에 표시됩니다.':item.phase==='idle'?'Allow 선택은 반영됐습니다. 이 그림으로 동작을 만들고 있습니다. 완성된 후보는 검토 대기에 표시됩니다.':'Allow 선택은 반영됐습니다. 받을 파일을 준비 중이며, Modify·Deny로 선택을 바꿀 수 있습니다.';

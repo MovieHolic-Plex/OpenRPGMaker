@@ -1,0 +1,204 @@
+{
+  "cell": 96,
+  "paletteColors": 18,
+  "frames": [
+    {
+      "frame": "idle_a",
+      "bounds": [
+        17,
+        8,
+        86,
+        91
+      ],
+      "ink": 3603,
+      "sha256": "d74e4f8f5900d9961595aa903d3e1e9ed093a137edfd0ea7b2cbbf8cbfd81362"
+    },
+    {
+      "frame": "idle_b",
+      "bounds": [
+        17,
+        8,
+        86,
+        90
+      ],
+      "ink": 3470,
+      "sha256": "65dbc957b4483c4fa985da67268b2e0ff2e733d9ac27b72447c64a9def9eba10"
+    },
+    {
+      "frame": "idle_c",
+      "bounds": [
+        17,
+        8,
+        86,
+        91
+      ],
+      "ink": 3479,
+      "sha256": "639d6637566a03fdea0f5226e2953a55463d9a9c1f38461c86e69d264485e137"
+    },
+    {
+      "frame": "windup",
+      "bounds": [
+        23,
+        8,
+        78,
+        89
+      ],
+      "ink": 2468,
+      "sha256": "9e2cdbd2ba8738bf9e88d109e5eda4551930298e9444b1503869cf5b4ed5523d"
+    },
+    {
+      "frame": "move",
+      "bounds": [
+        23,
+        8,
+        89,
+        88
+      ],
+      "ink": 2653,
+      "sha256": "a5404fe440577bf217a30abd173bc531a73977c29ba7ce28ba9f3df16018ac2a"
+    },
+    {
+      "frame": "attack",
+      "bounds": [
+        21,
+        8,
+        94,
+        90
+      ],
+      "ink": 2846,
+      "sha256": "76289395332567528fa800e3e46cdb9d3ff1ff20c1dd29ef263eaf49eb3f4f72"
+    },
+    {
+      "frame": "recover",
+      "bounds": [
+        18,
+        8,
+        84,
+        90
+      ],
+      "ink": 3106,
+      "sha256": "b240867a3ab771a7de89b9f1da771117534008b42360cffcc198830cfd85ad07"
+    },
+    {
+      "frame": "hit",
+      "bounds": [
+        16,
+        12,
+        84,
+        89
+      ],
+      "ink": 2933,
+      "sha256": "fe749ef511dccd27a41bea43ff1aa31bbced71fed8bb54816f6c49ef3433a393"
+    },
+    {
+      "frame": "dead",
+      "bounds": [
+        15,
+        56,
+        84,
+        91
+      ],
+      "ink": 1375,
+      "sha256": "4a7be15aa89929d63dc402c603246465658c81e8ce7d2c02fede372adf385b98"
+    },
+    {
+      "frame": "skill_a",
+      "bounds": [
+        23,
+        8,
+        81,
+        88
+      ],
+      "ink": 2602,
+      "sha256": "6e76f7ab34a4eb1b94b70b82dc188d676f0a0a40a82bb73712ab4be0e7405375"
+    },
+    {
+      "frame": "skill_b",
+      "bounds": [
+        23,
+        8,
+        94,
+        89
+      ],
+      "ink": 3166,
+      "sha256": "9b0050b1979d35d84d1c503e445c86b22a461402d938fc1cc8bfe4f4a53d6664"
+    },
+    {
+      "frame": "skill_c",
+      "bounds": [
+        20,
+        8,
+        93,
+        91
+      ],
+      "ink": 3276,
+      "sha256": "cbf44becef5c9afd0cc4c97f37015bba41c6c2276ee0a55a891b1104e18afa01"
+    },
+    {
+      "frame": "poison_a",
+      "bounds": [
+        11,
+        12,
+        82,
+        87
+      ],
+      "ink": 2462,
+      "sha256": "4a16f620d17e673d815d9a8f71e9ce1b6dbf46aac0d1057eece5f9497d366160"
+    },
+    {
+      "frame": "poison_b",
+      "bounds": [
+        8,
+        12,
+        85,
+        89
+      ],
+      "ink": 2453,
+      "sha256": "49304be2a00fc5ae2f2e8507f0db24ba74e39689085b9dda84a597c58ee3f41f"
+    },
+    {
+      "frame": "stun_a",
+      "bounds": [
+        24,
+        11,
+        85,
+        89
+      ],
+      "ink": 2504,
+      "sha256": "3627d1cca89edafd4575cad9553bea7266f1bdebb03106a5a70713ca1e446312"
+    },
+    {
+      "frame": "stun_b",
+      "bounds": [
+        23,
+        8,
+        85,
+        89
+      ],
+      "ink": 2562,
+      "sha256": "23384ddf0a996eb9cde984d5c09c480d121f1b78e4a67fd9618f3c803a0b5be3"
+    },
+    {
+      "frame": "sleep_a",
+      "bounds": [
+        22,
+        38,
+        83,
+        91
+      ],
+      "ink": 1790,
+      "sha256": "3d106889b27f1097acd797426c0854f7e0cb316e0398628e8adfb569897996e0"
+    },
+    {
+      "frame": "sleep_b",
+      "bounds": [
+        22,
+        38,
+        83,
+        91
+      ],
+      "ink": 1867,
+      "sha256": "be7ed32a5df31f73ca4d702f5ef63afb41db7e2cfa5c2f8b177156af9428c91e"
+    }
+  ]
+}

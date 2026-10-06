@@ -1,0 +1,72 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the actual portrait, light, dark and checker PNGs, including the native 1x cells and nearest 3x cells. The hornless, wingless teal serpent, swept jade mane, gold underside and rightward gaze are recognizable. Upper-left mint highlights and darker lower/right coil planes give useful volume; the lower coil rests consistently at native y=124. Feet, hands and held tools are not applicable. The large coil opening is intentional negative space, but several throat gaps are not: recover, skill_a, skill_b and skill_c visibly separate the head from the torso, with abrupt horizontal skull undersides. Move, attack and the status poses also expose weak throat transitions. Windup changes the neck but does not visibly compress the ground coil. The skill has three distinguishable stages: a pale gold mouth charge, a mouth-connected forked blue-white discharge, and falling water fragments; its discharge reads too much like two rigid capped rods. Poison uses a slumped body and bubbles, stun uses a closed eye/open mouth and stars, and sleep folds the body with a closed eye; these are recognizable shape changes rather than simple tints. Pair-to-pair changes are subtle at 1x. Sleep's projecting teal/gold wedge needs anatomical clarification. Dead is low and uncoiled, distinct from sleep. No broad unintended transparent holes were apparent inside the main coil surfaces; the principal outline/alpha defects are at the throat. Coordinates below are zero-based native 128x128 pixels and identify repair regions. These static pose previews cannot establish literal-grid authorship, animation timing, runtime grounding, battle scale relative to a swordsman or actual attack contact. This recommendation is advisory; user selection remains pending.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 77,
+      "y": 39,
+      "message": "The cheek underside terminates in a straight horizontal shelf while the gold throat resumes farther left. Redraw the underside around x=65..89, y=36..46 as a curved jaw-to-neck transition with a dark overlap edge and continuous belly-facing volume. Carry the anatomical correction into idle_b and idle_c while preserving their small breathing changes."
+    },
+    {
+      "pose": "windup",
+      "x": 58,
+      "y": 105,
+      "message": "The lower coil remains the same broad open ring as idle; the preparation reads mainly as a shorter neck. Explicitly redraw the front/back coil contours around x=9..96, y=80..124 into a tighter, thicker compressed loop and lower the upper bend, preserving ground contact at y=124."
+    },
+    {
+      "pose": "move",
+      "x": 91,
+      "y": 63,
+      "message": "A triangular transparent wedge separates the lower skull from the gold throat, leaving an abrupt flat head underside. Rebuild the throat around x=82..99, y=57..69 with a substantial curved connection and a continuous underside; retain the low rightward head extension."
+    },
+    {
+      "pose": "attack",
+      "x": 91,
+      "y": 68,
+      "message": "The enlarged open-mouth head hangs beyond a narrow upper neck connection while the throat disappears into background around x=88..98, y=63..73. Draw the stretched throat and lower-jaw hinge as connected flesh, including a shadow under the jaw, so the bite reads as a serpent extending its neck rather than a separate mask."
+    },
+    {
+      "pose": "recover",
+      "x": 83,
+      "y": 54,
+      "message": "The head is visibly detached from the torso at the flat lower-left skull edge. Replace the background seam around x=73..86, y=49..58 with a broad curved neck bridge and outline/shadow continuity. The head needs to rise out of the recovering S bend."
+    },
+    {
+      "pose": "skill_a",
+      "x": 78,
+      "y": 51,
+      "message": "The charged head floats above the gold throat: background cuts between the body ending near x=72 and the skull beginning near x=83 at y=51. Author a continuous throat across x=70..86, y=46..57, retaining the pale charge beside the actual mouth."
+    },
+    {
+      "pose": "skill_b",
+      "x": 75,
+      "y": 64,
+      "message": "The emitting head/effect group is separated from the torso by the large background opening under the skull around x=67..91, y=63..71. Reconnect the throat with a thick curved underside and matching gold belly/shadow planes. Preserve the existing discharge attachment at the mouth near x=92, y=58."
+    },
+    {
+      "pose": "skill_b",
+      "x": 112,
+      "y": 72,
+      "message": "The two discharge branches have rigid straight shafts and rounded end caps, resembling solid rods. Redraw the branches around x=96..126, y=28..85 with curved narrowing water masses, uneven crest edges, dark teal troughs and broken white foam clusters. Keep their common root visibly connected to the mouth."
+    },
+    {
+      "pose": "skill_c",
+      "x": 83,
+      "y": 54,
+      "message": "The recovery head repeats the detached skull/throat seam of recover. Join x=73..86, y=49..58 with a continuous neck curve while keeping the separated falling droplets; detached water fragments are appropriate, a detached head is not."
+    },
+    {
+      "pose": "poison_a",
+      "x": 76,
+      "y": 72,
+      "message": "The slumped head and belly meet through a fragile corner beside a background wedge, making the head appear cut off at 1x. Widen and curve the anatomical join around x=66..82, y=68..78 with connected teal flesh and gold underside. Apply the same repair to poison_b, retaining the moving bubbles and slumped posture."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 92,
+      "y": 115,
+      "message": "The long pointed teal/gold projection below and to the right of the sleeping muzzle reads as a separate flipper or detached jaw. Redraw x=81..108, y=106..123 as a rounded, clearly connected neck/belly fold tucked against the coil, with an identifiable closed muzzle above it. Preserve the closed eye and subtle breathing differences in sleep_b."
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "azure-scale-imugi",
+    "name": "청린 이무기",
+    "cell": 128,
+    "grounded": true,
+    "motion": "breath",
+    "tier": "boss",
+    "idleFrameMs": 300,
+    "silhouette": "128원본의 거대한 뿔 없는 용사/이무기. 긴 주둥이와 두 수염, 청록/남청 큰 비늘 면, 미백/황금빛 배판, 아래로 크게 말린 굵은 S자 코일과 앞쪽으로 든 긴 목, 옆으로 흐르는 짧은 비취 갈기. 검객보다 약두 배 큰 본체높이104~116px/폭104~118px. 사람 다리나 서양용의 날개 없이 길게 연결된 뱀 몸을 그린다. 코일/목/머리의 겹침과 배판의 곡률을 직접 묘사하며 반복 줄무늬로 떡칠하지 않는다. 입 옆 작은 금빛 여의주와 수염; 용 뿔/발은 없다.",
+    "attack": "목을 뒤로 굽히고 코일을 압축 → 위 코일/목을 낮고 길게 우측으로 펴기 → 크게 벌어진 입과 흰 송곳니의 물어뜯기 → 목을 다시 들어 코일 회수. 쓰러짐은 목이 땅에 누워 코일이 풀림.",
+    "skill": "벽해용식: 벌린 입/여의주에 황백 핵을 모음, 입부터 이어지는 굽은 짙은청록/백청 물결 브레스가 우측으로 두 면으로 갈라짐, 긴 물줄기가 끊어져 떨어지는 물덩어리/수염 회수. 준비/분출/붕괴가 서로 다른 물의 덩어리다.",
+    "resourceId": "jf-enemy-azure-scale-imugi",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 124,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

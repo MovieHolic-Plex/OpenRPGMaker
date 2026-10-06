@@ -1,0 +1,142 @@
+SHOULDER_SCALE = '''
+46 36 gGGGgo
+47 35 gGYYYGo
+48 34 gGYYwYGgo
+49 33 gGYYmYYGgo
+50 33 gGYYlmYGgo
+51 33 gGYYlmYGgo
+52 34 gGYYmYGgo
+53 35 gGYYYGgo
+54 36 gGGYGgo
+55 37 ggGgo
+56 38 ggo
+85 35 gGGGGGgo
+86 35 gGYYGGgo
+87 34 gGYYGGGgo
+88 33 ggGGGgggso
+'''
+BRACE_SHOULDER = '''
+58 63 osbbccchhso
+59 63 osbbccchhhso
+60 63 osbbccchhhhso
+61 64 osbbccchhhhso
+62 65 osbbccchhhhso
+63 66 osbbccchhhbso
+64 67 osbbccchhbbso
+65 68 osbbcccchbbso
+66 69 osbbcccchbbso
+67 70 osbbcccchbbso
+68 71 osbbcccchbbso
+69 72 osbbcccbbso
+'''
+ATTACK_SHOULDER = '''
+63 70 osbbcccchhso
+64 71 osbbcccchhhso
+65 72 osbbcccchhhso
+66 73 osbbcccchhhso
+67 74 osbbcccchhbbso
+68 75 osbbcccchbbso
+69 76 osbbcccbbso
+70 77 osbbcccbbso
+'''
+SICK_SHOULDER = '''
+64 70 osbbcccchhso
+65 71 osbbcccchhhso
+66 72 osbbcccchhhso
+67 73 osbbcccchhhso
+68 74 osbbcccchhbbso
+69 75 osbbcccchbbso
+70 76 osbbcccbbso
+71 77 osbbcccbbso
+'''
+LIFT_ERASE = '''
+86 54 .....
+87 54 .....
+88 54 .....
+89 54 .....
+90 54 .....
+91 54 .....
+92 54 .....
+'''
+# Preserve a clean closed eye in the reclining frames.
+SLEEP_EYE = '''
+67 63 ccbboooobbccc
+68 63 ccbooooobcccc
+69 63 cccbbsoobbccc
+'''
+HEAVY_HAUNCH = '''
+64 15 osbbbccchhhhccbbbbbbssso
+65 15 osbbccchhhhhhccbbbbbssso
+66 16 osbccchhhhhhhccbbbbbssso
+67 17 osbcchhhhhhhhccbbbbbssso
+68 18 osbcchhhhhhhcccbbbbbssso
+69 19 osbcchhhhhhcccbbbbbssso
+70 19 osbcchhhhhcccbbbbbssso
+71 19 osbcchhhhcccbbbbbssso
+72 19 osbcchhhhccbbbbssso
+73 19 osbcchhhccbbbbssso
+74 19 osbcchhccbbbbssso
+75 19 osbcchccbbbbssso
+76 19 osbccccbbbbssso
+77 19 osbcccbbbbssso
+78 18 osbcccbbbbssso
+79 18 osbcccbsssso
+80 18 osbcccbsssso
+81 17 osbcccbsssso
+82 17 osbcccbsssso
+83 17 osbcccbsssso
+84 16 gGGGGGGGGGgso
+85 16 gGYYwYYGGGGgo
+86 15 gGYYwwYYGGGGgo
+87 14 ggGGYYYGGggggso
+88 13 osbbccccccccbbbso
+89 12 osbbcchccchccchcbso
+90 11 osbbcwcccwwcccwwcbso
+91 11 osssccsssccsssccssso
+92 12 oooooooooooooooooo
+'''
+REST_SCALE = '''
+65 31 gGGGgo
+66 30 gGYYYGo
+67 29 gGYYwYGgo
+68 28 gGYYmYYGgo
+69 28 gGYYlmYGgo
+70 28 gGYYlmYGgo
+71 29 gGYYmYGgo
+72 30 gGYYYGgo
+73 31 gGGYGgo
+74 32 ggGgo
+75 33 ggo
+'''
+DEAD_SCALE = '''
+73 31 gGGGgo
+74 30 gGYYYGo
+75 29 gGYYwYGgo
+76 28 gGYYmYYGgo
+77 28 gGYYlmYGgo
+78 28 gGYYlmYGgo
+79 29 gGYYmYGgo
+80 30 gGYYYGgo
+81 31 gGGYGgo
+82 32 ggGgo
+83 33 ggo
+'''
+CLOSED_SLEEP_EYE = '''
+67 63 cccbbbbcccccc
+68 63 ccssooosccccc
+69 63 cccbbbbcccccc
+'''
+CLOSED_DEAD_EYE = '''
+75 63 ccbbbbcccc
+76 63 cbsooosccc
+77 63 ccbbbbcccc
+'''
+LION_JAW = '''
+51 74 hhccccccbbbso
+52 74 hhhcccccccso
+53 74 hhhhccwwccso
+54 74 hhhccwwccso
+55 74 hhccccccso
+56 74 hcccccsso
+57 74 cccccso
+'''

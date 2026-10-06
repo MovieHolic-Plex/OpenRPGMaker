@@ -1,0 +1,12 @@
+{
+  "ownNativeReference": "wandering-swordsman/eyes-right-v4",
+  "humanCell": 64,
+  "humanBodyHeightApprox": 52,
+  "ownReferenceSha256": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60",
+  "purpose": "Observe common pixel vocabulary/light and native size difference, do not copy or scale human art. New creature original literal source.",
+  "officialResearchUrl": "https://baramy.nexon.com/",
+  "officialImageBytesIncluded": false,
+  "ownCreatureStyleReference": "crimson-nine-tail-fox/ornate-boss-v1",
+  "ownCreatureStyleBinding": "d76a43270adb2e6fce6e44fcf3b10533fc9728a04f38ff6bdbfb32ffa009d6b2",
+  "referenceApprovalClaimed": false
+}

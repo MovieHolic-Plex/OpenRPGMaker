@@ -1,0 +1,254 @@
+{
+  "idle_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      120,
+      124
+    ],
+    "colors": 15,
+    "sha256": "1625616a656bfa7f42ae7b6b85628f1b1c90983b20e0809feb46176eed4d22b4"
+  },
+  "idle_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      120,
+      124
+    ],
+    "colors": 15,
+    "sha256": "b5d801a5f4ea402eef32c692a025f8f0ca75095d3e428b402f0fc9da0d2ffd13"
+  },
+  "idle_c": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      120,
+      124
+    ],
+    "colors": 15,
+    "sha256": "c6e30fbc6c5ea0a24a45e84e20b8a51b63b33c0dce3f33b06d7db63082402042"
+  },
+  "windup": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      5,
+      13,
+      95,
+      124
+    ],
+    "colors": 15,
+    "sha256": "b65e9a089f0e2f7e959b361896558a68b0023afaaa69f9a538ff2551a34b8fad"
+  },
+  "move": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      10,
+      115,
+      124
+    ],
+    "colors": 15,
+    "sha256": "71d8659f3c92dfa971445bd04e60eb73536a839d3ec9c42d6cf450074be46f93"
+  },
+  "attack": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      17,
+      116,
+      124
+    ],
+    "colors": 15,
+    "sha256": "338c1999ff80805f5e838e3d0df96850f5bfc3a6ac2bbfd4adc200d7cb821b0e"
+  },
+  "recover": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      112,
+      124
+    ],
+    "colors": 15,
+    "sha256": "1922fcf7e40094a1687b2cc5fe5f38d00823b35d64e2e25783caa3f7f3b1d526"
+  },
+  "hit": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      112,
+      124
+    ],
+    "colors": 14,
+    "sha256": "b511b903133b1c67c34008a8970b661e91371b78197e92bb5aeb9bbc78dccd48"
+  },
+  "dead": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      12,
+      62,
+      109,
+      122
+    ],
+    "colors": 14,
+    "sha256": "bbd12bd945c78eee8d515e668c655bb3d017ac854bfc4a596e972c404cf3ac7e"
+  },
+  "skill_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      4,
+      123,
+      124
+    ],
+    "colors": 15,
+    "sha256": "0f8600d71f9b4c942b3a0169726ee3b866422bada71b0a27875eaadba9a83ae0"
+  },
+  "skill_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      17,
+      125,
+      124
+    ],
+    "colors": 17,
+    "sha256": "cbd4684c3e8957b29ab215c94ad1c882b0aeabcb397aef2cf4cbb9d25913730f"
+  },
+  "skill_c": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      13,
+      124,
+      124
+    ],
+    "colors": 17,
+    "sha256": "97790a624c5d044d663083a9a80847c8f06a85b50bfcaacf4ee1aa31e97d80a8"
+  },
+  "poison_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      21,
+      112,
+      124
+    ],
+    "colors": 16,
+    "sha256": "68e7ddac7b3895780b3e691451cb7eabd5b608e52695738c83fc5be2bbb30f7e"
+  },
+  "poison_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      18,
+      116,
+      124
+    ],
+    "colors": 16,
+    "sha256": "8f60cce95c3460f6094c74081b18bfb8538430d6e20fb47ae2759b8d6d01be35"
+  },
+  "stun_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      16,
+      112,
+      124
+    ],
+    "colors": 15,
+    "sha256": "17eb4824a3e43fbd8a4b9782ecf1baed9e545cdabf58e91435689d6b57fea188"
+  },
+  "stun_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      10,
+      21,
+      112,
+      124
+    ],
+    "colors": 15,
+    "sha256": "cce02aaca7f86fd29897496fe84f980714bd0d905e0e06e0cdcf845daf0728a7"
+  },
+  "sleep_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      16,
+      43,
+      116,
+      124
+    ],
+    "colors": 14,
+    "sha256": "765f104430d23bc71919ff45abb50d687392f22f6157f82934da8528f1f6694b"
+  },
+  "sleep_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "inkBounds": [
+      16,
+      43,
+      116,
+      124
+    ],
+    "colors": 14,
+    "sha256": "30ad0a7e4248af4c7641fb2569f91d241aa80377070bcc7f77ca3a190816e052"
+  }
+}
