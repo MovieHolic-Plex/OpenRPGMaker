@@ -739,6 +739,9 @@ def on_art(meta, code, result):
             art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], feedback)
             art_demo.validate_preserved_sources(DATA, cid, layout, result)
             write_json(cdir(cid, 'art-layout-input.json'), layout)
+            # Collection overwrites art-result.json; keep the preparation's
+            # cross-batch coverage declaration for art_batches.scene_links.
+            write_json(cdir(cid, 'art-prepare-result.json'), dict(result, execution=request))
             store.update_concept(cid, stage='art-layout-review', status='queued', note='제작 전 배치·비례·여백 적대적 검수 대기')
         except (OSError, ValueError, TypeError, KeyError) as error:
             store.update_concept(cid, stage='blocked', status='idle', note='그림 실행 준비 오류', reasons=[str(error)])

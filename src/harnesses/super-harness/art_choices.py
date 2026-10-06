@@ -7,6 +7,7 @@ from pathlib import Path
 import store
 import art_layout
 import art_acceptance
+import art_native_rereview
 
 
 def digest(path):
@@ -35,6 +36,16 @@ def verified(root, r):
     if digest(path) != r['sha256']:
         raise ValueError('그림 또는 검수 결과가 바뀌었습니다. 새 후보를 확인해 주세요.')
     return path
+
+
+def row_item(receipt, row):
+    """Native runs rows carry no item column; collectors copy it from rounds."""
+    if row.get('item'):
+        return row['item']
+    items = {r.get('item') for r in receipt.get('rounds', []) if r.get('id') == row.get('round')}
+    if len(items) != 1 or not next(iter(items)):
+        raise ValueError(f"영수증 runs 행의 품목을 rounds에서 찾을 수 없습니다: h{row.get('round')}-{row.get('letter')}")
+    return items.pop()
 
 
 def fingerprint(candidate):
@@ -130,13 +141,17 @@ def prepare(data, cid):
             # Receipt paths own generic spaces. Prison round numbers are not a schema.
             by_item = {}
             for row in receipt['runs']:
-                item = row['item']; slug = re.sub(r'[^A-Za-z0-9]+', '_', item).strip('_')
+                item = row_item(receipt, row); slug = re.sub(r'[^A-Za-z0-9]+', '_', item).strip('_')
                 suffix = f"/{slug}/h{row['round']}-{row['letter']}.png"
                 matches = [r for r in receipt.get('candidateImages', []) if r['path'].endswith(suffix)]
                 if len(matches) != 1: raise ValueError('현재 품목의 후보 이미지 경로가 모호하거나 없습니다: ' + item)
                 original = matches[0]; verified(root, original)
                 review = json.loads(row.get('review') or '{}') if isinstance(row.get('review'), str) else row.get('review') or {}
                 passed = row.get('status') == 'done' and bool(row.get('ok')) and review.get('verdict') == 'PASS'
+                recovery = art_native_rereview.resolve(data, cid, original, item,
+                    f"h{row['round']}-{row['letter']}", review) if not passed else None
+                if recovery:
+                    passed = True
                 previews = []
                 if review.get('pack'):
                     # Native scene adapters use a ground context rather than the
@@ -158,6 +173,7 @@ def prepare(data, cid):
                     repairFixes=[dict(category='asset', target=item, problem=review.get('reasons') or '부품 검수 불합격',
                         change=review['fix'], keep='다른 품목과 원본 판정 기록')] if review.get('fix') and not passed else [],
                     sources=[receipt_ref, original], images=previews, sheet=original,
+                    nativeReviewRecoveries=[recovery] if recovery else [],
                     caution='품목 검수와 별개로 조립 공간의 시점·접합·동선을 확인해야 합니다.'))
             groups.extend(by_item.values())
         elif receipt.get('harness') == 'interior-props' and receipt.get('runs'):
@@ -278,6 +294,7 @@ def view(data, cid):
             valid = current or previous_visible
             try:
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
+                for recovery in candidate.get('nativeReviewRecoveries', []): art_native_rereview.verify(data, cid, recovery)
             except (ValueError, OSError, KeyError): valid = False
             item['ready'] = current and valid and candidate['passed'] and context_ok
             item.update(fingerprint=token, eligible=document.get('demoVersion') == 1 and current and not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
