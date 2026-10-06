@@ -1,0 +1,22 @@
+{
+  "description": "Actual source pixel differences; no verdict.",
+  "pixelsChangedFromPreservedDraft": {
+    "poses/hit": 97,
+    "actions/skill_b": 76,
+    "poses/idle_a": 34,
+    "poses/idle_b": 34,
+    "poses/idle_c": 34,
+    "poses/windup": 34,
+    "poses/move": 36,
+    "poses/attack": 36,
+    "poses/recover": 34,
+    "actions/skill_a": 37,
+    "actions/skill_c": 34,
+    "actions/poison_a": 34,
+    "actions/poison_b": 34,
+    "actions/stun_a": 34,
+    "actions/stun_b": 37,
+    "actions/sleep_a": 26,
+    "actions/sleep_b": 26
+  }
+}

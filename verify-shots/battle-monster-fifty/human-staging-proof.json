@@ -1,0 +1,49 @@
+{
+  "expectedSpecies": 50,
+  "goalPaused": false,
+  "humanProducer": {
+    "state": "running",
+    "startedAt": "2026-10-06T05:03:39.954897+00:00",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "battle-monster",
+      "wave",
+      "--work",
+      "qa-runs/battle-monster-fifty-human-wave",
+      "--candidate",
+      "fifty-v1",
+      "--workers",
+      "1",
+      "--visual-repairs",
+      "4",
+      "--visual-repair-authorization",
+      "qa-runs/battle-monster-fifty-wave/authorization.txt",
+      "--note-file",
+      "qa-runs/battle-monster-fifty-wave/direction.txt",
+      "red-tassel-swordswoman"
+    ],
+    "species": [
+      "red-tassel-swordswoman"
+    ],
+    "goalSpeciesCount": 50,
+    "reason": "One actual free model slot; inspect adult woman face/clothing/sword style early."
+  },
+  "dispatcherTransition": {
+    "reason": "Introduce one human woman pilot in the free third slot and replace scheduling only after current lynx wave is terminal. Existing two model chains continue.",
+    "oldDispatcherPid": 4087652,
+    "currentWavePid": 518548,
+    "currentSpecies": "mist-tail-lynx",
+    "currentWaveStartTicks": "84564964",
+    "humanPilot": "red-tassel-swordswoman",
+    "modelMaxConcurrency": 3,
+    "goalSpecies": 50,
+    "goalPaused": false,
+    "state": "waiting-for-current-wave-terminal",
+    "startedAt": "2026-10-06T05:03:39.990238+00:00"
+  },
+  "actualObserverPassedSpecies": 6,
+  "finalGoalComplete": false
+}

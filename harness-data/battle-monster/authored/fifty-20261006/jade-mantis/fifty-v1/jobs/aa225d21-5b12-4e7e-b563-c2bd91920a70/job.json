@@ -1,0 +1,37 @@
+{
+  "id": "aa225d21-5b12-4e7e-b563-c2bd91920a70",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T04:35:17.356469+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/references/human-size.png",
+    "-"
+  ],
+  "promptSha256": "794d0d8d5a222b354003b24f4c5085a9082e077227fc3e05a1198e3faeb50c45",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "reference.png": "5436a9effcc0d857f00e508a5bd935ca7e45148d02aa0f29ac88ec35d82c2e0f",
+    "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T04:50:01.433188+00:00"
+}

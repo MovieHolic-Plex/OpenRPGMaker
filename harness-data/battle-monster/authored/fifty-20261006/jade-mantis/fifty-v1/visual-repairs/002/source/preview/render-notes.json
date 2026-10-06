@@ -1,0 +1,158 @@
+{
+  "idle": [
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_b",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_c",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_b",
+      "durationMs": 240,
+      "matchesSource": true
+    }
+  ],
+  "attack": [
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "windup",
+      "durationMs": 220,
+      "matchesSource": true
+    },
+    {
+      "pose": "move",
+      "durationMs": 100,
+      "matchesSource": true
+    },
+    {
+      "pose": "attack",
+      "durationMs": 130,
+      "matchesSource": true
+    },
+    {
+      "pose": "recover",
+      "durationMs": 220,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    }
+  ],
+  "hit": [
+    {
+      "pose": "idle_a",
+      "durationMs": 250,
+      "matchesSource": true
+    },
+    {
+      "pose": "hit",
+      "durationMs": 180,
+      "matchesSource": true
+    },
+    {
+      "pose": "recover",
+      "durationMs": 200,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_a",
+      "durationMs": 300,
+      "matchesSource": true
+    }
+  ],
+  "dead": [
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "hit",
+      "durationMs": 180,
+      "matchesSource": true
+    },
+    {
+      "pose": "dead",
+      "durationMs": 1100,
+      "matchesSource": true
+    }
+  ],
+  "skill": [
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    },
+    {
+      "pose": "skill_a",
+      "durationMs": 350,
+      "matchesSource": true
+    },
+    {
+      "pose": "skill_b",
+      "durationMs": 170,
+      "matchesSource": true
+    },
+    {
+      "pose": "skill_c",
+      "durationMs": 300,
+      "matchesSource": true
+    },
+    {
+      "pose": "idle_a",
+      "durationMs": 240,
+      "matchesSource": true
+    }
+  ],
+  "poison": [
+    {
+      "pose": "poison_a",
+      "durationMs": 420,
+      "matchesSource": true
+    },
+    {
+      "pose": "poison_b",
+      "durationMs": 420,
+      "matchesSource": true
+    }
+  ],
+  "stun": [
+    {
+      "pose": "stun_a",
+      "durationMs": 450,
+      "matchesSource": true
+    },
+    {
+      "pose": "stun_b",
+      "durationMs": 450,
+      "matchesSource": true
+    }
+  ],
+  "sleep": [
+    {
+      "pose": "sleep_a",
+      "durationMs": 650,
+      "matchesSource": true
+    },
+    {
+      "pose": "sleep_b",
+      "durationMs": 650,
+      "matchesSource": true
+    }
+  ]
+}

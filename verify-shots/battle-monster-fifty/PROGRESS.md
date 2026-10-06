@@ -1,4 +1,4 @@
-# 신규50종 전체 통과 · 현재5/50 완료
+# 신규50종 전체 통과 · 현재6/50 완료
 
 이 기록 시점 실제 전체 감사는 **2/50**,36자세/16GIF이며 exit1/전체 false다.
 금각사슴은 얼굴/가슴3/4 면과 뿔의 전진 방향을 직접 교정한 후 실제 독립 keep를 받았다.
@@ -61,3 +61,18 @@ observer 실제 MainPID479830/ActiveState active를 확인했다. 기존 세 모
 전체 감사5/50/90자세/40GIF/exit1이다. 기존52판정/8선택을 보존했고 신규15행은 위임된
 5종의3단계 Allow다. source archive와 실제 화면 근거가5종에 모였으나 전체50 완료가 아니다.
 근거:five-passed-proof.json,root-review-lantern-goblin.json,browser-proof-lantern-goblin.json.
+
+## 옥날사마귀 세 번 교정 후 통과 · 실제6/50
+
+옥날사마귀는 낫 형태/가위 접촉/낫 끝 기술·회수 군집/어두운 지지다리, 이어진 피격 두 번째
+앞낫/잎 칼날 중심 면/다리 관절의 밝은 면을 세 번 직접 교정했다. 실제 새 독립 keep0지적을
+받았고 감독이 현재18자세1배/3배 PNG와 native 저작/세 교정의 ASCII 문자열 복사 코드를
+읽었다. 픽셀/현재 실제 keep/3단계 Allow/선택 ZIP/8GIF 원본과 시간/출처 재로드 및 실제
+8GIF·정지/재생·1440/375/320 브라우저 오류/넘침0을 확인했다.
+전체6/50/108자세/48GIF/exit1이고 source archive6종이다. 기존52판정/8선택은 보존되었다.
+실제 빈 세 번째 자리에서 홍영검희 여성64를 별도 source로 먼저 저작해 중간 얼굴/복식 그림을
+공유했다. 실제 기존 안개삵 wave는 유지하며 그 실제 PID 종료 경계에서 다음 배차기를 교체한다.
+후속은 초기/여성의 실제 작업 체인·model PID를 예약해 남는1/2/3자리를 사용한다.
+wave note-file은 다음 새 저작/교정마다 최신 파일을 읽어 이후 사용자 steering을 반영한다.
+원문/모델/검수 판정을 만들거나 기존 source를 덮어써 배차하지 않는다. 전체50 목표는 동일하다.
+근거:six-passed-proof.json,root-review-jade-mantis.json,browser-proof-jade-mantis.json.

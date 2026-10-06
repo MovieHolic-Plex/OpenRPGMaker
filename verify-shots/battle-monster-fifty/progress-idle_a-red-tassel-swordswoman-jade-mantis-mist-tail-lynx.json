@@ -1,0 +1,29 @@
+[
+  {
+    "monster": "jade-mantis",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "4bee0db5cbd22a78c15f17b8047804d6b210c35f98bbc03df86bf89436504220",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "mist-tail-lynx",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/mist-tail-lynx/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "d6ce6116985b4803f32aee5aa8003c1fd60b5395e9f83b030a85efe1c5facf48",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "red-tassel-swordswoman",
+    "source": "qa-runs/battle-monster-fifty-human-wave/candidates/red-tassel-swordswoman/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "a005b235b36e255c45948580692f7b149e8f8e8e5a2cd779cfb3e183f069e8b5",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 12,
+    "completedOrApprovedClaim": false
+  }
+]

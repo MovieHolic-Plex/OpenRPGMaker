@@ -1,0 +1,369 @@
+{
+  "purpose": "Source/export readback facts; no reviewer verdict or user selection.",
+  "previousDraft": "revisions/before-anatomy-leaf",
+  "paletteColors": 15,
+  "paletteUnchanged": true,
+  "uniqueGrids": 18,
+  "frames": {
+    "attack": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "79db2c0fbe6e3fedd46cdf4fe7c1d5d99c199b0897b084870cfda19f09e725ef",
+      "changedPixels": 336,
+      "changedPixelsFromPreviousDraft": 36,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "dead": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "9fcb229c0467a918fcb9536fa96887939ff118bd3d852b5ca1c726934bb3c2b0",
+      "changedPixels": 0,
+      "changedPixelsFromPreviousDraft": 0,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "hit": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "0508bdcc08e522703127d9ad1ca0b57f6b22f21e4c8bbc00f431dc2e4601692a",
+      "changedPixels": 215,
+      "changedPixelsFromPreviousDraft": 97,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "4bee0db5cbd22a78c15f17b8047804d6b210c35f98bbc03df86bf89436504220",
+      "changedPixels": 227,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "e5e9c9d3dda3141794ac0d4e25b523987a601e830d36f4f1ad1373874951e927",
+      "changedPixels": 219,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_c": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "c34ddacae13f887e00b41b0bde580079a68f93625ba9f9973a945f4447da9621",
+      "changedPixels": 212,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "move": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "731cbaecdb7d472ab2f325effd5c070af2ee738daceb56654ede38e98f9a7c4f",
+      "changedPixels": 231,
+      "changedPixelsFromPreviousDraft": 36,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "recover": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "ad7d7f52baaaa3eef6b517bd2cd2d8cb21c6ba778a26756db52ebf5136417e27",
+      "changedPixels": 225,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "windup": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "d926e75c0976249abc09743b16df73e4f037876cb285a921154d1aa5853b3982",
+      "changedPixels": 286,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "poison_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "1bfe806bb3fb964dbea04c579e05b30015424ad5d69fe9c9de600307fb2b5819",
+      "changedPixels": 47,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "poison_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "0819e497f66f238faa9dd1cf3767a4d6de8acfcb395c3a72836e46158ff54c6d",
+      "changedPixels": 47,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "17f4c9f7eec03821011884035c6cb6ea9bddf97f48b94e00fc35f88dc3d5c33a",
+      "changedPixels": 276,
+      "changedPixelsFromPreviousDraft": 37,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "7a16e9d25d5d0d123fd1e31789c9f41fccefb30f1515c25c987b8e533bc0081c",
+      "changedPixels": 321,
+      "changedPixelsFromPreviousDraft": 76,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_c": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "dbee5ec4f3982f17a324fa069c5b654abdab1c7f0d327e208cb4452f90b84204",
+      "changedPixels": 293,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "sleep_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "58fd99df394f47da8774e1309ac72ccc9748fbd6a856e9f1a3164d3bc83b1fee",
+      "changedPixels": 30,
+      "changedPixelsFromPreviousDraft": 26,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "sleep_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "2740a7eb8990aaa3c6721f59701e9033988dbdab65776f695b240604d81864c4",
+      "changedPixels": 30,
+      "changedPixelsFromPreviousDraft": 26,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "stun_a": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "61c8d0fd9dd71c6a7387b34001fe046d5830b4c1d6a99021679f6bbeb61087fc",
+      "changedPixels": 46,
+      "changedPixelsFromPreviousDraft": 34,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "stun_b": {
+      "rows": 64,
+      "widths": [
+        64
+      ],
+      "unknownSymbols": [],
+      "lowestInkY": 60,
+      "transparentBorder": true,
+      "sha256": "80872b1a1ab412f9ade22b82fb9c7a9456a4a414a06434f0b499c90df554cc03",
+      "changedPixels": 49,
+      "changedPixelsFromPreviousDraft": 37,
+      "nativePngSize": [
+        64,
+        64
+      ],
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    }
+  }
+}

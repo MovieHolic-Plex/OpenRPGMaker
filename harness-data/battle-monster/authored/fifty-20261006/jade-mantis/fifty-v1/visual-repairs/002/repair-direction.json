@@ -1,0 +1,32 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "564f678bde78574d74f4b0862e1d2fd348835a7fd95de57486f371e24be029f9",
+  "priorReviewJob": "10dbe6a4-efec-421a-a168-dcedf5fe5443",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 53,
+      "y": 34,
+      "message": "The two forelegs merge around this crossing into one hollow diamond with a single prominent right-facing point. Redraw two separately readable pointed scythe blades converging in a scissors cut; use a short dark overlap seam at the crossing and preserve each blade's connection back to its own shoulder. The separation must remain readable at 1x."
+    },
+    {
+      "pose": "skill_b",
+      "x": 54,
+      "y": 23,
+      "message": "The upper cyan branch leaves the straight outer foreleg extension while the recurved jade cutting end remains inward. Redraw the emitting blade so its distal cutting tip points along this upper branch, or move the branch origin onto that actual tip. Join the first cyan cluster directly to the blade tip while retaining the shoulder-to-blade connection."
+    },
+    {
+      "pose": "skill_b",
+      "x": 55,
+      "y": 36,
+      "message": "The lower cyan branch similarly leaves an extended thin limb beyond the inward-curled jade blade. Reorient the actual lower scythe tip toward the lower projectile and anchor the cyan root there; retain a visibly continuous jade foreleg rather than using the projectile-side extension as a substitute blade."
+    },
+    {
+      "pose": "skill_c",
+      "x": 52,
+      "y": 39,
+      "message": "The lower claw remains extended to the right, and the upper claw is also broadly open, so the recovery silhouette does not clearly show the specified folding and leaf retrieval. Bring the distal claws inward toward the thorax, redraw their bent joints continuously, and place the nearest cyan remnants on the returning cutting edges. Keep the grounded support legs stable."
+    }
+  ],
+  "startedAt": "2026-10-06T04:52:12.325456+00:00"
+}

@@ -1,0 +1,36 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 1x cells and nearest 3x previews on light, dark and checker backgrounds. The right-facing mantis is recognizable: two dark eyes, long neck, antennae, folded leaf wing and articulated support legs. The body fills the cell well; broad upper-left wing highlights give useful volume. Main body and limb connections appear intact, with no obvious accidental holes in filled surfaces. Visible planted feet remain near baseline 60. Windup, forward lean, recoil and collapsed death are readable, and idle changes preserve identity. However, the foreleg ends mostly read as rounded paddles rather than hooked scythes; attack does not clearly show two blades closing in a scissors cut. Skill preparation, release and residue are distinct from the normal attack, but release obscures the physical blade tips and recovery introduces doubled foreleg tips. Poison has a hunched body and purple bubbles, stun has slack folded arms and stars, and sleep has a low crouch and closed eyes; these are distinct body states rather than recolors. The sleep pair differs subtly at the head and neck. Dark backgrounds substantially reduce support-leg readability. This is a static pose review, not actual battle footage: playback timing, foot sliding, target contact, source authorship and technical palette/alpha compliance are unverified. Recommendation is advisory; user selection remains separate.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 49,
+      "y": 26,
+      "message": "The upper distal foreleg is a blunt green paddle, and the lower tip around (45,40) has the same rounded treatment. Shape both into tapered inward-facing hooks with a clear inner cutting edge and elbow separation, retaining their connected arm roots. Carry this blade anatomy consistently through the other poses."
+    },
+    {
+      "pose": "attack",
+      "x": 40,
+      "y": 38,
+      "message": "The lower foreleg becomes a broad horizontal oval while the upper one stretches diagonally upward; their cutting edges remain separated and do not communicate scissors closure. Redraw the two connected hooked blades into a readable converging or crossing contact silhouette, preserving the shoulder and elbow chain."
+    },
+    {
+      "pose": "skill_b",
+      "x": 39,
+      "y": 29,
+      "message": "Turquoise effect pixels run through the inner upper foreleg, making the physical blade end ambiguous; the lower origin around (44,35) is also difficult to distinguish from the blade. Preserve two clearly readable scythe tips and originate one short tapered leaf projectile at each actual tip. Shorten the long luminous ribbons so the release reads as two leaf blades."
+    },
+    {
+      "pose": "skill_c",
+      "x": 44,
+      "y": 38,
+      "message": "The lower foreleg has two adjacent green terminal clusters around (41,37) and (49,38), joined by branching contours. At 1x this suggests an extra blade or an unremoved previous position. Consolidate these into one connected recovering foreleg with one tip; express returning leaves with the turquoise effect palette instead of duplicate body-colored limb clusters."
+    },
+    {
+      "pose": "idle_a",
+      "x": 20,
+      "y": 52,
+      "message": "The thin far support leg and its foot lose most of their separation against the dark preview background. Add a restrained existing mid-green rim along exposed knee, shin and foot pixels while keeping the underside dark; apply the same separation to corresponding far legs in the standing poses."
+    }
+  ]
+}

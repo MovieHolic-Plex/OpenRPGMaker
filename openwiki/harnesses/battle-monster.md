@@ -215,6 +215,16 @@ npm run harness -- battle-monster accept-batch \
 실제 제작 수에는 `battle-monster-fifty-wave/tasks`를 포함한다. 원본/독립 검수/현재 선택/팩 재읽기로
 전체50종을 확인하기 전까지 목표 완료로 보고하지 않는다.
 
+50종 중간 지시를 받는 동안 `wave --note-file`은 새 종의 작가와 기술/시각 교정 호출을
+시작할 때마다 최신 파일을 읽는다. 이미 실행한 호출/그림은 보존하고 실제 다음 job prompt에
+새 방향이 남는다. 독립 검수의 판정은 이 방향 갱신으로 바꾸지 않는다.
+
+빈 세 번째 자리에 여성 검객 홍영검희를 별도 `battle-monster-fifty-human-wave`에서 먼저
+제작한다. 기존 안개삵 wave는 그대로 실행하고, 이전 배차 parent만 다음 호출 경계에서 기다린다.
+기존 wave의 실제 PID/시작 식별자가 종료된 뒤 같은 후속 서비스의 배차기를 바꾼다. 후속은
+초기/여성 작업의 실제 producer MainPID·진행 상태와 live model PID를 함께 세어 남는1/2/3개
+자리만 쓴다. 외부 작업이 끝나면 나머지를3명 풀로 이어간다.50종/합격 기준은 동일하다.
+
 현재50종 작업의 임시 `oprn-battle-fifty-observer-20261006` 실행기는 게시된 현재 keep를 읽고
 기존 `accept-batch`/`audit-batch` 단계와 실제 브라우저 캡처·출처 재로드를 이어간다. 원본을 그리거나
 검수를 만들지 않으며, API의 기존 Deny/Modify 보호를 그대로 사용한다. 부분 audit exit1은 전체

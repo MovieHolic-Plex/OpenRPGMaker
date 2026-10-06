@@ -8,11 +8,16 @@ from pipeline import Harness, REPO, load, save, lock, stamp
 from motions import bake_motions
 
 
+def shared_direction(args):
+    # Read when a new artist/repair starts so queued work receives user steering.
+    note_file = getattr(args, 'note_file', None)
+    return note_file.read_text(encoding='utf-8') if note_file else getattr(args, 'note', '')
+
 def produce(args, monster):
     task = args.work / 'tasks' / (monster + '.json')
     state = load(task) if task.exists() else {'monster': monster, 'state': 'queued', 'createdAt': stamp()}
     workargs = argparse.Namespace(seed=args.seed, root=str(args.work / 'candidates'), monster=monster,
-        candidate=args.candidate, note=getattr(args, 'note', ''), prepare_only=False, out=None)
+        candidate=args.candidate, note=shared_direction(args), prepare_only=False, out=None)
     harness = Harness(workargs)
     directory = harness.directory()
     final = args.publish / monster / args.candidate
@@ -69,7 +74,7 @@ def produce(args, monster):
                         shutil.copytree(parent / 'source/poses', directory / 'source/poses', dirs_exist_ok=True)
                     if attempt == 2:
                         raise ValueError(error)
-                    harness.args.note = (getattr(args, 'note', '') + '\nTechnical correction only: ' + error
+                    harness.args.note = (shared_direction(args) + '\nTechnical correction only: ' + error
                         + '. Preserve the intended design, repair literal row lengths/symbols/contact only. '
                           'Grounded idle_a contact touches y=cell-4. No ink below y=cell-4. Do not transform entire frames.')
             if parent is not None and harness.pixels(directory, 'poses')[2]['binding'] != state['coreBinding']:
@@ -100,7 +105,7 @@ def produce(args, monster):
                                  priorReviewJob=review['jobId'], priorBinding=report['binding'])
                     save(task, state)
                     shutil.copyfile(directory / 'preview/suite/checker.png', directory / 'reference.png')
-                    harness.args.note = (getattr(args, 'note', '')
+                    harness.args.note = (shared_direction(args)
                         + '\nUser explicitly requested all batch results pass inspection. Repair this existing draft; '
                           'do not invent approval or edit reviewer results. Preserve good poses, identity and palette. '
                           'Inspect the attached current sheet and directly fix the following specific native-pixel issues: '

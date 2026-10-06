@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 5,
+  "archivedPassedSpecies": 6,
   "entireGoalComplete": false,
   "items": [
     {
@@ -13,6 +13,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "295398f19dfcbb27e695263a692d8acf5b057a9b5dae980896a5341274d97aef"
+    },
+    {
+      "key": "jade-mantis/fifty-v1",
+      "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "e719f87139c357dc90fcc4b1765a4bc303d19afd34a6769fc2b183ab15527f0a"
     },
     {
       "key": "iron-beak-crane/fifty-v1",

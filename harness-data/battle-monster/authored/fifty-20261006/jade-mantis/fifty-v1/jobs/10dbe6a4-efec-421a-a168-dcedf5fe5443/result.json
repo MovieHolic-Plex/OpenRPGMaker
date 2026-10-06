@@ -1,0 +1,30 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the actual portrait, light, dark and checker PNGs at native size; all 18 sheet enlargements match nearest-neighbor 3x. The large triangular head, two dark eyes, leaflike jade wing case and four thin supporting legs read as a mantis facing right. Broad dorsal highlights support the upper-left light, although the darkest leg edges lose definition against the dark background. The body occupies the cell well. No obvious accidental detached body part or punched-through filled surface is visible; the spaces between limbs are mostly intentional. Planted feet reach native y=60, and the flattened dead pose is distinct. Idle changes are restrained, windup opens the forelegs, move leans forward, and hit recoils. The attack's merged foreleg loop weakens the required two-blade scissors action. Skill preparation contains small cyan clusters inside the claws and emission has two cyan branches, but their launch points read as outer foreleg bends rather than recurved blade tips; recovery returns to broadly open claws. Poison has a separate bent posture and purple bubbles, stun droops with closed eyes and orbiting stars, and sleep crouches with closed eyes and a small head shift: these are readable authored state changes rather than simple tints. This is a revision recommendation for human review, not a selection. Static PNGs cannot establish animation timing, battle contact, runtime presentation, or literal-grid authorship.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 53,
+      "y": 34,
+      "message": "The two forelegs merge around this crossing into one hollow diamond with a single prominent right-facing point. Redraw two separately readable pointed scythe blades converging in a scissors cut; use a short dark overlap seam at the crossing and preserve each blade's connection back to its own shoulder. The separation must remain readable at 1x."
+    },
+    {
+      "pose": "skill_b",
+      "x": 54,
+      "y": 23,
+      "message": "The upper cyan branch leaves the straight outer foreleg extension while the recurved jade cutting end remains inward. Redraw the emitting blade so its distal cutting tip points along this upper branch, or move the branch origin onto that actual tip. Join the first cyan cluster directly to the blade tip while retaining the shoulder-to-blade connection."
+    },
+    {
+      "pose": "skill_b",
+      "x": 55,
+      "y": 36,
+      "message": "The lower cyan branch similarly leaves an extended thin limb beyond the inward-curled jade blade. Reorient the actual lower scythe tip toward the lower projectile and anchor the cyan root there; retain a visibly continuous jade foreleg rather than using the projectile-side extension as a substitute blade."
+    },
+    {
+      "pose": "skill_c",
+      "x": 52,
+      "y": 39,
+      "message": "The lower claw remains extended to the right, and the upper claw is also broadly open, so the recovery silhouette does not clearly show the specified folding and leaf retrieval. Bring the distal claws inward toward the thorax, redraw their bent joints continuously, and place the nearest cyan remnants on the returning cutting edges. Keep the grounded support legs stable."
+    }
+  ]
+}

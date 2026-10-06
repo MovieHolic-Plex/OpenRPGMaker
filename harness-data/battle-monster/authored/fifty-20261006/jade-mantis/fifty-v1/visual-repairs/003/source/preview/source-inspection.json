@@ -1,0 +1,200 @@
+[
+  {
+    "pose": "attack",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "dead",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "hit",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "idle_a",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "idle_b",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "idle_c",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "move",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "recover",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "windup",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "poison_a",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "poison_b",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "skill_a",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "skill_b",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "skill_c",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "sleep_a",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "sleep_b",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "stun_a",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  },
+  {
+    "pose": "stun_b",
+    "size": [
+      64,
+      64
+    ],
+    "literalRows": true,
+    "symbolsKnown": true,
+    "transparentBorder": true,
+    "lowestInkY": 60
+  }
+]

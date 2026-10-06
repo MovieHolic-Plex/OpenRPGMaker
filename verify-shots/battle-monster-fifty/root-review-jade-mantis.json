@@ -1,0 +1,15 @@
+{
+  "monster": "jade-mantis",
+  "passed": true,
+  "rootViewedActual18PosePng": true,
+  "authorHelperBodiesRead": true,
+  "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+  "reviewJob": "9184f906-e1b0-49d1-bea6-f930aa37075b",
+  "reviewRecommendation": "keep",
+  "actualReviewIssues": 0,
+  "realVisualRepairCount": 3,
+  "nativeCell": 64,
+  "sourceMethod": "Explicit per-pose y/x/ASCII rows; selected repair tables and literal row-slice replacement; no geometry/scaling/frame transforms in native author/repair files.",
+  "artRead": "Two hooked connected forelegs, converging scissor contact, second folded foreleg in hit, two tapered leaf cores from scythe tips, supported bright leg joints. Crouched sleep differs from flat death.",
+  "lightPngSha256": "06eb563179daac9f8fac1b73e90473dda359c11225968991b95bd33c397b8c90"
+}

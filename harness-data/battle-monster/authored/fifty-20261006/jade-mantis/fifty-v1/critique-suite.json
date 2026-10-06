@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "실제 portrait/light/dark/checker PNG 네 장의 native 1배와 nearest 3배 표시를 검토했다. 삼각형으로 좁아지는 머리, 검은 두 눈, 긴 목, 두 낫 앞다리, 잎 모양 접힌 날개와 네 지지 다리로 사마귀가 읽히며 오른쪽을 향한다. 날개와 머리의 왼쪽 위 밝은 면, 중간 비취색 면, 아래쪽 어두운 면이 부피를 만든다. 어두운 배경에서 지지 다리의 어두운 윤곽은 대비가 약해지지만 녹색 면과 관절은 구별된다. 낫의 안쪽 빈 공간과 다리 사이 공간은 해부학적 음영 공간으로 읽히며, 세 배경에서 몸통·목·어깨·앞다리의 명백한 끊김이나 의도하지 않은 투명 구멍은 보이지 않는다. windup은 두 낫을 벌리고, move는 몸을 앞으로 낮추며 지지 다리를 옮기고, attack은 연결된 두 낫이 오른쪽에서 교차한다. recover는 낫을 다시 굽히고 hit는 팔과 머리를 움츠리며 dead는 바닥에 옆으로 눕는다. 서 있는 자세의 발끝과 쓰러짐·수면 자세의 하단은 native y=60에 맞아 정지판에서 접지가 유지된다. 대기 세 장은 몸의 크기와 다리 위치를 유지하며 작은 머리·낫 변화를 보인다. skill_a는 실제 낫 안쪽에 청록 기를 모으고, skill_b는 뻗은 두 낫 끝에서 각각 짧은 잎 칼날을 내보내며, skill_c는 낫을 접고 작은 잔엽을 남겨 일반 가위 베기와 구별된다. poison 두 장은 몸을 움츠리고 팔을 안으로 당긴 상태와 보라 기포, stun 두 장은 고개가 처지고 낫이 아래로 늘어진 상태와 별, sleep 두 장은 낮게 쪼그린 몸과 감긴 눈으로 서로 구별되며 단순 색 변환으로 보이지 않는다. keep은 독립 시각 검수 추천이며 사용자 선택을 기록하지 않는다. 이 자료는 합성 배경의 정지 자세 미리보기이므로 실제 GIF의 시간 배분·프레임 전환·이동 중 발 미끄러짐·전투 타격 접촉은 확인하지 못했다. 원본 pxgrid 저작 방식, 원본 팔레트 18색 제한과 binary alpha 계약도 이 PNG 표시만으로 확정하지 않았다.",
+  "issues": [],
+  "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "181aca9fcc9cb8d3a4d9acea3a999bf3ef0e0d2605bca4a74b83bc0976b3e154",
+    "preview/suite/light.png": "06eb563179daac9f8fac1b73e90473dda359c11225968991b95bd33c397b8c90",
+    "preview/suite/dark.png": "dd540bb1bfa943986b0f2d3426917b7675ee5a4bff22565d9cdec9149d2af3ad",
+    "preview/suite/checker.png": "79bf4601b2777dc17e3e77cc15b3ee3caefd9dfba1cef08e426827593062bc06"
+  },
+  "jobId": "9184f906-e1b0-49d1-bea6-f930aa37075b",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T05:11:42.110395+00:00",
+  "userApproved": false
+}
