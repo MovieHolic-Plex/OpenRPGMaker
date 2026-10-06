@@ -20,9 +20,15 @@ const cases=[
 ].filter(entry=>selected.includes(entry.id));
 const save=(file,value)=>writeFileSync(file,JSON.stringify(value,null,2)+'\n');
 async function saveUi(page){
-  await page.getByTestId('toolbar-save').click();
-  await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:120000});
-  const kind=await page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
+  // 부팅 직후 자동 저장이 막 시작되면 끝난 줄 알고 읽은 순간 다시 pending 으로 돌아간다(2026-10-06 run4) — 끝 상태가 될 때까지 다시 누른다.
+  let kind;
+  for(let attempt=0;attempt<4;attempt++){
+    await page.getByTestId('toolbar-save').click();
+    await page.waitForFunction(()=>['idle','saved','error','unsaved-session'].includes(document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind),null,{timeout:120000});
+    await page.waitForTimeout(1500);
+    kind=await page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
+    if(['idle','saved','error','unsaved-session'].includes(kind))break;
+  }
   if(!['idle','saved'].includes(kind))throw Error(`SQLite save failed: ${kind}`);
 }
 async function showMap(page,id){
