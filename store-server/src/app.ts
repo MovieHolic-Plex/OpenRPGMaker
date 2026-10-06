@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { join } from "node:path";
-import { isSha256, STORE_LIMITS, type StoreItemStatus } from "../../src/assetStore/format";
+import { isSha256, STORE_LIMITS, type StoreItemKind, type StoreItemStatus, type StoreItemSummary } from "../../src/assetStore/format";
 import { sniffMime } from "../../src/assetStore/sniff";
 import {
   authenticate, consumeLoginLink, createSession, decideDeviceCode, destroySession, findDeviceCode, googleUser, pollDeviceCode,
@@ -13,9 +13,10 @@ import type { StoreConfig } from "./config";
 import type { Db } from "./db";
 import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, type Ctx } from "./http";
 import {
-  addVersion, adminQueue, adminSetStatus, authorVisibility, blobServable, createItem, itemDetail, listCatalog, myItems,
+  addVersion, adminQueue, adminSetStatus, authorVisibility, blobServable, catalogOverview, createItem, itemDetail, listCatalog, myItems,
   recordDownload, reportItem, singleManifest, sweepOrphanBlobs, versionManifest, type SingleInput,
 } from "./items";
+import { LANG_COOKIE, langFromAcceptLanguage, matchLang, type Lang } from "./web/i18n";
 import * as pages from "./web/pages";
 
 export interface App { server: Server; close(): Promise<void> }
@@ -50,9 +51,14 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   const viewer = async (ctx: Ctx): Promise<Auth | null> => {
     try { return await authenticate(db, ctx); } catch (error) { if (error instanceof HttpError && error.status === 401) return null; throw error; }
   };
-  const page = async (ctx: Ctx, body: (auth: Auth | null) => string | Promise<string>, status = 200): Promise<void> => {
+  /** 웹 화면 언어: 주소의 ?lang= → 고른 언어 쿠키 → 브라우저 언어 → 영어. */
+  const webLang = (ctx: Ctx): Lang => matchLang(ctx.url.searchParams.get("lang")) ?? matchLang(ctx.cookies[LANG_COOKIE]) ?? langFromAcceptLanguage(ctx.req.headers["accept-language"]) ?? "en";
+  /** API 언어: ?lang= → Accept-Language. 없으면 원문(작가가 쓴 기본 글). */
+  const apiLang = (ctx: Ctx): Lang | null => matchLang(ctx.url.searchParams.get("lang")) ?? langFromAcceptLanguage(ctx.req.headers["accept-language"]);
+  const view = (ctx: Ctx, auth: Auth | null): pages.View => pages.makeView(config, auth, webLang(ctx), ctx.url);
+  const page = async (ctx: Ctx, body: (view: pages.View) => string | Promise<string>, status = 200): Promise<void> => {
     const auth = await viewer(ctx);
-    sendHtml(ctx.res, status, await body(auth));
+    sendHtml(ctx.res, status, await body(view(ctx, auth)));
   };
   const loginRedirect = (ctx: Ctx): void => redirect(ctx.res, `/login?next=${encodeURIComponent(ctx.url.pathname + ctx.url.search)}`);
   /** 로그인 뒤 돌아갈 곳: 같은 사이트의 경로만. `//x`, `/\\x`, 제어 문자는 밖으로 나가는 주소가 될 수 있어 거른다. */
@@ -65,11 +71,11 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   router.get("/healthz", (ctx) => sendJson(ctx.res, 200, { ok: true }));
   router.get("/api/v1/items", async (ctx) => {
     const q = ctx.url.searchParams;
-    sendJson(ctx.res, 200, await listCatalog(db, { q: q.get("q") ?? "", kind: q.get("kind") ?? "", grade: q.get("grade") ?? "", sort: q.get("sort") ?? "", page: Number(q.get("page") ?? 1) }));
+    sendJson(ctx.res, 200, await listCatalog(db, { q: q.get("q") ?? "", kind: q.get("kind") ?? "", grade: q.get("grade") ?? "", sort: q.get("sort") ?? "", page: Number(q.get("page") ?? 1), lang: apiLang(ctx) }));
   });
   router.get("/api/v1/items/:slug", async (ctx) => {
     const auth = await viewer(ctx);
-    const { authorId: _authorId, ...detail } = await itemDetail(db, ctx.params.slug!, auth?.user ?? null);
+    const { authorId: _authorId, ...detail } = await itemDetail(db, ctx.params.slug!, auth?.user ?? null, apiLang(ctx));
     sendJson(ctx.res, 200, detail);
   });
   router.get("/api/v1/items/:slug/versions/:version/manifest", async (ctx) => {
@@ -153,7 +159,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   router.get("/api/v1/me", async (ctx) => {
     const auth = await authenticate(db, ctx);
     if (!auth) throw new HttpError(401, "로그인이 필요합니다.", "login_required");
-    sendJson(ctx.res, 200, { user: auth.user, items: await myItems(db, auth.user) });
+    sendJson(ctx.res, 200, { user: auth.user, items: await myItems(db, auth.user, apiLang(ctx)) });
   });
   router.post("/api/v1/logout", async (ctx) => {
     await revokeToken(db, ctx);
@@ -175,7 +181,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const auth = await authenticate(db, ctx);
     if (!auth) throw new HttpError(401, "로그인이 필요합니다.", "login_required");
     requireAdmin(auth);
-    sendJson(ctx.res, 200, await adminQueue(db));
+    sendJson(ctx.res, 200, await adminQueue(db, apiLang(ctx)));
   });
   router.post("/api/v1/admin/items/:slug/status", async (ctx) => {
     const auth = await requireWriter(db, ctx);
@@ -186,14 +192,50 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   });
 
   // ── 웹 화면 ─────────────────────────────────────────────────────────
-  router.get("/", (ctx) => page(ctx, async (auth) => {
+  router.get("/", (ctx) => page(ctx, async (v) => {
     const q = ctx.url.searchParams;
-    const query = { q: q.get("q") ?? "", kind: q.get("kind") ?? "", grade: q.get("grade") ?? "", sort: q.get("sort") ?? "", page: Number(q.get("page") ?? 1) };
-    return pages.home(config, auth, query, await listCatalog(db, query));
+    const lang = v.lang;
+    const overview = await catalogOverview(db);
+    // 찾기·종류·정렬 중 하나라도 있으면 진열대 대신 목록 화면이다(`/?kind=` 는 전체 목록).
+    if (["q", "kind", "grade", "sort", "page"].some((key) => q.has(key))) {
+      const query = { q: q.get("q") ?? "", kind: q.get("kind") ?? "", grade: q.get("grade") ?? "", sort: q.get("sort") ?? "", page: Number(q.get("page") ?? 1), lang };
+      return pages.browse(v, query, await listCatalog(db, query), overview.kinds);
+    }
+    const shelf = async (kind: StoreItemKind | "", grade = "", sort = "", pageSize = 5): Promise<StoreItemSummary[]> =>
+      (await listCatalog(db, { kind, grade, sort, pageSize, lang })).items;
+    const [featured, packs, characters, faces, latest] = await Promise.all([
+      shelf("", "pack", "popular", 4), shelf("", "pack"), shelf("character"), shelf("face"), shelf(""),
+    ]);
+    // 진열대 맨 앞은 표지가 있는 팩. 모자라면 최신 상품으로 채운다.
+    const hero = [...featured, ...latest].filter((it, index, list) => it.cover && list.findIndex((other) => other.slug === it.slug) === index).slice(0, 4);
+    return pages.home(v, {
+      total: overview.total,
+      kinds: overview.kinds,
+      featured: hero,
+      shelves: [
+        { title: "shelfPack", href: "/?grade=pack", items: packs },
+        { title: "shelfCharacter", href: "/?kind=character", items: characters },
+        { title: "shelfFace", href: "/?kind=face", items: faces },
+        { title: "shelfNew", href: "/?sort=", items: latest },
+      ],
+    });
   }));
-  router.get("/items/:slug", (ctx) => page(ctx, async (auth) => {
-    const detail = await itemDetail(db, ctx.params.slug!, auth?.user ?? null);
-    return pages.item(config, auth, detail, ctx.url.searchParams.get("reported") === "1");
+  router.get("/items/:slug", (ctx) => page(ctx, async (v) => {
+    const detail = await itemDetail(db, ctx.params.slug!, v.auth?.user ?? null, v.lang);
+    let inside: pages.InsideAsset[] = [];
+    let insideTotal = 0;
+    if (detail.status !== "removed" && detail.latestVersion > 0) {
+      try {
+        const manifest = await versionManifest(db, detail.slug, detail.latestVersion, v.auth?.user ?? null);
+        const assets = Object.values(manifest.content.assets ?? {}).sort((x, y) => x.id.localeCompare(y.id));
+        insideTotal = assets.length;
+        inside = assets.slice(0, 48).map((asset) => ({ name: asset.name || asset.id, blob: asset.blob, mime: asset.mime }));
+      } catch (error) {
+        if (!(error instanceof HttpError)) throw error;
+      }
+    }
+    const related = (await listCatalog(db, { kind: detail.kind, sort: "popular", pageSize: 6, lang: v.lang })).items.filter((it) => it.slug !== detail.slug).slice(0, 5);
+    return pages.item(v, detail, ctx.url.searchParams.get("reported") === "1", { inside, insideTotal, related });
   }));
   router.post("/items/:slug/report", async (ctx) => {
     limit(limits.report, ctx);
@@ -212,18 +254,18 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   router.get("/upload", async (ctx) => {
     const auth = await viewer(ctx);
     if (!auth) return loginRedirect(ctx);
-    sendHtml(ctx.res, 200, pages.upload(config, auth));
+    sendHtml(ctx.res, 200, pages.upload(view(ctx, auth)));
   });
   router.get("/me", async (ctx) => {
     const auth = await viewer(ctx);
     if (!auth) return loginRedirect(ctx);
-    sendHtml(ctx.res, 200, pages.me(config, auth, await myItems(db, auth.user)));
+    sendHtml(ctx.res, 200, pages.me(view(ctx, auth), await myItems(db, auth.user, webLang(ctx))));
   });
   router.get("/admin", async (ctx) => {
     const auth = await viewer(ctx);
     if (!auth) return loginRedirect(ctx);
     requireAdmin(auth);
-    sendHtml(ctx.res, 200, pages.admin(config, auth, await adminQueue(db)));
+    sendHtml(ctx.res, 200, pages.admin(view(ctx, auth), await adminQueue(db, webLang(ctx))));
   });
   router.post("/admin/items/:slug/status", async (ctx) => {
     const form = await readForm(ctx.req);
@@ -232,9 +274,9 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     await adminSetStatus(db, auth, ctx.params.slug!, (form.get("status") ?? "") as StoreItemStatus, form.get("note") ?? "");
     redirect(ctx.res, "/admin");
   });
-  router.get("/login", (ctx) => page(ctx, (auth) => pages.login(config, auth, safeNext(ctx.url.searchParams.get("next")))));
+  router.get("/login", (ctx) => page(ctx, (v) => pages.login(v, safeNext(ctx.url.searchParams.get("next")))));
   // 일회용 링크: GET 은 확인 버튼만 보이고(링크 미리보기·보안 검사기가 열어도 쓰이지 않게), POST 가 실제로 쓴다.
-  router.get("/auth/link", (ctx) => sendHtml(ctx.res, 200, pages.loginLink(config, String(ctx.url.searchParams.get("token") ?? ""))));
+  router.get("/auth/link", (ctx) => sendHtml(ctx.res, 200, pages.loginLink(view(ctx, null), String(ctx.url.searchParams.get("token") ?? ""))));
   router.post("/auth/link", async (ctx) => {
     limit(limits.login, ctx);
     const form = await readForm(ctx.req);
@@ -285,7 +327,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const auth = await viewer(ctx);
     if (!auth) return loginRedirect(ctx);
     const code = (ctx.url.searchParams.get("code") ?? "").toUpperCase();
-    sendHtml(ctx.res, 200, pages.device(config, auth, code, code ? await findDeviceCode(db, code) : null, ctx.url.searchParams.get("done")));
+    sendHtml(ctx.res, 200, pages.device(view(ctx, auth), code, code ? await findDeviceCode(db, code) : null, ctx.url.searchParams.get("done")));
   });
   router.post("/device", async (ctx) => {
     limit(limits.approve, ctx);
@@ -295,9 +337,9 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const ok = await decideDeviceCode(db, code, auth.user.id, form.get("decision") === "approve");
     redirect(ctx.res, `/device?code=${encodeURIComponent(code)}&done=${ok ? form.get("decision") === "approve" ? "approved" : "denied" : "expired"}`);
   });
-  router.get("/terms", (ctx) => page(ctx, (auth) => pages.terms(config, auth)));
-  router.get("/copyright", (ctx) => page(ctx, (auth) => pages.copyright(config, auth)));
-  router.get("/privacy", (ctx) => page(ctx, (auth) => pages.privacy(config, auth)));
+  router.get("/terms", (ctx) => page(ctx, pages.terms));
+  router.get("/copyright", (ctx) => page(ctx, pages.copyright));
+  router.get("/privacy", (ctx) => page(ctx, pages.privacy));
   router.get("/static/:file", (ctx) => {
     const file = ctx.params.file!;
     const ext = file.slice(file.lastIndexOf("."));
@@ -314,6 +356,11 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const found = router.match(req.method ?? "GET", url.pathname);
     const ctx: Ctx = { req, res, url, params: found && found !== "method" ? found.params : {}, cookies: parseCookies(req.headers.cookie), ip };
     const isApi = url.pathname.startsWith("/api/");
+    // 화면에서 언어를 고르면(?lang=) 다음 방문에도 그 언어로 보이게 기억한다.
+    const chosen = isApi ? null : matchLang(url.searchParams.get("lang"));
+    if (chosen && ctx.cookies[LANG_COOKIE] !== chosen) {
+      res.setHeader("set-cookie", `${LANG_COOKIE}=${chosen}; Path=/; Max-Age=31536000; SameSite=Lax${config.publicUrl.startsWith("https://") ? "; Secure" : ""}`);
+    }
     const fail = (error: unknown): void => {
       if (res.headersSent) { res.destroy(); return; }
       const http = error instanceof HttpError ? error : null;
@@ -322,7 +369,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
       const message = http?.message ?? "서버 오류가 났습니다.";
       if (isApi || req.headers.accept?.includes("application/json")) sendJson(res, status, { error: http?.code ?? "server_error", message, ...(http?.details ? { details: http.details } : {}) });
       else if (status === 401) redirect(res, `/login?next=${encodeURIComponent(url.pathname)}`);
-      else sendHtml(res, status, pages.errorPage(config, status, message));
+      else sendHtml(res, status, pages.errorPage(view(ctx, null), status, message));
     };
     if (!found) return fail(new HttpError(404, "없는 주소입니다.", "not_found"));
     if (found === "method") return fail(new HttpError(405, "허용하지 않는 요청입니다.", "method_not_allowed"));

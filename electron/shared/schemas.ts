@@ -139,7 +139,8 @@ export const assetPruneSchema = z.object({ projectDir, referenced: z.array(z.str
 
 /** 에셋 스토어 IPC 입력. 본문 검증(팩 형식·해시)은 assetStoreClient 와 서버가 한 번 더 한다. */
 const storeSlug = z.string().regex(/^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$/);
-export const storeSlugSchema = z.object({ slug: storeSlug, version: z.number().int().positive().optional() });
+const storeLang = z.enum(["ko", "en", "ja", "zh"]);
+export const storeSlugSchema = z.object({ slug: storeSlug, version: z.number().int().positive().optional(), lang: storeLang.optional() });
 export const storeBlobSchema = z.object({ sha256: z.string().regex(/^[0-9a-f]{64}$/) });
 export const storeUrlSchema = z.object({ url: z.string().url().max(300) });
 export const storeLoginSchema = z.object({ openBrowser: z.boolean().optional() });
@@ -149,6 +150,7 @@ export const storeCatalogSchema = z.object({
   grade: z.enum(["single", "pack", ""]).optional(),
   sort: z.enum(["new", "popular", ""]).optional(),
   page: z.number().int().positive().max(500).optional(),
+  lang: storeLang.optional(),
 });
 export const storeUploadSchema = z.object({
   manifest: z.record(z.string(), z.unknown()),

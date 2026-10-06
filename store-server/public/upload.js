@@ -9,28 +9,30 @@
   const syncKind = () => { tileRow.hidden = kind.value !== "tileset"; };
   kind.addEventListener("change", syncKind);
   syncKind();
+  // 문구는 화면 언어로 서버가 양식의 data-msg-* 에 넣어 준다.
+  const msg = (key) => form.dataset[`msg${key[0].toUpperCase()}${key.slice(1)}`] ?? key;
   const say = (text, tone = "") => { status.textContent = text; status.className = `upload-status ${tone}`; };
   const hex = (buffer) => [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
   const api = async (path, init) => {
     const response = await fetch(path, { ...init, headers: { "x-csrf-token": csrf, ...(init.headers ?? {}) } });
     const body = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error([body.message ?? `오류 ${response.status}`, ...(body.details ?? [])].join("\n"));
+    if (!response.ok) throw new Error([body.message ?? `HTTP ${response.status}`, ...(body.details ?? [])].join("\n"));
     return body;
   };
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = new FormData(form);
     const file = data.get("file");
-    if (!(file instanceof File) || file.size === 0) return say("파일을 골라 주세요.", "error");
+    if (!(file instanceof File) || file.size === 0) return say(msg("choose"), "error");
     const button = form.querySelector("button[data-testid=upload-submit]");
     button.disabled = true;
     try {
-      say("파일 확인 중…");
+      say(msg("hashing"));
       const bytes = await file.arrayBuffer();
       const sha256 = hex(await crypto.subtle.digest("SHA-256", bytes));
-      say("파일 올리는 중…");
+      say(msg("sending"));
       await api("/api/v1/blobs", { method: "POST", headers: { "x-sha256": sha256, "content-type": "application/octet-stream" }, body: bytes });
-      say("상품 만드는 중…");
+      say(msg("creating"));
       const created = await api("/api/v1/single", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -48,11 +50,10 @@
           credits: String(data.get("credits") ?? ""),
         }),
       });
-      const note = created.status === "pending" ? " 새 작가의 첫 공개는 운영자가 한 번 확인합니다." : "";
-      say(`올렸습니다.${note}`, "ok");
+      say(created.status === "pending" ? `${msg("done")} ${msg("pending")}` : msg("done"), "ok");
       const link = document.createElement("a");
       link.href = `/items/${created.slug}`;
-      link.textContent = " 상품 보기 →";
+      link.textContent = ` ${msg("view")}`;
       link.dataset.testid = "upload-result-link";
       status.append(link);
       form.reset();
