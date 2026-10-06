@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "af5dc25c4bfe798a511d00bfcea062f376404750f516c30400f059eafbedb1cd",
+  "priorReviewJob": "1ce252fe-a9f0-4703-8e78-9c82f3815e7b",
+  "issues": [
+    {
+      "pose": "windup",
+      "x": 18,
+      "y": 49,
+      "message": "The most conspicuous cocked fist is the screen-left rear hand around x13-24/y45-54, whereas attack emphasizes the screen-right fist around x59-70/y69-78. At 1x the sequence appears to change striking hands. Redraw the screen-right shoulder/elbow/fist clusters in windup as an unmistakably cocked version of the arm used in attack, and reduce the competing raised rear fist. Preserve a continuous shoulder-to-wrist path through move and recover."
+    },
+    {
+      "pose": "dead",
+      "x": 54,
+      "y": 80,
+      "message": "The mask/head beside the collapsed torso looks severed: the visible join near x54-55/y79-86 is dominated by adjoining dark outlines, with no readable red neck volume. Replace part of this seam with a short red neck cluster and its shadow between the vest shoulder and underside of the mask, approximately x51-57/y77-85. Keep the jaw edge distinct and retain the grounded collapsed silhouette; this is an anatomy/readability repair, not a claim that the entire head is a disconnected component."
+    },
+    {
+      "pose": "skill_c",
+      "x": 55,
+      "y": 30,
+      "message": "The two flying ash embers read, but the mask returns to an essentially idle head angle instead of visibly lifting after the mouth blast. Redraw the horn, brow, mouth and jaw clusters around x40-65/y8-49 with a raised chin and upward mouth direction, and expose a connected neck under the jaw. Keep recognizable mask proportions and a modest change from skill_b so this reads as recovery from the same mouth skill."
+    }
+  ],
+  "startedAt": "2026-10-06T08:18:16.331784+00:00"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "frost-ribbon-maiden",
+    "source": "qa-runs/harnesses/battle-monster/frost-ribbon-maiden/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "b0e4f9491caba8f21a887d5c6cde5eebdc21871de92676d5c5a0b0c447278295",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:52:52.896056+00:00",
+    "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "red-tassel-swordswoman",
+    "source": "qa-runs/harnesses/battle-monster/red-tassel-swordswoman/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "a7de39df03729d4c7140a2748550f8726d3ec7c1762d5abcb22bc46507b19ab0",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:52:52.896056+00:00",
+    "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/harnesses/battle-monster/sun-gold-phoenix/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:52:52.896056+00:00",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "entireGoalCompleteClaim": false
+  }
+]

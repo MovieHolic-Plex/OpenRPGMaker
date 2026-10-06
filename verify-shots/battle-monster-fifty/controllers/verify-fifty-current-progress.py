@@ -5,6 +5,7 @@ import argparse, fcntl, hashlib, json, sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--out', required=True, type=Path)
+parser.add_argument('--expect-passed', type=int)
 args = parser.parse_args()
 repo = Path.cwd()
 sys.path.insert(0, str(repo / 'src/harnesses/battle-monster/node'))
@@ -23,6 +24,8 @@ with (archive / '.archive.lock').open('a') as lock:
     rows = [r for r in audit['items'] if r['passed']]
     count = len(rows)
     assert count == audit['passedSpecies']
+    if args.expect_passed is not None:
+        assert count == args.expect_passed, ('Current qualified count differs', count, args.expect_passed)
     assert audit['expectedSpecies'] == 50
     assert audit['posesVerified'] == 18 * count
     assert audit['motionGifsVerified'] == 8 * count
@@ -54,6 +57,11 @@ with (archive / '.archive.lock').open('a') as lock:
             assert hashlib.sha256((live / relative).read_bytes()).hexdigest() == digest
         if root.get('lightPngSha256'):
             assert sha((live / 'preview/suite/light.png').read_bytes()) == root['lightPngSha256']
+        for writer, digest in root.get('nativeWriterFilesRead', {}).items():
+            assert sha((live / 'source' / writer).read_bytes()) == digest, (key, writer, 'reviewed writer changed')
+            assert sha((archive / key / 'source' / writer).read_bytes()) == digest, (key, writer, 'archived writer changed')
+        if root.get('actualUnresizedNativeContact'):
+            assert sha((repo / root['actualUnresizedNativeContact']).read_bytes()) == root['nativeContactPngSha256'], key
         assert root.get('actualIndependentReviewJob', root.get('reviewJob')) == row['review']['jobId']
         root_checked.append(key)
     matches, browser_files = set(), set()

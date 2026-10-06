@@ -1,0 +1,69 @@
+{
+  "idle": {
+    "frames": 4,
+    "holds_ms": [
+      240,
+      240,
+      240,
+      240
+    ]
+  },
+  "attack": {
+    "frames": 6,
+    "holds_ms": [
+      600,
+      200,
+      100,
+      120,
+      220,
+      900
+    ]
+  },
+  "hit": {
+    "frames": 3,
+    "holds_ms": [
+      700,
+      180,
+      900
+    ]
+  },
+  "dead": {
+    "frames": 3,
+    "holds_ms": [
+      700,
+      150,
+      1700
+    ]
+  },
+  "skill": {
+    "frames": 5,
+    "holds_ms": [
+      700,
+      260,
+      160,
+      240,
+      900
+    ]
+  },
+  "poison": {
+    "frames": 2,
+    "holds_ms": [
+      420,
+      420
+    ]
+  },
+  "stun": {
+    "frames": 2,
+    "holds_ms": [
+      300,
+      300
+    ]
+  },
+  "sleep": {
+    "frames": 2,
+    "holds_ms": [
+      650,
+      650
+    ]
+  }
+}

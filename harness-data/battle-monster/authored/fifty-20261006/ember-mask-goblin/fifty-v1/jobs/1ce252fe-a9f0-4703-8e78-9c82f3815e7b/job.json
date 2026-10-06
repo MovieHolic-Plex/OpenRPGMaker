@@ -1,0 +1,43 @@
+{
+  "id": "1ce252fe-a9f0-4703-8e78-9c82f3815e7b",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T08:15:36.726436+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ember-mask-goblin/fifty-v1/jobs/1ce252fe-a9f0-4703-8e78-9c82f3815e7b",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ember-mask-goblin/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ember-mask-goblin/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ember-mask-goblin/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/ember-mask-goblin/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "22ebcb34f6510dd999d6451dea555103574647b2ca8d53a12f7bfccc5bea92d2",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7c778e4573a92737e49f64fd1a925c641dd386512e633fb885d16724f288ec9a",
+    "preview/suite/light.png": "342f708c8bc492919d2022a2f29dcaa007726865376743bd804b7d5377fac74d",
+    "preview/suite/dark.png": "0ba2339cf563d0a131572a5ef71867c361dd27e99489bcf9eeb51b01c41277b5",
+    "preview/suite/checker.png": "17933d2527b7e27a0535ee1d3ccfabb902c495e3ac026cac0073ff1ab9decec2"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T08:18:15.742852+00:00"
+}

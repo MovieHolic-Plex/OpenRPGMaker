@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-06T08:57:45.719846+00:00",
+  "passed": true,
+  "key": "ember-mask-goblin/fifty-v1",
+  "binding": "62d5580075d4e16b143777b6ba9e30121b37d3c6974432d6335e4e7eb4215c80",
+  "actualIndependentReviewJob": "7e96320e-4a85-46f5-977f-b3278df689bd",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "7c778e4573a92737e49f64fd1a925c641dd386512e633fb885d16724f288ec9a",
+    "preview/suite/light.png": "43d9a0d602e10393464e3878de860fa8a8cf38a62dea797696b63979dea2683e",
+    "preview/suite/dark.png": "1318f96d5b28b1d62a666a024f626e7a72e8acfe45667f58e4a6e877961677e3",
+    "preview/suite/checker.png": "7a1445c3de9de2947f49c386a0de01cdee5b9780c8f57292f62c91c8726f42a3"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-ember-mask-goblin.png",
+  "nativeContactPngSha256": "4d25b08b6dfd9a3964e24f7120afc55904259df29960bf2e100ca74a633d3092",
+  "actualUnresizedDarkNativeContact": "verify-shots/battle-monster-fifty/native-contact-ember-mask-goblin-dark.png",
+  "nativeWriterFilesRead": {
+    "author.py": "d3e3c492bcf80668a003efa767a7f5629265f32963830784f2aa59bdbfd48f51",
+    "additional.py": "c58cd3d179dbca623f587596ac1ed14d3281aea86d89574aa5f63dc8f3088e5e",
+    "refine.py": "996ed3fb7fbcb6cdbaa167652df6c32f227fe1290369b539720ec6bc9edb7432",
+    "repair_review.py": "8efe829b9662446cd4d4f6d7350c350a1b7bfe5e3bc26d8e1dfa3a1faf6d3344",
+    "repair_windup.py": "37dbe06c31f123377cf5280af6c3c3ecf181903e155afb79108f374e592f024e",
+    "repair_status_carving.py": "e456bcc452c475dc627010412e29aae9807bd4863ed474cf05cb84e757313c60",
+    "repair_join_pinholes.py": "30aae98a04ce1fb158a2aa627b9758fffb81a2256b7e79658d8fb9a7c99f4855"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actual final18pose native1x/nearest2x1248x984 light and samebinding dark sheet unresized. Orange singlehorn carvedmask/red limbs/graybrownvest/ashload with brightcoal, proper connected head-neck and ashstrap. Same strikingarm drawnback inwindup thenstep/large downforwardfist/higher recovery; backwardhead/outstretchedarm hit vsflatfallenbody. Mouthcore/three attachedfiretongues/chinliftreturn withtwoemberclumps. Carvedrecess retained inpoison/stun/closedeyesleep with lowfoldedbody, greenbubbles/stars. Explicit jaw/neck andhorn/mask pinhole replacement2pixels. Smallskill_c sole1pxhigher andsleeppairbodychanges are retained observations from keeper, not actualbattle timing approval. Read all7writers fullcontrolflow/callnames while shortening only ASCII literals: blank96 perindependentclusterframe andexplicitselectedrow patches, no generatedgeometry/wholebodyframe transformation; additional17calls onlyframe. All18nativePNG RGBA exactlymatch currentASCII/palette; actual independentkeep0issues after4repairs.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

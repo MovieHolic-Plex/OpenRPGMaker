@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "ca81dde6e5350d7dbb1e9e45f2a9608dde6873ff7d044fbf490c321b426ad4b5",
+  "priorReviewJob": "0ea05ab9-bb7c-46a1-872d-4c33c0bcbeee",
+  "issues": [
+    {
+      "pose": "poison_a",
+      "x": 58,
+      "y": 42,
+      "message": "At the bridge between the eye recesses and mouth, solid orange separates the dark cavities and turns the mask into an expressive skin face. Retain a narrow connected deep-shadow carving through approximately x55-62, y39-46, keeping the pained eye shapes and open mouth inset within it. Apply the corresponding repair to poison_b at its shifted face position. Preserve the existing crouch, belly hand and poison bubbles."
+    },
+    {
+      "pose": "stun_a",
+      "x": 61,
+      "y": 46,
+      "message": "The isolated small eyes and separate oval mouth lose the idle mask's connected carved face. Reconnect the recessed eye-to-mouth shadow around x58-65, y43-49, using the existing darkest face color and mask-shadow rim; express dizziness inside those recesses. Make the same local repair at the shifted face in stun_b while retaining the slack arms and changing star positions."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 61,
+      "y": 51,
+      "message": "Between the closed-eye strokes and tiny mouth, the carved facial hollow has been filled with flat orange, so the wooden mask reads as a different soft face. Preserve a connected recessed eye/nose/mouth area around x55-67, y47-57 and place the closed-eye strokes and small sleeping mouth within it. Carry the same construction into sleep_b at its shifted coordinates, retaining the low planted crouch and breathing displacement."
+    }
+  ],
+  "startedAt": "2026-10-06T08:38:55.246510+00:00"
+}

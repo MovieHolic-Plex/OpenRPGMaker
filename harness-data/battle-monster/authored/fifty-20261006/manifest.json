@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 22,
+  "archivedPassedSpecies": 23,
   "entireGoalComplete": false,
   "items": [
     {
@@ -200,6 +200,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "52685c0aa679734701f63ad8b879d896a70e09673eeb9410b8eb8f2c189e9746"
+    },
+    {
+      "key": "ember-mask-goblin/fifty-v1",
+      "binding": "62d5580075d4e16b143777b6ba9e30121b37d3c6974432d6335e4e7eb4215c80",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "414a2359524c9a065b547a8d04a9a78b302708fa2e8cacdad4240cc3344d309b"
     },
     {
       "key": "frost-ribbon-maiden/fifty-v1",

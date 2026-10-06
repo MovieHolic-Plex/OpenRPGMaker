@@ -1,0 +1,235 @@
+"""Small, explicitly located corrections selected after opening the actual PNGs.
+No loop propagates anatomical coordinates to other poses; each location is separate.
+"""
+def refine(frames):
+    def rows(name,x,y,text):
+        grid=[list(r) for r in frames[name]]
+        for dy,row in enumerate(text.strip('\n').splitlines()):
+            for dx,ch in enumerate(row):
+                if ch!='.':grid[y+dy][x+dx]=ch
+        frames[name]=[''.join(r) for r in grid]
+    # The ash tail in these lowered poses lacked its support at the neck/back.
+    # Hand-drawn gray clump and vest strap: deliberately not an automatic gap fill.
+    rows('poison_b',37,47,'''
+aaaao
+abbaaao
+abbaaaao
+.abbbaaao
+..abbaaavo
+..oaavvuuvo
+...ovvuuuuv
+....ovvuuv
+.....ovvv
+''')
+    rows('stun_a',38,49,'''
+aabao
+abbaaao
+abbbaaao
+.abbbaaao
+..abbaavvo
+..oavvuuuvo
+...ovvuuuuv
+....ovvuuv
+.....ovvv
+''')
+    rows('stun_b',38,49,'''
+aabao
+abbaaao
+abbbaaaao
+.abbbaaaao
+..abbaaavvo
+..oavvuuuvo
+...ovvuuuuv
+....ovvuuv
+.....ovvv
+''')
+    # Broader idle fists end at a visible short wrist, keeping the open armpit.
+    rows('idle_a',21,60,'''
+..ortttssro
+.ortttttssro
+ortttffttssro
+orttfffftssro
+ortttffttssro
+orrtttttssro
+.orrssssssro
+..oooooooo
+''')
+    rows('idle_b',23,61,'''
+..ortttssro
+.ortttttssro
+ortttffttssro
+orttfffftssro
+ortttffttssro
+orrtttttssro
+.orrssssssro
+..oooooooo
+''')
+    rows('idle_c',23,59,'''
+..ortttssro
+.ortttttssro
+ortttffttssro
+orttfffftssro
+ortttffttssro
+orrtttttssro
+.orrssssssro
+..oooooooo
+''')
+    # Folded rear calf across the collapsed vest has its own outline and toes.
+    rows('dead',33,83,'''
+..orrrssro
+.ortttsssro
+ortttttsssro
+orttttssssro
+orrttssssro
+.orrssssro
+..orrttssro
+...orrtttssro
+....oooooooo
+''')
+    # Irregular coals nestled in the ash, separately located in each pose.
+    rows('idle_a',26,38,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('idle_b',26,39,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('idle_c',25,38,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('windup',24,42,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('move',29,37,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('attack',30,43,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('recover',27,39,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('hit',22,41,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('dead',20,73,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('skill_a',26,38,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('skill_b',23,37,'''
+.aa
+anpo
+amw
+.ao
+''')
+    rows('skill_c',25,36,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('poison_a',25,43,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('poison_b',25,44,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('stun_a',26,47,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('stun_b',26,48,'''
+.aa
+amno
+amw
+.ao
+''')
+    rows('sleep_a',26,58,'''
+.aa
+awm
+aww
+.ao
+''')
+    rows('sleep_b',26,58,'''
+.aa
+amw
+aww
+.ao
+''')
+    # Three fire tongues have separately billowing tips instead of straight rays.
+    rows('skill_b',75,25,'''
+...m
+..mnm
+.mnpm
+mmnppm
+mnpppm
+mnnpm
+.mmm
+''')
+    rows('skill_b',82,29,'''
+.......m
+......mm
+.....mnm
+....mnnm
+...mnppm
+..mnpppm
+.mnnppm
+mmnnmm
+''')
+    rows('skill_b',77,47,'''
+..mm
+.mnnm
+mnppnm
+mnpppm
+.mmppm
+..mnnm
+...mm
+''')
+    # A one-pixel exhaling chest contour: preserves both hands and folded feet.
+    rows('sleep_b',44,77,'''
+vvo
+vvvo
+vuvo
+vuvo
+vvvo
+vvo
+''')

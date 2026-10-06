@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재22/50 통과
+# 신규50종 제작 · 현재23/50 통과
 
 ## 최초 두 종 확인
 
@@ -252,3 +252,22 @@ PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정�
 화린독사·매화정의 작은 지적 각1개를 유지한다. 남은28종까지 같은 목표이며 전체 완료나 설치를
 주장하지 않는다. 근거:twenty-two-passed-proof.json,root-review-frost-ribbon-maiden.json,
 native-contact-frost-ribbon-maiden.*,browser-proof-frost-ribbon-maiden.json,지속 출처22종.
+
+## 잿불탈귀 교정 통과 · 실제23/50
+
+잿불탈귀는 네 차례 실제 좌표 교정 뒤 독립 keep0지적이다. 감독이 현재18자세 native1배/최근접2배
+밝은/어두운 시트와 일곱 native writer의 실제 쓰기 본문·호출 연결을 읽었다. 주홍 나무 탈/
+한 뿔·붉은 팔/발·회갈 조끼·등 재 덩어리, 같은 공격 팔의 준비/전진/타격/회수, 턱과 목 및
+쓰러진 뿔 접합, 입 핵에서 뻗는 세 불꽃과 고개를 든 회수, 상태이상에도 유지된 가면 홈을
+확인했다. 새 교정의 투명 구멍 두 곳은 지정 좌표2픽셀만 바꿨다. 모든18PNG는 실제 격자와
+일치한다. skill_c 발은1px 높고 수면 쌍 변화는 작다는 실제 검수 관찰을 그대로 유지한다.
+형상 수학이나 몸 전체 변환으로 합격시키지 않았다.
+
+현재23/50/414자세/184GIF/전체false다. 같은23종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 원본 그림/저작 방식 확인을 마쳤다. 원래52판정/8선택 보존, 신규69행은 목표 위임 Allow다.
+화린독사·매화정의 작은 지적 각1개를 유지한다. 남은27종까지 같은 목표이며 전체 완료나 설치를
+주장하지 않는다. 읽기 전용 감독 증거 확인기는 기록된 writer/시트 해시를 실제 원본과 출처에서
+재확인하며 --expect-passed로 현재 종 수와 파일명을 맞춘다.
+근거:twenty-three-passed-proof.json,root-review-ember-mask-goblin.json,native-contact-ember-mask-goblin*,
+browser-proof-ember-mask-goblin.json,지속 출처23종. 같은 배율의 사람64/요괴96/봉황128 비교도 보존한다.

@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "65ebc28f2f851564df8476a5d53e69f4abb3197d710fa2cd0d92b21dea1fdb2e",
+  "priorReviewJob": "193d6710-61e1-4b98-85b8-e33bbbd77236",
+  "issues": [
+    {
+      "pose": "skill_c",
+      "x": 54,
+      "y": 39,
+      "message": "Fill this isolated transparent pixel at the raised mask's lower jaw/neck junction with the existing outline color #211B23, matching its left and right neighbors. It shows background through a solid join on the light and checker previews; preserve the surrounding neck and external negative space."
+    },
+    {
+      "pose": "dead",
+      "x": 69,
+      "y": 65,
+      "message": "Fill this isolated transparent pixel under the swept horn base, where it meets the fallen mask, with the existing outline color #211B23. All four direct neighbors are outline pixels; this background pinhole breaks the solid horn/mask seam. Preserve the horn silhouette and the space outside it."
+    }
+  ],
+  "startedAt": "2026-10-06T08:50:23.104711+00:00"
+}

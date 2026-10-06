@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including native 1x and nearest 3x pose previews. The large vermilion mask, single horn, grey-brown vest, broad feet and ash lump form a readable right-facing silhouette. Broad upper-left highlights and lower-right shadows give the mask, limbs and ash distinct volume. Windup, stride, connected downward fist, recovery, recoil and grounded collapse are readable with consistent anatomy. Skill preparation has a gold mouth core; the three flame branches emerge from that mouth, followed by the raised head and two ember chunks. Poison's abdominal clutch, stun's slack arms and stars, and sleep's lowered crouch and closed eyes are distinct states rather than tints; their paired changes are subtle. Two isolated background pinholes interrupt otherwise solid jaw/neck and horn/mask joins and need bounded pixel repairs. This recommendation is not a user selection. Static pose previews cannot establish battle timing, the hop trajectory, runtime integration or literal pxgrid authorship.",
+  "issues": [
+    {
+      "pose": "skill_c",
+      "x": 54,
+      "y": 39,
+      "message": "Fill this isolated transparent pixel at the raised mask's lower jaw/neck junction with the existing outline color #211B23, matching its left and right neighbors. It shows background through a solid join on the light and checker previews; preserve the surrounding neck and external negative space."
+    },
+    {
+      "pose": "dead",
+      "x": 69,
+      "y": 65,
+      "message": "Fill this isolated transparent pixel under the swept horn base, where it meets the fallen mask, with the existing outline color #211B23. All four direct neighbors are outline pixels; this background pinhole breaks the solid horn/mask seam. Preserve the horn silhouette and the space outside it."
+    }
+  ]
+}

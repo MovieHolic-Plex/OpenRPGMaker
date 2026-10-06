@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including native 1x and nearest 3x pose previews. The large vermilion mask, single horn, grey-brown vest, broad feet and ash lump form a readable right-facing silhouette. Broad upper-left highlights and lower-right shadows give the mask, limbs and ash distinct volume. Windup, stride, connected downward fist, recovery, recoil and grounded collapse are readable with consistent anatomy. Skill preparation has a gold mouth core; the three flame branches emerge from that mouth, followed by the raised head and two ember chunks. Poison's abdominal clutch, stun's slack arms and stars, and sleep's lowered crouch and closed eyes are distinct states rather than tints; their paired changes are subtle. Two isolated background pinholes interrupt otherwise solid jaw/neck and horn/mask joins and need bounded pixel repairs. This recommendation is not a user selection. Static pose previews cannot establish battle timing, the hop trajectory, runtime integration or literal pxgrid authorship.",
+  "issues": [
+    {
+      "pose": "skill_c",
+      "x": 54,
+      "y": 39,
+      "message": "Fill this isolated transparent pixel at the raised mask's lower jaw/neck junction with the existing outline color #211B23, matching its left and right neighbors. It shows background through a solid join on the light and checker previews; preserve the surrounding neck and external negative space."
+    },
+    {
+      "pose": "dead",
+      "x": 69,
+      "y": 65,
+      "message": "Fill this isolated transparent pixel under the swept horn base, where it meets the fallen mask, with the existing outline color #211B23. All four direct neighbors are outline pixels; this background pinhole breaks the solid horn/mask seam. Preserve the horn silhouette and the space outside it."
+    }
+  ],
+  "binding": "65ebc28f2f851564df8476a5d53e69f4abb3197d710fa2cd0d92b21dea1fdb2e",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7c778e4573a92737e49f64fd1a925c641dd386512e633fb885d16724f288ec9a",
+    "preview/suite/light.png": "a792815f90b48862cc8ef99958f0f06bfad3b848c1febc6b473fdaea46efa2d6",
+    "preview/suite/dark.png": "bd2c537e076e3f9ba0caf4b8a269d99b226944cb2b16072efb701efd297da877",
+    "preview/suite/checker.png": "ac67e142d18bb6d7388c4da49d3b707ebc33ca690dbb0403291f19379ddda0c7"
+  },
+  "jobId": "193d6710-61e1-4b98-85b8-e33bbbd77236",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T08:50:22.959475+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,506 @@
+{
+  "poison_a": {
+    "ink": 2104,
+    "bounds": [
+      18,
+      16,
+      92,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2017,
+        "bounds": [
+          18,
+          16,
+          68,
+          92
+        ]
+      },
+      {
+        "pixels": 43,
+        "bounds": [
+          84,
+          39,
+          92,
+          47
+        ]
+      },
+      {
+        "pixels": 32,
+        "bounds": [
+          77,
+          19,
+          83,
+          25
+        ]
+      },
+      {
+        "pixels": 12,
+        "bounds": [
+          73,
+          48,
+          76,
+          51
+        ]
+      }
+    ],
+    "sha256": "fed350a619a4956d7397f482907b9cf3c41dd2fa98cd111e27201e4c60355642"
+  },
+  "poison_b": {
+    "ink": 2115,
+    "bounds": [
+      18,
+      15,
+      90,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2026,
+        "bounds": [
+          18,
+          18,
+          69,
+          92
+        ]
+      },
+      {
+        "pixels": 51,
+        "bounds": [
+          80,
+          15,
+          89,
+          23
+        ]
+      },
+      {
+        "pixels": 24,
+        "bounds": [
+          76,
+          36,
+          81,
+          41
+        ]
+      },
+      {
+        "pixels": 14,
+        "bounds": [
+          87,
+          51,
+          90,
+          55
+        ]
+      }
+    ],
+    "sha256": "3cd2793abd67198ec1e0a442bff0e9c20cbca4d07113cb90add6fd959f258315"
+  },
+  "skill_a": {
+    "ink": 2326,
+    "bounds": [
+      20,
+      7,
+      68,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2326,
+        "bounds": [
+          20,
+          7,
+          68,
+          92
+        ]
+      }
+    ],
+    "sha256": "c44ccabfa21d3a29e1e3bce013a8a80435c8ecb3344e286d6b1307341711b0df"
+  },
+  "skill_b": {
+    "ink": 2860,
+    "bounds": [
+      16,
+      5,
+      89,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2860,
+        "bounds": [
+          16,
+          5,
+          89,
+          92
+        ]
+      }
+    ],
+    "sha256": "077715ff5d217d20c324c24aaf84791f45befa0b788fdb6edc24f57e1db36885"
+  },
+  "skill_c": {
+    "ink": 2534,
+    "bounds": [
+      18,
+      5,
+      90,
+      91
+    ],
+    "components4": [
+      {
+        "pixels": 2410,
+        "bounds": [
+          18,
+          5,
+          65,
+          91
+        ]
+      },
+      {
+        "pixels": 60,
+        "bounds": [
+          77,
+          18,
+          86,
+          27
+        ]
+      },
+      {
+        "pixels": 47,
+        "bounds": [
+          82,
+          40,
+          90,
+          48
+        ]
+      },
+      {
+        "pixels": 10,
+        "bounds": [
+          70,
+          35,
+          73,
+          37
+        ]
+      },
+      {
+        "pixels": 7,
+        "bounds": [
+          73,
+          32,
+          76,
+          34
+        ]
+      }
+    ],
+    "sha256": "d9c088979bd83384b763bf530d315c0b2cb73ff0af8badac290903a1c9bc9ab5"
+  },
+  "sleep_a": {
+    "ink": 1900,
+    "bounds": [
+      22,
+      25,
+      70,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 1900,
+        "bounds": [
+          22,
+          25,
+          70,
+          92
+        ]
+      }
+    ],
+    "sha256": "7f1b3fc4e81c15d5efd4a18213746bd88ff61e76a1178552eeea2daf22684059"
+  },
+  "sleep_b": {
+    "ink": 1903,
+    "bounds": [
+      22,
+      25,
+      70,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 1903,
+        "bounds": [
+          22,
+          25,
+          70,
+          92
+        ]
+      }
+    ],
+    "sha256": "f17597abf5a103fb7e56ce942c4aa9299475c0c02b5fb0665708d95a3269b000"
+  },
+  "stun_a": {
+    "ink": 2113,
+    "bounds": [
+      22,
+      16,
+      85,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2061,
+        "bounds": [
+          22,
+          21,
+          69,
+          92
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          30,
+          16,
+          38,
+          23
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          78,
+          25,
+          85,
+          31
+        ]
+      }
+    ],
+    "sha256": "7d0358562b0e3a55335f991df3d9b2134b6c42c5fa33c3c69818d741ffa07fcf"
+  },
+  "stun_b": {
+    "ink": 2099,
+    "bounds": [
+      22,
+      12,
+      76,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2047,
+        "bounds": [
+          22,
+          22,
+          70,
+          92
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          68,
+          12,
+          76,
+          19
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          22,
+          29,
+          29,
+          35
+        ]
+      }
+    ],
+    "sha256": "360ad5d005ba95bbc504d3870bfb4e74618bf6ee9c3e168a30ed26c4af4adbc3"
+  },
+  "attack": {
+    "ink": 2364,
+    "bounds": [
+      21,
+      14,
+      74,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2364,
+        "bounds": [
+          21,
+          14,
+          74,
+          92
+        ]
+      }
+    ],
+    "sha256": "ac48a6bc92a94fdc61a846d43482633468ea9f4163529e38d79384cc111c23ea"
+  },
+  "dead": {
+    "ink": 1398,
+    "bounds": [
+      14,
+      58,
+      78,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 1398,
+        "bounds": [
+          14,
+          58,
+          78,
+          92
+        ]
+      }
+    ],
+    "sha256": "f8cfcab700671e8aec72549b65e82a3179ed9fb7263ded65a6d4cdac932d6245"
+  },
+  "hit": {
+    "ink": 2320,
+    "bounds": [
+      17,
+      8,
+      80,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2320,
+        "bounds": [
+          17,
+          8,
+          80,
+          92
+        ]
+      }
+    ],
+    "sha256": "82ae8ff9275a0660a6ca37fba96ab10458cffe953c3b656e2cca7b9754fb1090"
+  },
+  "idle_a": {
+    "ink": 2398,
+    "bounds": [
+      20,
+      6,
+      69,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2398,
+        "bounds": [
+          20,
+          6,
+          69,
+          92
+        ]
+      }
+    ],
+    "sha256": "c3a1729f13c5fa71dc03df84d69b1d537513e5b67392f08ea290b5a55f8b398d"
+  },
+  "idle_b": {
+    "ink": 2359,
+    "bounds": [
+      22,
+      6,
+      68,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2359,
+        "bounds": [
+          22,
+          6,
+          68,
+          92
+        ]
+      }
+    ],
+    "sha256": "70a28709d6f172c22f7246a9202ec7c0d544feb9b9d55fa35b7ea3e05e52727b"
+  },
+  "idle_c": {
+    "ink": 2410,
+    "bounds": [
+      22,
+      5,
+      68,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2410,
+        "bounds": [
+          22,
+          5,
+          68,
+          92
+        ]
+      }
+    ],
+    "sha256": "3d8d2666a938470a6433d66cf1581c08b8b117f9714f879ca175c217949d61d5"
+  },
+  "move": {
+    "ink": 2364,
+    "bounds": [
+      18,
+      6,
+      74,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2364,
+        "bounds": [
+          18,
+          6,
+          74,
+          92
+        ]
+      }
+    ],
+    "sha256": "0f6b49aae5666a2a32007389237113f6a144763d6b5ee7ae4c59c3749c9cbe62"
+  },
+  "recover": {
+    "ink": 2276,
+    "bounds": [
+      22,
+      8,
+      70,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2276,
+        "bounds": [
+          22,
+          8,
+          70,
+          92
+        ]
+      }
+    ],
+    "sha256": "339c8ace019a5087a23a2355d3b0ae03ff7d61634aefbe1c450aa71977bc9d1b"
+  },
+  "windup": {
+    "ink": 2326,
+    "bounds": [
+      20,
+      10,
+      81,
+      92
+    ],
+    "components4": [
+      {
+        "pixels": 2326,
+        "bounds": [
+          20,
+          10,
+          81,
+          92
+        ]
+      }
+    ],
+    "sha256": "9315da34ef0afb3574f50bfbd10fd7081bfb10b0556be40b542d2d8cb02aecb0"
+  }
+}

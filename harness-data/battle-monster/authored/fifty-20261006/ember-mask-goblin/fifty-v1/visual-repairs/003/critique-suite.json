@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the actual portrait and light, dark and checker PNGs, including their native 1x and nearest 3x pose panels. The large orange single-horn mask, red limbs, broad feet, gray-brown vest and ash load form a clear right-facing silhouette. Upper-left light and broad shadow planes consistently separate the materials. The standing feet look planted; the fallen body reads as grounded. Windup, advancing step, lowered striking fist and recovery have connected arms and distinguishable silhouettes, with no obvious accidental transparent body holes or floating hands in these stills. Skill preparation has a gold mouth core; the three flame branches visibly originate at the mouth, and recovery raises the face with two separate ember clumps. Poison has a crouched belly-clutch, stun has slack arms and stars, and sleep has a low crouch and closed eyes: these are distinct drawn states rather than tint substitutions. However, the connected recessed eye/mouth carving established in idle is replaced by isolated marks and a mostly solid orange face in poison, stun and especially sleep, making the wooden mask change material and facial construction between states. Recommend preserving that carved face through the status poses. This is advisory visual review, not a user selection. Static pose previews cannot establish hop timing, impact continuity in playback, battle placement, palette/alpha compliance or literal-pixel authorship; no geometry PASS or actual battle approval is implied.",
+  "issues": [
+    {
+      "pose": "poison_a",
+      "x": 58,
+      "y": 42,
+      "message": "At the bridge between the eye recesses and mouth, solid orange separates the dark cavities and turns the mask into an expressive skin face. Retain a narrow connected deep-shadow carving through approximately x55-62, y39-46, keeping the pained eye shapes and open mouth inset within it. Apply the corresponding repair to poison_b at its shifted face position. Preserve the existing crouch, belly hand and poison bubbles."
+    },
+    {
+      "pose": "stun_a",
+      "x": 61,
+      "y": 46,
+      "message": "The isolated small eyes and separate oval mouth lose the idle mask's connected carved face. Reconnect the recessed eye-to-mouth shadow around x58-65, y43-49, using the existing darkest face color and mask-shadow rim; express dizziness inside those recesses. Make the same local repair at the shifted face in stun_b while retaining the slack arms and changing star positions."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 61,
+      "y": 51,
+      "message": "Between the closed-eye strokes and tiny mouth, the carved facial hollow has been filled with flat orange, so the wooden mask reads as a different soft face. Preserve a connected recessed eye/nose/mouth area around x55-67, y47-57 and place the closed-eye strokes and small sleeping mouth within it. Carry the same construction into sleep_b at its shifted coordinates, retaining the low planted crouch and breathing displacement."
+    }
+  ],
+  "binding": "ca81dde6e5350d7dbb1e9e45f2a9608dde6873ff7d044fbf490c321b426ad4b5",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7c778e4573a92737e49f64fd1a925c641dd386512e633fb885d16724f288ec9a",
+    "preview/suite/light.png": "e7efdf765765e263be9582c25a043ac5dcebbd83f9d8d53af60c3076f36f1171",
+    "preview/suite/dark.png": "f985ad2891821e5159ebca267499d770ac29d3be47642e9968daf3b57b425fe3",
+    "preview/suite/checker.png": "24f660312d42a09b78374906865ea6e43d2590625d48411e859adced9e4ef327"
+  },
+  "jobId": "0ea05ab9-bb7c-46a1-872d-4c33c0bcbeee",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T08:38:55.195754+00:00",
+  "userApproved": false
+}
