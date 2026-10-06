@@ -83,7 +83,16 @@ def inspect(order_file, actions_file, root):
                            sheets=sheets,frame=[24,32],actionFrame=read(action['request'])['canvas'],
                            walkAnchor=[12,31],actions=action_frames,
                            preview=dict(path=str((w/'views/sheet_x8.png').relative_to(root)),sha256=sha(w/'views/sheet_x8.png'))))
+    actor_ids = {a['id'] for a in actors}
+    requirements = manifest['productionContract'].get('requirementActors', {a['id']:[a['id']] for a in actors})
+    if (not isinstance(requirements, dict) or not requirements
+            or any(not isinstance(key,str) or not key or not isinstance(ids,list) or not ids
+                   or any(not isinstance(a,str) or a not in actor_ids for a in ids)
+                   for key,ids in requirements.items())
+            or {a for ids in requirements.values() for a in ids} != actor_ids):
+        raise ValueError('기획 재료와 제작 인물의 완전한 연결 목록이 필요합니다.')
     return dict(version=1,harness='charset-actor',scope='theme-actors',theme=manifest['theme'],
+                requirementActors=requirements,
                 actors=actors,independentSceneReview=False,humanDecision=None)
 
 
@@ -108,7 +117,9 @@ def collect(data,cid):
                receipt=dict(path=str(path.relative_to(root)),sha256=sha(path)),images=images,
                selection='전용 인물 걷기·행동 초안 · 공간 시각 검수와 최종 Allow 전')
     (folder/'art-actors-status.json').write_text(json.dumps(dict(ready=True,complete=False,receipt=batch['receipt']),ensure_ascii=False))
-    return dict(batch=batch,coverage={a['id']:a['sheets'] for a in receipt['actors']},theme=receipt['theme'])
+    sheets = {a['id']:a['sheets'] for a in receipt['actors']}
+    return dict(batch=batch,coverage={rid:[r for actor in ids for r in sheets[actor]]
+                                    for rid,ids in receipt['requirementActors'].items()},theme=receipt['theme'])
 
 
 if __name__=='__main__':
