@@ -266,7 +266,8 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [battleMusic(), ...(winSwitch ? [sw(winSwitch)] : []), ...win, music(map.bgm!.resourceId!)],
-      defeatBranch: [battleMusic(), text("동료들이 지쳤다. 회복 센터에서 다시 준비하자."), { kind: "recoverAll" }, transfer(project.maps[id(`${townFor(map)}_center`)] ?? project.maps[id("home_center")]!, entries.get(id(`${townFor(map)}_center`)) ?? entries.get(id("home_center"))!)],
+      defeatBranch: [battleMusic(), text("동료들이 지쳤다. 회복 센터에서 다시 준비하자."), { kind: "recoverAll" },
+        transfer(project.maps[id(`${townFor(map)}_center`)] ?? project.maps[id("home_center")]!, centerLanding(project.maps[id(`${townFor(map)}_center`)] ? `${townFor(map)}_center` : "home_center"))],
       escapeBranch: [battleMusic(), text("다시 준비해서 돌아오자.")] };
     let commands: Command[] = [...intro, fight];
     if (required) commands = [{ kind: "fork", condition: condition(required), then: commands, else: [text("먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", name)] }];
@@ -275,6 +276,13 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const e = event(map, suffix, at, commands, { graphic: charsetGraphic("tex_easyrpg_charset_people1", 6) });
     manifest.battles.push({ mapId: map.id, eventId: e.id, troopId: tid, level, ...(winSwitch ? { victorySwitch: winSwitch } : {}) });
     return e;
+  }
+
+  // 패배하면 원작처럼 직원 앞에서 다시 선다 — 출입문 칸 위로 옮기면 다음 걸음에 문이 발동하지 않아 헤맨다.
+  function centerLanding(centerKey: string): Point {
+    const room = project.maps[id(centerKey)]!;
+    const exit = entries.get(room.id)!;
+    return nearest(room, { x: exit.x, y: exit.y - 1 }, connected(room).filter(p => coord(p) !== coord(exit)), true);
   }
 
   function townFor(map: GameMap): string {
@@ -495,7 +503,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       { id: "league", title: "별빛 리그의 사천왕과 챔피언 나루에게 도전하라.", switchId: "mx_ending", requiresSwitchId: "mx_story_beacon" }] };
   project.endings = [{ id: "mx_ending_starlight", name: "여덟 빛의 약속", conditions: [condition("mx_ending")], priority: 100,
     presentation: { tone: "warm", musicResourceId: audio.ending, credits: "별빛섬 몬스터 원정\n기획·맵·이벤트: OPRN Studio\n몬스터·타일·음악: 오리지널 좌표 도트와 작곡\n함께 걸어 준 모든 동료에게" } }];
-  project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다.", recovery: { mapId: id("home_center"), ...entries.get(id("home_center"))! } };
+  project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다.", recovery: { mapId: id("home_center"), ...centerLanding("home_center") } };
   project.system.startActorIds = [DEFAULT_ACTOR_ID];
   project.session.partyActorIds = [DEFAULT_ACTOR_ID];
   project.system.sellPrices = [...(project.system.sellPrices ?? []).filter(p => p.itemId !== "item_capture_orb"), { itemId: "item_capture_orb", price: 0 }];

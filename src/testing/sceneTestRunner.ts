@@ -15,10 +15,13 @@ import {
   getFriendship,
   nextSessionRandom,
   setAudioState,
+  setMapTileOverride,
   showPictureState,
   startSession,
   type PlaySession,
 } from "@/project/session";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
+import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/project/types";
@@ -54,7 +57,7 @@ import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
-import { monsterBattlePartyOf } from "@/project/monsterCollection";
+import { monsterBattlePartyOf, monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
   advanceFieldSpawns,
@@ -272,6 +275,12 @@ export interface SceneRunnerOptions {
    * 기본은 꺼짐: 실제 소모를 그대로 본다.
    */
   readonly recoverBeforeRandomEncounters?: boolean;
+  /**
+   * QA 자동 플레이 전용 몬스터 전술: 상성이 크게 나쁜 리더를 대기 몬스터로 바꾸고, 야생은 파티가 6마리 미만이고
+   * 아직 없는 종이면 체력을 반 아래로 깎은 뒤 공을 던진다. 혼자 남은 스타터로는 상성 나쁜 관장을 못 넘는다.
+   * 기본은 꺼짐: run_scene_test 의 전투는 지금처럼 공격만 한다.
+   */
+  readonly monsterTactics?: boolean;
 }
 
 export interface SceneInteractionReceipt {
@@ -386,6 +395,7 @@ interface RunnerState {
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
   readonly recoverBeforeRandomEncounters: boolean;
+  readonly monsterTactics: boolean;
   facing: Dir;
   /** Runner-observable transcript of message text bodies shown so far. */
   readonly messages: string[];
@@ -645,6 +655,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
       { kind: "invalid-input", stepIndex: 0, mapId: session.currentMapId });
   }
   const runtimeMaps = structuredClone(project.maps);
+  for (const runtime of Object.values(runtimeMaps)) applyRuntimeMapOverrides(runtime, session);
   const map = runtimeMaps[input.mapId];
   const log: string[] = [];
   if (!map) {
@@ -677,6 +688,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     chasers: new Map(),
     encounterAccumulator: 0,
     recoverBeforeRandomEncounters: runnerOptions.recoverBeforeRandomEncounters === true,
+    monsterTactics: runnerOptions.monsterTactics === true,
     facing: "down",
     messages: [],
     gameOver: false,
@@ -1371,6 +1383,19 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         }
         step = interp.resume(undefined);
         break;
+      case "changeTile": {
+        // 실제 플레이어(applyChangeTileStep)처럼 세션 오버라이드에 남기고 지금 맵에도 칠한다 — 무시하던 때는
+        // 체육관 장치가 연 길이 헤드리스에서 벽으로 남아 관장에게 못 갔다(2026-10-06 몬스터 원정 새순 체육관).
+        const target = state.runtimeMaps[step.mapId];
+        const index = step.y * (target?.width ?? 0) + step.x;
+        if (target && index >= 0 && index < target.lowerTiles.length) {
+          setMapTileOverride(state.session, step.mapId, step.layer, index, step.tile);
+          invalidateTilePassabilityComponents(target);
+          applyRuntimeMapOverrides(target, state.session);
+        }
+        step = interp.resume(undefined);
+        break;
+      }
       case "relocateEvents":
         for (const eventId of step.eventIds) state.chasers.delete(eventId);
         refreshChasers(state);
@@ -1381,7 +1406,6 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "removeEvent":
       case "vehicle":
       case "setEventGraphicPattern":
-      case "changeTile":
       case "timer":
       case "moveEvent":
       case "waitForAllMovement":
@@ -2361,6 +2385,7 @@ function resetRuntimeMapForRunner(state: RunnerState, mapId: string): void {
   const source = state.project.maps[mapId];
   if (!source) return;
   state.runtimeMaps[mapId] = structuredClone(source);
+  applyRuntimeMapOverrides(state.runtimeMaps[mapId], state.session);
   state.encounterAccumulator = 0;
   for (const key of Object.keys(state.eventPositions)) {
     if (key.startsWith("__field_spawn__")) delete state.eventPositions[key];
@@ -2506,12 +2531,18 @@ function runHeadlessBattle(
     },
     rng: () => nextSessionRandom(state.session, "battle"),
   });
+  const troop = state.project.database.troops.find((entry) => entry.id === step.troopId);
+  const tactics: HeadlessTactics | undefined = state.monsterTactics && partyMonsters ? {
+    switches: 0,
+    catchable: troop?.uncapturable !== true && troop?.trainerBattle !== true,
+    owned: new Set(Object.values(state.session.monsterInstances ?? {}).map((instance) => instance.speciesId)),
+  } : undefined;
   for (let guard = 0; guard < 8000; guard += 1) {
     const snapshot = headlessBattleSnapshot(runtime);
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
-      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id);
+      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id, tactics);
       else runtime.tick(1000);
     } else {
       runtime.tick(1000);
@@ -2519,12 +2550,15 @@ function runHeadlessBattle(
   }
   const final = headlessBattleSnapshot(runtime);
   const result = final.result ?? "defeat";
+  const terminalDefeat = result === "defeat" && (!step.canLose || !!final.eventState.gameOverRequest);
   applyBattleRewardsToSession(state.session, {
     result,
     canLose: step.canLose,
     rewards: final.rewards,
     actors: [...final.actors, ...final.reserveActors],
     eventState: final.eventState,
+    // 잡은 몬스터도 실제 전투(playSceneBattle)처럼 세션에 넣는다 — 빠뜨리면 헤드리스 포획이 사라졌다.
+    capturedMonsters: terminalDefeat ? [] : final.capturedMonsters,
     participatingActorIds: final.participatingActorIds,
     ...(partyMonsters ? { monsterPartyMode: true } : {}),
   }, state.project);
@@ -2536,12 +2570,42 @@ function runHeadlessBattle(
  * 그러면 아무 수도 두지 못해 매 전투를 졌다(2026-09-24 몬스터 수집 도그푸딩: 스타터가 Lv3 야생에 패배).
  * 적을 때리는 기술을 위력 순으로 시도하고, 받아들여지지 않으면 다음 수로 간다.
  */
-function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string): void {
+interface HeadlessTactics {
+  switches: number;
+  readonly catchable: boolean;
+  readonly owned: Set<string>;
+}
+
+type HeadlessBattler = ReturnType<typeof headlessBattleSnapshot>["actors"][number];
+
+function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string, tactics?: HeadlessTactics): void {
   // activeActorId 는 기록 id 다(몬스터 배틀러는 id 가 "mon:<개체>" 라 recordId·monsterInstanceId 로 찾는다).
-  const active = snapshot.actors.find((actor) => actor.id === snapshot.activeActorId || actor.recordId === snapshot.activeActorId
-    || actor.monsterInstanceId === snapshot.activeActorId);
+  const matches = (actor: HeadlessBattler, id: string | undefined) => actor.id === id || actor.recordId === id || actor.monsterInstanceId === id;
+  const active = snapshot.actors.find((actor) => matches(actor, snapshot.activeActorId));
   const skills = new Map(project.database.skills.map((skill) => [skill.id, skill]));
   const target = snapshot.enemies.find((enemy) => enemy.id === targetEnemyId);
+  const bestDamage = (user: HeadlessBattler): number => !target ? 0 : Math.max(0, ...user.skillIds
+    .map((skillId) => skills.get(skillId))
+    .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
+    .map((skill) => predictSkillDamageFor(project, user, skill, target).amount));
+  const candidates = snapshot.switchCandidateActorIds.flatMap((id) => {
+    const battler = [...snapshot.reserveActors, ...snapshot.actors].find((actor) => matches(actor, id) && actor.hp > 0);
+    return battler ? [{ id, battler }] : [];
+  });
+  // 리더가 쓰러져 교체를 기다리면 다음 몬스터를 내보낸다 — 안 받으면 남은 몬스터가 있어도 「방어」만 하다 졌다.
+  if (snapshot.forcedSwitchActorId && candidates.length > 0) {
+    const pick = [...candidates].sort((a, b) => bestDamage(b.battler) - bestDamage(a.battler))[0]!;
+    runtime.performActorCommand({ kind: "switch", targetActorId: pick.id });
+    return;
+  }
+  if (tactics && active && candidates.length > 0 && tactics.switches < 3) {
+    const pick = [...candidates].sort((a, b) => bestDamage(b.battler) - bestDamage(a.battler))[0]!;
+    if (bestDamage(pick.battler) > bestDamage(active) * 2 + 2) {
+      tactics.switches += 1;
+      runtime.performActorCommand({ kind: "switch", targetActorId: pick.id });
+      if (headlessBattleSnapshot(runtime).turn !== snapshot.turn || headlessBattleSnapshot(runtime).activeActorId !== snapshot.activeActorId) return;
+    }
+  }
   // 상성까지 본 예상 피해 순 — 위력만 보면 같은 풀 타입에게 반감되는 풀 기술을 고집하다 졌다(2026-10-06 몬스터 원정 1번길).
   const expected = (skill: NonNullable<ReturnType<typeof skills.get>>): number =>
     active && target ? Math.max(0, predictSkillDamageFor(project, active, skill, target).amount) : (skill.power ?? 0);
@@ -2557,8 +2621,15 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
       .sort((a, b) => a.price - b.price)[0]
     : undefined;
   const healSelf: ActorCommand[] = potion && active ? [{ kind: "item", itemId: potion.id, targetEnemyId }] : [];
+  // 처음 보는 야생 종은 체력을 반 아래로 깎은 뒤 잡는다(파티 6마리까지).
+  const species = target ? monsterSpeciesForEnemy(project, project.database.enemies.find((enemy) => enemy.id === target.recordId)) : undefined;
+  const ball = tactics?.catchable && target && species && !tactics.owned.has(species.id) && target.hp <= target.maxHp * 0.5
+    && snapshot.actors.length + snapshot.reserveActors.length < 6
+    ? project.database.items.filter((item) => item.captureProfile && (snapshot.eventState.inventory[item.id] ?? 0) > 0).sort((a, b) => a.price - b.price)[0]
+    : undefined;
+  const throwBall: ActorCommand[] = ball && target ? [{ kind: "capture", captureItemId: ball.id, targetEnemyId: target.id }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
-    ? [...healSelf, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    ? [...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
