@@ -589,6 +589,8 @@ export interface SpriteDef {
   frames: number;
   frameWidth: number;
   frameHeight: number;
+  /** Pixel coordinate of the ground/contact point inside one frame; defaults to bottom-center. */
+  anchor?: { readonly x: number; readonly y: number };
 }
 
 export interface UploadedAssetRef {

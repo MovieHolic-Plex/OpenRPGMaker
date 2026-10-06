@@ -331,7 +331,7 @@ function createEditableEventSprite(
     spriteTexture.texture,
     spriteTexture.frame
   );
-  sprite.setOrigin(0.5, 1);
+  sprite.setOrigin(spriteTexture.origin?.x ?? 0.5, spriteTexture.origin?.y ?? 1);
   sprite.setScale(isCharsetSpriteTexture(spriteTexture)
     ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode, projectReferenceTileSize(store.getCurrent()))
     : editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));

@@ -65,6 +65,14 @@ export function validateAssets(value: unknown): void {
     requireNumber(`${id}.frames`, record.frames);
     requireNumber(`${id}.frameWidth`, record.frameWidth);
     requireNumber(`${id}.frameHeight`, record.frameHeight);
+    if (record.anchor !== undefined) {
+      const anchor = requireRecord(`${id}.anchor`, record.anchor);
+      const x = requireNumber(`${id}.anchor.x`, anchor.x);
+      const y = requireNumber(`${id}.anchor.y`, anchor.y);
+      const width = record.frameWidth as number, height = record.frameHeight as number;
+      assert(width > 0 && height > 0 && x >= 0 && x <= width && y >= 0 && y <= height,
+        `${id}.anchor must lie within its positive frame dimensions`);
+    }
   }
   requireRecord("assets.uploaded", assets.uploaded);
 }

@@ -1,3 +1,4 @@
+import { characterBaseOrigin } from "./characterOrigin";
 /**
  * 캐릭터 체공(hop) 채널 — 접지 좌표를 건드리지 않고 스프라이트만 위로 띄운다.
  *
@@ -282,11 +283,13 @@ export function applyCharacterLift(sprite: HopSprite | undefined, liftPx: number
   if (!sprite) return;
   const height = typeof sprite.height === "number" && sprite.height > 0 ? sprite.height : CHARSET_FRAME_HEIGHT;
   const scaleY = typeof sprite.scaleY === "number" && sprite.scaleY !== 0 ? sprite.scaleY : 1;
-  sprite.setOrigin(0.5, hopOriginY(liftPx, height, scaleY));
+  const origin = characterBaseOrigin(sprite);
+  sprite.setOrigin(origin.x, origin.y + hopOriginY(liftPx, height, scaleY) - 1);
 }
 
 /** 접지 복귀. 중단 경로(액션 전투 선딜/피격, 맵 전이, 이동 취소)에서 반드시 불러야 한다. */
 export function clearCharacterLift(sprite: HopSprite | undefined): void {
   if (!sprite) return;
-  sprite.setOrigin(0.5, 1);
+  const origin = characterBaseOrigin(sprite);
+  sprite.setOrigin(origin.x, origin.y);
 }
