@@ -1,0 +1,164 @@
+{
+  "idle_a": {
+    "ink_bounds": [
+      11,
+      8,
+      50,
+      60
+    ],
+    "sha256_rgba": "9b9e86ca6ab2dfba7d9569e751d9363d562c3d740f756372209b4a09c299451b"
+  },
+  "idle_b": {
+    "ink_bounds": [
+      11,
+      8,
+      50,
+      60
+    ],
+    "sha256_rgba": "f333e0e956d19ec3dbac01e95428468c8436304fddbdafa5d0c3bf48261678b5"
+  },
+  "idle_c": {
+    "ink_bounds": [
+      11,
+      8,
+      49,
+      60
+    ],
+    "sha256_rgba": "b1b0f98ec06edbb838a41cd8c8fb04575e69caff3c4527f4292159a76184982c"
+  },
+  "windup": {
+    "ink_bounds": [
+      5,
+      9,
+      38,
+      60
+    ],
+    "sha256_rgba": "6ebab76456b2a4f2de9a96284edc836af4c764b484f8fe7a5d0195704df6411c"
+  },
+  "move": {
+    "ink_bounds": [
+      11,
+      8,
+      52,
+      60
+    ],
+    "sha256_rgba": "1df8509e15c91c5c971f528dd3a96396e7e7a6f3a1e655ce641f508f096cf85d"
+  },
+  "attack": {
+    "ink_bounds": [
+      14,
+      12,
+      58,
+      60
+    ],
+    "sha256_rgba": "0dd92f158f11b8d35432bccfc3abfaeceba0cf132e51a6f236680da17e43d0dc"
+  },
+  "recover": {
+    "ink_bounds": [
+      11,
+      10,
+      55,
+      60
+    ],
+    "sha256_rgba": "edc09776c03fb20feb50eea68f7f8d7a18d1b05d004ffebeab7b74fb02e3c124"
+  },
+  "hit": {
+    "ink_bounds": [
+      10,
+      12,
+      48,
+      60
+    ],
+    "sha256_rgba": "d66f7b3d31e0854ca6312b9b0d34fd57388767580306cd8fb0bdc1cb33794f38"
+  },
+  "dead": {
+    "ink_bounds": [
+      8,
+      39,
+      59,
+      60
+    ],
+    "sha256_rgba": "144253a2138088d11d1af5aecf277553a0cf395227950eb8048314be18f20638"
+  },
+  "skill_a": {
+    "ink_bounds": [
+      11,
+      8,
+      51,
+      60
+    ],
+    "sha256_rgba": "10e6b817a37531fdaef5171eec2096605efb6532fee4b44ccb4996ebe4508cea"
+  },
+  "skill_b": {
+    "ink_bounds": [
+      9,
+      3,
+      62,
+      60
+    ],
+    "sha256_rgba": "17470c2512c8e19b4462c4672c3085b575bfac83a08116bae8a1dc7f71b10cb7"
+  },
+  "skill_c": {
+    "ink_bounds": [
+      11,
+      10,
+      59,
+      60
+    ],
+    "sha256_rgba": "5f2084f7ceeb571950e8bfeda72488d5b28b22ccdac8289842644ccadb46113c"
+  },
+  "poison_a": {
+    "ink_bounds": [
+      12,
+      11,
+      56,
+      60
+    ],
+    "sha256_rgba": "e5407af4d69c9e9d7d9b8e07941c27bdf4d257bae5546b2aaf24e107e91fc117"
+  },
+  "poison_b": {
+    "ink_bounds": [
+      11,
+      7,
+      58,
+      60
+    ],
+    "sha256_rgba": "c1755c3b3bf72418160432a87024a34044aa658499bd9cbe98370f2132b9832f"
+  },
+  "stun_a": {
+    "ink_bounds": [
+      10,
+      7,
+      49,
+      60
+    ],
+    "sha256_rgba": "142c12d5164aed2670d03e17706523ddd379097301ae886231f9094914643051"
+  },
+  "stun_b": {
+    "ink_bounds": [
+      9,
+      5,
+      48,
+      60
+    ],
+    "sha256_rgba": "d09c4fdd00371296c31f4ba084af75ebbe944e887449ed84201b8c75ac899407"
+  },
+  "sleep_a": {
+    "ink_bounds": [
+      11,
+      22,
+      55,
+      60
+    ],
+    "sha256_rgba": "7be4e1f259b75df41134d2ee73cccad0656dd359ad6d6715c3950a25bcce096f"
+  },
+  "sleep_b": {
+    "ink_bounds": [
+      11,
+      23,
+      55,
+      60
+    ],
+    "sha256_rgba": "cdb446adabe977566d8c14cd16054f563102cb93a00dcb4082fcc59708998315"
+  }
+}

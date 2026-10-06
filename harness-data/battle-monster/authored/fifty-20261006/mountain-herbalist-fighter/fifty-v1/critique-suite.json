@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the actual portrait and light, dark, and checker PNGs, including the native 1x and nearest 3x pose displays. The adult herbalist reads clearly through the broad brown headwrap, pale jacket, teal vest, herb basket, and wooden staff. Head and clothing highlights favor the upper left; the basket, cloth, and wood have distinct pixel clusters. Neck, shoulders, limbs, gripping hands, and staff remain visibly connected, with no obvious unintended transparent holes. Standing and crouched feet share a consistent ground line; the fallen pose rests on that line. Windup, advancing raised staff, downward strike, and recovery communicate the intended attack sequence while retaining the same character. The skill grows from the actual staff tip into three green leaves and teal energy, followed by a lowered staff and departing fragments. Poison uses a hand-to-mouth reaction and a deeper crouch; stun has separate wobbling poses and overhead stars; sleep uses seated, closed-eye poses with small changes between frames. These are visibly different states rather than palette tints. Dark contours lose some contrast on the dark background, especially at the boots, but the poses remain legible. The idle changes and sleep breathing changes are subtle. This is a recommendation for the supplied static pose preview only, not user selection or battle approval: animation timing, movement interpolation, battle-scale visibility, exact alpha compliance, and literal-grid/model authorship cannot be established from these PNGs alone.",
+  "issues": [],
+  "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "f7cdac39d1ef6a333bd65b08bf2e211c55135c9bd5444ce27d18901ba08d6443",
+    "preview/suite/light.png": "ec46bc90c20768d324da78d292ae83cfe2ccc0013f5d20b76b2cbda1c902c33c",
+    "preview/suite/dark.png": "14d90e7db15240a5a5f007a0b4d1be03105d29b592dc0dd4617617b3a4b60fe5",
+    "preview/suite/checker.png": "79f8952602f0345a90bdfae90fb077dc7dd7bf9d21824fcd5dc1ba9e6164c014"
+  },
+  "jobId": "2f5cabeb-5db5-40ef-a7f8-e12965d7dbe3",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T11:04:09.314180+00:00",
+  "userApproved": false
+}

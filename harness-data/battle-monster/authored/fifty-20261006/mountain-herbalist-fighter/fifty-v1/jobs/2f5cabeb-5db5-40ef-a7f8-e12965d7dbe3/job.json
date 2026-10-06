@@ -1,0 +1,43 @@
+{
+  "id": "2f5cabeb-5db5-40ef-a7f8-e12965d7dbe3",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T11:02:07.001160+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/jobs/2f5cabeb-5db5-40ef-a7f8-e12965d7dbe3",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/mountain-herbalist-fighter/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "aa23b344580c33fe0c1e908fd46409dc9c36ed8b0cdd6ffac66360312dd1e8d8",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "f7cdac39d1ef6a333bd65b08bf2e211c55135c9bd5444ce27d18901ba08d6443",
+    "preview/suite/light.png": "ec46bc90c20768d324da78d292ae83cfe2ccc0013f5d20b76b2cbda1c902c33c",
+    "preview/suite/dark.png": "14d90e7db15240a5a5f007a0b4d1be03105d29b592dc0dd4617617b3a4b60fe5",
+    "preview/suite/checker.png": "79f8952602f0345a90bdfae90fb077dc7dd7bf9d21824fcd5dc1ba9e6164c014"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T11:04:09.092073+00:00"
+}

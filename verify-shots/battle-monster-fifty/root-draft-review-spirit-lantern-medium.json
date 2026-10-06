@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T11:04:32.557352+00:00",
+  "passed": false,
+  "key": "spirit-lantern-medium/fifty-v1",
+  "binding": "4d3101d96241012826b1f03f20c3d82d32375703181f6474c64b6e2bd9e7fb7f",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-spirit-lantern-medium-before-initial-review.png",
+  "nativeContactPngSha256": "56230b0801240c2e41fbeb716bb2d05082a3ad22615b81ef34b3a660e7fa74d9",
+  "nativeWriterFilesRead": {
+    "author_native.py": "2c41ab985f025ba1130e2a4d32251a4f084e67636dab1c1aa2ca7cec86174344"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized. Adultwoman/quietsmallrightface/highdarkhairbun/goldpin/creambroad sleeves/redskirt/leftteallantern/rightsealpalm. Gatheredlanternwindup/advancestep/rightpalmstrike/retraction, leaningface/shoulderhit andlowfoldedhorizontaldead vsclosed-eye seatedsleep. Teallanterncore/two curvedteal soulflamepaths fromrightfingertips thenhandsreturned/two residualflames. Purplehand-onabdomen poison/tealparticles, slackhandstun withstars, seatedclosedeyesleeppairlowerhead/shoulder. Read full write_frames/apply_explicit_row_edits/apply_explicit_pixel_edits bodies/allmoduleflow andcalls. Literal per-pose blocks+individualfullrow/xystring patches only. No generatedgeometry/wholeframe transformation. Render calls onlyPNG/GIF/diagnosticboards andreadback. All18nativePNG exactlymatch ASCII/palette. Actual independent result pending; noAllow/passclaim."
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "mountain-herbalist-fighter/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T11:04:54.323792+00:00",
+    "requestId": "a599b662-1a39-5be0-a5f5-0d0a6efebd14",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "mountain-herbalist-fighter/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "74f7f5ab9c536157c8c9c230d5045bfaf7c2afc72cb0eb8fef6e3680fde1236f",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T11:04:54.323792+00:00",
+    "requestId": "a599b662-1a39-5be0-a5f5-0d0a6efebd14",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "mountain-herbalist-fighter/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "059437c2b29e04d4b6b7f24125028b65f28aacb9af7d0dd6be422ef2fdd037cc",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T11:04:54.323792+00:00",
+    "requestId": "a599b662-1a39-5be0-a5f5-0d0a6efebd14",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

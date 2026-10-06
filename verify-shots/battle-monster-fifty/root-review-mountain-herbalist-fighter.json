@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T11:09:48.218763+00:00",
+  "passed": true,
+  "key": "mountain-herbalist-fighter/fifty-v1",
+  "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+  "actualIndependentReviewJob": "2f5cabeb-5db5-40ef-a7f8-e12965d7dbe3",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "f7cdac39d1ef6a333bd65b08bf2e211c55135c9bd5444ce27d18901ba08d6443",
+    "preview/suite/light.png": "ec46bc90c20768d324da78d292ae83cfe2ccc0013f5d20b76b2cbda1c902c33c",
+    "preview/suite/dark.png": "14d90e7db15240a5a5f007a0b4d1be03105d29b592dc0dd4617617b3a4b60fe5",
+    "preview/suite/checker.png": "79f8952602f0345a90bdfae90fb077dc7dd7bf9d21824fcd5dc1ba9e6164c014"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-mountain-herbalist-fighter.png",
+  "nativeContactPngSha256": "a53c7c073267f63354652591948afe258b70eb530b74145fef55569760559026",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "c7a947d298b0d3109d33a26dd366d8b7a050072e0e5e01e4b6a22a0039cec9f2"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened all18 final native1x/nearest2x864x696 unresized. Brownheadwrap/quietadultface/pale sleeves/tealvest/herbbasket/connectedwoodstaff. Shoulderwindup/raisedstaffadvancestep/downstroke/retract, bentheadhit andlowhorizontalfallenbody distinct fromclosedeye seatedsleep. Threegreenleaves andtealenergy fromactualstafftip; poisonhandmouth/deepercrouch, stars/slackkneesstun, seatedclosed-eye head/shoulderchanges. Read complete author.frame body andallmoduleflow/calls at finalc7a947 hash; eachblank64canvas filledonlyliteralstatic y/x/pixelstrings withboundschecks. No generatedgeometry/automaticwholeframe transformation. Render readsgrids andwritesPNG/GIF/diagnosticboards only. All18nativePNG exactlymatch ASCII/palette. Actual initialkeeper0formalissues retains lowdarkboot/contourcontrast andsubtleidle/sleepchanges. Battlecontact/runtime/timingnotclaimed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

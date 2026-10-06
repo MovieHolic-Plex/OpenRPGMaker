@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "mountain-herbalist-fighter",
+    "name": "산야약객",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "성인 남성 조선/무협 SD 적. 머리18~21px/피부 얼굴12~14px, 실제 키50~54px, 우향3/4 차분한 눈과 눈썹. 검은 머리/갈색 넓은 두건, 회백 저고리와 녹청 조끼, 등에 작은 약초 바구니, 오른손 짧은 나무 지팡이. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "지팡이를 어깨로 당김 → 앞발 내딛기 → 연결된 지팡이손 내려치기 → 지팡이/발 회수.",
+    "skill": "약엽탄: 지팡이 꼭대기 녹빛 잎 핵 → 실제 끝부터 세 잎과 청록 기 발사 → 지팡이 낮추고 잎 잔기.",
+    "resourceId": "jf-enemy-mountain-herbalist-fighter",
+    "kind": "human",
+    "reviewActions": true,
+    "gender": "male",
+    "role": "taoist",
+    "age": "adult"
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

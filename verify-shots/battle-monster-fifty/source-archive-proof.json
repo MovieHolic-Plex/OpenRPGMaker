@@ -363,6 +363,17 @@
     "selectedPackSha256": "e9857deb9d6a82b12fb42720c3e6972740e6ec9f362e639d2ea888c7fd69c917"
   },
   {
+    "key": "mountain-herbalist-fighter/fifty-v1",
+    "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "813628a8c83169e9cffd75d15a7009722430c7563053e980241b60bd4f41061d"
+  },
+  {
     "key": "sun-gold-phoenix/fifty-v1",
     "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
     "nativeCell": 128,

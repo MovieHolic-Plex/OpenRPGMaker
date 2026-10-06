@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재34/50 통과
+# 신규50종 제작 · 현재35/50 통과
 
 ## 최초 두 종 확인
 
@@ -473,3 +473,30 @@ final-adjustments/render.transcribe의 전체 쓰기 본문·모듈 흐름·호�
 근거:thirty-four-passed-proof.json,세 종 root-review/native-contact/browser-proof,
 progress-skill_b-silk-fan-sorceress-golden-bell-monk-white-hair-saber-master.*,지속 출처34종.
 전체50 완료나 게임 프로젝트 설치/실전 접촉·피해 동기화 완료를 주장하지 않는다.
+
+
+## 산야약객 통과 · 실제35/50 · 혼등무녀 초기 교정
+
+산야약객은 최초 실제 독립 GPT 6.1 sol/high keep0지적이다. 감독이 현재18자세 native1배/
+최근접2배864×696 원본 시트와 author_rows.frame 전체 쓰기 본문·모듈 흐름·호출을 읽었다.
+갈색 두건/작은 성인 얼굴/미백 소매/청록 조끼/약초 바구니와 연결된 나무 지팡이, 어깨 준비·
+올려 전진·내리쳐 타격·회수, 기운 피격과 낮은 수평 쓰러짐/감긴 눈의 앉은 수면, 실제 지팡이
+끝의 세 초록 잎/청록 기운을 확인했다. 독의 입가 손/깊은 웅크림, 별/굽은 무릎 기절, 작은
+머리·어깨 수면 변화가 구분된다. 직접 지정 y/x/ASCII 행만 저장하고 형상 생성/몸 전체 변환이
+없다. 실제18PNG와 ASCII/팔레트가 같으며 공개 후 원본/시트/writer 해시를 다시 읽었다.
+검수 요약의 어두운 신발·윤곽 대비와 작은 대기/수면 변화 관찰을 보존한다.
+
+혼등무녀는 초기 실제 독립 rework2지적이며 통과로 세지 않는다. 감독이 초기18자세와
+직접 저작 writer의 전체 쓰기 본문·모듈 흐름·호출을 읽고 draft(false)/당시 원본 시트/실제
+job/result를 보존했다. 오른손 끝 연결은 유지하되 각진 분기 번개를 두 둥근 혼불 머리/굽은
+꼬리로 구분하고, 손잡이 옆의 짧은 진홍 끈을 치마 윤곽과 구별하는 실제 별도 교정 중이다.
+여성 궁수·철권 무인의 별도 실제 저작도 진행 중이며 전체50종 목표는 유지한다.
+
+현재35/50/630자세/280GIF/전체false다. 같은35종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/저작 방식을 확인했다. 원래52판정/8선택 보존, 신규105행은 사용자
+목표 위임 Allow다. 화린독사·매화정 각1개, 옥적무인2개, 비단선술사1개 실제 minor를 보존한다.
+남은15종까지 같은 기준이며 전체50 완료/게임 설치·실전 전투 완료를 주장하지 않는다.
+근거:thirty-five-passed-proof.json,root-review-mountain-herbalist-fighter.json,
+native-contact-mountain-herbalist-fighter.*,browser-proof-mountain-herbalist-fighter.json,
+draft-independent-rework-spirit-lantern-medium-initial.json,지속 출처35종.

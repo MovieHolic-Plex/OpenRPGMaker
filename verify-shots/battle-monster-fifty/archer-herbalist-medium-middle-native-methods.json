@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-06T11:00:42.526876+00:00",
+  "actualMiddleVisual": "progress-idle_a-crimson-bow-huntress-mountain-herbalist-fighter-spirit-lantern-medium.png",
+  "wholeGoalComplete": false,
+  "approvalClaim": false,
+  "claimScope": "Draft native writer method inspection and actual middle idle image. Final source binding/all18 native previews/actual keeper/native pack/archive/browser remain required. Literal data represented by sizes; full method logic and module flow read without relying on truncated initial output.",
+  "items": [
+    {
+      "monster": "crimson-bow-huntress",
+      "writer": "author_rows.py",
+      "sha256": "c2f2174226e16494dd8da1c2491364bf6575a2f73d3b13e945845231d28fbeee",
+      "methodsActuallyRead": [
+        "frame",
+        "replace_rows",
+        "pixels"
+      ],
+      "nativeWriterMethodsInspected": true,
+      "idleMiddleVisualActuallyOpened": true,
+      "full18NativePreviewReviewCompleted": false,
+      "passed": false
+    },
+    {
+      "monster": "mountain-herbalist-fighter",
+      "writer": "author_rows.py",
+      "sha256": "cbb84d52be3ef43085b5690040ca8d9201731df3f5df314ad4438f8df402ef33",
+      "methodsActuallyRead": [
+        "frame"
+      ],
+      "nativeWriterMethodsInspected": true,
+      "idleMiddleVisualActuallyOpened": true,
+      "full18NativePreviewReviewCompleted": false,
+      "passed": false
+    },
+    {
+      "monster": "spirit-lantern-medium",
+      "writer": "author_native.py",
+      "sha256": "2c41ab985f025ba1130e2a4d32251a4f084e67636dab1c1aa2ca7cec86174344",
+      "methodsActuallyRead": [
+        "write_frames",
+        "apply_explicit_row_edits",
+        "apply_explicit_pixel_edits"
+      ],
+      "nativeWriterMethodsInspected": true,
+      "idleMiddleVisualActuallyOpened": true,
+      "full18NativePreviewReviewCompleted": false,
+      "passed": false
+    }
+  ]
+}
