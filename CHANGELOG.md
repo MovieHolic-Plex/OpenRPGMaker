@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.157.1 — 2026-10-07
+
+### 수정
+
+- count approved preserved sources as authored theme coverage (`82326b4`)
+- keep scene-bound coverage links across collection batches (`a390106`)
+- accept same-theme actor sheets as preserved-source receipts (`883296e`)
+- admit hash-bound native shelf re-review in candidate collection (`8fd9840`)
+- **assistant** — check_reachability accepts a single to point (`bb11e1e`)
+- **editor** — kit overlay tiles of bundled sheets paint on the upper layer (`00b0e5f`)
+- **assistant** — show_map_region reads uploaded charsets stored by ref (`124177b`)
+- **editor** — tile_erase finds kit ground via layer backing; reference reads find the category owner (`4fc7427`)
+- **editor** — route tiles with an authored layer backing to their declared layer (`6805d68`)
+- **qa** — monster autoplay trains in short chunks, heals at 60% HP, retries knocked-out walks (`5106c85`)
+
+### 문서
+
+- record super-harness coverage accumulation and actor action gap (`263da5a`)
+- **openwiki** — monster film cases and bundled kit layer routing (`8c49ce8`)
+
+### 테스트
+
+- **harness** — follow-up fixture reads the campaign from ctx.project (`ef92eb6`)
+- **harness** — build the follow-up campaign fixture in bun, not inside vite-node (`65026e2`)
+- **harness** — film monster-followup — ask the assistant to fill an empty corner of an existing monster game (`de95940`)
+- **harness** — film monster cases for the desert and harbor briefs, record gym 1 team (`043dd7f`)
+
 ## 0.157.0 — 2026-10-06
 
 ### 기능
