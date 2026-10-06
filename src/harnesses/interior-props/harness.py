@@ -414,13 +414,23 @@ def _finish(r, code):
     if not os.path.exists(base + '.pxg'):
         if att == 1 or code == 'timeout':
             return store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=f'후보 파일 없음(종료 코드 {code})')
+    check_path = base + '.check.json'
+    if os.path.exists(check_path):
+        os.replace(check_path, check_path + f'.before-check-{time.time_ns()}')
     ck = subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/check_candidate.py', base + '.pxg'],
                         cwd=r['root'], capture_output=True, text=True)
     try:
-        j = json.load(open(base + '.check.json'))
+        j = json.load(open(check_path))
+        if (not isinstance(j, dict) or type(j.get('ok')) is not bool
+                or not isinstance(j.get('hard'), list)
+                or ck.returncode != (0 if j['ok'] else 1)):
+            raise ValueError('검사 종료 코드와 새 보고서가 일치하지 않습니다.')
         hard = j.get('hard', []); ok = 0 if hard or not j.get('ok') else 1
-    except (OSError, ValueError):
-        hard, ok = [(ck.stdout + ck.stderr)[-400:]], 0
+    except (OSError, ValueError) as error:
+        # A crashed checker must not accept a previous worker-written report or
+        # spend another drawing attempt on an infrastructure failure.
+        return store.update_run(r['id'], status='failed', ended=store.now(), ok=0, review='',
+                                error=('기계 검사 실행 오류: ' + str(error) + ' ' + (ck.stdout + ck.stderr)[-300:])[:500])
     if ok and os.path.exists(base + '.png'):   # 파생 묶음: 원본 칸·고치지 않는 칸은 화소 그대로(derive.lock_check)
         from . import derive
         from common import objects_by_id
