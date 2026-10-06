@@ -4,6 +4,7 @@ import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/command
 import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
+import { normalizeVisualTopOverhangPx } from "../mapVisualBounds";
 import { normalizeSunlight } from "../sunlight";
 import { normalizeAiAuthoring } from "../aiAuthoring";
 import { normalizeGameDesignBrief } from "../gameDesignBrief";
@@ -188,6 +189,9 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   normalizeProjectRelief(project);
   for (const map of Object.values(project.maps)) {
     if (map.sunlight !== undefined) map.sunlight = normalizeSunlight(map.sunlight);
+    const overhang = normalizeVisualTopOverhangPx(map.visualTopOverhangPx);
+    if (overhang !== undefined) map.visualTopOverhangPx = overhang;
+    else delete map.visualTopOverhangPx;
     const climate = normalizeMapClimate(map.climate);
     if (climate) map.climate = climate;
     else delete map.climate;

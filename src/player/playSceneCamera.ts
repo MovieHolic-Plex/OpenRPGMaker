@@ -12,6 +12,7 @@ import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
 import { reliefTopOverhangPx } from "@/player/playSceneRelief";
+import { normalizeVisualTopOverhangPx } from "@/project/mapVisualBounds";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
 
@@ -59,7 +60,8 @@ function syncRuntimeCameraBounds(camera: Phaser.Cameras.Scene2D.Camera, map: Gam
   const viewHeight = camera.height / zoom;
   const mapWidth = Math.max(tile, map.width * tile);
   // 높이 지형: 북쪽 끝 고지대는 월드 y=0 위로 그려진다 — 경계를 그만큼 위로 넓혀야 잘리지 않는다.
-  const overhang = reliefTopOverhangPx(map, tile);
+  const overhang = Math.max(reliefTopOverhangPx(map, tile),
+    normalizeVisualTopOverhangPx(map.visualTopOverhangPx) ?? 0);
   const mapHeight = Math.max(tile, map.height * tile + overhang);
   const paddingX = Math.max(0, (viewWidth - mapWidth) / 2);
   const paddingY = Math.max(0, (viewHeight - mapHeight) / 2);
