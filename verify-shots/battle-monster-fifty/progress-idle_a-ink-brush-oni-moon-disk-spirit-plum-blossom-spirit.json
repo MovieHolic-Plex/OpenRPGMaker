@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "ink-brush-oni",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/ink-brush-oni/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "782e70ba2d4cca5fe1466d5471d176b2079dcbb17f76a78515e51b364b3493e3",
+    "cell": 96,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": "ff8674444190809619f31721584c852224ae8fda46ed0682686bea9798ef7394",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moon-disk-spirit",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/moon-disk-spirit/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "734fb89987e99fe7ce956007507a0d0d0746415be88495c3d349b3049f757b30",
+    "cell": 96,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": "cd71efd4bb769f896f4e8a342eb43c4cfc6cf485f9817ebf41b5b60f440ab0cf",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "plum-blossom-spirit",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/plum-blossom-spirit/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "5707b1f50dd3886c9c5e93fe6c081b8fca51fc4f8564b35d9689eee4c57b378b",
+    "cell": 96,
+    "pose": "idle_a",
+    "writtenGridCount": 9,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
