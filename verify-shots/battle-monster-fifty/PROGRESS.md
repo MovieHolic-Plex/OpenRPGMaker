@@ -760,3 +760,5 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 선택 ZIP/PNG18/디코딩8GIF의 픽셀·노출시간과 현재 source 및 정본 source archive45종을 다시 읽었다. 감독이 실제 데스크톱 정지/375·320px 화면을 열었다.8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
 - 현재 합격 **45/50종 · 810자세 · 360GIF**. 동물10/요괴16/사람12(여성6)/보스7; 남은5종128px 보스. 기존 결정52행/선택8건 보존, 새 위임135행/전체187행, 기존 정식 minor11건 유지. 대시보드 Allow53은 기존8+신규45다. 전체50 완료는 false다.
 - 청동정마 둘째 수정 원본18자세·현재 세 writer의 전체 로직을 실제 열고 읽었다. 피격의 기울어진 입구/다리, 쓰러진 솥의 어두운 입구와 별도 손잡이, 준비 기 핵을 확인했다. 새 실제 `8caeabc2-041f-472e-b8b9-aa27af781de0` rework1건을 terminal 작업·불변 snapshot18/검수4PNG/writer 해시와 함께 보존하고 셋째 수정 중이다. 설갈사자왕/옥갑전갈왕 최초 저작도 실제 고정 모델로 이어진다. 근거: `forty-five-passed-proof.json`, `root-review-thousand-year-pine-king.json`, `browser-proof-thousand-year-pine-king.json`, `source-archive-proof.json`.
+
+- 같은 배율의 천년송왕/청동정마/설갈사자왕 대기 원본 중간판을 제공했다. 사자는 당시5/18자세 초안이고 청동정마는 수정 중이며 이 둘을45종 합격에 넣지 않는다.
