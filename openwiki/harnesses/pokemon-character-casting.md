@@ -1,5 +1,62 @@
 # Pokémon character casting — browser Allow / Deny
 
+## Campaign NPC adoption and natural entrances (2026-10-06)
+
+The user explicitly requested applying the existing template character designs to
+all campaign NPCs and removing portal arrows. This is integration authorization
+recorded as `source: explicit-user-message`; it is **not** a fabricated browser
+Allow. Portable harness votes and immutable candidate packages remain untouched,
+and its normal reviewed-download/export gates still require their current votes.
+
+`scripts/content/prepare-npc-wayfinding.mjs` consumes a fresh official host read,
+a pinned role selection, the independent harness directory, and the verified
+portable asset cache. It checks every selected PNG/GIF/recipe/template hash and
+replays the existing bundle verifier before packing. `pack-template-npc-cast.py`
+centers native 16×32 poses in 24×32 cells with four transparent columns per side;
+all 180 NPC poses are recovered exactly, without scaling. The existing hero slot
+is retained byte for byte. The two existing cast resource IDs and role slots are
+preserved so trainer-intro lookup and old saves keep working. Field graphics use
+manual scale 1 and the candidate's 130ms gait cadence.
+
+The campaign patch covers 127 human NPC pages and replaces 8 misplaced human
+sign graphics with signposts. Transfer arrows are removed from all 142 portals.
+Seventeen ambiguous town entrances move to authored house doors, piers, stone
+stairs, or gates; inverse transfers and `world-manifest.json` move with them.
+Three town maps extend six cells to the east for the school/garden/tower building,
+preserving existing building pieces, walkable coordinates and resident patrols.
+The shared campaign sign resource now uses the existing atlas's rectangular wood
+notice board (tile582), so informational signs also have no arrow-shaped graphic.
+Pier signs are beside the boarding lane rather than over its transfer trigger.
+Existing project-owned tile references and kit rows supply geometry;
+no new tile art or atlas numbering is introduced. Indoor exit rugs, league doors,
+and continuous boundary paths reveal the remaining transitions.
+
+`audit-npc-wayfinding.mjs` checks new standing/route obstructions and overlapping
+solid events against the previous document. The preparation script also checks
+every portal/landing with real engine collision and preserves database, session,
+start, system, opening, and music. Save only through `monster-expedition-store.mjs`
+with source-SHA CAS, backup and fresh host reload. Export from that reloaded copy.
+
+`scripts/qa/runtime/npc-wayfinding-native.probe.mjs` observes the actual compiled
+player in an isolated genuine predecessor slot. It visits all campaign maps,
+checks visible NPC cell size/scale and absent arrow sprites, walks through each
+relocated entrance using keyboard input, checks school return coordinates, and
+samples a moving human NPC's frames/positions. Conditional exits use explicitly
+recorded temporary QA progression flags for those entrances only. Reload the
+genuine slot between the map-observation and input phases: observing the ending
+map can start an interpreter, and debug teleports do not cancel it. Wait for the
+scene's real idle/input state after a transfer, rather than only its map ID.
+Use the loopback server address for
+HTML-instrumented Playwright runs: fulfilling HTTP `mdc-server` HTML can trigger
+Chromium's private-network restriction for its local script/styles. Public browser
+navigation does not intercept the HTML and uses the normal game URL.
+
+Evidence: `verify-shots/npc-wayfinding-20261006/`. This focused observation is not
+a natural, uninterrupted campaign clear or a full engine gate run. The seed's
+portal helper now draws no arrow; newly authored seed layouts must also supply
+natural doorway/path/stair geometry, rather than treating invisible events as
+visual wayfinding.
+
 User-requested reusable human selection harness. `src/harnesses/pokemon-character-casting/` owns the producer, review server, SQLite decisions, live approval checks and approved output. It uses the existing `pokemon-character-motion` native import/check/preview/review/gate/build without changing its implementation hashes. Genre: monster-collect. CLI and standalone review page exist; editor workshop integration/assistant tools do not yet exist and are honestly false in the manifest.
 
 

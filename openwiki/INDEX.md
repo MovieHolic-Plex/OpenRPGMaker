@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4660KB / 약 1,344,540 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **142쪽 / 4670KB / 약 1,347,125 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 532 | ~21,580 |
 | `openwiki/runtime-battle.md` | 328KB | 32KB | 1841 | ~95,847 |
 | `openwiki/runtime-pre-edit-routing.md` | 109KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 791 | ~32,764 |
-| `openwiki/runtime-project-schema.md` | 208KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1492 | ~58,274 |
+| `openwiki/runtime-project-schema.md` | 209KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1502 | ~58,410 |
 | `openwiki/runtime-sessions.md` | 137KB | 50KB | 834 | ~36,898 |
 | `openwiki/testing.md` | 213KB | 48KB | 2013 | ~59,223 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 562 | ~16,674 |
@@ -80,7 +80,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/pokemon-character-casting.md` | 1 | `data/waves/full-cast-v1.json` |
+| `openwiki/harnesses/pokemon-character-casting.md` | 4 | `audit-npc-wayfinding.mjs`, `data/waves/full-cast-v1.json`, `pack-template-npc-cast.py`, `world-manifest.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 1 | `map-from-sheet.png` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
@@ -134,7 +134,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 15KB · 180줄 · ~4,046 토큰
+### `openwiki/PROJECT_WIKI.md` — 15KB · 182줄 · ~4,077 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -1049,7 +1049,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` Existing authored animation compatibility
 - `L85` 2026-10-04 canonical adoption and publication
 
-### `openwiki/emerald-runtime-surfaces.md` — 9KB · 92줄 · ~2,324 토큰
+### `openwiki/emerald-runtime-surfaces.md` — 10KB · 102줄 · ~2,456 토큰
 
 - `L5` Owners
 - `L14` Geometry and reference
@@ -1057,6 +1057,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L33` 2026-10-04 evidence receipt
 - `L39` Shipping icon dependencies
 - `L78` Genuine predecessor Continue evidence (2026-10-04)
+- `L94` Approved field-kit surfaces (2026-10-05)
 
 ### `openwiki/feature16-battle-ui.md` — 6KB · 48줄 · ~1,534 토큰
 
@@ -1136,17 +1137,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L171` 시험
 - `L180` 아직 없는 것
 
-### `openwiki/harnesses/pokemon-character-casting.md` — 19KB · 127줄 · ~4,940 토큰
+### `openwiki/harnesses/pokemon-character-casting.md` — 23KB · 184줄 · ~5,898 토큰
 
-- `L6` Portable harness (2026-10-05)
-- `L25` Legacy editor adapter: start and reuse
-- `L40` Current distinct-body wave (supersedes first wave)
-- `L56` Human review
-- `L67` Freshness and shipping gate
-- `L75` Focused verification
-- `L85` Newly authored candidate workflow (2026-10-05)
-- `L100` Template edits (current strategy, user-directed 2026-10-05)
-- `L116` Complete sixteen-role template collection (2026-10-05)
+- `L3` Campaign NPC adoption and natural entrances (2026-10-06)
+- `L63` Portable harness (2026-10-05)
+- `L82` Legacy editor adapter: start and reuse
+- `L97` Current distinct-body wave (supersedes first wave)
+- `L113` Human review
+- `L124` Freshness and shipping gate
+- `L132` Focused verification
+- `L142` Newly authored candidate workflow (2026-10-05)
+- `L157` Template edits (current strategy, user-directed 2026-10-05)
+- `L173` Complete sixteen-role template collection (2026-10-05)
 
 ### `openwiki/harnesses/pokemon-character-motion.md` — 35KB · 247줄 · ~9,580 토큰
 
@@ -1494,6 +1496,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L47` Actual read models and lifecycle data
 - `L64` Verification
 
+### `openwiki/pokemon-like-field-kit.md` — 5KB · 88줄 · ~1,328 토큰
+
+- `L11` Current candidate
+- `L23` Ownership and validation
+- `L38` Canonical boundary
+- `L48` Approved integration (2026-10-05)
+
 ### `openwiki/project-wiki.md` — 12KB · 199줄 · ~3,096 토큰
 
 - `L8` Data and evidence
@@ -1709,7 +1718,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L782` Independent opening timelines
 - `L786` Monster authoring dogfood (2026-10-03)
 
-### `openwiki/runtime-project-schema.md` — 208KB · 1492줄 · ~58,274 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 209KB · 1502줄 · ~58,410 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 캐릭터별 전투 동작 (2026-10-03)
 - `L12` 퀘스트 프리셋 메타 (2026-10-01)
@@ -1788,6 +1797,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1454` 타일셋 참고문서 데이터 (2026-09-21)
 - `L1458` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 - `L1484` Optional authored slide tables (2026-10-04)
+- `L1494` Uploaded charset pose cadence (2026-10-05)
 
 ### `openwiki/runtime-sessions.md` — 137KB · 834줄 · ~36,898 토큰 · 통째읽기 잘림
 

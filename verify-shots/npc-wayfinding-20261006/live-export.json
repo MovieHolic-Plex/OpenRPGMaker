@@ -1,0 +1,17 @@
+{
+  "url": "http://mdc-server:18301/monster-expedition/player.html?build=npc-paths-20261006",
+  "projectSha256": "cb50c35ba6db88ce131443c3730f8594d155352b0b8fe1173e14e9424bcc1eb0",
+  "matchesTestedPlayerProject": true,
+  "canonicalRevision": 36,
+  "canonicalSha256": "e95f055910b72808d716a3c78c256f96169f0e6b2c7246ce4b07983caaecf37a",
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "canonicalMediaByteReloads": 3,
+  "publicBoot": true,
+  "publicNativeNpcSizes": true,
+  "publicScreenshot": "live-home.png",
+  "reportImages": 20,
+  "reportWidth": 360,
+  "reportOverflow": false,
+  "reportSelectionWorks": true,
+  "errors": []
+}

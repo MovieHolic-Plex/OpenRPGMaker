@@ -147,7 +147,9 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     if (!isPassableLanding(project, map, at.x, at.y) || !isPassableLanding(project, target, landing.x, landing.y)) throw Error(`Blocked doorway ${map.name} → ${target.name}`);
     const go = transfer(target, landing);
     const commands: Command[] = required ? [{ kind: "fork", condition: condition(required), then: [go], else: [text(`${label}로 가는 길은 아직 열리지 않았다. 메뉴의 「배지·목표」에서 다음 약속을 확인하자.`)] }] : [go];
-    const e = event(map, `to_${target.id}`, at, commands, { trigger: "playerTouch", below: true, graphic: marker("exit") });
+    // Travel is shown by authored doors, paths and stairs; transfer events do not
+    // draw a navigation arrow over the native tiles.
+    const e = event(map, `to_${target.id}`, at, commands, { trigger: "playerTouch", below: true, graphic: invisible });
     manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: landing, ...(required ? { required } : {}) });
   }
 
