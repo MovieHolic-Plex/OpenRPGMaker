@@ -57,9 +57,11 @@ ssh seogo 'chown -R root:root /opt/oprn-store && systemctl restart oprn-store &&
 - 버킷: 운영 `oprn-store`, 스테이징 `oprn-store-staging` (Cloudflare 계정 `1de02586…`, APAC, 비공개).
 - 설정: `/etc/oprn-store/store.env` 의 `STORE_R2_ACCOUNT_ID`, `STORE_R2_ACCESS_KEY_ID`, `STORE_R2_SECRET_ACCESS_KEY`, `STORE_R2_BUCKET`.
   넷 다 없으면 R2 없이 예전처럼 디스크에서 내준다. 일부만 있으면 서버가 켜지지 않는다.
-- 자격 증명은 전용 API 토큰 `oprn-store-prod` 다: 권한은 `oprn-store` 버킷 객체 읽기·쓰기뿐, **요청 IP 는 85.155.177.241 만**.
+- 자격 증명은 전용 API 토큰 `oprn-store-prod` 다(스테이징은 `oprn-store-staging`). 권한은 그 버킷 객체 읽기·쓰기뿐이다.
   - S3 키 ID = 토큰 id, 비밀 = 토큰 값의 sha256. 토큰 값은 어디에도 남기지 않았다. 잃어버리면 토큰을 지우고 새로 만든다.
-  - 서버 IP 가 바뀌면 R2 가 403 을 낸다(로그 `[store] r2 put … 403`). 이때도 파일은 디스크에서 계속 나간다.
+  - **토큰에 요청 IP 제한을 걸지 않는다.** R2 는 서명 주소로 받는 방문자에게도 그 IP 조건을 적용한다.
+    seogo IP 로 묶었더니 방문자 전원이 403 이었다(2026-10-06, 약 5분). 계정의 `master` 토큰은 mdc-server IP 로 묶여 있어 seogo 에서 못 쓴다.
+  - R2 가 거절하면 로그에 `[store] r2 put … 403` 이 남고, `r2_at` 이 비어 있는 파일은 계속 디스크에서 나간다.
 - 서버 디스크 사본은 그대로 둔다(검증·원본). `store_blobs.r2_at` 이 비어 있는 파일은 켜질 때와 매시간 뒤에서 R2 로 올린다.
 - 상품을 내려도 이미 나간 서명 주소는 최대 약 2시간 유효하다(한 시간 단위 고정 주소 + 유효 2시간). 고아 blob 정리 때 R2 에서도 지운다.
 - openrpgmaker.com DNS 가 Namecheap 이라 R2 사용자 도메인·엣지 캐시는 못 쓴다. 영역을 Cloudflare 로 옮기면 `files.` 같은 도메인으로 바꿀 수 있다.

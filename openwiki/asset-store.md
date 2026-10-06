@@ -97,7 +97,7 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
 - 웹 화면 CSP 의 `img-src`·`media-src` 에 R2 출처를 더한다(`setFileOrigin`). 편집기(Electron 중계)의 fetch 는 303 을 따라가고 sha256 을 검사한다.
 - 설정 `STORE_R2_*` 넷이 없으면 R2 없이 디스크에서 내준다. 운영·스테이징 설정과 토큰 범위는 `store-server/deploy/README.md`.
   - 스테이징은 `~/.config/systemd/user/oprn-store-staging.service.d/r2.conf` → `~/.config/oprn-store-staging-r2.env`(600).
-- 토큰은 버킷 하나 + 요청 IP 하나로 묶었다. 기존 `master` 토큰은 IP 가 mdc-server(221.155.3.135)로 묶여 seogo 에서 403 이었다.
+- 토큰은 버킷 하나로만 묶는다. **IP 조건은 걸면 안 된다** — R2 는 서명 주소로 받는 방문자에게도 토큰의 IP 조건을 적용한다(걸었다가 방문자 전원 403).
 
 ## 보안 검토 반영 (2026-10-06)
 
