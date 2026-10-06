@@ -1,0 +1,330 @@
+{
+  "attack": {
+    "changedPixels": 1234,
+    "changedBounds": [
+      40,
+      30,
+      109,
+      96
+    ]
+  },
+  "stun_a": {
+    "changedPixels": 259,
+    "changedBounds": [
+      91,
+      101,
+      117,
+      116
+    ]
+  },
+  "stun_b": {
+    "changedPixels": 274,
+    "changedBounds": [
+      91,
+      101,
+      118,
+      117
+    ]
+  },
+  "paletteUnchanged": true,
+  "files": {
+    "attack": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        121,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "dead": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        55,
+        112,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "hit": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        108,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "idle_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "idle_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        2,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "idle_c": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "move": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        115,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "recover": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "windup": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        108,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "poison_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        120,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "poison_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        119,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "skill_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        113,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "skill_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        126,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "skill_c": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        118,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "sleep_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        54,
+        106,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "sleep_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        55,
+        105,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "stun_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        116,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    },
+    "stun_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        116,
+        124
+      ],
+      "unknownSymbols": [],
+      "opaqueBorderPixels": 0
+    }
+  },
+  "gifHoldsMs": {
+    "idle": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "attack": [
+      320,
+      300,
+      120,
+      200,
+      240,
+      320
+    ],
+    "hit": [
+      360,
+      220,
+      240,
+      400
+    ],
+    "dead": [
+      450,
+      200,
+      1200
+    ],
+    "skill": [
+      350,
+      420,
+      240,
+      360,
+      400
+    ],
+    "poison": [
+      460,
+      460
+    ],
+    "stun": [
+      500,
+      500
+    ],
+    "sleep": [
+      720,
+      820
+    ]
+  }
+}

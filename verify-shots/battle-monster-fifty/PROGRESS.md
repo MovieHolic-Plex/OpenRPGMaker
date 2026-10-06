@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재41/50 통과
+# 신규50종 제작 · 현재42/50 통과
 
 ## 최초 두 종 확인
 
@@ -707,3 +707,12 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 봉황/기린/빙룡의 현재 기술 원본을 검객과 동일 배율로 나란히 보인 실제 중간판을 사용자에게 제공했다. 서로 다른 불꽃/번개/얼음 발원점과 몸 크기를 확인할 수 있다.
 - 현무 다섯 번째 수정 원본18자세와 현재 저작 메서드를 실제로 열고 초안으로 보존했다. 새 독립 검수 `9d2adda2-c97a-4ec8-92d8-93b7b26c4804`는 **rework1건**: 앞 갑각/어깨 들이받기 동작을 분명히 하고 머리를 갑각 쪽으로 접어 넣으며 앞발을 지지하도록 한다. 실제 지적/작업/before-sixth source를 보존했고 여섯 번째 수정 중이다. 적갑문지기와 천년송왕도 실제 고정 모델로 저작 중이다.
 - 근거: `forty-one-passed-proof.json`, `root-review-storm-horn-kirin.json`, `browser-proof-storm-horn-kirin.json`, `source-archive-proof.json`, `root-draft-review-abyss-jade-turtle-after-repair-five.json`, `draft-independent-rework-abyss-jade-turtle-after-repair-five.json`.
+
+## 42번째 신규 몬스터 · 심연현무 · 2026-10-06 13:35 UTC
+
+- 현무 여섯 번째 직접 수정의 실제 독립 검수 `0b7b001b-cbd9-4ed1-8987-6fa41dc20cf3`는 **keep / 정식 issues0건**이다. 현재 binding `b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815`, 기술 PASS와 실제 terminal GPT6.1sol/high 작업/네 검수 그림 해시가 일치한다. 최초와 다섯 번 수정의 실제 rework2/3/4/2/3/1건을 보존한다.
+- 감독은 여섯 번째 수정 원본18자세를 원본1배와 nearest2배로 실제 열고, 현재 writer 일곱 개의 전체 메서드/모듈 흐름을 확인했다. 여섯 이전 메서드는 직접 읽었던 해시 그대로이며 새 shell-bash writer는 지정한 공격 프레임의 명시적 y/x/문자 행만 바꾼다. 공개 후 다시 만든 원본 그림이 실제로 열었던 그림과 byte-identical임을 확인했다. 목/머리가 갑각 아래로 접히고 금색 앞 갑각이 앞서며 근경 앞발이 앞을 지지하는 공격을 확인했다. 입에서 두 물 호가 이어지고 준비/회수/독/기절/수면 몸 자세가 구분된다. 넓고 성긴 갑각 면, 미세한 대기/상태 변화와 먼 다리 대비 한계는 보존한다.
+- 선택된 ZIP/원본 PNG18/디코딩 GIF8/현재 source와 정본 source archive42종을 다시 읽었다. 감독이 실제 데스크톱 정지 화면과375/320px 화면도 열었다. 8GIF/정지·재생/같은 배율 사람 비교, 오류0/가로 넘침0, 선택 버튼 미클릭이다.
+- 현재 합격 **42/50종 · 756자세 · 336GIF**. 동물10/요괴16/사람12(여성6)/보스4; 남은8종은128px 대형 보스. 기존 결정52행/선택8건 보존, 새 위임126행/전체178행, 기존 정식 minor11건 유지. 대시보드 Allow50종은 기존8+신규42이며 신규 목표 완료가 아니다. 전체50 완료는 false다.
+- 갑옷/장병기의 적갑문지기와 나무 몸체의 천년송왕을 검객과 같은 배율로 실제 중간판에 보여 주었다. 당시는 검수 전18/18자세와1/18자세 초안이고 통과 주장 없이 보존한다. 적갑문지기/천년송왕/심연구목거미 실제 저작은 이어진다.
+- 근거: `forty-two-passed-proof.json`, `root-review-abyss-jade-turtle.json`, `browser-proof-abyss-jade-turtle.json`, `source-archive-proof.json`, `root-draft-review-abyss-jade-turtle-after-repair-six.json`.

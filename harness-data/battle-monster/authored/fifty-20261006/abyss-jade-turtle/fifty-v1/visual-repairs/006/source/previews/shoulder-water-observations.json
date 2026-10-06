@@ -1,0 +1,304 @@
+{
+  "attack": {
+    "changedPixels": 116,
+    "changedBounds": [
+      99,
+      99,
+      117,
+      108
+    ]
+  },
+  "skill_b": {
+    "changedPixels": 506,
+    "changedBounds": [
+      102,
+      49,
+      126,
+      100
+    ]
+  },
+  "paletteUnchanged": true,
+  "attackFeetRows109to127Unchanged": true,
+  "files": {
+    "attack": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        121,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "dead": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        55,
+        112,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "hit": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        108,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "idle_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "idle_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        2,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "idle_c": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "move": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        115,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "recover": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        112,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "windup": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        108,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "poison_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        120,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "poison_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        119,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "skill_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        113,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "skill_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        126,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "skill_c": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        118,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "sleep_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        54,
+        106,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "sleep_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        5,
+        55,
+        105,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "stun_a": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        117,
+        124
+      ],
+      "unknownSymbols": []
+    },
+    "stun_b": {
+      "rows": 128,
+      "rowLengths": [
+        128
+      ],
+      "inkBounds": [
+        3,
+        29,
+        118,
+        124
+      ],
+      "unknownSymbols": []
+    }
+  },
+  "gifHoldsMs": {
+    "idle": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "attack": [
+      320,
+      300,
+      120,
+      200,
+      240,
+      320
+    ],
+    "hit": [
+      360,
+      220,
+      240,
+      400
+    ],
+    "dead": [
+      450,
+      200,
+      1200
+    ],
+    "skill": [
+      350,
+      420,
+      240,
+      360,
+      400
+    ],
+    "poison": [
+      460,
+      460
+    ],
+    "stun": [
+      500,
+      500
+    ],
+    "sleep": [
+      720,
+      820
+    ]
+  }
+}

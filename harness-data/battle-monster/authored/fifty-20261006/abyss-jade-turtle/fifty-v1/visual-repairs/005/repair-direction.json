@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "3a38c8d48a6b223bccaaebaef6ba658a80f5a3fab27df1974d8c111c6e4a89ab",
+  "priorReviewJob": "3e56c79a-cadc-46d0-aff4-a69d9ca2ae22",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 103,
+      "y": 66,
+      "message": "Compared with windup and move, the lower-right shell contour balloons outward while the crown and central gold emblem largely retain their earlier placement. The rigid stone shell reads as stretching during impact. Redraw this flank and the adjoining rim as a coherent rotation or forward shift, carrying the gold grooves with that plane; emphasize the connected shoulder at approximately (89,92) so the impact reads as a shell shoulder shove."
+    },
+    {
+      "pose": "stun_a",
+      "x": 107,
+      "y": 111,
+      "message": "The lowered neck ends in a broad triangular flap and a very thin hooked muzzle, making the head difficult to recognize at 1x. Redraw the head with a compact rounded snout, a readable closed gold eye and a short attached jaw; keep the neck bend continuous into the shoulder rather than widening the entire neck into the head."
+    },
+    {
+      "pose": "stun_b",
+      "x": 108,
+      "y": 112,
+      "message": "The second stun frame repeats the ambiguous triangular head and hooked tip. Carry the repaired muzzle and eye placement from stun_a into this frame, then author a small downward head sag at the neck joint so the pair preserves the same anatomy."
+    }
+  ],
+  "startedAt": "2026-10-06T13:03:39.096739+00:00"
+}

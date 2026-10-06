@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>심연현무 · 18자세 / 8동작 후보</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{max-width:1200px;margin:24px auto;padding:0 20px;background:#17212c;color:#e3e8ec}h1{font-size:24px}p{line-height:1.6;color:#bdcad3}button,select{font:inherit;padding:6px 12px}nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:20px 0}.motions{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}figure{margin:0;padding:14px;background:#253340;border-radius:8px}figcaption{margin-bottom:10px}.cell{width:256px;height:256px;max-width:100%;image-rendering:pixelated;background-color:#eee9d9}.cell.checker{background-color:#9aa5ae;background-image:conic-gradient(#697583 25%,transparent 0 50%,#697583 0 75%,transparent 0);background-size:32px 32px}.cell.dark{background:#121d29}.cell.light{background:#eee9d9}a{color:#92d6dc}.sheet{display:block;width:100%;image-rendering:pixelated;margin:20px 0}.native{width:auto;max-width:100%}.detail{margin-top:36px}
+</style>
+<h1>심연현무</h1>
+<p>128px 원본 18자세와 8동작. 검토용 후보이며 사용자 선택과 하네스 독립 검수는 별도입니다.</p>
+<nav><label>배경 <select id="bg"><option value="checker">체커</option><option value="light">밝은색</option><option value="dark">어두운색</option></select></label><label>표시 크기 <select id="zoom"><option value="1">1배</option><option value="2" selected>2배</option><option value="3">3배</option></select></label><a href="../AUTHORING.md">저작 기록</a><a href="../TIMING.md">시간표</a></nav>
+<section class="motions">
+<figure><figcaption>대기</figcaption><img class="cell checker" src="idle.gif" alt="대기 3자세"></figure>
+<figure><figcaption>공격</figcaption><img class="cell checker" src="attack.gif" alt="준비 전진 접촉 회수"></figure>
+<figure><figcaption>피격</figcaption><img class="cell checker" src="hit.gif" alt="피격과 회복"></figure>
+<figure><figcaption>쓰러짐</figcaption><img class="cell checker" src="dead.gif" alt="피격 후 쓰러짐"></figure>
+<figure><figcaption>현해진</figcaption><img class="cell checker" src="skill.gif" alt="갑각 청금 기와 입에서 나오는 두 물 파문"></figure>
+<figure><figcaption>독</figcaption><img class="cell checker" src="poison.gif" alt="턱과 앞발을 움츠리는 아픈 자세"></figure>
+<figure><figcaption>기절</figcaption><img class="cell checker" src="stun.gif" alt="아래로 접힌 긴 목과 처진 머리"></figure>
+<figure><figcaption>수면</figcaption><img class="cell checker" src="sleep.gif" alt="접힌 네 발 말린 꼬리 감긴 눈과 호흡"></figure>
+</section>
+<section class="detail"><h2>공격 수정 전후</h2><img class="sheet" src="shell-bash-before-after.png" alt="목을 앞테 아래로 접고 갑각 앞면과 버티는 앞발을 직접 수정한 전후 그림"><h2>준비·전진·접촉·회수</h2><img class="sheet" src="shell-bash-sequence.png" alt="공격 네 자세의 원본과 최근접 확대"><h2>원본 크기</h2><img class="sheet native" src="light-native.png" alt="밝은 배경 원본 크기 18자세"><h2>체커 확대</h2><img class="sheet" src="checker-3x.png" alt="체커 3배 확대 18자세"></section>
+<script>
+const bg=document.getElementById('bg'),zoom=document.getElementById('zoom');
+function update(){document.querySelectorAll('.cell').forEach(im=>{im.className='cell '+bg.value;im.style.width=(128*Number(zoom.value))+'px';im.style.height=(128*Number(zoom.value))+'px';});}
+bg.addEventListener('change',update);zoom.addEventListener('change',update);
+</script></html>

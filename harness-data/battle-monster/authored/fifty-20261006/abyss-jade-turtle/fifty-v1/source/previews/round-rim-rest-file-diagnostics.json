@@ -1,0 +1,294 @@
+{
+  "palette_colors": 18,
+  "frames": [
+    {
+      "name": "attack",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 1036,
+      "change_extent": [
+        80,
+        62,
+        122,
+        124
+      ]
+    },
+    {
+      "name": "dead",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "hit",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "idle_a",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "idle_b",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "idle_c",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "move",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "recover",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "windup",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "poison_a",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "poison_b",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "skill_a",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "skill_b",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "skill_c",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 0,
+      "change_extent": null
+    },
+    {
+      "name": "sleep_a",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 298,
+      "change_extent": [
+        80,
+        102,
+        107,
+        124
+      ]
+    },
+    {
+      "name": "sleep_b",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 382,
+      "change_extent": [
+        80,
+        96,
+        107,
+        124
+      ]
+    },
+    {
+      "name": "stun_a",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 317,
+      "change_extent": [
+        87,
+        100,
+        117,
+        118
+      ]
+    },
+    {
+      "name": "stun_b",
+      "rows": 128,
+      "row_widths": [
+        128
+      ],
+      "unknown_symbols": [],
+      "border_ink": 0,
+      "lowest_ink_y": 124,
+      "changed_pixels": 310,
+      "change_extent": [
+        87,
+        100,
+        118,
+        118
+      ]
+    }
+  ],
+  "identical_frame_pairs": [],
+  "palette_unchanged_from_before": true,
+  "gif_holds_ms": {
+    "idle": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "attack": [
+      320,
+      300,
+      120,
+      200,
+      240,
+      320
+    ],
+    "hit": [
+      360,
+      220,
+      240,
+      400
+    ],
+    "dead": [
+      450,
+      200,
+      1200
+    ],
+    "skill": [
+      350,
+      420,
+      240,
+      360,
+      400
+    ],
+    "poison": [
+      460,
+      460
+    ],
+    "stun": [
+      500,
+      500
+    ],
+    "sleep": [
+      720,
+      820
+    ]
+  }
+}

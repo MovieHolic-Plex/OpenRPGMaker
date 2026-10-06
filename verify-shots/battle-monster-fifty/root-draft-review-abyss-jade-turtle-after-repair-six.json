@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-06T13:29:40.040307+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-jade-turtle-after-repair-six.png",
+  "nativeContactPngSha256": "f043ceb9b74c826a77b5d8310c47572d4c7bad4f235ac006fd7afdd81fa7dea2",
+  "nativeWriterFilesRead": {
+    "author.py": "01165733235635df42730484b368d664ab7ccdbab371eea7ba64de1ae2d60b56",
+    "repair.py": "d2f00c5bf2f577b791001d0469bddf97bbe77c122cc8952a105b0749f58bcfbb",
+    "apply_native_edits.py": "b716bcf40e4b2c1e5265c71467cd6dec65f79da24167d922cfbdba3c3cba34fe",
+    "apply_round_rim_rest.py": "40815c0553c7add33365c71088a90fb79bba29462d8c6f47efe9a4ad9ef01b0c",
+    "apply_shoulder_water.py": "0992dec8796b55cbc7850ce011be5b14bda3d4fe51b4c899265478df9f072697",
+    "apply_rigid_shell_rounded_stun.py": "4849788bef468123c9750b90ba4cfa17c9a3eb50261a03c71c558d21135a7832",
+    "apply_shell_bash.py": "a83b32f6126f395eed3c0df78ecde851da1aeee561447fc08245e8f7c8955e6b"
+  },
+  "observations": [
+    "All18 sixth-repair native128 poses actually opened at original resolution, displaying native1x and nearest2x without an intermediate resize. Matching baked source/PNG/check binding was reread.",
+    "Attack folds the neck/head back below the leading gold shell rim, which now leads the impact; the connected near foreleg is braced in front at the ground, with the smaller far foot separate. The coherent shell crown and grooves remain recognizable, rather than extending the whole head beyond the rim.",
+    "Unchanged gold/jade dome planes remain sparsely textured. Windup lowers the neck, move pushes rear limbs, recover extends the neck, hit crouches, dead drops body and limbs. Mouth charge/two blue arcs/recovery splashes and distinct poison/stun/sleep authored body states remain. State pairs and idle differences are small.",
+    "Read entire new apply_shell_bash.py including module flow and entire inspect_shell_bash.py. Writer applies individually chosen literal y/x/ASCII row spans only to attack.pxgrid. Its diagnostics decode pixels and display backgrounds/crops/nearest enlargements without changing native art. Six previous native writers retain exactly the previously fully read method hashes. No primitive body generation, whole-frame transformation or tweening is present.",
+    "Fresh sixth-repair independent review is pending at this viewing; preceding fifth-repair rework1 belongs to the prior binding. Retain modest far-limb dark contrast and broad plain shell planes. No live battle impact/collision proof claimed."
+  ],
+  "claimScope": "Actual sixth-repair root native/source viewing only; no independent keep/Allow/archive/species completion claim."
+}

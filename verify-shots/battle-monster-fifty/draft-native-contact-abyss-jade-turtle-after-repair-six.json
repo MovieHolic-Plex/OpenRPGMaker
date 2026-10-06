@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-06T13:28:36.170936+00:00",
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
+  "nativeCell": 128,
+  "nativePoses": 18,
+  "displayScales": [
+    1,
+    2
+  ],
+  "boardSize": [
+    1632,
+    1272
+  ],
+  "background": "#e5e2d7",
+  "noSourceWrites": true,
+  "approvalClaim": false,
+  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates",
+  "pngSha256": "f043ceb9b74c826a77b5d8310c47572d4c7bad4f235ac006fd7afdd81fa7dea2",
+  "frames": [
+    {
+      "pose": "idle_a",
+      "nativePngSha256": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "sourceSha256": "fb65a0aaf7531f8ac1f1fe0d60102b078e1ecd038344cd6d9c24a274148d1f87",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_b",
+      "nativePngSha256": "6973a45fdb479dc8a92e1a57645003076a16d61acf15e7e8e3944946791c5d33",
+      "sourceSha256": "1566d99d29a418193d2a53bf3fb6eef330bdf2e550f2afb881989d16cd6286c0",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_c",
+      "nativePngSha256": "f5213116276c1ed2c33bbb361aca5993ab5224c7b647b71d57e1596b54cd8fd4",
+      "sourceSha256": "bbc1cd6f04c7111f60f369d0537803bff18b5158c7ab971cbdd6fb3ad186a8fa",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "windup",
+      "nativePngSha256": "0d536424bdb6f39759fa84c14ba6f329fe6db5df88a8e9be73c598909c73097b",
+      "sourceSha256": "5f427df8975b10a01f285e825a8b35f04d187c16031ed2f2abe105b156e95ebe",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "move",
+      "nativePngSha256": "24eeab4b6d824da3d921ebd23606c1201865f4ab13b9e90d44f8eac115426cd4",
+      "sourceSha256": "dfa58865efa35a417e09bebca90b1db407342026c4c3301443ea42e8ab6fc2bc",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "attack",
+      "nativePngSha256": "44c81e8aaf8ebe983c61d816be32fd8b481a49f8cb37aca98d37db531f3779c6",
+      "sourceSha256": "9065b8d8c69345ffff2da3b5b488ee0e4290ef7f2cd8e9a2ecd71dea6633019f",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "recover",
+      "nativePngSha256": "b93a676c9db012c3dce4261b81c9284e0db4452a7b69052fb6334288b83f227e",
+      "sourceSha256": "3d5fd53b8e3acce13600611e64fd626281619a5787c0239aaa7d8f8ee9afe569",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "hit",
+      "nativePngSha256": "bf1441d2f995faf8a8fc84cb77ca6297fa841b12794968c4d748db386778fe5b",
+      "sourceSha256": "cc71dbe8658e0e219160c11de5353e23c4b4b883cc8fe0d1cacb3ebe5d1cda60",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "dead",
+      "nativePngSha256": "a8b2a6ed8b14dca003c2409e93d94b55b06c1a81dd4ab9f6fa5b495c2e9f9fc7",
+      "sourceSha256": "7ac073e4eaeabcac3b78a554a63d69840e0639d09e2ed8fe830394f76813bd3d",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_a",
+      "nativePngSha256": "9e7a4e901624685c04908eeaccfdba75b528847db2324ffff5ebaf5f8fac0d5f",
+      "sourceSha256": "6df68d182bc33f0aac59b765189a6befcbbc58bcbe6f6f451c10731eceff12c4",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_b",
+      "nativePngSha256": "062f1310b7cef66a8921a8e9f42c9626c6ca99fcc9dac066fe2e0a062676727b",
+      "sourceSha256": "16cd55c672b9802c2030887e1e1643aa491f5d449ab152298661630ddb0ba07b",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_c",
+      "nativePngSha256": "b0fead2a60d6845553fcae3bcf15c94124ff0e32b97b22ee5c47eb08ffb75ad5",
+      "sourceSha256": "9f96dd2a3c7f27e75550209325b74cf77722af293af4eaa374e67ab28461fdf2",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_a",
+      "nativePngSha256": "fd2283bb80697d935386a229d6bfb3114cba8a844020dde45ca1bd3c78087218",
+      "sourceSha256": "45bc178e1e931f572e23a41033cae1a5f57f9287d7d4ab21a8225c380c1a5bb3",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_b",
+      "nativePngSha256": "4e9412f3f1ba8a5e87c461d80d6ad03d884085d69806ee8d71397606117446de",
+      "sourceSha256": "ed0fc4a2fc9777bc62ff42965fd5aaebd421484f9d1e7f273f3514263e1fe3a9",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_a",
+      "nativePngSha256": "6d147f6111c8912443f8ae2e7582ef6c7a40b0fb625dc6878c71d2bcd14f618d",
+      "sourceSha256": "c493fce11be9510344f8201e5050266ce8e2e87814d6b7499674ed3df9e53fa4",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_b",
+      "nativePngSha256": "2422d418a36cc761a9f5be90dc712cbca91f85540e1bb1f2b92905be4e24dc0c",
+      "sourceSha256": "f366d900bfb54e7c2b70b701210e771f41d15a03bd186737b971c14a34dbb550",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_a",
+      "nativePngSha256": "d0b56edaa3a14c7f285327d82546c43847baea10132b7b9a5cf5339de8c7b701",
+      "sourceSha256": "45e91c4766b3725cbd0de283e1c377a8d6cc7fcb52ee96e1dea71a6594deee29",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_b",
+      "nativePngSha256": "38cee1e1767ea0e7038c00055c1a27e44a96b86a78eb7ffbf1b1a87d9954fd04",
+      "sourceSha256": "568007f0865d921d5944ced3cbb47a46a4719d45ddaf75e30e7f08cdc5cd03b0",
+      "rgbaMatchesNativeSource": true
+    }
+  ]
+}

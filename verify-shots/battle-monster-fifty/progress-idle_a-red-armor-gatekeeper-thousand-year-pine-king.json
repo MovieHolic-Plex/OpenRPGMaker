@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "red-armor-gatekeeper",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/red-armor-gatekeeper/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "4dae724e89a3008d7526ba6453bd1ee4c597cc2da6f310b17121b48315502058",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T13:22:04.235727+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "thousand-year-pine-king",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "6a548afacf2587988b0f97b87b546796f04a753992227dae5e96e519e83ccd19",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 1,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T13:22:04.235727+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]

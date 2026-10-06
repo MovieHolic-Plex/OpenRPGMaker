@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "6ba982dacdfe2489e0f6b53a2b0057469a404a0aacd2f22738749e25e0fa648c",
+  "priorReviewJob": "68e4352c-91df-4ac7-8eb8-ce6280d49c2f",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 82,
+      "y": 58,
+      "message": "The tall nearly vertical right shell edge and straight diagonal shadow boundary make the carapace resemble a flat upright shield. Redraw the right dome contour with a gradual inward curve, round the shadow transition with stepped native pixel clusters, and give the lower shell rim a distinct dark thickness band. Carry the same dome and rim structure through the other upright poses while preserving the upper-left light."
+    },
+    {
+      "pose": "attack",
+      "x": 94,
+      "y": 92,
+      "message": "The leading foreleg advances, but the shell remains almost stationary and upright; the small front wedge provides little readable shoulder impact. Redraw the front carapace/shoulder as a clear forward-driving mass, compress the neck behind that contact contour, and brace the extended near forefoot under it. Show a coherent rear-leg push from move into attack and return through recover, keeping planted near soles at the native baseline."
+    },
+    {
+      "pose": "skill_b",
+      "x": 110,
+      "y": 73,
+      "message": "The snout remains effectively closed while two narrow hooked cyan ribbons sit above and below it; their origin reads around the forehead and chin instead of clearly inside the mouth. Author an open mouth at the snout, join a short cyan emission cluster directly to that opening, and redraw two broad expanding water-wave arcs along the rightward firing direction. Retract the casting head slightly if needed to fit the waves inside the 128px cell with the required transparent edge; preserve the three separate residual splashes in skill_c."
+    }
+  ],
+  "startedAt": "2026-10-06T11:57:45.822461+00:00"
+}

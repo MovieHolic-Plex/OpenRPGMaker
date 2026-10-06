@@ -429,6 +429,17 @@
     "selectedPackSha256": "6190b19ea5f6b4f8f3c52564475dd4ac1df41f2e9da4bb16f38bfda2dc6d0392"
   },
   {
+    "key": "abyss-jade-turtle/fifty-v1",
+    "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "3bb0fc55e1d3ade15478bc5fc5e6d68a9aa574b7a9f7f5592f12fee0d60223a8"
+  },
+  {
     "key": "storm-horn-kirin/fifty-v1",
     "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
     "nativeCell": 128,

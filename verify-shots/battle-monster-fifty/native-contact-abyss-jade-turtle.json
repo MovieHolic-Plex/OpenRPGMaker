@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-06T13:18:26.251932+00:00",
+  "at": "2026-10-06T13:31:54.662707+00:00",
   "key": "abyss-jade-turtle/fifty-v1",
-  "binding": "573afee0e62dbebb014c4a2543e42afe10efa9e827a7be40750ca6e26913dcf8",
+  "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
   "nativeCell": 128,
   "nativePoses": 18,
   "displayScales": [
@@ -15,8 +15,8 @@
   "background": "#e5e2d7",
   "noSourceWrites": true,
   "approvalClaim": false,
-  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates",
-  "pngSha256": "6241524b7eafaea4897deb7f88c2b6f6a17e727683ffe076d18e8dd51b460dc1",
+  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster",
+  "pngSha256": "f043ceb9b74c826a77b5d8310c47572d4c7bad4f235ac006fd7afdd81fa7dea2",
   "frames": [
     {
       "pose": "idle_a",
@@ -50,8 +50,8 @@
     },
     {
       "pose": "attack",
-      "nativePngSha256": "2cb48145e37d19efdc31764132971e9011aef371606b67235e9ed15975059e4c",
-      "sourceSha256": "c2a4f4c6f3a36857c180aad09274f8200277e9b6fd47f5bdae369a29fdb98ca4",
+      "nativePngSha256": "44c81e8aaf8ebe983c61d816be32fd8b481a49f8cb37aca98d37db531f3779c6",
+      "sourceSha256": "9065b8d8c69345ffff2da3b5b488ee0e4290ef7f2cd8e9a2ecd71dea6633019f",
       "rgbaMatchesNativeSource": true
     },
     {

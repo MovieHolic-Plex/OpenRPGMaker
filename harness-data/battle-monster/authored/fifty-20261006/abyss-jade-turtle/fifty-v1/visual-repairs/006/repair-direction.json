@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "573afee0e62dbebb014c4a2543e42afe10efa9e827a7be40750ca6e26913dcf8",
+  "priorReviewJob": "9d2adda2-c97a-4ec8-92d8-93b7b26c4804",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 88,
+      "y": 94,
+      "message": "Strengthen the shell-shoulder impact around the front rim and neck root. The current exposed head remains ahead of the rim and the near foreleg reads as a supporting step, so the silhouette does not clearly show a shell bash. Redraw the neck/head tucked back toward the shell, project the leading shoulder/rim farther right, and brace the near foreleg ahead of the body while retaining its grounded sole around y=123. Keep the neck-to-shoulder pixels continuous and preserve the shell volume and gold-groove layout across move, attack and recover."
+    }
+  ],
+  "startedAt": "2026-10-06T13:19:59.730944+00:00"
+}

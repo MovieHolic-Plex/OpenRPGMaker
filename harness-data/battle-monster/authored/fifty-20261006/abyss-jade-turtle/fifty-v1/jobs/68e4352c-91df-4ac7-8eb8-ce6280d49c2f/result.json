@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the 18 native 1x cells and their nearest-neighbor 3x previews on light, dark and checker backgrounds. The large jade shell, four clawed feet, long connected neck, gold eye and wave tail identify the creature clearly. Upper-left highlights and broad shadow areas are consistent, but the shell reads as an upright faceted plate more than a rounded stone dome. No obvious accidental transparent body holes or detached anatomical parts are visible; spaces between legs and inside the curled resting tail appear intentional. The near feet share a convincing standing baseline, with the smaller far feet reading in perspective. Windup retracts the head and lifts the forefoot; move stretches the hind leg; attack advances the foreleg but barely changes the shell mass, weakening the boss shoulder shove. Skill preparation and lowered-neck recovery are readable, but the casting effect resembles two vertically stacked hooked ribbons and its mouth origin is ambiguous. Poison bubbles, bent-neck stun with stars, and prone closed-eye sleep are readable authored states rather than tints or unrelated attacks. Sleep differs from death through the raised neck and uncracked shell, although paired body changes are subtle. This is a static pose preview: battle timing, actual contact, runtime grounding, palette limits and literal-grid authorship cannot be approved from these PNGs. Coordinates below identify native cell repair regions. This recommendation does not select the candidate for the user.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 82,
+      "y": 58,
+      "message": "The tall nearly vertical right shell edge and straight diagonal shadow boundary make the carapace resemble a flat upright shield. Redraw the right dome contour with a gradual inward curve, round the shadow transition with stepped native pixel clusters, and give the lower shell rim a distinct dark thickness band. Carry the same dome and rim structure through the other upright poses while preserving the upper-left light."
+    },
+    {
+      "pose": "attack",
+      "x": 94,
+      "y": 92,
+      "message": "The leading foreleg advances, but the shell remains almost stationary and upright; the small front wedge provides little readable shoulder impact. Redraw the front carapace/shoulder as a clear forward-driving mass, compress the neck behind that contact contour, and brace the extended near forefoot under it. Show a coherent rear-leg push from move into attack and return through recover, keeping planted near soles at the native baseline."
+    },
+    {
+      "pose": "skill_b",
+      "x": 110,
+      "y": 73,
+      "message": "The snout remains effectively closed while two narrow hooked cyan ribbons sit above and below it; their origin reads around the forehead and chin instead of clearly inside the mouth. Author an open mouth at the snout, join a short cyan emission cluster directly to that opening, and redraw two broad expanding water-wave arcs along the rightward firing direction. Retract the casting head slightly if needed to fit the waves inside the 128px cell with the required transparent edge; preserve the three separate residual splashes in skill_c."
+    }
+  ]
+}
