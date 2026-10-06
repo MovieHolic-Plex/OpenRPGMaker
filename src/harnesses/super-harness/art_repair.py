@@ -16,6 +16,15 @@ def failed_checks(review):
     return {k: v['evidence'] for k, v in review.get('checks', {}).items() if v.get('verdict') == 'FAIL'}
 
 
+def whole_scene_required(folder, repairs=()):
+    """Once a full demo is being repaired, calibration cannot replace that scope."""
+    previous = read(Path(folder) / 'art-feedback.json', {})
+    items = list(repairs)
+    for key in ('repairs', 'deferredRepairs', 'completionRepairs'):
+        items.extend(previous.get(key, []))
+    return any(item.get('group') == 'space-demo' for item in items)
+
+
 def route(folder, repairs, source):
     history = [read(p) for p in (folder / 'art-feedback-history').glob('*.json')]
     history = [h for h in history if h.get('manifestSha256') != source and h.get('repairs')]
@@ -34,7 +43,7 @@ def route(folder, repairs, source):
     brief = read(folder / 'parking-repair-brief.json', {})
     approved = read(folder / 'art-calibration.json', {})
     needs_calibration = bool({'style', 'projection'} & repeated) or bool(brief.get('requireCalibration') and not approved)
-    if read(folder / 'art-acceptance.json', {}).get('requiresFacilityVerdict'):
+    if whole_scene_required(folder, repairs) or read(folder / 'art-acceptance.json', {}).get('requiresFacilityVerdict'):
         # The full facility contract cannot be satisfied by a miniature. Repair
         # its projection in the complete scene; never lose outstanding orders
         # by silently narrowing the accepted scope back to calibration.

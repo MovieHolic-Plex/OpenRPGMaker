@@ -127,3 +127,9 @@ requirement는 기존 themeCoverage의 재료 ID, reason은 보존할 부분과 
 원본은 동일 테마 art-batches의 native 영수증 candidateImages와 themeCoverage 양쪽에서 확인돼야 한다.
 예: 양옆 낮은 선반을 새로 그려도 기존 북쪽 선반 crop은 보존 원본으로 명시한다.
 도면 독립 승인 이후에만 사용 가능하다. 실행 중인 승인 도면을 직접 수정하지 않는다.
+
+## 전체 공간 수정의 범위 유지
+이전 반려 대상이 space-demo이면 시점 결함도 phase=scene 안에서 고친다.
+교체된 옛 부품을 각각 다시 승인받는 calibration으로 되돌아가지 않는다.
+이름이 달라진 교체 부품은 componentReplacements로 연결하고, 보존할 일부 원본은 preservedSources로 명시한다.
+도면을 새로 승인받은 뒤 현재 전체 공간 데모와 독립 검수를 다시 제출한다.
