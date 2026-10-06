@@ -70,7 +70,7 @@ export function registerAssetStore(): void {
   ipcMain.handle(OPRN_CHANNELS.storeStatus, () => wrap(status));
   ipcMain.handle(OPRN_CHANNELS.storeSetUrl, (_event, payload: unknown) => wrap(() => { storeClient().setUrl(storeUrlSchema.parse(payload).url); return status(); }));
   ipcMain.handle(OPRN_CHANNELS.storeCatalog, (_event, payload: unknown) => wrap(() => storeClient().catalog(storeCatalogSchema.parse(payload ?? {}))));
-  ipcMain.handle(OPRN_CHANNELS.storeItem, (_event, payload: unknown) => wrap(() => storeClient().item(storeSlugSchema.parse(payload).slug)));
+  ipcMain.handle(OPRN_CHANNELS.storeItem, (_event, payload: unknown) => wrap(() => { const input = storeSlugSchema.parse(payload); return storeClient().item(input.slug, input.lang); }));
   ipcMain.handle(OPRN_CHANNELS.storeBlob, (_event, payload: unknown) => wrap(() => storeClient().blob(storeBlobSchema.parse(payload).sha256)));
   ipcMain.handle(OPRN_CHANNELS.storeInstalled, () => wrap(() => storeClient().installed()));
   ipcMain.handle(OPRN_CHANNELS.storeInstall, (_event, payload: unknown) => wrap(async () => {
