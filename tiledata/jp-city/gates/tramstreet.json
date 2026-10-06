@@ -1,77 +1,64 @@
 {
  "stage": "tramstreet",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 2,
- "seconds": 242,
- "focus": "예제 맵 ⑤ 노면전차 거리 48×29 — 2회차. 1회차 지적 반영: 횡단보도가 궤도 위로 이어진다(레일+줄무늬 합성 칸), 軌道敷 포장으로 궤도 띠를 차로와 나누고 차로|軌道敷 경계선·路側帯·정지선(횡단보도 상류), 동쪽행 섬(동쪽행 궤도 북쪽, 좌측통행·문은 차 왼쪽)과 서쪽행 섬을 횡단보도 양쪽에 엇갈려 — 두 방향 모두 런타임에서 정차·「조사」로 탑승 검증(SUMMARY 10/10), 남 보도 가드레일·화분·자전거 거치대(꾸밈 건너뜀 0 이 아니면 검사 실패), 건물 뒤·틈은 자갈 뒷마당, 보행 신호 대각 한 쌍(빨강), 전주는 칸 태그 foot-dy 로 밑동 줄 y 정렬(차로 위로 솟은 그림은 3/4 의 기둥 높이 — 밑동 칸만 막힘, 차 경로는 전주 행을 지나지 않는다), 가선은 궤도 윗행 −2(전차 팬터그래프 끝 높이; tram-stop.png 에서 집전기와 닿는다). 키트 그림은 transit 단계에서 따로 본다.",
+ "rounds": 4,
+ "seconds": 267,
+ "focus": "예제 맵 ⑤ 노면전차 거리 48×30 — 4회차. 3회차 지적 반영: (major) 서쪽행 가선이 동쪽행 섬 위 승객 얼굴을 긋던 것 → 가운데 띠를 3행(동쪽행 섬 17~18 · 전주 밑동 19)으로 넓혀 서쪽행 궤도 20~21, 서쪽행 가선(궤도 윗행 −2 = 18행)은 섬 난간 줄을 지난다(tram-stop-e.png). 전주 1×8, 두 팔이 두 가선에. 복선 판정은 6칸 안 나란한 두 레일. probe 가 섬 위 승객 발·머리 칸에 4층이 없음을 검사. (major) 남 보도 가드레일 → 남 보도 3행(27~29), 27행 = 가드레일·가로수·가로등(틈에), 28~29행 걷는 줄 비움, 남 보도 자전거 거치대 삭제. 두 보도 끝→끝 걸어 이어짐을 extraLayersCheck(sidewalks)로 검사. (major) 북 보도 자전거 거치대를 맨션 정문(x27~29) 밖 x24·x31로. (minor) 머리 주석·rules 단면 갱신, report.extra 에 poles 3기·레일 오토타일 0칸의 이유(note). 서쪽행 → 동네 역 앞, 동쪽행 → 학교 앞(행선지 다름, 정류장 이름에 방면). 정차 사진은 횡단보도 위 차가 없을 때 찍는다. 런타임 11/11 PASS.",
  "files": {
-  "verify-shots/jp-city/tramstreet-x3.png": "fd29ddb4c2c9c655a0057eb9906c45fd4fac2a51582611af9594e9116c03944e",
-  "verify-shots/jp-city/tram-runtime/tram-stop.png": "d0b32973d72fc28ddd3f0859e6ff2dccc37e2fc40303e9ab46f7feecad929747",
-  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "cced31b4575468b1b06c2bb64e8e42e56a186af462a551dc84cb833a303b2243",
-  "verify-shots/jp-city/tram-runtime/flow.png": "d5b45f6fc8af176ce0f5af1fd0f0b6e6597aa90e3f116adb2c12e07bae286d67",
-  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "6d0fbeb805e28620236dc01d6148c6aef97727d31226e6a6cd8eb8bdf1367eba",
-  "scripts/content/jp-city/maps/tramstreet.mjs": "20020b4172dbe35b08e26e6d05d25d91328653f77106f64e59c56bb24f67fdd3",
-  "scripts/content/jp-city/maps/out/tramstreet.report.json": "a0b13c21f67987c7356d16478854cc2d209d10a6710b450c7ae6b3184c497399"
+  "verify-shots/jp-city/tramstreet-x3.png": "ad93891e181855d6a8b734ba5a5c5c2f833b52fe6ef71729e34c09a998523569",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "6c8f519a0d7305c2865585fb97cafd8bc8be355cba090ab60fdebab30f6de82b",
+  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "27f43d0fbab31cba1fd5e2fb731bef012e06efcef41738a33fe30f0b2fe0511e",
+  "verify-shots/jp-city/tram-runtime/flow.png": "2ced5a2536ad470d630635e77f56d54ec351cc96c93ca9e5c1be01a2eafdf7e7",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "dcefe290d982c9f0e3d316bb2db2cb567397e331b404d0e9d94c1db5debd092d",
+  "scripts/content/jp-city/maps/tramstreet.mjs": "d1b10815da30fa21e64b94e94a39f1743fd240275ad9f29495f87799961e8cb0",
+  "scripts/content/jp-city/maps/out/tramstreet.report.json": "5fc81458bb477b3b595ec0ec633be8425fc265c936b81ec58c9858da6f347aaf",
+  "scripts/content/jp-city/qa/tram-street.probe.mjs": "b939c1caed8148dc8cc1e5d182dad4f84009bbe79dfb589d02905ceb2a293250"
  },
  "findings": [
   {
-   "severity": "major",
-   "file": "verify-shots/jp-city/tram-runtime/tram-stop-e.png",
-   "where": "화면 x170-740 y265-440 / 맵 ISE x6-17 rows15-16",
-   "problem": "17-18행 동행 전차가 15-16행 섬을 완전히 가려 정류장(점자 블록·난간·표지)이 보이지 않고, 보이는 문은 섬 반대쪽 남면이다. right_open 프레임도 실제 승차 면(북면)과 다르다. SUMMARY의 승차 PASS는 이벤트만 검사했다.",
-   "fix": "섬을 13-15행으로 올려 차체 위로 섬 가장자리가 보이게 하거나, 정차 중 섬 위 차체를 반투명/절단으로 그리거나, 북면 문 개폐 전용 프레임을 만든다. tram-stop-e.png에서 섬 위의 사람과 열린 문이 함께 보여야 한다."
-  },
-  {
-   "severity": "major",
+   "severity": "minor",
    "file": "scripts/content/jp-city/maps/tramstreet.mjs",
-   "where": "가선 L4 rows15·18 (WIRE_UP=2); tram-stop-e.png y≈410; flow.png y≈505, y≈615-700",
-   "problem": "남궤도용 18행 가선이 북궤도 전차 몸통을 가로질러 그려지고, 15행 가선은 섬 난간과 겹친다. 레일·가선·난간이 모두 같은 회흑 1px 선이라 선로를 식별할 수 없다. report의 rail autotile cells=0이라 레일은 검사되지 않는다.",
-   "fix": "가선은 해당 궤도 지붕선 높이에만 두고 다른 궤도 전차 칸에서는 차체 아래로 내리거나 비운다. 가선은 처짐·매달림 점이 있는 은회색으로, 레일은 하이라이트+측면 그림자와 침목 결 궤도 바닥으로 대비를 키우고, rail autotile 검사를 report에 추가한다."
+   "where": "4층 서쪽행 가선 18행 x6~17 (동쪽행 섬 난간 줄) — verify-shots/jp-city/tram-runtime/tram-stop-e.png y≈365",
+   "problem": "서쪽행 가선이 동쪽행 섬의 정류장 이름표 기둥·단말 표지·노란 볼라드를 허리 높이로 가로질러 지상의 줄처럼 읽힌다. 승객 얼굴 겹침(지난 major)은 해소됐다.",
+   "fix": "섬 18행 시설(이름표·단말·볼라드)을 가선이 지나지 않는 칸(17행 또는 섬 양 끝)으로 옮기거나, x6~17 구간 서쪽행 가선을 섬 시설 위에서 끊김 없이 지나가게 그린 전용 조각으로 바꾼다."
   },
   {
-   "severity": "major",
+   "severity": "minor",
+   "file": "scripts/content/jp-city/qa/tram-street.probe.mjs",
+   "where": "섬 위 4층 겹침 검사 (isl.y, isl.y-1 두 행만)",
+   "problem": "발·머리 칸만 보고 섬 아래 줄(18·23행)의 시설과 가선 겹침은 검사하지 않아, 위 겹침이 PASS 로 보고된다.",
+   "fix": "섬 전체 행(17~18, 22~23)에서 4층과 3층 시설이 같은 칸에 있으면 기록하도록 범위를 넓힌다."
+  },
+  {
+   "severity": "minor",
    "file": "scripts/content/jp-city/maps/tramstreet.mjs",
-   "where": "동행 차로 rows12-14, 서행 차로 rows24-26",
-   "problem": "축척 기준은 차로 4칸인데 두 차로 모두 3칸이다. tram-stop.png의 택시가 차로를 가득 채운다.",
-   "fix": "차로를 각 4칸으로 넓히고 지도 높이를 31행으로 늘린다. 예외로 둔다면 발행 규칙에 근거와 함께 명시한다."
+   "where": "남쪽 정지선 x22 (24~26행)과 보행 신호기 (22,27)",
+   "problem": "정지선과 신호 등주가 같은 열이라 흰 선이 신호기 머리까지 이어져 신호기가 정지선 위에 꽂힌 것처럼 보인다.",
+   "fix": "보행 신호기를 x23(정지선 바깥, 횡단보도 반대편 가장자리)으로 한 칸 옮기거나 정지선을 x22 안쪽 가장자리에 붙여 등주와 떨어뜨린다."
   },
   {
-   "severity": "major",
+   "severity": "minor",
    "file": "scripts/content/jp-city/maps/out/tramstreet.report.json",
-   "where": "북보도 x0-47 rows9-11, 남보도 rows27-28, poles: []",
-   "problem": "간선인데 가로수·가로등·전주가 0이다. 48x3 북보도가 신호기 하나만 두고 비어 있고, 이전에 지적한 가로수는 옮겨지지 않고 삭제됐다. emptiness 지표는 보도를 측정하지 않는다.",
-   "fix": "11행 차도 쪽에 6-8칸 간격 가로수+가로등을 두고(출입문·횡단보도·지하철 입구 앞 제외), 9행에 자판기·자전거 거치대를 둔다. 남보도 가드레일 사이에 가로수 받침을 넣고, emptiness 검사 범위에 보도 행을 넣는다."
-  },
-  {
-   "severity": "minor",
-   "file": "verify-shots/jp-city/tram-runtime/tram-stop.png",
-   "where": "팬터그래프 y≈212-235 vs 가선 y≈197; tram-stop-e.png y≈285-305 vs 268",
-   "problem": "팬터그래프가 가선에서 약 1/3칸 떠 있다.",
-   "fix": "가선 높이를 팬터그래프 상단에 맞추거나 팬터그래프 프레임을 1-2px 올린다."
+   "where": "최상위 \"poles\": [] vs extra.poles [[2,19],[25,19],[44,19]]",
+   "problem": "보고서 최상위 기둥 목록이 비어 있어, 그것을 읽는 도구는 가운데 기둥이 없다고 본다.",
+   "fix": "보고서 생성 시 가운데 기둥을 최상위 poles 에도 기록하거나 최상위 키를 제거하고 extra.poles 하나만 둔다."
   },
   {
    "severity": "minor",
    "file": "scripts/content/jp-city/maps/tramstreet.mjs",
-   "where": "jp-tram-pole-c (2,19)(25,19)(44,19); flow.png x≈720",
-   "problem": "전주 가지(y≈480·620)가 가선(y≈505·655)보다 위라서 가선이 전주를 그냥 통과한다. 꼭대기가 동행 차로 위까지 솟는다.",
-   "fix": "가지 끝을 각 가선 행에 맞추고 애자 점을 찍는다."
+   "where": "동쪽행 섬 17~18행 x6~17 (궤도 남쪽, right_open)",
+   "problem": "동쪽행 전차가 진행 방향 오른쪽 문으로 승객을 태운다. 일본 노면전차의 안전지대는 보통 진행 방향 왼쪽인데, 그 타협이 규칙·위키에 근거 없이 남아 있다.",
+   "fix": "rules 와 openwiki/jp-city.md 에 「3/4 에서 문이 보이는 남쪽 면을 위해 동쪽행은 오른쪽 승강」을 명시하거나, 동쪽행 섬을 12~14행 쪽(차로와 궤도 사이)으로 옮기고 북쪽 면 문 표기를 추가한다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
-   "where": "공개공지 x14-18 rows4-8 및 건물 사이; flow.png x120-410 y0-215",
-   "problem": "도심 간선 건물 앞 공개공지와 화분 바닥이 갈색 자갈·흙이다.",
-   "fix": "건물 앞·공개공지는 판석/인터로킹 포장으로 바꾸고 자갈은 뒤편 주차장에만 남긴다."
-  },
-  {
-   "severity": "minor",
-   "file": "public/assets/jp-city/jp-city-chipset.png",
-   "where": "jp-tram-ped-signal (17,9),(22,26)",
-   "problem": "보행 신호가 적·녹 원 두 개뿐이다. 일본 보행 신호는 사람 그림 표시(서 있는 적/걷는 청록)다.",
-   "fix": "등 안에 사람 실루엣 2-3px을 넣고 녹색을 청록 계열로 바꾼다."
+   "file": "verify-shots/jp-city/tram-runtime/tram-stop-e.png",
+   "where": "동쪽행 차로 회색 승용차 x≈550~755",
+   "problem": "승용차가 약 4.3칸(205px/48)으로 기준 5칸보다 짧다.",
+   "fix": "차량 스프라이트 폭을 5칸(240px@3x) 기준으로 맞추거나 기준 표에 이 차종의 실측 길이를 근거로 남긴다."
   }
  ],
- "report": "# tramstreet 2회차 적대적 검수\n\n## 이전 지적 재확인\n\n| 이전 지적 | 확인 결과 | 상태 |\n|---|---|---|\n| 횡단보도가 궤도 위에서 끊김 | `flow.png`에서 x18–21, 12~26행 전체에 끊김이 없다. | 해소 |\n| 13행 차도에 표시가 없고 레일이 안 보임 | 차선 구분선·가장자리선·정지선(x17, x22)은 생겼다. 그러나 레일은 여전히 회색 바닥 위 회색 실선이다. 가선과도 섞여서 레일로 읽히지 않는다. | 일부 남음(F2) |\n| 동쪽 정류장 승객이 차로를 건너야 함, 동행 승차 미검증 | 섬을 궤도 북쪽(15–16행)으로 옮겨 동선은 맞다. 그러나 `tram-stop-e.png`에서는 전차가 섬을 통째로 가린다. 보이는 문도 섬 반대쪽(남면)이다. | 새 결함(F1) |\n| 가로수 누락, 남쪽 보도 공백 | 가로수가 \"옮겨지지\" 않고 아예 사라졌다. 리포트의 deco 7은 가로수 0을 숨긴다. | 남음(F4) |\n\n## 지적 사항\n\n**F1 [major] 동쪽 정류장이 화면에서 읽히지 않는다**\n- **위치:** `verify-shots/jp-city/tram-runtime/tram-stop-e.png` 화면 좌표 x170–740, y265–440. 맵에서는 ISE x6–17, 15–16행이다.\n- **문제:**\n  - 17–18행 전차 그림의 키가 15–16행 섬을 완전히 덮는다.\n  - 점자 블록·난간·표지가 하나도 보이지 않는다.\n  - 화면에는 섬 없는 궤도 위의 전차만 남는다.\n  - 보이는 문은 남면이라 섬 반대쪽이다. 동행 전차는 좌측통행상 북면 문으로 타야 한다.\n  - 런타임 문 상태 `right_open`도 보이는 면 기준으로 그려져 실제 승차 면과 맞지 않는다.\n  - SUMMARY의 \"동행 승차 PASS\"는 「조사」 이벤트만 검사한 것이고, 그림은 검사하지 않았다.\n- **수정:** 셋 중 하나를 고른다.\n  - 동행 섬을 13–15행으로 한 줄 올려 차체 위로 섬 북쪽 가장자리가 보이게 한다. 동행 차로는 그만큼 줄이고 지도 높이를 늘린다.\n  - 정차 중에만 섬 위 부분의 차체를 반투명 또는 절단으로 그린다.\n  - 북면 문 개폐를 지붕 가장자리에 그리는 전용 프레임을 만든다.\n  - 어느 쪽이든 `tram-stop-e.png`에서 섬 위의 사람과 열린 문이 함께 보여야 합격이다.\n\n**F2 [major] 18행 가선이 동행 전차 차체를 가로지르고, 가선과 레일이 구분되지 않는다**\n- **위치:**\n  - `tram-stop-e.png` y≈410–415: 녹색 치마판·문·후미등 위를 지나는 검은 선.\n  - `flow.png` y≈505: 15행 가선이 섬 난간·표지(x215–255)와 겹친다.\n  - `flow.png` y≈615–700: 레일 4줄과 가선 1줄이 같은 굵기·색이다.\n  - 코드는 `tramstreet.mjs`의 가선 L4 15·18행, WIRE_UP=2 부분이다.\n- **문제:**\n  - 남궤도용 가선(18행)은 L4라 북궤도 전차 몸통 높이에 그려진다. 공중 전선이 차체를 꿰뚫는 레이어·위치 오류다.\n  - 15행 가선은 섬 난간 줄과 겹쳐 난간의 일부처럼 보인다.\n  - 레일·가선·난간이 모두 같은 1px 회흑 실선이라 무엇이 선로인지 눈으로 구분할 수 없다.\n  - 리포트의 `autotiles rail cells 0`이라 레일은 검사조차 되지 않는다.\n- **수정:**\n  - 가선은 각 궤도 위 지붕선 높이에만 그린다.\n  - 다른 궤도의 전차가 지나가는 칸에서는 차체보다 아래 레이어로 내리거나 그 칸을 비운다.\n  - 가선 모양을 바꾼다. 매달림 점 2칸 간격과 처짐 1px, 밝은 은회색 1px에 그림자 1px.\n  - 레일은 밝은 상단 하이라이트에 어두운 측면을 두고, 침목 결이 보이는 궤도 바닥으로 아스팔트와 대비를 키운다.\n  - 리포트에 rail 자동 타일 검사를 추가한다.\n\n**F3 [major] 차로 폭이 기준(4)보다 좁다**\n- **위치:** `tramstreet.mjs` 단면. 동행 차로 12–14행, 서행 차로 24–26행이 각 3칸이다.\n- **문제:**\n  - 축척 기준은 차로 4칸인데 두 차로 모두 3칸이다.\n  - `tram-stop.png`의 택시는 차로를 가득 채운다. 좌우 여유가 0이다.\n  - 다른 jp_city 맵과 축척이 어긋난다.\n- **수정:** 두 차로를 각 4칸으로 넓히고 지도 높이를 31행으로 늘린다. 이 맵만 예외로 둔다면 발행 규칙 문서에 근거와 함께 명시한다.\n\n**F4 [major] 간선 보도에 가로수·가로등·전주가 전혀 없다**\n- **위치:** 북보도 x0–47, 9–11행. 남보도 27–28행. 리포트 `poles: []`.\n- **문제:**\n  - research README는 간선도로의 신호로 연석·보도·가로수·가드 파이프를 든다. 전주와 전선은 1번 신호다.\n  - 그런데 48×3칸 북보도가 신호기 1개만 남기고 비어 있다. 남보도도 가드레일 줄을 빼면 1행뿐이다.\n  - 이전 회차에서 지적한 가로수는 옮겨지지 않고 삭제됐다.\n  - emptiness 지표(worst17x13 0.29)는 도로·보도를 측정하지 않아 이 공백을 놓친다.\n- **수정:**\n  - 북보도 차도 쪽 11행에 6~8칸 간격으로 가로수와 가로등을 둔다. 출입문·횡단보도·지하철 입구 앞은 비운다.\n  - 건물 쪽 9행에는 자판기·자전거 거치대를 1~2곳 둔다.\n  - 남보도는 가드레일 사이 빈칸에 가로수 받침을 넣는다.\n  - emptiness 검사 범위에 보도 행을 포함시킨다.\n\n**F5 [minor] 집전장치가 가선에 닿지 않는다**\n- **위치:**\n  - `tram-stop-e.png` 팬터그래프 y≈285–305, 가선 y≈268.\n  - `tram-stop.png` 팬터그래프 y≈212–235, 가선 y≈197.\n- **문제:** 약 1/3칸 떠 있다. 전차가 가선 아래를 지나는 것이 아니라 그냥 놓인 것처럼 보인다.\n- **수정:** 가선 높이를 팬터그래프 상단에 맞춘다. 또는 팬터그래프 프레임을 1~2px 올린다.\n\n**F6 [minor] 중앙 전주의 가지가 가선 높이와 어긋난다**\n- **위치:** `flow.png` x≈720. 가지 y≈480·620, 가선 y≈505·655. 맵 좌표는 전주 (2,19)·(25,19)·(44,19)다.\n- **문제:**\n  - 가지가 가선보다 위에 있어 가선이 전주를 그냥 통과한다.\n  - 전주 꼭대기가 동행 차로(14행) 위까지 솟아 차로 경계처럼 보인다.\n- **수정:** 가지 끝을 각 가선 행에 정확히 맞추고, 가지 끝에 애자 점을 찍는다.\n\n**F7 [minor] 간선 공개공지가 비포장 자갈이다**\n- **위치:** `flow.png` 상단 x120–410, y0–215. 맵에서는 x14–18, 4–8행의 화분 주변과 건물 사이다.\n- **문제:** 도심 간선 건물의 후퇴 공간과 화분 바닥이 갈색 자갈·흙이다. 도시 간선 경관과 맞지 않는다.\n- **수정:** 공개공지와 건물 앞은 보도 판석이나 인터로킹 블록으로 포장한다. 자갈은 뒤편 주차장에만 남긴다.\n\n**F8 [minor] 보행자 신호기가 일본 형식이 아니다**\n- **위치:** (17,9), (22,26). `flow.png` x320–355, `tram-stop.png` x175–210.\n- **문제:** 적·녹 원 두 개만 세로로 있다. 일본 보행 신호는 사람 그림 표시 상자다(서 있는 적색, 걷는 청색).\n- **수정:** 등 안에 사람 실루엣 2~3px을 넣고, 녹색은 청록 계열로 바꾼다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[{\"severity\":\"major\",\"file\":\"verify-shots/jp-city/tram-runtime/tram-stop-e.png\",\"where\":\"화면 x170-740 y265-440 / 맵 ISE x6-17 rows15-16\",\"problem\":\"17-18행 동행 전차가 15-16행 섬을 완전히 가려 정류장(점자 블록·난간·표지)이 보이지 않고, 보이는 문은 섬 반대쪽 남면이다. right_open 프레임도 실제 승차 면(북면)과 다르다. SUMMARY의 승차 PASS는 이벤트만 검사했다.\",\"fix\":\"섬을 13-15행으로 올려 차체 위로 섬 가장자리가 보이게 하거나, 정차 중 섬 위 차체를 반투명/절단으로 그리거나, 북면 문 개폐 전용 프레임을 만든다. tram-stop-e.png에서 섬 위의 사람과 열린 문이 함께 보여야 한다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"가선 L4 rows15·18 (WIRE_UP=2); tram-stop-e.png y≈410; flow.png y≈505, y≈615-700\",\"problem\":\"남궤도용 18행 가선이 북궤도 전차 몸통을 가로질러 그려지고, 15행 가선은 섬 난간과 겹친다. 레일·가선·난간이 모두 같은 회흑 1px 선이라 선로를 식별할 수 없다. report의 rail autotile cells=0이라 레일은 검사되지 않는다.\",\"fix\":\"가선은 해당 궤도 지붕선 높이에만 두고 다른 궤도 전차 칸에서는 차체 아래로 내리거나 비운다. 가선은 처짐·매달림 점이 있는 은회색으로, 레일은 하이라이트+측면 그림자와 침목 결 궤도 바닥으로 대비를 키우고, rail autotile 검사를 report에 추가한다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"동행 차로 rows12-14, 서행 차로 rows24-26\",\"problem\":\"축척 기준은 차로 4칸인데 두 차로 모두 3칸이다. tram-stop.png의 택시가 차로를 가득 채운다.\",\"fix\":\"차로를 각 4칸으로 넓히고 지도 높이를 31행으로 늘린다. 예외로 둔다면 발행 규칙에 근거와 함께 명시한다.\"},{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/out/tramstreet.report.json\",\"where\":\"북보도 x0-47 rows9-11, 남보도 rows27-28, poles: []\",\"problem\":\"간선인데 가로수·가로등·전주가 0이다. 48x3 북보도가 신호기 하나만 두고 비어 있고, 이전에 지적한 가로수는 옮겨지지 않고 삭제됐다. emptiness 지표는 보도를 측정하지 않는다.\",\"fix\":\"11행 차도 쪽에 6-8칸 간격 가로수+가로등을 두고(출입문·횡단보도·지하철 입구 앞 제외), 9행에 자판기·자전거 거치대를 둔다. 남보도 가드레일 사이에 가로수 받침을 넣고, emptiness 검사 범위에 보도 행을 넣는다.\"},{\"severity\":\"minor\",\"file\":\"verify-shots/jp-city/tram-runtime/tram-stop.png\",\"where\":\"팬터그래프 y≈212-235 vs 가선 y≈197; tram-stop-e.png y≈285-305 vs 268\",\"problem\":\"팬터그래프가 가선에서 약 1/3칸 떠 있다.\",\"fix\":\"가선 높이를 팬터그래프 상단에 맞추거나 팬터그래프 프레임을 1-2px 올린다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"jp-tram-pole-c (2,19)(25,19)(44,19); flow.png x≈720\",\"problem\":\"전주 가지(y≈480·620)가 가선(y≈505·655)보다 위라서 가선이 전주를 그냥 통과한다. 꼭대기가 동행 차로 위까지 솟는다.\",\"fix\":\"가지 끝을 각 가선 행에 맞추고 애자 점을 찍는다.\"},{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/tramstreet.mjs\",\"where\":\"공개공지 x14-18 rows4-8 및 건물 사이; flow.png x120-410 y0-215\",\"problem\":\"도심 간선 건물 앞 공개공지와 화분 바닥이 갈색 자갈·흙이다.\",\"fix\":\"건물 앞·공개공지는 판석/인터로킹 포장으로 바꾸고 자갈은 뒤편 주차장에만 남긴다.\"},{\"severity\":\"minor\",\"file\":\"public/assets/jp-city/jp-city-chipset.png\",\"where\":\"jp-tram-ped-signal (17,9),(22,26)\",\"problem\":\"보행 신호가 적·녹 원 두 개뿐이다. 일본 보행 신호는 사람 그림 표시(서 있는 적/걷는 청록)다.\",\"fix\":\"등 안에 사람 실루엣 2-3px을 넣고 녹색을 청록 계열로 바꾼다.\"}]}\n```"
+ "report": "세 차례 지적을 다시 확인했다. 그다음 남은 결함을 찾았다.\n\n- **(1) 서쪽행 가선이 동쪽행 섬 승객 얼굴을 긋던 문제:** 해소됐다. `tram-stop-e.png` 에서 주인공은 섬 17행에 서 있고, 몸·얼굴 위로 가선이 지나가지 않는다. 가선은 발 아래 18행(난간 줄)으로 지나간다. 다만 그 18행에서 정류장 이름표 기둥·단말 표지·노란 볼라드를 허리 높이로 가른다. 이것은 아래 minor 로 남긴다.\n- **(2) 남쪽 보도 가드레일이 보행 줄을 끊던 문제:** 해소됐다. 가드레일·가로수·가로등은 27행에만 있고, 28~29행은 x0~47 이 끊김 없이 트여 있다. `tramstreet-x3.png` 와 `tram-stop.png` 하단에서 확인했다.\n- **(3) 자전거 거치대가 맨션 문 x27~29 를 막던 문제:** 해소됐다. 거치대는 (24,9)와 (31,9)에 있고 문 앞 세 칸은 비어 있다. `flow.png` 우상단에서 확인했다.\n\n### 남은 결함\n\n1. **가선과 섬 시설의 겹침 (minor)**\n   - 서쪽행 가선(4층 18행, x6~17)이 동쪽행 섬의 정류장 이름표·단말 표지·볼라드 위로 지나간다. 지상 높이의 줄처럼 읽힌다.\n   - 프로브는 섬 윗줄과 그 위 한 칸(발·머리 칸)만 검사한다. 그래서 이 겹침을 잡지 못한다.\n2. **정지선이 신��기 몸통으로 이어짐 (minor)**\n   - 남쪽 x22 정지선(24~26행)이 보행 신호기 (22,27)의 등주와 같은 열이다. 흰 선이 신호기 머리까지 이어져, 신호기가 정지선 위에 꽂힌 것처럼 보인다. `/tmp/sw.png` 에서 확인했다.\n3. **보고서 내부 불일치 (minor)**\n   - `tramstreet.report.json` 의 최상위 `\"poles\": []` 는 비어 있다. 반면 `extra.poles` 에는 기둥 3개가 있다.\n   - 최상위 값을 읽는 도구는 이 맵에 가운데 기둥이 없다고 판단한다.\n4. **동쪽행 승강 방향 (minor)**\n   - 동쪽행 섬이 두 궤도 사이(궤도 남쪽)에 있다. 그래서 동쪽행 전차는 진행 방향 오른쪽 문으로 태운다(`right_open`).\n   - 일본 노면전차의 안전지대는 보통 진행 방향 왼쪽이다. 화면에 문을 보이게 하려는 타협이다. 그 결정이 지도 규칙·위키에 근거로 적혀 있지 않다.\n5. **차량 길이 (minor)**\n   - `tram-stop-e.png` 의 회색 승용차는 화면 폭 약 205px 이다. 3배 기준 약 4.3칸으로, 기준 5칸보다 짧다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"4층 서쪽행 가선 18행 x6~17 (동쪽행 섬 난간 줄) — verify-shots/jp-city/tram-runtime/tram-stop-e.png y≈365\", \"problem\": \"서쪽행 가선이 동쪽행 섬의 정류장 이름표 기둥·단말 표지·노란 볼라드를 허리 높이로 가로질러 지상의 줄처럼 읽힌다. 승객 얼굴 겹침(지난 major)은 해소됐다.\", \"fix\": \"섬 18행 시설(이름표·단말·볼라드)을 가선이 지나지 않는 칸(17행 또는 섬 양 끝)으로 옮기거나, x6~17 구간 서쪽행 가선을 섬 시설 위에서 끊김 없이 지나가게 그린 전용 조각으로 바꾼다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/qa/tram-street.probe.mjs\", \"where\": \"섬 위 4층 겹침 검사 (isl.y, isl.y-1 두 행만)\", \"problem\": \"발·머리 칸만 보고 섬 아래 줄(18·23행)의 시설과 가선 겹침은 검사하지 않아, 위 겹침이 PASS 로 보고된다.\", \"fix\": \"섬 전체 행(17~18, 22~23)에서 4층과 3층 시설이 같은 칸에 있으면 기록하도록 범위를 넓힌다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"남쪽 정지선 x22 (24~26행)과 보행 신호기 (22,27)\", \"problem\": \"정지선과 신호 등주가 같은 열이라 흰 선이 신호기 머리까지 이어져 신호기가 정지선 위에 꽂힌 것처럼 보인다.\", \"fix\": \"보행 신호기를 x23(정지선 바깥, 횡단보도 반대편 가장자리)으로 한 칸 옮기거나 정지선을 x22 안쪽 가장자리에 붙여 등주와 떨어뜨린다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/tramstreet.report.json\", \"where\": \"최상위 \\\"poles\\\": [] vs extra.poles [[2,19],[25,19],[44,19]]\", \"problem\": \"보고서 최상위 기둥 목록이 비어 있어, 그것을 읽는 도구는 가운데 기둥이 없다고 본다.\", \"fix\": \"보고서 생성 시 가운데 기둥을 최상위 poles 에도 기록하거나 최상위 키를 제거하고 extra.poles 하나만 둔다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"동쪽행 섬 17~18행 x6~17 (궤도 남쪽, right_open)\", \"problem\": \"동쪽행 전차가 진행 방향 오른쪽 문으로 승객을 태운다. 일본 노면전차의 안전지대는 보통 진행 방향 왼쪽인데, 그 타협이 규칙·위키에 근거 없이 남아 있다.\", \"fix\": \"rules 와 openwiki/jp-city.md 에 「3/4 에서 문이 보이는 남쪽 면을 위해 동쪽행은 오른쪽 승강」을 명시하거나, 동쪽행 섬을 12~14행 쪽(차로와 궤도 사이)으로 옮기고 북쪽 면 문 표기를 추가한다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/tram-runtime/tram-stop-e.png\", \"where\": \"동쪽행 차로 회색 승용차 x≈550~755\", \"problem\": \"승용차가 약 4.3칸(205px/48)으로 기준 5칸보다 짧다.\", \"fix\": \"차량 스프라이트 폭을 5칸(240px@3x) 기준으로 맞추거나 기준 표에 이 차종의 실측 길이를 근거로 남긴다.\"}\n]}\n```"
 }

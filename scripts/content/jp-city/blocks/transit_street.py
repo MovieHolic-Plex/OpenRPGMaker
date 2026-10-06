@@ -109,7 +109,7 @@ def rail_h(c, x0, x1, oy=0):
 
 @prop('tram-rail-h', '노면전차 레일(가로)', 1, 2, other='flat', role='terrain', repeat='x',
       tags=('노면전차', '레일', '선로', '도로'),
-      rules='간선도로 가운데 2칸 띠로 가로로 이어 깐다(복선은 레일 2행 + 사이 1행 + 레일 2행). 아스팔트 위 2층 덧그림(레일 사이는 투명). 단면(북→남): 동행 차로 3행 · 동행 궤도 2행 · 가운데 띠 2행(동행 섬/軌道敷·전주) · 서행 궤도 2행 · 서행 섬 2행 · 서행 차로 3행. 두 섬 모두 자기 궤도 바로 남쪽.')
+      rules='간선도로 가운데 2칸 띠로 가로로 이어 깐다(복선은 레일 2행 + 가운데 띠 3행 + 레일 2행). 아스팔트 위 2층 덧그림(레일 사이는 투명). 단면(북→남): 동행 차로 3행 · 동행 궤도 2행 · 가운데 띠 3행(동행 섬 2행 + 전주 밑동 1행) · 서행 궤도 2행 · 서행 섬 2행 · 서행 차로 3행. 두 섬 모두 자기 궤도 바로 남쪽.')
 def _(c):
     rail_h(c, 0, 16)
 
@@ -215,10 +215,11 @@ def _(c):
     c.HL(0, WIRE_Y, 32, OL)                                 # 전차선(먹 1px)
     for x in (0, 16): c.P(x + 4, WIRE_Y - 1, K('sumi', -2)) # 드로퍼 16px 간격
 
+MID_ROWS = 3                       # 가운데 띠 행 수(동쪽행 섬 2행 + 전주 밑동 행) — 서쪽행 가선(서쪽행 궤도 윗행 −2)이 섬 위 승객 몸이 아니라 섬 난간 줄에 오게(관문 tramstreet 3회차)
 POLE_TOP = 3                       # 전주 키트 윗행 = 동행 궤도 윗행 −3 (= 동행 가선 행 −1)
-POLE_H = 7                         # 키트 높이(행): 동행 가선 행 −1 ~ 가운데 띠 아랫행
+POLE_H = 5 + MID_ROWS              # 키트 높이(행): 동행 가선 행 −1 ~ 가운데 띠 아랫행
 POLE_EAST_C = (POLE_TOP - WIRE_UP) * 16 + WIRE_Y   # 키트 안 동행 전차선 y (19)
-POLE_WEST_C = POLE_EAST_C + 4 * 16 # 서행 전차선 y (83, 서행 궤도 윗행 = 동행 + 4행)
+POLE_WEST_C = POLE_EAST_C + (2 + MID_ROWS) * 16   # 서행 전차선 y (서행 궤도 윗행 = 동행 + 2 + 가운데 띠)
 POLE_PX = 6                        # 강관 x 6..9
 POLE_FOOT = (POLE_H - 1) * 16 + 2  # 밑동 칸 = 가운데 띠 아랫행(동행 궤도 윗행 +3) (98)
 
@@ -235,7 +236,7 @@ def _bracket(c, yc, stay_from):
 @prop('tram-pole-c', '노면전차 센터 전주(복선 사이)', 1, POLE_H, solid=[(0, POLE_H - 1)], other='star', role='prop',
       cell_tags=lambda cx, cy: [f'foot-dy:{POLE_H - 1 - cy}'],
       tags=('노면전차', '전주', '가선', '기둥', '센터폴', '브래킷'),
-      rules='가운데 띠(동행 궤도와 서행 궤도 사이 2행)의 아랫행에 밑동, 16~24칸 간격, 동행 섬 x 범위 밖. 키트 윗행 = 동행 궤도 윗행 −3(동행 가선 행 −1), 밑동 칸 = 동행 궤도 윗행 +3. 위 팔은 동행 전차선(궤도 윗행 29px 위), 아래 팔은 서행 전차선 높이에 애자가 닿는다. 보도에는 세우지 않는다. 밑동 칸만 막힘.')
+      rules='가운데 띠(동행 궤도와 서행 궤도 사이 3행: 동행 섬 2행 + 전주 행)의 아랫행에 밑동, 16~24칸 간격. 키트 윗행 = 동행 궤도 윗행 −3(동행 가선 행 −1), 밑동 칸 = 동행 궤도 윗행 +4. 위 팔은 동행 전차선(궤도 윗행 29px 위), 아래 팔은 서행 전차선 높이에 애자가 닿는다. 보도에는 세우지 않는다. 밑동 칸만 막힘.')
 def _(c):
     px, foot = POLE_PX, POLE_FOOT
     top = POLE_EAST_C - 12                                 # 강관 꼭대기(동행 전차선보다 12px 위, 키트 윗행 안)
@@ -511,9 +512,9 @@ def _bldg(name):
     a[(a[:, :, :3] == a[0, 0, :3]).all(axis=2)] = 0          # 점검 그림 바탕색 빼기
     return Image.fromarray(a, 'RGBA')
 
-# 장면 가로 단면(칸 행): 건물 0..8 · 북 보도 9..11 · 동행 차로 12..14 · 동행 궤도 15..16 · 사이 17 ·
-# 서행 궤도 18..19 · 서행 안전지대 20..21 · 서행 차로 22..24 · 남 보도 25..27 (좌측 통행)
-SC = dict(walk_n=9, lane_e=12, track_n=15, mid=17, track_s=19, island=21, lane_w=23, walk_s=26, rows=29)
+# 장면 가로 단면(칸 행): 건물 0..8 · 북 보도 9..11 · 동행 차로 12..14 · 동행 궤도 15..16 · 가운데 띠 17..19(동행 섬 17..18 · 전주 밑동 19) ·
+# 서행 궤도 20..21 · 서행 안전지대 22..23 · 서행 차로 24..26 · 남 보도 27..29 (좌측 통행)
+SC = dict(walk_n=9, lane_e=12, track_n=15, mid=17, track_s=20, island=22, lane_w=24, walk_s=27, rows=30)
 EISX, WISX, CWG = 6, 22, 18                                         # 동행 섬 x, 서행 섬 x, 횡단보도 칸 x(4칸)
 
 def render_scene(cells, kits):
@@ -611,7 +612,7 @@ def render_scene(cells, kits):
     # 3층: 정류장 소품·센터 전주(가운데 띠, 섬 밖)·보행자 신호기 → 점검용 전차 1량(서행, 서행 섬 옆에 정차)
     put('jp-tram-stop', EISX, SC['mid'], layers=('grid',))
     put('jp-tram-stop', WISX, SC['island'], layers=('grid',))
-    for gx in (1, 27, 38): put('jp-tram-pole-c', gx, SC['mid'] + 1 - (POLE_H - 1))
+    for gx in (1, 27, 38): put('jp-tram-pole-c', gx, SC['mid'] + MID_ROWS - 1 - (POLE_H - 1))
     put('jp-tram-ped-signal', CWG - 1, SC['lane_e'] - 3)
     tram = Image.open(os.path.join(ROOT, 'public', 'assets', 'jp-city', 'vehicles', 'jp-tram.png')).convert('RGBA').crop((194, 144, 386, 208))
     im.alpha_composite(tram, (WISX * 16, (SC['track_s'] + 2) * 16 - 64))

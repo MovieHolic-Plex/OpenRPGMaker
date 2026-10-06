@@ -3,7 +3,7 @@
   "id": "jp-city-station-concourse",
   "size": [
    26,
-   14
+   15
   ]
  },
  "start": [
@@ -50,7 +50,7 @@
  "layers": {
   "overlaps": 0,
   "issues": [],
-  "l2": 28,
+  "l2": 36,
   "l3": 163,
   "l4": 0
  },
@@ -62,7 +62,7 @@
   "skippedWindows": 0
  },
  "reach": {
-  "reachable": 244
+  "reachable": 270
  },
  "placed": 66,
  "ok": true,

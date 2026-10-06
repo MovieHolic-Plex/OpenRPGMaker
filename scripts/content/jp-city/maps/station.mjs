@@ -23,9 +23,9 @@ const transferEvent = (id, name, x, y, to) => ({
     movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId: to.mapId, x: to.x, y: to.y, fade: "black", ...(to.dir ? { direction: to.dir } : {}) }] }],
 });
 
-// ── 콘코스 26×14 ───────────────────────────────────────────────
+// ── 콘코스 26×15 ───────────────────────────────────────────────
 {
-  const W = 26, H = 14;
+  const W = 26, H = 15;
   const m0 = await kitMap(W, H, {});
   const FLOOR = m0.KIT["jp-subway-floor"].rows[0].tiles[0];
   const m = await kitMap(W, H, { fill: FLOOR });
@@ -45,10 +45,10 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-pillar-plain", 4, 12, { tag: "pillar-sw" });
   put("jp-subway-pillar-plain", 21, 12, { tag: "pillar-se" });
   put("jp-subway-sign-line", 6, 11, { tag: "sign-line" });              // 「のりば」
-  put("jp-subway-stairs-down", 11, 13, { tag: "platform-stairs" });     // 승강장 계단 x 11~14, 입구 칸 (12,13)(13,13)
-  // 점자 유도 블록(2층): 매표기 앞 ― 출구 계단 앞 ― 역무실 앞(4줄), 출구 계단 앞에서 개찰 통로(x 13)를 지나 승강장 계단 앞(10줄)까지
+  put("jp-subway-stairs-down", 11, 13, { tag: "platform-stairs" });     // 승강장 계단 x 11~14(11~13행, 머리벽 북쪽), 입구 = 남쪽 끝 칸 (12,13)(13,13) — 14행에서 들어선다
+  // 점자 유도 블록(2층): 매표기 앞 ― 출구 계단 앞 ― 역무실 앞(4줄), 출구 계단 앞에서 개찰 통로(x 13)를 지나 계단 동쪽(15열)으로 돌아 남쪽 입구 앞(14행)까지
   const line = (x0, y0, x1, y1) => { const out = []; for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) out.push([x, y]); return out; };
-  m.groupLineL2("jp-tactile", [...line(2, 4, 22, 4), ...line(13, 5, 13, 10), [12, 10]]);   // 4줄 = 매표기(x 2~7) 앞부터 역무실(x 19~22) 앞까지·출구 계단·역무실 앞(끝·꺾임 = 점형), 13열 = 개찰 통로 → 승강장 계단 앞
+  m.groupLineL2("jp-tactile", [...line(2, 4, 22, 4), ...line(13, 5, 13, 10), ...line(14, 10, 15, 10), ...line(15, 11, 15, 14), ...line(12, 14, 14, 14)]);   // 4줄 = 매표기(x 2~7) 앞부터 역무실(x 19~22) 앞까지(끝·꺾임 = 점형), 13열 = 개찰 통로 → 10행 동쪽 → 15열 계단 옆 → 14행 입구 앞 (12,14)(13,14) 끝 = 경고 블록
   const events = [
     ...[12, 13].map((x) => transferEvent(`ev_exit_${x}`, "출구 계단(지상)", x, 3, EXIT_TARGET)),
     ...[12, 13].map((x) => transferEvent(`ev_down_${x}`, "승강장으로", x, 13, { mapId: PLATFORM_ID, x: x + 9, y: 11, dir: "down" })),
@@ -88,7 +88,7 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-vending", 41, 11, { tag: "vending" });               // 음료 자판기 — 기둥 사이 바닥에 홀로
   stamp("jp-subway-extinguisher", 16, 1, { layer: 4, tag: "extinguisher" });   // 뒷벽 소화기 상자(광고 사이 빈 벽) — 벽이 3층이라 4층 덧그림
   m.groupLineL2("jp-tactile", [...line(24, 7, 24, 11), ...line(21, 11, 23, 11)]);   // 승강장 끝 점자 띠(6줄, 바닥 그림) → 계단 입구(21·22, 10) 앞 11줄
-  const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 11, dir: "up" }));
+  const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 14, dir: "down" }));
   // 지하철: 서쪽 맵 밖에서 동쪽으로, 머리 x 38 에 서면 몸 x 9~38 이 승강장 앞에 선다. 경로 칸 번호 = 38 − (−36) = 74.
   const transit = { routes: [{ id: "subway-sakura-east", name: "地下鉄 さくら線", kind: "subway", path: [{ x: -36, y: 4 }, { x: W - 1 + 36, y: 4 }], vehicles: ["jp-subway"], headwaySec: 40, speed: 6,
     stops: [{ index: 74, name: "さくら町", waitSec: 12, board: { ...RIDE_TARGET } }] }] };
