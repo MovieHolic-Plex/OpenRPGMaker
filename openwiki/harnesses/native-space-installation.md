@@ -50,6 +50,55 @@ the helper throws. The schema validator supplies command/reference shape validat
 this helper authors no events or scene artwork. Pass the returned packet to
 `saveNativeSpaceProject` only after approved common publication and visual review.
 
+## Frozen POTIONS runtime draft preparation
+
+`src/harnesses/super-harness/native_runtime_prepare.py` has separate `freeze` and
+`pack` commands. `freeze --artwork-root ROOT --recipes EXACT_RECIPE_DIR --contract
+EXACT_SCENE_JSON --actors EXACT_RUNTIME_ASSETS_JSON --out NEW_MANIFEST_JSON` hashes
+the four existing scene recipes, every native PNG they cite, scene contract/composer,
+slot definitions, and the actor delivery receipt's full source list. It checks all
+preexisting reference hashes. No active concept or native art is written.
+
+`pack --manifest MANIFEST_JSON --out NEW_PACKET_DIR` reads only the frozen bytes and
+rechecks all source files before writing. Changed source hashes fail. Output is
+`authoring-input.json`, `library.json`, separate PNG assets, `preparation-proof.json`,
+`input-manifest.json`, and `stair-binding.json`. A wall/vault refresh creates a new
+manifest from an explicit recipe directory; it keeps authored actor/event identities
+and does not read a moving latest pointer. Only unmasked crop/copy and transparent
+padding are used. Native crop/source/output RGBA and PNG hashes are recorded.
+
+Run `node src/harnesses/super-harness/node/nativeRuntimeDraft.mjs --packet PACKET_DIR`
+to invoke `createNativeSceneProject` and write portable `project.oprn.json` plus
+`draft-project-proof.json`. This authors and validates a packet; it never publishes,
+saves SQLite, hosts a runtime, or claims quality. All uploaded assets belong to the
+draft common library, which is an input for later approved common publication.
+
+The classroom retains its23×14 ground collision diagram, all12student slots, native
+floor/wall tiles, separate tall/offgrid sprites, and32px visual north headroom.
+`visualTopOverhangPx` changes camera bounds only. Walking actor packs remain byte
+identical with their original anchors. Per-instance frame copies use explicit
+transparent padding/anchors to reconcile source contact pixels with cell-bottom
+runtime pivots; no source SpriteDef is altered. Tabletop children share their bench
+ground row for Y-depth. Same-priority nonblocking graphics and collision tiles/events
+have separate responsibilities.
+
+Teacher/student/assistant actions use their same delivered48-frame sheets and native
+receipt durations: four poses, four directions, three ordered frames. Interactive
+menus demonstrate every commissioned pose; per-actor parallel clocks loop the actual
+classroom contact pose. The four original scene states also select door/light/pose
+frames. Potion responses retain all36native frames at150ms; bottle holds frame6.
+The rinse sequence uses four150ms frames then returns to idle. Door open/closed/locked
+pages change only the authored one-cell threshold occupancy.
+
+Stairs stay explicitly unresolved until the supervisor authors a real connected
+landing. `pack(..., stair_destination={mapId,x,y,...})` is an optional Python adapter
+for later composition with that map; `stair-binding.json` supplies the required
+reciprocal return to classroom[8,12]. The CLI draft provides no pretend local teleport.
+Stairs are not complete. Runtime Y-depth cannot directly represent all eight source
+assembly bands, and exact hand/duct/player occlusion remains a visual QA requirement.
+Current wall/vault review status and `runtimePassed:false`, `publicRegistered:false`,
+`canonicalReload:false` remain explicit even after successful schema normalization.
+
 ## Preconditions and ownership
 
 - `selections` must be nonempty; every value is a 64-hex fingerprint and every key
