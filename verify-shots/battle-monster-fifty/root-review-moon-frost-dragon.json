@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-06T13:03:59.918828+00:00",
+  "passed": true,
+  "key": "moon-frost-dragon/fifty-v1",
+  "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+  "actualIndependentReviewJob": "fb1e79a9-63d0-47ed-af6d-dd1909ae2a77",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "b97464b3e9cdad4e1b0be5e6197e4e37be1011dcc64b12c11d98a27c3aab0231",
+    "preview/suite/light.png": "71412a1dd7f1a4280ee8ef8c03ab5b8877216928b549f1ee9c3d522c43f13323",
+    "preview/suite/dark.png": "8c6b633fb889778dcf92a9dceb927298db9b5c43350444037cf4541925384b5f",
+    "preview/suite/checker.png": "1736860b05a13b80bef838f865a863345197ca99e644cba5cc902f17945b134b"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "retainedIndependentSummary": "제공된 실제 PNG 4장을 native 1x와 최근접 3x로 검수했다. 긴 주둥이·수염, 뒤로 휜 작은 두 뿔, 금빛 눈, 푸른 등갈기와 큰 날개 없는 코일이 용의 실루엣으로 읽힌다. 은백색의 넓은 밝은 면과 청록색 오른쪽·아래 그림자는 왼쪽 위 광원과 일관된다. 코일 안쪽 빈 공간은 의도된 실루엣이며, 세 배경에서 뚜렷한 몸체 관통 구멍이나 끊긴 목·앞발 접합은 보이지 않는다. 겹친 두 앞발은 낮은 목과 코일의 접합부에 이어지고, 접지는 공중의 앞발 대신 코일 밑면이 담당한다. 준비 자세의 뒤로 굽힌 목, 전진하며 낮아지는 상체, 벌린 턱과 뻗은 앞발, 회수·피격·낮게 쓰러진 몸이 구분된다. 전진·공격에서 코일 아래 끝의 각진 윤곽 변화는 보이지만 정지 시트만으로 움직임 중 튐을 판정할 수 없다. 추가 9자세는 색조 변경에 그치지 않는다. 스킬은 입 안 청백 핵 → 실제 입에서 이어지는 두 갈래 얼음 브레스 → 턱을 좁히며 남는 세 얼음 조각으로 읽힌다. 독은 앞발을 접은 구역질 자세와 녹색 기포, 기절은 낮은 웅크림과 금색 별, 수면은 감긴 눈과 늘어진 앞발로 구분된다. 대기와 상태이상 쌍의 변화는 작고 미세하므로 재생 리듬은 GIF에서 별도 확인해야 한다. 이는 자세 PNG 검수이며 실제 전투 크기·돌격 이동·프레임 시간·애니메이션 연속성, 원본 격자 저작 방식과 모델 출처, 전체 원본의 색 수·알파 계약을 입증하지 않는다. keep은 시각 검수 추천이며 사용자 선택을 대신하지 않는다.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-moon-frost-dragon.png",
+  "nativeContactPngSha256": "f147dd520b13fac96842a753607134e852d67234e6584829e18cf28d97555349",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "9fd989392e23579e293a6624bee0b382bf55575fe30cbc7277078903c289c608",
+    "repair_forelegs.py": "5fd7971f2c4fb79816882e8911eb27f5ee14d1b7976cb267f2d0def5b79c87c6",
+    "repair_claws_horns.py": "0a870848d3d62446893c689a3fa5259ae81ed0283c57b04513137867757af2e8"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after second repair. Both ivory near/far horns now shorter backward-curved tapering clusters with distinct roots through all18poses. Near/far arms shortened in upright idle, claws now have hooked/tapered separated endpoints rather than rectangular boot sole; actual lower coil supports native124 contact. Attack open jaw/connected narrowed forearm and small claw contour, folded windup/recovery, broad hit-neck join retained. Sleep relaxed far paw has smaller wrist-bent claw endpoint, poison raised paw and lower resting paw carry pointed claw shapes; stunt slumped neck/claws and fallen low body retain same species. Mouthcore/two connected ice branches/3fragments retained. Sparse skin scales/angular coil lightplane, lowcontrast dark contours and small pair changes remain; claw/root naturalness and closed lids still require fresh review. Read whole current original author_pixels and repair_forelegs previously at exact unchanged hashes, plus complete repair_claws_horns.main/moduleflow/calls: saved-before snapshots, explicit per-pose horn/limb/followup row blocks at separately specified x/y/right bounds, direct row padding only; reused own rigid horn literal parts, no wholeframe transforms/tweens/generated geometry. Other scripts render/GIF/readonlyinspect exact prior hashes. All18 nativePNG/source match. Fresh actual independent fb1e79a9 GPT6.1sol/high keep, no formal minor issues. Retain actual keeper summary limitations: angular advance/attack coil bottom contour and subtle idle/status pair movement; decoded GIF/native exposures and browser are separate checks. Actual static art/source methods verified, no actual battle contact/timing claim.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

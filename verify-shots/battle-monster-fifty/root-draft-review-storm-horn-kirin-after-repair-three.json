@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-06T12:55:16.528870+00:00",
+  "passed": false,
+  "key": "storm-horn-kirin/fifty-v1",
+  "binding": "e86ce0b32612e213e8189cfd0cd3eff8a79239bc6a1860a9919d565981e42321",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-storm-horn-kirin-after-repair-three.png",
+  "nativeContactPngSha256": "e67911ac24b68f6e5d1d3d026da7c35269c679cd3774a08514e8eebc230b7d2b",
+  "nativeWriterFilesRead": {
+    "author.py": "fd650a8316a5e86b05d716642f539c6492635671dd24e6ba189ff00d119ec972",
+    "apply_native_repair.py": "7718c13a1bf83a2f9da9c3cc9e0ccc4849c4c9fb49ea1c4ce7b5773a2d4af33f"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after third repair. Lowered attack horn now has recognizable thicker gold base/shaded taper rather than single pale line, connected forehead/near-horizontal horn-first thrust and supporting stride retained. Targeted attack/hit/dead/skill-foot clusters appear opaque/continuous at identified punctures, hit far front foot has compact dark hoof cap, skill_c jade/gold throat bands now contiguous and stray stun gap dot removed. Horn-root branched goldwhite lightning, distinct bent-knee droop stun, poison hunch, bowed sleep and fallen dead retain species anatomy. Predominantly side-facing body, subtle idle/sleep changes and lowcontrast dark far hooves remain. Read complete current author.main/moduleflow/calls with final native-cluster literal patches, plus entire apply_native_repair.main/moduleflow/calls: selected frame/y/x literal row strings only, no inferred fill/body geometry/wholeframe transforms/tweens. Changed new native_repair_diagnostics full methods/nested background/moduleflow read: read-only images/comparisons, no native writes; other diagnostics/render exact prior hashes. All18 currentPNG/source match. Fresh actual independent0f1c4b1f pending; no keeper/Allow claim.",
+  "actualIndependentReviewJob": "0f1c4b1f-9072-46f5-b15e-59ccf48233ad",
+  "clarificationAfterActualIndependentReview": "Fresh actual review supports closed accidental holes and distinct authored states; remaining rework3 is torso depth, still shortened/thinned rigid horn during dash, and dark far-hoof contrast. Root observed increased thickness relative to previous one-pixel horn, which did not establish conservation of idle horn length/base mass. Draft remains false."
+}

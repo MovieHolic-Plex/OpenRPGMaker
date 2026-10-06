@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "4362e47b86160ff561be21b849091a6e230395331b88f2059456c624f58df2b6",
+  "priorReviewJob": "ae671308-a574-4f79-a4e6-3a4ec8fa73b6",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 79,
+      "y": 77,
+      "message": "The small bent limb beside the torso and the much larger appendage rooted around (77,93) do not read as a consistent pair of two short dragon forelegs. Redraw their shoulder roots at coherent positions on the upper body, give both an identifiable upper arm/elbow/paw, and shorten the long leg-shaped appendage. Preserve those attachment landmarks in idle_b/c and the action poses."
+    },
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 66,
+      "message": "The vertical throat ends against the diagonal chest through a pinched border junction, producing a cut-neck impression at 1x. Broaden the join around x44-51, y64-70 with a continuous band of neck midtone and shadow, then carry the throat highlight into the recoiling chest curve. Preserve the recoil while removing the sharp anatomical discontinuity."
+    },
+    {
+      "pose": "attack",
+      "x": 96,
+      "y": 105,
+      "message": "The attacking appendage expands into a long broad paddle with a rounded mitten end, losing the short clawed foreleg identity established by the idle's small limb. Keep its shoulder and elbow consistent with move/windup, shorten the broad shaft, and articulate two or three claw tips in the outer paw contour around x99-109, y108-113. Carry the same paw proportions into recover and skill poses."
+    }
+  ],
+  "startedAt": "2026-10-06T12:24:45.631298+00:00"
+}

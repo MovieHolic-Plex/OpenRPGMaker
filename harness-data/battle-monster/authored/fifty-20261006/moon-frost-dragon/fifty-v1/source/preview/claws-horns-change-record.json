@@ -1,0 +1,186 @@
+{
+  "paletteBytesUnchanged": true,
+  "frames": {
+    "attack": {
+      "changedPixels": 294,
+      "sourceSha256": "8e3273cea822f2b2484d093d12ee05dbcc2cf542d171a44bce061fb8d55cf50b",
+      "changedBounds": [
+        62,
+        42,
+        103,
+        114
+      ]
+    },
+    "dead": {
+      "changedPixels": 177,
+      "sourceSha256": "35399c786e7a61ee05ffe02bc12a4bb3ec753ddfda3726dea77fa21d9edf3c4a",
+      "changedBounds": [
+        68,
+        78,
+        99,
+        124
+      ]
+    },
+    "hit": {
+      "changedPixels": 153,
+      "sourceSha256": "fa93780ca745ec07092a7e87dd083f9006e62074b8c02ade1babdba14a3decdc",
+      "changedBounds": [
+        31,
+        33,
+        87,
+        100
+      ]
+    },
+    "idle_a": {
+      "changedPixels": 540,
+      "sourceSha256": "e7fac88abf0d7da4c618f9de20e97134907463ec01d82917028da35f53b84647",
+      "changedBounds": [
+        52,
+        13,
+        94,
+        124
+      ]
+    },
+    "idle_b": {
+      "changedPixels": 540,
+      "sourceSha256": "60eed5dfe58f477dd007290d5e26902e25eeb34ea2697e2ed463a1f21ef04592",
+      "changedBounds": [
+        52,
+        13,
+        94,
+        124
+      ]
+    },
+    "idle_c": {
+      "changedPixels": 540,
+      "sourceSha256": "a9ce4fb5dce2312ce24cce164ad3e3c4ebecfa18c6d1da9f49471ce6a1176696",
+      "changedBounds": [
+        52,
+        13,
+        94,
+        124
+      ]
+    },
+    "move": {
+      "changedPixels": 219,
+      "sourceSha256": "77a99448d000e5609f4b619afe63cf294b71d8af943d65c324fdef1e40be0a16",
+      "changedBounds": [
+        62,
+        34,
+        96,
+        105
+      ]
+    },
+    "recover": {
+      "changedPixels": 200,
+      "sourceSha256": "3fb4b2e4eb1ae2a4777c12cf8c3c7e9fccfbc98e071ac89000bd5e8a8e0d714f",
+      "changedBounds": [
+        50,
+        26,
+        96,
+        98
+      ]
+    },
+    "windup": {
+      "changedPixels": 187,
+      "sourceSha256": "4268fe1915559768ba9e7e4674238b0c1ad961d08bb71c025176e8414978afd4",
+      "changedBounds": [
+        32,
+        20,
+        84,
+        99
+      ]
+    },
+    "poison_a": {
+      "changedPixels": 269,
+      "sourceSha256": "d8918fd817aa8d40f0080b0a6e05036c150307b4430b7b331e8b03b26d204e14",
+      "changedBounds": [
+        47,
+        46,
+        92,
+        107
+      ]
+    },
+    "poison_b": {
+      "changedPixels": 269,
+      "sourceSha256": "66c3ddaef3c29d9de915e2912f91953c0e08d6f5d4be52f5087fd4ce239d09e2",
+      "changedBounds": [
+        46,
+        47,
+        92,
+        109
+      ]
+    },
+    "skill_a": {
+      "changedPixels": 195,
+      "sourceSha256": "6accf69cd1f659ff18f8358e3e133de113b43f79e35230949eccc9c09a33b175",
+      "changedBounds": [
+        51,
+        25,
+        96,
+        96
+      ]
+    },
+    "skill_b": {
+      "changedPixels": 180,
+      "sourceSha256": "917cb8546f0cca2ee902cbc7dd4be6b4876d7ffb833225e3716c29ee4f8ed092",
+      "changedBounds": [
+        39,
+        32,
+        90,
+        104
+      ]
+    },
+    "skill_c": {
+      "changedPixels": 195,
+      "sourceSha256": "195cb7b4b3b9c6ddbcec22fb1097b4a5fbd905939ebfa754d4d77a32e0c9a189",
+      "changedBounds": [
+        49,
+        32,
+        96,
+        98
+      ]
+    },
+    "sleep_a": {
+      "changedPixels": 414,
+      "sourceSha256": "aa0443fc52bf5bbbd90c60098429f541ae76aba180a18f8ca38aaa0d42ad2978",
+      "changedBounds": [
+        57,
+        54,
+        96,
+        124
+      ]
+    },
+    "sleep_b": {
+      "changedPixels": 406,
+      "sourceSha256": "4e7f096576fbc0db172451c8a43c0abb6efa8ebf606949c626baccb9015f7550",
+      "changedBounds": [
+        57,
+        54,
+        96,
+        124
+      ]
+    },
+    "stun_a": {
+      "changedPixels": 241,
+      "sourceSha256": "f6b5abe06d967b2cc3e096d2a736db3601a3b41868aed730428dd765a82ac7da",
+      "changedBounds": [
+        49,
+        57,
+        90,
+        118
+      ]
+    },
+    "stun_b": {
+      "changedPixels": 241,
+      "sourceSha256": "7fe32a849f5a0851436f25035d2a4bcdfd5b3c9943ac373cec745758de205854",
+      "changedBounds": [
+        49,
+        57,
+        91,
+        118
+      ]
+    }
+  },
+  "uniqueSourceFrames": 18
+}

@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-06T13:08:25.939639+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "3a38c8d48a6b223bccaaebaef6ba658a80f5a3fab27df1974d8c111c6e4a89ab",
+  "actualIndependentReview": {
+    "recommendation": "rework",
+    "summary": "Reviewed all four supplied PNGs, including the native 1x cells and their existing nearest-neighbor 3x previews. The large jade shell, gold grooves, small gold eye, four clawed feet and wave tail give a clear right-facing turtle silhouette. Broad upper-left highlights and dark right-side planes convey volume; the near feet consistently meet the ground, while higher far feet read as depth. Major body connections remain visible on light, dark and checker backgrounds; no obvious accidental interior transparency was identified. The attack changes the shell mass abruptly, and the stunned muzzle loses anatomical clarity. Skill preparation, two mouth-origin water arcs and three recovery splashes form a readable sequence. Poison bubbles with a crouch, stars with a dropped neck, and low sleeping poses with closed-eye marks are distinct states rather than tints or unrelated attacks; their paired changes are subtle at 1x. No hand or tool applies to this creature. This is a static pose review: animation timing, actual battle contact, source authorship and the full suite palette/alpha contract cannot be certified from these previews. The recommendation is advisory; user selection remains separate.",
+    "issues": [
+      {
+        "pose": "attack",
+        "x": 103,
+        "y": 66,
+        "message": "Compared with windup and move, the lower-right shell contour balloons outward while the crown and central gold emblem largely retain their earlier placement. The rigid stone shell reads as stretching during impact. Redraw this flank and the adjoining rim as a coherent rotation or forward shift, carrying the gold grooves with that plane; emphasize the connected shoulder at approximately (89,92) so the impact reads as a shell shoulder shove."
+      },
+      {
+        "pose": "stun_a",
+        "x": 107,
+        "y": 111,
+        "message": "The lowered neck ends in a broad triangular flap and a very thin hooked muzzle, making the head difficult to recognize at 1x. Redraw the head with a compact rounded snout, a readable closed gold eye and a short attached jaw; keep the neck bend continuous into the shoulder rather than widening the entire neck into the head."
+      },
+      {
+        "pose": "stun_b",
+        "x": 108,
+        "y": 112,
+        "message": "The second stun frame repeats the ambiguous triangular head and hooked tip. Carry the repaired muzzle and eye placement from stun_a into this frame, then author a small downward head sag at the neck joint so the pair preserves the same anatomy."
+      }
+    ],
+    "binding": "3a38c8d48a6b223bccaaebaef6ba658a80f5a3fab27df1974d8c111c6e4a89ab",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "f7a3f0d8474ee8650e44dc76287fe262edfe502b3ed9c47ee9d1e94eee8951c7",
+      "preview/suite/dark.png": "0f8bed6c9c896ba374b125c64cfb2a59697068dfe1924b9bffcf85fc175bf802",
+      "preview/suite/checker.png": "222cc895ff533e87a66525fb0d76a0cbf3dc550b38416834fc9c8c3cd79986aa"
+    },
+    "jobId": "3e56c79a-cadc-46d0-aff4-a69d9ca2ae22",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T13:03:39.031733+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "3e56c79a-cadc-46d0-aff4-a69d9ca2ae22",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T13:01:03.655240+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/jobs/3e56c79a-cadc-46d0-aff4-a69d9ca2ae22",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "da19dc879003c03d92fcadfad025475fb765e0cb06fd26eaa9c38f6efdbedaf8",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "f7a3f0d8474ee8650e44dc76287fe262edfe502b3ed9c47ee9d1e94eee8951c7",
+      "preview/suite/dark.png": "0f8bed6c9c896ba374b125c64cfb2a59697068dfe1924b9bffcf85fc175bf802",
+      "preview/suite/checker.png": "222cc895ff533e87a66525fb0d76a0cbf3dc550b38416834fc9c8c3cd79986aa"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T13:03:38.228466+00:00"
+  },
+  "actualPreservedPriorSourceSnapshot": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/visual-repairs/005",
+  "rootNative18ReviewOfThisSnapshotClaim": false,
+  "claimScope": "Actual fresh rework3 after fourth repair preserved from real completed critic and immutable before-fifth-repair snapshot. Root has not claimed viewing all18 native poses of this fourth repair; next final keeper still needs actual root full native/source review."
+}

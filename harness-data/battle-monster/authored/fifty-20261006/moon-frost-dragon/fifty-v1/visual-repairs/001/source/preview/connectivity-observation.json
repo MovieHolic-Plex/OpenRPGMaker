@@ -1,0 +1,524 @@
+{
+  "paletteColors": 18,
+  "paletteSha256": "c9fee8a84e7d4256d2512d16648170c11499cbec2b1e090a381c47738d0969ad",
+  "frames": {
+    "attack": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQRSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "f96583661d8a0ea94e9b1572ea3c588f32efc28b14a2e4ba055a17516e351510",
+      "components": [
+        {
+          "pixels": 3660,
+          "bounds": [
+            11,
+            42,
+            113,
+            124
+          ]
+        }
+      ]
+    },
+    "dead": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DHMOPQSTWabc",
+      "unknownSymbols": "",
+      "sourceSha256": "e8ef43322a4086c1b6a8d51b29c88c105b44f9eaabc3e8a89a7a6c35b65e4bd5",
+      "components": [
+        {
+          "pixels": 2465,
+          "bounds": [
+            12,
+            78,
+            117,
+            124
+          ]
+        }
+      ]
+    },
+    "hit": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "c2e57817c81be05f1846824c336a093805c54fa4d50d7b6022e97ec4b8151a74",
+      "components": [
+        {
+          "pixels": 3184,
+          "bounds": [
+            11,
+            33,
+            90,
+            124
+          ]
+        }
+      ]
+    },
+    "idle_a": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "98740fa6b7b58ac1ad630b2b63b37f0b9d6b6521ff2fbc41fff4933c38960669",
+      "components": [
+        {
+          "pixels": 4046,
+          "bounds": [
+            11,
+            13,
+            115,
+            124
+          ]
+        }
+      ]
+    },
+    "idle_b": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "fd2523c24a2aefd6e5ee4b1153f80938ed8015b64bc5f6243de3437e415e8a22",
+      "components": [
+        {
+          "pixels": 4063,
+          "bounds": [
+            11,
+            13,
+            115,
+            124
+          ]
+        }
+      ]
+    },
+    "idle_c": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "94e6f4286bb47c4519e6aa2e0ec10ff106109f898c32ce3af4fc69e67f7bd1eb",
+      "components": [
+        {
+          "pixels": 4066,
+          "bounds": [
+            11,
+            13,
+            115,
+            124
+          ]
+        }
+      ]
+    },
+    "move": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "418c3095af744c44941c6c4126cd9b3745b1f23a061ac3a94de2b3df91c629bf",
+      "components": [
+        {
+          "pixels": 3284,
+          "bounds": [
+            11,
+            34,
+            111,
+            124
+          ]
+        }
+      ]
+    },
+    "recover": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQRSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "eb8c9fb60c30f269be58065917e49d6a5b25bbd608901aa23076f039bf28b0b0",
+      "components": [
+        {
+          "pixels": 3497,
+          "bounds": [
+            11,
+            26,
+            99,
+            124
+          ]
+        }
+      ]
+    },
+    "windup": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "13b1a70813414727d6c7462c5c574dd4dde587b0915a25833400efd9f9db2725",
+      "components": [
+        {
+          "pixels": 3641,
+          "bounds": [
+            11,
+            20,
+            90,
+            124
+          ]
+        }
+      ]
+    },
+    "poison_a": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcgp",
+      "unknownSymbols": "",
+      "sourceSha256": "0954467d59dd214d1646bb22922f35c648f639a7b6e6f750af2e02dcdad2b696",
+      "components": [
+        {
+          "pixels": 3046,
+          "bounds": [
+            11,
+            46,
+            95,
+            124
+          ]
+        },
+        {
+          "pixels": 40,
+          "bounds": [
+            97,
+            76,
+            105,
+            81
+          ]
+        },
+        {
+          "pixels": 30,
+          "bounds": [
+            94,
+            56,
+            100,
+            61
+          ]
+        },
+        {
+          "pixels": 12,
+          "bounds": [
+            104,
+            39,
+            107,
+            42
+          ]
+        }
+      ]
+    },
+    "poison_b": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcp",
+      "unknownSymbols": "",
+      "sourceSha256": "ffcb6564f9b5abd89a5710bc7d2e6f21e3d10dc87467ab388ec0a7d8cc7c23ed",
+      "components": [
+        {
+          "pixels": 3033,
+          "bounds": [
+            11,
+            47,
+            96,
+            124
+          ]
+        },
+        {
+          "pixels": 40,
+          "bounds": [
+            101,
+            49,
+            109,
+            54
+          ]
+        },
+        {
+          "pixels": 12,
+          "bounds": [
+            106,
+            70,
+            109,
+            73
+          ]
+        },
+        {
+          "pixels": 5,
+          "bounds": [
+            93,
+            33,
+            95,
+            37
+          ]
+        },
+        {
+          "pixels": 5,
+          "bounds": [
+            89,
+            33,
+            91,
+            37
+          ]
+        }
+      ]
+    },
+    "skill_a": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQRSTWabcgiv",
+      "unknownSymbols": "",
+      "sourceSha256": "325ae79fc2f6399475fc1d7f972b812425b9e5ad885b539388164adad5e9bf12",
+      "components": [
+        {
+          "pixels": 3540,
+          "bounds": [
+            11,
+            25,
+            100,
+            124
+          ]
+        }
+      ]
+    },
+    "skill_b": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQRSTWabcgiv",
+      "unknownSymbols": "",
+      "sourceSha256": "e9ccf0980214506ab01fe9737358be59b83a243939c3e96fa5ebe20b5282c4ba",
+      "components": [
+        {
+          "pixels": 4392,
+          "bounds": [
+            11,
+            29,
+            126,
+            124
+          ]
+        }
+      ]
+    },
+    "skill_c": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcgiv",
+      "unknownSymbols": "",
+      "sourceSha256": "7b8d34b339231922c35136a01dcc654ed49218334d1a86bbc4de0f9f74ab5625",
+      "components": [
+        {
+          "pixels": 3373,
+          "bounds": [
+            11,
+            32,
+            101,
+            124
+          ]
+        },
+        {
+          "pixels": 70,
+          "bounds": [
+            111,
+            74,
+            122,
+            84
+          ]
+        },
+        {
+          "pixels": 66,
+          "bounds": [
+            108,
+            43,
+            118,
+            52
+          ]
+        }
+      ]
+    },
+    "sleep_a": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DHMOPQSTWabc",
+      "unknownSymbols": "",
+      "sourceSha256": "8334b50a9fd2ca867ca401991a3f578acd25167e09d06d8bec8fd13e869d25e1",
+      "components": [
+        {
+          "pixels": 3232,
+          "bounds": [
+            11,
+            54,
+            103,
+            124
+          ]
+        }
+      ]
+    },
+    "sleep_b": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DHMOPQSTWabc",
+      "unknownSymbols": "",
+      "sourceSha256": "9ff527d632c681951f7f64b0200d182792ac63bbac82ff1cab07c01aa2ae5b64",
+      "components": [
+        {
+          "pixels": 3277,
+          "bounds": [
+            11,
+            54,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    "stun_a": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "b6bf524c0f098c0e7f50f5e88112734340be07474a0664c030f7849a872151bc",
+      "components": [
+        {
+          "pixels": 2888,
+          "bounds": [
+            11,
+            57,
+            98,
+            124
+          ]
+        },
+        {
+          "pixels": 14,
+          "bounds": [
+            101,
+            65,
+            106,
+            70
+          ]
+        },
+        {
+          "pixels": 14,
+          "bounds": [
+            42,
+            41,
+            47,
+            46
+          ]
+        },
+        {
+          "pixels": 9,
+          "bounds": [
+            83,
+            45,
+            87,
+            49
+          ]
+        }
+      ]
+    },
+    "stun_b": {
+      "rows": 128,
+      "rowWidths": [
+        128
+      ],
+      "symbols": ".DGHMOPQSTWabcg",
+      "unknownSymbols": "",
+      "sourceSha256": "34f387ece2e68f3cacea9bd5ad3248f2c71b63fc3241289df3a52885b773999b",
+      "components": [
+        {
+          "pixels": 2902,
+          "bounds": [
+            11,
+            57,
+            99,
+            124
+          ]
+        },
+        {
+          "pixels": 14,
+          "bounds": [
+            92,
+            49,
+            97,
+            54
+          ]
+        },
+        {
+          "pixels": 14,
+          "bounds": [
+            30,
+            62,
+            35,
+            67
+          ]
+        },
+        {
+          "pixels": 9,
+          "bounds": [
+            53,
+            35,
+            57,
+            39
+          ]
+        }
+      ]
+    }
+  },
+  "pairDifferences": {
+    "idle_a/idle_b": {
+      "changedPixels": 88,
+      "silhouettePixels": 17
+    },
+    "idle_a/idle_c": {
+      "changedPixels": 67,
+      "silhouettePixels": 20
+    },
+    "poison_a/poison_b": {
+      "changedPixels": 993,
+      "silhouettePixels": 385
+    },
+    "stun_a/stun_b": {
+      "changedPixels": 356,
+      "silhouettePixels": 134
+    },
+    "sleep_a/sleep_b": {
+      "changedPixels": 423,
+      "silhouettePixels": 95
+    }
+  },
+  "uniqueSourceHashes": 18
+}

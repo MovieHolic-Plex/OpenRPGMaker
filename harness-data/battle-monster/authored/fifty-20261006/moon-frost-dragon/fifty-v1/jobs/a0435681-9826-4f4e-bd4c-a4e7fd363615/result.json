@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including the native 1x cells and supplied nearest-neighbor 3x cells. The wingless coil, long muzzle, whisker and blue dorsal mane identify the dragon; broad silver/cyan planes and darker right-facing surfaces give consistent upper-left lighting. The main body connections look intact, with no obvious accidental transparent body holes; the coil opening is intentional. The coil maintains ground contact even when the paws lift. Windup, lowered advance, open-jaw attack, recoil and collapse are readable. The mouth core, mouth-attached forked ice breath and three recovery shards form a coherent skill; poison hunch, seated stun with stars and closed-eye sleep are distinct authored-looking states rather than body tints. Rework the disproportionately long, boot-shaped forelimbs and weak claw articulation, and make both horns visibly curve backward. Static pose previews cannot establish animation timing, battle contact, runtime grounding, authoring provenance or literal pxgrid compliance. This is an advisory visual review, not a user selection or battle-footage approval.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 72,
+      "y": 105,
+      "message": "The near forelimb runs from roughly (65,85) to (80,123), nearly the length of the upright neck, and ends in a broad flat boot. Redraw a shorter connected shoulder/elbow/wrist chain with a compact hooked forepaw nearer the torso; separate two or three tapered claw tips instead of lining a rectangular sole with gold dots. Preserve coil contact at y=124 and carry the same limb proportions through idle_b/idle_c, windup, move, attack, recover, hit and the extra states."
+    },
+    {
+      "pose": "idle_a",
+      "x": 55,
+      "y": 17,
+      "message": "The rear horn is a long straight diagonal spike, while the far horn near (73,19) reads mostly as an upright stub. Reshape both into smaller tapering clusters with a visible backward bend toward the left; preserve distinct near/far horn roots and the same horn anatomy in the remaining poses."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 87,
+      "y": 94,
+      "message": "The relaxed far forepaw projects right as a smooth pale paddle with no readable wrist or claw separation. Add a small wrist bend and distinct hooked distal claw pixels while keeping its shoulder connection continuous; repeat the anatomical correction in sleep_b. Check the raised paw near (80,79) in poison_a/poison_b, where the similarly broad rounded endpoint obscures the clawed-hand shape."
+    }
+  ]
+}

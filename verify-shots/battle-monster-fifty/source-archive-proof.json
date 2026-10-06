@@ -427,5 +427,16 @@
     "currentAllow": true,
     "sourceArchiveReread": true,
     "selectedPackSha256": "6190b19ea5f6b4f8f3c52564475dd4ac1df41f2e9da4bb16f38bfda2dc6d0392"
+  },
+  {
+    "key": "moon-frost-dragon/fifty-v1",
+    "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "ac5efbdddbd519a7935cfa233fa87b5f693b937883c86a83170303e3ab360a20"
   }
 ]

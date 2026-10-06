@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-06T13:00:38.995026+00:00",
+  "passed": false,
+  "key": "moon-frost-dragon/fifty-v1",
+  "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-moon-frost-dragon-after-repair-two.png",
+  "nativeContactPngSha256": "f147dd520b13fac96842a753607134e852d67234e6584829e18cf28d97555349",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "9fd989392e23579e293a6624bee0b382bf55575fe30cbc7277078903c289c608",
+    "repair_forelegs.py": "5fd7971f2c4fb79816882e8911eb27f5ee14d1b7976cb267f2d0def5b79c87c6",
+    "repair_claws_horns.py": "0a870848d3d62446893c689a3fa5259ae81ed0283c57b04513137867757af2e8"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after second repair. Both ivory near/far horns now shorter backward-curved tapering clusters with distinct roots through all18poses. Near/far arms shortened in upright idle, claws now have hooked/tapered separated endpoints rather than rectangular boot sole; actual lower coil supports native124 contact. Attack open jaw/connected narrowed forearm and small claw contour, folded windup/recovery, broad hit-neck join retained. Sleep relaxed far paw has smaller wrist-bent claw endpoint, poison raised paw and lower resting paw carry pointed claw shapes; stunt slumped neck/claws and fallen low body retain same species. Mouthcore/two connected ice branches/3fragments retained. Sparse skin scales/angular coil lightplane, lowcontrast dark contours and small pair changes remain; claw/root naturalness and closed lids still require fresh review. Read whole current original author_pixels and repair_forelegs previously at exact unchanged hashes, plus complete repair_claws_horns.main/moduleflow/calls: saved-before snapshots, explicit per-pose horn/limb/followup row blocks at separately specified x/y/right bounds, direct row padding only; reused own rigid horn literal parts, no wholeframe transforms/tweens/generated geometry. Other scripts render/GIF/readonlyinspect exact prior hashes. All18 nativePNG/source match. Fresh actual independentfb1e79a9 pending; no keeper/Allow claim."
+}

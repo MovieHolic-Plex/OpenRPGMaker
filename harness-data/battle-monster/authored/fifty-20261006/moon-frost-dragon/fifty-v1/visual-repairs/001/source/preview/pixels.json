@@ -1,0 +1,448 @@
+{
+  "cell": 128,
+  "colors": 18,
+  "frames": {
+    "idle_a": {
+      "sourceSha256": "98740fa6b7b58ac1ad630b2b63b37f0b9d6b6521ff2fbc41fff4933c38960669",
+      "rgbaSha256": "99bf0458904c2b6bd1baef5dec7097ace50b7bf5912b46182074ad4bc7a33a12",
+      "bounds": [
+        11,
+        13,
+        115,
+        124
+      ],
+      "inkPixels": 4046
+    },
+    "idle_b": {
+      "sourceSha256": "fd2523c24a2aefd6e5ee4b1153f80938ed8015b64bc5f6243de3437e415e8a22",
+      "rgbaSha256": "fcee27d64a2bce2ba767a5a0e7092bca9b8fd6569ef5d967037ac90de48cd734",
+      "bounds": [
+        11,
+        13,
+        115,
+        124
+      ],
+      "inkPixels": 4063
+    },
+    "idle_c": {
+      "sourceSha256": "94e6f4286bb47c4519e6aa2e0ec10ff106109f898c32ce3af4fc69e67f7bd1eb",
+      "rgbaSha256": "1c55184a79c1510983da9d0974b64028b166d45773bdd7239a5e6a6a11f729f2",
+      "bounds": [
+        11,
+        13,
+        115,
+        124
+      ],
+      "inkPixels": 4066
+    },
+    "windup": {
+      "sourceSha256": "13b1a70813414727d6c7462c5c574dd4dde587b0915a25833400efd9f9db2725",
+      "rgbaSha256": "d7c5a445dda16d42c4a313551f9e250c836e7a1ae0e6c04e789becff3d79c1be",
+      "bounds": [
+        11,
+        20,
+        90,
+        124
+      ],
+      "inkPixels": 3641
+    },
+    "move": {
+      "sourceSha256": "418c3095af744c44941c6c4126cd9b3745b1f23a061ac3a94de2b3df91c629bf",
+      "rgbaSha256": "9ccff735b4cdca2c5bbdc9c9c7a1838ef2134d3223ec3b76e7d59059e1b1b249",
+      "bounds": [
+        11,
+        34,
+        111,
+        124
+      ],
+      "inkPixels": 3284
+    },
+    "attack": {
+      "sourceSha256": "f96583661d8a0ea94e9b1572ea3c588f32efc28b14a2e4ba055a17516e351510",
+      "rgbaSha256": "8d8003a1b7759a534087bc270592927b0e0741d69159f25ce063ee4a816763b0",
+      "bounds": [
+        11,
+        42,
+        113,
+        124
+      ],
+      "inkPixels": 3660
+    },
+    "recover": {
+      "sourceSha256": "eb8c9fb60c30f269be58065917e49d6a5b25bbd608901aa23076f039bf28b0b0",
+      "rgbaSha256": "8e624c11ee99cdc0f2aeb2a8abb51e6d5137095f6e86a075bd799d9bf6135152",
+      "bounds": [
+        11,
+        26,
+        99,
+        124
+      ],
+      "inkPixels": 3497
+    },
+    "hit": {
+      "sourceSha256": "c2e57817c81be05f1846824c336a093805c54fa4d50d7b6022e97ec4b8151a74",
+      "rgbaSha256": "252c8a2311b6a10ff85ae3184312179dc3f2a5ebabfc4ca356bc3385801dce27",
+      "bounds": [
+        11,
+        33,
+        90,
+        124
+      ],
+      "inkPixels": 3184
+    },
+    "dead": {
+      "sourceSha256": "e8ef43322a4086c1b6a8d51b29c88c105b44f9eaabc3e8a89a7a6c35b65e4bd5",
+      "rgbaSha256": "5c3b00f3a2cb4cba5403f02baf6990f884ea735449f8bc91754114ffb28b05ea",
+      "bounds": [
+        12,
+        78,
+        117,
+        124
+      ],
+      "inkPixels": 2465
+    },
+    "skill_a": {
+      "sourceSha256": "325ae79fc2f6399475fc1d7f972b812425b9e5ad885b539388164adad5e9bf12",
+      "rgbaSha256": "fa95138b67c5bb1b00043122f5749e9884537aead17a795d1199342f6919e6c3",
+      "bounds": [
+        11,
+        25,
+        100,
+        124
+      ],
+      "inkPixels": 3540
+    },
+    "skill_b": {
+      "sourceSha256": "e9ccf0980214506ab01fe9737358be59b83a243939c3e96fa5ebe20b5282c4ba",
+      "rgbaSha256": "1bead633dc35aba456beebe0be2f057ef7f59e3de44f4c9863d931b1f2d99648",
+      "bounds": [
+        11,
+        29,
+        126,
+        124
+      ],
+      "inkPixels": 4392
+    },
+    "skill_c": {
+      "sourceSha256": "7b8d34b339231922c35136a01dcc654ed49218334d1a86bbc4de0f9f74ab5625",
+      "rgbaSha256": "a1cdb8d200027fafec2c02397f491e7aa13ab8fa38f09d1b8240d7e92e3264d8",
+      "bounds": [
+        11,
+        32,
+        122,
+        124
+      ],
+      "inkPixels": 3509
+    },
+    "poison_a": {
+      "sourceSha256": "0954467d59dd214d1646bb22922f35c648f639a7b6e6f750af2e02dcdad2b696",
+      "rgbaSha256": "c328a2f45af204eed17cc6d0bf6dd59be973a9c290294fba208dc4fa0a5b1084",
+      "bounds": [
+        11,
+        39,
+        107,
+        124
+      ],
+      "inkPixels": 3128
+    },
+    "poison_b": {
+      "sourceSha256": "ffcb6564f9b5abd89a5710bc7d2e6f21e3d10dc87467ab388ec0a7d8cc7c23ed",
+      "rgbaSha256": "11f7b035006e6655c7c9d94d94339f3eab98aa369ac79cc4bbe3e1161da3cd6e",
+      "bounds": [
+        11,
+        33,
+        109,
+        124
+      ],
+      "inkPixels": 3095
+    },
+    "stun_a": {
+      "sourceSha256": "b6bf524c0f098c0e7f50f5e88112734340be07474a0664c030f7849a872151bc",
+      "rgbaSha256": "c6048330bef6d4909376c47bc5462d8439861e806e7fcac85e276fb54b26aa35",
+      "bounds": [
+        11,
+        41,
+        106,
+        124
+      ],
+      "inkPixels": 2925
+    },
+    "stun_b": {
+      "sourceSha256": "34f387ece2e68f3cacea9bd5ad3248f2c71b63fc3241289df3a52885b773999b",
+      "rgbaSha256": "cca534592cc9d07cee7356ab2d16f588553df99a778dd3c72558a3181557ae82",
+      "bounds": [
+        11,
+        35,
+        99,
+        124
+      ],
+      "inkPixels": 2939
+    },
+    "sleep_a": {
+      "sourceSha256": "8334b50a9fd2ca867ca401991a3f578acd25167e09d06d8bec8fd13e869d25e1",
+      "rgbaSha256": "38a7f24b8a3c8c8d23bc493b7334972094fde77501c1f2cd3fe3d2aa60c04fdc",
+      "bounds": [
+        11,
+        54,
+        103,
+        124
+      ],
+      "inkPixels": 3232
+    },
+    "sleep_b": {
+      "sourceSha256": "9ff527d632c681951f7f64b0200d182792ac63bbac82ff1cab07c01aa2ae5b64",
+      "rgbaSha256": "ace6d008deb92627a21175880a9ef729e252e856e10cfc32bee325b3ac3a41fa",
+      "bounds": [
+        11,
+        54,
+        104,
+        124
+      ],
+      "inkPixels": 3277
+    }
+  },
+  "gifReadback": [
+    {
+      "name": "idle",
+      "sequence": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "idle_b"
+      ],
+      "durationsMs": [
+        240,
+        240,
+        240,
+        240
+      ],
+      "gifSha256": "2322416d3f232e98881ac9284ef1d21f0b49c11a47a7828f4934c240a8e08434",
+      "readback": [
+        {
+          "pose": "idle_a",
+          "durationMs": 240
+        },
+        {
+          "pose": "idle_b",
+          "durationMs": 240
+        },
+        {
+          "pose": "idle_c",
+          "durationMs": 240
+        },
+        {
+          "pose": "idle_b",
+          "durationMs": 240
+        }
+      ]
+    },
+    {
+      "name": "attack",
+      "sequence": [
+        "idle_a",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "idle_a"
+      ],
+      "durationsMs": [
+        600,
+        200,
+        100,
+        120,
+        220,
+        900
+      ],
+      "gifSha256": "1ea4f0159dd81ba677aa2ce21a2991d1e9c33f9f564ff8043ae43e5b9244cf51",
+      "readback": [
+        {
+          "pose": "idle_a",
+          "durationMs": 600
+        },
+        {
+          "pose": "windup",
+          "durationMs": 200
+        },
+        {
+          "pose": "move",
+          "durationMs": 100
+        },
+        {
+          "pose": "attack",
+          "durationMs": 120
+        },
+        {
+          "pose": "recover",
+          "durationMs": 220
+        },
+        {
+          "pose": "idle_a",
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "name": "hit",
+      "sequence": [
+        "idle_a",
+        "hit",
+        "idle_a"
+      ],
+      "durationsMs": [
+        700,
+        180,
+        900
+      ],
+      "gifSha256": "51e636abe27f728d5512411206d7387181c0b396d46b0774b5c31421495a9911",
+      "readback": [
+        {
+          "pose": "idle_a",
+          "durationMs": 700
+        },
+        {
+          "pose": "hit",
+          "durationMs": 180
+        },
+        {
+          "pose": "idle_a",
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "name": "dead",
+      "sequence": [
+        "idle_a",
+        "hit",
+        "dead"
+      ],
+      "durationsMs": [
+        700,
+        150,
+        1700
+      ],
+      "gifSha256": "23db3f0650d4c395975481b135c43931cf663f4b2e2d6b041b552c82e1fec76d",
+      "readback": [
+        {
+          "pose": "idle_a",
+          "durationMs": 700
+        },
+        {
+          "pose": "hit",
+          "durationMs": 150
+        },
+        {
+          "pose": "dead",
+          "durationMs": 1700
+        }
+      ]
+    },
+    {
+      "name": "skill",
+      "sequence": [
+        "idle_a",
+        "skill_a",
+        "skill_b",
+        "skill_c",
+        "idle_a"
+      ],
+      "durationsMs": [
+        700,
+        260,
+        160,
+        240,
+        900
+      ],
+      "gifSha256": "ca71f71868db64719442223d315f4b73b2576edd2e4e7be2178efd26dfd9bb34",
+      "readback": [
+        {
+          "pose": "idle_a",
+          "durationMs": 700
+        },
+        {
+          "pose": "skill_a",
+          "durationMs": 260
+        },
+        {
+          "pose": "skill_b",
+          "durationMs": 160
+        },
+        {
+          "pose": "skill_c",
+          "durationMs": 240
+        },
+        {
+          "pose": "idle_a",
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "name": "poison",
+      "sequence": [
+        "poison_a",
+        "poison_b"
+      ],
+      "durationsMs": [
+        420,
+        420
+      ],
+      "gifSha256": "27224f41cec4241c87ebc45f74e63c9439d34708d0003356a209e0f5ca5950d4",
+      "readback": [
+        {
+          "pose": "poison_a",
+          "durationMs": 420
+        },
+        {
+          "pose": "poison_b",
+          "durationMs": 420
+        }
+      ]
+    },
+    {
+      "name": "stun",
+      "sequence": [
+        "stun_a",
+        "stun_b"
+      ],
+      "durationsMs": [
+        300,
+        300
+      ],
+      "gifSha256": "b8447e19bc4b917fe3d434f2c3772808b69c894461012024f7daa7604ce1ea6f",
+      "readback": [
+        {
+          "pose": "stun_a",
+          "durationMs": 300
+        },
+        {
+          "pose": "stun_b",
+          "durationMs": 300
+        }
+      ]
+    },
+    {
+      "name": "sleep",
+      "sequence": [
+        "sleep_a",
+        "sleep_b"
+      ],
+      "durationsMs": [
+        650,
+        650
+      ],
+      "gifSha256": "1874adfc23a5008fc4a8578592458c78aa250d830403d85eb5d8a5318e4e1f2a",
+      "readback": [
+        {
+          "pose": "sleep_a",
+          "durationMs": 650
+        },
+        {
+          "pose": "sleep_b",
+          "durationMs": 650
+        }
+      ]
+    }
+  ]
+}
