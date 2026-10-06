@@ -51,6 +51,8 @@ export interface GameMap {
   height: number;
   tilesetId: TilesetId;
   tileSize: number;
+  /** Native-pixel art extending north of ground y=0. Camera framing only; no extra walkable rows. */
+  visualTopOverhangPx?: number;
   lowerTiles: number[];
   upperTiles: number[];
   /** 2층(바닥 장식). 선택 — 없으면 빈칸. 길이 width*height, -1 = 빈칸. `src/project/mapLayers.ts` 로만 읽고 쓴다. */

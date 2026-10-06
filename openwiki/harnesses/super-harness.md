@@ -976,6 +976,13 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 원본 영수증, 행동별 시간·프레임 목록을 남긴다. 걷기 프레임 수는 96, 첫 인물 정지 프레임은 up1/right13/down25/left37.
 산출물은 `prepared-not-approved`이며 선택·공용 게시·프로젝트 저장·플레이 검증을 대신하지 않는다.
 공용 설치 시 이미지 ID와 SpriteDef ID를 일치시키고 두 자료를 함께 게시한다.
+추가 행동을 납품한 도면의 `actorActionDelivery`는 기존 행동 한 장으로 대체할 수 없다.
+상자 들기는 접촉·들기 상태에서 실제 손/상자/선반의 좌표를 비교하며, 상자를 원래 자리와 손에
+중복 배치하지 않는다. 감독은 승인된 추가 주문의 보존 프레임 목록을 제외한 새 행동에서
+최소 두 프레임이 실제 배치됐는지 확인한다. 이 검사는 접촉·가림 시각 검수를 대신하지 않는다.
+추가 주문은 인물 영수증의 현재 action `request.json`에서도 읽어 `requiredNewActionFrames`로 전달한다.
+후속 도면이 `actorActionDelivery`를 누락해도 납품된 추가 동작의 조립 의무는 사라지지 않는다.
+조립 예시와 별도로 전체 프레임의 플레이 검증은 필요하다.
 
 ### 전체 데모 수정은 전체 데모로 재검수 (2026-10-06)
 
@@ -983,3 +990,6 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 반복된 projection/style 오류가 있더라도 전체 공간을 calibration으로 되돌리지 않는다.
 종전 경로는 교체된 옛 부품까지 누적 28그룹을 시점 표본으로 다시 승인받게 해 완성 장면 재조립을 지연시켰다.
 `route`와 `ensure_layout_feedback` 모두 scene을 유지하며, 도면 승인·원본 해시·최대 수정 횟수는 그대로 적용한다.
+`require_preparation`도 이전 실행의 policy와 layout이 함께 calibration으로 남은 경우를 거부한다.
+완료된 native 결과는 `resumeMode=collect-existing`으로 보존하고, scene 도면을 새로 독립 검수한 뒤
+수집·전체 장면 조립을 재개한다. 과거 부품/도면 판정을 PASS로 바꾸거나 그림 회차를 초기화하지 않는다.

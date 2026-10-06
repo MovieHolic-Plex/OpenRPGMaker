@@ -105,11 +105,22 @@ def prepare(data, cid):
                 for r in actor['sources'] + actor['sheets'] + [actor['preview']]: verified(root, r)
                 if not actor.get('machineReady') or len(actor['sheets']) != 2:
                     raise ValueError('인물 걷기·행동 기술 납품이 모두 필요합니다.')
+                # The delivered action order owns additions even if a later layout
+                # preparation omits its optional actorActionDelivery annotation.
+                request_path = str(Path(actor['sheets'][1]['path']).parent.parent / 'request.json')
+                request_refs = [r for r in actor['sources'] if r['path'] == request_path]
+                new_action_ids = []
+                if request_refs:
+                    action_order = read(verified(root, request_refs[0]))
+                    preserved = set(action_order.get('preserveActions', {}).get('frames', []))
+                    if preserved:
+                        new_action_ids = [f['id'] for f in actor['actions'] if f['id'] not in preserved]
                 groups.append(dict(id='actor:'+actor['id'],title=actor['title'],requiresContextReview=True,
                     description='같은 전용 인물의 걷기와 행동 포즈입니다. 공간 접합 검수 전입니다.',
                     candidates=[dict(id='native',title=actor['title'],passed=True,nativeHarness='charset-actor',
                         nativeSheets=actor['sheets'],sheet=actor['sheets'][0],sources=[receipt_ref,*actor['sources']],
                         actorFrames=dict(walkSize=actor['frame'],walkAnchor=actor.get('walkAnchor',[12,31]),
+                            requiredNewActionFrames=new_action_ids,
                             actionSize=actor['actionFrame'],actions=[dict(f,rect=f.get('rect',
                                 [i*actor['actionFrame'][0],0,*actor['actionFrame']])) for i,f in enumerate(actor['actions'])]),
                         images=[dict(actor['preview'],label='걷기 12프레임'),dict(actor['sheets'][1],label='직접 저작 행동 포즈')],
