@@ -68,22 +68,24 @@ const transferEvent = (id, name, x, y, to) => ({
   const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
   const line = (x0, y0, x1, y1) => { const out = []; for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) out.push([x, y]); return out; };
   for (const x of range(0, W - 1)) stamp("jp-subway-ceiling", x, 0, { tag: `ceil-${x}` });
-  put("jp-subway-backwall-ad", 4, 3, { tag: "ad-w" });
+  put("jp-subway-backwall-ad2", 4, 3, { tag: "ad-w" });
   put("jp-subway-backwall-ad", 20, 3, { tag: "ad-m" });                // 뒷벽 역명판(8×3)은 열차 지붕에 아랫단이 가려 쓰지 않는다 — 역명판은 승강장 쪽에 매단다
-  put("jp-subway-backwall-ad", 36, 3, { tag: "ad-e" });
+  put("jp-subway-backwall-ad3", 36, 3, { tag: "ad-e" });
   for (const x of range(0, W - 1)) if (!own3[idx(x, 1)]) stamp("jp-subway-backwall", x, 1, { tag: `back-${x}` });
   for (const x of range(0, W - 1)) stamp("jp-subway-track", x, 4, { tag: `track-${x}` });   // 선로 2줄(1층, 막힘)
   for (const x of range(0, W - 1)) stamp("jp-subway-edge", x, 6, { tag: `edge-${x}` });     // 승강장 끝(점자 블록)
   for (const x of [8, 32]) put("jp-subway-pillar", x, 8, { tag: `pillar-${x}` });
-  put("jp-subway-station-sign-hang", 12, 8, { tag: "sign-hang" });
-  put("jp-subway-station-sign-hang", 34, 8, { tag: "sign-hang-e" });
-  put("jp-subway-led", 26, 8, { tag: "led" });
+  put("jp-subway-station-sign-hang", 12, 9, { tag: "sign-hang" });
+  put("jp-subway-station-sign-hang", 34, 9, { tag: "sign-hang-e" });
+  put("jp-subway-led", 26, 9, { tag: "led" });
+  // 승차 위치 표시(2층): 열차가 서면 몸 x 9~38 — 문 9곳(몸 왼쪽 끝에서 1·4·8·11·14·18·21·24·28칸)의 승강장 끝 바로 아래 행
+  for (const dx of [1, 4, 8, 11, 14, 18, 21, 24, 28]) m.stampL2("jp-subway-boarding-mark", 9 + dx, 7);
   put("jp-subway-stairs-up", 20, 10, { tag: "stairs-up" });             // 콘코스로 올라가는 계단 x 20~23, 입구 칸 (21,10)(22,10)
   put("jp-subway-bench", 3, 11, { tag: "bench-w" });
   put("jp-subway-bench", 13, 11, { tag: "bench-m" });
   put("jp-subway-bench", 28, 11, { tag: "bench-e" });
   put("jp-subway-recycle", 34, 11, { tag: "recycle" });               // 분별 쓰레기통 — 기둥(32) 옆
-  put("jp-subway-vending", 39, 11, { tag: "vending" });               // 음료 자판기 — 기둥 사이 바닥에 홀로
+  put("jp-subway-vending", 41, 11, { tag: "vending" });               // 음료 자판기 — 기둥 사이 바닥에 홀로
   stamp("jp-subway-extinguisher", 16, 1, { layer: 4, tag: "extinguisher" });   // 뒷벽 소화기 상자(광고 사이 빈 벽) — 벽이 3층이라 4층 덧그림
   m.groupLineL2("jp-tactile", [...line(24, 7, 24, 11), ...line(21, 11, 23, 11)]);   // 승강장 끝 점자 띠(6줄, 바닥 그림) → 계단 입구(21·22, 10) 앞 11줄
   const events = [21, 22].map((x) => transferEvent(`ev_up_${x}`, "콘코스로", x, 10, { mapId: CONCOURSE_ID, x: x - 9, y: 11, dir: "up" }));

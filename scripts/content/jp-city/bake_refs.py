@@ -2223,12 +2223,13 @@ def doc_trn_rules():
 {md_table(['id', '이름', '종류', '길이', '프레임'], vrows)}
 버스·노면전차·전철·지하철의 문은 **차의 왼쪽 면**에만 있다(좌측통행 승강) — 화면에 보이는 남쪽 면은 서쪽으로 갈 때의 왼쪽 면이다. 동쪽으로 가는 차의 `right_open` 은 `right` 와 같은 그림(문이 반대쪽)이다.
 
-## 노면전차 거리 (키트 {len(TRS)}종, 그림 `jp-img-transit-street-scene`)
-- 단면(북→남): 보도 3 · 동쪽행 차로 3 · 동쪽행 레일 2 · 사이 1 · 서쪽행 레일 2 · 서쪽행 안전지대 섬 2(`jp-tram-stop`, 동쪽 끝 導流帯 `jp-tram-stop-zebra`) · 서쪽행 차로 3 · 보도 3. 차로 폭 3칸 = 차 몸 2칸 + 여유.
+## 노면전차 거리 (키트 {len(TRS)}종, 그림 = 실제 예제 맵 `jp-img-transit-tramstreet`, 실제 게임 화면 `jp-img-transit-runtime-tram`)
+- 단면(북→남, 예제 맵 행): 보도 3(9~11) · 동쪽행 차로 3(12~14) · 동쪽행 섬 `jp-tram-stop-e`/軌道敷 2(15~16) · 동쪽행 궤도 2(17~18) · 센터 전주 행 1(19) · 서쪽행 궤도 2(20~21) · 서쪽행 섬 `jp-tram-stop`/軌道敷 2(22~23) · 서쪽행 차로 3(24~26) · 보도. 차로 폭 3칸 = 차 몸 2칸 + 여유. **좌측통행 + 문은 차의 왼쪽 면** → 동쪽행 섬은 동쪽행 궤도 북쪽, 서쪽행 섬은 서쪽행 궤도 남쪽, 둘을 횡단보도 양쪽에 엇갈려 붙이고 각 섬 상류 끝에 導流帯(`jp-tram-stop-zebra-e` 서쪽 끝 / `jp-tram-stop-zebra` 동쪽 끝). 섬 밖·궤도·전주 행 1층은 軌道敷 `jp-tram-trackbed`(-b) — 생활도로 오토타일과 섞지 않는다(차도 띠가 갈라져야 차 흐름이 일방 둘로 잡힌다).
 - 레일 `jp-tram-rail-h`/`-v` 는 **2층**(투명 덧그림 — 아스팔트 위). 1층에 찍으면 아스팔트가 사라진다.
 - 가선 `jp-tram-wire-h`(2칸 반복)는 **4층**, 동행·서행 궤도 각각 윗행 **−2행**(전차 `jp-tram` 팬터그래프 끝이 닿는 높이). 센터 전주 `jp-tram-pole-c`(1×6)는 복선 사이 빈 행에 밑동(키트 윗행 = 동행 궤도 윗행 −3), 16~24칸 간격. 보도에는 전주를 세우지 않는다(출입문·간판 앞을 막는다).
-- 횡단보도는 **보도 → 차로 → 섬 → 두 궤도 → 차로 → 보도** 끝까지 4칸 폭으로 잇고(궤도 위 흰 줄은 레일 사이만), 북쪽 끝 보도에 보행 신호기 `jp-tram-ped-signal`. 지하철 출입구 앞에서 건너오게 둔다.
-- 섬이 없는 방향(동쪽행)의 승강 자리는 보도 맨 아랫행에 `jp-tram-curb-stop`(2층, 노란 점자 띠)을 섬 맞은편에 가로로.
+- 횡단보도는 **보도 → 차로 → 軌道敷·두 궤도·전주 행 → 차로 → 보도** 끝까지 4칸 폭(오토타일 `jp-crosswalk-ns`, 궤도 칸은 레일+줄무늬 합성 `jp-tram-rail-h-xwalk`). 보행 신호기 `jp-tram-ped-signal` 은 양 끝 보도에 대각 한 쌍(빨강 켜짐 그림). 각 차로 횡단보도 상류 바로 앞 열에 정지선 `jp-mark-stopline-v`, 차로|軌道敷 경계에 `jp-tram-lane-line-s`(동쪽행 차로 맨 아랫행)·`jp-tram-lane-line-n`(서쪽행 차로 맨 윗행).
+- 센터 전주·보행 신호기 칸에는 태그 `foot-dy:N` 이 있다 — 런타임이 기둥 전체를 밑동 줄 기준으로 탈것·캐릭터와 y 정렬한다(북쪽 전차는 기둥 뒤, 남쪽 전차는 기둥 앞). 키트를 쪼개 찍지 말고 통째로.
+- `jp-tram-curb-stop`(보도 승강 띠)은 궤도가 보도에 붙은 サイドリザベーション 길 전용.
 - 차막이 `jp-tram-rail-end` 는 **단선 종점 전용** — 복선 장면에는 쓰지 않는다(좌측통행 서쪽행 궤도는 동쪽에서 들어온다).
 - 차 흐름: 궤도(2층 레일) 칸은 차도에서 빠지므로 `set_map_transit` auto 가 북쪽 차로 = 동쪽행, 남쪽 차로 = 서쪽행 일방 두 개로 깐다. 차·버스는 레일 위를 달리지 못한다(`off-road`).
 - 지하철 출입구 `jp-subway-entrance` 는 보도 안쪽(연석에서 2칸 이상)에 두고, 입구(anchor) 칸에 지하철역 콘코스로 가는 이동 이벤트를 둔다.
@@ -2363,10 +2364,7 @@ def img_trn():
             vitems.append((f"{v['id'][3:]} {fk}", g))
     for i, pg in enumerate(shelf_pack(vitems)):
         save_img(f'transit-vehicles{"" if i == 0 else "-" + str(i + 1)}', pg, f'탈것 {len(VEH)}종(오른쪽·문 연·아래 보는 그림, 원본 16px 칸 기준 — 긴 열차는 ½). 칸이 아니라 따로 된 시트다 — 맵에 찍지 말고 `set_map_transit` 노선으로 달리게 한다.', C_TRN)
-    sc = Image.open(os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'transit_street', 'scene-street.png')).convert('RGBA')
-    for i, x0 in enumerate(range(0, sc.width, 800)):
-        save_img(f'transit-street-scene{"" if i == 0 else "-" + str(i + 1)}', sc.crop((x0, 0, min(sc.width, x0 + 800), min(sc.height, 800))),
-                 '노면전차 거리 단면 장면(키트 합성, 원본 해상도): 보도·동행 차로·복선 레일·센터 전주+당김선·가선(궤도 윗행 −2)·서행 안전지대 섬+導流帯·서행 차로·보도, 4칸 횡단보도+보행 신호기·북 보도 승강 띠·지하철 출입구·건물 줄. 전차 한 대는 확인용 합성(맵에는 런타임이 그린다).', C_TRN)
+    # 노면전차 거리 그림은 키트 합성 장면이 아니라 실제 예제 맵(tramstreet.mjs)을 굽는다 — 장면과 맵이 어긋나 조수에게 틀린 배치를 가르치던 문제(관문 4회차).
     W, H = EBT['W'], EBT['H']
     full = render(EBT['good']['layers'], W, H)
     save_img('transit-concourse', full, f'さくら町駅 콘코스 {W}×{H}칸(원본 해상도): 매표기·출구 계단·역무실·개찰구+칸막이·승강장 계단·점자 유도 블록. 배열 `jp-transit-ex`.', C_TRN)

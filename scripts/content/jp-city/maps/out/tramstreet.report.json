@@ -3,7 +3,7 @@
   "id": "jp-city-tram-street",
   "size": [
    48,
-   27
+   29
   ]
  },
  "start": [
@@ -12,8 +12,8 @@
  ],
  "poles": [],
  "deco": {
-  "placed": 4,
-  "skipped": 4
+  "placed": 7,
+  "skipped": 0
  },
  "doors": {
   "n": 7,
@@ -26,13 +26,13 @@
   "failing": []
  },
  "solid": {
-  "cells": 133,
+  "cells": 151,
   "openByEngine": 0,
   "open": []
  },
  "autotiles": {
   "lane": {
-   "cells": 594,
+   "cells": 288,
    "mismatch": 0,
    "ex": []
   },
@@ -45,13 +45,18 @@
    "cells": 0,
    "mismatch": 0,
    "ex": []
+  },
+  "jp-guardrail": {
+   "cells": 41,
+   "mismatch": 0,
+   "ex": []
   }
  },
  "layers": {
   "overlaps": 0,
   "issues": [],
-  "l2": 240,
-  "l3": 472,
+  "l2": 414,
+  "l3": 537,
   "l4": 96
  },
  "emptiness": {
@@ -65,15 +70,31 @@
   "skippedWindows": 0
  },
  "reach": {
-  "reachable": 1163
+  "reachable": 1178
  },
- "placed": 66,
+ "placed": 71,
  "ok": true,
  "placedList": [
   {
+   "id": "jp-tram-stop-e",
+   "x": 6,
+   "y": 15,
+   "w": 12,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-stop-zebra-e",
+   "x": 3,
+   "y": 15,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
    "id": "jp-tram-stop",
    "x": 22,
-   "y": 20,
+   "y": 22,
    "w": 12,
    "h": 2,
    "layer": 3
@@ -81,7 +102,7 @@
   {
    "id": "jp-tram-stop-zebra",
    "x": 34,
-   "y": 20,
+   "y": 22,
    "w": 3,
    "h": 2,
    "layer": 3
@@ -151,9 +172,9 @@
    "layer": 3
   },
   {
-   "id": "jp-prop-bench",
-   "x": 15,
-   "y": 6,
+   "id": "jp-prop-planter",
+   "x": 17,
+   "y": 8,
    "w": 2,
    "h": 1,
    "layer": 3
@@ -169,23 +190,23 @@
   {
    "id": "jp-tram-ped-signal",
    "x": 22,
-   "y": 24,
+   "y": 26,
    "w": 1,
    "h": 3,
    "layer": 3
   },
   {
    "id": "jp-tram-pole-c",
-   "x": 3,
-   "y": 12,
+   "x": 2,
+   "y": 14,
    "w": 1,
    "h": 6,
    "layer": 3
   },
   {
    "id": "jp-tram-pole-c",
-   "x": 24,
-   "y": 12,
+   "x": 25,
+   "y": 14,
    "w": 1,
    "h": 6,
    "layer": 3
@@ -193,7 +214,7 @@
   {
    "id": "jp-tram-pole-c",
    "x": 44,
-   "y": 12,
+   "y": 14,
    "w": 1,
    "h": 6,
    "layer": 3
@@ -201,7 +222,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 0,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -209,7 +230,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 0,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -217,7 +238,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 2,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -225,7 +246,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 2,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -233,7 +254,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 4,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -241,7 +262,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 4,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -249,7 +270,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 6,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -257,7 +278,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 6,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -265,7 +286,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 8,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -273,7 +294,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 8,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -281,7 +302,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 10,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -289,7 +310,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 10,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -297,7 +318,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 12,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -305,7 +326,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 12,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -313,7 +334,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 14,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -321,7 +342,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 14,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -329,7 +350,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 16,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -337,7 +358,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 16,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -345,7 +366,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 18,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -353,7 +374,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 18,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -361,7 +382,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 20,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -369,7 +390,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 20,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -377,7 +398,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 22,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -385,7 +406,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 22,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -393,7 +414,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 24,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -401,7 +422,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 24,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -409,7 +430,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 26,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -417,7 +438,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 26,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -425,7 +446,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 28,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -433,7 +454,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 28,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -441,7 +462,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 30,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -449,7 +470,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 30,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -457,7 +478,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 32,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -465,7 +486,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 32,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -473,7 +494,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 34,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -481,7 +502,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 34,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -489,7 +510,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 36,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -497,7 +518,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 36,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -505,7 +526,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 38,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -513,7 +534,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 38,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -521,7 +542,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 40,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -529,7 +550,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 40,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -537,7 +558,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 42,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -545,7 +566,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 42,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -553,7 +574,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 44,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -561,7 +582,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 44,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -569,7 +590,7 @@
   {
    "id": "jp-tram-wire-h",
    "x": 46,
-   "y": 13,
+   "y": 15,
    "w": 2,
    "h": 1,
    "layer": 4
@@ -577,23 +598,47 @@
   {
    "id": "jp-tram-wire-h",
    "x": 46,
-   "y": 16,
+   "y": 18,
    "w": 2,
    "h": 1,
    "layer": 4
   },
   {
    "id": "jp-prop-bike-rack",
-   "x": 7,
-   "y": 26,
+   "x": 6,
+   "y": 28,
    "w": 2,
    "h": 1,
    "layer": 3
   },
   {
    "id": "jp-prop-bike-rack",
-   "x": 36,
-   "y": 26,
+   "x": 30,
+   "y": 28,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 12,
+   "y": 28,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 38,
+   "y": 28,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 44,
+   "y": 28,
    "w": 2,
    "h": 1,
    "layer": 3

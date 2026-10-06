@@ -17,7 +17,7 @@ const DIRS: TransitDir[] = ["right", "left", "up", "down"];
 const KIND_KO: Record<TransitRouteKind, string> = { road: "차 흐름", bus: "버스", tram: "노면전차", train: "전철", subway: "지하철" };
 /** 차·버스가 달려도 되는 1층 칸 = 생활도로 오토타일 묶음. */
 const LANE_GROUP = "jp-lane-road";
-const TRAM_RAIL_KITS = ["jp-tram-rail-h", "jp-tram-rail-v", "jp-tram-rail-end"];
+const TRAM_RAIL_KITS = ["jp-tram-rail-h", "jp-tram-rail-h-xwalk", "jp-tram-rail-v", "jp-tram-rail-end"];
 const TRACK_KITS = ["jp-subway-track"];
 
 const vehicleIds = (): string[] => transitVehicleCatalog().map((v) => v.id);

@@ -21,10 +21,13 @@ BLOCK = 'transit_street'
 OUTDIR = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'transit_street')
 P = []
 
-def prop(id_, name, w, h, solid=(), other='star', tags=(), rules='', ground=None, ground_solid=(), role='prop', repeat=None):
+def prop(id_, name, w, h, solid=(), other='star', tags=(), rules='', ground=None, ground_solid=(), role='prop', repeat=None,
+         cell_tags=None, layer=None):
+    """cell_tags(cx, cy) → 그 칸에만 붙는 태그(예: foot-dy:N). layer='base' 면 그림 전체를 1층 바닥으로 자른다."""
     def deco(fn):
         P.append(dict(id=id_, name=name, w=w, h=h, draw=fn, solid=list(solid), other=other, tags=list(tags), rules=rules,
-                      ground=ground, ground_solid=list(ground_solid), role=role, repeat=repeat)); return fn
+                      ground=ground, ground_solid=list(ground_solid), role=role, repeat=repeat,
+                      cell_tags=cell_tags, layer=layer)); return fn
     return deco
 
 # ── 공용 바탕 ───────────────────────────────────────────────
@@ -58,6 +61,34 @@ def post_v(c, x, y0, y1, m='tekko'):
     c.VL(x - 1, y0, y1 - y0 + 1, OL); c.VL(x + 2, y0, y1 - y0 + 1, OL)
     c.VL(x, y0, y1 - y0 + 1, K(m, 1)); c.VL(x + 1, y0, y1 - y0 + 1, K(m, -1))
 
+# ── 軌道敷 포장 ─────────────────────────────────────────────
+def trackbed(c, x, y, w, h, variant=0):
+    """軌道敷 콘크리트 포장(아스팔트보다 한 단 밝다). 줄눈은 레일 방향(가로)만, 무늬는 칸 안 좌표 고정 — 이어 붙여도 이음매가 없다."""
+    for j in range(h):
+        for i in range(w):
+            X, Y = x + i, y + j
+            u, v = X % 16, Y % 16
+            col = K('yoru', 2)
+            if v == 7: col = K('yoru', 0)                       # 가로 줄눈
+            elif v == 8: col = K('yoru', 3)                     # 줄눈 아래 모서리 빛
+            else:
+                hsh = (u * 37 + v * 61 + variant * 29) % 41
+                if hsh == 0 or hsh == 17: col = K('yoru', 1)      # 물 얼룩(어두운 점)
+                elif hsh == 9: col = K('yoru', 3)               # 골재 반짝
+                if variant and 2 <= v <= 5 and 9 <= u <= 13 and (u + v) % 2 == 0: col = K('yoru', 1)
+                if not variant and 10 <= v <= 13 and 2 <= u <= 6 and (u + v) % 2 == 0: col = K('yoru', 1)
+            c.P(X, Y, col)
+
+@prop('tram-trackbed', '노면전차 軌道敷 포장', 1, 1, layer='base', role='terrain', repeat='x',
+      tags=('노면전차', '軌道敷', '포장', '바닥', '도로'),
+      rules='궤도 두 줄이 지나는 띠 전체에 1층 바닥으로 깐다(아스팔트 대신). 위에 jp-tram-rail-h 를 2층으로 겹친다. 걸을 수 있다.')
+def _(c): trackbed(c, 0, 0, 16, 16, 0)
+
+@prop('tram-trackbed-b', '노면전차 軌道敷 포장(얼룩 변형)', 1, 1, layer='base', role='terrain', repeat='x',
+      tags=('노면전차', '軌道敷', '포장', '바닥', '변형'),
+      rules='jp-tram-trackbed 와 섞어 깐다(3~5칸에 1칸). 얼룩 자리만 다르다.')
+def _(c): trackbed(c, 0, 0, 16, 16, 1)
+
 # ── 레일 ────────────────────────────────────────────────────
 RAIL_A, RAIL_B = 5, 27            # 궤간 22px
 
@@ -77,6 +108,19 @@ def rail_h(c, x0, x1, oy=0):
       rules='간선도로 가운데 2칸 띠로 가로로 이어 깐다(복선은 레일 2행 + 사이 1행 + 레일 2행). 아스팔트 위 2층 덧그림(레일 사이는 투명). 정류장 섬은 남쪽 궤도 바로 남쪽.')
 def _(c):
     rail_h(c, 0, 16)
+
+@prop('tram-rail-h-xwalk', '노면전차 레일(가로)·횡단보도 겹침', 1, 2, other='flat', role='terrain', repeat='x',
+      tags=('노면전차', '궤도', '레일', '횡단보도', '노면 표시'),
+      rules='횡단보도(jp-crosswalk-ns 와 같은 가로 줄)가 궤도를 건너는 칸에 jp-tram-rail-h 대신 2층으로 찍는다. 흰 줄 위로 레일이 지나간다.')
+def _(c):
+    for oy in (0, 16):
+        for y in (2, 3, 4, 5, 10, 11, 12, 13): c.HL(0, oy + y, 16, K('shiro', 2))
+        for (x, y) in ((4, 3), (10, 11), (11, 4), (3, 12)): c.P(x, oy + y, K('shiro', 1))
+    # 흰 칠은 매립 콘크리트를 덮고, 쇠 윗면과 홈(2px)만 칠 위로 드러난다
+    for x in range(16):
+        for y, col in _rail_profile(x):
+            if y in (RAIL_A, RAIL_A + 1, RAIL_B - 1, RAIL_B): c.P(x, y, col)
+            elif y not in (2, 3, 4, 5, 10, 11, 12, 13, 18, 19, 20, 21, 26, 27, 28, 29): c.P(x, y, col)
 
 @prop('tram-rail-v', '노면전차 레일(세로)', 2, 1, other='flat', role='terrain', repeat='y',
       tags=('노면전차', '레일', '선로', '도로'),
@@ -114,7 +158,7 @@ def _in_zebra(x, y):
     half = 14 * (46 - x) / 46.0
     return abs(y - 15) <= half
 
-@prop('tram-stop-zebra', '정류장 유도 표시(導流帯)', 3, 2, other='flat', role='terrain',
+@prop('tram-stop-zebra', '정류장 유도 표시(導流帯)', 3, 2, other='flat', role='terrain', ground=lambda c: trackbed(c, 0, 0, 48, 32),
       tags=('노면전차', '정류장', '導流帯', '노면 표시', '도로'),
       rules='정류장 섬(jp-tram-stop) 동쪽 끝에 바로 붙여 깐다(같은 행). 2층 투명 덧그림, 차는 지나가지 않는다.')
 def _(c):
@@ -125,17 +169,47 @@ def _(c):
             if edge: c.P(x, y, K('shiro', 0))
             elif (x + y) % 9 < 3: c.P(x, y, K('shiro', -1))
 
+@prop('tram-stop-zebra-e', '정류장 유도 표시(導流帯, 동행)', 3, 2, other='flat', role='terrain', ground=lambda c: trackbed(c, 0, 0, 48, 32),
+      tags=('노면전차', '정류장', '導流帯', '노면 표시', '도로', '동행'),
+      rules='동행 섬(jp-tram-stop-e) 서쪽 끝에 바로 붙여 깐다(같은 행, 섬 왼쪽). jp-tram-stop-zebra 의 좌우 거울. 2층 투명 덧그림, 차는 지나가지 않는다.')
+def _(c):
+    for y in range(32):
+        for x in range(48):
+            z = lambda a, b: _in_zebra(47 - a, b)
+            if not z(x, y): continue
+            edge = not (z(x, y - 2) and z(x, y + 2) and z(x - 2, y))
+            if edge: c.P(x, y, K('shiro', 0))
+            elif (x - y) % 9 < 3: c.P(x, y, K('shiro', -1))
+
+MARK_RULE = '2층 투명 덧그림 흰 선. 도로 차로와 軌道敷 경계·정지선에 찍는다.'
+
+@prop('mark-stopline-v', '정지선(세로)', 1, 1, other='flat', role='terrain', repeat='y',
+      tags=('노면 표시', '정지선', '도로'), rules='횡단보도 앞 차로에 세로로 이어 찍는다(폭 3px 흰 줄, 칸 가운데). ' + MARK_RULE)
+def _(c):
+    c.R(6, 0, 3, 16, K('shiro', 2)); c.P(7, 5, K('shiro', 1)); c.P(6, 12, K('shiro', 1))
+
+@prop('tram-lane-line-s', '차로|軌道敷 경계선(칸 아래)', 1, 1, other='flat', role='terrain', repeat='x',
+      tags=('노면 표시', '차선', '軌道敷 경계', '도로'), rules='차로 행의 아랫변(남쪽이 軌道敷일 때). ' + MARK_RULE)
+def _(c):
+    c.HL(0, 14, 16, K('shiro', 2)); c.HL(0, 15, 16, K('shiro', 1)); c.P(9, 14, K('shiro', 1))
+
+@prop('tram-lane-line-n', '차로|軌道敷 경계선(칸 위)', 1, 1, other='flat', role='terrain', repeat='x',
+      tags=('노면 표시', '차선', '軌道敷 경계', '도로'), rules='차로 행의 윗변(북쪽이 軌道敷일 때). ' + MARK_RULE)
+def _(c):
+    c.HL(0, 0, 16, K('shiro', 2)); c.HL(0, 1, 16, K('shiro', 1)); c.P(4, 1, K('shiro', 2))
+
 # ── 가선·전주 ──────────────────────────────────────────────
 WIRE_UP = 2                        # 가선 키트 행 = 궤도 윗행 −2 (전차 팬터그래프 끝이 닿는 높이)
 WIRE_Y = 3                         # 키트 안 전차선 몸 y(먹 1px), 바로 위 y2 가 회색 반사 1px → 궤도 윗행보다 29px 위
 WIRE_RULE = '궤도 키트 윗행 −2 행에 4층으로 둔다(동행·서행 궤도 두 줄 모두). 전차선은 궤도 윗행 29px 위 — jp-tram 팬터그래프 끝이 닿는 높이다.'
 
 @prop('tram-wire-h', '노면전차 가선(가로)', 2, 1, other='star', role='prop', repeat='x',
-      tags=('노면전차', '가선', '전선', '트롤리선', '4층'),
-      rules=WIRE_RULE + ' 2칸 반복(매달이 귀 32px 간격). 먹 몸 + 회색 반사(흰 차선과 구별). 도로에 그림자를 그리지 않는다.')
+      tags=('노면전차', '가선', '전선', '트롤리선', '조가선', '4층'),
+      rules=WIRE_RULE + ' 2칸 반복. 먹 1px 전차선 + 그 위 더 어두운 1px 조가선, 16px 마다 드로퍼. 밝은 반사 없음(흰 차선과 구별). 도로에 그림자를 그리지 않는다.')
 def _(c):
-    c.HL(0, WIRE_Y - 1, 32, K('tekko', 1)); c.HL(0, WIRE_Y, 32, OL)   # 전차선 2px: 회색 반사 + 먹 몸
-    c.P(8, WIRE_Y - 2, OL); c.P(7, WIRE_Y - 1, OL); c.P(9, WIRE_Y - 1, OL)   # 매달이 귀
+    c.HL(0, WIRE_Y - 2, 32, K('sumi', -2))                  # 조가선(위, 더 어둡게)
+    c.HL(0, WIRE_Y, 32, OL)                                 # 전차선(먹 1px)
+    for x in (0, 16): c.P(x + 4, WIRE_Y - 1, K('sumi', -2)) # 드로퍼 16px 간격
 
 POLE_TOP = 3                       # 전주 키트 윗행 = 동행 궤도 윗행 −3
 POLE_EAST_C = (POLE_TOP - WIRE_UP) * 16 + WIRE_Y   # 키트 안 동행 전차선 y (19)
@@ -157,6 +231,7 @@ def _bracket(c, yc):
     c.P(0, yc - 1, K('tekko', 0)); c.P(15, yc - 1, K('tekko', 0))   # 당김선 끝 쇠(전차선 바로 위)
 
 @prop('tram-pole-c', '노면전차 센터 전주(복선 사이)', 1, 6, solid=[(0, 5)], other='star', role='prop',
+      cell_tags=lambda cx, cy: [f'foot-dy:{5 - cy}'],
       tags=('노면전차', '전주', '가선', '기둥', '센터폴', '당김선'),
       rules='복선 사이 빈 행에 밑동, 16~24칸 간격. 키트 윗행 = 동행 궤도 윗행 −3(밑동 칸 = 동행 궤도 윗행 +2). 위 팔은 동행 가선, 아래 팔은 서행 가선으로 사선 당김선이 내려간다. 보도에는 세우지 않는다. 밑동 칸만 막힘.')
 def _(c):
@@ -176,22 +251,24 @@ def _(c):
 
 # ── 보행자 신호기·보도 승강 표시 ────────────────────────────
 @prop('tram-ped-signal', '보행자 신호기', 1, 3, solid=[(0, 2)], other='star', role='prop',
+      cell_tags=lambda cx, cy: [f'foot-dy:{2 - cy}'],
       tags=('신호기', '보행자', '횡단보도', '정류장'),
-      rules='횡단보도 끝 보도 칸에 둔다(밑동 칸 = 보도 맨 아랫행, 횡단보도 줄무늬 바로 옆). 사람 그림 없는 둥근 등 2개(위 빨강 꺼짐·아래 초록 켜짐). 밑동 칸만 막힘.')
+      rules='횡단보도 끝 보도 칸에 둔다(밑동 칸 = 보도 맨 아랫행, 횡단보도 줄무늬 바로 옆). 사람 그림 없는 둥근 등 2개(위 빨강 켜짐·아래 초록 꺼짐 — 차가 지나는 장면). 밑동 칸만 막힘. 횡단보도 양 끝 보도에 대각 한 쌍.')
 def _(c):
     c.R(4, 38, 8, 3, K('conc', 1)); c.HL(4, 38, 8, K('conc', 2)); c.R(4, 41, 8, 4, K('conc', -1))
     box(c, 3, 37, 10, 9, None); c.HL(4, 41, 8, OL); c.HL(4, 46, 9, K('yoru', -3))
     c.VL(7, 21, 16, K('tekko', 2)); c.VL(8, 21, 16, K('tekko', -1)); c.VL(6, 21, 16, OL); c.VL(9, 21, 16, OL)
     c.R(3, 2, 10, 18, K('tekko', -2)); c.HL(3, 2, 10, K('tekko', 0)); c.VL(3, 2, 18, K('tekko', -1))
     box(c, 2, 1, 12, 20, None)
-    for cy, ramp, sh in ((7, 'aka', -2), (15, 'midori', 1)):
+    for cy, ramp, sh in ((7, 'aka', 1), (15, 'midori', -2)):
         for y in range(cy - 3, cy + 4):
             for x in range(4, 13):
                 d = ((x - 8) ** 2 + (y - cy) ** 2) ** 0.5
                 if d <= 2.6: c.P(x, y, K(ramp, sh))
                 elif d <= 3.4: c.P(x, y, OL)
         c.HL(5, cy - 4, 7, OL)                             # 차양
-    c.P(7, 6, K('aka', 0)); c.P(7, 14, K('midori', 3)); c.P(8, 14, K('midori', 2))
+    c.P(7, 5, K('aka', 3)); c.P(8, 5, K('aka', 2)); c.P(7, 6, K('aka', 2))      # 켜진 빨강 반짝
+    c.P(9, 9, K('aka', 0)); c.P(7, 14, K('midori', -1))                        # 꺼진 초록은 유리 반사 1점만
 
 @prop('tram-curb-stop', '노면전차 보도 승강 표시', 1, 1, other='flat', role='terrain', repeat='x',
       tags=('노면전차', '정류장', '점자 블록', '보도', '연석'),
@@ -271,6 +348,63 @@ def _(c):
     # 동쪽 끝 안전지대 표지 기둥
     for x in (181, 187): marker_post(c, x, 10, 22)
 
+def island_e_ground(c):
+    """동행 섬: 궤도가 남쪽. 윗줄(북)=차로 쪽 난간, 아랫줄(남)=궤도 쪽 승강 가장자리(점자 블록)·남쪽 앞면 연석."""
+    W = 192
+    for y in range(0, ISL_FRONT):
+        for x in range(W):
+            u, v = x % 16, (y - 4) % 12
+            col = K('conc', 1)
+            if u == 15 or v == 11: col = K('conc', 0)
+            c.P(x, y, col)
+    c.HL(0, 0, W, OL); c.HL(0, 1, W, K('conc', 2))                     # 북쪽(차로 쪽) 가장자리: 앞면은 안 보인다
+    # 남쪽 승강 가장자리: 노란 점자 블록 + 흰 선(궤도 쪽)
+    c.HL(0, 15, W, K('kii', -3)); c.R(0, 16, W, 5, K('kii', 1))
+    for y in range(16, 21):
+        for x in range(W):
+            if (x % 3 == 1) and ((y - 16) % 2 == (x // 3) % 2): c.P(x, y, K('kii', -1))
+    c.HL(0, 21, W, K('shiro', -1)); c.HL(0, 22, W, K('shiro', 1))
+    for x in range(W):
+        e = 16 - x if x < 16 else 0
+        h = 7 - (e * 7) // 16
+        top = 30 - h
+        for y in range(ISL_FRONT, top): c.P(x, y, K('conc', 0))
+        for y in range(top, 30): c.P(x, y, K('conc', -2) if y == top else K('conc', -1))
+        c.P(x, 30, OL if h else K('yoru', -3)); c.P(x, 31, K('yoru', -3) if h else K('yoru', -1))
+    c.HL(16, ISL_FRONT, W - 16, K('conc', 0))
+    for x in range(40, W, 24): c.VL(x, ISL_FRONT + 1, 6, K('conc', -2))
+    c.VL(0, 0, 31, OL); c.VL(W - 1, 0, 31, OL)
+
+@prop('tram-stop-e', '노면전차 정류장(안전지대, 동행)', 12, 2, ground=island_e_ground,
+      ground_solid=[(x, 0) for x in range(12)],
+      solid=[(x, 0) for x in range(12)],
+      other='star', role='prop', tags=('노면전차', '정류장', '안전지대', '시간표', '점자 블록', '동행'),
+      rules='북쪽 궤도(동행) 바로 북쪽에 붙인다(동행 차로 쪽). 윗줄은 바깥(차로 쪽) 난간(막힘), 아랫줄이 궤도 쪽 승강 가장자리(노란 점자 블록, 걸을 수 있음)와 남쪽 앞면 연석. 서쪽 끝은 경사로 + jp-tram-stop-zebra-e, 동쪽 끝은 안전지대 표지 기둥.')
+def _(c):
+    # 바깥(북쪽·차로 쪽) 난간: 섬 북쪽 가장자리 바로 안 y4..12
+    for x in range(8, 177, 16): post_v(c, x, 6, 12)
+    c.HL(4, 4, 174, OL); c.HL(4, 5, 174, K('tekko', 2)); c.HL(4, 6, 174, OL)
+    c.HL(4, 9, 174, K('tekko', 0)); c.HL(4, 10, 174, OL)
+    c.VL(3, 4, 3, OL); c.VL(178, 4, 3, OL)
+    for x in range(4, 178): c.P(x, 13, K('conc', 0))                 # 난간 밑 그림자 1px
+    # 정류장 표지(원판) — 서쪽(경사로 쪽)
+    post_v(c, 40, 8, 12)
+    for y in range(0, 10):
+        for x in range(36, 46):
+            d = ((x - 40.5) ** 2 + (y - 4.5) ** 2) ** 0.5
+            if d <= 2.4: c.P(x, y, K('shiro', 1))
+            elif d <= 3.6: c.P(x, y, K('kon', 0) if y < 3 else K('kon', -1))
+            elif d <= 4.5: c.P(x, y, OL)
+    # 시간표
+    post_v(c, 150, 9, 12)
+    c.R(145, 1, 12, 7, K('shiro', 0)); c.HL(145, 1, 12, K('kon', 0))
+    for i, y in enumerate((3, 5)):
+        for x in range(146, 156):
+            if (x + i) % 4 != 3: c.P(x, y, K('tekko', -1))
+    box(c, 144, 0, 14, 9, None)
+    # 동쪽 끝 안전지대 표지 기둥(난간 줄 위)
+    for x in (181, 187): marker_post(c, x, 2, 13)
+
 # ── 지하철 출입구 ──────────────────────────────────────────
 ROOF_B = 46                        # 지붕(윗면 0..21 + 처마 22..24 + 간판 25..42 + 밑면 43..45)
 
@@ -346,17 +480,21 @@ def _finalize():
             def add(cx, cy, t):
                 if layer == 'base': pc = 'solidfloor' if (cx, cy) in set(map(tuple, p['ground_solid'])) else 'floor'
                 else: pc = 'solid' if (cx, cy) in set(map(tuple, p['solid'])) else p['other']
-                k = (t.tobytes(), pc)
+                extra = tuple(p['cell_tags'](cx, cy)) if (p['cell_tags'] and layer != 'base') else ()
+                k = (t.tobytes(), pc, extra)
                 if k in seen: return seen[k]
                 local = '%s/%s%d.%d' % (p['id'], 'g' if layer == 'base' else '', cx, cy)
                 seen[k] = local
                 cells[local] = dict(img=Image.fromarray(t, 'RGBA'), pc=pc,
                                     label='%s 칸 (%d,%d)%s' % (p['name'], cx, cy, ' 바닥' if layer == 'base' else ''),
-                                    desc='%s — %s' % (p['name'], p['rules']), tags=list(p['tags']))
+                                    desc='%s — %s' % (p['name'], p['rules']), tags=list(p['tags']) + list(extra))
                 return local
             return add
-        base = _cut(_render(p['ground'], C, R), R, C, None, adder('base')) if p['ground'] else None
-        grid = _cut(_render(p['draw'], C, R), R, C, None, adder('grid'))
+        if p['layer'] == 'base':                            # 바닥 전용(1층) 키트
+            base, grid = _cut(_render(p['draw'], C, R), R, C, None, adder('base')), [[None] * C for _ in range(R)]
+        else:
+            base = _cut(_render(p['ground'], C, R), R, C, None, adder('base')) if p['ground'] else None
+            grid = _cut(_render(p['draw'], C, R), R, C, None, adder('grid'))
         spr = Image.new('RGBA', (C * 16, R * 16), (0, 0, 0, 0))
         if p['ground']: spr.alpha_composite(Image.fromarray(_render(p['ground'], C, R), 'RGBA'))
         spr.alpha_composite(Image.fromarray(_render(p['draw'], C, R), 'RGBA'))
@@ -370,9 +508,11 @@ def _finalize():
         kits.append(dict(id='jp-' + p['id'], name=p['name'], grid=grid, base=base, parts=parts, ai=ai))
     def _cells_of(prefixes): return [k for k in cells if k.split('/')[0] in prefixes]
     groups = [dict(id='jp:tram-rail', name='노면전차 궤도(투명 덧그림)', role='detail', defaultLayer='upper',
-                   cells=_cells_of(('tram-rail-h', 'tram-rail-v', 'tram-rail-end')), desc='아스팔트에 묻힌 노면전차 레일·차막이.', rules='키트 jp-tram-rail-* 로 2층에 찍는다.'),
+                   cells=_cells_of(('tram-rail-h', 'tram-rail-h-xwalk', 'tram-rail-v', 'tram-rail-end', 'mark-stopline-v', 'tram-lane-line-s', 'tram-lane-line-n')), desc='노면전차 레일·횡단보도 겹침·차막이·정지선·차선 경계선.', rules='키트 jp-tram-rail-* 로 2층에 찍는다.'),
               dict(id='jp:tram-stop', name='노면전차 정류장·가선·전주', role='prop', defaultLayer='upper',
-                   cells=_cells_of(('tram-stop', 'tram-stop-zebra', 'tram-wire-h', 'tram-pole-c', 'tram-ped-signal', 'tram-curb-stop')), desc='안전지대 섬·가공 전차선·전주·보행자 신호기·보도 승강 표시.', rules='키트로 찍는다(가선은 4층).'),
+                   cells=_cells_of(('tram-stop', 'tram-stop-e', 'tram-stop-zebra', 'tram-stop-zebra-e', 'tram-wire-h', 'tram-pole-c', 'tram-ped-signal', 'tram-curb-stop')), desc='안전지대 섬·가공 전차선·전주·보행자 신호기·보도 승강 표시.', rules='키트로 찍는다(가선은 4층).'),
+              dict(id='jp:tram-trackbed', name='노면전차 軌道敷 포장', role='terrain', defaultLayer='lower',
+                   cells=_cells_of(('tram-trackbed', 'tram-trackbed-b')), desc='궤도가 지나는 띠의 콘크리트 포장(아스팔트보다 한 단 밝다).', rules='1층 바닥으로 깔고 위에 레일을 2층으로.'),
               dict(id='jp:subway-entrance', name='지하철 출입구', role='building', defaultLayer='upper',
                    cells=_cells_of(('subway-entrance',)), desc='보도 위 지하철 출입구.', rules='키트 jp-subway-entrance, 계단 입구 anchor 2칸에 전이 이벤트.')]
     groups = [g for g in groups if g['cells']]

@@ -14,7 +14,9 @@ const OUT = join(ROOT, "verify-shots/jp-city/tram-runtime");
 const FIXTURE = "/tmp/oprn-tram-fixture.json";
 const PROJECT_URL = "/__qa/tram.json";
 const MAP = "jp-city-tram-street";
-const ISLAND_VIEW = { x: 28, y: 20 };     // 섬 윗줄(점자 띠) — 위(서쪽행 궤도 18~19)를 본다
+const ISLAND_W = { x: 28, y: 21 };        // 서쪽행 섬 윗줄(점자 띠) — 위(서쪽행 궤도 19~20)를 본다
+const ISLAND_E = { x: 12, y: 17 };        // 동쪽행 섬(가운데 띠) 윗줄 점자 띠 — 위(동쪽행 궤도 15~16)를 본다
+const TRACK_N = 15, TRACK_S = 19;
 const failures = [], lines = [];
 const record = (ok, label, detail) => { lines.push(`- ${ok ? "PASS" : "FAIL"} — ${label}: ${detail}`); if (!ok) failures.push(label); };
 
@@ -51,33 +53,37 @@ try {
   }
   const med = (xs) => (xs.length ? [...xs].sort((p, q) => p - q)[Math.floor(xs.length / 2)] : 0);
   record(dx.car.right.length > 0 && med(dx.car.right) > 1 && dx.car.left.length > 0 && med(dx.car.left) < -1, "차가 양쪽 일방 차로로 달린다", `동쪽행 ${dx.car.right.length}대 Δx ${med(dx.car.right).toFixed(2)} · 서쪽행 ${dx.car.left.length}대 Δx ${med(dx.car.left).toFixed(2)}`);
-  // 차는 레일 행(15~16·18~19)에 몸을 두지 않는다
-  const onRail = t1.vehicles.filter((v) => v.id !== "jp-tram" && [15, 16, 18, 19].some((y) => y >= v.rect.y && y < v.rect.y + v.rect.h));
+  // 차는 레일 행에 몸을 두지 않는다
+  const onRail = t1.vehicles.filter((v) => v.id !== "jp-tram" && [TRACK_N, TRACK_N + 1, TRACK_S, TRACK_S + 1].some((y) => y >= v.rect.y && y < v.rect.y + v.rect.h));
   record(onRail.length === 0, "차가 궤도 위를 달리지 않는다", onRail.length ? onRail.map((v) => `${v.id}@y${v.rect.y}`).join(" ") : "없음");
   const carRows = [...new Set(t1.vehicles.filter((v) => v.id !== "jp-tram").map((v) => `${v.dir}:y${v.rect.y}`))].join(" ");
   lines.push(`  (차 행: ${carRows})`);
   await page.screenshot({ path: join(OUT, "flow.png") });
 
-  // 서쪽행 전차가 섬 옆에 서서 문 연다 → 「조사」로 탄다
-  await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [MAP, ISLAND_VIEW.x, ISLAND_VIEW.y]);
-  let tram = null;
-  const deadline = Date.now() + 90_000;
-  while (Date.now() < deadline) {
-    const t = await transit();
-    tram = t.vehicles.find((v) => v.id === "jp-tram" && v.dir === "left" && v.open && v.stopAt !== null) ?? null;
-    if (tram) break;
-    await page.waitForTimeout(400);
-  }
-  record(!!tram, "서쪽행 전차가 안전지대 옆에 서서 문을 연다", tram ? `x ${tram.rect.x}~${tram.rect.x + tram.rect.w - 1} y ${tram.rect.y} 프레임 ${tram.sprite?.frame}` : "90초 안에 정차 없음");
-  if (tram) {
-    record(tram.rect.y === 18 && tram.rect.x <= ISLAND_VIEW.x && tram.rect.x + tram.rect.w > ISLAND_VIEW.x, "전차 몸이 섬 앞(궤도 18~19, 주인공 x 위)", `x ${tram.rect.x}~${tram.rect.x + tram.rect.w - 1}`);
-    await page.screenshot({ path: join(OUT, "tram-stop.png") });
-    await page.evaluate(() => window.__oprnInput.face("up"));
+  // 두 방향 전차가 각자 섬 옆에 서서 문 연다 → 섬에서 「조사」로 탄다
+  const board = async (dir, view, face, trackY, shotName) => {
+    await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [MAP, view.x, view.y]);
+    let tram = null;
+    const deadline = Date.now() + 100_000;
+    while (Date.now() < deadline) {
+      const t = await transit();
+      tram = t?.vehicles.find((v) => v.id === "jp-tram" && v.dir === dir && v.open && v.stopAt !== null) ?? null;
+      if (tram) break;
+      await page.waitForTimeout(400);
+    }
+    const label = dir === "left" ? "서쪽행" : "동쪽행";
+    record(!!tram, `${label} 전차가 섬 옆에 서서 문을 연다`, tram ? `x ${tram.rect.x}~${tram.rect.x + tram.rect.w - 1} y ${tram.rect.y} 프레임 ${tram.sprite?.frame}` : "100초 안에 정차 없음");
+    if (!tram) return;
+    record(tram.rect.y === trackY && tram.rect.x <= view.x && tram.rect.x + tram.rect.w > view.x, `${label} 전차 몸이 섬 앞(궤도 ${trackY}~${trackY + 1}, 주인공 x)`, `x ${tram.rect.x}~${tram.rect.x + tram.rect.w - 1}`);
+    await page.screenshot({ path: join(OUT, shotName) });
+    await page.evaluate((f) => window.__oprnInput.face(f), face);
     await page.evaluate(() => window.__oprnInput.action());
     await page.waitForFunction(() => window.__oprnDebug.readState().currentMapId === "jp-city-town", undefined, { timeout: 15_000 }).catch(() => {});
     const s = await page.evaluate(() => window.__oprnDebug.readState());
-    record(s.currentMapId === "jp-city-town", "「조사」로 전차를 타면 동네 역 앞으로", `${s.currentMapId} (${s.x},${s.y})`);
-  }
+    record(s.currentMapId === "jp-city-town", `「조사」로 ${label} 전차를 타면 동네 역 앞으로`, `${s.currentMapId} (${s.x},${s.y})`);
+  };
+  await board("left", ISLAND_W, "up", TRACK_S, "tram-stop.png");
+  await board("right", ISLAND_E, "up", TRACK_N, "tram-stop-e.png");
   // 지하철 출입구 계단 → 콘코스
   await page.evaluate(([m]) => window.__oprnDebug.teleport(m, 20, 10), [MAP]);
   await page.waitForTimeout(600);
@@ -93,7 +99,7 @@ try {
   await browser?.close();
   await server.close();
 }
-const report = ["# 노면전차 거리 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "", "증거: `flow.png`(차·전차 흐름) · `tram-stop.png`(섬 옆에 선 전차)"].join("\n");
+const report = ["# 노면전차 거리 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "", "증거: `flow.png`(차·전차 흐름) · `tram-stop.png`(서쪽행 섬 옆 전차) · `tram-stop-e.png`(동쪽행 섬 옆 전차)"].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), report + "\n");
 console.log(report);
 process.exit(failures.length ? 1 : 0);

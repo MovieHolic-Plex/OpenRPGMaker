@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 34628
+   "chars": 35162
   },
   {
    "id": "jp-autotile",
@@ -58,10 +58,10 @@
   },
   {
    "id": "jp-transit",
-   "name": "일본 도시 · 탈것·노면전차·지하철 (키트 36종 · 탈것 14종)",
+   "name": "일본 도시 · 탈것·노면전차·지하철 (키트 47종 · 탈것 14종)",
    "documents": 3,
-   "images": 12,
-   "chars": 64277
+   "images": 11,
+   "chars": 70495
   },
   {
    "id": "jp-errors",
@@ -74,14 +74,14 @@
  "totals": {
   "categories": 10,
   "documents": 61,
-  "images": 169,
-  "chars": 648352,
+  "images": 168,
+  "chars": 655104,
   "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 7553,
- "kitsEmitted": 423,
- "kitArrayItemsRoundtrip": 423,
+ "tilesEmitted": 7592,
+ "kitsEmitted": 434,
+ "kitArrayItemsRoundtrip": 434,
  "unknownTokens": [
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
@@ -100,7 +100,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "acaea90b2f9001fab8a050bef01902eef31a22d8ec4c141d1c91403ef8ef9602",
-  "images": "5eeb79d718c0c067d898d5d7972ac7097c4e68658217c3dc48c1f05a8549c5d2"
+  "json": "e166b7d9db211960299c636e5d03d3bc7133530ffac42c3d6d7b8dd19a754387",
+  "images": "891a2508c8793f6a6b9617a631dd55e7ce53264bb4baa4856be066c5696d2cc0"
  }
 }
