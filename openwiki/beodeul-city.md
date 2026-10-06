@@ -19,6 +19,11 @@
 - `create_map`(2026-10-01): 버들항이면 잔디 737 로 채운다(`plainGrassTileFor`, `defaultMaps.ts`). 예전엔 `isCombinedTownCompatibleTileset` 이 거짓이라 빈칸(-1)이었다.
 - 시작 마을(2026-10-01): 「예제로 시작」(`projectStartSeed.ts`)과 첫 실행 안내 「작은 마을 추가하기」(`firstRunGuide.ts`)는 `createBeodeulStarterMap`(`src/editor/content/beodeulStarterMap.ts`) — `author_beodeul_town` 40×30 seed 7(주택가·시장 둘·저택) 뒤 오른쪽 남는 띠를 비우고 첫 띠 아래 길(2줄)을 동쪽 끝까지 잇는다. 첫 구간 뼈대가 (가로-1, 시작 y)에 다음 맵 문을 달기 때문이다. 시작 칸 (3, 13). 첫 실행 안내는 시작 맵이 버들항일 때만 쓰고, 옛 칩셋으로 시작한 프로젝트는 합본 마을 `createStarterMap` 그대로(계열을 섞지 않게). `createStarterMap` 자체와 샘플 모험(`createDefaultProject`)은 합본 마을 칸 번호로 꾸민 것이라 그대로다.
 - 몬스터 수집 도로(2026-10-01): `author_wild_route` 가 버들항 맵도 깐다(`wildRouteBeodeul.ts`) — 합본 마을 경로와 같은 길 계획(`planRouteCorridor`)을 포석·짙은 잎 풀(11628)·버들항 나무 키트로. **버들항엔 키큰 풀이 없어 풀숲은 짙은 잎 풀 대용이다** — 손 도트 키큰 풀을 시트에 더하는 일은 남았다. 이것이 없던 동안(#1789~) 새 프로젝트의 몬스터 수집 첫 구간 뼈대(AI 인터뷰 시작·예제로 시작)는 이 도구에서 멈췄다.
+  - 2026-10-06 다시 손봄(「1번 도로가 엉망진창」): 시내 포석 → **`버들항 모랫길`** 오토타일, 잡음 경로의 계단 대각선 → **꺾임 비용 경로**(`routePathStraight`, 방향을 상태에 넣은 다익스트라) + 경유점까지 갔다 되돌아온 막다른 가지 잘라 내기(`pruneLoops`),
+    풀숲에 잘려 남은 4칸 이하 모랫길 토막은 풀밭으로. 숲은 2칸 격자 흩뿌림(덤불 점박이) → **숲 벽**(`plantBeodeulForestWall`): 크기로 나눈 나무(3×3 수관·3×4 줄기 나무·2×2 덤불)를
+    위에서 아래로 벽돌처럼 엇갈려 붙이고, 아래가 트인 앞줄엔 줄기 나무, 맵 하나에 수관·줄기 한 종씩. 길섶엔 깊은 숲길 세트 1칸 소품(`dressBeodeulVerge`).
+    도구가 맵에 `mapRole: "field"` 를 붙이고, `stamp_object` 는 필드 맵에 마을·항구·농장 소품(bd-house·block·harbour·garden…, bd-pick-fishing-port·riverside-mill·vineyard·walled-market·wheat-roman 등)을 `settlement-prop-on-route` 로 거부한다(`routePropPolicy.ts` — 조수가 1번 도로에 통발·건조대·밀단을 찍었다).
+    남은 것: 수관 사이 풀밭 이음매(키트끼리 겹칠 수 없다), 키큰 풀 그림. 계약 `test/wildRouteBeodeul.test.ts`.
 - 계열 규칙(`isCombinedTownCompatibleTileset`)은 합본 마을 계열 기준 그대로다.
 
 ### 빠른 집·도로 도구 (2026-10-03)

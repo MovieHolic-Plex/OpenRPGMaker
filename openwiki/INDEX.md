@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **147쪽 / 5125KB / 약 1,494,002 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **147쪽 / 5130KB / 약 1,495,613 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
+| `openwiki/beodeul-city.md` | 52KB | 5KB | 375 | ~15,663 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,067 |
 | `openwiki/editor-ai-panel.md` | 636KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4052 | ~186,195 |
 | `openwiki/editor-ai-tools.md` | 343KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 2805 | ~99,293 |
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
 | `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
-| `openwiki/harnesses/super-harness.md` | 80KB | 4KB | 822 | ~25,250 |
+| `openwiki/harnesses/super-harness.md` | 83KB | 4KB | 850 | ~25,942 |
 | `openwiki/runtime-battle.md` | 327KB | 32KB | 1832 | ~95,934 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
 | `openwiki/runtime-project-schema.md` | 216KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1556 | ~60,521 |
@@ -84,12 +84,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/charset-actor.md` | 5 | `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 1 | `library.json` |
-| `openwiki/harnesses/interior-prop-derivations.md` | 1 | `.png` |
+| `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/modern-chipset.md` | 2 | `.input.json`, `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness.md` | 23 | `B.json`, `DATA/reference-catalog.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-result.json`, `card.json`, `concept-request.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `reference-source.json`, `result-review.json`, `supervisor-authorization.json`, `verdict.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness.md` | 25 | `B.json`, `DATA/reference-catalog.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-pending-materials.json`, `art-result.json`, `card.json`, `concept-request.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `reference-source.json`, `result-review.json`, `supervisor-authorization.json`, `theme-material-progress.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -308,37 +308,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 51KB · 370줄 · ~15,285 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 52KB · 375줄 · ~15,663 토큰 · 통째읽기 잘림
 
 - `L8` 기본 타일셋 (2026-09-30)
-  - `L24` 빠른 집·도로 도구 (2026-10-03)
-  - `L39` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L65` 무엇이 어디에 있나
-- `L85` 칸 자르기 규칙
-- `L97` 정본 저장·재로드 (2026-09-28)
-- `L105` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L116` 결과 (2026-09-28, 두 번)
-- `L136` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L140` 무엇을 더했나
-  - `L153` 예시 배치 둘과 배치 자
-  - `L164` 참고문서 (v7)
-  - `L170` 정본 (v7)
-  - `L174` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L196` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L201` 무엇을 더했나
-  - `L217` 배우며 찾은 것
-  - `L225` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L245` 정본 (v8)
-- `L249` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L267` 남은 것
-- `L278` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L289` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L302` 칸·키트
-  - `L325` 기존 프로젝트
-  - `L331` 참고문서 (조수)
-  - `L338` 화면 증거
-  - `L342` 남은 것
-- `L347` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L29` 빠른 집·도로 도구 (2026-10-03)
+  - `L44` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L70` 무엇이 어디에 있나
+- `L90` 칸 자르기 규칙
+- `L102` 정본 저장·재로드 (2026-09-28)
+- `L110` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L121` 결과 (2026-09-28, 두 번)
+- `L141` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L145` 무엇을 더했나
+  - `L158` 예시 배치 둘과 배치 자
+  - `L169` 참고문서 (v7)
+  - `L175` 정본 (v7)
+  - `L179` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L201` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L206` 무엇을 더했나
+  - `L222` 배우며 찾은 것
+  - `L230` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L250` 정본 (v8)
+- `L254` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L272` 남은 것
+- `L283` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L294` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L307` 칸·키트
+  - `L330` 기존 프로젝트
+  - `L336` 참고문서 (조수)
+  - `L343` 화면 증거
+  - `L347` 남은 것
+- `L352` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
 
 ### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,787 토큰
 
@@ -1198,7 +1198,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L218` 2026-10-05 제작 풀의 콘텐츠 경로 누락 복구
   - `L258` 2026-10-05 마을 300종과 크기 변경 선택의 게시 복구
 
-### `openwiki/harnesses/interior-prop-derivations.md` — 34KB · 407줄 · ~10,578 토큰
+### `openwiki/harnesses/interior-prop-derivations.md` — 36KB · 428줄 · ~11,119 토큰
 
 - `L9` 1. 사용자가 결정한 제품 흐름
 - `L32` 2. 세 계층과 현재 완료 범위
@@ -1219,6 +1219,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L332` 실제 DB와 픽셀 확인
   - `L348` 2026-10-05 후속 개편: 이름·그림 먼저, 더블클릭으로 다음
   - `L376` 2026-10-05 크기 변경 후 다시 뽑기
+- `L408` 신규 제작 묶음의 원본 검사 (2026-10-06)
+  - `L417` 검수 수치의 적용 범위
 
 ### `openwiki/harnesses/interior-props.md` — 8KB · 90줄 · ~2,570 토큰
 
@@ -1302,7 +1304,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
 - `L176` 전체 제작 통합 방향 (2026-10-05)
 
-### `openwiki/harnesses/super-harness.md` — 80KB · 822줄 · ~25,250 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/super-harness.md` — 83KB · 850줄 · ~25,942 토큰 · 통째읽기 잘림
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1341,6 +1343,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L741` 고유 테마 전용 세트 관문 (2026-10-05)
 - `L775` 제작 범위 분기·우선 세계관·컨셉아트 (2026-10-05)
 - `L807` 승인 대기와 초안 제작 분리 (2026-10-06)
+- `L824` 전용 세트의 독립 재료 묶음 실행 (2026-10-06)
+  - `L837` 전용 세트의 여러 제작 묶음 누적 (2026-10-06)
 
 ### `openwiki/harnesses/town-props-300.md` — 29KB · 532줄 · ~8,453 토큰
 
