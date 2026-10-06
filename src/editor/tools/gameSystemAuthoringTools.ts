@@ -47,7 +47,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(args.style!==undefined&&!['field-list','pixel','classic','sheet','workbench'].includes(String(args.style)))throw new ToolError('메뉴 스타일 오류.',{code:'invalid-args'});
     if(next)p.meta.oprnFieldMenu=next;else delete p.meta.oprnFieldMenu;
     p.system.menuUiStyle=args.style as Project['system']['menuUiStyle']??(preset==='default'?'pixel':'field-list');
-    if(p.system.fieldHud)p.system.fieldHud.menuStyle=p.system.menuUiStyle;
+    if(p.system.fieldHud)p.system.fieldHud.menuStyle=p.system.menuUiStyle==='field-list'?'field-list':'project';
     return {summary:'ESC 메뉴를 실제 기능 ID에 연결했습니다. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.',data:systemView(p)};
   }),
   tool('configure_monster_campaign','도감 순서·생태 설명·배지 스위치·지도 좌표·진행 목표를 실제 데이터/맵/스위치와 검증해 저장. 런타임 진행 상태는 바꾸지 않음.','write',schema({definition:{type:'object'}},['definition']),(p,args)=>{

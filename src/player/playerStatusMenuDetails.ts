@@ -671,7 +671,7 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (isEmeraldMonsterStyle(options.project) && view === "party") {
     const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index) => {
       const raw = options.session.monsterInstances[ids[index] ?? ""];
-      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true" }, disabled: true };
+      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
       const member = monsterUiEntry(options.project, raw);
       return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
         testId: `status-menu-monster-${raw.instanceId}`,

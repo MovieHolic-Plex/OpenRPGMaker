@@ -15,7 +15,7 @@ export function configureMonsterPresentation(project: Project): { defaultOpening
   project.meta.oprnShopPreset = 'collector';
   project.system.fieldHud = {
     ...project.system.fieldHud,
-    theme: 'collector', font: 'pixel', menuStyle: 'project',
+    theme: 'collector', font: 'pixel', menuStyle: 'project', clock: project.system.fieldHud?.clock ?? false,
     vitals: false, hideEmpty: true,
   };
   const opening = project.system.opening;
