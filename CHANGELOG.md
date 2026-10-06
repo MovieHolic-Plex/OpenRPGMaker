@@ -5,6 +5,28 @@
 
 <!-- releases -->
 
+## 0.154.0 — 2026-10-06
+
+### 기능
+
+- **monster** — build_monster_game takes the brief's first gym type (`11d475b`)
+- **monster** — the old star observatory gets its own hall instead of a ruins copy (`33758be`)
+
+### 수정
+
+- **monster** — no stray stone pair above the route 8 ruins exit (`7d69a7a`)
+- **monster** — wooden route signs only outdoors and never three in one corner (`076b061`)
+- **battle** — emerald message box spans the band while acting; journey flags text outside the box (`39b1529`)
+- **assistant** — monster-game runs skip map layout quality; editor leaves a vanished map (`0e0d326`)
+
+### 문서
+
+- **openwiki** — monster game names/firstGymType, layout gate skip, film monster case (`29bb1ed`)
+
+### 테스트
+
+- **harness** — film-worldmaps keeps the refine findings the user sees (`4ee0529`)
+
 ## 0.153.0 — 2026-10-06
 
 ### 기능
