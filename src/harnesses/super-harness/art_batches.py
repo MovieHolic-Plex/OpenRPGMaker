@@ -40,7 +40,7 @@ def collect(data, cid, result):
             'layoutInput': art_choices.read(folder / 'art-layout-input.json'),
             'layoutReview': art_choices.read(folder / 'art-layout-review.json'),
         })
-    candidates, coverage = {}, {}
+    candidates, coverage, declared = {}, {}, []
     for path in sorted(archive.glob('*.json')):
         previous = art_choices.read(path)['result']
         if any((previous.get('theme') or {}).get(k) != result['theme'].get(k)
@@ -65,9 +65,43 @@ def collect(data, cid, result):
                 isinstance(r, dict) and (r.get('path'), r.get('sha256')) in usable for r in refs
             ):
                 coverage[rid] = refs
+                declared.append((rid, refs, usable))
+    for rid, refs in scene_links(folder, result, declared).items():
+        known = {r['sha256'] for r in coverage.get(rid, [])}
+        coverage[rid] = coverage.get(rid, []) + [r for r in refs if r['sha256'] not in known]
     merged = dict(result, candidates=list(candidates.values()), themeCoverage=coverage)
     write(folder / 'art-result.json', merged)
     return merged
+
+
+def scene_links(folder, result, declared):
+    """The current preparation's coverage links, if receipt-backed and scene-bound.
+
+    Collectors declare coverage only for their own execution and the newest batch
+    wins, so links to parts the scene still uses (e.g. a preserved north shelf)
+    were dropped, and the preparation that re-declared them was overwritten by the
+    collection result. Older batches are not unioned: the layout also binds
+    superseded versions for comparison.
+    """
+    try:
+        layout = art_choices.read(folder / 'art-layout-input.json')['layout']
+        execution = art_choices.read(folder / 'art-execution.json')
+        prep = art_choices.read(folder / 'art-prepare-result.json')
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+    if any((prep.get('theme') or {}).get(k) != (result.get('theme') or {}).get(k) for k in ('policyHash', 'briefSha256')):
+        return {}
+    if (prep.get('execution') or {}).get('layout') != execution.get('layout'):
+        return {}
+    bound = {(r['path'], r['sha256']) for r in layout.get('sources', [])}
+    usable = set().union(*(u for _, _, u in declared)) if declared else set()
+    links = {}
+    for rid, refs in (prep.get('themeCoverage') or {}).items():
+        for r in refs if isinstance(refs, list) else []:
+            key = (r.get('path'), r.get('sha256')) if isinstance(r, dict) else None
+            if key in bound and key in usable:
+                links.setdefault(rid, []).append({'path': key[0], 'sha256': key[1]})
+    return links
 
 
 def queue_missing(data, cid, result, components):

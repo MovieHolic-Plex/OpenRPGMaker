@@ -38,6 +38,16 @@ def verified(root, r):
     return path
 
 
+def row_item(receipt, row):
+    """Native runs rows carry no item column; collectors copy it from rounds."""
+    if row.get('item'):
+        return row['item']
+    items = {r.get('item') for r in receipt.get('rounds', []) if r.get('id') == row.get('round')}
+    if len(items) != 1 or not next(iter(items)):
+        raise ValueError(f"영수증 runs 행의 품목을 rounds에서 찾을 수 없습니다: h{row.get('round')}-{row.get('letter')}")
+    return items.pop()
+
+
 def fingerprint(candidate):
     return hashlib.sha256(json.dumps(candidate, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
@@ -131,7 +141,7 @@ def prepare(data, cid):
             # Receipt paths own generic spaces. Prison round numbers are not a schema.
             by_item = {}
             for row in receipt['runs']:
-                item = row['item']; slug = re.sub(r'[^A-Za-z0-9]+', '_', item).strip('_')
+                item = row_item(receipt, row); slug = re.sub(r'[^A-Za-z0-9]+', '_', item).strip('_')
                 suffix = f"/{slug}/h{row['round']}-{row['letter']}.png"
                 matches = [r for r in receipt.get('candidateImages', []) if r['path'].endswith(suffix)]
                 if len(matches) != 1: raise ValueError('현재 품목의 후보 이미지 경로가 모호하거나 없습니다: ' + item)
