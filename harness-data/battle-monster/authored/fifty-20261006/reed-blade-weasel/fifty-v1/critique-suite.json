@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four supplied PNGs, including the native 1x cells and nearest-neighbor 3x previews. The curved long tail, ochre fur, cream chin/chest, small dark nose and green leaf read clearly. The standing torso and pointed ears lean somewhat canine; the stretched dash poses convey the long weasel body more strongly. Near/far leg separation is modest but the four limb paths, shoulder, holding forepaw and leaf remain visually connected. Broad dorsal highlights and underside shadows give readable volume consistent with upper-left light; fur and leaf have distinct color clusters. No conspicuous accidental transparent holes or broken body contours are visible across the three backgrounds. Planted paws align consistently through the standing and dash poses; lifted far limbs read as intentional. Idle changes are restrained, windup collects the leaf across the body, attack extends it through the holding paw, recover lowers it, hit recoils, and dead flattens the body. Skill preparation lights the actual raised leaf; contact retains the paw-to-leaf connection and emits two curved mint wind blades; recovery retains the leaf and disperses the effect. Poison uses a lowered, squinting head and moving bubbles; stun slumps further with stars and a drooping leaf; sleep folds the limbs, closes the eye and changes the back/chest between frames. These are distinct authored-looking states rather than color tints. Sleep breathing is subtle at 1x. This is a visual recommendation for user consideration, not a selection. Static pose previews cannot establish playback timing, battle placement/contact, palette-index authorship or model provenance; no geometry PASS was used as visual approval.",
+  "issues": [],
+  "binding": "79ad5e2c3430d42a81ecc04fdc470dc836407f1d598f12e225fa04293caa545e",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "201fcc9b5352ef179ab2be9e1e801292956c2ea72d197f9f4c25ecb24efe27b9",
+    "preview/suite/light.png": "1833ee59640a865a28476e823c7e6d77d7f3008b01ee049c948727207d43e087",
+    "preview/suite/dark.png": "832d4e038436aa33d2609d34a8a47fb0d170ab5675ced26b60b2a3192ac8897b",
+    "preview/suite/checker.png": "cc52f33c4fb9a1306cd3a8d8a963cf79b30f8f033e70801b0c1126da5d14df03"
+  },
+  "jobId": "800a8d6a-7ad4-4fc0-9d92-fbbc401c5b9e",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T07:15:04.315172+00:00",
+  "userApproved": false
+}

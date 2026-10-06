@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-06T07:02:50.004110+00:00",
+  "key": "lotus-marsh-wraith/fifty-v1",
+  "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+  "nativeCell": 96,
+  "nativePoses": 18,
+  "displayScales": [
+    1,
+    2
+  ],
+  "boardSize": [
+    1248,
+    984
+  ],
+  "noSourceWrites": true,
+  "approvalClaim": false,
+  "pngSha256": "f155d1ed6d5ea97b1c41929d51b08b6068e6587157c685eb52cc6e71ceb5edfe",
+  "frames": [
+    {
+      "pose": "idle_a",
+      "nativePngSha256": "3c1d13b594410d7fa4db5b2c9e0953a6b0eac7506a5175855d6bdf15a2e77be7",
+      "sourceSha256": "303cec1e4219235f1259f31099a3a308ea6b344799438aeba77faa82a43c9b38",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_b",
+      "nativePngSha256": "b97b850a2192d842018f0ecb1d5948a70c5bec4453307ef169d4fca53514da05",
+      "sourceSha256": "c1ba64e5b0a875fbd5c3482a7aef18cb610b89887c4a9fec652b43056e8f76c9",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_c",
+      "nativePngSha256": "d36e1955f73f0db12c39f123ba5d82c4ce7d15bfa83a09d4a7ec3fab8b26febf",
+      "sourceSha256": "990281fb38d2608d19b2cb2b68e180fccd21e0c4e0f0e7c28cac774f6fd4ed8d",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "windup",
+      "nativePngSha256": "83c0ae67a6114f016b02535f10bc4a14f021f3931592ccdf60fb1cb17aa54b39",
+      "sourceSha256": "824c6c344e44cabdaeee42bc93fcd96ce81573beed00dbeeeee469001eedcba9",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "move",
+      "nativePngSha256": "08cfcfa386e26aea775dca3cfcec4dacf041748c0b8956c5a800a5078cd860c6",
+      "sourceSha256": "aff7fc85ffd22862a4077091015d23ce2f602ad3981ed42be742f1fbae673f9a",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "attack",
+      "nativePngSha256": "ac7c7945432f4f7d303a8622f6b037b4241e7356d2fb75d63004443b9a63d91e",
+      "sourceSha256": "a918dfe20c4bf117a3cc65c6af997162cb228af021f2617baf8260adff76e314",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "recover",
+      "nativePngSha256": "de4f7c27cc00cea594520ae228ba195f1aa82cbdbc7f66f542b15664ee0784a7",
+      "sourceSha256": "fbf8412fc5eae525be0b9089793f6d4f49731763b491300127a5d2a21d553a2b",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "hit",
+      "nativePngSha256": "41ad244edc724e26f4e8605073375a140560b669e828a5cc255993fa796b983f",
+      "sourceSha256": "ca2bb70e73242536532f0e58727b7dde2f2385142d82a7830d4b62961d95bbd5",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "dead",
+      "nativePngSha256": "18cba0ea1263cfc22c11b7ac193d348f244d3dc361dd336bd89424bc2e714506",
+      "sourceSha256": "eb0d6938e4be364fd7fb68d0d7ef42b1d3f691306faa65a79a59689eb55d7b85",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_a",
+      "nativePngSha256": "78f7e13b231f0505ee046087518c2120054c39aa527f989593c8ced3d46cad2f",
+      "sourceSha256": "245c56a9fcc9f266439b5b28763b5581c8ee3b3acebfcc7ccae018ae685768ab",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_b",
+      "nativePngSha256": "7826d7be03d7a78ab6fdbaa74387bba32d94c65a9da5a86114c29ceec97bdc14",
+      "sourceSha256": "c4d62f92b4fe729d513f7efb6ef3344b50bff5b217ae653a5721c3b44d35a581",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_c",
+      "nativePngSha256": "74c0fc79e4c3f6ef5d5dcf716860665cb2e8a221735f6cffe7200ef44f3d65ad",
+      "sourceSha256": "d8de9a92a0ac31b27df757b8b117424089b81c5b5fd4369849226ea3c2f4f44a",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_a",
+      "nativePngSha256": "8e51ca1962585d7b75ef6d293c2a5334c689ef5b456aa3eeea0b9b2065160e3c",
+      "sourceSha256": "65a04ce0881f97d6f1a0489ca5f1aa04e631dd8d532a4041086416aa126bca1f",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_b",
+      "nativePngSha256": "32dbc0b590d376343211a65797139ebda92f48e1de89ee936b3eb227b4d5c742",
+      "sourceSha256": "93c73e714780629de745a85b9d6b219ce6b3e2c9f12bb86cfaac9f2d518b96e9",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_a",
+      "nativePngSha256": "69ae5653d34354a6e7ff24855b700a7d9bc8993b0acb58ba3f5e2e0abbea0c9b",
+      "sourceSha256": "5b51519a616493c8f121def7482561aebc44b8279ffa231684d7960e7d34809f",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_b",
+      "nativePngSha256": "7d73d51c1d2387ab3ec0eb92d2af5021e02650b01a57d2c6877c41ab232ab02c",
+      "sourceSha256": "1e4b5c2bab730cd4023d34f3a08ed1c546fa79635d7c6658bb273943bc6b9387",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_a",
+      "nativePngSha256": "6c72bb71919bcddda07b9e59a4e18d00f1b18680c0ea0aef00fb85dbbb09d8da",
+      "sourceSha256": "d4139f257897fd8b4f17e6bd1a24035175073f44456ade76040612b4367cd312",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_b",
+      "nativePngSha256": "cc877a5d10b25268c1c08c460c1cb0e925598f08bb2fe031500616b5dc55a273",
+      "sourceSha256": "d438e06c5e48322c46d7a8030d5c0b8e32f5b12cc6540112110ff43497f09f5a",
+      "rgbaMatchesNativeSource": true
+    }
+  ]
+}

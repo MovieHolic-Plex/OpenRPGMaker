@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-06T07:02:50.206553+00:00",
+  "key": "sun-gold-phoenix/fifty-v1",
+  "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+  "nativeCell": 128,
+  "nativePoses": 18,
+  "displayScales": [
+    1,
+    2
+  ],
+  "boardSize": [
+    1632,
+    1272
+  ],
+  "noSourceWrites": true,
+  "approvalClaim": false,
+  "pngSha256": "0a59b6c64fbcd0a24ca4384702fb01fe84057afe66aa5482cf2abc12490f59a7",
+  "frames": [
+    {
+      "pose": "idle_a",
+      "nativePngSha256": "8f863a7bc3d6a20f741d8448d20d158d91e76a182500e6bd242da34f74f3d877",
+      "sourceSha256": "5b724acbb0c69413a4ad8779b8248e11228e24d3b74a6bfddf2101e90aa7a671",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_b",
+      "nativePngSha256": "92ca346e665f429710b46c5f33f3898a1299d36da03d57dec9889c89da39911e",
+      "sourceSha256": "e295ad709ce4e4b440a1d9ec9db3bcd60988ba3cc843bf36196aaf941dd695a7",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "idle_c",
+      "nativePngSha256": "87812f139730d0edf1c28bc172d92be83399aa2fd41062fabe813740d5509b81",
+      "sourceSha256": "f08122887d7fa4ab9da3c75f484e26d9b0d2adf58a1e42e57cad037d5d605252",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "windup",
+      "nativePngSha256": "230ab99a3330515c8c800abbcc8aee44e13267f906548e3716d0aa20a7cc624e",
+      "sourceSha256": "48da649a5d092e4026060185ce8864395f72bd6d42fccc10ce8784d80b06a95f",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "move",
+      "nativePngSha256": "101775fb67cba4d97c9569731c20f8ab6934ddc4917d3af6e91f6c0f60b87632",
+      "sourceSha256": "4c9a8f651180fc7bcde1288cd6cf1a5d8156045ea5719c2a92d8078333f401e8",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "attack",
+      "nativePngSha256": "427d732d827a9f1078289129d6b704c7111c09c7820aa38fc7a8fdd5b7b6dea8",
+      "sourceSha256": "d416c9690ce2c15a25257e7eac7155f0ceca1f9aa8d5b81f74046785132abe77",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "recover",
+      "nativePngSha256": "22c59b5da65be04c49d5b5c6515c15817c67bf1228637975fc9f98b2beefc6c3",
+      "sourceSha256": "a968b14adba65e80e010265a03dfb0315a520a8465bae042df25dfc0f0d256da",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "hit",
+      "nativePngSha256": "a1828008860592b19423b450448d7f4ff09ebd04a76a0dc3ed4dcf10f7861daf",
+      "sourceSha256": "3ad20e3648f9473beb465f75d2bd790e4d5d1f84d5db0dd89ae1f72850978135",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "dead",
+      "nativePngSha256": "8bdedab6ac9656236423c9de843a6e0e7855d644cf0b0e9bba2bd203bb53470b",
+      "sourceSha256": "2a74fd37a8fceb024095d8d12914028032c21dab082e5795ddfaa9ee8d1250c6",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_a",
+      "nativePngSha256": "760a9b6be08f052b13c8af648c8352ca0a1092f00cf184fc0744dd2d52f28f55",
+      "sourceSha256": "15611d8518a6cc0a9230c97965f5d81ffecf32f46d7235696d15d71a728dd81d",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_b",
+      "nativePngSha256": "c0fd0df86c387133147f44f18afe6fed29e6124ea074c1e5129341e986943383",
+      "sourceSha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "skill_c",
+      "nativePngSha256": "938353360534f6f0a74f8eb02f6633ef433e2dfce04fda951bdeaa37003ca57c",
+      "sourceSha256": "b3540768d62b3693fc979eed5a1ec34920b555cce7495ea7b0906870564ebfe5",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_a",
+      "nativePngSha256": "d97c6cac670c971aa2206ac838d6033a7ac0716b45d60273e12a14f289520f1b",
+      "sourceSha256": "ce6ea3c9142922704d85e46ef3a307b6e1940998af686f5d08df3c8b722e5113",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "poison_b",
+      "nativePngSha256": "da25e2e455078908b7c385df84ee42aba573ec1925c00cf1ce152e17412505e0",
+      "sourceSha256": "184351a6b8b8a98c4f2ed4592293ce2e5c9b762d8d05826010aeed943d760eff",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_a",
+      "nativePngSha256": "fe1052b2099ecc1c6bba37322e25bce398949b74db49436ae2b841c76ca7baf7",
+      "sourceSha256": "7071ab317450480633119baaecc9fc61b79072191e2473c2a69ecfef19b934d2",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "stun_b",
+      "nativePngSha256": "e40cf13b2a92ae07f18ac4db778427049ce78936d300af17bddd66f9aac262a5",
+      "sourceSha256": "e1280e7b58b2df7ba4a214d18aecb414791c2e9dcb6ced1fe66a3940ddded67d",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_a",
+      "nativePngSha256": "0c29c9b17108e1dc8ad8c42593da91b163f10c11b1eead573e05e670fc7bba93",
+      "sourceSha256": "005133a1cc92d05a60946eaf13212076c132bed2f124b5ab0b61acfd4c74c623",
+      "rgbaMatchesNativeSource": true
+    },
+    {
+      "pose": "sleep_b",
+      "nativePngSha256": "972d6568147971931712cc312d3dc2327b60c177cf78a48c529969bf3cdd18c8",
+      "sourceSha256": "0bce21ac416cc66660026e8c725a229d6da363e14d1496a3854d5f081db63fc1",
+      "rgbaMatchesNativeSource": true
+    }
+  ]
+}

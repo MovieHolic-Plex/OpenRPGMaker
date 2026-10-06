@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 13,
+  "archivedPassedSpecies": 16,
   "entireGoalComplete": false,
   "items": [
     {
@@ -103,6 +103,17 @@
       "selectedPackSha256": "4d6ead62173bc1fc147f490279e8e766df6b1744ea50c7ee5b8aef6d2037874d"
     },
     {
+      "key": "reed-blade-weasel/fifty-v1",
+      "binding": "79ad5e2c3430d42a81ecc04fdc470dc836407f1d598f12e225fa04293caa545e",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "d9c3606370fd1e3ba3bbb68cad96669c06bbd9d54f26df113f471e0fd65c5b10"
+    },
+    {
       "key": "lantern-goblin/fifty-v1",
       "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
       "nativeCell": 96,
@@ -123,6 +134,28 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "5bf5c538b858e79ba4e44d764b664858cf5d13f9eac7ab4bd5e89bb8f87730ae"
+    },
+    {
+      "key": "silk-loom-specter/fifty-v1",
+      "binding": "92b8027ba1873852ad38c3ce7631669919bf6ceba52bcb0f623d805fee0d1944",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "ac44918130e2c5bf3350efab90f2e8886f9b4525772794930f0fa5db738cc827"
+    },
+    {
+      "key": "lotus-marsh-wraith/fifty-v1",
+      "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "9f28271fc028b8b33126e6cbe3b5d1c53574290555a3232bf97940fa511f54c2"
     },
     {
       "key": "red-tassel-swordswoman/fifty-v1",

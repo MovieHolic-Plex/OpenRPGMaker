@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-06T07:09:17.814564+00:00",
+  "passed": true,
+  "key": "lotus-marsh-wraith/fifty-v1",
+  "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+  "actualIndependentReviewJob": "70a75ce1-1a43-484a-b1ae-0187eb2e732e",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "3c1d13b594410d7fa4db5b2c9e0953a6b0eac7506a5175855d6bdf15a2e77be7",
+    "preview/suite/light.png": "8f1e8f47edd8b4b1f5dd10738d82d46f7cf2cc42ed506ec04fa192b726ccc689",
+    "preview/suite/dark.png": "1ed567f88e1aced1afecb9ad6c066a0a0e5dfd5b2c9851ef042ba8e20d126af4",
+    "preview/suite/checker.png": "e9c07361c9c6c16e39b5120fd2504235ed970e7d99489b1000fa67c8dc7a1c4b"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-lotus-marsh-wraith.png",
+  "nativeContactPngSha256": "f155d1ed6d5ea97b1c41929d51b08b6068e6587157c685eb52cc6e71ceb5edfe",
+  "rootVisualAndSourceMethodObservations": "Root opened actual current harness18pose light sheet; tool reduced936x2568. Then generated and opened exact native1x/nearest2x contact1248x984 (no resizing). All18 decoded native PNG RGBA exactly match canonical ASCII/palette. Quiet adult green ghostface, long blue-black hair/white robe/lotuswaist, connected broad sleeve/waterhand, shoulderwindup/extended openhand strike/long forwardstride/recoil, low sidefallen vs seated closedeye resting. Palm-origin lotus gather/two curved waterstreams/3dropletresiduals; sick face/raised sleeve and slumped two-stunposes retain body. Read author.write/revise/pixels full writer bodies, only explicit y/x row strings and fixedcoordinates; no native geometry/morph/transforms. Real current keeper0issues and source/previewhashes match.",
+  "claimScope": "Current native art/source method and actual18pose images. Separate current audit proves GIF/selectedZIP/archive/browser. No gameplaycollision inferred; full50 incomplete."
+}

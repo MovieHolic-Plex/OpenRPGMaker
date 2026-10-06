@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-06T03:35:29.520529+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "94a8626c-0de0-4612-988f-cb219c8e2211",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T06:33:16.937549+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "149c59dfec0f934f452c68f28ede21a629fe256be4e5527e5d939075665a0fd7",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T06:51:58.198028+00:00"
+    },
+    {
+      "id": "70a75ce1-1a43-484a-b1ae-0187eb2e732e",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T06:52:03.369308+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/jobs/70a75ce1-1a43-484a-b1ae-0187eb2e732e",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/lotus-marsh-wraith/fifty-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "509d3669779472eafd91031a5806373890246b7ae7476a24c363c05648273086",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "3c1d13b594410d7fa4db5b2c9e0953a6b0eac7506a5175855d6bdf15a2e77be7",
+        "preview/suite/light.png": "8f1e8f47edd8b4b1f5dd10738d82d46f7cf2cc42ed506ec04fa192b726ccc689",
+        "preview/suite/dark.png": "1ed567f88e1aced1afecb9ad6c066a0a0e5dfd5b2c9851ef042ba8e20d126af4",
+        "preview/suite/checker.png": "e9c07361c9c6c16e39b5120fd2504235ed970e7d99489b1000fa67c8dc7a1c4b"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T06:54:17.890856+00:00"
+    }
+  ]
+}

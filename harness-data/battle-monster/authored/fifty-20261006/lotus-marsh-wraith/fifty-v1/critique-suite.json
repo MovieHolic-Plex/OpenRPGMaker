@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "실제 portrait/light/dark/checker PNG의 native 1배와 nearest 3배를 검수했다. 작은 성인 얼굴, 젖은 긴 검은 머리, 회백색 넓은 소매, 분홍 연꽃 허리 장식과 몸 아래 두 청록 물갈래가 읽힌다. 오른쪽을 보는 얼굴과 몸 방향이 일관되며 목·어깨·소매·물손·하단 물갈래의 연결이 보인다. 머리와 옷은 넓은 색면과 왼쪽 위 하이라이트로 부피가 잡히고, 물손과 물줄기의 밝은 청록 띠는 옷과 재질을 구분한다. 밝은/어두운/체커 배경에서 눈에 띄는 윤곽 결손이나 몸 내부의 우발적인 투명 구멍은 보이지 않는다. 부유형 계약에 맞는 두 물갈래이며 접지 발을 요구할 대상은 아니다. windup의 뒤로 모은 손, move의 늘어난 하단 물갈래, attack의 연결된 긴 팔과 펼친 손바닥, recover의 접힌 팔이 서로 구분된다. hit는 몸을 세우고 손을 가슴 쪽으로 모으며 dead는 낮게 쓰러져 sleep과 구분된다. skill_a의 손끝 연꽃과 청빛 핵, skill_b의 실제 손에서 이어지는 굽은 두 큰 물줄기, skill_c의 접힌 팔과 세 물방울이 같은 기술의 준비/접촉/회수로 읽힌다. 독은 얼굴에 올린 손과 주변 방울, 기절은 처진 팔과 머리 주변 별, 수면은 접힌 하체와 닫힌 눈으로 구분되며 단순 색 틴트가 아니다. idle 세 장과 독/기절/수면 쌍의 변화는 작고, 쌍 안에서는 입자 위치와 옷 주름 변화가 중심이다. 시각적으로 필수 픽셀 수정을 요구할 결함은 찾지 못했다. 이 추천은 사용자 선택을 대신하지 않는다. 정지 자세 미리보기만 검수했으므로 실제 전투의 타이밍·보간·프레임 전환 느낌, 원본의 literal pxgrid 저작 방식과 런타임 접촉 판정은 확인하지 못했다.",
+  "issues": [],
+  "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "3c1d13b594410d7fa4db5b2c9e0953a6b0eac7506a5175855d6bdf15a2e77be7",
+    "preview/suite/light.png": "8f1e8f47edd8b4b1f5dd10738d82d46f7cf2cc42ed506ec04fa192b726ccc689",
+    "preview/suite/dark.png": "1ed567f88e1aced1afecb9ad6c066a0a0e5dfd5b2c9851ef042ba8e20d126af4",
+    "preview/suite/checker.png": "e9c07361c9c6c16e39b5120fd2504235ed970e7d99489b1000fa67c8dc7a1c4b"
+  },
+  "jobId": "70a75ce1-1a43-484a-b1ae-0187eb2e732e",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T06:54:18.306665+00:00",
+  "userApproved": false
+}

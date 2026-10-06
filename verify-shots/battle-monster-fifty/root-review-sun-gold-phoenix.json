@@ -11,5 +11,22 @@
   "reviewRecommendation": "keep",
   "reviewJob": "d86e8b1a-5960-4442-b8fe-aa031420972e",
   "actualReviewIssues": 0,
-  "realVisualRepairCount": 2
+  "realVisualRepairCount": 2,
+  "additionalUnresizedNativeReview": {
+    "at": "2026-10-06T07:09:17.815667+00:00",
+    "path": "verify-shots/battle-monster-fifty/native-contact-sun-gold-phoenix.png",
+    "pngSha256": "0a59b6c64fbcd0a24ca4384702fb01fe84057afe66aa5482cf2abc12490f59a7",
+    "nativePoses": 18,
+    "scales": [
+      1,
+      2
+    ],
+    "boardSize": [
+      1632,
+      1272
+    ],
+    "all18SourceRgbaCompared": true,
+    "actualRootOpenedWithoutToolResize": true,
+    "observations": "Actual128px birdbody/legs/claws and foldedfeather planes remain coherent across18poses. Bright beak-origin splitfire keeps mouth connection, standing feet ground consistently; lower prone dead vs folded closedeye sleep separate. All18 source/nativePNG matrices exactlymatch."
+  }
 }

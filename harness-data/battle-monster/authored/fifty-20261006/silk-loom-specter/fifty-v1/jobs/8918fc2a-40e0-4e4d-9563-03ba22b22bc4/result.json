@@ -1,0 +1,12 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four actual PNGs, including the native 1x and nearest 3x panels on light, dark and checker backgrounds. The adult silhouette, small right-facing 3/4 face, black hair/gold hairpin, broad purple sleeves and teal skirt remain coherent. Broad upper-left highlights and right-side shadows give the cloth volume; hands, neck and shuttle visibly connect, with no obvious accidental interior transparency or broken body outline. Standing feet share the ground line; stepping, recoil and horizontal collapse are distinguishable. Idle changes are subtle but consistent. Skill preparation gathers red thread between the hands, contact ribbons originate at the held shuttle, and recovery retains a hand-connected loop alongside intentionally detached fragments. Poison has a hunched posture and mouth-side breath/bubbles; stun lowers the body with overhead stars; sleep sits on the ground with closed eyes. These are distinct authored-looking states rather than palette tints or unrelated attacks. Rework is recommended specifically because the attack thread is a chain of separated dark pixels, weakening the continuous shuttle-to-thread swing at 1x. This is advisory, not a user selection. Still pose previews cannot establish animation timing, hop motion, battle-scale readability, runtime contact, or literal pxgrid authorship; no actual battle footage or source-authoring verification was available.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 80,
+      "y": 48,
+      "message": "Reconnect the red thread below the shuttle into a continuous native stepped cluster. The dark-red pixels at (82,47), (79,48), (78,49), (76,50), (74,51), (73,52), (71,53), (69,54) and (66,55) have transparent gaps between several steps. Bridge those gaps along the existing diagonal back toward the lower hand/spool, and use the existing brighter red sparingly so the strand reads at 1x on the dark background. Preserve the connected wrist/shuttle and the current attack silhouette; the detached fragments in skill_c serve a different, intentional recovery state."
+    }
+  ]
+}

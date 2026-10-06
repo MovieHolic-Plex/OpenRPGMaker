@@ -1,0 +1,164 @@
+{
+  "idle_a": {
+    "ink_bbox": [
+      4,
+      15,
+      63,
+      61
+    ],
+    "ink_pixels": 975
+  },
+  "idle_b": {
+    "ink_bbox": [
+      5,
+      15,
+      63,
+      61
+    ],
+    "ink_pixels": 984
+  },
+  "idle_c": {
+    "ink_bbox": [
+      4,
+      16,
+      63,
+      61
+    ],
+    "ink_pixels": 985
+  },
+  "windup": {
+    "ink_bbox": [
+      3,
+      18,
+      50,
+      61
+    ],
+    "ink_pixels": 848
+  },
+  "move": {
+    "ink_bbox": [
+      2,
+      23,
+      56,
+      61
+    ],
+    "ink_pixels": 821
+  },
+  "attack": {
+    "ink_bbox": [
+      2,
+      25,
+      63,
+      61
+    ],
+    "ink_pixels": 836
+  },
+  "recover": {
+    "ink_bbox": [
+      4,
+      20,
+      62,
+      61
+    ],
+    "ink_pixels": 878
+  },
+  "hit": {
+    "ink_bbox": [
+      2,
+      15,
+      63,
+      61
+    ],
+    "ink_pixels": 904
+  },
+  "dead": {
+    "ink_bbox": [
+      5,
+      39,
+      60,
+      61
+    ],
+    "ink_pixels": 569
+  },
+  "skill_a": {
+    "ink_bbox": [
+      6,
+      16,
+      62,
+      61
+    ],
+    "ink_pixels": 936
+  },
+  "skill_b": {
+    "ink_bbox": [
+      2,
+      10,
+      63,
+      61
+    ],
+    "ink_pixels": 938
+  },
+  "skill_c": {
+    "ink_bbox": [
+      5,
+      12,
+      63,
+      61
+    ],
+    "ink_pixels": 907
+  },
+  "poison_a": {
+    "ink_bbox": [
+      4,
+      19,
+      63,
+      61
+    ],
+    "ink_pixels": 861
+  },
+  "poison_b": {
+    "ink_bbox": [
+      5,
+      17,
+      63,
+      61
+    ],
+    "ink_pixels": 853
+  },
+  "stun_a": {
+    "ink_bbox": [
+      4,
+      17,
+      56,
+      61
+    ],
+    "ink_pixels": 753
+  },
+  "stun_b": {
+    "ink_bbox": [
+      5,
+      19,
+      54,
+      61
+    ],
+    "ink_pixels": 728
+  },
+  "sleep_a": {
+    "ink_bbox": [
+      8,
+      31,
+      62,
+      61
+    ],
+    "ink_pixels": 725
+  },
+  "sleep_b": {
+    "ink_bbox": [
+      8,
+      31,
+      62,
+      61
+    ],
+    "ink_pixels": 742
+  }
+}

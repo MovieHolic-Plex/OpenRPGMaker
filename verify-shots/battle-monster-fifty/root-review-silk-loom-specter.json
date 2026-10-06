@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-06T07:14:13.192278+00:00",
+  "passed": true,
+  "key": "silk-loom-specter/fifty-v1",
+  "binding": "92b8027ba1873852ad38c3ce7631669919bf6ceba52bcb0f623d805fee0d1944",
+  "actualIndependentReviewJob": "67d937d2-a196-4dac-a1eb-dc9a8b9f35f8",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "7237db3f4ed98ff6aff797d07badac2e5b0ea44fcebaaa23dbe2bfef9e0395d5",
+    "preview/suite/light.png": "d226557e827fc7c58cef0ac9648438e45cbb2463aeda8da0e66fa406f21ca1d7",
+    "preview/suite/dark.png": "339becd23b8190834ccc15150efcd4f9503adf53a252fe331e159d0b21e23ef2",
+    "preview/suite/checker.png": "ca2cdc4260d2b418f87e7812502996aa9c20f7efe3d1cb6a6e547abd338fee09"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-silk-loom-specter.png",
+  "nativeContactPngSha256": "9321dbd0d734eeba5c8e64eec618a4b4352f261438fa8e76527453fab8be34c8",
+  "rootVisualAndSourceMethodObservations": "Root opened current native1x/nearest2x compact18pose contact1248x984 with no image-tool resizing. Quiet3/4 adultface with restrained eyes, goldhairpin/blueblackhair/plum broad sleeves/teal full skirt. Windup raised shuttle, forward spread stance/extended sleeve strike, recoil tucked arm, low horizontal fallen vs seated closedeyesleep. Skillspool betweenhands, three continuous red threads from shuttle, separate recoveryfragments. Prior actual attack-thread gaps repaired with explicit coordinate strings; current one repair/new keeper has0issues. Read author.block/frame/save full bodies and frames.py only block/Ink/frame/save calls, literalrows/fixedxy; render.py only native pixel decoding/preview/GIF packing, no authored shape interpolation. All18 native PNG RGBA equal canonical ASCII.",
+  "claimScope": "Current native art/source method and18actualPNG. Separate nativeGIF/selectedZIP/archive/browser audit; full50 remains incomplete."
+}

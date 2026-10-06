@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "d290a2f2cd1e7c8dcf4fe1b8db2cac55721be1d42569ee698a570dfd68616644",
+  "priorReviewJob": "8918fc2a-40e0-4e4d-9563-03ba22b22bc4",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 80,
+      "y": 48,
+      "message": "Reconnect the red thread below the shuttle into a continuous native stepped cluster. The dark-red pixels at (82,47), (79,48), (78,49), (76,50), (74,51), (73,52), (71,53), (69,54) and (66,55) have transparent gaps between several steps. Bridge those gaps along the existing diagonal back toward the lower hand/spool, and use the existing brighter red sparingly so the strand reads at 1x on the dark background. Preserve the connected wrist/shuttle and the current attack silhouette; the detached fragments in skill_c serve a different, intentional recovery state."
+    }
+  ],
+  "startedAt": "2026-10-06T06:54:44.578592+00:00"
+}

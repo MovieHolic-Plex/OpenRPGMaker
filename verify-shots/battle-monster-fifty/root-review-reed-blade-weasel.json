@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-06T07:17:24.220379+00:00",
+  "passed": true,
+  "key": "reed-blade-weasel/fifty-v1",
+  "binding": "79ad5e2c3430d42a81ecc04fdc470dc836407f1d598f12e225fa04293caa545e",
+  "actualIndependentReviewJob": "800a8d6a-7ad4-4fc0-9d92-fbbc401c5b9e",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "201fcc9b5352ef179ab2be9e1e801292956c2ea72d197f9f4c25ecb24efe27b9",
+    "preview/suite/light.png": "1833ee59640a865a28476e823c7e6d77d7f3008b01ee049c948727207d43e087",
+    "preview/suite/dark.png": "832d4e038436aa33d2609d34a8a47fb0d170ab5675ced26b60b2a3192ac8897b",
+    "preview/suite/checker.png": "cc52f33c4fb9a1306cd3a8d8a963cf79b30f8f033e70801b0c1126da5d14df03"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-reed-blade-weasel.png",
+  "nativeContactPngSha256": "6102fdc2ceadfbdfd57ce09493e7e81251b1363cdb5d3bf2957f48ac5eb7db14",
+  "rootVisualAndSourceMethodObservations": "Root opened current18pose actual native1x/nearest2x contact864x696 without resize. Long low ochre weasel torso, shortconnectedlegs/small roundedears/long hookedtail, leafholding forepaw visible apart fromsupport. Windup leaf drawn back behindhead, longforwardstride and pointedleaf slash distinct fromdownwardleafmove. Lowflatdead vs crouched closedeyesleep with curledtail. Two separate curvedwindblades start fromactualgreenleaf tip and endclearofsupportfoot. Read author_native.write_grids plus repair_native.apply_rows/main and repair_leaf_native.main full bodies: literal perpose y/x/run rows, explicitchangedrows and fixedxyspans, no geometry/tween/pose transform. Actualtwo prior rework sets and new keeper0issues preserved. All18 native PNG RGBA exactly match canonicalASCII.",
+  "claimScope": "Current native art/source method and actual18PNG. NativeGIF/selectedZIP/archive/browser separately audited. Full50 incomplete."
+}

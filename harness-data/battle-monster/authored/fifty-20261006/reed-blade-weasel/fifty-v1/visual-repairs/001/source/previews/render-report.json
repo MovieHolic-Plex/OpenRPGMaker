@@ -1,0 +1,164 @@
+{
+  "idle_a": {
+    "ink_bbox": [
+      4,
+      15,
+      59,
+      61
+    ],
+    "ink_pixels": 998
+  },
+  "idle_b": {
+    "ink_bbox": [
+      5,
+      15,
+      59,
+      61
+    ],
+    "ink_pixels": 1010
+  },
+  "idle_c": {
+    "ink_bbox": [
+      4,
+      16,
+      61,
+      61
+    ],
+    "ink_pixels": 1015
+  },
+  "windup": {
+    "ink_bbox": [
+      3,
+      18,
+      54,
+      61
+    ],
+    "ink_pixels": 913
+  },
+  "move": {
+    "ink_bbox": [
+      2,
+      23,
+      58,
+      61
+    ],
+    "ink_pixels": 879
+  },
+  "attack": {
+    "ink_bbox": [
+      2,
+      25,
+      63,
+      61
+    ],
+    "ink_pixels": 887
+  },
+  "recover": {
+    "ink_bbox": [
+      4,
+      20,
+      59,
+      61
+    ],
+    "ink_pixels": 946
+  },
+  "hit": {
+    "ink_bbox": [
+      2,
+      15,
+      60,
+      61
+    ],
+    "ink_pixels": 951
+  },
+  "dead": {
+    "ink_bbox": [
+      5,
+      39,
+      60,
+      61
+    ],
+    "ink_pixels": 580
+  },
+  "skill_a": {
+    "ink_bbox": [
+      6,
+      16,
+      62,
+      61
+    ],
+    "ink_pixels": 1005
+  },
+  "skill_b": {
+    "ink_bbox": [
+      2,
+      5,
+      63,
+      61
+    ],
+    "ink_pixels": 1103
+  },
+  "skill_c": {
+    "ink_bbox": [
+      5,
+      12,
+      61,
+      61
+    ],
+    "ink_pixels": 963
+  },
+  "poison_a": {
+    "ink_bbox": [
+      4,
+      19,
+      63,
+      61
+    ],
+    "ink_pixels": 930
+  },
+  "poison_b": {
+    "ink_bbox": [
+      5,
+      17,
+      63,
+      61
+    ],
+    "ink_pixels": 924
+  },
+  "stun_a": {
+    "ink_bbox": [
+      4,
+      17,
+      56,
+      61
+    ],
+    "ink_pixels": 824
+  },
+  "stun_b": {
+    "ink_bbox": [
+      5,
+      19,
+      54,
+      61
+    ],
+    "ink_pixels": 792
+  },
+  "sleep_a": {
+    "ink_bbox": [
+      8,
+      31,
+      62,
+      61
+    ],
+    "ink_pixels": 736
+  },
+  "sleep_b": {
+    "ink_bbox": [
+      8,
+      31,
+      62,
+      61
+    ],
+    "ink_pixels": 754
+  }
+}

@@ -242,6 +242,14 @@ npm run harness -- battle-monster accept-batch \
 미게시/미선택/검수 불일치/팩 작업 중이면 그 종의 부족한 근거를 기록하고 전체 exit1이다.
 이 확인이 직접 저작/미감/실전 전투를 대신하지는 않는다. 실제 그림과 저작 코드는 감독이 별도로 본다.
 
+현재50종의 감독용 검사 보조 원본은 `verify-shots/battle-monster-fifty/controllers/`에 보존한다.
+`capture-fifty-native-contact.py <종 ID...>`는 게시된 실제18개 PNG와 ASCII/팔레트의 RGBA를
+대조한 뒤1배/최근접2배를6열3행으로 배치한다.96/128px도 긴 변2048px 안에 들어가
+이미지 도구의 긴 시트 축소를 피한다. 원본을 고치거나 통과 판정을 만들지 않는다.
+`verify-fifty-current-progress.py --out <JSON>`는 현재 감사·저장 출처 해시·실제 감독 기록·
+현재 선택 binding·8GIF/정지/재생/375/320px 브라우저 근거와 기존 판정/선택 보존을 다시 읽는다.
+부분 합격 수는 전체50 완료와 구별하며 원본 그림과 쓰기 함수의 실제 감독 열람은 여전히 필요하다.
+
 시드 `harness-data/battle-monster/seed.json`은 사람이 쓴다. 다른 분위기는 같은 형식의
 `--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96/128), grounded, motion,
 idleFrameMs, 실루엣, 공격 자세, 스킬 역할을 적는다. motion은 `pixelEnemySheets.ts`의 7종이다.

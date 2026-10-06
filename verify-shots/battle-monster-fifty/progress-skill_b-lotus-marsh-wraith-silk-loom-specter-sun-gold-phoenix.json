@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "silk-loom-specter",
+    "source": "qa-runs/harnesses/battle-monster/silk-loom-specter/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "8b527f0616d2232c243895e0ec1b525b8f870c0c66f567b1159e2392cc650cc1",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": "92b8027ba1873852ad38c3ce7631669919bf6ceba52bcb0f623d805fee0d1944",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "lotus-marsh-wraith",
+    "source": "qa-runs/harnesses/battle-monster/lotus-marsh-wraith/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "c4d62f92b4fe729d513f7efb6ef3344b50bff5b217ae653a5721c3b44d35a581",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/harnesses/battle-monster/sun-gold-phoenix/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T07:17:42.974905+00:00",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "entireGoalCompleteClaim": false
+  }
+]
