@@ -99,6 +99,13 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
   - 스테이징은 `~/.config/systemd/user/oprn-store-staging.service.d/r2.conf` → `~/.config/oprn-store-staging-r2.env`(600).
 - 토큰은 버킷 하나로만 묶는다. **IP 조건은 걸면 안 된다** — R2 는 서명 주소로 받는 방문자에게도 토큰의 IP 조건을 적용한다(걸었다가 방문자 전원 403).
 
+### 앞단은 Cloudflare (2026-10-06)
+
+- `openrpgmaker.com` 네임서버를 Namecheap → Cloudflare 로 옮겼다. `store` 레코드만 프록시(WAF·DDoS 완화·정적 캐시), 나머지는 DNS 만.
+- 오리진은 `cloudflare-real-ip.conf` 로 `$remote_addr` 를 사용자 IP 로 되돌린다. 빠뜨리면 `app.ts` 의 IP 속도 제한이 Cloudflare 엣지 단위로 묶인다.
+- 무료 플랜 한도: 요청 본문 100MB(앱은 blob 32MB), 첫 바이트 100초(nginx 120초). 둘 다 지금 앱 한도 안이다.
+- 파일 303 은 `cf-cache-status: DYNAMIC`(캐시 안 함), 실제 바이트는 R2 서명 주소에서 나간다. 운영 절차·zone id 는 `store-server/deploy/README.md`.
+
 ## 보안 검토 반영 (2026-10-06)
 
 적대적 검토에서 나온 항목과 막은 방법:
