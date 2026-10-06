@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.150.0",
+  "version": "0.151.0",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "type": "module",
