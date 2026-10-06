@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "golden-feather-garuda",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/source/poses/windup.pxgrid",
+    "sha256": "3b728359d36305795467a55cb44cdde7d8f19420f915f709671148704866b9e1",
+    "cell": 128,
+    "pose": "windup",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T17:04:42.488920+00:00",
+    "binding": "f25c609601e5275aaa0f655f425d4733714e5e04f86712224462df7154c34e45",
+    "entireGoalCompleteClaim": false
+  }
+]

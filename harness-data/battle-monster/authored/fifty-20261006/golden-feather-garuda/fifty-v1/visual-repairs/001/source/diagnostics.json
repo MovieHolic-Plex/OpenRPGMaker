@@ -1,0 +1,563 @@
+{
+  "paletteColors": 17,
+  "frames": [
+    {
+      "frame": "poison_a",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 17,
+      "bounds": [
+        5,
+        25,
+        120,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 5606,
+          "bounds": [
+            5,
+            25,
+            104,
+            124
+          ]
+        },
+        {
+          "pixels": 20,
+          "bounds": [
+            108,
+            46,
+            113,
+            49
+          ]
+        },
+        {
+          "pixels": 16,
+          "bounds": [
+            116,
+            36,
+            120,
+            40
+          ]
+        },
+        {
+          "pixels": 11,
+          "bounds": [
+            108,
+            29,
+            112,
+            31
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "poison_b",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 16,
+      "bounds": [
+        5,
+        20,
+        119,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 5620,
+          "bounds": [
+            5,
+            25,
+            104,
+            124
+          ]
+        },
+        {
+          "pixels": 20,
+          "bounds": [
+            114,
+            44,
+            119,
+            47
+          ]
+        },
+        {
+          "pixels": 16,
+          "bounds": [
+            115,
+            25,
+            119,
+            28
+          ]
+        },
+        {
+          "pixels": 7,
+          "bounds": [
+            103,
+            20,
+            105,
+            23
+          ]
+        },
+        {
+          "pixels": 4,
+          "bounds": [
+            107,
+            20,
+            108,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "skill_a",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        9,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6366,
+          "bounds": [
+            5,
+            9,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "skill_b",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        14,
+        8,
+        124,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6793,
+          "bounds": [
+            14,
+            8,
+            124,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "skill_c",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        15,
+        122,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6420,
+          "bounds": [
+            5,
+            15,
+            118,
+            124
+          ]
+        },
+        {
+          "pixels": 120,
+          "bounds": [
+            94,
+            62,
+            122,
+            79
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "sleep_a",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        14,
+        39,
+        116,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 4720,
+          "bounds": [
+            14,
+            39,
+            116,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "sleep_b",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        14,
+        39,
+        116,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 4703,
+          "bounds": [
+            14,
+            39,
+            116,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "stun_a",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        14,
+        24,
+        116,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 4667,
+          "bounds": [
+            14,
+            39,
+            116,
+            124
+          ]
+        },
+        {
+          "pixels": 15,
+          "bounds": [
+            108,
+            35,
+            114,
+            39
+          ]
+        },
+        {
+          "pixels": 12,
+          "bounds": [
+            76,
+            24,
+            81,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "stun_b",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        14,
+        25,
+        116,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 4667,
+          "bounds": [
+            14,
+            39,
+            116,
+            124
+          ]
+        },
+        {
+          "pixels": 15,
+          "bounds": [
+            63,
+            33,
+            69,
+            37
+          ]
+        },
+        {
+          "pixels": 15,
+          "bounds": [
+            106,
+            25,
+            112,
+            29
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "attack",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        26,
+        122,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6366,
+          "bounds": [
+            5,
+            26,
+            122,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "dead",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 12,
+      "bounds": [
+        5,
+        76,
+        95,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 2946,
+          "bounds": [
+            5,
+            76,
+            95,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "hit",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 13,
+      "bounds": [
+        5,
+        25,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 5588,
+          "bounds": [
+            5,
+            25,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "idle_a",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        9,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6348,
+          "bounds": [
+            5,
+            9,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "idle_b",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        9,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6393,
+          "bounds": [
+            5,
+            9,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "idle_c",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        9,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6290,
+          "bounds": [
+            5,
+            9,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "move",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        26,
+        120,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 5937,
+          "bounds": [
+            5,
+            26,
+            120,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "recover",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        5,
+        15,
+        104,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 6279,
+          "bounds": [
+            5,
+            15,
+            104,
+            124
+          ]
+        }
+      ]
+    },
+    {
+      "frame": "windup",
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "colors": 14,
+      "bounds": [
+        14,
+        20,
+        116,
+        124
+      ],
+      "components8": [
+        {
+          "pixels": 5159,
+          "bounds": [
+            14,
+            20,
+            116,
+            124
+          ]
+        }
+      ]
+    }
+  ]
+}

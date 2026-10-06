@@ -1,0 +1,685 @@
+{
+  "at": "2026-10-06T17:25:58.212581+00:00",
+  "expectedNewSpecies": 50,
+  "originalSpecies": 23,
+  "originalSeedRevision": "cb4e0b7d04^",
+  "originalSeedSha256": "6348285555d59fa7039fcb9996382e18dd339fd43b64d54688477b59fe734364",
+  "original23SeedRecordsUnchanged": true,
+  "new50DisjointFromOriginal23": true,
+  "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+  "seedSha256": "3606e553d8b1546dc8f1428e4fb1d2176f8919e8a7e5491af7d62e43660e9567",
+  "plannedCategoriesAndCells": [
+    {
+      "category": "beast",
+      "cell": 64,
+      "count": 10
+    },
+    {
+      "category": "yokai",
+      "cell": 96,
+      "count": 16
+    },
+    {
+      "category": "human",
+      "cell": 64,
+      "count": 12
+    },
+    {
+      "category": "boss",
+      "cell": 128,
+      "count": 12
+    }
+  ],
+  "adultHumanFemaleSpecies": [
+    "red-tassel-swordswoman",
+    "black-lotus-assassin",
+    "silk-fan-sorceress",
+    "crimson-bow-huntress",
+    "spirit-lantern-medium",
+    "silver-sword-matron"
+  ],
+  "adultHumanMaleSpecies": [
+    "blue-robe-spear-master",
+    "jade-flute-martial-artist",
+    "golden-bell-monk",
+    "white-hair-saber-master",
+    "mountain-herbalist-fighter",
+    "iron-gauntlet-brawler"
+  ],
+  "actualPublishedContractAndModelVerifiedSpecies": 49,
+  "progressProof": "verify-shots/battle-monster-fifty/forty-nine-passed-proof.json",
+  "progressProofSha256": "df9052b9fae67e66b98441ddddc16bbc6ffdba444f3816198dbf470069ace3c9",
+  "all50Complete": false,
+  "noSourceOrChoiceWrites": true,
+  "claimScope": "Scope/brief/model provenance only; actual native art, selected GIFs, archive and browser are proved separately by the bound progress evidence.",
+  "items": [
+    {
+      "key": "golden-antler-deer/fifty-v1",
+      "binding": "31bb9cdc2f73ce1fe186909bea7ee46164ad7c11b58660e9f4450b0150115632",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "b2532e6b07e4d648ecc4db516f18734c95b695ac9d872c1534ef3d24eb3c1e22",
+      "actualSuccessfulAuthorJobs": [
+        "608c9440-64cb-4f50-afae-64a1a69f0d42",
+        "fabc1a39-0589-4313-8cce-02e148cfe5f1"
+      ],
+      "actualKeeperJob": "29701e7e-bebe-49b4-99d1-a2f0891ac247"
+    },
+    {
+      "key": "jade-mantis/fifty-v1",
+      "binding": "e7a016de1d9dc20e8f2fd5fd697d920aed29e4ab885b07e078fbdb910317a447",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "5544837f33d00887fd6963f25be3315142dde23fd7d3e9befe3a22887a6c4d89",
+      "actualSuccessfulAuthorJobs": [
+        "a1e11dfd-71a7-4e87-b305-62afdf81c4f7",
+        "9b108165-54dd-475f-97e6-14551ed93a16",
+        "aa225d21-5b12-4e7e-b563-c2bd91920a70",
+        "5d18084a-81bc-481d-89e3-c01a7f49a586"
+      ],
+      "actualKeeperJob": "9184f906-e1b0-49d1-bea6-f930aa37075b"
+    },
+    {
+      "key": "iron-beak-crane/fifty-v1",
+      "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "65c44f24926cf0145785ab57cb607b19ec36cf35305e125086222e9408feb4aa",
+      "actualSuccessfulAuthorJobs": [
+        "963312eb-050d-43a1-a9bd-c0f21450529d"
+      ],
+      "actualKeeperJob": "8c9d69e3-574a-4efa-a5c2-e2e99596f88d"
+    },
+    {
+      "key": "mist-tail-lynx/fifty-v1",
+      "binding": "6f96f0541b475ef867b695b45e6934cd513b79ad2018030d1729c66641141cfc",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "14e0c168c4c9e502c132cefa110ad2e16266844df90fa86351766ada370ffa79",
+      "actualSuccessfulAuthorJobs": [
+        "25c7ee41-90e2-4757-b0fb-3b8c5ec3417c",
+        "51459b35-c587-4a74-bde1-78e5afe2309b",
+        "03b66a6a-04d9-4f20-a35c-95779e6f2de3",
+        "7394c3ce-a1b2-4361-a5af-161a6d43abad",
+        "66b330f3-83d2-42b3-bea4-3999e48db51f"
+      ],
+      "actualKeeperJob": "f99d570d-a4c7-406c-b4ed-a98e61be83ac"
+    },
+    {
+      "key": "red-jawed-wolf/fifty-v1",
+      "binding": "d692062ca446fc036db7279c3bf7e42cd563b0ffdd09efd4831e104914e155f0",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "fc26c7ee1120a0f5bcc1baffb130c5a16ca76ea35b454c38a8645666c5c4d15e",
+      "actualSuccessfulAuthorJobs": [
+        "bdc3de5a-5a12-43ee-ab9b-c1e19a0a56f6",
+        "1095f63f-e51a-4a6f-96f1-c181b6766b6f",
+        "bd628060-86c4-43c8-9051-ca7b1f4e069d",
+        "d4d6fe97-d4f0-42a2-b6b3-308f7a925434",
+        "467cccc4-01f1-4caa-b090-ba66ddc8ec07"
+      ],
+      "actualKeeperJob": "a1185996-61a7-4a3b-810a-ed68291b63a6"
+    },
+    {
+      "key": "moss-back-badger/fifty-v1",
+      "binding": "fb277d7fa75fbc22cbdcfb45042efcc2f691e427d198fc720b16ee598a12c0ca",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "15f8b96fc70e836646d642c54f7ac57c17bed29e0d643a8b2157b9fbd9e24bde",
+      "actualSuccessfulAuthorJobs": [
+        "c0b3bdef-c193-4ddc-b125-13cca831e7de",
+        "e1e9bde9-2899-4107-b5e6-c465dded214f"
+      ],
+      "actualKeeperJob": "588e627f-39f1-40fe-8281-2a17025080fd"
+    },
+    {
+      "key": "snow-wing-owl/fifty-v1",
+      "binding": "3aa039bb5bf89016456f10fb32a3786f6c9f8c5f0ba5d29a6925cff38df525f6",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "84e7cc2b4e78e3e38700bdfe5c3c4054f87580995cd7e47a3f99d1e43ec79071",
+      "actualSuccessfulAuthorJobs": [
+        "47e37b8f-5341-4ba7-8905-b00dd18aae8d",
+        "613511b1-bf61-4bbb-ab8b-f00aedca3e37",
+        "9282fc8c-f015-49aa-8e15-b3abe73495f2",
+        "cddcb687-2e42-4ab2-aec2-c4a1f9e327cb"
+      ],
+      "actualKeeperJob": "9e2527dc-103f-423c-84d4-afc7c43febc6"
+    },
+    {
+      "key": "fire-scale-viper/fifty-v1",
+      "binding": "92d75b075ef71b1882eeaba3e3e8356c4a43d04fcba7000c0ea343f84e2cd81f",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "a40bbca958f889046e87b3db34077caca347452dfd21bb9d653a466f0b0ca6fc",
+      "actualSuccessfulAuthorJobs": [
+        "98bbf2a7-1f1d-489e-a54c-e9dc66d34f3b"
+      ],
+      "actualKeeperJob": "97240675-9ff2-4629-8a17-abfb6610dd16"
+    },
+    {
+      "key": "stone-shell-tortoise/fifty-v1",
+      "binding": "73bca5d310d84ebbe91ac1b8358edae59db4915db843bb22c6ea291d7af9a80d",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "5f0e9f80cb6210d25b8e88a37c905090971129561f738c311a5659b4f5fa4e82",
+      "actualSuccessfulAuthorJobs": [
+        "37a41883-ca38-406d-a243-b660a1cc0d1b"
+      ],
+      "actualKeeperJob": "362ac7c4-0400-41df-8bde-f3c5332aa92c"
+    },
+    {
+      "key": "reed-blade-weasel/fifty-v1",
+      "binding": "79ad5e2c3430d42a81ecc04fdc470dc836407f1d598f12e225fa04293caa545e",
+      "category": "beast",
+      "nativeCell": 64,
+      "briefSha256": "252f406b0dc6c1492d8e52946d9db492ae2635f8dd73c5198b250bb21df7f3f3",
+      "actualSuccessfulAuthorJobs": [
+        "20229669-2046-431e-bde2-3beff73f5348",
+        "716a6125-594b-43b6-994f-1eb0d8e835d0",
+        "ca8aa52d-3c68-4669-b002-b9ca437982f6"
+      ],
+      "actualKeeperJob": "800a8d6a-7ad4-4fc0-9d92-fbbc401c5b9e"
+    },
+    {
+      "key": "lantern-goblin/fifty-v1",
+      "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "0463e1f61e01db41e844412f26137e40da0f3ea1cfb1e43addfdd92b3d76e419",
+      "actualSuccessfulAuthorJobs": [
+        "d1a9c594-3630-491d-ad5c-1751ce2c1591",
+        "6b25a9f4-defe-4dfd-8485-be0e8ca088b7",
+        "886db9cf-3a42-44f9-894a-b105352cbb1e"
+      ],
+      "actualKeeperJob": "2a5f2d39-811f-4374-bc85-7d16252b9d2d"
+    },
+    {
+      "key": "bronze-bell-wraith/fifty-v1",
+      "binding": "5379954cec7a0be8cf2dd9cf1449b78e230d5e0b9699c9336635cc2dcea8b310",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "d9b6efab828bc1ede323fde9726a19485941cde1301adc497a3e1c312bd80195",
+      "actualSuccessfulAuthorJobs": [
+        "ed4eebce-326d-4412-95ad-4828ad8ded43"
+      ],
+      "actualKeeperJob": "203ee414-169f-4c9a-a944-f8cdd101afd0"
+    },
+    {
+      "key": "silk-loom-specter/fifty-v1",
+      "binding": "92b8027ba1873852ad38c3ce7631669919bf6ceba52bcb0f623d805fee0d1944",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "d4dce7a7eab13ffb0ad509bbcf4dac053715f2087996d5d6ffd0e351bc4cf8b4",
+      "actualSuccessfulAuthorJobs": [
+        "6789368e-da77-448f-a152-763ff9bcbb49",
+        "0e90fe11-a1cd-465e-ad8f-f239c576b091"
+      ],
+      "actualKeeperJob": "67d937d2-a196-4dac-a1eb-dc9a8b9f35f8"
+    },
+    {
+      "key": "lotus-marsh-wraith/fifty-v1",
+      "binding": "ca126c38fe7ebc9a9a6188eef3d358463500309669a6712e4ed542cd7123626b",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "2b776247360d897563b2f1813b231788ba8a20a19f6a3b11d8ebda5bb9d1af15",
+      "actualSuccessfulAuthorJobs": [
+        "94a8626c-0de0-4612-988f-cb219c8e2211"
+      ],
+      "actualKeeperJob": "70a75ce1-1a43-484a-b1ae-0187eb2e732e"
+    },
+    {
+      "key": "ink-brush-oni/fifty-v1",
+      "binding": "3362930369104709761dbd4c92be4984159129db3be3c5590f34a10ae6cf1ef6",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "619be2c422c58114c7dd66e9af0a98657cff5fce89b1a1c5a895346d96eeea37",
+      "actualSuccessfulAuthorJobs": [
+        "df3262c3-d450-469a-9397-13cdbb412430",
+        "c348a4cb-adec-4d12-ab5d-27ea0ec1f635",
+        "3e4f6a99-1839-4de8-88f3-846664834934",
+        "cf50eb45-72f7-4ac8-b808-1bb9a736c7af",
+        "13ec7ddb-8e14-4986-be62-0a504081bf70",
+        "a0148744-793f-4d61-bad7-192c7a54c643"
+      ],
+      "actualKeeperJob": "89f6611a-d008-4725-a1e8-4e0d577970a8"
+    },
+    {
+      "key": "moon-disk-spirit/fifty-v1",
+      "binding": "2b33f74977f4432ab25619c344aaf64d2a03b74586db048daa2a26e60ceb3398",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "7844b2f5d69557dd17ebefaa5d2c3e0e59e5f76e5149ab3f950d7c1e6cfec614",
+      "actualSuccessfulAuthorJobs": [
+        "c7af9a37-05ab-441e-83da-263d89e44593",
+        "11d8b7d3-cc58-46f2-8802-161aaaad5295",
+        "15855961-24c2-4207-b1d6-8432fd78c998"
+      ],
+      "actualKeeperJob": "ab10a321-9632-400e-8b70-ee460efbf872"
+    },
+    {
+      "key": "plum-blossom-spirit/fifty-v1",
+      "binding": "5285ecd41d425d19ad5f852995102a0ad7895cf9336747c7cb4c6323a3f0578d",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "a07e0a615dd33fa80f3a2a4ce22e87d01d10ee7d9010aeba74ffb8d460b247c8",
+      "actualSuccessfulAuthorJobs": [
+        "cd24a3ce-8d7f-4ffe-b950-e45adf74b431",
+        "6b6aec7f-0889-4ef3-8ff6-9b331545a90b",
+        "f4edf792-f7a0-4cc1-b75d-09042c9d20df",
+        "6ffcba34-d5d2-4f05-8d8f-e453fcae0a80"
+      ],
+      "actualKeeperJob": "163af064-5699-406b-b634-bc03f483bf81"
+    },
+    {
+      "key": "jade-lantern-serpent/fifty-v1",
+      "binding": "3d1e6bb8a82cec3a3529f85dbbf85581e7045fdde98dc5326e413725f8b21451",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "a9592f971895aa24e1c5de1ca697eb33a55e3209540b6a050715e0c88b7a28a2",
+      "actualSuccessfulAuthorJobs": [
+        "16dc2dc6-6fdd-4bad-8b8c-8ace65d347c6",
+        "29217332-f98a-4d8c-96fa-9bb34ff2800d"
+      ],
+      "actualKeeperJob": "cd4f57eb-11c8-4c8a-9906-71aee8fc2cdf"
+    },
+    {
+      "key": "ember-mask-goblin/fifty-v1",
+      "binding": "62d5580075d4e16b143777b6ba9e30121b37d3c6974432d6335e4e7eb4215c80",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "e4654a2012ce01da5a1b90d2c7a463d955f78a4358dc1d3ab75da865ea6b11a5",
+      "actualSuccessfulAuthorJobs": [
+        "0adba9bb-eb1e-4638-a5ff-d82085f01fba",
+        "9ac87bbc-1ae2-4fcc-b362-a334c1e419da",
+        "9d6447f8-7c97-44bf-a91f-7f4dd5e58947",
+        "6670a989-7227-42d8-bf56-dbb0597c097f",
+        "1a24b003-305c-4a19-9fa0-386d7624a709"
+      ],
+      "actualKeeperJob": "7e96320e-4a85-46f5-977f-b3278df689bd"
+    },
+    {
+      "key": "frost-ribbon-maiden/fifty-v1",
+      "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "e359c3294e193e764fcd8cc5578c0de25b9ac4a1c6fc708a8fb95b8a57289e9e",
+      "actualSuccessfulAuthorJobs": [
+        "24d53a92-cb03-44af-9d3d-b812d9992626",
+        "8acbf94d-f968-47db-bf1b-82834c12a6d2",
+        "368bbbce-2b84-43e3-80a4-1ba8dfbe6ca3",
+        "084a4d8e-7bd9-48d8-9660-bed9100a200d"
+      ],
+      "actualKeeperJob": "c845b0ff-bb75-4399-845a-3c4123a593ba"
+    },
+    {
+      "key": "storm-kite-spirit/fifty-v1",
+      "binding": "835082df80a345cebbf5aa46cd5e7fc5d1933731626a56ea9f794b085d341c29",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "d1185efe47b2bc3cc71eb8530020057e3cb9d54e5b0f83b613ff7a3f611aacd8",
+      "actualSuccessfulAuthorJobs": [
+        "4de8584c-0113-484e-a06b-4974ddb522e8"
+      ],
+      "actualKeeperJob": "7710471b-c5c3-4c9f-aee2-e7931704cdbf"
+    },
+    {
+      "key": "thorn-crown-demon/fifty-v1",
+      "binding": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "b816bef68ccd64b43ddee8da7d5a1b4d4a702a8b307b27d3b77b572bd91ce09c",
+      "actualSuccessfulAuthorJobs": [
+        "0b6a6bb6-63ca-4b26-b178-78ad75feac90",
+        "1430b5c9-1a93-4280-92d1-c0c8f313f7ab",
+        "6c35224b-df74-4df5-8411-24f680e1f40d"
+      ],
+      "actualKeeperJob": "066a1c1f-ea1d-4407-8ce5-20632cf80c95"
+    },
+    {
+      "key": "red-pine-guardian/fifty-v1",
+      "binding": "6e0c2ebf70c4f952fc5c0268a420dccbe20173c2fb86ba3235d5aa6f1c3ec6e3",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "39e32fae15d075de5852c124a2ec704b39e58736720a9ae7c17f3455b47431e3",
+      "actualSuccessfulAuthorJobs": [
+        "695c30ce-ff05-4e7f-aa3d-df85d1af144b",
+        "5fe4c90d-f2fe-46f2-be33-f06686cdd21c",
+        "1f9d0b66-22b9-4e1e-ab50-cc08da4119f9",
+        "f519078e-8c99-43af-9549-451e730290ac"
+      ],
+      "actualKeeperJob": "3132aec8-0f36-4ccc-9604-e80406f3886e"
+    },
+    {
+      "key": "dusk-paper-falcon/fifty-v1",
+      "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "95e8c1e4eb6c686493f649d8e211e4da505db7f58d31029291f42c9e13a44746",
+      "actualSuccessfulAuthorJobs": [
+        "6bbf23ed-dfd2-4482-ad0c-4359cf02240a"
+      ],
+      "actualKeeperJob": "1975672a-443a-447a-b57f-d575a562ba2e"
+    },
+    {
+      "key": "soul-drum-dokkaebi/fifty-v1",
+      "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "7f5cad22810d64bac24717475022bd6b855fa16739c1fb1b6962c49f8fa7278b",
+      "actualSuccessfulAuthorJobs": [
+        "7b142e05-cc6b-4f90-b919-c263dcf05920"
+      ],
+      "actualKeeperJob": "11145db8-b8c7-41c7-a793-3011eaba9f59"
+    },
+    {
+      "key": "golden-grain-spirit/fifty-v1",
+      "binding": "51e7143ef23714fb834ab4baff9293ddb752137f0625b1b04cb7e1424b84f2eb",
+      "category": "yokai",
+      "nativeCell": 96,
+      "briefSha256": "7784c3a4c23691497072f64400c6555f1fc0a47fdb9aaf837764e9c3a71bc817",
+      "actualSuccessfulAuthorJobs": [
+        "afe22deb-104e-4672-bd03-4ad99731188e"
+      ],
+      "actualKeeperJob": "4579383c-f169-4cc1-9e42-fce5d9f31213"
+    },
+    {
+      "key": "red-tassel-swordswoman/fifty-v1",
+      "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "9bc2a2d18db64ba59773a03b4df7270d88f42ed9dfbd21a2354737c148f60fbe",
+      "actualSuccessfulAuthorJobs": [
+        "4234d753-f481-48e3-98b5-791a058bc0ca",
+        "ea86ff0d-c616-43b7-bbc3-a1662eb6d720",
+        "83ca7cce-3ebd-4503-aefb-ae609eb7a60f",
+        "4223ac1c-91cd-4956-83c7-ae6eab7382b5"
+      ],
+      "actualKeeperJob": "d864f94e-2462-4468-a02f-051d6457412e"
+    },
+    {
+      "key": "blue-robe-spear-master/fifty-v1",
+      "binding": "2a47781181c6ba4f2962187029f0d7426893efa3cf5752e9de8835fd7d1c8347",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "b3d3a49dd649f0e2ece02b140a948b584e77be30a35ded2cae3706ba1656977b",
+      "actualSuccessfulAuthorJobs": [
+        "3d0f721e-675b-463c-acf9-25bb2091afec",
+        "33a4cf5d-3d80-49be-b4e0-341a1ab9f935",
+        "a3a51cb2-8e77-496a-ada3-eabc8688c487"
+      ],
+      "actualKeeperJob": "7fed050d-f7d9-42bd-91b6-421637f8e2bd"
+    },
+    {
+      "key": "jade-flute-martial-artist/fifty-v1",
+      "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "d9550a9aa10d2ce494da97066ad36f8e8483b2f3ab5812f2b8d2b071b2136e07",
+      "actualSuccessfulAuthorJobs": [
+        "79068975-8487-4cfb-aeeb-fde3c2e3c2ad",
+        "9d91a636-1896-48df-ba51-3c99e43ed0ab"
+      ],
+      "actualKeeperJob": "9f99c37c-26ea-4d9f-8d05-f23e26dd0977"
+    },
+    {
+      "key": "black-lotus-assassin/fifty-v1",
+      "binding": "3be3541b59b8b6b79e7f30b75ee48b17ed5562be13d79adbf6baed26645b3134",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "896569542d926270ee6412aaac341d785d4936f08801ca6313a38884fed1f560",
+      "actualSuccessfulAuthorJobs": [
+        "39b550a4-49cc-43e7-bf08-79e2f921a259",
+        "0d0eb01f-2bd8-44ba-97a6-fdafc52ab446"
+      ],
+      "actualKeeperJob": "fa7a05ca-146e-453e-ba1d-17720a1a3c2d"
+    },
+    {
+      "key": "silk-fan-sorceress/fifty-v1",
+      "binding": "aa09d08970012f264891bd241f34c1c51d0dc571f6676cdc3844785c4cc0b68f",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "c7e31a2d9bc9591a9d58adf8a2c3cd0361011de3e5660f961c22f04ea3289cf8",
+      "actualSuccessfulAuthorJobs": [
+        "ac0b81b6-226e-49a6-af7c-a6e9856ade7f"
+      ],
+      "actualKeeperJob": "1182f0fd-b8a7-4e9c-b10b-6d2eec02ec33"
+    },
+    {
+      "key": "golden-bell-monk/fifty-v1",
+      "binding": "d9dbb8062edbe7878659e8ba28bbca497080ed48e7c90983478ee1c556adfb34",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "77e1aadbdb9e49800bf753cef1824797962dce7bc3dd91bbfcf8b1a488bc3593",
+      "actualSuccessfulAuthorJobs": [
+        "5968e76f-00b8-430a-a69d-9577531569f0",
+        "0d869235-8330-43d5-ab6a-4ecfcc4f01ea"
+      ],
+      "actualKeeperJob": "c3e6c373-e5e6-4b0d-aa29-b1b1d15244dc"
+    },
+    {
+      "key": "white-hair-saber-master/fifty-v1",
+      "binding": "1ec93ce6ba376d52ac9fe8968fd5160a279cf051aad9ed56dc94ca474c742693",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "ab5b4633328035f693191ecc6a779088a42eebdf9a4f52f4d952761dcb8f8456",
+      "actualSuccessfulAuthorJobs": [
+        "4da65ca6-9980-4b3d-bf28-db41cdabab1a"
+      ],
+      "actualKeeperJob": "e36010ed-08df-4c64-9869-e0b9cfab9e90"
+    },
+    {
+      "key": "crimson-bow-huntress/fifty-v1",
+      "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "8817f635b6e3b59444d37f3a5fb92edd1118656e5a1c61b607087964f046890b",
+      "actualSuccessfulAuthorJobs": [
+        "adf26ff3-6809-4f11-8362-f781837afb2f",
+        "4df8f820-4736-4ffc-9e94-781c121d8a30"
+      ],
+      "actualKeeperJob": "b3112cec-b669-4c5d-bd08-875c7f9727aa"
+    },
+    {
+      "key": "mountain-herbalist-fighter/fifty-v1",
+      "binding": "991371eacc39d17c083363fc16edc80d59ad9d9b1c71623837a7fddc344a7552",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "26672cd90489b1b42ad490710aefd767a6dab3b4e03187536a1e3ab60091d6ec",
+      "actualSuccessfulAuthorJobs": [
+        "4947353d-eae5-487d-a932-72afecdbb334"
+      ],
+      "actualKeeperJob": "2f5cabeb-5db5-40ef-a7f8-e12965d7dbe3"
+    },
+    {
+      "key": "spirit-lantern-medium/fifty-v1",
+      "binding": "103c8b8df2fd2fcbc01c2cb96ef5f9111cfce1000d0d076204a9295b8bb88819",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "3a49c6b9c2f330f9bccfd6bf7a44ca1fc3bd555a5058cb24ca6c380fb6f35cb4",
+      "actualSuccessfulAuthorJobs": [
+        "ef8c8682-96bd-42a0-873f-28b395fe0eb3",
+        "b626b913-d0da-4f0b-931f-b6129078dc50"
+      ],
+      "actualKeeperJob": "bf19e6d5-b541-464a-b132-be978cdb7523"
+    },
+    {
+      "key": "iron-gauntlet-brawler/fifty-v1",
+      "binding": "63e058d82972c1b6d5ce34645730dce1f171bd53739e7c8c43869eb90e5aa82a",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "d030813c892ad7bfdffd63291505732a50ab9abfd6a514893bfa5a7b814db6bc",
+      "actualSuccessfulAuthorJobs": [
+        "a70efd30-f21e-4218-9572-4d25b2192d93",
+        "67f1b5ca-18e7-4564-b8f1-d75f46f16ccb"
+      ],
+      "actualKeeperJob": "324e8f58-186f-4829-8b73-0e4580ee97e6"
+    },
+    {
+      "key": "silver-sword-matron/fifty-v1",
+      "binding": "fc3bd1124fa6a97805f2adde78b2029fd033da490c0aade306db61be614783ff",
+      "category": "human",
+      "nativeCell": 64,
+      "briefSha256": "3e37f8b5ad5e0399f5b9b03b4ffe4bf78d3234ba81280d6e241c789f79fdc26c",
+      "actualSuccessfulAuthorJobs": [
+        "2e85054f-c8d7-417b-95ac-4a10487ed9e0",
+        "541300dc-e6b0-4122-89fd-783f98cdf325"
+      ],
+      "actualKeeperJob": "a9343884-97f8-4151-94ce-1a03d36d6155"
+    },
+    {
+      "key": "sun-gold-phoenix/fifty-v1",
+      "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "dea67d0bdc5f11ef26d4e227b3144042700d4370cae55cb2e9c907220f0868f9",
+      "actualSuccessfulAuthorJobs": [
+        "7da6371a-4dea-4b92-b816-eb536f8d8b6d",
+        "2523c10f-afed-463e-aafb-c407b2984abd",
+        "ecda7bc5-1a83-43ed-bff8-272641fc34dc"
+      ],
+      "actualKeeperJob": "d86e8b1a-5960-4442-b8fe-aa031420972e"
+    },
+    {
+      "key": "abyss-jade-turtle/fifty-v1",
+      "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "f5588617efa0d937d150f04b3e9fef0f449a86a035841a66c28c980cfb9318ac",
+      "actualSuccessfulAuthorJobs": [
+        "430c25bb-110f-40aa-93ee-c0fdcab8366c",
+        "c961b474-4deb-481b-b4f8-712f769b40b4",
+        "f761fa51-5f6e-43dc-b40c-0aae7f256b4c",
+        "dfa02064-417e-4810-a4d4-28ec84b7d083",
+        "09f2144b-82a6-4ce4-8d10-520eff2b4748",
+        "18bebdc6-cc68-4150-8877-78e40984ceb8",
+        "d6d2bac0-9dee-4679-8b17-e4cda91fc246"
+      ],
+      "actualKeeperJob": "0b7b001b-cbd9-4ed1-8987-6fa41dc20cf3"
+    },
+    {
+      "key": "storm-horn-kirin/fifty-v1",
+      "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "01cd984dd17a3899b1909d8a6dd25174c5ddc9a68d3f270b5279a444fc3dab9d",
+      "actualSuccessfulAuthorJobs": [
+        "edb1a117-9e03-4a3c-a4f8-206a84923a5a",
+        "c1c020eb-cca8-43d2-8cff-c1dd76bbf7b7",
+        "3553c733-8556-4610-af57-92f292587641",
+        "ac11fcca-f61d-4007-b901-6e404896b75d",
+        "2d49f2ac-ac6c-49d0-99d5-0dcfb7b2a0f8"
+      ],
+      "actualKeeperJob": "2b43abec-697a-4b12-a562-3e7a82b6a32a"
+    },
+    {
+      "key": "moon-frost-dragon/fifty-v1",
+      "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "ca306af8e6cfe39aa0d2bdabb5063d53ca2f428a5f16bfbfbf3d1ef01d595bce",
+      "actualSuccessfulAuthorJobs": [
+        "7a7abbd0-cd1c-4c4e-bb52-5b502ad9eea8",
+        "83a8cccf-89f5-4b4a-bcdf-7b7c18d9314d",
+        "790a10a6-4c59-46c4-9d4b-c81b67a05b89"
+      ],
+      "actualKeeperJob": "fb1e79a9-63d0-47ed-af6d-dd1909ae2a77"
+    },
+    {
+      "key": "red-armor-gatekeeper/fifty-v1",
+      "binding": "dd8aef50eaa5b5bbc1b10f28b7c65c8b50f43816f2122599569fe45f0173eb90",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "19e716f0e3cc695026e81f3a98a995f4b55adf333068e9f4433b0c31e18213ff",
+      "actualSuccessfulAuthorJobs": [
+        "a2a350aa-3d21-4f7a-a8bc-b22a71288ddc",
+        "8bd3a358-c73e-4984-bec0-d1758ae52368"
+      ],
+      "actualKeeperJob": "4b4441d9-5adf-4874-bde0-df38d0a44096"
+    },
+    {
+      "key": "thousand-year-pine-king/fifty-v1",
+      "binding": "914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "39f05b77e03c8168b42e9a796e2660e2621c0c9f3f22d46b18f30f6a515695cb",
+      "actualSuccessfulAuthorJobs": [
+        "eec46564-a1d4-4186-83fc-1478a8fbfcd9",
+        "aa098fba-9788-412c-b2a3-b2804d219f65",
+        "ea1fe1b3-b4ee-4e14-b037-5f484080d485",
+        "b4052da1-5f51-4965-a10e-427ae61da929",
+        "54168e06-9397-4e56-8983-e0b1f79fb6a2"
+      ],
+      "actualKeeperJob": "01a9984f-e690-439f-8802-c746279a56a6"
+    },
+    {
+      "key": "abyss-nine-eye-spider/fifty-v1",
+      "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "8f239c7d39902ae3d018b948745206c290f64a7fc39a3f8ff56473198e21ada4",
+      "actualSuccessfulAuthorJobs": [
+        "1a59a759-c1e0-4463-8819-0a1e27d2d45e",
+        "264d7609-5e95-4fda-8628-fe5fde066384",
+        "1d7815de-7764-4200-83af-26f6d1176009"
+      ],
+      "actualKeeperJob": "e14591ec-f110-4581-921e-58c137ffa829"
+    },
+    {
+      "key": "bronze-cauldron-demon/fifty-v1",
+      "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "66b3895d6750c4e6e377e0e71424cb6cd752e5e18bcf53ea78f5be112bd7a4e6",
+      "actualSuccessfulAuthorJobs": [
+        "e2830cc3-dcab-46a1-b645-dd6bc99d0dc2",
+        "3c49d2b6-0760-488a-b141-6f9cdf764ac5",
+        "222087cd-6796-4653-a67e-7352557b015a",
+        "eb0fe8bf-b3ce-410b-89b0-e4bdd9508888"
+      ],
+      "actualKeeperJob": "71fceaed-f71d-46a1-bd5c-c9017e709b16"
+    },
+    {
+      "key": "snow-mane-lion/fifty-v1",
+      "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "b76c77947b4a5865a01660c7902fd748afdfde7d5f01b415be35e0531c0b1c4d",
+      "actualSuccessfulAuthorJobs": [
+        "3ebec856-7055-4e55-b846-b077af42f6f3",
+        "fd9e9c72-640e-4218-9cae-b714c8adbe30",
+        "4eead246-cf0b-4e9c-8589-bfa8f6439214",
+        "8f83c399-4374-4712-b8cc-c27573103054",
+        "2522a0fc-712c-4fcf-91ac-42a94d92548c",
+        "74d3dd07-90a0-42fd-a596-136e648f5e8e"
+      ],
+      "actualKeeperJob": "11e7a545-cf4e-4528-aac1-cedd87df78a6"
+    },
+    {
+      "key": "jade-armor-scorpion/fifty-v1",
+      "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "a1263737a6da8aba7732aa019e453d8d7bc39c0ba64778b6042abefc83ca346a",
+      "actualSuccessfulAuthorJobs": [
+        "c5aeae4a-01cd-4d66-b197-bfc510bf136c",
+        "601bde2f-ef8d-4651-97ef-33650a452dfa",
+        "c847621c-3ca1-472d-89e8-103f27f07570",
+        "0fd6475c-c667-420f-906c-b54e317041d6"
+      ],
+      "actualKeeperJob": "46162a99-79cc-48c8-aa8b-b6e87dd062bc"
+    },
+    {
+      "key": "sea-pearl-serpent/fifty-v1",
+      "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "8c8d3c0db2d78554e00e764ecc8411e373f8c7e695471b0c53671dca77a814f6",
+      "actualSuccessfulAuthorJobs": [
+        "e3fc50aa-e5ae-484b-be76-ed5670acf5a1",
+        "c30f87c3-45b8-4d16-9171-4b21a7e390aa"
+      ],
+      "actualKeeperJob": "7c187596-bd07-43c0-b2ff-1a2e72bf0c3c"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 49,
-  "entireGoalComplete": false,
+  "archivedPassedSpecies": 50,
+  "entireGoalComplete": true,
   "items": [
     {
       "key": "golden-antler-deer/fifty-v1",
@@ -541,6 +541,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "3786883c5ad67af12dde3b3da27e4235941f2515cf79c4ef647212c87c4037d1"
+    },
+    {
+      "key": "golden-feather-garuda/fifty-v1",
+      "binding": "f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524",
+      "nativeCell": 128,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "6827ff676e1b9f33c14d6048ae6090c5eb23d353efbafaa2b8ee5b8ad77722cb"
     }
   ]
 }

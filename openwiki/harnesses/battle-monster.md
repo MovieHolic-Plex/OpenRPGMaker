@@ -238,6 +238,8 @@ npm run harness -- battle-monster accept-batch \
 `audit-batch --plan <계획 JSON> --out <근거 JSON>`은 게시된 각 종의18격자를 읽고 현재 실제 keep,
 3단계의 현재 Allow, native 3×6 PNG 각 칸,8GIF의 프레임 픽셀/노출 시간, 현재 요청이 만든
 선택 ZIP과 포함된 PNG/GIF를 다시 읽는다. 소스/검수/ledger를 쓰거나 모델을 호출하지 않는다.
+ZIP 안의18개 개별 native PNG·원본 격자·팔레트도 현재 원본과 대조하고 resourceId/cell/motion/
+idleFrameMs가 현재 brief와 같은지 확인한다. 원본 Python 저작기는 별도의 출처 보관/감독 열람 대상이다.
 정확한 계획 수만큼 모두 통과하고 idle 이미지 중복이 없을 때만 exit0/`passed:true`다.
 미게시/미선택/검수 불일치/팩 작업 중이면 그 종의 부족한 근거를 기록하고 전체 exit1이다.
 이 확인이 직접 저작/미감/실전 전투를 대신하지는 않는다. 실제 그림과 저작 코드는 감독이 별도로 본다.
@@ -259,8 +261,10 @@ binding에 대해 신규50종의 범위·규격·실제 모델 작업을 별도�
 `cb4e0b7d04`의 부모 시드에 있던23종의 전체 레코드를 현재 시드와 대조하고, 새50개 ID와
 resourceId의 분리/유일성, 동물10×64·요괴16×96·사람12×64·보스12×128, 성인 여성6/남성6과
 네 직업을 확인한다. 게시된 각 brief 및 실제 성공 author/keeper 작업의 고정 모델·high·실제
-명령도 읽는다. `before-state.json`에는 과거 종 목록이 없고 종 수만 있으므로 빈 items를
-과거 목록으로 취급하지 않는다. 원본 그림/GIF/저장/화면은 현재 근거가 별도로 증명한다.
+명령도 읽는다. 성공한 author 작업 전부의 실제 모델·high·exec 명령을 확인하며,
+brief의 resourceId도 현재 시드와 대조한다. `before-state.json`에는 과거 종 목록이 없고
+종 수만 있으므로 빈 items를 과거 목록으로 취급하지 않는다. 원본 그림/GIF/저장/화면은
+현재 근거가 별도로 증명한다.
 부분 확인을 전체 완료로 바꾸지 않으며 보조 원본은 같은 controllers에 보존한다.
 
 `finalize-fifty-root-review.py`는 감독이 이미 실제18원본을 열고 모든 현재 writer/모듈을 읽은

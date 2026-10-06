@@ -63,6 +63,7 @@ for row in passed:
     directory = repo / 'qa-runs/harnesses/battle-monster' / row['key']
     brief = read(directory / 'brief.json')
     assert brief['monster']['id'] == ident
+    assert brief['monster']['resourceId'] == lookup[ident]['resourceId']
     assert brief['monster']['cell'] == contract['cell'] == row['nativeCell']
     for field in ['kind', 'gender', 'age', 'role']:
         if field in lookup[ident]:
@@ -72,14 +73,15 @@ for row in passed:
     jobs = [read(path) for path in (directory / 'jobs').glob('*/job.json')]
     actual = [job for job in jobs if job.get('preparedOnly') is False
               and job.get('exitCode') == 0 and job.get('finishedAt')]
-    author_jobs = [job for job in actual if job['stage'] == 'author'
-                   and job['model'] == 'gpt-6.1-sol' and job['effort'] == 'high']
+    author_jobs = [job for job in actual if job['stage'] == 'author']
     assert author_jobs, ident
     keeper = next(job for job in actual if job['id'] == row['review']['jobId'])
     assert keeper['stage'] == 'critique' and keeper['model'] == 'gpt-6.1-sol'
     assert keeper['effort'] == 'high'
     for job in [*author_jobs, keeper]:
+        assert job['model'] == 'gpt-6.1-sol' and job['effort'] == 'high'
         command = job['command']
+        assert 'exec' in command
         assert command[command.index('-m') + 1] == 'gpt-6.1-sol'
         assert 'model_reasoning_effort="high"' in command
     published.append({'key': row['key'], 'binding': row['binding'],

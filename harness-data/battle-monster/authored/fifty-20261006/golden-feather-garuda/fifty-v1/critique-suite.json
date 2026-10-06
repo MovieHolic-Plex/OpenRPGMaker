@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Inspected all four supplied actual PNGs at native 1x and the existing nearest-neighbor 3x panels, using in-memory row crops to avoid shrinking the tall sheets. The right-facing bird has readable paired golden wings, three tail feathers, a silver-white hooked beak and throat, and two silver-gray feet. Broad gold highlights and brown undersides consistently suggest upper-left light; cool lower planes separate the beak and feet. Wing roots and legs remain visibly connected, with no obvious accidental transparent holes or missing body sections on the checker background. Standing support feet share a stable ground line. Windup folds the wings and gathers the feet; move lowers the body; attack extends a connected curled talon; recover restores the stance. Hit bends the wings and recoils, while dead clearly collapses onto the ground. Skill preparation brightens actual wing tips, contact shows three attached gold-white blades, and folded-wing recovery retains two departing streaks. Poison largely reuses the hit silhouette but changes the face and adds bubbles; its body-only distinction is modest. Stun uses a splayed crouch and stars; sleep lowers the head with closed eyes. These states remain readable at 1x and are not simple palette tints. Idle and status-pair changes are subtle. This is a static pose review: playback timing, actual battle movement/contact, boss scale in battle, and literal-grid authorship cannot be confirmed from these PNGs. Keep is a review recommendation, not the user’s selection or runtime approval.",
+  "issues": [],
+  "binding": "f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "cedc164f53841418532898cf4a1d22a7d6178a7e207c87aaf087e3aa6ed553e6",
+    "preview/suite/light.png": "c6cacb358c722c2da6f05ec734fbbc1b4327c8cc71b4ef9c5f2f87374432c15e",
+    "preview/suite/dark.png": "a9a363cc6d40fc2d833557280c0716e6a0d57790c32878689f5487731d1d0451",
+    "preview/suite/checker.png": "c896123fe5f4b2cf17dc40111acf9082d0437d8c49804f674ccc1d3467422ae8"
+  },
+  "jobId": "61ebdf8c-d354-4974-a241-831eb8a0bc99",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T17:25:15.433057+00:00",
+  "userApproved": false
+}

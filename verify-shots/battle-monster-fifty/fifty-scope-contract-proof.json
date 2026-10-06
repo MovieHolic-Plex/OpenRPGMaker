@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-06T17:05:24.008066+00:00",
+  "at": "2026-10-06T17:29:00.319887+00:00",
   "expectedNewSpecies": 50,
   "originalSpecies": 23,
   "originalSeedRevision": "cb4e0b7d04^",
@@ -46,10 +46,10 @@
     "mountain-herbalist-fighter",
     "iron-gauntlet-brawler"
   ],
-  "actualPublishedContractAndModelVerifiedSpecies": 49,
-  "progressProof": "verify-shots/battle-monster-fifty/forty-nine-passed-proof.json",
-  "progressProofSha256": "df9052b9fae67e66b98441ddddc16bbc6ffdba444f3816198dbf470069ace3c9",
-  "all50Complete": false,
+  "actualPublishedContractAndModelVerifiedSpecies": 50,
+  "progressProof": "verify-shots/battle-monster-fifty/fifty-passed-proof.json",
+  "progressProofSha256": "5a6c6c489a58d58f12fa4724d7f19f31a904846edec70daa8b8b24c7f0abb659",
+  "all50Complete": true,
   "noSourceOrChoiceWrites": true,
   "claimScope": "Scope/brief/model provenance only; actual native art, selected GIFs, archive and browser are proved separately by the bound progress evidence.",
   "items": [
@@ -680,6 +680,20 @@
         "c30f87c3-45b8-4d16-9171-4b21a7e390aa"
       ],
       "actualKeeperJob": "7c187596-bd07-43c0-b2ff-1a2e72bf0c3c"
+    },
+    {
+      "key": "golden-feather-garuda/fifty-v1",
+      "binding": "f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "8cee8894c76347bdd8286218b37b5d3217f57510d35da5df7caa285f6f36b26f",
+      "actualSuccessfulAuthorJobs": [
+        "d9719df2-68df-4c37-9f91-718be25cf585",
+        "0414e93b-fe9d-48fd-a092-1c4e3033ac84",
+        "a5462be4-3e1e-4de0-9333-700812c19bc1",
+        "18a1bc7a-5fe6-474a-a3cf-65caf8204a8d"
+      ],
+      "actualKeeperJob": "61ebdf8c-d354-4974-a241-831eb8a0bc99"
     }
   ]
 }

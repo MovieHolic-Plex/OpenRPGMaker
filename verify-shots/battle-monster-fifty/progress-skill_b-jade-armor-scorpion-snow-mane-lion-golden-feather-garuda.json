@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "snow-mane-lion",
+    "source": "qa-runs/harnesses/battle-monster/snow-mane-lion/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "adc0eceabf2749b4b002712fd5eeae81473f5d023c451a1976fb7558611a5584",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T17:27:30.441187+00:00",
+    "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "jade-armor-scorpion",
+    "source": "qa-runs/harnesses/battle-monster/jade-armor-scorpion/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "695c3ef600d46f775e0dc29a8ac624c0ec1bb2b46f2ab7c8499ca8ee7284f6fe",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T17:27:30.441187+00:00",
+    "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "golden-feather-garuda",
+    "source": "qa-runs/harnesses/battle-monster/golden-feather-garuda/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "f8197aea9db0ed93f972d1848fe46d1480c686a348111370290f849b2b092650",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T17:27:30.441187+00:00",
+    "binding": "f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524",
+    "entireGoalCompleteClaim": false
+  }
+]

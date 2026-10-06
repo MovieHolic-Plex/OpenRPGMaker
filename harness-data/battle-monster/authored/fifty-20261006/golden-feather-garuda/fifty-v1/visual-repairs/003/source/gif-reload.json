@@ -1,0 +1,201 @@
+{
+  "idle": {
+    "frames": [
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_c",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "attack": {
+    "frames": [
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "windup",
+        "durationMs": 180,
+        "differentPixels": 0
+      },
+      {
+        "source": "move",
+        "durationMs": 110,
+        "differentPixels": 0
+      },
+      {
+        "source": "attack",
+        "durationMs": 170,
+        "differentPixels": 0
+      },
+      {
+        "source": "recover",
+        "durationMs": 200,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "hit": {
+    "frames": [
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "hit",
+        "durationMs": 220,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "dead": {
+    "frames": [
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "hit",
+        "durationMs": 180,
+        "differentPixels": 0
+      },
+      {
+        "source": "dead",
+        "durationMs": 1100,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "skill": {
+    "frames": [
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "skill_a",
+        "durationMs": 360,
+        "differentPixels": 0
+      },
+      {
+        "source": "skill_b",
+        "durationMs": 240,
+        "differentPixels": 0
+      },
+      {
+        "source": "skill_c",
+        "durationMs": 300,
+        "differentPixels": 0
+      },
+      {
+        "source": "idle_a",
+        "durationMs": 240,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "poison": {
+    "frames": [
+      {
+        "source": "poison_a",
+        "durationMs": 360,
+        "differentPixels": 0
+      },
+      {
+        "source": "poison_b",
+        "durationMs": 360,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "stun": {
+    "frames": [
+      {
+        "source": "stun_a",
+        "durationMs": 420,
+        "differentPixels": 0
+      },
+      {
+        "source": "stun_b",
+        "durationMs": 420,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  },
+  "sleep": {
+    "frames": [
+      {
+        "source": "sleep_a",
+        "durationMs": 640,
+        "differentPixels": 0
+      },
+      {
+        "source": "sleep_b",
+        "durationMs": 760,
+        "differentPixels": 0
+      }
+    ],
+    "decodedSize": [
+      128,
+      128
+    ]
+  }
+}

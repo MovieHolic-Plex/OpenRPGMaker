@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-06T17:27:26.117210+00:00",
+  "passed": false,
+  "key": "golden-feather-garuda/fifty-v1",
+  "binding": "f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-golden-feather-garuda-after-repair-three.png",
+  "nativeContactPngSha256": "79f162fa598d02dbf64aefb0eb7ade25f498fff1be649d816ae54d735245f776",
+  "nativeWriterFilesRead": {
+    "repair.py": "6c028da34746829b79b80c8b509832977dcb8f4ed95d23a41e857a0356f4b935",
+    "feather_revision.py": "055c9ce81ee9e422fa28c0d4910aedd94e8d7904415c103c57fdaaf613614c29",
+    "author.py": "94a2bba99191659c6ad57d3715bbfab9f67e0694bfe6dd42c7f05eba3dfb2179",
+    "anatomy_repair.py": "8150bfda78fcbdffd854e8405329a3fabf159d2d195addc1ed2c9875b8845a80"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "c43f4b65890dd12c4bbe5d09c07131239020a087fe57c610d5a23ffd3a67f96d",
+    "diagnose.py": "a6b6bbf0fba41b7e6199407506d8f45265470abf11aceb30e1ec62b92910c304",
+    "observe_revision.py": "9c27ff663bfe31e71ea24f52f9c1de5ac72524daf3e608b00b11cdf27b1cdfd9",
+    "observe_anatomy.py": "323d262199b42c1cd663510ca967e01decf47a3d84ce2afc307db8d34af6868f"
+  },
+  "observations": [
+    "Actually opened all18 final third-repair native128 poses at original1632x1272/native1x/nearest2x on both light and dark contacts. Gold crest and quiet eyes, pale hooked beak/throat and two silver feet remain consistent; three broad layered upper feathers and near feather fan connect to shoulders. Body interior wedge is now filled and three gold tail feathers have a wider visible body root. Upper-left gold highlights with brown lower planes read on both backgrounds.",
+    "Windup has a broad rounded layered folded wing and two gathered talon feet directly under the body. Move lowers head/body into a crouch, attack extends a connected curved silver leg and curled talon, recover restores idle. Hit and poison bend wings/neck; dead piles the folded gold wing and horizontal head at the floor. Folded-wing stun with stars and raised head differs from lowered-head closed-eye sleep, while poison open beak/bubbles remains close to hit silhouette. Idle and paired status motion is subtle; angular body and feather planes remain a stylistic limitation.",
+    "Skill preparation lights both actual wing ends. Contact shows two upper blades beginning at extended upper wing tips and a third pale-gold blade beginning at the separate lower/front wing tip; pale beak/neck boundary remains readable. Recovery has folded rounded layered wings and two departing streaks. These are actually authored distinct native poses; static inspection does not prove live battle dash/contact or runtime boss scale.",
+    "Actually read complete final968-line anatomy_repair.py/module after earlier924 draft changed: loads only own immutable before-anatomy-repair18 native grids; pixels(name,text) writes named literal y/x spans, block(name,x,y,width,text) writes fixed literal row spans with width check and explicit transparent padding. Every module call including final skill_b/body repairs and full native save loop was read. No procedural geometry, whole-frame transformation or tweened pose creation. Original author.py2414, repair.py1389 and feather_revision.py1649 retain their previously fully read exact hashes. Whole readonly observe_anatomy52 reads palette/native/PNG/GIF hashes, before-grid changed pixel counts, borders and baseline only. All4 current native writers and4 helpers were read with exact bytes guarded."
+  ],
+  "actualIndependentRecommendation": "keep",
+  "actualIndependentReviewJob": "61ebdf8c-d354-4974-a241-831eb8a0bc99",
+  "actualIndependentIssues": [],
+  "actualIndependentSummary": "Inspected all four supplied actual PNGs at native 1x and the existing nearest-neighbor 3x panels, using in-memory row crops to avoid shrinking the tall sheets. The right-facing bird has readable paired golden wings, three tail feathers, a silver-white hooked beak and throat, and two silver-gray feet. Broad gold highlights and brown undersides consistently suggest upper-left light; cool lower planes separate the beak and feet. Wing roots and legs remain visibly connected, with no obvious accidental transparent holes or missing body sections on the checker background. Standing support feet share a stable ground line. Windup folds the wings and gathers the feet; move lowers the body; attack extends a connected curled talon; recover restores the stance. Hit bends the wings and recoils, while dead clearly collapses onto the ground. Skill preparation brightens actual wing tips, contact shows three attached gold-white blades, and folded-wing recovery retains two departing streaks. Poison largely reuses the hit silhouette but changes the face and adds bubbles; its body-only distinction is modest. Stun uses a splayed crouch and stars; sleep lowers the head with closed eyes. These states remain readable at 1x and are not simple palette tints. Idle and status-pair changes are subtle. This is a static pose review: playback timing, actual battle movement/contact, boss scale in battle, and literal-grid authorship cannot be confirmed from these PNGs. Keep is a review recommendation, not the user’s selection or runtime approval.",
+  "claimScope": "Performed actual final native18/full4 current native writer and readonly helper review; unfinalized record, selected/archive/browser verification separate."
+}

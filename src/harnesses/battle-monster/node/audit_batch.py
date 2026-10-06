@@ -4,6 +4,7 @@ Never turns missing or weak evidence into a passed result. No source edits,
 model calls, ledger mutations, or preview regeneration happen in this audit.
 """
 import argparse
+import json
 from io import BytesIO
 from pathlib import Path
 import zipfile
@@ -83,6 +84,20 @@ def inspect(h, directory):
         if archive.testzip() is not None:
             raise ValueError('Selected ZIP did not reread successfully.')
         asset = 'assets/harnesses/battle-monster/' + directory.parent.name + '/'
+        for pose in names:
+            native_png = 'preview/suite/' + pose + '.png'
+            with Image.open(BytesIO(archive.read('provenance/' + native_png))) as image:
+                if image.size != (cell, cell) or image.convert('RGBA').tobytes() != frames[pose].tobytes():
+                    raise ValueError('Selected ZIP native PNG differs from current source: ' + pose)
+            source = 'source/' + ('poses/' if pose in POSES else 'actions/') + pose + '.pxgrid'
+            if archive.read('provenance/' + source) != (directory / source).read_bytes():
+                raise ValueError('Selected ZIP native grid differs from current source: ' + pose)
+        if archive.read('provenance/source/palette.json') != (directory / 'source/palette.json').read_bytes():
+            raise ValueError('Selected ZIP palette differs from current source.')
+        metadata = json.loads(archive.read('sheets.json'))
+        if len(metadata) != 1 or any(metadata[0].get(field) != brief['monster'][field]
+                                     for field in ('resourceId', 'cell', 'motion', 'idleFrameMs')):
+            raise ValueError('Selected ZIP resource metadata differs from the current brief.')
         with Image.open(BytesIO(archive.read(asset + 'sheet.png'))) as sheet:
             with Image.open(directory / 'preview/poses/sheet.png') as live:
                 if sheet.convert('RGBA').tobytes() != live.convert('RGBA').tobytes():
@@ -98,7 +113,8 @@ def inspect(h, directory):
             'review': {'jobId': review['jobId'], 'recommendation': review['recommendation'],
                        'issues': review['issues'], 'userApproved': review['userApproved']},
             'decisions': decisions, 'pack': str(pack), 'packSha256': sha(pack.read_bytes()),
-            'nativePngAndGifReread': True}
+            'nativePngAndGifReread': True, 'selectedNativePosePngsReread': len(names),
+            'selectedNativeGridsAndPaletteReread': True, 'selectedResourceMetadataReread': True}
 
 
 def main():

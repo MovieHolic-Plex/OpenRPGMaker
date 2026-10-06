@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재49/50 통과
+# 신규50종 제작 · 전체50/50 통과
 
 ## 최초 두 종 확인
 
@@ -851,3 +851,15 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 
 - 실제 GPT6.1sol/high 독립 `f203c624-bdb4-44a2-bafd-4167a18803cd`는 rework7이다. body 안 쐐기 투명 틈/얇은 세 꼬리 뿌리/접힌 지그재그 날개/벌어진 준비 발/앞날개 충전 핵/가슴 앞 세 번째 칼날의 출처/날개 접기 없는 기술 회수라는 실제 좌표를 before-third source·terminal 작업·검수4PNG 및 실제 감독18자세/full3 native writer와 동일 binding으로 보존했다. 세 꼬리깃·공격 발톱의 연결은 확인되므로 완전 분리라고 바꾸지 않았다. 실제 셋째 수정 `d9719df2-68df-4c37-9f91-718be25cf585`가 이어간다.
 - 통과49/50·882자세·392GIF와 whole50=false를 유지한다. 마지막 실제 rework를 통과로 세거나 형식 검사로 대체하지 않는다.
+
+
+## 2026-10-06 17:29 UTC — 신규50종 전체 현재 원본/선택/출처/화면 확인 완료
+
+- 금익대붕 셋째 직접 수정의 실제 독립 GPT6.1sol/high `61ebdf8c-d354-4974-a241-831eb8a0bc99`는 keep/정식 issues0이다. binding `f4755d73b3fba424696a3a7749fcabfa0171355bb4007dc77a25599fc2a9c524`의 실제18자세를 감독이 밝음/어둠 원본1배 및 nearest2배로 열었다. 넓고 둥근 접힌 깃/몸통 아래로 모은 발/몸통과 꼬리 연결/앞날개 충전 핵/날개에서 나온 세 칼날/접힌 기술 회수와 두 잔광을 확인했다. 기존 angular 면·작은 idle/status 변화·피격과 비슷한 독 반응이라는 실제 한계는 기록했다.
+- 중간924행 anatomy writer를 완성본으로 대신하지 않고 바뀐968행 전체 메서드·모듈 흐름을 새로 읽었다. 자기 불변 원본18격자와 명시적 y/x/문자 행·폭 검증·투명 여백만 쓰며 골격 생성/전체 이동/보간이 없다. 기존 full3 writer 해시와 새 writer/full readonly helper를 묶어 현재 full4 writer/readonly4/native18/기술PASS/terminal keeper/검수4PNG가 모두 일치한다.
+- 현재 50종 모두18격자/8GIF의 디코딩 픽셀과 노출시간, 실제 현재 keep 및 목표 위임 Allow3단계, 선택ZIP을 다시 읽었다. ZIP의18개 개별 nativePNG와 격자/팔레트, resourceId/cell/motion/idleFrameMs도 현재 원본·brief와 직접 대조하도록 감사 범위를 보강했다. 모든 성공 author 작업의 실제 고정 모델/high/exec 명령을 확인하므로 다른 모델 성공 작업을 필터로 숨기지 않는다. brief resourceId도 현재 시드와 대조한다.
+- source archive50종을 동일 binding으로 재로드했다. 각 실제8GIF·정지/재생·375/320px·같은 픽셀 배율 크기 비교·오류0/가로 넘침0과 현재 선택binding이 있다. 마지막 금익대붕 desktop pause/375/320 화면3장도 감독이 실제 열었다.50종의 native18와 현재 저작 writer 열람 근거를 전체 현재 source/archive/keep와 다시 묶었다.
+- 전체 **50/50종 · 900자세 · 400GIF**, 동물10×64/요괴16×96/사람12×64(성인 여성6·남성6·네 직업)/대형 보스12×128. 원래23종 전체 시드 레코드는 그대로이고 새50종과 ID/resourceId가 분리된 전체73종이다. 현재 전체 감사·범위 확인·root50/source50/browser50 근거는 true다.
+- 원래52결정과8선택binding은 보존했다. 새150결정은 현재50종 목표에 따른 `user-delegated-goal` Allow이며 사용자 마우스 클릭이 아니다. 전체202결정/대시보드 Allow58=기존8+신규50. 후속 사용자 Modify/Deny 보호는 그대로다. 현재 keep의 정식 optional/minor13건/8종은 보존되어 있으며 완벽한 미감을 주장하지 않는다.
+- 범위는 새 몬스터 에셋/선택 팩 제작이다. 실제 게임 DB 설치·전투의 이동/접촉·피해 처리·실전 표시 크기 검수는 별도이며 이번 정적 자세/GIF 검수로 완료라고 주장하지 않는다.
+- 근거: `fifty-passed-proof.json`, `fifty-selected-native-audit.json`, `fifty-scope-contract-proof.json`, `root-review-golden-feather-garuda.json`, `root-draft-review-golden-feather-garuda-after-repair-three.json`, `browser-proof-golden-feather-garuda.json`, `source-archive-proof.json`.
