@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-06T11:44:12.180731+00:00",
+  "passed": true,
+  "key": "silver-sword-matron/fifty-v1",
+  "binding": "fc3bd1124fa6a97805f2adde78b2029fd033da490c0aade306db61be614783ff",
+  "actualIndependentReviewJob": "a9343884-97f8-4151-94ce-1a03d36d6155",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "49f3c03730b79c17328058dd167daa22d8abdd98399b6f0197fa29842355ecdb",
+    "preview/suite/light.png": "1f6b2d94670b6c07da69ea4f22021154af72ffabf3d6f279ed0866c04a6e757b",
+    "preview/suite/dark.png": "adc03a4bf4cd8f3978a8855ce8644e6c7f4762f89f73b55431ce7037f1132bf6",
+    "preview/suite/checker.png": "2e9b4029f3e117c1be0ad8576312b325604ba0034c67fba1a4b433544e7f74e5"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "sleep_a",
+      "x": 31,
+      "y": 35,
+      "message": "선택적 가독성 보완: 닫힌 눈이 볼의 갈색 그림자와 섞인다. (31,35) 부근 눈꺼풀의 기존 픽셀 2개를 얼굴의 더 짙은 기존 갈색으로 묶어 짧은 수평 눈 감김 선을 만들고, 콧등과 볼의 밝은 면은 유지한다. 새 눈동자를 추가하지 않는다."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 32,
+      "y": 36,
+      "message": "선택적 가독성 보완: 내려간 얼굴에서도 눈 감김 선의 대비가 약하다. (32,36) 부근의 기존 눈꺼풀 2픽셀을 sleep_a와 같은 짙은 갈색으로 연결해, 머리의 한 픽셀 하강 동안 닫힌 눈이 지속적으로 읽히게 한다."
+    }
+  ],
+  "retainedIndependentSummary": "실제 portrait/light/dark/checker PNG의 원본 1배와 시트 내 최근접 3배 표시를 확인했다. 은백 올림머리·검은 비녀·장년 얼굴·청록 겉옷·남청 치마·금띠·은검의 우향 실루엣이 일관되며, 머리와 얼굴의 크기가 몸에 비해 충분하다. 머리 윗면과 왼쪽 소매의 밝은 면, 뒤쪽 옷과 치마의 어두운 면으로 부피와 좌상광이 읽힌다. 목·어깨·소매·검손이 이어지고, 발과 앉거나 쓰러진 몸은 같은 바닥선에 놓인다. 세 배경에서 명백한 몸 내부의 빈 구멍이나 끊어진 검손은 보이지 않았다. 준비의 허리 높이 검, 이동의 전방 기울기, 공격의 벌어진 보폭과 낮은 우향 검, 회수의 내려간 검이 구분된다. 피격은 왼쪽으로 물러난 머리와 찡그린 눈으로 읽히지만 반동은 작다. 쓰러짐은 낮게 누운 머리·상체·치마로 구분된다. 기술은 날의 청록 기, 실제 수평 칼끝에 이어진 상하 두 은백 곡선, 내려간 검 옆의 끊어진 잔상으로 연결된다. 독은 처진 자세와 보라 기포, 기절은 더 기운 상체와 머리 위 금색 별, 수면은 앉은 몸·바닥에 낮춘 검·닫힌 눈으로 구분되며, 각 쌍에는 자세나 효과의 픽셀 변화가 있다. 단순 색조 변경이나 다른 무기로 바뀐 공격으로 보이지 않는다. 수면의 눈 감김은 1배에서 대비가 약해 작은 보완을 권한다. 이 추천은 사용자 선택을 대신하지 않는다. 정지 자세 미리보기 검수이므로 실제 전투의 위치·충돌·재생 속도·프레임 연결 타이밍은 확인하지 못했으며, 원본 pxgrid 저작 방식과 원본 알파·팔레트 계약도 이 네 PNG만으로 확정하지 않는다.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-silver-sword-matron.png",
+  "nativeContactPngSha256": "a76e9c993a0c46c1146b2d44c5f84835d52a804d400d851e5adfee01b5fba089",
+  "nativeWriterFilesRead": {
+    "author.py": "7bfe2f5fbf12d7a085b20c4acf32535fd8f15b55814f5e40a0b4af33e7c967ad",
+    "apply-skirt-fall.py": "9df6e97b757c9058d226e8824e814ad65c29554ec7c31e4adbda03532b37c12b"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened repaired18 native1x/nearest2x864x696 unresized. Sameadultolderwoman/whitehair+blackpin/tealcoat/goldbelt/one longsilverblade+shortscabbard. Navy skirtfront nowcontinuous broaderpanel/groupedfolds/clearhem, steppingfeet beneath; sameconnectedbladegrip andcutprepare/advance/horizontalstrike/retract. Deadheadloweredandtilted, thicker tealneck/shoulder/chestsidefacingtorso andnavyfolds besidegroundedbody distinctfromseatedsleep; weaponhand/neckconnected. Same blade-tip twosilverwhitepaths/fragments, poisonfacehand+purpleparticles, slackstarstun andclosed-lid seatedsleep pair. Read fullauthor.write_sources/read_more/revision loaderflow andapply-skirt-fall.apply body/allmoduleflow/calls. Explicitindividualy/x/pixelstrings fromliteralframe/repair/skirt-fall rowmanuscripts only. No generatedgeometry/automaticwholeframe transforms. UnchangedrendereronlyPNG/GIF/diagnostics/decodedreadback. All18nativePNG match ASCII/palette. Initialactual2-issue reworkandinitialdraftpreserved; Freshactualindependentkeep with2 optionalsleepclosedlidcontrastclaritysuggestions. Retaintheseactualminorandweakhitreaction/smallstatepairmovement; no minorfixclaimed. Staticnativeart/sourceverified, actualruntimecontact/timingnotclaimed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

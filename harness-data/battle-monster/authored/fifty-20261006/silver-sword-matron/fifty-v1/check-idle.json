@@ -1,0 +1,35 @@
+{
+  "phase": "idle",
+  "binding": "836169aa085bd795f5348d09988296a1783109a67f5dadd09bff20c5ad83eba6",
+  "sources": {
+    "brief.json": "272b62e8b21fffbf1f9cd6981c69bb9b03b03e91693bd26c1b9b7921449d474f",
+    "source/palette.json": "6f4e834c7cf25d5b14c2dc22bca0fdebcbedd74abdd87c0b8d3586f18e06775d",
+    "source/poses/idle_a.pxgrid": "24569d1778a43b04bb22008de69dce7a99b7b10aab7769888aa5f5cec829a285"
+  },
+  "frames": {
+    "idle_a": {
+      "bboxExclusive": [
+        11,
+        7,
+        60,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "3b1efb5d7b4aa6c188ecacb2f0fa6a57fc3423d30cf3337e3ba74cc34393cdd6"
+    }
+  },
+  "errors": [],
+  "pass": true,
+  "limitations": [
+    "격자·서로 다른 해시는 직접 저작/좋은 그림/자연스러운 동작의 증거가 아님",
+    "자세 미리보기는 실제 전투 이동·스킬·피해 검증이 아님"
+  ],
+  "images": {
+    "preview/idle/checker.png": "bb1163d47d6aff849cd32851baeec85d0f84d4d232931762032f1396ca43c1e2",
+    "preview/idle/dark.png": "8edcbd20d02d7120c6257e28dce3a9f3081eb51fdcecccf90a9ff3b1d2ffd495",
+    "preview/idle/idle_a.png": "49f3c03730b79c17328058dd167daa22d8abdd98399b6f0197fa29842355ecdb",
+    "preview/idle/light.png": "604781df984b64f58ca2dbe3c072440215b9347d92ec1aca0045ebd41908e39c",
+    "preview/idle/portrait.png": "49f3c03730b79c17328058dd167daa22d8abdd98399b6f0197fa29842355ecdb",
+    "preview/idle/sheet.png": "c0d409a2c42738fe37e84cbb1385605ce8172f4cd639a4b5a1bde3db66786b43"
+  }
+}

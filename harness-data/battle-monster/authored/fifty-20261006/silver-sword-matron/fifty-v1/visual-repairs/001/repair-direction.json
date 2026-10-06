@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "1a11119bbe12a67a429556c408789af57c899edd0719d541f41ac32a1d294863",
+  "priorReviewJob": "07607e2f-7e0d-4196-86a0-2b101182aeaa",
+  "issues": [
+    {
+      "pose": "dead",
+      "x": 31,
+      "y": 55,
+      "message": "Rebuild the collapsed shoulder/chest cluster around x25-39, y53-59 with a readable neck-to-shoulder contour and a side-facing teal torso. The current torso is only a few rows tall while the head remains nearly upright, making the body look flattened rather than fallen. Hand-author a lowered or tilted head and redistribute the folded navy garment toward x38-48 while retaining continuous neck, sleeve and sword-hand connections and ground contact at y60."
+    },
+    {
+      "pose": "idle_a",
+      "x": 29,
+      "y": 50,
+      "message": "The navy lower garment around x25-39, y44-56 splits into two trouser-like bent legs. For the contracted navy skirt, author a broader continuous front skirt panel with a clear hem and grouped folds, then expose the stepping feet below it. Carry that garment construction through idle_b/c and the standing action poses so the long teal coat and navy skirt remain distinct."
+    }
+  ],
+  "startedAt": "2026-10-06T11:30:44.208446+00:00"
+}

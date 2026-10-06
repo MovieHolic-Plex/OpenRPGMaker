@@ -407,6 +407,17 @@
     "selectedPackSha256": "7593bcb88974092fe4686150c52840adcbf1423461d99db667d5ef0c51aac368"
   },
   {
+    "key": "silver-sword-matron/fifty-v1",
+    "binding": "fc3bd1124fa6a97805f2adde78b2029fd033da490c0aade306db61be614783ff",
+    "nativeCell": 64,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "7d322fea2ea9d92a37bc06cae4db668b75d445b9edc3e283a81bf0f888ca4d3c"
+  },
+  {
     "key": "sun-gold-phoenix/fifty-v1",
     "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
     "nativeCell": 128,

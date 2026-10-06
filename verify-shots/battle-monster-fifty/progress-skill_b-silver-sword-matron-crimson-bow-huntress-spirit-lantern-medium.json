@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "crimson-bow-huntress",
+    "source": "qa-runs/harnesses/battle-monster/crimson-bow-huntress/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "9807dec5e663bbb7f008eb11e6280dd0d08b92ba214a8140cc111f7bd4141f9b",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "spirit-lantern-medium",
+    "source": "qa-runs/harnesses/battle-monster/spirit-lantern-medium/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "0b07ab3b032d2f5fc6e3cc5173aa561d73a8a17fdf6a13c9c6d1a7a4d1445980",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "103c8b8df2fd2fcbc01c2cb96ef5f9111cfce1000d0d076204a9295b8bb88819",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "silver-sword-matron",
+    "source": "qa-runs/harnesses/battle-monster/silver-sword-matron/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "e1dddf42d591ef59fdefd50427186648e8fbf07e1e23de14b1814d661aa7cc58",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "fc3bd1124fa6a97805f2adde78b2029fd033da490c0aade306db61be614783ff",
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,278 @@
+{
+  "purpose": "Native source measurements after literal skirt/fall repair; no visual approval or reviewer verdict",
+  "paletteColors": 18,
+  "palettePreserved": true,
+  "distinctNativeFrames": 18,
+  "frames": [
+    {
+      "pose": "attack",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        8,
+        10,
+        61,
+        60
+      ],
+      "changedPixels": 66
+    },
+    {
+      "pose": "dead",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        13,
+        43,
+        61,
+        60
+      ],
+      "changedPixels": 473
+    },
+    {
+      "pose": "hit",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        13,
+        9,
+        57,
+        60
+      ],
+      "changedPixels": 63
+    },
+    {
+      "pose": "idle_a",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        7,
+        59,
+        60
+      ],
+      "changedPixels": 60
+    },
+    {
+      "pose": "idle_b",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        7,
+        59,
+        60
+      ],
+      "changedPixels": 60
+    },
+    {
+      "pose": "idle_c",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        7,
+        58,
+        60
+      ],
+      "changedPixels": 60
+    },
+    {
+      "pose": "move",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        7,
+        8,
+        42,
+        60
+      ],
+      "changedPixels": 64
+    },
+    {
+      "pose": "recover",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        8,
+        55,
+        60
+      ],
+      "changedPixels": 57
+    },
+    {
+      "pose": "windup",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        7,
+        8,
+        39,
+        60
+      ],
+      "changedPixels": 60
+    },
+    {
+      "pose": "poison_a",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        12,
+        11,
+        55,
+        60
+      ],
+      "changedPixels": 54
+    },
+    {
+      "pose": "poison_b",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        12,
+        12,
+        57,
+        60
+      ],
+      "changedPixels": 54
+    },
+    {
+      "pose": "skill_a",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        7,
+        59,
+        60
+      ],
+      "changedPixels": 65
+    },
+    {
+      "pose": "skill_b",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        5,
+        8,
+        62,
+        60
+      ],
+      "changedPixels": 73
+    },
+    {
+      "pose": "skill_c",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        12,
+        9,
+        59,
+        60
+      ],
+      "changedPixels": 62
+    },
+    {
+      "pose": "sleep_a",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        22,
+        58,
+        60
+      ],
+      "changedPixels": 0
+    },
+    {
+      "pose": "sleep_b",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        11,
+        23,
+        58,
+        60
+      ],
+      "changedPixels": 0
+    },
+    {
+      "pose": "stun_a",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        13,
+        7,
+        56,
+        60
+      ],
+      "changedPixels": 39
+    },
+    {
+      "pose": "stun_b",
+      "rows": 64,
+      "rowWidths": [
+        64
+      ],
+      "unregisteredSymbols": [],
+      "inkBounds": [
+        13,
+        9,
+        54,
+        60
+      ],
+      "changedPixels": 43
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "paletteSha256": "6f4e834c7cf25d5b14c2dc22bca0fdebcbedd74abdd87c0b8d3586f18e06775d",
+  "frames": [
+    {
+      "pose": "attack",
+      "sha256": "fa632a3e3d316152d1f0adcbeae262a72e88f97360f2da81f5762cd30ecf2f29",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        8,
+        10,
+        62,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "dead",
+      "sha256": "9242a918f751a9f07edcce807f6702e7ce67299a44370d3b5203b0230b9c4797",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        10,
+        37,
+        61,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "hit",
+      "sha256": "20cab698b98a446a81eccdcd247a6310d63e1bb6175f722b737b8822ad2d1eee",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        13,
+        9,
+        58,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "idle_a",
+      "sha256": "f8c66cc65eafa2770e7801606e334075f7ed18fdc43f94ede68299fb1f1753f0",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        7,
+        60,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "idle_b",
+      "sha256": "087b0b54aed6e6c4283b8d5d90317b190e4869e71a3e122209db723d18ed7e58",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        7,
+        60,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "idle_c",
+      "sha256": "3957786c62a85fe47e796fb1116a61fb28b24daf269bfd7324107a83769415c8",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        7,
+        59,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "move",
+      "sha256": "c63c16bf0250b10ad9528dc961f79a38618bb6525191bd479cd3ab46ab37b5d5",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        7,
+        8,
+        43,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "recover",
+      "sha256": "55db21ef89696fd88ea748b2d8516aee65e6cc57663198a5b13f63299481a4d2",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        8,
+        56,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "windup",
+      "sha256": "90b9a968546f64be082b85d710012543ae50060fe01d38383920a824ebab0742",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        7,
+        8,
+        39,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "poison_a",
+      "sha256": "4ce45fc30b53ebcbd22d14f3c2428afa3ff44b39c61883bf111360d87e767c67",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        12,
+        11,
+        56,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "poison_b",
+      "sha256": "864bce075c318d55b67aa1a0705a27fbca9c403b168372ade8c9f346e7fcfd0d",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        12,
+        12,
+        58,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "skill_a",
+      "sha256": "cf56f39196c4dabdfd9692eb5045e52c8f3c44e65879ba9049a5a9813bc9dee4",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        7,
+        60,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "skill_b",
+      "sha256": "520e304873ba4831f12beb8e55b9676f4cc282218313144529284fe55a8823a7",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        5,
+        8,
+        63,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "skill_c",
+      "sha256": "0e2243bca2edf42733fb9e94c4c2264cad2b2b16381515a54ba9e85a5cda4c58",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        12,
+        9,
+        60,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "sleep_a",
+      "sha256": "2cce82ba6228bb581055fe7e304fe02a4d543d618f0b7d37d0f5787aeb68f79a",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        22,
+        59,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "sleep_b",
+      "sha256": "cb5233cbfbd003065458d9b693941a71af258971b387a98442631793659fd3a5",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        11,
+        23,
+        59,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "stun_a",
+      "sha256": "a0cf3f9c50cd5f0a59184ebbb09a0edb1c1379d74221f167ba2825783f3b89ab",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        13,
+        7,
+        57,
+        61
+      ],
+      "lowestInkY": 60
+    },
+    {
+      "pose": "stun_b",
+      "sha256": "e2e5278e66e7399733a8273694d99bea1f034d9ea8f4666ce142358421565472",
+      "canvas": [
+        64,
+        64
+      ],
+      "inkBoundsExclusive": [
+        13,
+        9,
+        55,
+        61
+      ],
+      "lowestInkY": 60
+    }
+  ]
+}

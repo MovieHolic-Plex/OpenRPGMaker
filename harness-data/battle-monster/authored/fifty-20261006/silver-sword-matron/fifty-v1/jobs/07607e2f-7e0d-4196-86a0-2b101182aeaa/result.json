@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs, including the native 1x cells and nearest 3x panels on light, dark and checker backgrounds. The mature silver-haired character, black hairpin, teal coat, gold belt and silver blade read clearly. Upper-left highlights give the hair and sleeves volume; the standing feet share the ground line. No obvious enclosed transparent holes or detached weapon hands were visible. Windup, forward movement, attack and recovery are readable; hit changes the head position and expression. Skill preparation, two connected curved blade-tip emissions and fading recovery are coherent. Poison raises the free hand toward the face, stun lowers the body and sword with orbiting stars, and sleep kneels with closed eyes; these are authored state changes rather than mere tints. Rework is recommended for the collapsed anatomy and the requested skirt silhouette: dead reduces the torso to a thin strip beneath a nearly upright full-size head, while the standing lower garment reads as separate trousers. Coordinates below are native 64x64 repair anchors. Static pose previews cannot establish animation timing, actual battle behavior, or literal pxgrid authorship. This recommendation does not record a user selection.",
+  "issues": [
+    {
+      "pose": "dead",
+      "x": 31,
+      "y": 55,
+      "message": "Rebuild the collapsed shoulder/chest cluster around x25-39, y53-59 with a readable neck-to-shoulder contour and a side-facing teal torso. The current torso is only a few rows tall while the head remains nearly upright, making the body look flattened rather than fallen. Hand-author a lowered or tilted head and redistribute the folded navy garment toward x38-48 while retaining continuous neck, sleeve and sword-hand connections and ground contact at y60."
+    },
+    {
+      "pose": "idle_a",
+      "x": 29,
+      "y": 50,
+      "message": "The navy lower garment around x25-39, y44-56 splits into two trouser-like bent legs. For the contracted navy skirt, author a broader continuous front skirt panel with a clear hem and grouped folds, then expose the stepping feet below it. Carry that garment construction through idle_b/c and the standing action poses so the long teal coat and navy skirt remain distinct."
+    }
+  ]
+}

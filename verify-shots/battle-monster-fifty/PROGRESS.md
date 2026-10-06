@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재38/50 통과
+# 신규50종 제작 · 현재39/50 통과
 
 ## 최초 두 종 확인
 
@@ -593,3 +593,41 @@ rework3지적/draft(false)와 교정본 시트/저작 방식 기록도 보존했
 근거:thirty-eight-passed-proof.json,root-review-iron-gauntlet-brawler.json,
 native-contact-iron-gauntlet-brawler.*,browser-proof-iron-gauntlet-brawler.json,
 draft-independent-rework-silver-sword-matron-initial.json,지속 출처38종.
+
+
+## 은검여협 한 차례 교정 후 통과 · 실제39/50 · 현무 초기 교정
+
+은검여협은 납작한 쓰러짐/들린 머리와 바지처럼 갈라진 치마를 별도 실제 모델 호출로
+직접 고친 뒤 새 독립 GPT 6.1 sol/high keep를 받았다. 감독이 수정된18자세 native1배/
+최근접2배864×696 원본 시트를 직접 열고 author.write_sources/read_more와 교정 호출
+흐름, apply-skirt-fall.apply 전체 쓰기 본문·모듈 흐름·호출을 읽었다. 연속된 남청 치마
+앞면/모인 주름/밑단과 아래의 발, 낮게 기운 머리/더 두꺼운 청록 목·어깨·옆몸통과 접힌
+하체, 검손의 연결을 확인했다. 기본 베기·칼끝 기술/독·기절·수면은 유지됐다. 명시적 자세별
+y/x/행 문자열만 저장하며 형상 생성/몸 전체 변환이 없다.18PNG는 실제 원본과 같고
+최종 공개 원본/writer/시트 해시를 다시 읽었다. 새 keep의 수면 두 장 눈꺼풀 대비 개선
+의견2개와 약한 피격/작은 상태 쌍 변화 관찰을 보존한다. 초기 실제 rework/draft(false)
+및 수정 시트/직접 저작 방식도 보존했다.12종 사람형 모두 실제 통과이며 지속 출처의
+각 brief를 읽어 여성6종을 확인했다:홍영검희/흑련자객/비단선술사/적궁궁녀/혼등무녀/은검여협.
+
+심연현무128의 초기 실제18자세 native1배/최근접2배1632×1272 시트를 감독이 직접 열고
+author.put/save 전체 쓰기 본문·모듈 흐름·호출을 읽었다. 직접 지정 갑각/문양/꼬리의
+리터럴 군집을 재사용하고 각 목·머리·발·상태 문자열을 직접 지정한다. 휴식 갑각은 별도로
+찍은 REST_SHELL이다. 형상 생성/좌표 자동 이동/몸 전체 변환이 없다.18PNG는 실제
+ASCII/팔레트와 같다. 실제 초기 독립 rework2지적은 sleep_b 갑각 윗면의 쓰러짐 같은
+파손 모양과 기술의 두 큰 물 파문 대신 가는 S자 선으로 보이는 효과다. 실제 원본 시트/
+감독 draft(false)/job/result를 보존했다. 온전한 수면 갑각/실제 입의 두 분리된 물 덩어리·
+밝은 물마루를 별도로 교정 중이며 새 검수 전에는 통과로 세지 않는다. 실제 기린/현무
+대기 중간안과64px 사람의 같은2배 비교도 보존했다.
+
+중간 시트 캡처는 요청한 원본 자세가 없거나 게시 이동 중이면 저장 전에 실패하도록
+읽기 보조기를 교정했다. 없는 자세의 빈 칸을 결과처럼 저장하지 않는다. 실제 존재하는
+기린/현무 대기 시트를 다시 읽었으며 그림/선택/생산 흐름은 수정하지 않았다.
+
+현재39/50/702자세/312GIF/전체false다. 같은39종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/저작 방식을 확인했다. 원래52판정/8선택 보존, 신규117행은 사용자
+목표 위임 Allow다. 실제 minor11개를 보존한다(이전9개+은검여협2개). 남은11종은 모두
+128px 보스다. 전체50 완료/게임 설치·실전 전투 완료를 주장하지 않는다.
+근거:thirty-nine-passed-proof.json,root-review-silver-sword-matron.json,
+native-contact-silver-sword-matron.*,browser-proof-silver-sword-matron.json,
+draft-independent-rework-abyss-jade-turtle-initial.json,지속 출처39종.

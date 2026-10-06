@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-06T11:47:08.335716+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "6135ec8316fa73647d32f9edbf3560e9964a5795c7ba890531ea96eaff3ed262",
+  "actualIndependentReview": {
+    "recommendation": "rework",
+    "summary": "공급된 실제 portrait/light/dark/checker PNG와 시트의 native 1x·nearest 3x를 확인했다. 큰 녹청 갑각, 금 홈, 긴 목·금 눈·물결 꼬리와 네 발이 읽힌다. 왼쪽 위의 넓은 빛 면과 오른쪽 그림자 면은 일관되며 목·다리·몸 연결에 뚜렷한 단절은 보이지 않는다. 가까운 발은 바닥에 닿고 먼 발의 높은 위치는 시점으로 읽힌다. 준비의 목 움츠림, 이동의 뒷발 뻗기, 공격의 앞발 내딛기, 피격의 목 낮춤은 구별되지만 갑각 밀치기는 비교적 약하다. 추가 자세는 색 틴트가 아니라 청금 기/물 효과, 독 거품과 웅크림, 별과 처진 목, 낮게 엎드린 수면으로 구분된다. 기술 효과의 중심은 실제 입에 닿아 있으나 두 물 파문은 가느다란 세로 S자 장식처럼 읽힌다. sleep_b에는 dead와 같은 갑각 윗윤곽의 파손 모양이 나타나 수면 연속성을 해친다. 손·도구 연결은 해당하지 않는다. 이는 정지 자세 미리보기 검수이며 실제 전투의 이동·충돌·시간, 저작 모델/리터럴 격자 방식, 전체 원본 팔레트·alpha 계약을 증명하지 않는다. 추천은 사용자 선택을 대신하지 않는다.",
+    "issues": [
+      {
+        "pose": "sleep_b",
+        "x": 69,
+        "y": 57,
+        "message": "갑각 꼭대기 x65–72/y55–58에 dead와 같은 검은 지그재그와 배경색 패임이 생긴다. sleep_a의 온전한 둥근 윗윤곽을 이 수면 높이에 맞춰 이어 그리고 내부를 갑각 그림자색으로 채워라. 호흡은 온전한 갑각·몸의 높이 변화로 표현하고 수면 중 갑각이 깨졌다가 복구되는 패임은 제거하라."
+      },
+      {
+        "pose": "skill_b",
+        "x": 113,
+        "y": 75,
+        "message": "입 앞 x107–125/y42–101의 두 곡선이 중앙에서 이어져 native 1x에서 하나의 세로 S자/주술 선처럼 읽힌다. 실제 입 x109–112/y72–77의 방출 연결을 유지하면서 위·아래 파문의 곡선 사이에 읽히는 간격을 주고, 각 파문에 넓은 청색 물 덩어리와 밝은 물마루 픽셀 군집을 직접 그려 두 큰 물 파문으로 구별되게 하라. 셀 오른쪽 여백은 보존하라."
+      }
+    ],
+    "binding": "6135ec8316fa73647d32f9edbf3560e9964a5795c7ba890531ea96eaff3ed262",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "28afedf5fc6fbdba769039be189a205db377f18eef64987eb3c400a0d8925c12",
+      "preview/suite/light.png": "7f3010f12848b78038dea2fd1ab5bac8b66c88475614d7b1dc1dba117bc4948d",
+      "preview/suite/dark.png": "82a553568ce49bc5b5ca816cf624e3f04ff2757fbbe0bea0c86bfd25ad96342a",
+      "preview/suite/checker.png": "df0e735bb1b72552da84502bcb7bb4137870e7f2a15d5d16c709e5e8422ebbdb"
+    },
+    "jobId": "d0744e0a-54f5-40fa-90d2-2e028db73ba6",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T11:45:34.336653+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "d0744e0a-54f5-40fa-90d2-2e028db73ba6",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T11:42:57.617035+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/jobs/d0744e0a-54f5-40fa-90d2-2e028db73ba6",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "3d24d2e15168f11c1c9dc82f4e12c5c4f1d20fa70c927a06dea613fc52829136",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "28afedf5fc6fbdba769039be189a205db377f18eef64987eb3c400a0d8925c12",
+      "preview/suite/light.png": "7f3010f12848b78038dea2fd1ab5bac8b66c88475614d7b1dc1dba117bc4948d",
+      "preview/suite/dark.png": "82a553568ce49bc5b5ca816cf624e3f04ff2757fbbe0bea0c86bfd25ad96342a",
+      "preview/suite/checker.png": "df0e735bb1b72552da84502bcb7bb4137870e7f2a15d5d16c709e5e8422ebbdb"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T11:45:33.488713+00:00"
+  },
+  "rootDraftEvidence": "verify-shots/battle-monster-fifty/root-draft-review-abyss-jade-turtle.json",
+  "claimScope": "Actual initial rework; no keeper/Allow claim. Repair must receive fresh independent review."
+}

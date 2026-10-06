@@ -1,0 +1,120 @@
+[
+  {
+    "name": "idle",
+    "sequence": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "holdsMs": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "attack",
+    "sequence": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_a"
+    ],
+    "holdsMs": [
+      600,
+      200,
+      100,
+      120,
+      220,
+      900
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "hit",
+    "sequence": [
+      "idle_a",
+      "hit",
+      "idle_a"
+    ],
+    "holdsMs": [
+      700,
+      180,
+      900
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "dead",
+    "sequence": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "holdsMs": [
+      700,
+      150,
+      1700
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "skill",
+    "sequence": [
+      "idle_a",
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "holdsMs": [
+      700,
+      260,
+      160,
+      240,
+      900
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "poison",
+    "sequence": [
+      "poison_a",
+      "poison_b"
+    ],
+    "holdsMs": [
+      420,
+      420
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "stun",
+    "sequence": [
+      "stun_a",
+      "stun_b"
+    ],
+    "holdsMs": [
+      300,
+      300
+    ],
+    "decodedPixels": "equal to native source"
+  },
+  {
+    "name": "sleep",
+    "sequence": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "holdsMs": [
+      650,
+      650
+    ],
+    "decodedPixels": "equal to native source"
+  }
+]
