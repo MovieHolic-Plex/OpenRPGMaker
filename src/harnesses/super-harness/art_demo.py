@@ -143,6 +143,7 @@ def prepare(data, cid):
     for g in manifest['groups']:
         for c in g['candidates']:
             for ref in c['sources'] + [c['sheet']]: choices.verified(root, ref)
+            for recovery in c.get('nativeReviewRecoveries', []): choices.art_native_rereview.verify(data, cid, recovery)
     import theme_production
     theme_sources=theme_production.demo_sources(cid,choices.read(folder/'art-result.json'),manifest)
     inputs = dict(version=1, root=str(root), generation=generation, components=manifest,
@@ -294,9 +295,11 @@ def accept(data, cid, result):
             raise ValueError('전용 인물마다 걷기/정지와 행동을 실제 공간의 별도 상태로 보여야 합니다. 전체 프레임 원본을 사용하세요.')
         if any(len(new_action_uses[gid]) < min(2, len(frames)) for gid, frames in new_actions.items()):
             raise ValueError('새로 주문한 행동의 서로 다른 프레임을 공간에서 보여야 합니다. 기존 행동만 배치하면 추가 동작 검수를 할 수 없습니다.')
+        recoveries = [r for c in selected for r in c.get('nativeReviewRecoveries', [])]
+        for recovery in recoveries: choices.art_native_rereview.verify(data, cid, recovery)
         passed = all(c['passed'] for c in selected)
         candidates.append(dict(id=f'demo-{number}', title=demo.get('title') or f'공간 데모 {number}',
-            passed=passed, summary='데모 조립 완료 · 독립 검수 대기',
+            passed=passed, nativeReviewRecoveries=recoveries, summary='데모 조립 완료 · 독립 검수 대기',
             reasons=[str(r) for c in selected if not c['passed'] for r in c['reasons']],
             repairFixes=[f for c in selected for f in c.get('repairFixes', [])],
             sources=list({r['path']:r for r in refs}.values()), images=previews, sheet=previews[0],
