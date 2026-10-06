@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "frost-ribbon-maiden/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T08:50:36.783550+00:00",
+    "requestId": "f20841da-dff1-58af-a441-49440847dbd1",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "frost-ribbon-maiden/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "a558857a56c878e3aab967565d4e4ffacf2070ec442db9df38f7e6ebf0cffbb6",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T08:50:36.783550+00:00",
+    "requestId": "f20841da-dff1-58af-a441-49440847dbd1",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "frost-ribbon-maiden/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "e37755be86c8a304cb621ca3766b214de19b92167988013473dd080125805744",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T08:50:36.783550+00:00",
+    "requestId": "f20841da-dff1-58af-a441-49440847dbd1",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

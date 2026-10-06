@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재21/50 통과
+# 신규50종 제작 · 현재22/50 통과
 
 ## 최초 두 종 확인
 
@@ -236,3 +236,19 @@ PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정�
 보존한다. 남은29종까지 목표는 동일하며 전체 완료나 게임 프로젝트 설치를 주장하지 않는다.
 근거:twenty-one-passed-proof.json,root-review-storm-kite-spirit.json,native-contact-storm-kite-spirit.*,
 실제 browser-proof,progress-skill_b-storm-kite-spirit.*,지속 출처21종.
+
+## 서리영녀 교정 통과 · 실제22/50
+
+서리영녀는 세 차례 실제 좌표 교정 뒤 독립 keep0지적이다. 감독이 현재18자세 native1배/최근접2배
+시트를 직접 열고 네 native writer의 실제 쓰기 본문·호출 연결을 읽었다. 은백 머리/푸른 비녀/
+작은 우향 성인 눈과 겹옷, 소매와 손의 연결, 앞 신발과 떨어진 채찍 끝, 손에서 뻗는 세 가지
+얼음 결정, 낮은 쓰러짐과 앉아 감긴 눈 수면을 확인했다.18PNG는 원본 ASCII/팔레트와 정확히 같다.
+변하지 않은 행을 유지하고 개별 지정 y/x/문자열로 고친 방식이며 형상 수학/몸 전체 변환이 없다.
+실제 독립 권고와 사용자의 위임 Allow를 구별한다.
+
+현재22/50/396자세/176GIF/전체false다. 같은22종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0과
+현재 감독 그림/직접 저작 방식을 확인했다. 원래52판정/8선택 보존, 신규66행은 목표 위임 Allow다.
+화린독사·매화정의 작은 지적 각1개를 유지한다. 남은28종까지 같은 목표이며 전체 완료나 설치를
+주장하지 않는다. 근거:twenty-two-passed-proof.json,root-review-frost-ribbon-maiden.json,
+native-contact-frost-ribbon-maiden.*,browser-proof-frost-ribbon-maiden.json,지속 출처22종.

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>서리영녀 — 원본 동작 후보</title>
+<style>
+body{background:#171c2a;color:#e6edf0;font:16px system-ui;margin:32px;max-width:1050px}
+h1{font-size:26px}p{line-height:1.7}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+figure{margin:0;padding:16px;background:#252e40;border:1px solid #526681;border-radius:8px}
+figure img{width:192px;height:192px;image-rendering:pixelated;display:block;margin:auto}
+figcaption{text-align:center;margin-bottom:12px}a{color:#b6f0ed}button{padding:8px 16px;margin-bottom:20px}
+.sheet{max-width:100%;image-rendering:pixelated}
+</style>
+<h1>서리영녀</h1><p>96px 원본 18자세 / 8동작. 사용자 선택과 하네스 독립 검수가 필요한 후보입니다.</p>
+<button id="toggle">일시 정지</button>
+<main>
+<figure><figcaption>대기</figcaption><img src="idle.gif" data-still="idle_a.png"></figure>
+<figure><figcaption>공격</figcaption><img src="attack.gif" data-still="attack.png"></figure>
+<figure><figcaption>피격</figcaption><img src="hit.gif" data-still="hit.png"></figure>
+<figure><figcaption>쓰러짐</figcaption><img src="dead.gif" data-still="dead.png"></figure>
+<figure><figcaption>빙사결</figcaption><img src="skill.gif" data-still="skill_b.png"></figure>
+<figure><figcaption>독</figcaption><img src="poison.gif" data-still="poison_a.png"></figure>
+<figure><figcaption>기절</figcaption><img src="stun.gif" data-still="stun_a.png"></figure>
+<figure><figcaption>수면</figcaption><img src="sleep.gif" data-still="sleep_a.png"></figure>
+</main>
+<h2>실제 크기</h2><img class="sheet" src="sheet-dark-1x.png">
+<h2>투명 경계 확인</h2><a href="sheet-checker-3x.png">체커 3배 시트</a> · <a href="sheet-light-3x.png">밝은 배경 3배 시트</a>
+<script>
+let paused=false;const imgs=[...document.querySelectorAll('figure img')];
+imgs.forEach(im=>im.dataset.gif=im.getAttribute('src'));
+document.querySelector('#toggle').onclick=e=>{paused=!paused;imgs.forEach(im=>im.src=paused?im.dataset.still:im.dataset.gif);e.target.textContent=paused?'재생':'일시 정지'};
+</script></html>

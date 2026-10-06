@@ -1,0 +1,90 @@
+{
+  "move": {
+    "changedPixels": 497,
+    "changedBoundsInclusive": [
+      32,
+      53,
+      66,
+      89
+    ],
+    "beforeGridSha256": "504792cb20bf7014d365e5c8ca17fa5126455a5c717c9470948e073c2c09cde2",
+    "currentGridSha256": "2a9383935ad54073082d5d0b0320551d4a4cc71b04b7ffe7e161e852c3cda306",
+    "currentInkBoundsExclusive": [
+      18,
+      20,
+      72,
+      93
+    ]
+  },
+  "attack": {
+    "changedPixels": 574,
+    "changedBoundsInclusive": [
+      28,
+      51,
+      64,
+      87
+    ],
+    "beforeGridSha256": "72e4879974fe963098993f6379dac5cc98c5f0af3ff8aef39d4df1a147a302ce",
+    "currentGridSha256": "a827de1e64e45d9163390460e3b038efbbdd6743b48aac679c552fb550028480",
+    "currentInkBoundsExclusive": [
+      17,
+      19,
+      88,
+      93
+    ],
+    "handRibbonRootUnchanged": true,
+    "wideWhipArcUnchanged": true
+  },
+  "skill_c": {
+    "changedPixels": 283,
+    "changedBoundsInclusive": [
+      41,
+      46,
+      67,
+      77
+    ],
+    "beforeGridSha256": "f6fd8652c2d25318cb2db2b8512dfe20a2479fce0372a64e0c4e6d29aae5f44c",
+    "currentGridSha256": "6c63f0958d94d4a5e88c753604dd91722867d5cd535347c533d778b0ac8f3368",
+    "currentInkBoundsExclusive": [
+      19,
+      20,
+      90,
+      93
+    ],
+    "dispersedShardsUnchanged": true
+  },
+  "stun_a": {
+    "changedPixels": 199,
+    "changedBoundsInclusive": [
+      39,
+      35,
+      56,
+      58
+    ],
+    "beforeGridSha256": "60199235f1600aed6a2bebf3e2bc4118ba65842af9d1e5dcf847b4916947a68a",
+    "currentGridSha256": "65fc947eb46596777afc0e5491fe14d3bb5950f3a0d96d379cbebb6d5311723e",
+    "currentInkBoundsExclusive": [
+      15,
+      21,
+      74,
+      93
+    ]
+  },
+  "stun_b": {
+    "changedPixels": 242,
+    "changedBoundsInclusive": [
+      39,
+      35,
+      57,
+      58
+    ],
+    "beforeGridSha256": "1076db3ef01d0b9c8affe2e9b4dd1fb50c63eb0131d77bf1421c8be7c6618815",
+    "currentGridSha256": "e1954e51ca3702375f2ea8176be4e74a632b10f2d3a8809adca4a3838bebd7c3",
+    "currentInkBoundsExclusive": [
+      16,
+      24,
+      76,
+      93
+    ]
+  }
+}

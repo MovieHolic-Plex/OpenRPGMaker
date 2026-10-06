@@ -1,0 +1,81 @@
+{
+  "pose": "move",
+  "changedPixels": 12,
+  "pixels": [
+    {
+      "x": 66,
+      "y": 85,
+      "before": "i",
+      "after": "o"
+    },
+    {
+      "x": 67,
+      "y": 86,
+      "before": "i",
+      "after": "o"
+    },
+    {
+      "x": 68,
+      "y": 86,
+      "before": "g",
+      "after": "o"
+    },
+    {
+      "x": 69,
+      "y": 86,
+      "before": "o",
+      "after": "."
+    },
+    {
+      "x": 68,
+      "y": 87,
+      "before": "i",
+      "after": "."
+    },
+    {
+      "x": 69,
+      "y": 87,
+      "before": "g",
+      "after": "."
+    },
+    {
+      "x": 70,
+      "y": 87,
+      "before": "o",
+      "after": "."
+    },
+    {
+      "x": 67,
+      "y": 88,
+      "before": "o",
+      "after": "."
+    },
+    {
+      "x": 68,
+      "y": 88,
+      "before": "g",
+      "after": "."
+    },
+    {
+      "x": 69,
+      "y": 88,
+      "before": "o",
+      "after": "."
+    },
+    {
+      "x": 68,
+      "y": 89,
+      "before": "o",
+      "after": "."
+    },
+    {
+      "x": 69,
+      "y": 89,
+      "before": "o",
+      "after": "."
+    }
+  ],
+  "beforeSha256": "2a9383935ad54073082d5d0b0320551d4a4cc71b04b7ffe7e161e852c3cda306",
+  "afterSha256": "aa111d58370300cdb2ab319ebdc86425b53b286b8bfbd52e1286d1d14bd39f72",
+  "scope": "Local silk tip only; hashes describe files, not review or approval."
+}

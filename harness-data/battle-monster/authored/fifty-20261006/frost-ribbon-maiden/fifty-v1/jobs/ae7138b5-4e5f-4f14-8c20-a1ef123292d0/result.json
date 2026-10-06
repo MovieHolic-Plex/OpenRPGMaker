@@ -1,0 +1,12 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four actual PNGs, including native 1x cells and nearest 3x views on light, dark and checker backgrounds. The adult female silhouette, silver hair, blue hairpin and unequal sleeves read clearly; broad cool light/shadow planes support the upper-left light. Head, neck and garment masses show no obvious accidental transparent holes. Standing feet have readable ground contact; the collapsed dead pose is distinct. Windup, step, whip extension and recovery remain recognizable, and the whip and skill effect connect to the visible forward hand. Skill preparation has a small hand-held core, contact has three differently shaped ice branches, and recovery folds the hand beside detached fragments. Poison, stun and seated closed-eye sleep are distinct body states rather than global tints; paired changes are subtle. One localized repair is recommended: the move-frame ribbon tip merges with the forward shoe, weakening separation of tool and anatomy at 1x. These static pose previews do not establish actual battle timing, hop behavior, animation continuity in motion, palette/alpha compliance or literal pxgrid authorship. This recommendation is not a user selection.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 67,
+      "y": 88,
+      "message": "At native (66-69,88), the forward shoe outline joins the descending cyan ribbon tip. The ribbon consequently reads as tethered to the toe. Redraw its final cluster around (67-70,86-89) farther right or terminate it higher, leaving at least one clear transparent pixel between the entire ribbon-tip outline and shoe outline. Preserve the connected wrist-to-ribbon path and the shoe's ankle connection."
+    }
+  ]
+}

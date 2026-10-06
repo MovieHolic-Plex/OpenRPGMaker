@@ -1,0 +1,200 @@
+{
+  "idle_a": {
+    "bbox": [
+      19,
+      20,
+      72,
+      93
+    ],
+    "sha256": "fe203f9299baa43e23c59eb680374d420869409225673d39b69cffefdd891533",
+    "rgbaSha256": "9d8e9e603c560bfea94ef5b0458a3a22dcd10f08e6fbea5b093d84f01a65ea08",
+    "pngSha256": "7dac11a3c62299df468ab938d2b7d4b677c02c3cb1f990982a7531b62b312d0c"
+  },
+  "idle_b": {
+    "bbox": [
+      19,
+      20,
+      73,
+      93
+    ],
+    "sha256": "c4680dd9548b2b6d032f328291a44459900d34a1403a1d203e0ead0d44727f2b",
+    "rgbaSha256": "6280bef226adbd5d9593b0b6845cf2572e19fbaea506c75f6b6d6d31a70951e4",
+    "pngSha256": "fbb5af341c74f9cab7dd32d63d3fdc75af092634865b97f876c7d4978d1313b4"
+  },
+  "idle_c": {
+    "bbox": [
+      19,
+      20,
+      72,
+      93
+    ],
+    "sha256": "133423e3eee57ea1833bec88a11f495c180f3bd23a3ae83f185b8eaa0e3976ba",
+    "rgbaSha256": "8692397198a2b6e07b2b3e7194a46884fac9775face7172113880b6eb2e61768",
+    "pngSha256": "88a306de090bbab34958db41c01a817aae261620f9480f190537c50bad21a48d"
+  },
+  "windup": {
+    "bbox": [
+      19,
+      20,
+      68,
+      93
+    ],
+    "sha256": "9fbe24d8f091144112efc1adcdaf7124a345b15648b705cda6416e695290b048",
+    "rgbaSha256": "b873486d21ac437f38c587e60715ed1ae24230bb08e54606b28615cc49af24f4",
+    "pngSha256": "40717975c87acce82fa22097ecd67ed8bc442488e125d7aa50a8738bebdc16bf"
+  },
+  "move": {
+    "bbox": [
+      18,
+      20,
+      72,
+      93
+    ],
+    "sha256": "aa111d58370300cdb2ab319ebdc86425b53b286b8bfbd52e1286d1d14bd39f72",
+    "rgbaSha256": "c8ae522a0e11704e37d73b339c055a53f7d482f8826298bcfa5584d3a78d8af9",
+    "pngSha256": "ab5945c076f25cf069d5def3d3983b7029a2543baef703ccdf82c7e30fd796ca"
+  },
+  "attack": {
+    "bbox": [
+      17,
+      19,
+      88,
+      93
+    ],
+    "sha256": "a827de1e64e45d9163390460e3b038efbbdd6743b48aac679c552fb550028480",
+    "rgbaSha256": "293f85bba4a59e354983df9ede46905b4e19f0daa3976e791a664125b7b2f698",
+    "pngSha256": "9358d2ed8c078d5c1a57113cf7f859f9101933164c97e28170da4d93ac527483"
+  },
+  "recover": {
+    "bbox": [
+      19,
+      20,
+      67,
+      93
+    ],
+    "sha256": "ebc08aa97f36df572b09c2882c5e45efa83c8480d6c23422f5a1fc9b6bd74f20",
+    "rgbaSha256": "3661f0d410c616e7677276e11c1c32795508a20777da2fffd9264f87cedd4a06",
+    "pngSha256": "e05cca0420da976677d1aaa667f16b4b82ac40b14134206bbff75e398f7afbea"
+  },
+  "hit": {
+    "bbox": [
+      18,
+      22,
+      69,
+      93
+    ],
+    "sha256": "f44217c52390461829526e2584606d516d404c94e932dd0f822d6e0806c6e618",
+    "rgbaSha256": "0f326d1e15d444d6aab492efd25c951d866b69d49e54c576833ef3fa6da1a1c1",
+    "pngSha256": "3265bc84ff17994d6dbd5da82723838de22c2f671d3c4b68f0bd2bc656242156"
+  },
+  "dead": {
+    "bbox": [
+      14,
+      72,
+      82,
+      93
+    ],
+    "sha256": "bf816f19d9cec3f6aa797492561cac6d9f6c7f19d185cdb44c369755298dcfe7",
+    "rgbaSha256": "c5a7a5f1c3f10556ebb16803de0eb6606441bf72dbc5673bddfdb8ce303c4a81",
+    "pngSha256": "cff240837c65de0a76344d63d9473a229988ac06a728c2120eabe64781eaa889"
+  },
+  "skill_a": {
+    "bbox": [
+      19,
+      20,
+      65,
+      93
+    ],
+    "sha256": "e18af4772e41ed4bc5c33968bdc6ee2f9c615ef9058aad9f000c49fe58868bcc",
+    "rgbaSha256": "d49dc52d2fc55807897104aafac0923e91cf3aea344658f00e54b9b23c8dd7a8",
+    "pngSha256": "7762568d1a2343caf4643216adb9e02ba08a4fbb277c3268d3f59c935b34995a"
+  },
+  "skill_b": {
+    "bbox": [
+      19,
+      20,
+      94,
+      93
+    ],
+    "sha256": "b0e4f9491caba8f21a887d5c6cde5eebdc21871de92676d5c5a0b0c447278295",
+    "rgbaSha256": "98059615d58cfb94dcb602ae60b8f47a8540ff4ac840d9e47c02dea349d86d12",
+    "pngSha256": "aa881fe54be9bb26fa6136005a6791d4da210ceeb4bbff8c53f3dbac566be1ff"
+  },
+  "skill_c": {
+    "bbox": [
+      19,
+      20,
+      90,
+      93
+    ],
+    "sha256": "6c63f0958d94d4a5e88c753604dd91722867d5cd535347c533d778b0ac8f3368",
+    "rgbaSha256": "1761017273e7af9034e098a20d22cf05e4fb38b4c6e7f7d468d80ac53f6a1ed8",
+    "pngSha256": "cf08304b4e8b05345ed23ddeb17a782c56f4c7a93d129e32c22bd6bf8444164c"
+  },
+  "poison_a": {
+    "bbox": [
+      21,
+      23,
+      76,
+      93
+    ],
+    "sha256": "fb181876658454229ee25ce473aaef6fe8fb1026e85920563679ac5ddb6f6ada",
+    "rgbaSha256": "e09bb97f6975603407f12fe05dacfeba6d0c5cfa702d17394536bc8c8a1014c3",
+    "pngSha256": "805df84b31e445dadd72f3274c4884067570132f1f887abbba937a7d7488c5b8"
+  },
+  "poison_b": {
+    "bbox": [
+      21,
+      21,
+      82,
+      93
+    ],
+    "sha256": "c0d5602845e3f1b018b74bbc1910396c6b4a4ff49eebfac9c69d4aba296827b7",
+    "rgbaSha256": "c6e7643f4b5bfd46a18750126197f05f3bed6bc9e38e55abfcac6766c05898f6",
+    "pngSha256": "cdf9109ea2be7fd8e472ad7d8f68c6139378113063866ca01fbd0ed8b4fb90fc"
+  },
+  "stun_a": {
+    "bbox": [
+      15,
+      21,
+      74,
+      93
+    ],
+    "sha256": "65fc947eb46596777afc0e5491fe14d3bb5950f3a0d96d379cbebb6d5311723e",
+    "rgbaSha256": "c6eea856d6f74d207b216c70fc80547b07502ec00d1bd17033f7c859eca7e26a",
+    "pngSha256": "409a4913496094ca04b9d85df71dcb7984f30e93eac94e0eee036dddb8465d5f"
+  },
+  "stun_b": {
+    "bbox": [
+      16,
+      24,
+      76,
+      93
+    ],
+    "sha256": "e1954e51ca3702375f2ea8176be4e74a632b10f2d3a8809adca4a3838bebd7c3",
+    "rgbaSha256": "af91e043f1db9b07a7ee2042c0f179097c4e35849e0cb1d6f64625a57fb9ea38",
+    "pngSha256": "3a66f9f8c0bb72f90f6ee4eaae912e40f7b8727531c824d94683c5e9c19e166d"
+  },
+  "sleep_a": {
+    "bbox": [
+      21,
+      46,
+      79,
+      93
+    ],
+    "sha256": "96fbccdd02bf507ffc2548b5ade8c04a772489c2b096c03074cab91d3e8bf0d7",
+    "rgbaSha256": "63a74f20ac0e4a48cbf381ab7295b8b8a40d190ac0c57bc952fa99ddce84d12e",
+    "pngSha256": "d2d1eb7fd519ef6840609bdc099bb6cdffa05eb9755e8bcbb5af83dd52dd1858"
+  },
+  "sleep_b": {
+    "bbox": [
+      21,
+      46,
+      79,
+      93
+    ],
+    "sha256": "42c073187606fcc8116be5d65595b1e81785652222ddc6eb69b3de2351a48290",
+    "rgbaSha256": "4df0740a25d3e908fe4fed2480b090f573c298366336e26cdebcd28af34b9140",
+    "pngSha256": "ca934dddfd0764f279e62c847002976fb3823f1511a163bba37e6ac75a4be7b0"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-06T08:51:23.239767+00:00",
+  "passed": true,
+  "key": "frost-ribbon-maiden/fifty-v1",
+  "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+  "actualIndependentReviewJob": "c845b0ff-bb75-4399-845a-3c4123a593ba",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "7dac11a3c62299df468ab938d2b7d4b677c02c3cb1f990982a7531b62b312d0c",
+    "preview/suite/light.png": "52d6e08924629aca388d84a4a4f5514059ec8f50c0300865a5255081255233ab",
+    "preview/suite/dark.png": "6a0e6546eeee94fd0edab58053bf9537d6547e7f6a71a489eae4f79e93b6f2b4",
+    "preview/suite/checker.png": "327151452686baf7d6ace5de41f4a66c40a58380a9c29f86fce4c6e636416c5c"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-frost-ribbon-maiden.png",
+  "nativeContactPngSha256": "afb9f07a253c320de9923c55dd141332f69f0c63b066e59f65046849eb9e77f7",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "5887fc4d22b76ba57b9d5db5b8381b8057e547e8df855d446182f59d9a3e46af",
+    "repair_pixels.py": "b2b629aeb9154f138d3872268f9171facc912032cbd966f367cb477f0f60ba67",
+    "repair_anatomy.py": "40bb5a5da2cb5514de10e5d13f7e0b70ee8b77fd9e0d3531eed64575d213c57c",
+    "repair_ribbon_tip.py": "2c043502345c8c22dc03fb0ac009321d1774e8a55268541eefeb558213fe7dea"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened final published current18pose native1x/nearest2x1248x984 unresized, same binding as previously viewed private exact native sheet. Silver longhair/bluepin/adult smallquiet rightwardeyes/asymmetric iceblue sleeve layers. Proper connected shoulder/cuff/fist and ribbonroot, moved ribbon-tip leaves gap from advancing shoe; grounded standing/fallen lowbody vsseated sleep. Crouched backward hit, handgatheredicecore/three distinct tall diagonal broad crystals/returned fragments. Poison crouch/purpleparticles, closedstuneyes andseatedclosedeyesleep with pairpose changes. Read full author_pixels rows/blank/clusters/derived/save and all3repair writers full application/save bodies and all callnames, shortening literal ASCII only for inspection: unchanged row preservation with individually authored explicit y,x,string replacements, no generated shape math or wholeframe/body translation. All18nativePNG RGBA exactlymatch current ASCII/palette; actual independent keep0issues after3repairs.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

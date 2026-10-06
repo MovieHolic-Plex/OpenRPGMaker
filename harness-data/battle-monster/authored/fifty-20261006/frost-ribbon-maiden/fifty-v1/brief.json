@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "frost-ribbon-maiden",
+    "name": "서리영녀",
+    "cell": 96,
+    "grounded": true,
+    "motion": "hop",
+    "tier": "elite",
+    "idleFrameMs": 240,
+    "silhouette": "성인 여성 서리 귀신, 은백 긴 머리와 푸른 비녀, 청백 겹옷과 긴 비단 띠, 작은 우향 얼굴과 서로 다른 두 소매. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "띠손을 어깨로 당김 → 옷자락 아래 발 내딛기 → 손부터 이어진 서리 띠 채찍 → 손/띠 회수.",
+    "skill": "빙사결: 실제 띠 쥔 손에 얼음 핵 → 띠 끝에서 세 다른 모양의 얼음 결정 → 손을 접고 깨진 얼음 파편.",
+    "resourceId": "jf-enemy-frost-ribbon-maiden",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 92,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

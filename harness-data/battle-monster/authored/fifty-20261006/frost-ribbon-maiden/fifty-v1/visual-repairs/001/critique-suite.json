@@ -1,0 +1,31 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the actual portrait, light, dark and checker PNGs at native 1x and nearest-neighbor 3x. The right-facing small face, long silver hair, blue pin and unequal sleeves give a recognizable frost maiden silhouette. Broad pale upper-left highlights and blue lower-right shadows describe the layered robe consistently; its central S-shaped fold remains readable across poses. The planted shoes retain the baseline, move exposes a stepping foot, attack extends the ribbon, and recovery retracts it. No obvious accidental interior transparency holes or severed body parts were visible. The idle cuff-to-hand junction is visually weak on the dark background despite pixel connectivity. Skill preparation has a small icy hand cluster, contact stays connected through the hand/ribbon, and recovery releases shards, but the contact effect reads as one branching lightning-like shape rather than three clearly differentiated ice crystals. Poison has a hunched body and purple bubbles, stun has a rigid lowered-arm stance and orbiting stars, and sleep has a seated closed-eye body with subtle sleeve/ribbon changes; these are recognizable authored status states rather than palette tints or unrelated attacks. This recommendation is advisory, not a user selection. Static pose previews cannot establish animation timing, hop motion, in-battle readability, literal-grid authorship or author/reviewer model provenance; geometric connectivity alone is not visual approval.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 55,
+      "y": 55,
+      "message": "The small fist at roughly x55-59, y55-58 meets the sloping sleeve through a narrow dark contour, so it looks like a detached square beside the cuff on the dark preview. Give the sleeve-to-palm junction a visible 1-2 pixel cuff/skin overlap using the existing midtone and light colors, and retain the ribbon emerging from the outer side of the grasp. Carry this readable junction into the corresponding idle_b and idle_c positions."
+    },
+    {
+      "pose": "skill_b",
+      "x": 81,
+      "y": 49,
+      "message": "The tall upper point, middle diagonal point and broad lower point fuse into one continuous angular zigzag. Separate their silhouettes with small transparent notches around the branching junction and distinct facet/shadow clusters, so three differently shaped ice crystals read at 1x. Preserve the continuous hand-to-ribbon root around x62-70, y49-53 and the existing right-edge margin."
+    }
+  ],
+  "binding": "0bb52740191fb2856dcd6e69cd737c97903a8cff2646ca7a896e6531cf511a97",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "63e48ad18d21d9b520c2a5d4e97ee3fe9e4aacaf5bfecff768f6f16e59b3eec4",
+    "preview/suite/light.png": "4cd3cd1404357f902264c11dfc2f3fad4acda69d0ad3f59817f15749ceefeec0",
+    "preview/suite/dark.png": "92a8460e22e85c230811f81cafad9b04b95399e1bdecfcb8dd3b073976a9fb81",
+    "preview/suite/checker.png": "aba2a93c1f5ee345e16446af191e7aa4f0ea9c5242114a82b0d6935a9354d303"
+  },
+  "jobId": "c585b2c6-fa2f-4d1a-8a15-f4694ad09661",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T08:20:16.106429+00:00",
+  "userApproved": false
+}

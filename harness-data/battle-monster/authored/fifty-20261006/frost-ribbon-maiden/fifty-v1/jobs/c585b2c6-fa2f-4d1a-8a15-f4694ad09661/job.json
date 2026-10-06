@@ -1,0 +1,43 @@
+{
+  "id": "c585b2c6-fa2f-4d1a-8a15-f4694ad09661",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T08:17:14.692449+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/frost-ribbon-maiden/fifty-v1/jobs/c585b2c6-fa2f-4d1a-8a15-f4694ad09661",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/frost-ribbon-maiden/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/frost-ribbon-maiden/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/frost-ribbon-maiden/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/frost-ribbon-maiden/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "f3e954f27264ca6c64c9df51703a0750004c3c655f5955fe41db84b748f7a762",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "63e48ad18d21d9b520c2a5d4e97ee3fe9e4aacaf5bfecff768f6f16e59b3eec4",
+    "preview/suite/light.png": "4cd3cd1404357f902264c11dfc2f3fad4acda69d0ad3f59817f15749ceefeec0",
+    "preview/suite/dark.png": "92a8460e22e85c230811f81cafad9b04b95399e1bdecfcb8dd3b073976a9fb81",
+    "preview/suite/checker.png": "aba2a93c1f5ee345e16446af191e7aa4f0ea9c5242114a82b0d6935a9354d303"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T08:20:15.678212+00:00"
+}

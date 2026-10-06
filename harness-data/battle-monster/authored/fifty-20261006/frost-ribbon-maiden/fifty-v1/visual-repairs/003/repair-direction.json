@@ -1,0 +1,14 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "b60ec5dda5ea2dea08d5e92a47ecb07ceea7c86f42707dcf5e24a1dc48114c55",
+  "priorReviewJob": "ae7138b5-4e5f-4f14-8c20-a1ef123292d0",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 67,
+      "y": 88,
+      "message": "At native (66-69,88), the forward shoe outline joins the descending cyan ribbon tip. The ribbon consequently reads as tethered to the toe. Redraw its final cluster around (67-70,86-89) farther right or terminate it higher, leaving at least one clear transparent pixel between the entire ribbon-tip outline and shoe outline. Preserve the connected wrist-to-ribbon path and the shoe's ankle connection."
+    }
+  ],
+  "startedAt": "2026-10-06T08:43:26.257964+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "idle_a": {
+    "changedPixels": 9,
+    "changedBoundsInclusive": [
+      53,
+      54,
+      55,
+      57
+    ],
+    "currentInkBoundsExclusive": [
+      19,
+      20,
+      72,
+      93
+    ]
+  },
+  "idle_b": {
+    "changedPixels": 9,
+    "changedBoundsInclusive": [
+      53,
+      54,
+      55,
+      57
+    ],
+    "currentInkBoundsExclusive": [
+      19,
+      20,
+      73,
+      93
+    ]
+  },
+  "idle_c": {
+    "changedPixels": 9,
+    "changedBoundsInclusive": [
+      53,
+      54,
+      55,
+      57
+    ],
+    "currentInkBoundsExclusive": [
+      19,
+      20,
+      72,
+      93
+    ]
+  },
+  "skill_b": {
+    "changedPixels": 262,
+    "changedBoundsInclusive": [
+      76,
+      33,
+      94,
+      72
+    ],
+    "currentInkBoundsExclusive": [
+      19,
+      20,
+      94,
+      93
+    ],
+    "handRibbonRootUnchanged": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "0bb52740191fb2856dcd6e69cd737c97903a8cff2646ca7a896e6531cf511a97",
+  "priorReviewJob": "c585b2c6-fa2f-4d1a-8a15-f4694ad09661",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 55,
+      "y": 55,
+      "message": "The small fist at roughly x55-59, y55-58 meets the sloping sleeve through a narrow dark contour, so it looks like a detached square beside the cuff on the dark preview. Give the sleeve-to-palm junction a visible 1-2 pixel cuff/skin overlap using the existing midtone and light colors, and retain the ribbon emerging from the outer side of the grasp. Carry this readable junction into the corresponding idle_b and idle_c positions."
+    },
+    {
+      "pose": "skill_b",
+      "x": 81,
+      "y": 49,
+      "message": "The tall upper point, middle diagonal point and broad lower point fuse into one continuous angular zigzag. Separate their silhouettes with small transparent notches around the branching junction and distinct facet/shadow clusters, so three differently shaped ice crystals read at 1x. Preserve the continuous hand-to-ribbon root around x62-70, y49-53 and the existing right-edge margin."
+    }
+  ],
+  "startedAt": "2026-10-06T08:20:16.389911+00:00"
+}

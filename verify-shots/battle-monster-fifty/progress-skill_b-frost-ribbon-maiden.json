@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "frost-ribbon-maiden",
+    "source": "qa-runs/harnesses/battle-monster/frost-ribbon-maiden/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "b0e4f9491caba8f21a887d5c6cde5eebdc21871de92676d5c5a0b0c447278295",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:51:26.604506+00:00",
+    "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+    "entireGoalCompleteClaim": false
+  }
+]

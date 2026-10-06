@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 21,
+  "archivedPassedSpecies": 22,
   "entireGoalComplete": false,
   "items": [
     {
@@ -200,6 +200,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "52685c0aa679734701f63ad8b879d896a70e09673eeb9410b8eb8f2c189e9746"
+    },
+    {
+      "key": "frost-ribbon-maiden/fifty-v1",
+      "binding": "7d10f96cecb23f157136fd17b173d52e516c49226e17a0ccbc712baa8e89ac85",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "7ea054fd8f7a03106e1a23aa52ce2723dc1c75397de76e7e257799cad41c9650"
     },
     {
       "key": "storm-kite-spirit/fifty-v1",
