@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-06T16:24:40.529268+00:00",
+  "passed": false,
+  "key": "jade-armor-scorpion/fifty-v1",
+  "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-jade-armor-scorpion-after-repair-three.png",
+  "nativeContactPngSha256": "0edcc8a3eb0af4aca8fc9a1a6189840c98ddc2fc37dd79295bdeb5ffaa3f87b4",
+  "nativeWriterFilesRead": {
+    "status_pixels.py": "2f3f99b48f29b9e50891fa96d57406e835ba9d1375adfd3aa09b9b248087a963",
+    "skill_pixels.py": "07838e70dd86b0d80ce089417acffba8786164683bb13b832ba97a5d38a114b6",
+    "pincer_repair_pixels.py": "dba058a508fbf2662a08e9535cf3fba872f6fb0c286badfcf481549c69021c0c",
+    "correct_pixels.py": "a60198d10b3ff854e1f6a4c62ea0580ddc258d128bec67c5c713060b5b6a3e4b",
+    "pinch_sequence_pixels.py": "6f280eafdc353344d52e72bfddabf244256412cad6ae1d629842f27b866a2f83",
+    "support_pose_pixels.py": "1a53c5b62379d085869f5065e0b3a23e2e4b9096d9f17460fe706b44a440403e",
+    "author_pixels.py": "63f3da76daee7de55b04b51c2d9e4062b91d838f97a8fa71aec05bdca2a828c7",
+    "collapse_pixels.py": "fb06046bfa48913a1ba1673741e59bf4d7e5282cca54379e28840bb5aabbbdf0",
+    "final_joint_pixels.py": "9b3e661626d842bb1fa3998f5f671626715a8196b5b9abb8143d47664db4d899",
+    "build_all.py": "aa9c6bed927caf7b4e45a36483c4e9360f268753498377103af9d902d36ea2fa",
+    "review_repair_pixels.py": "b5ed2046dce58754edae3ac42f0d0bd0bb512c7632c194ba0e04f7dad84f26af",
+    "motion_pixels.py": "da5a239b438db6f300ff087e5502a7f861e58c9f5514bb505a9134bfaf221116",
+    "body_socket_pixels.py": "d06322f946baec3deeeaebb25dcb4b29aeec300e7d1012780f606e90f2e21497"
+  },
+  "readOnlyHelperFilesRead": {
+    "render_source.py": "196120efb91db627b792a9c221ac9160fb2680e4ed5c83a19569196dea0db12e",
+    "body_socket_export.py": "2088f48b09ff78d33c519c636533fd059109c34aac1dcf1a1a7148be9fb9c64b",
+    "review_preview.py": "71487354ae833afc0da406d649a3fd7c16977356901034899af7df48ebbd3b45",
+    "pincer_export.py": "ac898d46b8b41e778deba829a8dce31759a94814d893c0a3fc0e2612068f8553"
+  },
+  "observations": [
+    "Actually opened all18 third-repair native128 poses at original1632x1272/native1x/nearest2x. Jade/gold shell, raised articulated jade tail and coral sting remain the same large scorpion. Six thin segmented supports are now traceable from distinct body-under sockets rather than emerging below pincer palms; overlapping far supports are darker. Upper-left pale jade/gold highlights and lower-right green shadows remain.",
+    "Windup near jaw swings outward to a larger negative-space wedge; move folds the arms toward contact; attack preserves long tapered fingers around narrow seams rather than short rounded mittens. Far claw is darker and near palm has the same gold ring/hinge. Recover reopens smaller jaw gap, hit has lower folded palms/body; dead lies low with collapsed tail and sleep keeps a higher folded tail/body. Native1x supports remain thin schematic shapes and some status stances are similar.",
+    "Skill still has violet sting core, two forked sting-rooted streams and three recovery droplets, while poison has lowered body/head and bubbles, stun has closed head pose/stars and sleep folded arms/no symbols. Their paired differences are restrained. Static poses/source cannot establish dash/actual hit contact/playback timing.",
+    "Actually read whole new body_socket edit method/module calls, pinch_sequence/support_pose/final_joint literal patch call modules, complete changed build_all orchestration and readonly body_socket_export method/module flow. Nine previous current native writers keep their fully read hashes except the just reread build orchestrator; four new native writer modules bring current total13. Every current executable writer/helper is guarded against actually read exact bytes. Patches use chosen y/x/literal palette strings, no procedural anatomy/whole-frame transformations/tweens; readonly exports inspect native grid/contracts/GIF facts only."
+  ],
+  "actualIndependentRecommendation": "pending-current-binding",
+  "claimScope": "Actual third-repair native18/full13 current native writers only; current independent keeper/selection/pack/archive/browser/completion pending."
+}

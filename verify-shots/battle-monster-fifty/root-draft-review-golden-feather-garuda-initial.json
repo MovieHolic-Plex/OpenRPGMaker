@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-06T16:13:49.263989+00:00",
+  "passed": false,
+  "key": "golden-feather-garuda/fifty-v1",
+  "binding": "93f5c5b7064303d1f2d45aef24e441888729cdae7a4321d4c1c14782d957c55d",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-golden-feather-garuda-initial.png",
+  "nativeContactPngSha256": "b99d0b017315dfb2076235a7372e00a4fc47e8d6c8c9f2fe6827e897cf438bf5",
+  "nativeWriterFilesRead": {
+    "author.py": "94a2bba99191659c6ad57d3715bbfab9f67e0694bfe6dd42c7f05eba3dfb2179"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "c43f4b65890dd12c4bbe5d09c07131239020a087fe57c610d5a23ffd3a67f96d",
+    "diagnose.py": "a6b6bbf0fba41b7e6199407506d8f45265470abf11aceb30e1ec62b92910c304"
+  },
+  "observations": [
+    "Actually viewed all18 initial native128 at original1632x1272/native1x/nearest2x. Golden ochre angular wings, pointed crest and short pale beak/chest with silver shoulder strip and gray leg/feet identify the same large bird. Upper-left yellow/ivory highlight planes and brown inner wing shadows are readable; broad feather panels are straight and origami/metal-like rather than rounded feather masses.",
+    "Windup lowers body and folds wing/head stance, move leans head/chest forward while spreading wider gold panels, attack adds an articulated lifted forward silver leg/talon, recover retracts wing/tail into upright stance. Hit closes/droops the eye and angles head but main torso remains rigid. Dead low piled wing/body and horizontal pale head is distinct from low but upright-neck folded sleep; feet in bent stances are long pale flattened shapes.",
+    "Skill prep places restrained pale glows at wing edges, contact spreads3 long tapered golden ray/blade silhouettes across upper/front wing edges, recovery shows3 bright loose feather pieces beside face/body. Poison open beak/closed eye bubbles differs from lowered stunned/sleep head with stars versus no stars; states have authored body changes but sleep/stun stance and pair changes are restrained. Static poses do not establish dash/actual strike contact/playback timing.",
+    "Read complete current author2414-line module and all block/blank/save/copy_idle/replace methods and every repeated save/correction call. Only literal chosen y/x/palette row spans and transparent initialization/explicit region clearing; own authored rigid scaffolding copied before local anatomy redraw, no procedural body geometry/whole-frame transform/tween. Initial full readonly renderer and complete33-line append/diagnose20-line module also read: native PNG/GIF decode/hold differences and nearest background/filmstrip sheets only. Current exact read writer/helper hashes and native18/PNG/check binding match."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "claimScope": "Actual same-binding native18/full current writers and actual GPT6.1sol/high rework8; not a keeper, selection or completion.",
+  "actualIndependentReviewJob": "82f53fc2-0b0e-4df7-aa41-8aed37068cce",
+  "actualIndependentIssues": [
+    {
+      "pose": "idle_a",
+      "x": 39,
+      "y": 82,
+      "message": "가까운 날개의 굽은 부분이 일정 폭의 날카로운 지그재그 띠와 반복 평행 명암으로 읽힌다. 이 부근의 깃을 넓은 겹침 면과 서로 다른 길이의 깃 끝으로 다시 찍고, 어깨에서 팔꿈치까지 살이 있는 날개 뿌리를 이어라. idle_b/c와 회수에서도 같은 두 날개의 앞뒤 관계를 유지하라."
+    },
+    {
+      "pose": "idle_a",
+      "x": 60,
+      "y": 43,
+      "message": "위쪽 먼 날개의 오른쪽 가장자리에 직사각형 배경색 홈이 있어 깃이 잘린 판처럼 보인다. x57–65, y39–47 부근의 수직/수평 절단을 깃 사이의 계단형 곡선과 깃 끝으로 다시 연결하고, 아래 가장자리의 어두운 윤곽을 이어라. 의도한 외부 깃 틈은 남기되 사각 구멍 같은 모양을 줄여라."
+    },
+    {
+      "pose": "idle_a",
+      "x": 87,
+      "y": 117,
+      "message": "회은 발이 넓적한 장화와 평평한 삼각 발끝으로 읽혀 맹금의 굽은 발톱이 약하다. 발목에서 갈라지는 발가락과 아래로 굽는 어두운 발톱 끝을 명시한 픽셀 덩어리로 찍고, 실제 지지 발끝은 y124 바닥을 유지하라. 반대 발과 idle_b/c에도 같은 발 구조를 이어라."
+    },
+    {
+      "pose": "attack",
+      "x": 113,
+      "y": 113,
+      "message": "뻗은 앞발 끝이 넓은 발목판 옆에 둥근 고리가 붙은 형태라 연결된 발톱 움켜쥠으로 읽히지 않는다. x104–121, y108–119 부근의 발목→발바닥→발가락을 두께 있는 연속 픽셀로 정리하고, 목표를 향해 모이는 세 굽은 발톱을 구분하라. 발가락 사이 투명 틈은 유지할 수 있지만 얇은 윗부분 연결에만 매달린 고리 인상을 줄여라."
+    },
+    {
+      "pose": "skill_a",
+      "x": 32,
+      "y": 12,
+      "message": "위쪽 날개 끝의 작은 밝은 변화가 평소 황금 하이라이트와 섞이고 본체는 대기 자세에 가까워 1배에서 스킬 준비가 약하다. 실제 두 날개 끝에 금백 핵을 뚜렷한 덩어리로 찍고, 그 핵 주변에 좁은 금색 테두리와 준비 중 접힌 깃을 배치해 idle_a와 구별하라."
+    },
+    {
+      "pose": "skill_b",
+      "x": 45,
+      "y": 40,
+      "message": "맨 위 칼날의 시작점은 날개 끝이 아니라 넓은 날개 면 안쪽이다. 나머지 칼날도 대략 (43,62), (65,94)의 면 안쪽에서 길게 뻗는다. 세 칼날의 시작 픽셀을 실제 깃 끝으로 옮기고, skill_a의 금백 핵→날개 끝→칼날 밑동이 같은 부위로 이어지게 직접 찍어라. 현재 닿아 있다는 사실만으로 날개 끝 발사 계약을 만족하지 않는다."
+    },
+    {
+      "pose": "skill_c",
+      "x": 90,
+      "y": 43,
+      "message": "위쪽 잔광이 얼굴/부리 위에서 시작해 입으로 쏘는 기술처럼 읽힌다. 두 잔광을 skill_b에서 실제 날개 끝에서 출발한 두 칼날의 진행 위치로 배치하고 부리 윤곽과 분리하라. 발사 후 떠 있는 잔광 자체는 허용되지만 몸의 다른 기관에서 새로 시작하는 인상을 없애라."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 87,
+      "y": 64,
+      "message": "낮춘 몸은 구분되지만 짧은 검은 눈 표시와 앞으로 내민 머리 때문에 1배에서 수면보다 쉬는 웅크림으로 읽힐 수 있다. 눈을 명확한 닫힌 눈꺼풀로 찍고 목을 더 편안하게 접어 몸/접힌 날개에 기대게 하라. sleep_b에서도 같은 접촉점과 지지 발을 유지하며 작은 호흡 차이를 남겨라."
+    }
+  ],
+  "actualIndependentSummary": "제공된 portrait/light/dark/checker PNG를 원본 1배와 시트의 최근접 3배로 확인했다. 몸은 128칸을 충분히 채우고 오른쪽을 향하며, 금갈색과 은백색의 구분 및 왼쪽 위 밝음/아래쪽 갈색 그림자는 읽힌다. 대기 발은 같은 바닥에 놓이고 쓰러짐은 낮게 접힌 별도 실루엣이다. 다만 날개가 넓은 맹금의 깃보다 각진 금속판/지그재그 띠로, 발은 굽은 발톱보다 장화로 읽힌다. 준비→이동→공격→회수의 변화는 있으나 공격 발톱의 움켜쥠이 약하다. 스킬은 준비의 작은 발광, 세 칼날 발사, 두 잔광으로 구분되지만 칼날 발생 위치가 실제 날개 끝과 맞지 않고 회수 잔광 하나는 부리와 겹친다. 독은 처진 얼굴/날개와 입자, 기절은 접힌 날개/힘 빠진 몸과 별, 수면은 더 낮춘 머리/몸으로 서로 구분되며 단순 색변환은 아니다. 수면은 1배에서 쉬는 웅크림과 혼동될 여지가 있다. 체커에서 보이는 날개/다리 사이 빈틈을 모두 결손으로 판정하지 않았으며, 공격 발끝도 완전 분리라고 단정하지 않는다. 정지 자세 미리보기만 검수했으므로 재생 타이밍, 실제 전투 접촉/접지, 저작 모델 및 리터럴 격자 저작 과정은 확인할 수 없다. 형식 PASS나 사용자 선택을 대신하는 결과가 아닌 시각 보완 추천이다.",
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/visual-repairs/001/source"
+}
