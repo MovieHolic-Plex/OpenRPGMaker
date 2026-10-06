@@ -1,0 +1,366 @@
+{
+  "idle_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "idle_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 41,
+    "changed_bounds": [
+      84,
+      79,
+      100,
+      90
+    ]
+  },
+  "idle_c": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "windup": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "move": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      3,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 605,
+    "changed_bounds": [
+      3,
+      25,
+      65,
+      107
+    ]
+  },
+  "attack": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 1331,
+    "changed_bounds": [
+      65,
+      57,
+      113,
+      119
+    ]
+  },
+  "recover": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "hit": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "dead": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      11,
+      78,
+      112,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "skill_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "skill_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      126,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "skill_c": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 150,
+    "changed_bounds": [
+      70,
+      81,
+      96,
+      90
+    ]
+  },
+  "poison_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 1312,
+    "changed_bounds": [
+      45,
+      59,
+      96,
+      118
+    ]
+  },
+  "poison_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 1279,
+    "changed_bounds": [
+      45,
+      58,
+      92,
+      118
+    ]
+  },
+  "stun_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "stun_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      5,
+      25,
+      122,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 0,
+    "changed_bounds": null
+  },
+  "sleep_a": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      12,
+      55,
+      116,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 93,
+    "changed_bounds": [
+      70,
+      103,
+      88,
+      112
+    ]
+  },
+  "sleep_b": {
+    "canvas": [
+      128,
+      128
+    ],
+    "row_widths": [
+      128
+    ],
+    "ink_bounds": [
+      12,
+      54,
+      116,
+      124
+    ],
+    "border_transparent": true,
+    "changed_pixels": 709,
+    "changed_bounds": [
+      35,
+      54,
+      110,
+      124
+    ]
+  }
+}

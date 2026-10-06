@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 43,
+  "archivedPassedSpecies": 44,
   "entireGoalComplete": false,
   "items": [
     {
@@ -475,6 +475,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "0f9b9f68c6e57d2670ef6acf1ee667ab305f1f3617bac86159728d2dc2a3ad56"
+    },
+    {
+      "key": "abyss-nine-eye-spider/fifty-v1",
+      "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+      "nativeCell": 128,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "f8cf12b81efb363d4b95f3280bb97ec41d58d4a82f71f157be8cce5280720bdc"
     }
   ]
 }

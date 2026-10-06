@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-06T14:37:37.664059+00:00",
+  "passed": false,
+  "key": "thousand-year-pine-king/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Viewed all four supplied PNGs, including the sheets' native 1x and nearest 3x panels. The broad teal pine crown, reddish trunk, white root beard and right-facing face identify the creature clearly; the standing body fills its cell. Upper-left highlights and large dark bark planes give useful volume on both backgrounds. No obvious accidental transparent pinholes were visible in the standing anatomy. Root feet retain a consistent ground line, and raised windup, wide stepping move, connected downward striking arm, recovery and recoil read as a coherent sequence. Skill preparation has a green-gold core at the forward foot; three crooked roots visibly emerge from that foot in contact, followed by a stump and wood fragments. This foot attachment fits the specified root skill. Poison has altered arms and bubbles, stun has a hanging arm and stars, and sleep has a lowered crouch and shorter stance; these are distinct body states rather than recolors. The collapsed pose needs a wooden arm connection repair: its far-right bent limb appears linked to the body through the white beard. Static pose previews cannot establish playback timing, actual battle contact, runtime scale, literal-grid authorship or exact palette/alpha compliance. This recommendation is advisory; user selection remains separate.",
+    "issues": [
+      {
+        "pose": "dead",
+        "x": 95,
+        "y": 107,
+        "message": "The far-right bent brown limb begins beside the beard tip; its visible route back to the central upright wooden mass passes through the white beard, with no readable wooden shoulder/upper-arm bridge. Reauthor the junction around native x81–99, y100–111 as a continuous brown branch from the trunk/head-side shoulder into this limb. Keep the white beard as an overlapping root tuft with its own contour, rather than using it as the limb's structural connection. Preserve the low grounded collapse silhouette."
+      }
+    ],
+    "binding": "08571377eb64c90388df07ae68786d23f926b0b9749738d1e6a86762ca5c2c0d",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+      "preview/suite/light.png": "979678c2c10c19dd3cd22c5602373cfbf5923440713f985bfe1c19d1171dce09",
+      "preview/suite/dark.png": "dfa035835cc84b71067bded1fe851bfa514b67582154f9cae2d2d33b4c176c2c",
+      "preview/suite/checker.png": "4c9733f7c5032d54c6cdda9fce8aeb561bbd3df07158cd00334eabfd8fbabca9"
+    },
+    "jobId": "77498c22-288c-4747-bbc8-55ac2722d00b",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T14:36:14.131164+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "77498c22-288c-4747-bbc8-55ac2722d00b",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T14:32:54.405988+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/jobs/77498c22-288c-4747-bbc8-55ac2722d00b",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "1c0e618e0ede46c4b6591e7e91e4dc2e6975994731732ece49abf8348e3dfff7",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+      "preview/suite/light.png": "979678c2c10c19dd3cd22c5602373cfbf5923440713f985bfe1c19d1171dce09",
+      "preview/suite/dark.png": "dfa035835cc84b71067bded1fe851bfa514b67582154f9cae2d2d33b4c176c2c",
+      "preview/suite/checker.png": "4c9733f7c5032d54c6cdda9fce8aeb561bbd3df07158cd00334eabfd8fbabca9"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T14:36:13.366105+00:00"
+  },
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/thousand-year-pine-king/fifty-v1/visual-repairs/004/source",
+  "rootNative18ReviewOfThisSnapshotClaim": true,
+  "claimScope": "Actual native18/whole writer viewing and actual independent rework only. Fourth repair pending; no keeper/Allow/completion claim."
+}

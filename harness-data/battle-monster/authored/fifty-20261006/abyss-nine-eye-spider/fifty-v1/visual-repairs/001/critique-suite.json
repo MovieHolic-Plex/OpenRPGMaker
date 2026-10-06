@@ -1,0 +1,49 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the actual portrait and light/dark/checker PNGs, including their native 1x tiles and nearest 3x tiles. The large silver abdomen has coherent upper-left lighting, broad material planes and a readable dark plum underside. Nine red eyes are individually visible in the standing poses. Eight leg paths are largely readable, with some roots occluded by the body; the narrow far-side limbs look less substantial than the foreground limbs. No obvious accidental transparent hole or detached structural part was seen. Standing support feet maintain the ground line; raised far-side feet are consistent with perspective. Windup folds the front legs, hit recoils the head, and death visibly collapses the body. The bite and rear-leg push need clearer articulation. The skill has two large branches connected to the mouth/fang area and three recovery droplets, but recovery leaves the jaws open. Poison crouching with bubbles, stun with a drooping head and stars, and folded sleep are distinct drawn states rather than simple tints; sleep still resembles collapse, and its pair changes a forelimb more than it conveys breathing. Hands and tools are inapplicable. This is a still pose preview: actual battle contact, dash travel, animation timing and seamless playback were not observed. PNG appearance cannot establish the authoring method. This recommendation is advisory and does not record a user selection or visual approval from a geometry check.",
+  "issues": [
+    {
+      "pose": "idle_b",
+      "x": 96,
+      "y": 87,
+      "message": "The far fang suddenly grows a long, nearly horizontal pale spur beyond the curled idle_a tip. Shorten this strip and redraw a tapered, outlined tip that continues the same fang curve; keep the idle changes in the jaw root rather than changing the tooth's apparent length."
+    },
+    {
+      "pose": "move",
+      "x": 17,
+      "y": 80,
+      "message": "The rear supporting leg remains an upright column while the abdomen stays in its idle position, so the specified rear-leg push is weak. Bend the rear knee and draw a sloping planted push leg with a connected hip; coordinate the head and front-leg advance with that push."
+    },
+    {
+      "pose": "attack",
+      "x": 85,
+      "y": 87,
+      "message": "The two pale fangs remain separated and point largely in parallel, reading as an open jaw over the extended leg rather than a bite contact. Rotate and taper their tips toward a shared contact region, narrow the visible gape, and preserve both outlined connections to the head."
+    },
+    {
+      "pose": "skill_c",
+      "x": 85,
+      "y": 85,
+      "message": "The three residual droplets read, but the jaw returns to the open idle fang shape instead of closing. Draw the two fang tips drawn inward under the mouth, with a smaller dark gape and intact roots, to make this visibly the recovery of the mouth-connected web release."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 89,
+      "y": 119,
+      "message": "Relative to sleep_a, the long diagonal foreground limb becomes a short stepped stump while the abdomen remains fixed. Preserve that limb's length and redraw it folding at an identifiable knee. Give the sleep pair a relaxed supported head and a small coordinated abdomen/head breathing change, so it reads as resting rather than another collapse."
+    }
+  ],
+  "binding": "9ceaef75b82a3bb395c39b1fd4a4cfec15fd519e8ad0f0efe45af65c6b1e0fad",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "5dc504cde33cc8c3059b06bdc6cabfc1059a965f205bd15094ea77123f69b73d",
+    "preview/suite/light.png": "998ef2f6255ed4d6c5fa89cdb3596cefdf0581165e6b04d23fbfe37c5e7afd6f",
+    "preview/suite/dark.png": "36d1aca94ed2ccca6791dbd6b659d92253c7da8e56b9106d66ff9642900d0e53",
+    "preview/suite/checker.png": "16d193a097d0eb961f8be1fa5ff081689f96c43c6ddff7a9d322d257c331895b"
+  },
+  "jobId": "1d2529af-be1f-4d98-83d8-a1190579e13f",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T14:00:00.632130+00:00",
+  "userApproved": false
+}

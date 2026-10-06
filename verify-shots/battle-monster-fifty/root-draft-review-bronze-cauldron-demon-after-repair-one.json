@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-06T14:34:20.398418+00:00",
+  "passed": false,
+  "key": "bronze-cauldron-demon/fifty-v1",
+  "binding": "5e56693d097201caa30b14e0ad2269389b918b0c20ed9015afa2ffd2b7f8a345",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-bronze-cauldron-demon-after-repair-one.png",
+  "nativeContactPngSha256": "1e4640b05cc89b03614bd35e46e197bd305711edaef404b594d70d7c51496a4f",
+  "nativeWriterFilesRead": {
+    "author.py": "5ec03290ce019b4dba0f141087046d9d447cd89d5bab407d519c958c3cc1bdad",
+    "repair_002.py": "bc24e6f0290b6b55228e2e4cb05acb45268dfed070a10e63bd98d106c32755d6"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Rounded green bronze vessel has gold open rim, near/far handle arms,3 feet, quiet gold face and red tassel. Broad upper-left light and dark right planes give material volume; the far arm is dark and paired changes are modest.",
+    "Windup lifts the attached handle fist, move changes the stride, attack extends the fist modestly and recovery lowers it. The actual reviewer requests a clearer punch and removal of shin slivers. Hit droops the face/body; dead lies horizontally with tucked limbs; closed-eye sleep crouches separately. Poison brings a hand toward the mouth with bubbles, stun slumps with stars.",
+    "Rim-origin charge develops into2 tall gold/orange flames then3 residual flames; the actual reviewer found one residual flame rooted on the outer rim. Static native views do not establish battle displacement/contact/timing.",
+    "Fully read every author.py method and full module call order, including inspected_joint_repairs after make_poses/rest_and_dead/skill/poison/stun. Blank grids receive explicit literal clusters, own rigid original parts are reused selectively, independently authored limb/face/status/dead rows and explicit selected erasures replace changing anatomy. No body primitives, full-frame transform or tween. Fully read render.py: native128 palette decode, nearest diagnostic sheets, explicit8 GIF timelines and actual decoded duration/hash readback; it writes previews rather than native grids.",
+    "Actually viewed all18 current native128 poses. Windup shin now has a continuous contained outline, attack extends an attached near handle/fist screen-right with wider legs, and skill_c has3 residual flames rooted within the open rim. Other15 poses retain the prior cauldron identity and status poses. Small paired changes and a fairly frontal face remain; no battle contact/timing claim.",
+    "Read the complete current author diff from the actually fully read initial author and every repair_002.py method/module guard. Its2 windup spans/67 attack rows/47 skill_c rows replace exactly those named native grids; the author entry imports/calls it last after all original writers. Fully read render_repair.py; before/current labeled panels and coordinate/hash facts only, with no native art writes. No body generator, whole-frame transform or tween."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "claimScope": "Actual native18/whole writer viewing and actual independent rework only. Second repair pending; no keeper/Allow/completion claim.",
+  "actualIndependentJob": "1eb977bf-b5b7-40c8-90bc-69ec3c647de0",
+  "actualIndependentIssues": [
+    {
+      "pose": "hit",
+      "x": 64,
+      "y": 57,
+      "message": "The cauldron lip, trunk and planted legs retain almost the idle silhouette; the changed eyelids, mouth and shortened right handle carry most of the hit cue. Redraw a small leftward tilt/recoil through the lip, shoulder and torso clusters, fold the receiving handle toward the body and adjust the leg bends while keeping a support foot at baseline 124. Preserve the handle-to-body connection throughout the recoil."
+    },
+    {
+      "pose": "dead",
+      "x": 88,
+      "y": 83,
+      "message": "The recognizable gold oval opening becomes a tall gold L-shaped edge beside a green hand, leaving the cauldron mouth and handle difficult to distinguish. Redraw a connected, tilted rim at the right end of the fallen body with readable near/far lip thickness and a dark opening or clear edge-on closure. Place the collapsed handle and fist as a separately legible connected structure; retain the three rearward feet and the grounded lower body edge."
+    },
+    {
+      "pose": "skill_a",
+      "x": 68,
+      "y": 43,
+      "message": "Preparation already shows a pointed orange-edged flame with a broad yellow fill, making it read as a smaller version of contact rather than the specified gold-white charging core. Redraw a compact pale core seated inside the dark cauldron opening with a restrained gold surround, preserving the visible foreground lip and connected raised handle. Reserve the tall branching flame silhouette for skill_b and retain the three residual flames in skill_c."
+    }
+  ],
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/bronze-cauldron-demon/fifty-v1/visual-repairs/002/source"
+}

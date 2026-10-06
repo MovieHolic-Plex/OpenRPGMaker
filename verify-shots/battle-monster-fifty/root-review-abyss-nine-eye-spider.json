@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-06T14:37:12.572217+00:00",
+  "passed": true,
+  "key": "abyss-nine-eye-spider/fifty-v1",
+  "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+  "actualIndependentReviewJob": "e14591ec-f110-4581-921e-58c137ffa829",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "5dc504cde33cc8c3059b06bdc6cabfc1059a965f205bd15094ea77123f69b73d",
+    "preview/suite/light.png": "dd50392edfeee74e5756c1c03a534721c81ad6eedea75d584ba8fae8973bf99b",
+    "preview/suite/dark.png": "c618e2161eac6d795d90ca72ebf9ea03f83807ab33852650dd014ce2560f079c",
+    "preview/suite/checker.png": "320ef297447b991d11b307d9da925cf8ca077ff74d48d3fb339209b401141aa7"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "retainedIndependentSummary": "Viewed all four supplied PNGs, including the native 128px portrait and the native 1x / nearest 3x panels on light, dark and checker backgrounds. The large silver-backed purple spider fills its standing cell well. Nine separate red eye clusters, four leg chains on each side and two attached pale fangs are readable; overlapping roots make the far legs less immediately countable at 1x. Broad upper-left highlights and lower-right slate shadows give the carapace volume, with darker purple joints separating the body segments. No obvious broken body connection, accidental interior transparency or missing silhouette outline is visible. Windup lowers the head and folds the front legs; move changes the supporting legs; attack projects the head and opens the connected jaws toward the right; recover retracts them. The shell remains nearly stationary, so dash force depends partly on runtime movement. Near supporting feet stay at the lower baseline, while raised limbs read as intentional. Skill preparation has a purple nucleus between the fangs, contact sends two web branches from that mouth region, and recovery closes the jaws with three residual droplets. Poison crouches with bent legs and bubbles; stun droops the head and closes the eyes with stars; sleep folds the limbs beneath a lower body, distinct from the flatter splayed death pose. These are visible pose changes rather than simple recolors. Idle and paired status changes are subtle. Static previews do not establish animation timing, sliding, battle contact, boss scale against allies, palette compliance or literal-grid authorship. This recommendation is independent visual review, not a user selection.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-nine-eye-spider-after-repair-two.png",
+  "nativeContactPngSha256": "ba0a4cf73f2362ec24c81725d41384e8ff706b7753679e68a1e0e666da7a393a",
+  "nativeWriterFilesRead": {
+    "author.py": "bec2e6fa3c63f3ed0c6b7d52d8b101089c24178bc43b3ea2fa1731bb9e4b6e3e",
+    "repair.py": "13d49528f0d9d0fbc2debc008f0e40e609c98bcedd127386015f3bfcf6499e69",
+    "review_correction.py": "5d77a53f9d44c3f82ac059165c94a709df2528d5c279cc54c3da10433554d110"
+  },
+  "rootVisualAndSourceMethodObservations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Silver segmented abdomen has upper-left ivory highlights and dark blue/purple underside. Nine small red eyes,8 thin bent legs and paired fangs identify the spider; distant legs and angular joints have limited dark-background contrast.",
+    "Actually viewed all18 current native128 poses at original1632x1272, native1x and nearest2x. Attack now pushes the connected neck/head screen-right with a rightward converging jaw/fang pair and tapered foreleg tip. Poison head/thorax sag over a buckled supporting leg with different connected face/jaw/knee clusters in the two frames. Detached2 sleep_a outline pixels are removed, retaining the deliberate mouth-to-leg opening. Other14 grids are unchanged. Silver abdominal plate remains fairly rigid and thin far legs have weak dark contrast. No battle collision/timing claim.",
+    "Fully read review_correction.py apply and module guard:4 explicitly named frames load their own before-review-correction snapshots and receive individually chosen literal x/y spans, including explicit transparent pixels. Original author/repair and native renderer hashes match those already completely read. Entire inspect_correction.py is diagnostic-only. Read AUTHORING.md replay order; review_correction applies to its own preserved first-repair source, then render/diagnostic readback. No body generator, whole-frame transform or tween.",
+    "Complete original writer/module reading and subsequent complete repair/diff reading are recorded in the binding-specific root drafts; exact current read writer hashes were rechecked. Native18/source/keeper4PNG/current technical binding all agree. Static pose/source review does not prove live battle contact or timing."
+  ],
+  "actualReadRecord": "verify-shots/battle-monster-fifty/root-draft-review-abyss-nine-eye-spider-after-repair-two.json",
+  "claimScope": "Actual native18/complete current writers and actual independent keeper binding only. Selected ZIP/native GIF/archive/browser evidence is verified separately; entire50 completion remains pending."
+}

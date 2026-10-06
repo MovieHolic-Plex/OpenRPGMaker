@@ -1,0 +1,30 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected all four supplied PNGs at native 1x and nearest 3x. The large silver abdominal plate has coherent upper-left light, broad shadow planes and readable volume; the purple body, eight-leg spread and nine separate red eyes identify the armored spider clearly. Standing head, neck, fangs and major limbs appear connected, and the principal support feet remain near the ground baseline. Thin rear legs lose contrast on the dark background, but there is no obvious widespread missing outline or perforated shell. Idle changes are restrained and consistent. Windup folds a foreleg and move changes a rear leg, but attack reads mainly as another leg step: the mouth does not communicate a decisive forward bite. Skill preparation, two web branches and three residual droplets form a readable sequence, with the web visibly originating between the connected fangs. Poison is close to the windup posture with bubbles and face shading; stun is identifiable through stars over a hit-like head tilt. Sleep has a distinct folded body and closed eyes, separate from the flatter death pose, but sleep_a contains a detached outline fragment. No hand or tool applies. This is a static pose review, not battle footage: timing, dash displacement, collision/contact, runtime grounding and literal-grid authorship cannot be verified. This recommendation is not the user's selection or visual approval based on geometry alone.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 83,
+      "y": 86,
+      "message": "The fangs still curl beneath the face while the foreleg does most of the visible attacking. Redraw the connected jaw and fang clusters to project toward the right and converge into a clear biting contact; carry the head and neck forward with that contact while preserving their connection to the thorax. Make the windup-to-attack mouth change readable at 1x."
+    },
+    {
+      "pose": "attack",
+      "x": 111,
+      "y": 117,
+      "message": "The advancing foreleg ends in a broad, flat purple wedge that reads as a boot and changes the pointed-foot design seen in idle and move. Taper this terminal cluster into a narrow articulated spider tip, retaining its connection to the highlighted leg segment and the intended landing height."
+    },
+    {
+      "pose": "poison_a",
+      "x": 75,
+      "y": 86,
+      "message": "At 1x the folded attacking foreleg and nearly unchanged torso make the poison pair read largely as windup with purple bubbles. Give poison_a and poison_b a clearer sick-body silhouette: sag the connected head/thorax and relax or buckle a supporting leg, with a small authored tremble between the pair. Preserve supported feet and keep the bubbles as a secondary cue."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 88,
+      "y": 107,
+      "message": "There is a detached dark two-pixel vertical fragment at native (88,107) and (88,108), in the transparent gap beside the curled mouth. Remove these stray outline pixels, or join them into the intended fang contour with a continuous outlined cluster if they are meant to be anatomy. Preserve the intentional open space between mouth and foreleg."
+    }
+  ]
+}

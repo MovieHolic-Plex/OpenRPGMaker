@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>심연구목거미 · 후보 미리보기</title>
+<style>body{margin:24px;background:#272936;color:#f4ead7;font:16px system-ui}h1{font-size:24px}button,a{color:inherit}button{padding:8px 14px;background:#42304b;border:1px solid #8c5d73;border-radius:6px;cursor:pointer}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:20px 0}.card{padding:16px;border:1px solid #65405b;border-radius:8px}.stage{height:400px;display:grid;place-items:center;background:#252733}.stage img{width:384px;height:384px;max-width:100%;object-fit:contain;image-rendering:pixelated}body.native .stage img{width:128px;height:128px}body.light .stage{background:#dfd8c9}body.checker .stage{background:conic-gradient(#ccc 25%,#999 0 50%,#ccc 0 75%,#999 0);background-size:24px 24px}small{color:#d8dece}h2{font-size:18px}.links{display:flex;flex-wrap:wrap;gap:16px}</style>
+<h1>심연구목거미 · 18자세 / 8동작 후보</h1><p>원본 128px · 16색 · 검토용 그림</p>
+<button onclick="document.body.classList.toggle('native')">1배 / 3배</button> <button onclick="document.body.classList.remove('light','checker')">어두운 배경</button> <button onclick="document.body.classList.remove('checker');document.body.classList.add('light')">밝은 배경</button> <button onclick="document.body.classList.remove('light');document.body.classList.add('checker')">체커 배경</button>
+<main>
+<section class="card"><h2>대기</h2><div class="stage"><img src="idle.gif" alt="대기"></div></section>
+<section class="card"><h2>공격</h2><div class="stage"><img src="attack.gif" alt="공격"></div></section>
+<section class="card"><h2>피격</h2><div class="stage"><img src="hit.gif" alt="피격"></div></section>
+<section class="card"><h2>쓰러짐</h2><div class="stage"><img src="dead.gif" alt="쓰러짐"></div></section>
+<section class="card"><h2>구목독</h2><div class="stage"><img src="skill.gif" alt="구목독"></div></section>
+<section class="card"><h2>독</h2><div class="stage"><img src="poison.gif" alt="독"></div></section>
+<section class="card"><h2>기절</h2><div class="stage"><img src="stun.gif" alt="기절"></div></section>
+<section class="card"><h2>수면</h2><div class="stage"><img src="sleep.gif" alt="수면"></div></section>
+</main><div class="links"><a href="native.png">1배 18자세</a><a href="sheet-light.png">밝은 확대판</a><a href="sheet-dark.png">어두운 확대판</a><a href="sheet-checker.png">체커 확대판</a><a href="../AUTHORING.md">저작 기록</a><a href="../TIMING.md">시간표</a></div></html>

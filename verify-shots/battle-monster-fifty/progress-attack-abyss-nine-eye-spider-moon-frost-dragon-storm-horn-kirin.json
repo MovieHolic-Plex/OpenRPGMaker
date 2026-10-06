@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "storm-horn-kirin",
+    "source": "qa-runs/harnesses/battle-monster/storm-horn-kirin/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "667428380ac6b1bba4151afc55aff41aad444b859001faaef55289c0310f3833",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T14:38:00.332101+00:00",
+    "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moon-frost-dragon",
+    "source": "qa-runs/harnesses/battle-monster/moon-frost-dragon/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "8e3273cea822f2b2484d093d12ee05dbcc2cf542d171a44bce061fb8d55cf50b",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T14:38:00.332101+00:00",
+    "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "abyss-nine-eye-spider",
+    "source": "qa-runs/harnesses/battle-monster/abyss-nine-eye-spider/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "18b0684cdadff43a618e39847bc484f2791838ea4b3dd28aa5e437db65500811",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T14:38:00.332101+00:00",
+    "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+    "entireGoalCompleteClaim": false
+  }
+]

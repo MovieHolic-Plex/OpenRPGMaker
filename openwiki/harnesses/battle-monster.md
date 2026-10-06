@@ -254,6 +254,13 @@ npm run harness -- battle-monster accept-batch \
 현재 선택 binding·8GIF/정지/재생/375/320px 브라우저 근거와 기존 판정/선택 보존을 다시 읽는다.
 부분 합격 수는 전체50 완료와 구별하며 원본 그림과 쓰기 함수의 실제 감독 열람은 여전히 필요하다.
 
+`finalize-fifty-root-review.py`는 감독이 이미 실제18원본을 열고 모든 현재 writer/모듈을 읽은
+binding별 False 초안 기록만 받는다. 현재 native18·이미지·읽었던 writer 해시와 기술 PASS,
+별도 GPT6.1sol/high의 실제 terminal keep/검수4PNG를 다시 맞춘 뒤 감독 기록을 묶는다.
+그림 열람이나 미감 판정을 자동으로 만들지 않으며 선택 팩/출처/브라우저/전체50 확인은 별도다.
+수정 중 source가 바뀌면 기존 판의 열람과 실제 rework는 다음 수정 전 불변 snapshot에 묶어
+보존한다. 새 판을 이전 열람으로 통과시키지 않는다. 보조 원본은 같은 controllers에 남긴다.
+
 시드 `harness-data/battle-monster/seed.json`은 사람이 쓴다. 다른 분위기는 같은 형식의
 `--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96/128), grounded, motion,
 idleFrameMs, 실루엣, 공격 자세, 스킬 역할을 적는다. motion은 `pixelEnemySheets.ts`의 7종이다.

@@ -1,0 +1,601 @@
+{
+  "palette_unchanged": true,
+  "colors": 16,
+  "frames": {
+    "poison_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "P",
+        "a",
+        "b",
+        "c",
+        "d",
+        "p",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 1312,
+      "changed_bounds": [
+        45,
+        59,
+        96,
+        118
+      ],
+      "sha256": "1887354da7737baafdff4c46eb809c0e3952b0aa5cff453971bb523e9b734b94"
+    },
+    "poison_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "P",
+        "a",
+        "b",
+        "c",
+        "d",
+        "p",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 1279,
+      "changed_bounds": [
+        45,
+        58,
+        92,
+        118
+      ],
+      "sha256": "6cb523b7a618be07174667825667aa5cce3c3882dfe5f9849badb2775322c5ba"
+    },
+    "skill_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "P",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "87ac7287425ae1563dbfa0a9fd9a656da800a2353bfdaed11e91dd732d8a25d0"
+    },
+    "skill_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "P",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        126,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "03fb5c71d1d7e3bf704250c91d2a8556da93d0fecea443cc0d654d02524c0ab0"
+    },
+    "skill_c": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "P",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "495f71b91eaa3b2cbd3c52fccb6da865d21a33014b694f713bfc3ab58f496892"
+    },
+    "sleep_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "a",
+        "b",
+        "c",
+        "d",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        12,
+        55,
+        116,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 2,
+      "changed_bounds": [
+        88,
+        107,
+        88,
+        108
+      ],
+      "sha256": "6346c29f77c4f64951299cf7eec621ea435370ebd8fbaac59ec4d3283b132fbc"
+    },
+    "sleep_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "a",
+        "b",
+        "c",
+        "d",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        12,
+        54,
+        116,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "b119ceeb76aa5b830c9ed154dffa36f89fdfdd1829213d949f226f7e9a943b9d"
+    },
+    "stun_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "d42f7e516b74aa8b478fb4a22813317b4c3678b52813c2277cb1d8369acaae0d"
+    },
+    "stun_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "b2b97cd06d30d6439b8418df158c21a662e0be111ac03364e6652d4db53fd169"
+    },
+    "attack": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 1251,
+      "changed_bounds": [
+        65,
+        57,
+        113,
+        119
+      ],
+      "sha256": "18b0684cdadff43a618e39847bc484f2791838ea4b3dd28aa5e437db65500811"
+    },
+    "dead": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "a",
+        "b",
+        "c",
+        "d",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        11,
+        78,
+        112,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "67ea6ebea307b93933f79065acaebe44c884504eb7cda95a606f02dd9d23f89c"
+    },
+    "hit": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "8ddcad5fd40da52f5d860ebc67b8c775b3259a91e3031a8ea8341fe68a0aebe8"
+    },
+    "idle_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "6c796175da02a5456e9e85b5829c7618d3baf9ffa2e7b5e5a22eaebba88f250a"
+    },
+    "idle_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "c30fbc8efea997d9cc422453a4e2ba93c2e45489642039a0041d98a13fb71cbf"
+    },
+    "idle_c": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "06197632e5c70c9438bf310f2e0091c037ce50f9c30a0c37eee22df91fdf67e2"
+    },
+    "move": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        3,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "fbd708b2b3f246922ecb9cc5798e078a21d18e9d279c2c9d37b6719affbe6eda"
+    },
+    "recover": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "276c19171110ef7a3188b110bb99e64667f7e895626646277c1f6d601dfd2075"
+    },
+    "windup": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "symbols": [
+        ".",
+        "K",
+        "R",
+        "a",
+        "b",
+        "c",
+        "d",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w"
+      ],
+      "ink_bounds": [
+        5,
+        25,
+        122,
+        124
+      ],
+      "transparent_border": true,
+      "changed_pixels": 0,
+      "changed_bounds": null,
+      "sha256": "5902326e6f72cb7827b7cb5648b6c426ab52c2552b340c8614bd0a190f0841c8"
+    }
+  },
+  "distinct_grid_hashes": 18,
+  "sleep_removed_pixels": {
+    "107": ".",
+    "108": "."
+  }
+}

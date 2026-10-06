@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T14:35:52.366064+00:00",
+  "passed": false,
+  "key": "abyss-nine-eye-spider/fifty-v1",
+  "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-nine-eye-spider-after-repair-two.png",
+  "nativeContactPngSha256": "ba0a4cf73f2362ec24c81725d41384e8ff706b7753679e68a1e0e666da7a393a",
+  "nativeWriterFilesRead": {
+    "author.py": "bec2e6fa3c63f3ed0c6b7d52d8b101089c24178bc43b3ea2fa1731bb9e4b6e3e",
+    "repair.py": "13d49528f0d9d0fbc2debc008f0e40e609c98bcedd127386015f3bfcf6499e69",
+    "review_correction.py": "5d77a53f9d44c3f82ac059165c94a709df2528d5c279cc54c3da10433554d110"
+  },
+  "observations": [
+    "Actually opened all18 native128 poses at original1632x1272, native1x and nearest2x. Silver segmented abdomen has upper-left ivory highlights and dark blue/purple underside. Nine small red eyes,8 thin bent legs and paired fangs identify the spider; distant legs and angular joints have limited dark-background contrast.",
+    "Windup folds the foreleg; move bends a pushing rear leg; attack advances a forelimb and adjusts fangs but the bite remains weak, as independently flagged. Hit raises the head; corpse is a separate flat collapse. Poison folds the foreleg with bubbles but needs more sick-body deformation. Stars mark drooping stun; sleep curls the body with closed eyes and preserved long forelimb. The actual reviewer found2 stray sleep outline pixels.",
+    "Charge and2 purple web forks meet the actual mouth; recovery closes fangs and leaves3 droplets. Rigid abdomen reuse and small idle changes remain. No live collision or timing claim.",
+    "Fully read all author.py functions and ordered module corrections, complete repair.py apply/module guard, and entire read-only render.py. The author copies its own literal BODY rows, clears selected part rectangles and writes explicit x/y literal clusters; dead/sleep are separately authored on blank grids. repair.py loads its own original-before-repair snapshot and applies ordered PATCHES/REFINEMENTS to6 named frames; author.py does not import it. No body-shape generator, whole-frame transform or automatic tween. Renderer decodes nativeRGBA, makes diagnostic backgrounds/sheets and8 native GIFs and checks decoded equality without editing native grids.",
+    "Actually viewed all18 current native128 poses at original1632x1272, native1x and nearest2x. Attack now pushes the connected neck/head screen-right with a rightward converging jaw/fang pair and tapered foreleg tip. Poison head/thorax sag over a buckled supporting leg with different connected face/jaw/knee clusters in the two frames. Detached2 sleep_a outline pixels are removed, retaining the deliberate mouth-to-leg opening. Other14 grids are unchanged. Silver abdominal plate remains fairly rigid and thin far legs have weak dark contrast. No battle collision/timing claim.",
+    "Fully read review_correction.py apply and module guard:4 explicitly named frames load their own before-review-correction snapshots and receive individually chosen literal x/y spans, including explicit transparent pixels. Original author/repair and native renderer hashes match those already completely read. Entire inspect_correction.py is diagnostic-only. Read AUTHORING.md replay order; review_correction applies to its own preserved first-repair source, then render/diagnostic readback. No body generator, whole-frame transform or tween."
+  ],
+  "actualIndependentRecommendation": "pending-current-binding",
+  "claimScope": "Actual current native18 and complete current native writers viewed/read; independent review pending. No keeper, Allow, archive or completed species claim."
+}

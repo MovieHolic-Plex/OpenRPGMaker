@@ -1,0 +1,32 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "579f5cdffd492e80e76a5a6972c90290642a2a16a455af7f988836a3f5f775e5",
+  "priorReviewJob": "54b7efc0-33c9-4d94-ab4b-36ea114cd9ca",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 83,
+      "y": 86,
+      "message": "The fangs still curl beneath the face while the foreleg does most of the visible attacking. Redraw the connected jaw and fang clusters to project toward the right and converge into a clear biting contact; carry the head and neck forward with that contact while preserving their connection to the thorax. Make the windup-to-attack mouth change readable at 1x."
+    },
+    {
+      "pose": "attack",
+      "x": 111,
+      "y": 117,
+      "message": "The advancing foreleg ends in a broad, flat purple wedge that reads as a boot and changes the pointed-foot design seen in idle and move. Taper this terminal cluster into a narrow articulated spider tip, retaining its connection to the highlighted leg segment and the intended landing height."
+    },
+    {
+      "pose": "poison_a",
+      "x": 75,
+      "y": 86,
+      "message": "At 1x the folded attacking foreleg and nearly unchanged torso make the poison pair read largely as windup with purple bubbles. Give poison_a and poison_b a clearer sick-body silhouette: sag the connected head/thorax and relax or buckle a supporting leg, with a small authored tremble between the pair. Preserve supported feet and keep the bubbles as a secondary cue."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 88,
+      "y": 107,
+      "message": "There is a detached dark two-pixel vertical fragment at native (88,107) and (88,108), in the transparent gap beside the curled mouth. Remove these stray outline pixels, or join them into the intended fang contour with a continuous outlined cluster if they are meant to be anatomy. Preserve the intentional open space between mouth and foreleg."
+    }
+  ],
+  "startedAt": "2026-10-06T14:22:44.682044+00:00"
+}
