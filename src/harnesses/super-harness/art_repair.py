@@ -73,10 +73,18 @@ def obligations(feedback):
 def validate_comparison(verdict, request, group_id):
     expected = {r['id']: r for r in request.get('comparisonObligations', []) if r['group'] == group_id}
     comparisons = verdict.get('comparisons', {})
-    if set(comparisons) != set(expected): raise ValueError('이전 실패별 해결/미해결 비교가 누락되었습니다.')
+    if not isinstance(comparisons, dict):
+        raise ValueError('이전 실패 비교는 id별 객체여야 합니다.')
+    missing = set(expected) - set(comparisons)
+    if missing:
+        raise ValueError('이전 실패별 비교 누락: ' + ', '.join(sorted(missing)))
     calibration = request.get('approvedLayout', {}).get('layout', {}).get('phase') == 'calibration'
-    for key, obligation in expected.items():
-        item = comparisons[key]
+    # Additional observations must not erase required comparisons or crash a
+    # complete review. Preserve them and enforce the same evidence/failure rules.
+    for key, item in comparisons.items():
+        if not isinstance(item, dict):
+            raise ValueError('실패 전후 비교 항목은 객체여야 합니다: ' + key)
+        obligation = expected.get(key, {'required': item.get('required', False), 'check': item.get('check', 'fix')})
         status = item.get('status')
         if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred', 'advisory'):
             raise ValueError('실패 전후 비교 상태 오류')
@@ -103,6 +111,10 @@ def camera_style(camera):
 
 
 def require_preparation(root, folder, layout, feedback):
+    # Persisted policies from an older supervisor may still say calibration.
+    # Reject that scope before admitting drawings, even if policy and layout agree.
+    if layout['phase'] != 'scene' and whole_scene_required(folder):
+        raise ValueError('전체 공간 수정은 scene 도면이 필요합니다. 완료 원본을 보존하고 전체 장면 범위로 복구하세요.')
     policy = feedback.get('policy', {})
     if policy and layout['phase'] != policy['phase']:
         raise ValueError('현재 수정 단계와 도면 단계가 다릅니다: ' + policy['phase'])

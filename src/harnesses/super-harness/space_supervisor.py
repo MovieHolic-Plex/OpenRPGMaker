@@ -48,6 +48,8 @@ def recover(cid):
         c = store.concept(cid)
         if not c or c['stage'] != 'blocked' or store.jobs("concept=? AND status='running'", (cid,)):
             return False
+        if c.get('note') == '조립 검수 실행 오류 — 2회 실패':
+            return review_recovery.recover_context(sh, cid)
         history = Path(sh.cdir(cid, 'operator-recovery.json'))
         record = sh.read_json(history, {'attempts': []})
         if len(record['attempts']) >= 2:

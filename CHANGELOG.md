@@ -5,6 +5,73 @@
 
 <!-- releases -->
 
+## 0.152.1 — 2026-10-06
+
+### 수정
+
+- bind native wand scene panels and serialize trial animation (`53bc294`)
+
+## 0.152.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 공용 캐릭터 그림을 스토어에 진열 — 얼굴·흉상·전신 16표정, 걷기 칩 (#2250) (`2147df5`)
+- re-review unchanged native wand shelf with current context (`47a1b29`)
+
+### 수정
+
+- recover native scene reviews and deploy playable drafts with resources (`9de0f9b`)
+- recover native review reason format without changing verdicts (`572c855`)
+- bind both required native shelf review receipts (`07b13f0`)
+
+## 0.151.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 스토어 화면 개편 — 밤의 상점 진열대(웹·에디터 창 공통) (#2247) (`d55c930`)
+- wire reviewed native shelf pickup and return in wand demo (`1b89a29`)
+- prepare isolated native wand shelf vacancy states (`fbd6655`)
+
+### 수정
+
+- accept identical replacement declarations and clear resolved demo errors (`926364d`)
+- show understandable actions in wandshop playable draft (`ba6a993`)
+- validate preserved material receipts before layout review (`399da47`)
+
+## 0.150.0 — 2026-10-06
+
+### 기능
+
+- prepare hash-bound native wandshop runtime drafts (`fa89c8b`)
+- expose executable draft previews in space progress (`b9f557b`)
+- prepare frozen native potions runtime draft packets (`79b31e0`)
+
+### 수정
+
+- prepare absent isolated picker output directories (`2a392fa`)
+- bind draft proof to stored bytes and name missing preservation evidence (`56f3d5a`)
+- exclude mutable picker databases from drawing specifications (`5d4115d`)
+
+## 0.149.0 — 2026-10-06
+
+### 기능
+
+- create native scene project packets without I/O (`383cc71`)
+- add canonical native space persistence adapter (`77d926d`)
+
+### 수정
+
+- recover action requirements from older prepared manifests (`f7ec3f4`)
+- retain added action obligations from native receipts (`d554971`)
+- **qa** — monster campaign check budget, route tests follow the monster start map (`bedc665`)
+- preserve native structure headroom in runtime camera bounds (`886630f`)
+- require new actor poses in assembled scene evidence (`8e288c6`)
+- show commissioned actor interactions in whole scene examples (`b1f6130`)
+- reject stale calibration scope before scene repair admission (`ecc9c7b`)
+- **qa** — monster campaign autoplay reaches the ending (`3b96870`)
+- **qa** — autoplay carries a monster campaign through three gyms (`f352dcf`)
+- **monster** — playable first route — starters out of early wild pools, type-aware headless moves (`4ea4c73`)
+
 ## 0.148.0 — 2026-10-06
 
 ### 기능

@@ -395,6 +395,11 @@ def _finish(r, code):
             v = json.load(open(os.path.join(pack, 'verdict.json'), encoding='utf-8'))
             v['verdict'] = str(v.get('verdict', '')).upper()
             if v['verdict'] not in ('PASS', 'FAIL'): raise ValueError(v.get('verdict'))
+            # Providers sometimes emit arrays for prose fields. Normalize only
+            # the recorder copy; keep the hash-bound raw verdict untouched.
+            for field in ('reasons', 'fix'):
+                value = v.get(field)
+                v[field] = '; '.join(map(str, value)) if isinstance(value, list) else str(value or '')
         except (OSError, ValueError) as e:
             errs = sum(1 for x in _hist(r) if x['stage'] == 'review-error' and x['attempt'] == att)
             h = _hist(r) + [dict(stage='review-error', attempt=att, error=f'검수 결과 없음({code}): {e!r}'[:300])]

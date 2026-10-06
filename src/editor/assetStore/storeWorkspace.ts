@@ -282,16 +282,20 @@ function body(): HTMLElement {
   }
 }
 
-function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated" | "license">): HTMLElement {
+const PACK_TITLE = "참고문서가 들어 있어 조수가 이 타일로 바로 맵을 깝니다";
+
+function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated">): HTMLElement {
   return el("span", { class: "store-badges", children: [
-    ...(item.grade === "pack" ? [el("span", { class: "store-badge pack", text: "조수 사용 가능", attrs: { title: "참고문서가 들어 있어 조수가 이 타일로 바로 맵을 깝니다" } })] : []),
+    ...(item.grade === "pack" ? [el("span", { class: "store-badge pack", text: "조수 사용 가능", attrs: { title: PACK_TITLE } })] : []),
     ...(item.aiGenerated ? [el("span", { class: "store-badge ai", text: "AI 생성" })] : []),
-    el("span", { class: "store-badge", text: item.license }),
   ] });
 }
 
+/** 받기 수가 0인 상품에 「받기 0」을 붙이면 인기 없는 물건처럼 보인다 — 새 상품이라고 쓴다. */
+const downloadsText = (downloads: number) => downloads > 0 ? `받기 ${downloads}` : "새로 올라옴";
+
 function cover(sha: string | null, kind: string, alt: string): HTMLElement {
-  if (!sha) return el("span", { class: "store-cover-icon", text: kind === "music" || kind === "sound" ? "♪" : "▦" });
+  if (!sha) return el("span", { class: "store-cover-icon" + (kind === "music" || kind === "sound" ? " is-sound" : ""), attrs: { "aria-hidden": "true" } });
   return fillStoreImage(el("img", { attrs: { alt, loading: "lazy" } }) as HTMLImageElement, sha);
 }
 
@@ -349,11 +353,15 @@ function card(item: StoreItemSummary): HTMLElement {
     dataset: { testid: `store-card-${item.slug}`, slug: item.slug },
     on: { click: () => void openDetail(item.slug) },
     children: [
-      el("span", { class: "store-cover", children: [cover(item.cover, item.kind, item.title), ...(tag ? [el("span", { class: "store-card-state", text: tag })] : [])] }),
+      el("span", { class: "store-cover", children: [
+        cover(item.cover, item.kind, item.title),
+        ...(item.grade === "pack" ? [el("span", { class: "store-badge pack on-cover", text: "조수 사용 가능", attrs: { title: PACK_TITLE } })] : []),
+        ...(tag ? [el("span", { class: "store-card-state", text: tag })] : []),
+      ] }),
       el("span", { class: "store-card-body", children: [
+        el("span", { class: "store-card-kind", children: [STORE_KIND_LABELS[item.kind], ...(item.aiGenerated ? [el("span", { class: "store-card-ai", text: "AI 생성" })] : [])] }),
         el("strong", { class: "store-card-title", text: item.title }),
-        el("span", { class: "store-card-meta", text: `${item.author} · ${STORE_KIND_LABELS[item.kind]} · 받기 ${item.downloads}` }),
-        badges(item),
+        el("span", { class: "store-card-foot", children: [el("span", { text: item.author }), el("span", { text: downloadsText(item.downloads) })] }),
       ] }),
     ],
   });
@@ -391,7 +399,7 @@ function detailView(): HTMLElement {
       : [el("figure", { class: "is-main", children: [cover(null, detail.kind, detail.title)] })] }),
     el("p", { class: "store-kind", text: STORE_KIND_LABELS[detail.kind] }),
     el("h3", { class: "store-detail-title", dataset: { testid: "store-detail-title" }, text: detail.title }),
-    el("p", { class: "store-by", text: `${detail.author} · 받기 ${detail.downloads} · 판본 ${detail.latestVersion}` }),
+    el("p", { class: "store-by", text: `${detail.author} · ${downloadsText(detail.downloads)} · 판본 ${detail.latestVersion}` }),
     badges(detail),
     el("p", { class: "store-summary", text: detail.summary }),
     actionButtons(detail.slug, detail.title),

@@ -18,7 +18,7 @@ def digest(path):
 def verified(root, ref):
     p = (Path(root) / ref['path']).resolve()
     if not p.is_relative_to(Path(root).resolve()) or digest(p) != ref['sha256']:
-        raise ValueError('도면 입력 파일 경로/해시 불일치')
+        raise ValueError('도면 입력 파일 경로/해시 불일치: ' + str(ref['path']))
     return p
 
 
@@ -56,6 +56,16 @@ def build_input(root, request):
         if symbol.isspace() or item.get('role') not in ('structure','parking','circulation','clearance','equipment','outside') or len(item.get('purpose','').strip()) < 8:
             raise ValueError('모든 도면 칸에 실제 용도와 근거가 필요합니다: ' + repr(symbol))
     sources = layout['sources']
+    # The picker owns decisions, not drawing instructions. Even opening an empty
+    # WAL database can change its file bytes without changing any decision.
+    if request.get('harness') == 'interior-props' and request.get('picks'):
+        picks = (Path(root) / request['picks']).resolve()
+        for ref in sources:
+            candidate = (Path(root) / ref['path']).resolve()
+            if candidate.parent == picks and candidate.name in (
+                    'picks.sqlite', 'picks.sqlite-wal', 'picks.sqlite-shm'):
+                raise ValueError('선택 DB는 도면 원본이 아닙니다: ' + ref['path'] +
+                                 ' — sources에서 빼고 새 도면 검수를 받으세요. 선택은 별도 영수증으로 확인합니다.')
     paths = {str(verified(root, r).relative_to(Path(root).resolve())) for r in sources}
     require_ground_kind(root, request, sources)
     if layout.get('phase') not in ('calibration', 'scene'):

@@ -53,7 +53,7 @@ export const SEED_BUNDLES: readonly BundleSeed[] = [
     title: "일본 도시 — 상가·주택·역·신사", summary: "현대 일본 거리의 주택가·역·공원·신사를 그리는 도트 칩셋.",
     description: "3/4 시점 현대 일본 도시 타일셋입니다. 건물 외형·소품·바닥 타일과 조립 참고문서가 들어 있습니다.",
     tags: ["현대", "일본", "도시"],
-    previews: ["assets/jp-city-references/ex-konbini_block.png", "assets/jp-city-references/ex-ramen_tower.png", "assets/jp-city-references/ex-sushi_bar.png", "assets/jp-city-references/road-trunk-cross.png"],
+    previews: ["assets/store-covers/jp-city-street.png", "assets/jp-city-references/ex-konbini_block.png", "assets/jp-city-references/ex-ramen_tower.png", "assets/jp-city-references/road-trunk-cross.png"],
   },
 ];
 

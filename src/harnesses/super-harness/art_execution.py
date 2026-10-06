@@ -40,7 +40,13 @@ def prepare(root, request, resume=False):
         if not isinstance(value, str) or not value:
             raise ValueError(f'격리 경로 {name} 누락')
         path = (root / value).resolve()
-        if not path.is_relative_to(root) or path == root or not path.is_dir():
+        if not path.is_relative_to(root) or path == root:
+            raise ValueError(f'워크트리 안의 기존 폴더 필요: {name}')
+        # A fresh picker has no decisions yet and is an output directory. Do not
+        # spend another model preparation just because an empty folder was omitted.
+        if name == 'picks' and not path.exists():
+            path.mkdir(parents=True, exist_ok=True)
+        if not path.is_dir():
             raise ValueError(f'워크트리 안의 기존 폴더 필요: {name}')
         return str(path)
     env = dict(os.environ)

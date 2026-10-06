@@ -20,6 +20,26 @@ def required(data, cid):
     return bool(manifest.get('groups')) and not any(c.get('phase') == 'calibration' for g in manifest['groups'] for c in g['candidates'])
 
 
+def added_action_frames(root, layout):
+    """Bind newly commissioned poses to the approved order, not a worker claim."""
+    delivery = layout.get('actorActionDelivery')
+    if not delivery: return {}
+    manifest = choices.read(choices.verified(root, delivery['manifest']))
+    approved = {r['path']: r for r in layout['sources']}
+    frames = {}
+    for order in manifest['orders']:
+        path = Path(order['request']).resolve()
+        relative = str(path.relative_to(Path(root).resolve()))
+        request = choices.read(choices.verified(root, approved[relative]))
+        previous = set(request.get('preserveActions', {}).get('frames', []))
+        if not previous: raise ValueError('추가 행동 주문에 보존 프레임 목록이 필요합니다.')
+        added = {f"{pose['id']}-{index}" for pose in request['poses']
+                 for index in range(pose['frames'])} - previous
+        if not added: raise ValueError('추가 행동 주문에 새 프레임이 없습니다.')
+        frames['actor:' + order['actor']] = added
+    return frames
+
+
 def component_requirements(data, cid, manifest, layout, result):
     """Retire a replaced component only through the approved scene specification.
 
@@ -41,11 +61,15 @@ def component_requirements(data, cid, manifest, layout, result):
     previous = [choices.read(p)['result'] for p in archive.glob('*.json')]
     for replacement in replacements:
         old, new, requirement = (replacement[k] for k in ('from', 'to', 'requirement'))
+        # Repeating the exact declaration does not retire a second component.
+        # Conflicting targets still fail below; provenance is checked on its first occurrence.
+        if old in retired and retired[old] == replacement:
+            continue
         if (old not in groups or new not in groups or old == new or old in retired
                 or len(str(replacement.get('reason', '')).strip()) < 12
                 or any(c.get('nativeHarness') == 'charset-actor'
                        for gid in (old, new) for c in groups[gid]['candidates'])):
-            raise ValueError('승인된 동일 재료의 부품 교체 명세가 필요합니다.')
+            raise ValueError('부품 교체 명세 오류: ' + str(old) + ' → ' + str(new) + ' (' + str(requirement) + ') — 누락·상충·자기참조·사유·배우 교체 확인 필요')
         old_hashes = {c['sheet']['sha256'] for c in groups[old]['candidates']}
         new_hashes = {c['sheet']['sha256'] for c in groups[new]['candidates']}
         current_refs = result.get('themeCoverage', {}).get(requirement, [])
@@ -69,6 +93,15 @@ def preserved_sources(data, cid, layout, result):
     folder = Path(data) / 'concepts' / cid
     root = Path(data) / 'art-worktrees' / cid
     art_layout.require_completed(root, choices.read(folder / 'art-execution.json'), layout)
+    return validate_preserved_sources(data, cid, layout, result)
+
+
+def validate_preserved_sources(data, cid, layout, result):
+    """Check receipt links before review; this does not grant layout approval."""
+    preserved = layout.get('layout', {}).get('preservedSources', [])
+    if not preserved: return []
+    folder = Path(data) / 'concepts' / cid
+    root = Path(data) / 'art-worktrees' / cid
     bound = {(r['path'], r['sha256']) for r in layout['layout']['sources']}
     evidence = set()
     for path in (folder / 'art-batches').glob('*.json'):
@@ -88,10 +121,14 @@ def preserved_sources(data, cid, layout, result):
                 if key in native_refs: evidence.add((requirement, *key))
     for ref in preserved:
         key = (ref['path'], ref['sha256'])
-        if (key not in bound or (ref.get('requirement'), *key) not in evidence
-                or not ref['path'].lower().endswith('.png')
-                or len(str(ref.get('reason', '')).strip()) < 12):
-            raise ValueError('보존 부품의 승인 도면·동일 테마 원본 영수증·보존 사유가 필요합니다.')
+        missing = []
+        if key not in bound: missing.append('현재 도면 sources의 경로/해시')
+        if (ref.get('requirement'), *key) not in evidence:
+            missing.append('동일 테마 batch의 재료 ' + str(ref.get('requirement')) + ' 원본 영수증')
+        if not ref['path'].lower().endswith('.png'): missing.append('PNG 원본')
+        if len(str(ref.get('reason', '')).strip()) < 12: missing.append('구체적인 보존 사유')
+        if missing:
+            raise ValueError('보존 부품 근거 누락: ' + ref['path'] + ' — ' + '; '.join(missing))
         choices.verified(root, ref)
     return preserved
 
@@ -199,6 +236,22 @@ def accept(data, cid, result):
         previews = []
         actor_uses = {c['nativeSheets'][1]['sha256']: set() for c in selected
                       if c.get('nativeHarness') == 'charset-actor'}
+        new_actions = added_action_frames(root, inputs.get('layout', {}).get('layout', {}))
+        for gid, candidate_id in components.items():
+            candidate = originals[gid][candidate_id]
+            added = candidate.get('actorFrames', {}).get('requiredNewActionFrames', [])
+            # Older prepared manifests predate requiredNewActionFrames. Their
+            # already-bound native request remains authoritative after a reload.
+            if candidate.get('nativeHarness') == 'charset-actor':
+                request_path = str(Path(candidate['nativeSheets'][1]['path']).parent.parent / 'request.json')
+                request_ref = next((r for r in candidate['sources'] if r['path'] == request_path), None)
+                if request_ref:
+                    order = choices.read(choices.verified(root, request_ref))
+                    previous = set(order.get('preserveActions', {}).get('frames', []))
+                    if previous:
+                        added = [f['id'] for f in candidate['actorFrames']['actions'] if f['id'] not in previous]
+            if added: new_actions.setdefault(gid, set()).update(added)
+        new_action_uses = {gid: set() for gid in new_actions}
         for index, recipe_ref in enumerate(recipes):
             path = choices.verified(root, recipe_ref); recipe = choices.read(path)
             # New pixels, flattened context screenshots, and swapped candidates are not source tiles.
@@ -232,9 +285,15 @@ def accept(data, cid, result):
                         actor_uses[action['sha256']].add('walk')
                     if source == action['sha256'] and any(rect == f['rect'] for f in frames['actions']):
                         actor_uses[action['sha256']].add('action')
+                        for gid, candidate_id in components.items():
+                            if originals[gid][candidate_id] is c and gid in new_actions:
+                                new_action_uses[gid].update(f['id'] for f in frames['actions']
+                                    if rect == f['rect'] and f['id'] in new_actions[gid])
             previews.append(choices.ref(root, dest, recipe.get('label') or '실제 타일 공간 데모'))
         if any(uses != {'walk', 'action'} for uses in actor_uses.values()):
             raise ValueError('전용 인물마다 걷기/정지와 행동을 실제 공간의 별도 상태로 보여야 합니다. 전체 프레임 원본을 사용하세요.')
+        if any(len(new_action_uses[gid]) < min(2, len(frames)) for gid, frames in new_actions.items()):
+            raise ValueError('새로 주문한 행동의 서로 다른 프레임을 공간에서 보여야 합니다. 기존 행동만 배치하면 추가 동작 검수를 할 수 없습니다.')
         passed = all(c['passed'] for c in selected)
         candidates.append(dict(id=f'demo-{number}', title=demo.get('title') or f'공간 데모 {number}',
             passed=passed, summary='데모 조립 완료 · 독립 검수 대기',

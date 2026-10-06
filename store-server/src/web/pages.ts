@@ -33,30 +33,57 @@ function layout(config: StoreConfig, auth: Auth | null, title: string, body: str
        <form method="post" action="/logout" class="inline"><input type="hidden" name="csrf" value="${esc(csrf)}"><button class="link" data-testid="logout">${esc(auth.user.displayName)} · 로그아웃</button></form>`
     : `<a href="/upload">올리기</a><a class="button small" href="/login" data-testid="login-link">로그인</a>`;
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} · OPRN 에셋 스토어</title><link rel="stylesheet" href="/static/app.css"><link rel="icon" href="/static/icon.svg">
+<title>${esc(title)} · OPRN 에셋 스토어</title><link rel="preload" href="/static/galmuri11-bold.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/static/app.css"><link rel="icon" href="/static/icon.svg">
 ${auth?.csrf ? `<meta name="csrf" content="${esc(auth.csrf)}">` : ""}</head><body>
-<header class="top"><a class="brand" href="/"><img src="/static/icon.svg" alt="" width="28" height="28"><span>OPRN <b>에셋 스토어</b></span></a>
+<a class="skip" href="#main">본문으로</a>
+<header class="top"><a class="brand" href="/"><img src="/static/icon.svg" alt="" width="32" height="32"><span><small>OPRN</small><b>에셋 스토어</b></span></a>
 <form class="search" action="/" method="get" role="search"><input type="search" name="q" value="${esc(options.q ?? "")}" placeholder="타일셋, 캐릭터, 음악 찾기" aria-label="찾기"></form>
 <nav>${nav}</nav></header>
-<main>${body}</main>
-<footer><a href="/terms">이용약관</a><a href="/copyright">저작권 신고</a><a href="/privacy">개인정보</a><span>문의 ${esc(config.contactEmail)}</span></footer>
+<main id="main">${body}</main>
+<footer><span class="foot-brand">OPRN 에셋 스토어 · 무료</span><a href="/terms">이용약관</a><a href="/copyright">저작권 신고</a><a href="/privacy">개인정보</a><span>문의 ${esc(config.contactEmail)}</span></footer>
 ${(options.scripts ?? []).map((src) => `<script src="${esc(src)}" defer></script>`).join("")}</body></html>`;
 }
 
-function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated" | "license">): string {
-  return `<span class="badges">${item.grade === "pack" ? `<span class="badge pack" title="참고문서가 들어 있어 에디터 조수가 바로 이 타일로 맵을 깔 수 있습니다">조수 사용 가능</span>` : ""}${item.aiGenerated ? `<span class="badge ai" title="AI 도구로 만든 그림·소리가 들어 있습니다">AI 생성</span>` : ""}<span class="badge license">${esc(item.license)}</span></span>`;
+const PACK_TITLE = "참고문서가 들어 있어 에디터 조수가 바로 이 타일로 맵을 깔 수 있습니다";
+
+/** 도트 아이콘(16칸 격자). 장식이 아니라 뜻을 돕는 곳에만 쓴다. */
+const ICONS = {
+  spark: "M7 1h2v4h-2zM7 11h2v4h-2zM1 7h4v2h-4zM11 7h4v2h-4zM5 5h2v2h-2zM9 5h2v2h-2zM5 9h2v2h-2zM9 9h2v2h-2z",
+  note: "M6 2h8v3h-6v7h-1v1h-1v1h-3v-1h-1v-2h1v-1h3zM13 5h1v6h-1v1h-1v1h-3v-1h-1v-2h1v-1h3v-4z",
+  grid: "M2 2h5v5h-5zM9 2h5v5h-5zM2 9h5v5h-5zM9 9h5v5h-5z",
+  down: "M7 2h2v7h2v2h-1v1h-1v1h-2v-1h-1v-1h-1v-2h2zM2 13h12v2h-12z",
+};
+const icon = (name: keyof typeof ICONS, cls = "") => `<svg class="ico ${cls}" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" shape-rendering="crispEdges"><path d="${ICONS[name]}"/></svg>`;
+
+function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated">): string {
+  return `<span class="badges">${item.grade === "pack" ? `<span class="mark pack" title="${PACK_TITLE}">${icon("spark")}조수 사용 가능</span>` : ""}${item.aiGenerated ? `<span class="mark ai" title="AI 도구로 만든 그림·소리가 들어 있습니다">AI 생성</span>` : ""}</span>`;
 }
+
+const downloadsText = (downloads: number) => downloads > 0 ? `${icon("down")}받기 ${downloads}` : "새로 올라옴";
 
 function cover(item: Pick<StoreItemSummary, "cover" | "kind" | "title">): string {
   if (item.cover) return `<img src="${blobUrl(item.cover)}" alt="${esc(item.title)} 미리보기" loading="lazy">`;
-  return `<span class="cover-icon" aria-hidden="true">${item.kind === "music" || item.kind === "sound" ? "♪" : "▦"}</span>`;
+  return `<span class="cover-icon" aria-hidden="true">${icon(item.kind === "music" || item.kind === "sound" ? "note" : "grid")}</span>`;
 }
 
 function card(item: StoreItemSummary): string {
   return `<a class="card" href="/items/${esc(item.slug)}" data-testid="store-card" data-slug="${esc(item.slug)}">
-<div class="cover">${cover(item)}</div>
-<div class="card-body"><h3>${esc(item.title)}</h3><p>${esc(item.summary)}</p>
-<div class="meta"><span>${esc(item.author)}</span><span>${esc(STORE_KIND_LABELS[item.kind])}</span><span>받기 ${item.downloads}</span></div>${badges(item)}</div></a>`;
+<div class="cover">${cover(item)}${item.grade === "pack" ? `<span class="mark pack on-cover" title="${PACK_TITLE}">${icon("spark")}조수 사용 가능</span>` : ""}</div>
+<div class="card-body"><p class="kind-line">${esc(STORE_KIND_LABELS[item.kind])}${item.aiGenerated ? `<span class="ai-text">AI 생성</span>` : ""}</p><h3>${esc(item.title)}</h3><p class="sum">${esc(item.summary)}</p>
+<div class="meta"><span>${esc(item.author)}</span><span class="dl">${downloadsText(item.downloads)}</span></div></div></a>`;
+}
+
+/** 첫 화면 진열창: 맨 앞 상품 그림을 크게, 나머지 그림을 옆에 작게. 모두 실제 상품 링크다. */
+function showcase(items: StoreItemSummary[], total: number): string {
+  const [lead, ...rest] = items.filter((it) => it.cover);
+  const window = lead
+    ? `<a class="window" href="/items/${esc(lead.slug)}"><span class="window-img">${cover(lead)}</span><span class="window-cap"><small>새로 들어온 물건</small><b>${esc(lead.title)}</b></span></a>
+<div class="window-side">${rest.slice(0, 3).map((it) => `<a href="/items/${esc(it.slug)}" title="${esc(it.title)}"><span class="window-img">${cover(it)}</span></a>`).join("")}</div>`
+    : "";
+  return `<section class="showcase${lead ? "" : " solo"}"><div class="pitch"><h1>게임에 바로 까는<br>도트 에셋</h1>
+<p>타일셋·캐릭터·음악을 OPRN 에디터 안에서 받아 프로젝트에 넣습니다. <b class="t-pack">${icon("spark")}조수 사용 가능</b> 팩에는 참고문서가 들어 있어, AI 조수가 그 타일로 바로 맵을 깝니다.</p>
+<p class="pitch-actions"><a class="button" href="#shelf">진열대 보기</a><a class="button ghost" href="/upload">내 에셋 올리기</a></p>
+<p class="pitch-fact">공개 에셋 <b>${total}</b>개 · 모두 무료</p></div>${window}</section>`;
 }
 
 export function home(config: StoreConfig, auth: Auth | null, query: CatalogQuery, page: { items: StoreItemSummary[]; total: number; page: number; pageSize: number }): string {
@@ -71,13 +98,13 @@ export function home(config: StoreConfig, auth: Auth | null, query: CatalogQuery
   const kinds = [chip("전체", { kind: "" }, !query.kind), ...STORE_ITEM_KINDS.map((kind) => chip(STORE_KIND_LABELS[kind], { kind }, query.kind === kind))].join("");
   const pages = Math.max(1, Math.ceil(page.total / page.pageSize));
   const pager = pages > 1 ? `<nav class="pager">${page.page > 1 ? `<a href="${esc(link({ page: page.page - 1 }))}">← 이전</a>` : ""}<span>${page.page} / ${pages}</span>${page.page < pages ? `<a href="${esc(link({ page: page.page + 1 }))}">다음 →</a>` : ""}</nav>` : "";
-  const body = `<section class="hero"><h1>에디터에서 바로 받는 RPG 에셋</h1>
-<p>타일셋·캐릭터·음악을 OPRN 앱 안에서 받아 프로젝트에 넣습니다. <b>조수 사용 가능</b> 표시가 있는 팩은 참고문서가 들어 있어 AI 조수가 그 타일로 바로 맵을 깝니다.</p></section>
-<section class="filters"><div class="chips">${kinds}</div><div class="chips">
+  const browsing = !query.q && !query.kind && !query.grade && page.page === 1 && page.items.length > 0;
+  const body = `${browsing ? showcase(page.items, page.total) : ""}
+<section class="filters" id="shelf" aria-label="거르기"><nav class="tabs" aria-label="종류">${kinds}</nav><div class="chips">
 ${chip("조수 사용 가능만", { grade: query.grade === "pack" ? "" : "pack" }, query.grade === "pack")}
 ${chip("최신", { sort: "" }, query.sort !== "popular")}${chip("인기", { sort: "popular" }, query.sort === "popular")}</div></section>
 ${query.q ? `<p class="result-line">「${esc(query.q)}」 결과 ${page.total}개</p>` : ""}
-${page.items.length > 0 ? `<section class="grid" data-testid="store-grid">${page.items.map(card).join("")}</section>` : `<p class="empty">아직 보여 줄 에셋이 없습니다.</p>`}
+${page.items.length > 0 ? `<section class="grid" data-testid="store-grid">${page.items.map(card).join("")}</section>` : `<div class="empty"><span class="cover-icon">${icon("grid")}</span><p>${query.q || query.kind || query.grade ? "조건에 맞는 에셋이 없습니다." : "아직 진열된 에셋이 없습니다."}</p><a class="button ghost" href="/">처음으로</a></div>`}
 ${pager}`;
   return layout(config, auth, "둘러보기", body, { q: query.q ?? "" });
 }
@@ -89,7 +116,7 @@ export function item(config: StoreConfig, auth: Auth | null, detail: StoreItemDe
     : "";
   const gallery = detail.previews.length > 0
     ? `<div class="gallery">${detail.previews.map((sha, index) => `<figure class="${index === 0 ? "main" : "thumb"}"><img src="${blobUrl(sha)}" alt="${esc(detail.title)} 미리보기 ${index + 1}"></figure>`).join("")}</div>`
-    : `<div class="gallery"><figure class="main audio"><span class="cover-icon">♪</span></figure></div>`;
+    : `<div class="gallery"><figure class="main audio"><span class="cover-icon">${icon("note")}</span></figure></div>`;
   const versions = detail.versions.map((v) => `<li><b>판본 ${v.version}</b> <span>${esc(seoulTime(v.createdAt).slice(0, 10))}</span> <span>${fileSize(v.bytes)}</span></li>`).join("");
   const report = detail.status === "visible" || detail.status === "hidden"
     ? `<details class="report"><summary>신고하기</summary><form method="post" action="/items/${esc(detail.slug)}/report">
@@ -101,12 +128,12 @@ export function item(config: StoreConfig, auth: Auth | null, detail: StoreItemDe
   const body = `${notice}${reported ? `<p class="notice ok" data-testid="report-done">신고를 받았습니다. 고맙습니다.</p>` : ""}
 <article class="detail">${gallery}<aside class="info">
 <p class="kind">${esc(STORE_KIND_LABELS[detail.kind])}</p><h1 data-testid="item-title">${esc(detail.title)}</h1>
-<p class="by">${esc(detail.author)} · 받기 ${detail.downloads}</p>${badges(detail)}
+<p class="by">${esc(detail.author)} · ${downloadsText(detail.downloads)}</p>${badges(detail)}
 <p class="summary">${esc(detail.summary)}</p>
 <dl class="facts"><dt>라이선스</dt><dd>${esc(STORE_LICENSE_LABELS[detail.license])}</dd>
 <dt>들어 있는 것</dt><dd>타일셋 ${detail.counts.tilesets} · 에셋 ${detail.counts.assets} · 참고문서 ${detail.counts.referenceDocuments}</dd>
 <dt>최신 판본</dt><dd>${detail.latestVersion}</dd></dl>
-<div class="get"><h2>에디터에서 받기</h2><p>OPRN 앱의 왼쪽 막대 <b>「스토어」</b>에서 이 이름을 찾아 <b>받기</b> → <b>이 프로젝트에 넣기</b>를 누릅니다. 받은 에셋은 프로젝트 안에 저장되어 스토어 없이도 게임이 돌아갑니다.</p><code>${esc(detail.slug)}</code></div>
+<div class="get"><h2>에디터에서 받기</h2><ol><li><span>OPRN 앱 왼쪽 막대에서 <b>스토어</b>를 엽니다.</span></li><li><span>이 이름을 찾아 <b>받기</b>를 누릅니다.</span></li><li><span><b>이 프로젝트에 넣기</b>를 누릅니다.</span></li></ol><p>받은 에셋은 프로젝트 안에 저장되어 스토어 없이도 게임이 돌아갑니다.</p><code>${esc(detail.slug)}</code></div>
 ${mine ? `<p class="fine">내 상품입니다. 새 판본은 에디터에서 같은 상품으로 다시 올리면 됩니다.</p>` : ""}
 </aside></article>
 <section class="text-block"><h2>설명</h2><div class="pre">${esc(detail.description || detail.summary)}</div></section>
@@ -170,12 +197,12 @@ export function login(config: StoreConfig, auth: Auth | null, next: string): str
   const google = config.google ? `<a class="button google" href="/auth/google?next=${encodeURIComponent(next)}" data-testid="google-login">Google 계정으로 로그인</a>` : "";
   const dev = config.devLogin ? `<form method="post" action="/auth/dev" class="stack dev" data-testid="dev-login"><p class="fine">스테이징 전용 개발 로그인입니다. 운영 서버에서는 꺼져 있습니다.</p>
 <input type="hidden" name="next" value="${esc(next)}"><label>이메일 <input type="email" name="email" required data-testid="dev-email"></label><label>이름 <input name="name" maxlength="40" data-testid="dev-name"></label><button class="button" data-testid="dev-submit">로그인</button></form>` : "";
-  const body = `<section class="narrow"><h1>로그인</h1><p class="lead">둘러보기와 받기는 로그인 없이 됩니다. 올리기·내 상품에만 로그인이 필요합니다.</p>${google}${dev}${!google && !dev ? `<p class="notice">일반 로그인(Google)은 곧 열립니다. 지금은 둘러보기와 받기만 할 수 있습니다.</p>` : ""}</section>`;
+  const body = `<section class="narrow auth-card"><h1>로그인</h1><p class="lead">둘러보기와 받기는 로그인 없이 됩니다. 에셋을 올리거나 내 상품을 관리할 때만 로그인합니다.</p>${google}${dev}${!google && !dev ? `<p class="notice">일반 로그인(Google)은 곧 열립니다. 지금은 둘러보기와 받기만 할 수 있습니다.</p>` : ""}</section>`;
   return layout(config, null, "로그인", body);
 }
 
 export function loginLink(config: StoreConfig, token: string): string {
-  const body = `<section class="narrow"><h1>운영자 로그인</h1><p class="lead">서버에서 발급한 일회용 링크입니다. 아래 단추를 누르면 로그인됩니다(한 번만 쓸 수 있습니다).</p>
+  const body = `<section class="narrow auth-card"><h1>운영자 로그인</h1><p class="lead">서버에서 발급한 일회용 링크입니다. 아래 단추를 누르면 로그인됩니다(한 번만 쓸 수 있습니다).</p>
 <form method="post" action="/auth/link" class="row"><input type="hidden" name="token" value="${esc(token)}"><button class="button" data-testid="link-login">로그인</button></form></section>`;
   return layout(config, null, "운영자 로그인", body);
 }
@@ -195,7 +222,7 @@ export function device(config: StoreConfig, auth: Auth, code: string, found: { c
   } else {
     content = `${code ? `<p class="notice">코드를 찾지 못했습니다.</p>` : ""}<form method="get" action="/device" class="row"><input name="code" placeholder="ABCD-EFGH" value="${esc(code)}" aria-label="에디터 코드"><button class="button">확인</button></form>`;
   }
-  return layout(config, auth, "에디터 로그인", `<section class="narrow"><h1>에디터 로그인</h1>${content}</section>`);
+  return layout(config, auth, "에디터 로그인", `<section class="narrow auth-card"><h1>에디터 로그인</h1>${content}</section>`);
 }
 
 const DOC = (title: string, html: string) => `<section class="narrow doc"><h1>${esc(title)}</h1>${html}</section>`;

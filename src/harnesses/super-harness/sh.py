@@ -692,6 +692,8 @@ def start_art(c):
                '커스텀 장면 검수와 역할 경계는 보존한다. 실제 검수 템플릿/코드의 변경을 새 layout.sources에 결합하고 '
                '독립 검수를 받는다. 기존 PNG나 판정을 변경하지 않는다.\n')
     prompt += art_choices.example_feedback_prompt(c)
+    import art_supplementary
+    prompt += art_supplementary.prompt(DATA, cid)
     acceptance = art_acceptance.contract(cdir(cid))
     if acceptance:
         prompt += '\n고정 합격 계약이 이전 반려 의견보다 우선합니다. 필수 결함을 수정하고 권고만으로 재설계 범위를 늘리지 마세요. 계약 파일을 변경하지 마세요. 준비 결과 형식은 그대로 유지합니다.\n' + json.dumps(acceptance, ensure_ascii=False)
@@ -735,6 +737,7 @@ def on_art(meta, code, result):
             write_json(request_path, request)
             layout = art_layout.build_input(wt, request)
             art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], feedback)
+            art_demo.validate_preserved_sources(DATA, cid, layout, result)
             write_json(cdir(cid, 'art-layout-input.json'), layout)
             store.update_concept(cid, stage='art-layout-review', status='queued', note='제작 전 배치·비례·여백 적대적 검수 대기')
         except (OSError, ValueError, TypeError, KeyError) as error:
@@ -831,7 +834,7 @@ def start_art_demo(c):
         error = read_json(cdir(cid, 'art-demo-error.json'), {})
         if error: prompt += '\n지난 데모 조립의 기술 오류를 고친다: ' + json.dumps(error, ensure_ascii=False)
         start_codex(cid, 'art-demo', 'assemble', prompt, output, write_root=inputs['root'])
-        store.update_concept(cid, status='running', note='실제 타일로 공간 전체 데모 조립 중')
+        store.update_concept(cid, status='running', reasons=[], note='실제 타일로 공간 전체 데모 조립 중')
     except (ValueError, OSError, KeyError, TypeError) as error:
         if theme_production.policy(cid):
             # Missing theme material returns to production with the actual failure;
@@ -872,6 +875,9 @@ def start_art_context_review(c):
     if not request['groups']:
         advance_art_review(cid)
         return
+    previous_error = read_json(cdir(cid, 'art-context-response-error.json'), {}) or {}
+    if previous_error.get('manifestSha256') == request['manifestSha256']:
+        request['previousResponseError'] = previous_error
     attempt = (c.get('art_review_attempt') or 0) + 1
     input_path = cdir(cid, 'art-context-input.json')
     output_path = cdir(cid, 'art-context-result.json')
@@ -898,6 +904,10 @@ def on_art_context_review(meta, code, result):
                 for candidate in candidates.values():
                     art_acceptance.validate(candidate, request.get('acceptance'), art_layout.SCENE_CHECKS, True)
     except (ValueError, OSError, KeyError, TypeError) as error:
+        response_error = {'at': store.now(), 'error': str(error), 'response': result,
+                          'manifestSha256': (meta.get('context_input') or read_json(cdir(cid, 'art-context-input.json'), {}) or {}).get('manifestSha256')}
+        write_json(cdir(cid, 'art-context-response-error.json'), response_error)
+        write_json(cdir(cid, 'art-context-response-errors', str(time.time_ns()) + '.json'), response_error)
         c = store.concept(cid)
         retry = (c.get('art_review_attempt') or 0) < 2
         store.update_concept(cid, stage='art-context-review' if retry else 'blocked', status='queued' if retry else 'idle',

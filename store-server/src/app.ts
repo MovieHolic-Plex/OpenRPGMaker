@@ -20,7 +20,7 @@ import * as pages from "./web/pages";
 
 export interface App { server: Server; close(): Promise<void> }
 
-const STATIC_TYPES: Record<string, string> = { ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png" };
+const STATIC_TYPES: Record<string, string> = { ".css": "text/css; charset=utf-8", ".woff2": "font/woff2", ".txt": "text/plain; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png" };
 
 export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   const blobs = new BlobStore(config.blobDir);
@@ -301,7 +301,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   router.get("/static/:file", (ctx) => {
     const file = ctx.params.file!;
     const ext = file.slice(file.lastIndexOf("."));
-    if (!/^[a-z0-9-]+\.[a-z]+$/.test(file) || !STATIC_TYPES[ext]) throw new HttpError(404, "없는 파일입니다.", "not_found");
+    if (!/^[a-z0-9-]+\.[a-z0-9]+$/.test(file) || !STATIC_TYPES[ext]) throw new HttpError(404, "없는 파일입니다.", "not_found");
     let bytes: Buffer;
     try { bytes = readFileSync(join(publicDir, file)); } catch { throw new HttpError(404, "없는 파일입니다.", "not_found"); }
     sendBytes(ctx.res, bytes, STATIC_TYPES[ext]!, { "cache-control": "public, max-age=300", "content-security-policy": "default-src 'none'" });

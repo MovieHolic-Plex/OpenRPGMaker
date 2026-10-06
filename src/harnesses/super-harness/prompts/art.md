@@ -121,6 +121,9 @@ monster-collect-species는 monster-collect 게임 전용이며 일반 생물/적
 통합 설계: `{{ROOT}}/docs/superpowers/specs/2026-10-05-unified-harness-production.md`.
 
 ## 입력과 생성 출력 구분
+선택 저장소 picks/picks.sqlite와 WAL/SHM은 도면 sources에 넣지 않는다. 읽기·체크포인트만으로
+파일 바이트가 달라질 수 있고, 선택은 별도 현재 해시 영수증으로 확인한다. 실행 후보를 담은
+data/harness.sqlite와 주문서·시드·코드·원본 그림의 해시 결합은 유지한다.
 reference-source.json의 sources 배열이 있으면 각 references의 directory/INDEX.json에서 현재 용도를 고른다.
 생성 과정에서 덮어쓰는 art-output 아래 장면 PNG/assembly-evidence.json을 제작 전 기준으로 쓸 때는
 layout.sources의 해당 ref에 role="generated-preview"를 지정한다. 감독이 독립 검수 전에 불변 사본을 만든다.
