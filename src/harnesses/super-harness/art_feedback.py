@@ -8,6 +8,7 @@ import store
 import art_layout
 import art_repair
 import art_acceptance
+import art_supplementary
 
 CHECKS = art_layout.SCENE_CHECKS
 
@@ -84,6 +85,7 @@ def review_input(data, cid):
     return {'manifestSha256': art_choices.digest(manifest_path), 'groups': groups,
             'root': str(Path(data) / 'art-worktrees' / cid),
             'previousFeedback': previous, 'previousImages': previous_images,
+            'supplementaryEvidence': art_supplementary.load(data, cid), 'supplementaryDataRoot': str(Path(data).resolve()),
             'comparisonObligations': obligations,
             'repairBrief': read(folder / 'parking-repair-brief.json', {}),
             'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION,
@@ -92,6 +94,7 @@ def review_input(data, cid):
 
 def validate_review(data, cid, result, request):
     """Validate evidence shape as well as current manifest before accepting a model verdict."""
+    art_supplementary.verify(data, cid, request.get('supplementaryEvidence', []))
     if not isinstance(result, dict) or result.get('manifestSha256') != request['manifestSha256']:
         raise ValueError('조립 검수 입력 해시 누락/불일치')
     if art_choices.digest(directory(data, cid) / 'art-choices.json') != request['manifestSha256']:

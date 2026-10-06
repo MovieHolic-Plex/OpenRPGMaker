@@ -19,6 +19,7 @@ createNativeSceneProject({
   startMapId: string,
   startPos: { x: number, y: number },
   switches?: SwitchDef[],
+  fieldHud?: Project['system']['fieldHud'],
   playerSprite?: AssetRef,
 }): Project
 ```
@@ -49,6 +50,11 @@ and anchors), images, tree and start must survive normalization unchanged, other
 the helper throws. The schema validator supplies command/reference shape validation;
 this helper authors no events or scene artwork. Pass the returned packet to
 `saveNativeSpaceProject` only after approved common publication and visual review.
+
+Optional `fieldHud` is cloned and must survive normalization exactly. The wandshop
+and potions draft packets explicitly hide unrelated default health/clock/tool widgets.
+Classroom state, action, direction and potion response choices use Korean labels;
+source pose IDs and frozen recipe names remain unchanged for provenance.
 
 ## Frozen POTIONS runtime draft preparation
 
@@ -174,3 +180,34 @@ Scene recipes may have different placement counts per state. Draft packing align
 `wand_occupied_shelf_review.py prepare --root <native-artwork-root> --previous <reviewed-vacancy-scope> --out <new-scope>` snapshots original occupied shelf h2-A and its original READ FAIL, current four scene recipes and eight response recipes, native actors, and the separately reviewed vacancy state. Both complete occupied shelf slots are locked. It runs the existing native machine inspection on the unchanged source and queues independent review only; no draw worker runs.
 
 `run --out <scope>` executes the specialized native review and writes `receipt.json` with original/candidate SHA-256, original FAIL, new verdict, current evidence hashes and explicit `fullRoomApproved:false`. Each current recipe must reproduce its supplied PNG exactly. Native actors are inserted at the six actual shelf depth bands for contextual samples. A local native PASS resolves only the previous missing-context READ evidence; room geometry, walls, response failures, selection, runtime QA and canonical publication remain separate.
+
+Deep shelves require both native reviews; `requiredNativeVerdicts` binds both raw
+verdict files, with `verdictFile` pointing to the final cross-provider review.
+The frozen older native recorder has a scoped compatibility adapter for array
+reasons. Recovery re-runs its native machine/lock inspection and retains the raw
+verdict bytes and technical error. The current native harness normalizes prose
+fields in memory before any top-face or second-review message concatenation.
+
+`art-supplementary-evidence.json` may reference an unchanged source in the concept's
+native root and review files within DATA, each with its SHA-256 and explicit scope.
+Preparation and whole-scene review receive those files through `art_supplementary`;
+source and evidence hashes are checked before admission and again when accepting
+the scene report. This carries the isolated shelf re-review back into production.
+It never replaces existing native gates, changes original FAIL records, or grants
+whole-room approval. Refresh the evidence explicitly if its original source changes.
+
+### Public draft deployment
+
+`native_preview.py --packet <packet> --preview-dir qa-runs/<name> --note <remaining-work>`
+checks the frozen project's proof hash, copies project.json atomically and creates
+a player-only shell with an `assets` symlink to this checkout's public assets.
+The shell uses a hash-specific save namespace and a collapsible draft notice.
+This helper is for this local player dev server; it does not publish a shared
+library or save a canonical project. Other deployments must copy their resources.
+
+Missing assets beside a nested preview URL returned HTML for core PNG requests.
+The result was unsliced actor sheets and a green missing-player box even while
+the same project passed QA at `/player.html`. Always inspect the actual public
+URL without QA instrumentation and check console errors/image responses. Merely
+seeing a title and canvas is insufficient. Both current preview directories were
+re-deployed with their resource base and visually checked at their public URLs.

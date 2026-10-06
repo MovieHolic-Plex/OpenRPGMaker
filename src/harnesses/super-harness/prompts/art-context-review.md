@@ -5,6 +5,8 @@
 후보 워크트리 {{ROOT}}
 
 입력 JSON만 먼저 읽고 groups의 모든 candidates.images를 실제로 연다. 모든 열림/닫힘 그림을 확인한다.
+previousResponseError가 있으면 이전 원문과 구체적인 오류를 확인해 보완한다. 형식 오류를 고치려고 기존 FAIL이나 관찰 근거를 지우거나 합격으로 바꾸지 않는다.
+supplementaryEvidence가 있으면 supplementaryDataRoot 기준 files의 판정·비교 그림을 실제로 읽고 scope를 확인한다. 같은 원본의 재검수 근거이며 현재 전체 방의 합격을 대신하지 않는다. 이전 READ 누락이 해소됐는지와 새 장면의 실제 결함을 구분한다.
 부품별 PASS는 공간 합격이 아니다. 기존 실패 피드백과 repairBrief를 읽고 지적이 실제로 해결됐는지 확인한다.
 comparisonObligations의 required=true 항목은 시설 완료를 막는 결함이다. 다음 세대에도 전부 비교하며
 advisory/deferred로 낮출 수 없다. 미해결이면 FAIL+fixes로 재작업한다. 실제 전후 그림으로 반증한
@@ -45,6 +47,7 @@ change(다음 저작자가 실행할 변경), keep(유지해야 할 합격 요�
 입력 previousImages의 모든 이미지를 열고 현재 1배/3배 그림과 비교한다. previousImagesSeen에 그 sha256 전부를 기록한다.
 comparisonObligations의 해당 group 항목마다 comparisons[id] = {status, before, after, evidence}를 작성한다.
 status: resolved / unresolved / invalid-prior-claim / deferred. before/after/evidence는 각각 20자 이상,
+입력 obligation id를 정확히 그대로 사용한다. 추가 관찰은 필수 비교를 대체하지 않으며, 추가 comparisons에도 동일한 근거·미해결 FAIL 규칙을 적용한다.
 구체적인 좌표·외곽선·접지·면 분리를 들어 설명한다. 같은 크기/색만 유지했다는 말은 해결 근거가 아니다.
 unresolved가 하나라도 있으면 전체 FAIL 및 해당 checks FAIL, fixes에 다음 수정 지시를 쓴다.
 이전 검수의 잘못된 주장은 invalid-prior-claim으로 판정할 수 있으나 실제 근거를 들어야 한다.

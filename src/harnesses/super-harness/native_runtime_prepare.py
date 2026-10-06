@@ -314,7 +314,7 @@ def pack(manifest, out, stair_destination=None):
         return [switch(id, state == i) for i, id in enumerate(STATE_SWITCHES, 1)] + [
             switch("hp_class_working", state > 0), switch("hp_door_closed", state == 1), switch("hp_door_locked", state == 2)]
 
-    scene_menu = choice([(name, set_scene(i)) for i, name in enumerate(STATES)], "교실 상태")
+    scene_menu = choice([(name, set_scene(i)) for i, name in enumerate(("수업 준비 · 문 열림", "실습 시작 · 문 닫힘", "집중 실습 · 문 잠김", "실습 계속 · 문 열림"))], "교실 상태")
     actor_animations = []
     for i, actor in enumerate(recipes[0]["actorInstances"]):
         actors = [r["actorInstances"][i] for r in recipes]
@@ -368,9 +368,9 @@ def pack(manifest, out, stair_destination=None):
                 for pattern, frame in ordered:
                     branch += [{"kind": "setEventGraphicPattern", "eventId": id, "pattern": pattern}, {"kind": "wait", "ms": frame["durationMs"]}]
                 branch += [{"kind": "setEventGraphicPattern", "eventId": id, "pattern": 0}, switch(busy, False)]
-                directions.append((direction, branch))
-            pose_options.append((action, [choice(directions, "원본 행동 방향")]))
-        action_menu = choice(pose_options, "원본 행동 시연")
+                directions.append(({"up": "뒤쪽", "right": "오른쪽", "down": "앞쪽", "left": "왼쪽"}[direction], branch))
+            pose_options.append(({"stir": "젓기", "weigh": "계량하기", "carry": "나르기", "rinse": "헹구기"}[action], [choice(directions, "바라볼 방향")]))
+        action_menu = choice(pose_options, "수업 행동 보기")
         commands = [text("용액의 변화와 도구 접촉을 관찰하세요.", "마법약 교사"),
                     choice([("교실 상태", [scene_menu]), ("행동 시연", [action_menu])], "마법약 수업")] if actor["role"] == "master" else [action_menu]
         recipe_patterns = [0] + [next(j + 1 for j, f in enumerate(action_frames) if f["id"] == a["pose"] + "-" + str(a["frame"])) for a in actors[1:]]
@@ -427,7 +427,7 @@ def pack(manifest, out, stair_destination=None):
         at = [contact[0] - 8, contact[1] - 15]
         sprite = p.sheet("potion-rim-response", frames, cell, at, [8, 15])
         select = lambda state: [switch(done, False)] + [switch(s, j == state) for j, s in enumerate(state_switches)]
-        menu = choice([(name, select(j)) for j, name in enumerate(response_names)], "마법약 반응")
+        menu = choice([({"bubble": "기포", "steam": "증기", "green": "초록 약액", "purple": "보라 약액", "amber": "호박빛 약액", "bottle": "병에 담기"}.get(name, name), select(j)) for j, name in enumerate(response_names)], "마법약 반응")
         pages, clocks = [], []
         bases = []
         for state, r in enumerate(recipes):
@@ -507,6 +507,7 @@ def pack(manifest, out, stair_destination=None):
     player = next(a for a in actor_pack["actors"] if a["id"] == "potions-student")["walk"]
     authored = {"title": "마법약 교실 · 원본 소재 초안", "library": library, "maps": [game_map], "startMapId": MAP_ID,
                 "startPos": {"x": 8, "y": 10}, "switches": [{"id": id, "name": name} for id, name in p.switch_names.items()],
+                "fieldHud": {"theme": "minimal", "vitals": False, "clock": False, "tools": False, "objective": False, "hideEmpty": True, "widgets": []},
                 "playerSprite": {"type": "uploaded", "id": player}}
     stair_binding = {"eventId": "hp_south_stairs", "origin": stair["origin"], "destination": stair_destination,
                      "returnDestination": {"mapId": MAP_ID, "x": 8, "y": 12}, "reciprocalRequired": True,

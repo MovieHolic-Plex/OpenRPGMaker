@@ -291,6 +291,7 @@ def pack(manifest, out, vacancy_receipt=None):
                "sprites": p.sprites, "maps": {MAP: game_map}, "sourceProjectId": "native-wand-draft", "previews": {}}
     authored = {"title": "올리밴더 지팡이 상점 · 원본 초안", "library": library, "maps": [game_map], "startMapId": MAP,
                 "startPos": {"x": 6, "y": 10}, "switches": [{"id": key, "name": name} for key, name in p.switch_names.items()],
+                "fieldHud": {"theme": "minimal", "vitals": False, "clock": False, "tools": False, "objective": False, "hideEmpty": True, "widgets": []},
                 "playerSprite": {"type": "uploaded", "id": next(a for a in actors["actors"] if a["id"] == "trial-student")["walk"]}}
     report = {"version": 1, "status": "prepared-not-approved", "libraryId": LIBRARY, "inputFingerprint": manifest["inputFingerprint"],
               "runtimePassed": False, "canonicalReload": False, "publicRegistered": False, "groundGrid": [11, 12], "groundOffset": [0, 32],

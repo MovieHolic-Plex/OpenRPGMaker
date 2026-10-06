@@ -12,6 +12,7 @@ export interface NativeSceneProjectInput {
   readonly startMapId: string;
   readonly startPos: { x: number; y: number };
   readonly switches?: SwitchDef[];
+  readonly fieldHud?: Project["system"]["fieldHud"];
   /** Walking CharSet resource (slot zero); action sprites belong to events. */
   readonly playerSprite?: AssetRef;
 }
@@ -104,6 +105,7 @@ export function createNativeSceneProject(input: NativeSceneProjectInput): Projec
   project.startPos = structuredClone(input.startPos);
   project.mapConnections = [];
   delete project.system.opening;
+  if (input.fieldHud) project.system.fieldHud = structuredClone(input.fieldHud);
 
   const switchIds = new Set<string>();
   for (const def of input.switches ?? []) {
@@ -139,6 +141,7 @@ export function createNativeSceneProject(input: NativeSceneProjectInput): Projec
   assertEqual(normalized.mapTree, project.mapTree, 'Native map tree');
   assertEqual(normalized.startPos, project.startPos, 'Native start position');
   assertEqual(normalized.switches, project.switches, 'Native switch definitions');
+  if (input.fieldHud) assertEqual(normalized.system.fieldHud, project.system.fieldHud, 'Native field HUD');
   if (input.playerSprite) {
     const actorId = project.system.startActorIds[0];
     const graphic = (value: Project) => {

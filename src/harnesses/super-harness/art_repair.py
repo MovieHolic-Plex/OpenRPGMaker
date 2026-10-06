@@ -73,10 +73,18 @@ def obligations(feedback):
 def validate_comparison(verdict, request, group_id):
     expected = {r['id']: r for r in request.get('comparisonObligations', []) if r['group'] == group_id}
     comparisons = verdict.get('comparisons', {})
-    if set(comparisons) != set(expected): raise ValueError('이전 실패별 해결/미해결 비교가 누락되었습니다.')
+    if not isinstance(comparisons, dict):
+        raise ValueError('이전 실패 비교는 id별 객체여야 합니다.')
+    missing = set(expected) - set(comparisons)
+    if missing:
+        raise ValueError('이전 실패별 비교 누락: ' + ', '.join(sorted(missing)))
     calibration = request.get('approvedLayout', {}).get('layout', {}).get('phase') == 'calibration'
-    for key, obligation in expected.items():
-        item = comparisons[key]
+    # Additional observations must not erase required comparisons or crash a
+    # complete review. Preserve them and enforce the same evidence/failure rules.
+    for key, item in comparisons.items():
+        if not isinstance(item, dict):
+            raise ValueError('실패 전후 비교 항목은 객체여야 합니다: ' + key)
+        obligation = expected.get(key, {'required': item.get('required', False), 'check': item.get('check', 'fix')})
         status = item.get('status')
         if status not in ('resolved', 'unresolved', 'invalid-prior-claim', 'deferred', 'advisory'):
             raise ValueError('실패 전후 비교 상태 오류')
