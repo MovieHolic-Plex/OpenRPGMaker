@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "moon-frost-dragon",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/moon-frost-dragon/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "e9ccf0980214506ab01fe9737358be59b83a243939c3e96fa5ebe20b5282c4ba",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "4362e47b86160ff561be21b849091a6e230395331b88f2059456c624f58df2b6",
+    "entireGoalCompleteClaim": false
+  }
+]

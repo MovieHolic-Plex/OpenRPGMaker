@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-06T12:21:52.885954+00:00",
+  "passed": false,
+  "key": "moon-frost-dragon/fifty-v1",
+  "binding": "4362e47b86160ff561be21b849091a6e230395331b88f2059456c624f58df2b6",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-moon-frost-dragon-before-initial-review.png",
+  "nativeContactPngSha256": "ddf7901c355f60d01e4c6c9108256e681e554ace7e18839920ff993042a15b6b",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "9fd989392e23579e293a6624bee0b382bf55575fe30cbc7277078903c289c608"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x1632x1272 unresized. Silver-white right-facing long connected neck, small gold eye, ivory horns, whiskers, blue dorsal fins and left-returning lower coil. Broad upper-left light and darker near/far arm overlap. Neck/near claw fold in windup, reach forward in move/attack, open dark mouth in attack, withdraw on recovery/hit; distinct low coil/neck/fallen head and limp foreclaws in dead. Mouth-connected cyan core and two visibly diverging ice planes in skill_b, closed jaw and three fragments in skill_c. Raised folded sick forearm/green bubbles in poison, lowered neck/slack forearm/stars in stun, lower closed-lid-intended face and folded elbow/claws in sleep pair; independent face/state review remains pending. Coil bright inner plane is angular and skin has sparse scales; idle/state pair changes are restrained. Read whole final author_pixels block/blank/save/idle/finished_idle/anatomy/all pose,skill,status,sleep methods/final corrections/final coil rows and complete module flow/calls. Direct literal part rows/static coordinates/per-frame explicit patch strings; shared stationary coil allowed, no whole-frame transforms/tweens/generated geometry. Separate low dead coil and direct lower move/attack rows. Read complete render/bake_motions/observe: PNG/GIF and read-only diagnostics, no native writer. All18 preview PNGs matched actual grid/palette. Actual independent decision pending; no keep/Allow claim.",
+  "actualIndependentReviewJob": "ae671308-a574-4f79-a4e6-3a4ec8fa73b6",
+  "clarificationAfterActualIndependentReview": "Initial connected-limb and hit-recoil observations did not establish coherent forelimb anatomy. Actual review found inconsistent far/near shoulder roots, overly long paddle-shaped attacking paw and pinched hit-neck join. Actual mouth-connected skill and distinct state silhouettes were supported, but draft remains false pending native repair/fresh review."
+}
