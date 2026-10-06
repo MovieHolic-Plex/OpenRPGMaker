@@ -771,3 +771,12 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 선택 ZIP/PNG18/디코딩8GIF 픽셀·노출시간과 현재 source 및 정본 source archive46종을 다시 읽었다. 감독이 실제 데스크톱 정지/375·320px 화면을 열었다.8GIF/정지·재생/같은 배율 사람 비교, 오류0/넘침0, 선택 버튼 미클릭이다.
 - 현재 합격 **46/50종 · 828자세 · 368GIF**. 동물10/요괴16/사람12(여성6)/보스8; 남은4종128px 보스는 설갈사자왕/옥갑전갈왕/해주영사/금익대붕이다. 기존 결정52행/선택8건 보존, 새 위임138행/전체190행, 기존 정식 minor11건 유지. 대시보드 Allow54는 기존8+신규46이다. 전체50 완료는 false다. 실제 세 작가는 사자/전갈/바다뱀을 저작 중이고 대붕은 다음 자리에서 시작한다.
 - 근거: `forty-six-passed-proof.json`, `root-review-bronze-cauldron-demon.json`, `browser-proof-bronze-cauldron-demon.json`, `source-archive-proof.json`.
+
+## 마지막 네 대형보스 원본과 실제 재작업 · 2026-10-06 15:26 UTC
+
+- 사자 최초 원본18자세를 원본1배/nearest2배로 실제 열고 전체 native writer와 렌더·관측 helper의 모든 메서드/모듈 흐름을 읽었다. 실제 독립 `f0e040b9-c44e-4bfa-9917-5599abf1f278`의 rework11건(판금처럼 보이는 갈기/각진 목털/목걸이 연결, 약한 준비·피격·공격 발, 입 안 충전과 눈바람 두 줄기, 상태 쌍의 몸 변화)을 동일 초기 binding과 실제 before-first source/검수4PNG로 보존했다. 첫 수정 중이며 통과 수에 넣지 않는다.
+- 전갈 최초 원본18자세를 실제 열고 native writer·오케스트레이터7파일의 전체 메서드/모듈 흐름을 읽었다. 실제 독립 `4d575149-1012-46b1-bb97-7ec2b9bec595`의 rework4건은 두 집게의 속이 빈 고리형 공격 손가락, 돌진·공격·스킬 중 갑각 늘어남, 피격/독/기절 꼬리의 갑자기 가늘어진 구간이다. 실제 source/검수4PNG/모델 작업과 초기 감독18자세를 같은 binding으로 보존했다. 첫 수정 중이다.
+- 바다뱀 최초 원본18자세를 원본1배/nearest2배로 실제 열고 현재 native writer 전체와 두 readonly helper 전체를 읽었다. 독립적인 명시적 도트 행과 @+ 투명 건너뛰기만으로 원본을 쓴다. 두 코일/목 진주/금색 배판/긴 턱 깨물기, 별도 낮은 쓰러짐과 고개 접은 수면, 입 안 물핵→두 물줄기→세 파편을 확인했다. 얇은 물줄기와 단순한 넓은 코일 면, 미세한 상태 쌍 변화의 한계도 적었다. 실제 독립 검수 진행 중이며 keeper·Allow를 주장하지 않는다.
+- 실제 대기·공격 중간판 두 장을 보존하고 사용자에게 보여주었다. 실제128px 원본과 승인된64px 사람을 같은 픽셀 배율로 비교한다. 제작 중 후보를 통과로 표시하지 않는다.
+- 현재 통과 **46/50종 · 828자세 · 368GIF**와 원래 결정52행/선택8건을 유지한다. 사자·전갈은 수정, 바다뱀은 독립 검수, 대붕은 다음 자리 대기다. 전체50 완료는 false다.
+- 근거: `root-draft-review-snow-mane-lion-initial.json`, `draft-independent-rework-snow-mane-lion-initial.json`, `root-draft-review-jade-armor-scorpion-initial.json`, `draft-independent-rework-jade-armor-scorpion-initial.json`, `root-draft-review-sea-pearl-serpent-initial.json`, 각 immutable 최초 원본18자세 그림과 실제 중간판.

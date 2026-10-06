@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-06T15:13:19.590277+00:00",
+  "passed": false,
+  "key": "snow-mane-lion/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Reviewed the actual portrait and light/dark/checker PNGs, including their native 1x panels and nearest-neighbor 3x panels. The large white quadruped, layered mane, gold eye/collar, pink nose and turquoise tail tuft are recognizable; the standing sprite fills its cell well. Upper-left highlights and dark lower/right planes broadly agree, and planted paws share the visible baseline. No obvious accidental interior transparency or detached attacking forepaw was visible; the deep notch beside the fallen head joins opaque body pixels below it. However, long parallel mane stripes and the square hanging throat make the fur read as rigid plates, while windup and hit lack strong torso/neck changes. The skill touches the open mouth, but its contact image reads as one narrow vertical S-shaped ribbon instead of two substantial outward snowstorm waves. The recovery has three recognizable icy fragments. Poison, stun and folded sleep are distinguishable states rather than whole-sprite tints or unrelated attacks, but poison/stun pairs rely mostly on moving symbols and sleep has little visible breathing. These are static pose previews: playback timing, dash travel, battle contact, literal pxgrid authorship and palette/alpha compliance cannot be established from this visual review. Geometry compliance would not resolve the listed visual problems. This recommendation is advisory and does not record a user selection.",
+    "issues": [
+      {
+        "pose": "idle_a",
+        "x": 62,
+        "y": 62,
+        "message": "The mane has several long, nearly parallel vertical highlight/shadow bands ending together at its lower edge. Break these into overlapping stepped fur locks with different lengths and wider curved light/base/shadow clusters; retain the upper-left light and carry the repair consistently through the other upright poses. At 1x the current bands resemble a rigid fluted shield."
+      },
+      {
+        "pose": "idle_a",
+        "x": 106,
+        "y": 84,
+        "message": "Below the muzzle, straight vertical bands terminate in a flat square throat/beard edge. Shape the jaw underside and taper staggered fur locks into the chest so the head has a rounded throat volume instead of a hanging rectangular panel. Preserve an opaque neck connection."
+      },
+      {
+        "pose": "idle_a",
+        "x": 72,
+        "y": 92,
+        "message": "The gold collar reads as a diagonal crescent pinned to the lower mane, with a dark triangular interior. Add a short visible return around the neck and an occlusion edge where mane overlaps metal; clarify that it encircles the throat rather than floating on its surface. Keep this attachment consistent as the foreleg moves."
+      },
+      {
+        "pose": "windup",
+        "x": 95,
+        "y": 59,
+        "message": "The preparation is mainly a kinked-leg crouch while the face and tall mane remain upright. Lower and pitch the connected neck/mane/muzzle forward, compress the shoulder and bend the hind hocks into a loaded push. Keep planted paw bottoms on y=124 so the preparation visibly leads into the wide stride."
+      },
+      {
+        "pose": "attack",
+        "x": 108,
+        "y": 105,
+        "message": "The attached attacking forepaw points mostly downward and ends in tiny rounded toe marks, so the forward claw strike is weak at 1x. Extend the wrist/paw more toward the right and give its leading edge distinct projecting claw clusters, with a continuous elbow-to-wrist contour. Preserve the other supporting paws and the open-jaw attack cue."
+      },
+      {
+        "pose": "hit",
+        "x": 92,
+        "y": 64,
+        "message": "The bent foreground leg and eye change provide little recoil because the head, mane and torso stay close to idle. Shift and tilt the muzzle/neck back into the mane, compress the shoulder and visibly brace the supporting paws. Redraw connected fur and collar at the bend so the hit reads through the silhouette."
+      },
+      {
+        "pose": "skill_a",
+        "x": 113,
+        "y": 66,
+        "message": "The small turquoise disk sits on the front of the snout and the mane has only a thin cyan accent; preparation reads mainly as idle with a spark. Expose a small dark mouth cavity and place the blue-white core inside it, with a broader contained glow cluster between mane locks. Show a preparing jaw/neck change before the release."
+      },
+      {
+        "pose": "skill_b",
+        "x": 112,
+        "y": 72,
+        "message": "The effect visibly meets the mouth, but its two lobes form a narrow vertical S alongside the face, converging above the mouth and curling down the chest. Establish a clear opaque blue-white emission root inside the open jaw, then separate two thicker curved wave fronts expanding toward the right. Keep the effect inside the cell margin and preserve the muzzle outline around the opening."
+      },
+      {
+        "pose": "poison_b",
+        "x": 89,
+        "y": 78,
+        "message": "The poison pair changes droplet placement much more than the lion's posture; its eye and neck still look alert. Add a small connected neck droop and shoulder sag between poison_a and poison_b, with a restrained eyelid change. Keep the existing purple droplets and grounded supporting paws so the ailment remains distinct from hit recoil."
+      },
+      {
+        "pose": "stun_b",
+        "x": 97,
+        "y": 56,
+        "message": "The closed/hidden eye and stars identify stun, but the pair's body silhouette is almost stationary. Add a slight head/neck wobble and uneven shoulder settling between the two poses; explicitly move the adjoining mane and collar clusters with it while keeping the paws planted. Avoid relying only on relocated stars."
+      },
+      {
+        "pose": "sleep_b",
+        "x": 66,
+        "y": 94,
+        "message": "The folded sleeping silhouette is readable and differs from dead, but the pair changes chiefly around the muzzle. Add a small chest/mane rise and fall through explicit connected pixel clusters, with the folded paws and tail resting on the same baseline. Preserve a clearly closed eye and relaxed closed jaw in both frames."
+      }
+    ],
+    "binding": "f93f251b91b4072380ddce53935747163895dd6b0487b6de67560debe6a9a34b",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "74b18efa1457102181147c414da4fb7cc1430b910a389d30af003241eb753405",
+      "preview/suite/light.png": "fed1abbdc5d1f7e085702eb9692b175eb13c3d7cb1aac6d02ff404e52c17f3ae",
+      "preview/suite/dark.png": "0117e9c5cbabbfabf0fe323cfb9a6fe3a9ec1b7f0b2f6a94177491004b058534",
+      "preview/suite/checker.png": "7661a922ae34a341ae35abe334e1696e32de226668a10df57d2a3c6e28f22879"
+    },
+    "jobId": "f0e040b9-c44e-4bfa-9917-5599abf1f278",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T15:10:57.588012+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "f0e040b9-c44e-4bfa-9917-5599abf1f278",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T15:06:47.485315+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/jobs/f0e040b9-c44e-4bfa-9917-5599abf1f278",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "da529e05b138572127a718a75639313e47909a7e7013d2765ede410c9bc1365a",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "74b18efa1457102181147c414da4fb7cc1430b910a389d30af003241eb753405",
+      "preview/suite/light.png": "fed1abbdc5d1f7e085702eb9692b175eb13c3d7cb1aac6d02ff404e52c17f3ae",
+      "preview/suite/dark.png": "0117e9c5cbabbfabf0fe323cfb9a6fe3a9ec1b7f0b2f6a94177491004b058534",
+      "preview/suite/checker.png": "7661a922ae34a341ae35abe334e1696e32de226668a10df57d2a3c6e28f22879"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T15:10:56.748933+00:00"
+  },
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/visual-repairs/001/source",
+  "rootNative18ReviewOfThisSnapshotClaim": true,
+  "claimScope": "Actual initial native18/whole current writer viewing and actual independent rework only. First repair pending; no keeper/Allow/completion claim."
+}

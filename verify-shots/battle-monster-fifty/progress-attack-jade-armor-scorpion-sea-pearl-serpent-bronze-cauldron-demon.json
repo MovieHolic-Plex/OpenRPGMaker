@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "bronze-cauldron-demon",
+    "source": "qa-runs/harnesses/battle-monster/bronze-cauldron-demon/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "d37ae73c81eabe21b28d1ad7c2a66829b9d9d9fd661f4fabd85752669e3fbcc6",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T14:56:13.419835+00:00",
+    "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "jade-armor-scorpion",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/jade-armor-scorpion/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "7d2c98814a62705a2a083d43eade3b9a1cf65988180c19c830ad7b1cd0c549a3",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T14:56:13.419835+00:00",
+    "binding": "70a9a39421edbd7a125863e826896f26dc69fdc7d9824a2ec9dbfefc2e7d5f88",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "sea-pearl-serpent",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/sea-pearl-serpent/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "d1b1998fa000816d0fe9eef6364dc04734dc45cef747f94d09d1c0e58526278b",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T14:56:13.419835+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-06T15:19:12.673726+00:00",
+  "passed": false,
+  "key": "jade-armor-scorpion/fifty-v1",
+  "binding": "70a9a39421edbd7a125863e826896f26dc69fdc7d9824a2ec9dbfefc2e7d5f88",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-jade-armor-scorpion-initial.png",
+  "nativeContactPngSha256": "587c4391135720069ab9f51e8eadead0092ada76f572a1428831bcbde94429d4",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "63f3da76daee7de55b04b51c2d9e4062b91d838f97a8fa71aec05bdca2a828c7",
+    "motion_pixels.py": "da5a239b438db6f300ff087e5502a7f861e58c9f5514bb505a9134bfaf221116",
+    "status_pixels.py": "2f3f99b48f29b9e50891fa96d57406e835ba9d1375adfd3aa09b9b248087a963",
+    "collapse_pixels.py": "fb06046bfa48913a1ba1673741e59bf4d7e5282cca54379e28840bb5aabbbdf0",
+    "skill_pixels.py": "07838e70dd86b0d80ce089417acffba8786164683bb13b832ba97a5d38a114b6",
+    "correct_pixels.py": "a60198d10b3ff854e1f6a4c62ea0580ddc258d128bec67c5c713060b5b6a3e4b",
+    "build_all.py": "fa98bd10731e1eb86493f9278db7950c4e50dc126d2d530dfdd299c0deee3dda"
+  },
+  "observations": [
+    "Actually viewed all18 native128 poses at original1632x1272, native1x and nearest2x. Large green/teal shell with gold armor bands,2 outlined near/far pincers, articulated support legs and a segmented curved tail/red telson fills its cell. Upper-left pale/gold highlights and darker right claw/shell planes are readable; broad shell planes are fairly flat and farther joints are thin.",
+    "Windup retracts/raises the pincer, move advances the stance, attack closes both separately outlined fingers at their tips and recovery reopens/retracts them. Hit lowers head/claws and tail while the main shell is fairly rigid. Dead is low flattened shell/legs with a lower tail; sleep folds support legs and pincers into a higher compact rest, retaining the shell/tail identity.",
+    "Tail-tip purple core becomes2 forked poison streams continuously rooted at the actual telson, then a folded tail and3 drops. Poison and stun both sag head/claw/tail with bubbles versus stars; body and paired changes are restrained. Static views do not establish dash/contact/timing.",
+    "Read every method and full module flow of7 native writers/orchestrator, including2 author base definitions, repeated make_motion after ATTACK_CLAW replacement, import-star dependencies and sleep-neck post-main patch. Four original writer hashes match whole actual readings; changed motion and new correct/build entire executable flow were read. build_all runs6 native author/correction scripts in order then readonly render. Explicit selected y/x/literal part rows on blank128 grids, own rigid part reuse; no procedural body geometry, whole-frame transform or tween. Current entire renderer also read: nativeRGBA/indexed transparent8 GIFs, actual decodedRGBA/holds/hash facts, diagnostic backgrounds/nearest crops only."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "claimScope": "Actual initial native18/complete7 native writers and actual independent rework4 at the identical binding. Not a keeper, user choice or completed monster.",
+  "actualIndependentReviewJob": "4d575149-1012-46b1-bb97-7ec2b9bec595",
+  "actualIndependentIssues": [
+    {
+      "pose": "attack",
+      "x": 108,
+      "y": 70,
+      "message": "The upper pincer's moving finger becomes a thin gold/dark loop around a large transparent interior. Redraw the moving jaw as a solid jade finger with a shaded underside and continuous outline, preserving the windup finger's mass and hinge. Bring its actual tip toward the opposing finger so this frame reads as a pinch contact. Preserve only the intentional gap between the two fingers."
+    },
+    {
+      "pose": "attack",
+      "x": 116,
+      "y": 90,
+      "message": "The foreground pincer likewise replaces its long solid finger with a near-empty outlined arc at approximately x104–124, y83–98. At 1x this reads as a wire loop rather than a heavy closing claw. Author a solid rotating finger from the existing hinge, retain its gold edge and jade volume, and make the two finger tips visibly converge at contact."
+    },
+    {
+      "pose": "move",
+      "x": 73,
+      "y": 80,
+      "message": "The rigid carapace extends from roughly x17–63 in idle/windup to x17–84 in move, while its rear edge and tail root remain essentially fixed. The matching horizontal armor bands make the added length read as body stretching. Preserve the established plate proportions and put the thrust into articulated shoulders, claws and legs; if turning the shell, redraw its planes and band perspective consistently. Carry the correction into attack and skill_b, which share the elongated shell."
+    },
+    {
+      "pose": "hit",
+      "x": 40,
+      "y": 53,
+      "message": "After the thick rear tail curve, the diagonal section toward the orange sting abruptly narrows to a thin cord. Preserve several pixels of shaded, articulated tail volume through this bend before tapering into the sting. Apply the same anatomical correction to poison_a/b and stun_a/b, which repeat this extended tail shape; keep the orange sting and each status particle distinct."
+    }
+  ],
+  "actualIndependentSummary": "Inspected all four supplied PNGs, including the native 128px portrait and every embedded native 1x and nearest 3x pose. The upright segmented tail, broad jade armor, gold trim and right-facing paired claws give a recognizable scorpion silhouette. Upper-left highlights and broad jade shadow planes read on light and dark backgrounds. Standing feet retain a consistent ground line; no obvious accidental torso holes were visible, and the lowered sleep/dead claws retain pixel connections despite their separated appearance. The principal problems are attack fingers becoming hollow outline loops, abrupt carapace elongation during the dash, and the distal tail losing thickness in the hit/status poses. Skill preparation shows a violet stinger core; the forked discharge visibly starts at the actual stinger, followed by a folded tail and three droplets. Poison droplets, stun stars and lowered sleep posture distinguish the additional states without whole-body tinting; the sleep pair has only subtle claw movement. This is a visual rework recommendation, not a user selection. Static pose previews cannot establish battle contact, playback timing, native pxgrid authorship, model provenance or compliance with the palette limit; geometry PASS alone would not resolve these visual concerns.",
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/jade-armor-scorpion/fifty-v1/visual-repairs/001/source"
+}

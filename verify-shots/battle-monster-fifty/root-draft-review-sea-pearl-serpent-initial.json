@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T15:24:37.345825+00:00",
+  "passed": false,
+  "key": "sea-pearl-serpent/fifty-v1",
+  "binding": "227042747f96210e39358faaa420e5838dd0b658aedfd2df7937beb130952de8",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-sea-pearl-serpent-initial.png",
+  "nativeContactPngSha256": "ba1b69a297e3955cda2d17407f6136855a7f99cc7e760c7b47f4dbf75da8a3ed",
+  "nativeWriterFilesRead": {
+    "author.py": "762177cd9ad584e9781194b4c306881fb4e38e3d6eaa33ce043cb8e5857bd3e6"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "c486decc898fcd4af7e1f9325aa12ead5f3de7446bfedd1822a63cfb9e0e1575",
+    "preview_gifs.py": "5e12afd4e4950bc324bf8cebbc223b2c5f5b0994a794baca50fbb8db82195ef7"
+  },
+  "observations": [
+    "Actually viewed all18 native128 at original1632x1272 with native1x/nearest2x. Teal snake with pale neck pearl, gold eye/belly plates, long muzzle and2 large coiled loops. Upper-left lighter teal and dark right/lower planes; comparatively simple broad flat coils and small quiet eyes. No limbs; grounding is the bottom coil, not a paw baseline.",
+    "Windup folds the neck back, move leans neck forward, attack opens a separately drawn long upper/lower jaw and visible dark mouth/teeth, recover closes the jaw. Hit shortens/bends neck back; dead collapses the neck/head beside a low folded coil. Sleep folds the head and closes eyes above the coil, distinguishable from fallen horizontal neck.",
+    "Skill preparation contains a pale core in an open mouth, discharge sends2 thin blue outlined streams rooted at the mouth, then3 small water fragments. Poison shows drooped head/open mouth with purple bubbles; stun slumps head with gold stars; sleep pair changes head/pearl subtly. Idle/status body changes are restrained; static views do not prove dash travel, impact or playback timing.",
+    "Read full native author module and exact overlay-marker diff: each independently authored sketch text supplies explicit x/y row blocks to a transparent128 grid; @+ skips literal dots while painting explicit colored row pixels. No generated body geometry, inherited whole frame transforms or tweening. Read complete readonly render/preview_gifs module flow: nativeRGBA/indexed8GIF exact decodedRGBA/hold/hash checks, diagnostic nearest crops/background sheets, labelled decoded GIF filmstrips and3x3 sheets; these do not write native art."
+  ],
+  "actualIndependentRecommendation": "pending-current-binding",
+  "claimScope": "Actual initial native18 and complete current native writer plus readonly helper reading. Independent keeper/Allow/archive/browser/final completion pending."
+}
