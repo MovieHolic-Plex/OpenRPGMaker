@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **163쪽 / 5404KB / 약 1,572,021 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **163쪽 / 5406KB / 약 1,572,395 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -59,6 +59,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/ai-workflow.md` | 5 | `20260709000000_ai_activity_logs.sql`, `src/ai/plannerSkip.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
+| `openwiki/asset-store.md` | 1 | `admin-link.mjs` |
 | `openwiki/atlas-biome-interior.md` | 3 | `.loop.json`, `.loop.png`, `interior-merged-palette.html` |
 | `openwiki/battle-impact-contact.md` | 1 | `verify-shots/battle-impact/README.md` |
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
@@ -241,7 +242,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 11KB · 152줄 · ~3,301 토큰
+### `openwiki/asset-store.md` — 12KB · 162줄 · ~3,675 토큰
 
 - `L6` 결정 (사용자, 2026-10-06)
 - `L26` 구성 요소
@@ -252,7 +253,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L89` 보안 검토 반영 (2026-10-06)
 - `L111` 실행·시험
 - `L136` 화면 디자인
-- `L144` 함정
+- `L144` 공용 캐릭터 그림 진열 (2026-10-06)
+- `L154` 함정
 
 ### `openwiki/atlas-biome-interior.md` — 26KB · 162줄 · ~7,732 토큰
 

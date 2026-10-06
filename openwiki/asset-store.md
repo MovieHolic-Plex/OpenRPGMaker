@@ -141,6 +141,16 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
   - 「일본 도시」는 그래서 판본 2에서 대표 그림을 `public/assets/store-covers/jp-city-street.png`(상가 거리 장면)로 바꿨다. 시드(`seedBundles.ts`)도 같은 그림을 먼저 쓴다.
 - 카드에는 표시를 「조수 사용 가능」 하나만 그림 위에 둔다. 받기 수가 0이면 「새로 올라옴」으로 쓴다.
 
+## 공용 캐릭터 그림 진열 (2026-10-06)
+
+- `store-server/scripts/seed_library.py` 가 공용 캐릭터 그림을 상품 17개로 올린다. 다시 돌려도 같은 제목은 건너뛴다.
+  - 얼굴·흉상·전신 16표정 × 묶음 5개(Actor1·Actor2·People1·People2·Monster) = 15개. 팩 하나의 에셋 상한이 256개라 묶음마다 나눴다.
+  - 걷기 칩: 캐릭터 하네스에서 사람이 남긴 26명(`harness-data/charset-actor/accepted/`, 8명씩 RM2K3 시트로 묶음)과 OPRN 몬스터 Monster4~6.
+- 라이선스는 CC BY 4.0 이다(원본 얼굴·걷기 칩 뼈대가 EasyRPG RTP CC BY 4.0). 흉상·전신·새 걷기 칩은 「AI 생성」 표시를 단다.
+- 흉상·전신 에셋 id 에 `-bust`/`-full` 이 남아 있어 프로젝트에 넣으면 대화창이 그 모양으로 바뀐다(`facePresentationForResource`).
+- 운영에 올릴 때는 `admin-link.mjs` 토큰으로 `--link-token`. 분당 blob 상한(1500)에 걸리면 스크립트가 기다렸다가 다시 보낸다.
+- 아직 안 올린 것: 전투 도트(적 140종·파티 시트). 전투 시트는 런타임이 정해진 칸 규격·리소스 id 로 읽으므로, 스토어로 넣었을 때 전투에서 바로 쓰이는지 먼저 확인해야 한다.
+
 ## 함정
 
 - `pkill -f oprn-store` 처럼 셸 명령줄에도 들어가는 패턴으로 죽이면 자기 셸이 죽는다. `dev-unit.sh stop` 을 쓴다.
