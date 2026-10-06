@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 759,
+  "remainingAtSnapshot": 698,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T18:08:47.739936+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 759,
+      "manifestSha256": "2093616254e1074119190b78447dfd2e7e234afc8ad8e8c27bd9de7c41fd7a32",
+      "finishedAt": "2026-10-06T18:08:28.021100+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-759-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--team,monster--bond--team--bright,monster--bond--team--bright--route,monster--bond--team--bright--habitat,monster--bond--collect--warm--case,monster--bond--collect--warm--case--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 759,
+      "manifestSha256": "2093616254e1074119190b78447dfd2e7e234afc8ad8e8c27bd9de7c41fd7a32",
+      "finishedAt": "2026-10-06T18:08:46.283523+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-759-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--bond--collect--warm--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--collect--warm--case.png",
+      "sha256": "85934497ef73e56fe32eba27e557f4d58a4c73e94ee24b11c27eece2e7b1ab5d",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--collect--warm--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--collect--warm--case--episode.png",
+      "sha256": "319e9e708c57d97457de834f96c87bce6c3550100c193f4c6e42f63aad9e2e75",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--team",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--team.png",
+      "sha256": "001cdc4f9de0e40a0303652ba985a34beded7905ca3cb45426001dcb0da99419",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--team--bright",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--team--bright.png",
+      "sha256": "272b62e7c881e8c2a56515e8e95dd7066f3849a5213883574d40463eb83d79d2",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--team--bright--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--team--bright--route.png",
+      "sha256": "e26b4576495eafdebacaf905ea687d9ab88348ac8536cb5faf354ec80a248123",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--team--bright--habitat",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-759-stage184-selected-monster--bond--team--bright--habitat.png",
+      "sha256": "6cef0ca94b65ea9bc782dd06345979bc9a129a87704836b5adb9962aec26e3c5",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 28,
+  "scope": "759 file/record integrity plus six production-dialog paths with28 actualbuttonclicks; ROOT personally saw allsixsettledwhole screens. LEFTcaption overlap remains. Privately confirmed originalTEAM secretCASE/warmROUTE/warmHAB composition failures pendingofficialreview afterthisfreeze/cleanup. OriginalPARTNER brightMOOD/HAB audit notyetofficial. Not all759freshvisual/allpublishedclick/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-759-stage184-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-759-stage184-click-proof.json"
+  }
+}

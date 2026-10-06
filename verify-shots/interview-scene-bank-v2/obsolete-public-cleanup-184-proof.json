@@ -1,0 +1,55 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 759,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--bond--team",
+      "sourceSha256": "9dcc18645bda42191df8b69dc313a508b10e3f9f8311dd56b05354374a45c2f8",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--team-9dcc18645bda.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--team-2-9dcc18645bda.png",
+      "replacementPublished": true,
+      "replacementSha256": "4bb7fde5304ed2017f42d35b3eda0121cdf3ab6dc5874ac4138adc4dd8716ad2",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-184"
+    },
+    {
+      "key": "monster--bond--team--bright",
+      "sourceSha256": "08627b590b67baba1d450d6f5ea1bb13e300ef68490004955891e03a5f62a7b4",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--team--bright-08627b590b67.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright-1-08627b590b67.png",
+      "replacementPublished": true,
+      "replacementSha256": "7bc443eb70cfd4721bdc29024e38d7fb60a664c6a6fb65661dd1ab502cb385f7",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-184"
+    },
+    {
+      "key": "monster--bond--team--bright--route",
+      "sourceSha256": "a4e80e4630a7b543b236baec822212d147301e83fec2e2e83b3e861874a9c60f",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--team--bright--route-a4e80e4630a7.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--route-2-a4e80e4630a7.png",
+      "replacementPublished": true,
+      "replacementSha256": "48aea63f3a366a1cdccd27ab9d416c0b2505fce7b34ff08da94bd8c876002508",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-184"
+    },
+    {
+      "key": "monster--bond--team--bright--habitat",
+      "sourceSha256": "2c389d2f096b547b86b170759541fb73b47f20f2cc6b1f70c5d3c15fb91ad46d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--team--bright--habitat-2c389d2f096b.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--habitat-1-2c389d2f096b.png",
+      "replacementPublished": true,
+      "replacementSha256": "2335569ad6371d8ee2c7b351d624e602a4e624facea9527bb1ad84197053f1dd",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-184"
+    }
+  ],
+  "resolvedCumulative": 163
+}

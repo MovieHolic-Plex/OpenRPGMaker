@@ -1,0 +1,828 @@
+{
+  "groups": [
+    {
+      "group": "source-rejections-185-five-original-team-parents",
+      "actualOfficialToolExit": {
+        "actualToolSession": 17977,
+        "returncode": 0,
+        "reviewed": 5,
+        "ledgerAllExact": true,
+        "after182FrozenRootQA34CleanupAndCommit": "51c9116490",
+        "cumulativeActualCorrectiveSources164To185": 41
+      },
+      "history": [
+        {
+          "key": "monster--bond--team--warm",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--warm-1-ab3bcaf799a9.png",
+          "nativeSha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nLATEST CHOICE: 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nSCENE ID: monster--bond--team--warm. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Forest refuge with repaired shelter, soft blanket and water bowl suggests helping and earning trust. No cage, visible animal or egg.\nSHOT: elevated near-corner view, focal prop prominent left, environment receding right. Make a fresh shot, never copy the reference composition.\nPLAY MOTIF: Empty training space, unmarked equipment and different approach lanes suggest team composition and tactical challenge; no actual team or human trainers.\nTONE: Apply only the selected mood from facts, with discrete pixel shade bands, never painting gradients or adding a contradictory genre.\nMANDATORY DETAIL CONTROL: No flags, banners, faction emblems, logos, open books, writing-like marks, drawn species or silhouettes. No person or creature appearance has been selected. All foreground sharp square pixel clusters. Retain selected start plus selected play: bond must visibly include repaired trust refuge and care; team needs several different empty tactical obstacle stations and challenge arena; collect needs prominent binoculars and plain unopened specimen containers overlooking distinct empty habitats; partner needs empty cushioned rest bed and bowl. Hatch must show one cracked egg in nest, no visible hatchling. Distinguish bright sunlit discovery, secret concealed moonlit habitats, warm protected companionship. Never let the latest mood remove the earlier play.",
+          "exactOriginalOwnSha256": "a0991f22c56552601ed4fab0e87394ea116bef9abc25fd7cce600a489e65a56a",
+          "preservedOriginalReview": {
+            "sourceSha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
+            "promptSha256": "cb20696724dc8aa891c19d5efcf204becbdb9b3a58235c872c6853673500e1a4",
+            "reviewer": "Codex direct original visual inspection: v2-production-011",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Repaired protected shelter and bed/bowl beside several empty challenge stations retain trust, tactical growth and welcoming sunset; no faction emblem or text."
+          },
+          "corrective": {
+            "sourceSha256": "ab3bcaf799a9f3c63686f908e6a9c546bc3a46241aed2af62685214533587e43",
+            "promptSha256": "cb20696724dc8aa891c19d5efcf204becbdb9b3a58235c872c6853673500e1a4",
+            "reviewer": "Codex root actualoriginal own/native corrective after182 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": false,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "Original FULLexactOWN/wholeORIGINALnative and actualnew184TEAM parent: repairedrefuge/EMPTYcarebed/plaincloth/OPENBLUEwater/variousEMPTYtacticalstations/WARM present. LeftLOWworkbench/windowRIGHTcourse differs newUProofaid LOWcourse. Meaningfulcoursefeatures x56-99 hiddenactual60.3 (composition F). Prominentbinoculars/specimenjars establish unchosenCOLLECTIONlab despiteTEAMselected, plus unchosenRIGHTdifferentvillage (allChoices F). Conditionalcollecttext does not selectcollect. No laterpad/rope/branch/foodbowl/stationcount contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+            ],
+            "notes": "Original FULLexactOWN/wholeORIGINALnative and actualnew184TEAM parent: repairedrefuge/EMPTYcarebed/plaincloth/OPENBLUEwater/variousEMPTYtacticalstations/WARM present. LeftLOWworkbench/windowRIGHTcourse differs newUProofaid LOWcourse. Meaningfulcoursefeatures x56-99 hiddenactual60.3 (composition F). Prominentbinoculars/specimenjars establish unchosenCOLLECTIONlab despiteTEAMselected, plus unchosenRIGHTdifferentvillage (allChoices F). Conditionalcollecttext does not selectcollect. No laterpad/rope/branch/foodbowl/stationcount contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--secret",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--secret-2-d76ee085a0f4.png",
+          "nativeSha256": "d76ee085a0f4b162badb672e60c6533835a273545e7334bcfaff1df2712298ac",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nLATEST CHOICE: 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nSCENE ID: monster--bond--team--secret. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nNEW high near-floor view INSIDE an EMPTY sheltered repaired woodland care refuge toward a nearby concealed moonlit cave. On near LEFT clearly visible EMPTY padded companion resting bed, folded plain clean cloth, TWO separate FULLY VISIBLE bowls, one brown food pellets and one blue water. THREE clearly different actual EMPTY tactical stations in midground: low stone cover barrier, timber hurdle/platform, separated maneuvering posts alongside small empty challenge area. ONE CLOSED PLAIN undecorated notebook visible near LEFT care supplies. Concealed continuous moonlit setting, hard pixel shadows. PROGRESSION NOT SELECTED: no forced journey destination, triple habitat openings or case conclusion. Every plane same hard square pixel clusters, no foreground foliage framing or blur. No people/creature body/portrait/statue, text/open books/paper/maps/posters/clocks/numerals/flags/banners/heraldry/emblems. No binoculars/jars/collection lab, capture basket/net or egg. Fresh sheltered camera unlike previous open cliff view.",
+          "exactOriginalOwnSha256": "a7c87a8907735ff1f984aae0f4281c2b5fada308702b6032395e46eebd8ba70e",
+          "preservedOriginalReview": {
+            "sourceSha256": "d76ee085a0f4b162badb672e60c6533835a273545e7334bcfaff1df2712298ac",
+            "promptSha256": "30681b60f1bae990096beb81e6fa4d48952106f4e56c96cd4e6d2573b42ca3a2",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native replacement EMPTY repaired sheltered woodland care base at NIGHT with concealed cave, EMPTY padded rest/clean folded cloth/TWO filled food-water bowls and CLOSED plain notebook. THREE distinct actual nearby empty tactical stone cover/timber hurdle/maneuvering posts remain. Fresh shelter-floor camera versus rejected exposed paper-map cliff. No paper/open book, capture gear/egg/collection lab/body/text/flag/blur; progression unselected."
+          },
+          "corrective": {
+            "sourceSha256": "d76ee085a0f4b162badb672e60c6533835a273545e7334bcfaff1df2712298ac",
+            "promptSha256": "30681b60f1bae990096beb81e6fa4d48952106f4e56c96cd4e6d2573b42ca3a2",
+            "reviewer": "Codex root actualoriginal own/native corrective after182 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "Original FULLexactOWN/wholeORIGINALnative and actualnew184TEAM parent: repairedEMPTYpaddedcarebed/foldedplaincloth/TWOfood-waterbowls/ONEclosedPLAINnotebook/actualstonecover woodhurdleplatform maneuverposts/EMPTYchallengearena/continuousconcealedMOONLITcave present. INSIDELOWworkbench RIGHTcourse differs newUProofaid LOWcourse. Meaningfulwoodhurdle x60-74 and woodposts x76-93 and concealedcave RIGHThiddenactual60.3 (composition ONLY F). No laterwholebackgroundroof/pad/rope/branch/newwalkover-ramp requirements imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+            ],
+            "notes": "Original FULLexactOWN/wholeORIGINALnative and actualnew184TEAM parent: repairedEMPTYpaddedcarebed/foldedplaincloth/TWOfood-waterbowls/ONEclosedPLAINnotebook/actualstonecover woodhurdleplatform maneuverposts/EMPTYchallengearena/continuousconcealedMOONLITcave present. INSIDELOWworkbench RIGHTcourse differs newUProofaid LOWcourse. Meaningfulwoodhurdle x60-74 and woodposts x76-93 and concealedcave RIGHThiddenactual60.3 (composition ONLY F). No laterwholebackgroundroof/pad/rope/branch/newwalkover-ramp requirements imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--bright--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--bright--case-1-57bfb48c4232.png",
+          "nativeSha256": "57bfb48c4232bd9e8c15498af606355a3240294a7d0041b0ee872882fd10d30b",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--bond--team--bright--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: low diagonal foreground detail. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.",
+          "exactOriginalOwnSha256": "e675547deef9e8cf7617120365c9c107a920c320fd13856d0655645defa613a0",
+          "preservedOriginalReview": {
+            "sourceSha256": "57bfb48c4232bd9e8c15498af606355a3240294a7d0041b0ee872882fd10d30b",
+            "promptSha256": "264ba35e5b6ece394688c890d9ce2f70f75d2fa3274fdb3e1261185e62743cfa",
+            "reviewer": "Codex direct original visual inspection: v2-production-042",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native bright local interrupted EMPTY refuge has overturned bag/spilled rope/trace at damaged local doorway, EMPTY padded resting place/clean cloth/BOTH food-water bowls. Several distinct EMPTY actual tactical balance hurdle/weighted post/hoop stations are nearby. Fresh inside local refuge camera versus parent arena, no capture/egg/collection lab/body/text/flags/blur."
+          },
+          "corrective": {
+            "sourceSha256": "57bfb48c4232bd9e8c15498af606355a3240294a7d0041b0ee872882fd10d30b",
+            "promptSha256": "264ba35e5b6ece394688c890d9ce2f70f75d2fa3274fdb3e1261185e62743cfa",
+            "reviewer": "Codex root actualoriginal own/native corrective after182 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "Original FULLexactOWN/wholeORIGINALnative and actualnew184brightMOOD parent: repairedEMPTYpaddedcare/plaincloth/TWOfood-waterbowls/differentEMPTYtacticalstations/SUNLIT/tippedplainbag rope vacatedmat muddytrace damagedlocaldoor present. INSIDELOWcaretable RIGHTtrainingclues differs newLOWgroundaid UPcourse. RequiredTEAMcorestations x73-99 and partoflocalmudtrace x61-65 hiddenactual60.3 (composition ONLY F). No laterwholehouse/pail/pad/rope-count/fold/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+            ],
+            "notes": "Original FULLexactOWN/wholeORIGINALnative and actualnew184brightMOOD parent: repairedEMPTYpaddedcare/plaincloth/TWOfood-waterbowls/differentEMPTYtacticalstations/SUNLIT/tippedplainbag rope vacatedmat muddytrace damagedlocaldoor present. INSIDELOWcaretable RIGHTtrainingclues differs newLOWgroundaid UPcourse. RequiredTEAMcorestations x73-99 and partoflocalmudtrace x61-65 hiddenactual60.3 (composition ONLY F). No laterwholehouse/pail/pad/rope-count/fold/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--secret--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--secret--route-2-d72a0dedfb9d.png",
+          "nativeSha256": "d72a0dedfb9d2af2722dc1bac7498efcfc03a96a4382715cc7f1b17e130f82b0",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--bond--team--secret--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nMoonlit helping care base and actual route are visible, but ALL chosen tactical challenge stations are absent. REDRAW ALL SELECTED FACTS: CONCRETE SCENE BRIEF:\n\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.\nFINAL TARGETED OVERRIDE: Keep THREE fully identifiable nearby distinct EMPTY tactical stations occupying LEFT midground: ONE low stone COVER barrier, ONE timber HURDLE/platform, ONE group of separated MANEUVERING POSTS, alongside small empty challenge area. Do NOT omit these stations for care bed, journey path, three habitat openings or local case clues; ALL selected choices must coexist in SAME continuous world. Preserve repaired EMPTY padded companion resting place/folded plain cloth and TWO full visible food-water bowls, selected mood/progression and closed plain notebook for secret. No capture basket/net/egg/jars/binoculars/collection lab, body/text/flags/blur.",
+          "exactOriginalOwnSha256": "4c7788b9a35c06fe3190bdc1f30b7ee7c0131442b05885388169bd1354fbfb5b",
+          "preservedOriginalReview": {
+            "sourceSha256": "d72a0dedfb9d2af2722dc1bac7498efcfc03a96a4382715cc7f1b17e130f82b0",
+            "promptSha256": "e19231b31a1682f94a7794c9ee8f6a0833cd846f83821581ad3b86bd347a9932",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native moonlit continuous route links near repaired EMPTY care base to different EMPTY settlement/concealed cave. EMPTY padded rest/cloth/BOTH food-water bowls/CLOSED book, THREE nearby distinct stone cover/hurdle/posts stations plus empty challenge area remain. New open challenge-path camera versus sheltered replacement parent; no text/body/flags/collection lab/blur."
+          },
+          "corrective": {
+            "sourceSha256": "d72a0dedfb9d2af2722dc1bac7498efcfc03a96a4382715cc7f1b17e130f82b0",
+            "promptSha256": "e19231b31a1682f94a7794c9ee8f6a0833cd846f83821581ad3b86bd347a9932",
+            "reviewer": "Codex root actualoriginal own/native corrective after182 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "Original FULLexactOWN/wholeORIGINALnative and actualoriginalsecretMOOD FULLown/native: EMPTYpaddedcare/cloth/TWOfood-waterbowls/closedPLAINnotebook/actualstonecover timberhurdleplatform separatedmaneuverposts/EMPTYarena/continuousroute DIFFERENTsettlement MOONLIT correct. ForegroundSIDEaid RIGHTdifferenttown differs originalinsideLOWworkbench/concealedcave/no town. RequiredDIFFERENTtown x76-99 and meaningfulmaneuverposts x61-76 hiddenactual60.3 (composition ONLY F). No latertwo-house/pad/rope/branch/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+            ],
+            "notes": "Original FULLexactOWN/wholeORIGINALnative and actualoriginalsecretMOOD FULLown/native: EMPTYpaddedcare/cloth/TWOfood-waterbowls/closedPLAINnotebook/actualstonecover timberhurdleplatform separatedmaneuverposts/EMPTYarena/continuousroute DIFFERENTsettlement MOONLIT correct. ForegroundSIDEaid RIGHTdifferenttown differs originalinsideLOWworkbench/concealedcave/no town. RequiredDIFFERENTtown x76-99 and meaningfulmaneuverposts x61-76 hiddenactual60.3 (composition ONLY F). No latertwo-house/pad/rope/branch/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--secret--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--secret--habitat-2-43ce50179651.png",
+          "nativeSha256": "43ce50179651e4f4aec257496735bc773461931390238827ffeb18db641a34c3",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--bond--team--secret--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nMoonlit helping refuge with three actual habitat openings is clear, but ALL chosen tactical challenge stations are absent. REDRAW ALL SELECTED FACTS: CONCRETE SCENE BRIEF:\n\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.\nFINAL TARGETED OVERRIDE: Keep THREE fully identifiable nearby distinct EMPTY tactical stations occupying LEFT midground: ONE low stone COVER barrier, ONE timber HURDLE/platform, ONE group of separated MANEUVERING POSTS, alongside small empty challenge area. Do NOT omit these stations for care bed, journey path, three habitat openings or local case clues; ALL selected choices must coexist in SAME continuous world. Preserve repaired EMPTY padded companion resting place/folded plain cloth and TWO full visible food-water bowls, selected mood/progression and closed plain notebook for secret. No capture basket/net/egg/jars/binoculars/collection lab, body/text/flags/blur.",
+          "exactOriginalOwnSha256": "58d43606f4e6512bcd7a6d5f6f22754cd66e8a2562d1a1100a90324477c97380",
+          "preservedOriginalReview": {
+            "sourceSha256": "43ce50179651e4f4aec257496735bc773461931390238827ffeb18db641a34c3",
+            "promptSha256": "0822b78e7a2f00e24d457ded842f5138ce9bef26bf6bd2497634baec9e00d98e",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native moonlit continuous refuge with THREE real openings to wetland/forest/ruins, THREE distinct nearby empty stone cover/hurdle/posts tactical stations and empty challenge area. EMPTY padded rest/clean cloth/TWO food-water bowls/CLOSED book preserved. Fresh ruined-outpost camera versus replacement timber shelter; no capture/egg/body/text/flag/blur."
+          },
+          "corrective": {
+            "sourceSha256": "43ce50179651e4f4aec257496735bc773461931390238827ffeb18db641a34c3",
+            "promptSha256": "0822b78e7a2f00e24d457ded842f5138ce9bef26bf6bd2497634baec9e00d98e",
+            "reviewer": "Codex root actualoriginal own/native corrective after182 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "Original FULLexactOWN/wholeORIGINALnative and actualoriginalsecretMOOD FULLown/native: repairedEMPTYpaddedcare/cloth/TWOfood-waterbowls/closedPLAINnotebook/actualstonecover timberhurdleplatform separatedmaneuverposts/arena/threeactualOPENwetland forest RUINviews MOONLIT correct. InsideLOWlargeworkbench UPthreefullwidthviews differs secretMOODinsideLOWcare/opencave/no threeviews. MeaningfulRUININNER x60-66, woodhurdle x51-69 partly and maneuverposts x70-85 hiddenactual60.3 (composition ONLY F). No latertwo-house/pad/rope/branch/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+            ],
+            "notes": "Original FULLexactOWN/wholeORIGINALnative and actualoriginalsecretMOOD FULLown/native: repairedEMPTYpaddedcare/cloth/TWOfood-waterbowls/closedPLAINnotebook/actualstonecover timberhurdleplatform separatedmaneuverposts/arena/threeactualOPENwetland forest RUINviews MOONLIT correct. InsideLOWlargeworkbench UPthreefullwidthviews differs secretMOODinsideLOWcare/opencave/no threeviews. MeaningfulRUININNER x60-66, woodhurdle x51-69 partly and maneuverposts x70-85 hiddenactual60.3 (composition ONLY F). No latertwo-house/pad/rope/branch/newwalkover-ramp contract imposed. Originalreview/exactOWN/nativehash preserved. Pendingofficialcorrection ONLY after182frozen755 QA34 ROOTsixscreens/cleanup/commit."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ]
+    },
+    {
+      "group": "source-rejections-186-three-original-team-parents",
+      "actualOfficialToolExit": {
+        "actualToolSession": 94853,
+        "returncode": 0,
+        "reviewed": 3,
+        "ledgerAllExact": true,
+        "after184FrozenRootQA28AndCleanup": true,
+        "cumulativeActualCorrectiveSources164To186": 44
+      },
+      "history": [
+        {
+          "key": "monster--bond--team--secret--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--secret--case-2-723f61f6a1e5.png",
+          "nativeSha256": "723f61f6a1e58c88775d9d706b3581c1e51130999c77294aaf1bbc0cd6ff0326",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--bond--team--secret--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nMoonlit local interrupted refuge, disturbed bag/rope and physical muddy trace are clear, but ALL chosen tactical challenge stations are absent. REDRAW ALL SELECTED FACTS: CONCRETE SCENE BRIEF:\n\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.\nFINAL TARGETED OVERRIDE: Keep THREE fully identifiable nearby distinct EMPTY tactical stations occupying LEFT midground: ONE low stone COVER barrier, ONE timber HURDLE/platform, ONE group of separated MANEUVERING POSTS, alongside small empty challenge area. Do NOT omit these stations for care bed, journey path, three habitat openings or local case clues; ALL selected choices must coexist in SAME continuous world. Preserve repaired EMPTY padded companion resting place/folded plain cloth and TWO full visible food-water bowls, selected mood/progression and closed plain notebook for secret. No capture basket/net/egg/jars/binoculars/collection lab, body/text/flags/blur.",
+          "exactOriginalOwnSha256": "d07a18058994a9549bbcd0ccf385fa63dbd992aa7b7c51035cc0ec883cdcefef",
+          "preservedOriginalReview": {
+            "sourceSha256": "723f61f6a1e58c88775d9d706b3581c1e51130999c77294aaf1bbc0cd6ff0326",
+            "promptSha256": "4f433c6da5f40ce45aad69e16e3a6a5a3e5beac893500b85451d4334594a7fd7",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native one local EMPTY interrupted moonlit refuge with overturned bag/spilled rope and muddy trace to nearby hidden cave. EMPTY padded rest/clean cloth/TWO filled bowls/CLOSED plain book plus THREE empty stone cover/hurdle/posts tactical stations coexist. Fresh local damaged-refuge camera versus sheltered replacement parent; no capture/egg/body/text/flag/blur."
+          },
+          "corrective": {
+            "sourceSha256": "723f61f6a1e58c88775d9d706b3581c1e51130999c77294aaf1bbc0cd6ff0326",
+            "promptSha256": "4f433c6da5f40ce45aad69e16e3a6a5a3e5beac893500b85451d4334594a7fd7",
+            "reviewer": "Codex root original own/native corrective after184 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT originalFULLexactOWN/wholeORIGINALnative and actual185secretMOOD FULLown/wholeparent: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls CLOSEDPLAINnotebook THREEdistinctactualstonecover timberhurdleplatform posts/arena continuousMOONLITconcealedhabitat entrance tippedordinarytravelbag spilledrope vacatedbedroll muddytrace nearbydamageddoor present. InsideLOWcaretable MIDbag RIGHTcave differs newLOWgroundaid UPcourse. Requiredmaneuverposts x60-70 and localtrace/cave x60-99 hiddenactualrightcontrols60.3: composition ONLY F. No laterWHOLEhouse/newpail/woodwalkoverramp/paw/rope-count/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+            ],
+            "notes": "ROOT originalFULLexactOWN/wholeORIGINALnative and actual185secretMOOD FULLown/wholeparent: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls CLOSEDPLAINnotebook THREEdistinctactualstonecover timberhurdleplatform posts/arena continuousMOONLITconcealedhabitat entrance tippedordinarytravelbag spilledrope vacatedbedroll muddytrace nearbydamageddoor present. InsideLOWcaretable MIDbag RIGHTcave differs newLOWgroundaid UPcourse. Requiredmaneuverposts x60-70 and localtrace/cave x60-99 hiddenactualrightcontrols60.3: composition ONLY F. No laterWHOLEhouse/newpail/woodwalkoverramp/paw/rope-count/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--warm--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--warm--route-2-2f3ae40e4081.png",
+          "nativeSha256": "2f3ae40e40815dc191cf8a7e1d2676948b42193611080d69505d3d9b3b6c3fc2",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--bond--team--warm--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nWarm repaired care base and journey path are clear, but no actual nearby tactical challenge stations remain; distant coliseum cannot substitute. REDRAW ALL SELECTED FACTS: CONCRETE SCENE BRIEF:\n\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: Protected shared care nook, inviting warm afternoon and tidy helpful supplies. No sinister threat.\nFRESH SHOT: low diagonal foreground detail. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.\nFINAL TARGETED OVERRIDE: Keep THREE fully identifiable nearby distinct EMPTY tactical stations occupying LEFT midground: ONE low stone COVER barrier, ONE timber HURDLE/platform, ONE group of separated MANEUVERING POSTS, alongside small empty challenge area. Do NOT omit these stations for care bed, journey path, three habitat openings or local case clues; ALL selected choices must coexist in SAME continuous world. Preserve repaired EMPTY padded companion resting place/folded plain cloth and TWO full visible food-water bowls, selected mood/progression and closed plain notebook for secret. No capture basket/net/egg/jars/binoculars/collection lab, body/text/flags/blur.",
+          "exactOriginalOwnSha256": "90ae218fe742882272f69a6453aa52ca61cc972d6d6282f38bb24c9dae5a92ac",
+          "preservedOriginalReview": {
+            "sourceSha256": "2f3ae40e40815dc191cf8a7e1d2676948b42193611080d69505d3d9b3b6c3fc2",
+            "promptSha256": "595e3f63d208e70ca54b1dac09b55ba4feca60203e3c741a2e819b561e023859",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native inviting daylight repaired EMPTY care refuge/clean cloth/TWO food-water bowls, THREE nearby empty stone cover/hurdle/posts stations and empty challenge area, continuous traversable path to different EMPTY settlement. Fresh near resting-station camera versus parent exposed arena-worktable; no capture/egg/collection lab/body/text/flag/blur."
+          },
+          "corrective": {
+            "sourceSha256": "2f3ae40e40815dc191cf8a7e1d2676948b42193611080d69505d3d9b3b6c3fc2",
+            "promptSha256": "595e3f63d208e70ca54b1dac09b55ba4feca60203e3c741a2e819b561e023859",
+            "reviewer": "Codex root original own/native corrective after184 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT originalFULLexactOWN/wholeORIGINALnative and actualoriginalwarmMOOD FULLown/wholeparent seen in this ongoingturn: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls THREEdistinctactualstonecover timberhurdle posts/arena WARM continuousearthtrail DIFFERE NTsettlement present. GroundSIDEcare foreground path/distantsettlement differs originalLOWworkbench RIGHTcourse/no selectedjourney. RequiredDIFFERENTvillage x64-81, posts x60-74 and tacticalstonecover x74-91 hiddenactualrightcontrols60.3: composition ONLY F. No laterWHOLEtwo-house/newwoodwalkoverramp/paw/rope/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+            ],
+            "notes": "ROOT originalFULLexactOWN/wholeORIGINALnative and actualoriginalwarmMOOD FULLown/wholeparent seen in this ongoingturn: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls THREEdistinctactualstonecover timberhurdle posts/arena WARM continuousearthtrail DIFFERE NTsettlement present. GroundSIDEcare foreground path/distantsettlement differs originalLOWworkbench RIGHTcourse/no selectedjourney. RequiredDIFFERENTvillage x64-81, posts x60-74 and tacticalstonecover x74-91 hiddenactualrightcontrols60.3: composition ONLY F. No laterWHOLEtwo-house/newwoodwalkoverramp/paw/rope/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--team--warm--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--team--warm--habitat-1-35a62f926faf.png",
+          "nativeSha256": "35a62f926faf669a8bd3ae116daa52fb3ab0c17c698f02924b17df5f217a8696",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--bond--team--warm--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected TEAM CHALLENGES: several DIFFERENT empty defensive/tactical obstacle stations and challenge arena, no team bodies or species pictures. No flags, banners or heraldry.\nMOOD: Protected shared care nook, inviting warm afternoon and tidy helpful supplies. No sinister threat.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "5de7f16b6a30eac83d199e334da17d75a286fc4c414b877921670c9402ae05dd",
+          "preservedOriginalReview": {
+            "sourceSha256": "35a62f926faf669a8bd3ae116daa52fb3ab0c17c698f02924b17df5f217a8696",
+            "promptSha256": "05fec806e94b5f4c7129d9f93d4369587cac47db54015b457f48e78900ec90d0",
+            "reviewer": "Codex direct original visual inspection: v2-production-042",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native warm continuous repaired refuge retains EMPTY padded resting place/plain clean cloth/BOTH bowls and several distinct EMPTY tactical low cover/post maneuver/hoop/hurdle stations with empty challenge area. Three real openings to wetland/forest/ruins; new sheltered habitat camera versus parent open lake arena. No capture/egg/body/text/flags/blur."
+          },
+          "corrective": {
+            "sourceSha256": "35a62f926faf669a8bd3ae116daa52fb3ab0c17c698f02924b17df5f217a8696",
+            "promptSha256": "05fec806e94b5f4c7129d9f93d4369587cac47db54015b457f48e78900ec90d0",
+            "reviewer": "Codex root original own/native corrective after184 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT originalFULLexactOWN/wholeORIGINALnative and actualoriginalwarmMOOD FULLown/wholeparent seen in this ongoingturn: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls severalDIFFERENTactualtacticalobstaclestations/arena WARM and threeactualOPENwalkablewetland forest RUINviews present. InsideLOWcarebed UPthreefullwidtharches RIGHTcourse differs originalLOWworkbench RIGHTcourse/no threeviews. RequiredRUININNER x69-91 and meaningfulstonecover woodhurdle/posts arena x60-99 hiddenactualrightcontrols60.3: composition ONLY F. Plainclothstripe nottext. No laterWHOLEhouse/newwoodwalkoverramp/paw/rope/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+            ],
+            "notes": "ROOT originalFULLexactOWN/wholeORIGINALnative and actualoriginalwarmMOOD FULLown/wholeparent seen in this ongoingturn: repairedEMPTYpaddedcarebed plainfoldedcloth TWOfood-waterbowls severalDIFFERENTactualtacticalobstaclestations/arena WARM and threeactualOPENwalkablewetland forest RUINviews present. InsideLOWcarebed UPthreefullwidtharches RIGHTcourse differs originalLOWworkbench RIGHTcourse/no threeviews. RequiredRUININNER x69-91 and meaningfulstonecover woodhurdle/posts arena x60-99 hiddenactualrightcontrols60.3: composition ONLY F. Plainclothstripe nottext. No laterWHOLEhouse/newwoodwalkoverramp/paw/rope/FLATfold contract imposed. ExactoriginalOWN/nativehash/originalreviewpreserved. Pendingofficialreview ONLY after184 fullbuild/frozenQA/cleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ]
+    },
+    {
+      "group": "source-rejections-189-five-original-partner-parents",
+      "actualOfficialToolExit": {
+        "actualToolSession": 32419,
+        "returncode": 0,
+        "reviewed": 5,
+        "ledgerAllExact": true,
+        "after186FrozenRootQA27AndCleanup": true,
+        "cumulativeActualCorrectiveSources164To189": 49
+      },
+      "history": [
+        {
+          "key": "monster--bond--partner--bright",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright-3-47928a23cbe4.png",
+          "nativeSha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\nLATEST CHOICE: 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\nSCENE ID: monster--bond--partner--bright. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nKeep the new intimate repaired trust-care refuge, empty soft bed, food/water bowls and folded cloth in bright daylight. REMOVE ALL pinned wall sheets, notices, posters, documents, charts, labels, symbols and writing-like marks; bare timber/stone wall with dried herbs only. No training course, arena, collection laboratory, net, egg, people or creatures. Fresh diagonal indoor camera, hard square pixel clusters throughout.",
+          "exactOriginalOwnSha256": "f093c2dcc6feb0c4e6d22773c731f81f47ebd41896549a4db2db4a8bf91ddec1",
+          "preservedOriginalReview": {
+            "sourceSha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+            "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+            "reviewer": "Codex direct original visual inspection: v2-production-013",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Repaired bright trust refuge, empty soft bed, food/water bowls and folded cloth preserve deep care. All wall notices and writing removed; new low floor composition."
+          },
+          "corrective": {
+            "sourceSha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+            "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYcarebed foodwaterplaincloth SUNLITindoorbarewoodstone; requiredBLUEwater x60-67 hiddenactualrightcontrols60.3: composition ONLY F. DifferentactualfirstPARTNER shelterLOWbedRIGHTsunsetwindow viaSUNLITdiagonalindoorcare. Ordinarycarecontainers/backgroundtown notautomaticallylab/progression F. No laterwholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+            ],
+            "notes": "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYcarebed foodwaterplaincloth SUNLITindoorbarewoodstone; requiredBLUEwater x60-67 hiddenactualrightcontrols60.3: composition ONLY F. DifferentactualfirstPARTNER shelterLOWbedRIGHTsunsetwindow viaSUNLITdiagonalindoorcare. Ordinarycarecontainers/backgroundtown notautomaticallylab/progression F. No laterwholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--bright--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright--habitat-1-beaaf06d9a9b.png",
+          "nativeSha256": "beaaf06d9a9b10e7ac3176ef39c99b709610bf8441c711ee4323ee6e59c162bd",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--bond--partner--bright--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "c6285a00df7221a2211283adaea4a1ec2301ff98ab79fe0b9890da34e70188b4",
+          "preservedOriginalReview": {
+            "sourceSha256": "beaaf06d9a9b10e7ac3176ef39c99b709610bf8441c711ee4323ee6e59c162bd",
+            "promptSha256": "7b19a002b1dffdac53e88d08c4b8458ad3d7625ccea985d0529619a6df8397e2",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native continuous repaired companion care refuge with EMPTY padded bed/folded cloth/TWO food-water bowls and THREE real openings to wetland/forest/ruins. New vaulted empty refuge camera versus parent ordinary room. No capture equipment/egg/arena/collection lab/body/text/flag/blur."
+          },
+          "corrective": {
+            "sourceSha256": "beaaf06d9a9b10e7ac3176ef39c99b709610bf8441c711ee4323ee6e59c162bd",
+            "promptSha256": "7b19a002b1dffdac53e88d08c4b8458ad3d7625ccea985d0529619a6df8397e2",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYcarebench/bed TWOfoodwater freshcloth SUNLIT3actualOPENwetland forest RUINinner views. RequiredRUININNER x75-99/forestpart60-67 hiddenactual60.3: composition ONLY F. DifferentactualoriginalbrightMOOD LOWbedRIGHTsinglewindow viaLOWcarebenchUP3arches. Plainclothstripe nottext; no laterwholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+            ],
+            "notes": "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYcarebench/bed TWOfoodwater freshcloth SUNLIT3actualOPENwetland forest RUINinner views. RequiredRUININNER x75-99/forestpart60-67 hiddenactual60.3: composition ONLY F. DifferentactualoriginalbrightMOOD LOWbedRIGHTsinglewindow viaLOWcarebenchUP3arches. Plainclothstripe nottext; no laterwholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--secret",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret-2-d9fa94d350e3.png",
+          "nativeSha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nLATEST CHOICE: 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nSCENE ID: monster--bond--partner--secret. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nONLY selected facts: repaired trust refuge, deep partner bond, hidden-species mystery. Draw a NEW intimate diagonal interior under exposed woodland roots: clean folded cloth, EMPTY soft rest bed and food/water bowls near a partly concealed small side passage opening onto dim unexplored cave vegetation. Closed plain notebook, no pages or illustrations. One continuous moonlit scene with hard stepped shadows. No arena, course, training obstacles, collecting lab, net, cage, egg, flags, people, creatures, silhouettes or writing. Not left hut/right arena panorama.",
+          "exactOriginalOwnSha256": "bcbed78aa8c0645a4a4367c5bbcff350725e6e674e17c5e8ba0bf6ab5411c6dd",
+          "preservedOriginalReview": {
+            "sourceSha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+            "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+            "reviewer": "Codex direct original visual inspection: v2-production-012",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Fresh enclosed roots refuge with empty soft bed, food/water bowls and closed notebook faces a concealed moonlit side passage. No arena, species body, text or optical blur."
+          },
+          "corrective": {
+            "sourceSha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+            "promptSha256": "8a188d7230b2acd6b24d11f13bc41990b66c4c41a54e4489808eb097a54772e0",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: cleancloth EMPTYsoftbed foodwater CLOSEDPLAINnotebook MOONLITunderroots partlyconcealedsmallpassage dimunexploredcave vegetation. RequiredBLUEwater x61-70/caveINNER67-99 hiddenactual60.3: composition ONLY F. DifferentactualfirstPARTNER sunsetwoodenshelter LOWbedRIGHTwindow viaMOONrootarchedinterior LEFTnotebookRIGHTconcealedpassage. No later2wholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+            ],
+            "notes": "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: cleancloth EMPTYsoftbed foodwater CLOSEDPLAINnotebook MOONLITunderroots partlyconcealedsmallpassage dimunexploredcave vegetation. RequiredBLUEwater x61-70/caveINNER67-99 hiddenactual60.3: composition ONLY F. DifferentactualfirstPARTNER sunsetwoodenshelter LOWbedRIGHTwindow viaMOONrootarchedinterior LEFTnotebookRIGHTconcealedpassage. No later2wholehouse/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--secret--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--route-1-0d4450cbc2ca.png",
+          "nativeSha256": "0d4450cbc2cacbb4f3b4b134753904148456161d9001ab1496bb2c0cec23ab10",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--bond--partner--secret--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.",
+          "exactOriginalOwnSha256": "efcc561e2ece63aff5c9632786fffe2203668fbcd7f1156292a6d1de9be71c6b",
+          "preservedOriginalReview": {
+            "sourceSha256": "0d4450cbc2cacbb4f3b4b134753904148456161d9001ab1496bb2c0cec23ab10",
+            "promptSha256": "75173c55074889e62ae27c73e88172ed29e5ee16b7a9cb386305d10100fba3d1",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native moonlit repaired EMPTY companion care station with padded resting bed/folded plain cloth/TWO filled food-water bowls and CLOSED plain notebook. Continuous near refuge stair path reaches distinct EMPTY settlement and concealed cave. Fresh cliff-side care-journey camera versus parent enclosed cave refuge; no capture/egg/arena/collection lab/body/text/flags/blur."
+          },
+          "corrective": {
+            "sourceSha256": "0d4450cbc2cacbb4f3b4b134753904148456161d9001ab1496bb2c0cec23ab10",
+            "promptSha256": "75173c55074889e62ae27c73e88172ed29e5ee16b7a9cb386305d10100fba3d1",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: carebench EMPTYsoftbed TWOfoodwater foldedcloth CLOSEDPLAINnotebook MOONLITconcealedhabitat continuouspath differentdistantsettlement. RequiredDIFFERENTsettlement x60-80/concealedcave87-99 hiddenactual60.3: composition ONLY F. DifferentactualsecretMOOD rootarchedinteriorLOWbedRIGHTcave viaSIDEforegroundworkbench andoutdoorpath/differentsettlement. No later2wholehouses/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+            ],
+            "notes": "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: carebench EMPTYsoftbed TWOfoodwater foldedcloth CLOSEDPLAINnotebook MOONLITconcealedhabitat continuouspath differentdistantsettlement. RequiredDIFFERENTsettlement x60-80/concealedcave87-99 hiddenactual60.3: composition ONLY F. DifferentactualsecretMOOD rootarchedinteriorLOWbedRIGHTcave viaSIDEforegroundworkbench andoutdoorpath/differentsettlement. No later2wholehouses/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--bright--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright--case-1-9141623c48a6.png",
+          "nativeSha256": "9141623c48a69c2385b555761dff93d727dd3de173b2647fab5f1bbdc317a532",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--bond--partner--bright--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.",
+          "exactOriginalOwnSha256": "8ed34cb17609dc47da4456c36705a37b62456a89bfb293296c6b7f262b7a7e3d",
+          "preservedOriginalReview": {
+            "sourceSha256": "9141623c48a69c2385b555761dff93d727dd3de173b2647fab5f1bbdc317a532",
+            "promptSha256": "51b66a4b52693361a511051f0b41f3e774a1ce1e4ed48e6f161e560843215298",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native local EMPTY repaired companion refuge with disturbed bag/spilled rope and muddy trace linking broken nearby doorway. EMPTY padded bed/clean cloth/TWO food-water bowls and care workbench retained. Fresh close interrupted refuge camera versus parent neat room; no forced long journey/capture/egg/arena/collection lab/body/text/flag/blur."
+          },
+          "corrective": {
+            "sourceSha256": "9141623c48a69c2385b555761dff93d727dd3de173b2647fab5f1bbdc317a532",
+            "promptSha256": "51b66a4b52693361a511051f0b41f3e774a1ce1e4ed48e6f161e560843215298",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYpaddedcarebed TWOfoodwater plainfoldcloth carebench SUNLITlocalinterruption tippedtravelbag spilledordinaryrope vacatedbedroll muddytrace nearbydamageddoor. Requiredselectedmuddytrail/damageddoor x61-70 hiddenactual60.3: composition ONLY F. DifferentactualoriginalbrightMOOD neatindoorLOWbedRIGHTwindow viaforegroundcare MIDbag/rope disturbedroomRIGHTdamageddoor. No laterwholehouse/pail/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+            ],
+            "notes": "ROOT personallyFULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualparent: OriginalFULLOWN/WHOLEnative: EMPTYpaddedcarebed TWOfoodwater plainfoldcloth carebench SUNLITlocalinterruption tippedtravelbag spilledordinaryrope vacatedbedroll muddytrace nearbydamageddoor. Requiredselectedmuddytrail/damageddoor x61-70 hiddenactual60.3: composition ONLY F. DifferentactualoriginalbrightMOOD neatindoorLOWbedRIGHTwindow viaforegroundcare MIDbag/rope disturbedroomRIGHTdamageddoor. No laterwholehouse/pail/paw/FLATfoldcriteria. Allremaining6checks directlyP includingconsistentcoarsepixelgrid, identityUnset/noText; originalreviewpreserved. Appliedonlyafter186snapshot771 frozenQA27 andcleanup."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ]
+    },
+    {
+      "group": "source-rejections-190-four-original-partner-parents",
+      "actualOfficialToolExit": {
+        "actualToolSession": 47425,
+        "returncode": 0,
+        "reviewed": 4,
+        "ledgerAllExact": true,
+        "after189DeferredReviewAnd186FrozenRootQA27Cleanup": true,
+        "cumulativeActualCorrectiveSources164To190": 53
+      },
+      "history": [
+        {
+          "key": "monster--bond--partner--secret--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--habitat-1-3d33d2fc5204.png",
+          "nativeSha256": "3d33d2fc5204f298b898c68ea579355ef7891fd48ee4a4ee2a3d0a6bfa429bb1",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--bond--partner--secret--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "e3d911562eea019e7d8aff2e27b9f0cc09d9e49c98a53919822bb6944f768f45",
+          "preservedOriginalReview": {
+            "sourceSha256": "3d33d2fc5204f298b898c68ea579355ef7891fd48ee4a4ee2a3d0a6bfa429bb1",
+            "promptSha256": "532a792e7de5181234df363d97cfa5b4d03cb5a23d6b91a609f32ef7f1acb885",
+            "reviewer": "Codex direct original visual inspection: v2-production-043",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native continuous moonlit repaired companion care refuge: EMPTY padded resting place/folded clean cloth/TWO food-water bowls/CLOSED plain notebook, THREE real openings to wetland/forest/ruins. Fresh vaulted habitat camera versus parent cave-bed refuge; no capture/egg/arena/collection lab/body/text/flags/blur."
+          },
+          "corrective": {
+            "sourceSha256": "3d33d2fc5204f298b898c68ea579355ef7891fd48ee4a4ee2a3d0a6bfa429bb1",
+            "promptSha256": "532a792e7de5181234df363d97cfa5b4d03cb5a23d6b91a609f32ef7f1acb885",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint and189review",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: Carebench EMPTYbed TWOfoodwater foldcloth CLOSEDPLAINnotebook continuousMOONLITconcealedhabitat3actualOPENwetland forest RUININNER; RUININNER79-97 andFORESTpart60-72 hiddenactual60.3: composition ONLY F. OriginalINDOORLOWbenchUPfullwidth3arches differs actualnew189secretMOOD outdoorLOWaid/no3views. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+            ],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: Carebench EMPTYbed TWOfoodwater foldcloth CLOSEDPLAINnotebook continuousMOONLITconcealedhabitat3actualOPENwetland forest RUININNER; RUININNER79-97 andFORESTpart60-72 hiddenactual60.3: composition ONLY F. OriginalINDOORLOWbenchUPfullwidth3arches differs actualnew189secretMOOD outdoorLOWaid/no3views. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--secret--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--case-1-496d2c557650.png",
+          "nativeSha256": "496d2c55765093dff7c778e6261a0fc17113edf7649b4cbec40c1e303c3adb4c",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--bond--partner--secret--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.",
+          "exactOriginalOwnSha256": "fc25526ce9d8106faa4d4b65dc60d6e9485b54ea09c4f10ac3b0cf39243bcdb9",
+          "preservedOriginalReview": {
+            "sourceSha256": "496d2c55765093dff7c778e6261a0fc17113edf7649b4cbec40c1e303c3adb4c",
+            "promptSha256": "e9941008eaf6adaf34f247df2464f4bd571c1f255ada4dc4004e964205f7f283",
+            "reviewer": "Codex direct original visual inspection: v2-production-044",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native original inspected: Moonlit local damaged empty refuge: overturned travel bag/spilled rope/vacated bedroll and muddy trace at nearby broken threshold. Near EMPTY padded companion rest/folded plain cloth/TWO filled food-water bowls/CLOSED plain book. Fresh inside interrupted-refuge camera versus parent cave bed. Every plane retains hard square clusters/stepped shade ramps; no invented creature/hatchling/person/body, text/paper/open books/flags/emblems/blur, unselected arena or capture gear."
+          },
+          "corrective": {
+            "sourceSha256": "496d2c55765093dff7c778e6261a0fc17113edf7649b4cbec40c1e303c3adb4c",
+            "promptSha256": "e9941008eaf6adaf34f247df2464f4bd571c1f255ada4dc4004e964205f7f283",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint and189review",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: Carebench EMPTYbed TWOfoodwater foldcloth CLOSEDPLAINnotebook MOONLITconcealedhabitat tippedtravelbag spilledordinaryrope vacatedbedroll muddytrace damagednearbydoor; selectedtrail/doorINNER60-84 hiddenactual60.3: composition ONLY F. OriginalINDOORforegroundcare MIDbagRIGHTdoor differs actualnew189secretMOOD outdoorLOWgroundaid. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+            ],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: Carebench EMPTYbed TWOfoodwater foldcloth CLOSEDPLAINnotebook MOONLITconcealedhabitat tippedtravelbag spilledordinaryrope vacatedbedroll muddytrace damagednearbydoor; selectedtrail/doorINNER60-84 hiddenactual60.3: composition ONLY F. OriginalINDOORforegroundcare MIDbagRIGHTdoor differs actualnew189secretMOOD outdoorLOWgroundaid. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--warm",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--warm-3-a7d117912529.png",
+          "nativeSha256": "a7d117912529c540202594258d2b7a32ebe16d28a5c37f1659d69ce6046f1949",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nLATEST CHOICE: 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nSCENE ID: monster--bond--partner--warm. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nNEW high oblique view INSIDE a repaired EMPTY woodland timber-and-stone companion care refuge. On near LEFT a plain care workbench with folded clean undecorated cloth, beside an EMPTY padded companion resting bed. TWO separate FULLY VISIBLE undecorated bowls: one clearly filled with brown food pellets and one with blue water. ALL surfaces, bowls, floor mats, cloth and containers FULLY PLAIN: NO paw marks, emblems, logos, flags, insignia or decorative heraldry. Protected welcoming afternoon through modest wood framed window, tidy helpful care preparations. PROGRESSION NOT SELECTED: no forced journey destination, triple habitat openings or case conclusion. Fresh high care-workbench camera unlike old front-on paw-bowl room. Hard square pixel clusters/stepped shade ramps at EVERY plane. No foreground plant/flower/candle/doorjamb/railing framing or blur. No people/creature body/portrait/statue/text/paper/open books/maps/clocks/numerals, capture basket/net/egg, arena/tactical stations, collection lab/binoculars/jars.",
+          "exactOriginalOwnSha256": "f0ce052926c1539f8b92bf0a5957b2b6e047832fb53afbaa071321ec084d6cb5",
+          "preservedOriginalReview": {
+            "sourceSha256": "a7d117912529c540202594258d2b7a32ebe16d28a5c37f1659d69ce6046f1949",
+            "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+            "reviewer": "Codex direct original visual inspection: v2-production-045",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native original and parent inspected: Fresh high oblique timber-stone care refuge: near TWO plain filled food-water bowls, folded undecorated care cloth and entirely EMPTY padded bed; inviting warm window light. No chosen progression is forced. Differs from old frontal room with paw emblems; those emblems are absent. All planes retain sharp square clusters/stepped shade ramps; no invented person/creature body, text/paper/open books/flags/emblems/blur or unselected capture gear/collection laboratory. Right remains quiet and fully drawn."
+          },
+          "corrective": {
+            "sourceSha256": "a7d117912529c540202594258d2b7a32ebe16d28a5c37f1659d69ce6046f1949",
+            "promptSha256": "39c32664d2eb3de50a736e238d3df8922b53ab28db2f0f0729ed489ebb452bd2",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint and189review",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: HighobliqueINDOORrepairedwoodstone EMPTYcarebed plainfoldcloth TWOfoodwater protectedWARMafternoonmodestwindow; requiredEMPTYbed38-71 hiddenactual60.3: composition ONLY F. OriginalHIGHcarebench/bedsidecamera differs actualfirstPARTNER LOWbedRIGHTsunsetwindow. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+            ],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: HighobliqueINDOORrepairedwoodstone EMPTYcarebed plainfoldcloth TWOfoodwater protectedWARMafternoonmodestwindow; requiredEMPTYbed38-71 hiddenactual60.3: composition ONLY F. OriginalHIGHcarebench/bedsidecamera differs actualfirstPARTNER LOWbedRIGHTsunsetwindow. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--bond--partner--warm--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--warm--route-1-8413ce84a57a.png",
+          "nativeSha256": "8413ce84a57a42a77c8639f2bf984a63da1bb791e6718d2486a280fc8284ec18",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--bond--partner--warm--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected helping and earned trust: repaired woodland refuge with folded clean cloth, EMPTY padded companion resting place and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water. No capture equipment or egg.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Protected shared care nook, inviting warm afternoon and tidy helpful supplies. No sinister threat.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.",
+          "exactOriginalOwnSha256": "2e485ec9ab8d63de449a1c8d0fe4234b33fa45c058bdbbfd6cd3c04d7d5a4069",
+          "preservedOriginalReview": {
+            "sourceSha256": "8413ce84a57a42a77c8639f2bf984a63da1bb791e6718d2486a280fc8284ec18",
+            "promptSha256": "f5aa14d621ca6d5c38ce845b12e1028a1598c56637539f9691570a9fdcd05604",
+            "reviewer": "Codex direct original visual inspection: v2-production-044",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native original inspected: Warm daylight protected repaired companion care shelter with EMPTY padded rest/folded plain cloth/TWO filled plain food-water bowls. Continuous traversable path reaches different EMPTY settlement. Fresh sheltered departure camera versus parent front-on decorated room. Every plane retains hard square clusters/stepped shade ramps; no invented creature/hatchling/person/body, text/paper/open books/flags/emblems/blur, unselected arena or capture gear."
+          },
+          "corrective": {
+            "sourceSha256": "8413ce84a57a42a77c8639f2bf984a63da1bb791e6718d2486a280fc8284ec18",
+            "promptSha256": "f5aa14d621ca6d5c38ce845b12e1028a1598c56637539f9691570a9fdcd05604",
+            "reviewer": "Codex root original own/native corrective after186 checkpoint and189review",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: EMPTYcarebed/workbench plainfoldcloth TWOfoodwater WARMafternoon continuouspath DIFFERENTdistantsettlement/habitat; requiredDIFFERENTtown64-82/continuouspathportion61-88 hiddenactual60.3: composition ONLY F. OriginalrouteSIDEforegroundcare RIGHTdifferenttown differs actualoriginalwarmMOOD highINDOORcarebench/bedside nojourney. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+            ],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactualparent: EMPTYcarebed/workbench plainfoldcloth TWOfoodwater WARMafternoon continuouspath DIFFERENTdistantsettlement/habitat; requiredDIFFERENTtown64-82/continuouspathportion61-88 hiddenactual60.3: composition ONLY F. OriginalrouteSIDEforegroundcare RIGHTdifferenttown differs actualoriginalwarmMOOD highINDOORcarebench/bedside nojourney. Remaining6checks directlyP consistentcoarsepixelgrid/flatshade allplanes identityUnset/noText. Plainclothstripes notwriting; no laterWHOLEbuilding/2house/1bowl/paw/FLATfoldcriteria. Originalreview preserved. Officialmutation onlyafter189DEFERactualzero."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ]
+    },
+    {
+      "group": "source-rejections-190-one-189-child",
+      "actualOfficialToolExit": {
+        "actualToolSession": 97905,
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeActualCorrectiveSources164To190": 54,
+        "before190FullBuild": true
+      },
+      "history": [
+        {
+          "key": "monster--bond--partner--secret--case--short",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--case--short-1-415094ab0df9.png",
+          "nativeSha256": "415094ab0df9d9370330cbe586ecd803a0772db74b3aabaf082c5dd7f6ce3153",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\n5. 첫 제작 범위: 첫 도전과 거점 귀환 — 동료를 얻고 작은 도전을 해결한 뒤 돌아와요.\nLATEST CHOICE: 첫 제작 범위: 첫 도전과 거점 귀환 — 동료를 얻고 작은 도전을 해결한 뒤 돌아와요.\nSCENE ID: monster--bond--partner--secret--case--short. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Forest refuge with repaired shelter, soft blanket and water bowl suggests helping and earning trust. No cage, visible animal or egg.\nSHOT: near eye-level sheltered viewpoint framed by appropriate architecture, not generic foliage. Make a fresh shot, never copy the reference composition.\nPLAY MOTIF: Care equipment and companion-sized empty resting place evoke trust and shared experiences; no actual body/appearance.\nTONE: Apply only the selected mood from facts, with discrete pixel shade bands, never painting gradients or adding a contradictory genre.\nPROGRESSION: Reflect the selected progression as spatial staging and prop relationships. Do not add menu panels, route labels or invented characters.\nSCOPE: Emphasize the selected first playable range with framing and a tangible beginning/result motif. Do not depict an entire unchosen epic. All earlier choices remain visible or consistent.\nAUTHORITATIVE ESSENTIAL SELECTED-FACT SCENE:\nONE new16:9 landscape game-maker interviewbackground. Genuine COARSE16-bit/SNES RPGpixelart: visiblysquareclusters, hardstairstepcontours, SAMEpixelgrid ALLplanes, flat2-4shadebands, restrainedpalette, sparsedithering. No painting/photo/antialiasing/gradient/bloom/blur/grain/3D/filters/UI/text/signs/logos/papers/banners. Native image, no crop/resize. Independent location/camera, no referenceimage. LEFT selectedobjects are smallWHOLE completeforms including entire roofs/bases, stagedinside x8-52%, y8-86%. QuietRIGHT continuousordinarydensewoods, no requiredselectedobjecthiddenbehind rightcontrols60.3%. No distantcastle/panorama/rightlandmark. No people/humanoids/creaturebodies/speciespictures/egg/captureNETbasketcage/trap/jar/binoculars. Selected EARNEDTRUST: EMPTY protectedrestmat/plaincarecloth and separateOPENBLUEwaterbowl; no capture. SelectedPARTNERbond: oneWHOLEwelltended personalcompanioncare nook, a mendedPLAINblanket andseparateEMPTYpaddedrestmat showdeepcareandfamiliarity. No teamtrainingstations/collectionequipment. No inventedbody/collectionlab. Differentview than actualprecedingchoice, NOTonlyrecolor.  CAMERA FIX: extremely WIDE distant establishingview, ALL selectedforms TINY WHOLE separate objects insideLEFTx10-45%. RIGHT x55-100% ONLYquietcontinuouswoods; NEVER fillRIGHTwithmaneuverposts/ramps orselecteddoor/roof. Entireprimarybuilding/cloth insideimage. No near-camera cropping. Thisisrichhandclustered1990s SNESpixelart notrealisticillustration.  SECRET RECORDS: WHOLEoneCLOSEDPLAINundecoratednotebookbesidecare LEFT andactualLEFTecologicalearthtrace, MOONLITconcealedsearch. No openbook/writing. SelectedLOCALCASE: oneWHOLE smallOPENlocalrefuge with EMPTYinterior and fullfloor/threshold, a tippedEMPTYhollowwoodpail and shortearthtrace atthreshold suggest a localrequest. No differentvillage/threewayHAB. RETURN: WHOLEOPENnearhome fullroof EMPTYfloor/threshold LEFTearthtrailapproacheshome andtidypersonalcaretable mendedPLAINblanket separateEMPTYpaddedrestmat BLUEwater, no growthnest. Newindependentwidecamera: UPtinyWHOLEOPENnearhome fullroof EMPTYfloor/threshold LEFTx12-25,y17-33; MIDwholepersonalcaretable/notebookLEFTx12-29,y39-52; LOWWHOLEOPENlocalrefuge fullroof EMPTYfloor/threshold tippedEMPTYhollowpail shortearthtraceLEFTx12-43,y65-79.",
+          "exactOriginalOwnSha256": "ef75e0a2acb21627cb83e0218ae3849a1a31694dc740f512fb3e5aa8f3475295",
+          "preservedOriginalReview": {
+            "sourceSha256": "415094ab0df9d9370330cbe586ecd803a0772db74b3aabaf082c5dd7f6ce3153",
+            "promptSha256": "ede8ac1a27db8d584374e48dea4fb16cad53d2896bed9b23e76c9cad8b5088af",
+            "reviewer": "Codex direct original visual inspection: v2-production-189",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative andFULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENnearhomefullroof EMPTYfloor/threshold MIDtidypersonalcaretableblanket CLOSEDPLAINnotebook adjacentseparateEMPTYpadding BLUEwater LOWwholeOPENlocalrefugefullroof EMPTYfloor/threshold tippedEMPTYhollowpail shortearthtrace continuousLEFTreturntrail MOONLITreturn/no growthtownHAB/course/lab. DifferentactualoriginalsecretCASE indoorLOWcareMIDbag/ropeRIGHTdoor viaUPnearhomeMIDtableLOWlocalrefuge. AllmeaningfulWHOLEbefore60.3. OWNexplicitnearhomeANDlocalrefuge, no arbitraryonebuildinggate. Drapeallowed. Coarseconsistentpixelgrid/flatshade allplanes, identityUnset/noText directlyP. Plainstripes/seams notwriting; actual60.3 notideal45/52 gate; no oldfood2/paw/rope/branch/FLATfoldcriteria. Allseven directlyP."
+          },
+          "corrective": {
+            "sourceSha256": "415094ab0df9d9370330cbe586ecd803a0772db74b3aabaf082c5dd7f6ce3153",
+            "promptSha256": "ede8ac1a27db8d584374e48dea4fb16cad53d2896bed9b23e76c9cad8b5088af",
+            "reviewer": "Codex root actual child-native corrective during190 parent recomparison",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT reread exact FULL child OWN and FULL new parent OWN, personally viewed both WHOLE actual natives. Child UPwholelocalrefuge/pail/earthtrace LOWpersonalcare or UPwholehome MIDtidytable LOWlocalrefuge; parent UPpersonalcare LOWlocalrefuge. Independent camera beyond recolor; moonlit closedPLAINnotebook and ecologicalearthtrace, EMPTYpadding, mendedplainblanket, OPENBLUEwater. Coarseconsistentpixelgrid/flatshade allplanes, no body/text; sevenchecks independently reassessed, initial review preserved. Corrective: required LOWWHOLE localrefuge roof/body extend across native LEFT edge and are cut. OWN explicitly requires full roof/floor; this is an actual native crop, not ideal positional-margin gate."
+            ],
+            "notes": "ROOT reread exact FULL child OWN and FULL new parent OWN, personally viewed both WHOLE actual natives. Child UPwholelocalrefuge/pail/earthtrace LOWpersonalcare or UPwholehome MIDtidytable LOWlocalrefuge; parent UPpersonalcare LOWlocalrefuge. Independent camera beyond recolor; moonlit closedPLAINnotebook and ecologicalearthtrace, EMPTYpadding, mendedplainblanket, OPENBLUEwater. Coarseconsistentpixelgrid/flatshade allplanes, no body/text; sevenchecks independently reassessed, initial review preserved. Corrective: required LOWWHOLE localrefuge roof/body extend across native LEFT edge and are cut. OWN explicitly requires full roof/floor; this is an actual native crop, not ideal positional-margin gate."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ]
+    }
+  ],
+  "correctivesInThisInterval": 18,
+  "cumulativeActualCorrectiveSources164To190": 54,
+  "scope": "Original exactOWN/fullnative/actualrelevantparent directly ROOT inspected, original officialreviews retained. Includes17 older originals and one189newchild-crop corrective. Actual officialtoolzero/exactledger only, no idealposition/paw/clothfold/count bans retroapplied. Two privately ROOT-confirmed originalwarmHAB/CASE await191officialcorrective AFTER785 frozencheckpoint/commit."
+}

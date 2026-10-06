@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 785,
+  "remainingAtSnapshot": 672,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T19:11:43.882261+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 785,
+      "manifestSha256": "bd006b5517121fd50e7eb09ac0e3e6591744283161ff8d5d39752eb774a2ae91",
+      "finishedAt": "2026-10-06T19:11:18.930706+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-785-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--bond--team,monster--bond--partner--bright,monster--bond--partner--bright--habitat,monster--bond--partner--secret--case--episode,monster--bond--partner--warm,monster--bond--partner--bright--case--short"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 785,
+      "manifestSha256": "bd006b5517121fd50e7eb09ac0e3e6591744283161ff8d5d39752eb774a2ae91",
+      "finishedAt": "2026-10-06T19:11:42.321199+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-785-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--bond--team",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--team.png",
+      "sha256": "41eb16f9aad318351f3104102712d6f8454f721120410279b3e45c62d3ee9c56",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--partner--bright",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--partner--bright.png",
+      "sha256": "a93a5807d702146f8e606686b45756593967da8ea7193cfc388ded5ecf7064c4",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--partner--bright--habitat.png",
+      "sha256": "a7384eb5ebb5f8882de6eeeefed55174485afbf992aa4e744448c388b364f4ff",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--partner--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--partner--bright--case--short.png",
+      "sha256": "51394d87de71fc0af92628a74ab665252cf4c7c6cbd830e0de0b154d4b8213a3",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--partner--secret--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--partner--secret--case--episode.png",
+      "sha256": "7007c9e1c9d084b835867399bccf3a326003ac47831df7ec481ebcc3b2a1d294",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--bond--partner--warm",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-785-stage190-selected-monster--bond--partner--warm.png",
+      "sha256": "8993407da75eee5c346d43088a0853d088ae0d409d9cd39f83f3f5c3226d24cd",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 28,
+  "scope": "785 file/record integrity and six production-dialog paths, 28 actualclicks and six WHOLEsettledscreens personally viewed by ROOT. Left-caption overlap remains. Original source correctives164-190 total54 BEFOREsnapshot; two privately confirmed originalPARTNERwarmHAB/CASE visibility failures pending official corrective191 after this frozencheckpoint/commit. No all785 freshvisualaudit/fullappboot/AIhandoff claim.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-785-stage190-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-785-stage190-click-proof.json"
+  }
+}

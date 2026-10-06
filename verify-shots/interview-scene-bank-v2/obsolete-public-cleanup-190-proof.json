@@ -1,0 +1,91 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 785,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--bond--partner--bright",
+      "sourceSha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--bright-47928a23cbe4.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright-3-47928a23cbe4.png",
+      "replacementPublished": true,
+      "replacementSha256": "e844d24b6e3055e535eb6ea9ab2d2a8fc8bf8a7738b05a6e968309b0ab9364c3",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--secret",
+      "sourceSha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--secret-d9fa94d350e3.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret-2-d9fa94d350e3.png",
+      "replacementPublished": true,
+      "replacementSha256": "12e9b345f416e5e6c5ebc71398f146011b1c6d44956d428faf1d1db74dcd45ae",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--warm",
+      "sourceSha256": "a7d117912529c540202594258d2b7a32ebe16d28a5c37f1659d69ce6046f1949",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--warm-a7d117912529.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--warm-3-a7d117912529.png",
+      "replacementPublished": true,
+      "replacementSha256": "e61fd6399a57582ca7ad9866a90a27521b8c60f7cf86cd6b4a1655175eacbc8c",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat",
+      "sourceSha256": "beaaf06d9a9b10e7ac3176ef39c99b709610bf8441c711ee4323ee6e59c162bd",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--bright--habitat-beaaf06d9a9b.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright--habitat-1-beaaf06d9a9b.png",
+      "replacementPublished": true,
+      "replacementSha256": "c64e41029da1da1bba8587b693917f45ff565285b45935703d882321e0f79708",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--bright--case",
+      "sourceSha256": "9141623c48a69c2385b555761dff93d727dd3de173b2647fab5f1bbdc317a532",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--bright--case-9141623c48a6.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright--case-1-9141623c48a6.png",
+      "replacementPublished": true,
+      "replacementSha256": "970c1df01e857cdb937e72f1f9b6f617b269f335ff7b01c4dd46cd46b160f59f",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--secret--route",
+      "sourceSha256": "0d4450cbc2cacbb4f3b4b134753904148456161d9001ab1496bb2c0cec23ab10",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--secret--route-0d4450cbc2ca.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--route-1-0d4450cbc2ca.png",
+      "replacementPublished": true,
+      "replacementSha256": "3de23664cc6188b0767ab235a7c576adb2959b2e4ff2e99dd85dad795acae954",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    },
+    {
+      "key": "monster--bond--partner--secret--case",
+      "sourceSha256": "496d2c55765093dff7c778e6261a0fc17113edf7649b4cbec40c1e303c3adb4c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--bond--partner--secret--case-496d2c557650.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--secret--case-1-496d2c557650.png",
+      "replacementPublished": true,
+      "replacementSha256": "6ced9d94798428608d65aeef210f467022584a1bde4f5f95c1016421933fba97",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-190"
+    }
+  ],
+  "resolvedCumulative": 178
+}

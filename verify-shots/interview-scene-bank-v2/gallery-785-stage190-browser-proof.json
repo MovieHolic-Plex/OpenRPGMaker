@@ -1,0 +1,137 @@
+{
+  "publishedSnapshot": 785,
+  "actualBrowserToolSession": 27225,
+  "returncode": 0,
+  "actualClicks": 16,
+  "rootViewedWholeScreens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-785-stage190-gallery-320.png",
+      "sha256": "b8f57effdcd84a4f28c763f81373ab72672bb41166ba49077a426cc1f634d5ce",
+      "rootViewedWhole": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-785-stage190-gallery-736.png",
+      "sha256": "aea264ccdee796597f80dd1c49af234e375775dff12115761b48b40ff9b0ec64",
+      "rootViewedWhole": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-785-stage190-gallery-latest-320.png",
+      "sha256": "2f59ab636d173524cca4646e8a0dd42abcf540023841e64496323b779f798a66",
+      "rootViewedWhole": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-785-stage190-gallery-latest-736.png",
+      "sha256": "447f26e2690abda3d6dccaf28f74809e73f3bdbd01a25ea2604b4f005614368c",
+      "rootViewedWhole": true
+    }
+  ],
+  "browser": {
+    "results": [
+      {
+        "width": 320,
+        "images": [
+          {
+            "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          }
+        ],
+        "state": {
+          "count": "785 / 1457",
+          "pressed": 1,
+          "width": 288,
+          "scrollWidth": 288
+        }
+      },
+      {
+        "width": 736,
+        "images": [
+          {
+            "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          }
+        ],
+        "state": {
+          "count": "785 / 1457",
+          "pressed": 1,
+          "width": 704,
+          "scrollWidth": 704
+        }
+      }
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "scope": "Eight previously published reviewed representative backgrounds at320/736; four WHOLEactualbrowser screenshots ROOTviewed. 785count belongs190snapshot; notall785freshvisual/clickrescan. OnlypreviewWEBP800x450縮小, originalnativePNGbytes unchanged."
+}

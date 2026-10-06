@@ -1,0 +1,283 @@
+{
+  "batch": "v2-production-188",
+  "passedAttempts": 7,
+  "rejectedAttempts": 3,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-188",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-188-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T18:36:25.484895+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-188-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-188",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-188-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T18:36:47.574568+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-188-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-188",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-188",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T18:36:47.617583+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--bond--partner--bright",
+      "nativeSha256": "e844d24b6e3055e535eb6ea9ab2d2a8fc8bf8a7738b05a6e968309b0ab9364c3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ecee348af1e13f3fb30ba40e8797bb7a5a8ce6328868e0187e143aa6a541db75",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: LOWwholemendedplainblanket separateEMPTYpaddedmat andOPENBLUEwater SUNLIT woodland; no progression/scope/village/HABcase/course/lab. DifferentactualfirstPARTNERparent indoorLOWbed andRIGHTwindow: outdoorwidegroundcare. Allmeaningfulforms WHOLEbeforeactual60.3. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat",
+      "nativeSha256": "c64e41029da1da1bba8587b693917f45ff565285b45935703d882321e0f79708",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "04171e91bf73b6db5eb4cfc56ebfb212d4822d0910770ab44731ba0c5410c159",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholepersonalcareblanket separateEMPTYpadding BLUEwater LOW3actualOPENINNERwetland FOREST RUINsteps SUNLIT/no scopevillagecase/course/lab. AllmeaningfulINNERviewsbefore60.3; outerrightarchsupportbackgroundallowed. Reverseactual188MOODLOWaid/no views. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat--episode",
+      "nativeSha256": "dcfb4364d435f71a26965ae447d59ed3fd259a1546b74fceeaf7734fe7cc0c4d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3af40c05047fc6c22793bf15a16bf637aed504a0d061d94108263fa55ba1f386",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UP3actualOPENINNERwetland FOREST RUIN LOWlargerEMPTYprotectedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater SUNLITgrowth/no returntable. PrimaryWHOLEcare shelterroof/body nativeLEFTcut: composition ONLY F. Reverseactual188HABUPaidLOWviews. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+      ],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UP3actualOPENINNERwetland FOREST RUIN LOWlargerEMPTYprotectedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater SUNLITgrowth/no returntable. PrimaryWHOLEcare shelterroof/body nativeLEFTcut: composition ONLY F. Reverseactual188HABUPaidLOWviews. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--habitat--short",
+      "nativeSha256": "49aedf3c23888b636b145db66cd2fc62464786fb3d4e483c715e9e30f57c68ae",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "54474675270de04fea21f41147bac7c85ea3d2d21c0e94928db75e5aee323e61",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENnearhome EMPTYfloor/threshold MIDtidycaretableblanket separateEMPTYpadding BLUEwater LOW3actualOPENINNERwetland FOREST RUIN LEFTreturntrail SUNLITreturn/no growth. PrimaryWHOLEnearhomeroofridge nativeTOPcut: composition ONLY F. MeaningfulINNERviewsbefore60.3 outerbackgroundarchsupportallowed. Differentactual188HABUPgroundaid LOWviews viahome/table return. Drapeallowed. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+      ],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENnearhome EMPTYfloor/threshold MIDtidycaretableblanket separateEMPTYpadding BLUEwater LOW3actualOPENINNERwetland FOREST RUIN LEFTreturntrail SUNLITreturn/no growth. PrimaryWHOLEnearhomeroofridge nativeTOPcut: composition ONLY F. MeaningfulINNERviewsbefore60.3 outerbackgroundarchsupportallowed. Differentactual188HABUPgroundaid LOWviews viahome/table return. Drapeallowed. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--case--scene",
+      "nativeSha256": "9cfcfe42f74ab94798ea7e416bf00d6cf325e2e195a41eb0d694790a4f483303",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "beff05df667da1238ebec0b54a7ef761a712267116641d529692bca6f93d1145",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENlocalrefuge fullroof EMPTYfloor/threshold tippedEMPTYhollowpail shortearthtrace LOWwholepreparedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater SUNLITfirsttrustready/no growthreturntownHAB/course/lab. ActualoriginalbrightCASE indoorLOWbed MIDbagRIGHTdoor vsoutdoorUPwholelocalrefugeLOWgroundaid different. AllmeaningfulformsWHOLEbefore60.3. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--case--episode",
+      "nativeSha256": "d2be972944cbfec592f9b63b5579e8502630350e27bef39be84f7d97636a7f42",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "43ea77e1b46cee76019616713e6ce860b47137b1c814474399b1acbfd7fc7ece",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENlocalrefuge fullroof EMPTYfloor/threshold tippedEMPTYhollowpail shortearthtrace LOWlargerEMPTYprotectedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater SUNLITgrowth/no returntabletownHAB/course/lab. ActualoriginalbrightCASE indoorLOWbed MIDbagRIGHTdoor vsoutdoorUPwholelocalrefugeLOWlargergroundaid different. AllmeaningfulformsWHOLEbefore60.3. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--bright--case--short",
+      "nativeSha256": "efc60a09f41aa2fbe267a6f9c5644c3a823170738cb1248d9a43cac98ad9ff00",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "24a7b8d82ea0261100b6c76fee48cd175f9b14c371b5defe2fbaa0fb321e09c7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENnearhome fullroof EMPTYfloor/threshold tippedEMPTYhollowpail shortearthtrace LOWtidypersonalcaretableblanket separateEMPTYpadding BLUEwater LEFTreturntrail SUNLITreturn/no growthtownHAB/course/lab. ActualoriginalbrightCASE indoorLOWbed MIDbagRIGHTdoor vsoutdoorUPopenhomeLOWreturntable different. AllmeaningfulformsWHOLEbefore60.3. Clothdrapeallowed. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--secret--route--scene",
+      "nativeSha256": "2818c13c1bd5f00abf05b5550bd98feb6cd24b73575b612350f3f6df7fff01b4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e81e43b85e68a2973c2890f0b4c1aa5e5383cf0e932e3e528d274f5c753e2d2c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPtwoWHOLEDIFFERENTvillagefullroofs/chimneys/body/door/bases continuousLEFTearthtrail LOWwholepreparedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater CLOSEDPLAINnotebook actualLEFTecologicalearthtrace MOONLITfirsttrustready/no growthreturnHABcase/course/lab. ActualoriginalsecretROUTE indoorLOWcarebench RIGHTdistanttown vsoutdoorUPvillagesLOWgroundaid different. AllmeaningfulformsWHOLEbefore60.3. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    },
+    {
+      "key": "monster--bond--partner--secret--route--episode",
+      "nativeSha256": "58aa2d021961a9c22988042d0ee6bcec635802df1a41cf680042283919a37acd",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "08d59ffa0ea12d5d62ec78805b74501aa13a348eaed68c464a93fc94f0f75c84",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPtwoWHOLEDIFFERENTvillagefullroofs/chimneys/body/door/bases continuousLEFTearthtrail LOWlargerEMPTYprotectedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater CLOSEDnotebook actualLEFTecologicalearthtrace MOONLITgrowth/no returntableHABcase/course/lab. PrimaryWHOLEprotectivecare shelterroof/body nativeLEFTcut: composition ONLY F. Notebookclosedcoverclasp isnotwriting. ActualoriginalsecretROUTE indoorLOWcarebench RIGHTtown vsoutdoorUPvillagesLOWgroundaid different. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+      ],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPtwoWHOLEDIFFERENTvillagefullroofs/chimneys/body/door/bases continuousLEFTearthtrail LOWlargerEMPTYprotectedGROUNDpersonalcareblanket separateEMPTYpadding BLUEwater CLOSEDnotebook actualLEFTecologicalearthtrace MOONLITgrowth/no returntableHABcase/course/lab. PrimaryWHOLEprotectivecare shelterroof/body nativeLEFTcut: composition ONLY F. Notebookclosedcoverclasp isnotwriting. ActualoriginalsecretROUTE indoorLOWcarebench RIGHTtown vsoutdoorUPvillagesLOWgroundaid different. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Remaining six directlyP."
+    },
+    {
+      "key": "monster--bond--partner--secret--route--short",
+      "nativeSha256": "097aca4e71926101b9209b4df39cbc3948e7760c01f07d7e04a155f0183f1075",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fc3063af71a313821a583cbe7bfc847717cf17d61d7fd7b1373ebb6ef97b5e23",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN and WHOLEnative and FULLexactOWN/WHOLEactualrelevantparent: UPwholeOPENnearhome fullroof EMPTYfloor/threshold MIDtidypersonalcaretableblanket CLOSEDPLAINnotebook adjacentseparateEMPTYpadding OPENBLUEwater LOWtwoWHOLEDIFFERENTvillagefullroofs/chimneys/body/doors/bases continuousLEFTreturntrail actualLEFTecologicalearthtrace MOONLITreturn/no growthHABcase/course/lab. ActualoriginalsecretROUTE indoorLOWcarebench RIGHTdistanttown vsoutdoorUPopenhomeMIDreturntableLOWtown different. AllmeaningfulformsWHOLEbefore60.3. Drapeallowed; adjacentpadding/water arewholepartsofpersonalcare nook noarbitraryon-table requirement. Coarseconsistentpixelgrid/flatshade allplanes. IdentityUnset/noText directlyP. Plainclothstripes/seams notwriting. Actual60.3 visibility gate, notidealx45/52. No oldfood2/paw/rope/branch/FLATfold retrocriteria. Allseven directlyP."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

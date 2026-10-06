@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--bond--team,monster--bond--team--bright,monster--bond--team--warm,monster--bond--team--warm--route,monster--bond--team--warm--route--episode,monster--bond--team--secret--case"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 771,
+  "manifestSha256": "b18edd4e92f5466dde1c9517ff1605b8c9298fed63e79f01dc218ae70cd6905a",
+  "finishedAt": "2026-10-06T18:26:14.905494+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-771-click-proof.json",
+  "completeWholePlan": false
+}

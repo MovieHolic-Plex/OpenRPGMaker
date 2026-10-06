@@ -1,0 +1,196 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 771,
+  "targets": [
+    "monster--bond--team",
+    "monster--bond--team--bright",
+    "monster--bond--team--secret--case",
+    "monster--bond--team--warm",
+    "monster--bond--team--warm--route",
+    "monster--bond--team--warm--route--episode"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "monster--bond--team",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 23.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 6,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 8,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--bond--team--bright",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 8.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        },
+        {
+          "key": "monster--bond--team--bright",
+          "ms": 6.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--bright-7bc443eb70cf.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--bond--team--secret--case",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 5.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 10.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 10.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        },
+        {
+          "key": "monster--bond--team--secret",
+          "ms": 4.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--secret-9c58e6a7e7bd.png"
+        },
+        {
+          "key": "monster--bond--team--secret--case",
+          "ms": 13,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--secret--case-84cd72d6dd59.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--bond--team--warm",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 8.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 9.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        },
+        {
+          "key": "monster--bond--team--warm",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm-03c42b1ae766.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--bond--team--warm--route",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 9.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 9.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 4.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        },
+        {
+          "key": "monster--bond--team--warm",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm-03c42b1ae766.png"
+        },
+        {
+          "key": "monster--bond--team--warm--route",
+          "ms": 10.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm--route-54190938cf3f.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--bond--team--warm--route--episode",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--bond",
+          "ms": 4.400000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond-93f8ac4b4eb5.png"
+        },
+        {
+          "key": "monster--bond--team",
+          "ms": 5.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team-4bb7fde5304e.png"
+        },
+        {
+          "key": "monster--bond--team--warm",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm-03c42b1ae766.png"
+        },
+        {
+          "key": "monster--bond--team--warm--route",
+          "ms": 5.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm--route-54190938cf3f.png"
+        },
+        {
+          "key": "monster--bond--team--warm--route--episode",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--bond--team--warm--route--episode-e583efa11d45.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}
