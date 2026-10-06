@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.145.1 — 2026-10-06
+
+### 수정
+
+- retain collected art during additional theme production (#2222) (`affbd57`)
+
 ## 0.145.0 — 2026-10-06
 
 ### 기능
