@@ -145,3 +145,16 @@ PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정�
 근거:sixteen-passed-proof.json,root-review-{lotus-marsh-wraith,silk-loom-specter,reed-blade-weasel}.json,
 native-contact-* 및 각 실제 browser-proof. 전체 검증 보조는 현재 감사/해시/실제 감독/화면만 읽는다.
 
+## 다음3종 제작 관찰 · 통과 수16 유지
+
+먹필귀의 실제 다음 검수는 준비의 붓 파지·어두운 붓털/먹물 대비·회수와 비슷한 피격을
+추가로 지적했다. 세 번째 실제 교정 중이며 월륜정령의 짧은 팔 경로/비단 끝 교정도 진행 중이다.
+매화정은 초기18자세를 모두 저작하고 자체 GIF/시각 검사용 시트를 만들고 있다.
+현재 두 제작 중 비교(idle_a/skill_b)는 실제 시점의 ASCII를 읽은 초안이며 통과/완료 근거가 아니다.
+다음 호출 지침에 실제 파지 축·손/붓 목 경계·읽히는 팔 경로·떠 있는 비단 끝을 보강했고,
+먹필귀의 실제 세 번째 author job c348a4cb-adec-4d12-ab5d-27ea0ec1f635의 실제 prompt
+해시와 최신 지침 포함을 읽어 확인했다. 모델은 실제 GPT6.1sol/high다. 독립 검수 판정은 고치지 않았다.
+16/50 목표 진행과 원래 나머지34종은 유지된다. 현재 호출의 실제 /proc 핸들과 시작 식별자를
+다시 읽어 대기하며, 관찰이 느리다는 이유로 작가를 재시작하지 않는다.
+근거:controllers/fresh-direction-propagation.json,progress-{idle_a,skill_b}-ink-brush-oni-moon-disk-spirit-plum-blossom-spirit.*
+

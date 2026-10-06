@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-06T07:28:20.412152+00:00",
+  "key": "ink-brush-oni/fifty-v1",
+  "actualJobId": "c348a4cb-adec-4d12-ab5d-27ea0ec1f635",
+  "stage": "author",
+  "phase": "complete",
+  "startedAt": "2026-10-06T07:26:14.097638+00:00",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "actualPromptSha256": "a8ca2724c47dd545a18dbb622a394bdfcb14ca6f6a6a4cb7b5f676a2265aa420",
+  "latestDirectionPresent": true,
+  "approvalClaim": false,
+  "scope": "Actual third visual repair author call contains fresh shared direction derived from independent anatomy/tool rework. Current author/critic source remains unapproved until real new keep."
+}
