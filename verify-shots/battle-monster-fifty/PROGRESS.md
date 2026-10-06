@@ -311,3 +311,13 @@ keep 요약 관찰을 그대로 유지한다. 정적 자세 시트로 실전 타
 화린독사·매화정의 작은 지적 각1개를 유지한다. 남은25종까지 목표는 동일하며 전체 완료나 게임
 설치를 주장하지 않는다. 근거:twenty-five-passed-proof.json,root-review-dusk-paper-falcon.json,
 native-contact-dusk-paper-falcon*,browser-proof-dusk-paper-falcon.json,지속 출처25종.
+
+## 적송목령 첫 수면 수정본 재검수 · 통과 수는25/50 유지
+
+감독이 첫 수면 수정본의 실제18자세 native 시트를 열고 repair_sleep.write_literal 전체 본문을
+읽었다. 수관과 매달린 가지·접힌 뿌리가 돌아왔지만 실제 새 독립 검수는 타격 가지의 뭉툭한 끝,
+수면의 감긴 눈/작은 머리 안정 변화, 회수의 솔잎 파편을 rework로 지적했다. 첫 수정본 native
+시트/실제 job/result와 감독 draft(false)를 따로 보존하며 다음 실제 교정/새 검수까지 합격으로
+세지 않는다. 현재25종의 정본 source/선택/감독/브라우저 확인에는 변화가 없다.
+근거:draft-native-contact-red-pine-guardian-after-sleep-repair1.*,draft-independent-rework-red-pine-after-sleep-repair1.json,
+root-draft-review-red-pine-after-sleep-repair1.json.
