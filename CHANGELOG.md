@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.152.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 공용 캐릭터 그림을 스토어에 진열 — 얼굴·흉상·전신 16표정, 걷기 칩 (#2250) (`2147df5`)
+- re-review unchanged native wand shelf with current context (`47a1b29`)
+
+### 수정
+
+- recover native scene reviews and deploy playable drafts with resources (`9de0f9b`)
+- recover native review reason format without changing verdicts (`572c855`)
+- bind both required native shelf review receipts (`07b13f0`)
+
 ## 0.151.0 — 2026-10-06
 
 ### 기능
