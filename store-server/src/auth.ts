@@ -189,7 +189,7 @@ export async function revokeToken(db: Db, ctx: Ctx): Promise<void> {
 }
 
 /** Google OAuth: 인가 코드 → 토큰 → userinfo. 확인된 이메일만 받는다. */
-export async function googleUser(config: StoreConfig, code: string): Promise<{ email: string; name: string; sub: string }> {
+export async function googleUser(config: StoreConfig, code: string, codeVerifier: string): Promise<{ email: string; name: string; sub: string }> {
   const google = config.google;
   if (!google) throw new HttpError(404, "Google 로그인이 설정되지 않았습니다.", "google_disabled");
   const tokenResponse = await fetch(google.tokenUrl, {
@@ -201,6 +201,7 @@ export async function googleUser(config: StoreConfig, code: string): Promise<{ e
       client_secret: google.clientSecret,
       redirect_uri: `${config.publicUrl}/auth/google/callback`,
       grant_type: "authorization_code",
+      code_verifier: codeVerifier,
     }),
     signal: AbortSignal.timeout(10_000),
   });
