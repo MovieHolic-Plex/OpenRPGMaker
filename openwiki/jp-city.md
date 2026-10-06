@@ -225,11 +225,54 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 검사(생성기 안): 문 46곳 접근칸 도달 · 막힘 칸 전부 엔진이 막음 · 3/4층 겹침 0 · 오토타일(생활도로·선로·철망) 마스크 어긋남 0 · 빈칸 창(17×13) 최댓값. `--publish` 가 장소(`jp-city-town-96x80`, `jpCityPlaceReferences.ts` + `regionReferences/jp-city-town.json` + `public/assets/region-references/jp-city-town.*`)를 쓴다. 로더 항목은 `regionReferenceSnapshots.ts`.
 - 그림: `python3 scripts/content/jp-city/maps/render.py scripts/content/jp-city/maps/out/town.map.json town` → `verify-shots/jp-city/town-1x.png`·`town-x3.png`. 편집기 증거 `verify-shots/jp-city/editor-town-full.png`(새 맵에 `stamp_layer_block` 4층으로 옮겨 찍고 원본과 4층 모두 일치).
 
+## 小学校 블록·예제 맵 (블록 `school`, `BLOCK_ORDER` 여섯째) — 2026-10-07
+
+교정 키트 33종(`scripts/content/jp-city/blocks/school.py`): 교정 흙 A·B·C(1층)·고무 칩(遊具 밑) · 트랙 선 `jp-school-track-l`(30×15, **2층** 투명 덧그림) · 철봉·오르기 봉·운제·정글짐·타이어·골대 한 쌍·방구망·조례대·외발자전거 걸이 · 25m 수영장 `jp-pool`(29×19, 남쪽 탈의동 → 샤워 아치 → 데크, 입구 anchor 2칸) · 정문 `jp-school-gate-l`(개구부 4칸) · 창고·사육장·자전거 보관대·화단·나팔꽃·학급 밭·비오톱·등나무 그늘·百葉箱·게양대·二宮金次郎像·수돗가·ツツジ.
+- 예제 맵 `scripts/content/jp-city/maps/school.mjs`(68×48): 교사·체육관·수영장 뒷줄 → 교사 앞 줄 → 서쪽 운동장(트랙·골대·남쪽 띠·방구망) → 동쪽 놀이·관찰 구역 네 줄 → 정문·둘레 철망 → 앞 생활도로(「30」 차선마다 `jp-mark-30-e`/`-w` — 키트가 側溝·흰 선 포함, 동쪽행 위 두 줄·서쪽행 아래 두 줄) → 전봇대(정문 앞·나무 줄기 앞 비움).
+- 장소 `jp-city-school-68x48`(`--publish`, 관문 통과 필수). 크롭 `scripts/content/jp-city/maps/school_crops.py`.
+- 축척: 교사·트랙은 압축 축척, 수영장만 실제 25m.
+
+## 적대적 검증 관문 (`scripts/content/jp-city/gate/adversarial_gate.py`) — 2026-10-07
+
+`run --stage S --files … --focus …` 가 `claude -p --model opus --effort medium` 검수자에게 파일·그림을 주고 「통과시키지 않을 이유」를 찾게 한다. 판정은 `tiledata/jp-city/gates/<stage>.json` 에 **파일 sha256 과 묶여** 남고, blocker·major 가 0 이어야 통과. `check --stage S` 는 판정 뒤 파일이 바뀌었으면 실패 — `kitmap.mjs --publish` 가 이것을 부른다(안 통과면 게시 거부, `SKIP_GATE=1` 은 비상구). 단계: `vehicles`(통과) · `school`(8회차 통과) · `transit`(진행 중).
+- 관문 파일 목록에 공용 코드(`kitmap.mjs`)가 들어 있으면 덧붙이는 변경 하나로도 판정이 무효가 된다 — 실측: 학교 7회차 통과 뒤 kitmap 에 옵션을 더해 8회차를 다시 돌렸다. 공용 코드를 고치기 전에 관문을 먼저 끝내거나, 고친 뒤 다시 돌린다.
+- 동시 실행은 Opus 3개까지(사용자 허용). 검수자가 큰 그림을 통째로 읽어도 되지만 **작업자(그림 고치는 에이전트)는 1000px 넘는 PNG 를 통째로 Read 하면 컨텍스트가 넘쳐 죽는다**(실측) — 크롭만 읽게 지시한다.
+
+## kitmap 공용 검사기 (`scripts/content/jp-city/maps/kitmap.mjs`)
+
+예제 맵 생성기 공용: `stamp`/`put`(발 기준)/`tryPut`(빈 자리만) · `fillL1` · `addLane`+`shapeLanes`(생활도로 오토타일) · `railLine` · `fenceLine` · `groupLine`(3층 오토타일 선, 마스크 감사) · `groupLineL2`(2층 투명 오토타일 선 — 점자 블록) · `edgeMarks`(側溝+흰 선) · `stampL2` · `poleRow`(전봇대 동적 계획) · `finish`(검사·출력) · `publish`.
+- 검사: 문(entrance) 접근칸 도달 · **입구 anchor 칸 도달**(수영장·역 계단) · 막힘 칸 엔진 일치 · 겹침 0 · 오토타일 마스크 · 빈칸. `report.ok` 가 전부 묶는다.
+- 빈칸(사용자 규칙 map-emptiness-gate): `bare` 에 준 **바탕 칸만** 빈칸(길·포장·고무 칩·물은 목적 있는 바닥), 1~3층만 본다(4층 전선은 공중), `emptyIgnore` 사각은 분모에서 빼고(운동장), 17×13 창 중 셀 수 111 미만은 건너뛰고 수를 `skippedWindows` 로 보고, `emptinessMax` 를 넘으면 ok=false.
+- `finish({events, transit})` 로 이동 이벤트·탈것 노선을 맵에 같이 쓴다.
+
+## 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
+
+**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 `right_open` = `right`, 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
+
+**저장 모양**: `GameMap.transit = { routes: MapTransitRoute[] }` (`src/project/mapTransit.ts`). 노선 = 칸 경로(꺾이는 점) + 탈것 목록 + `loop`/`count`(순환) 또는 `headwaySec`(열린 노선, 맵 밖에서 나타나 맵 밖으로) + `speed` + `stops[{index, waitSec, name, board{mapId,x,y,dir}}]`. 경로 칸 = 머리가 지나는 칸이자 몸 폭 2칸의 위/왼쪽 칸. 좌측통행(`laneOffsetFor`): 폭 4칸 길에서 동쪽행 위 두 줄·서쪽행 아래 두 줄·남쪽행 오른쪽 두 열·북쪽행 왼쪽 두 열. 상태(위치)는 저장하지 않는다.
+
+**시뮬레이션**(순수, `createTransitSim`/`stepTransitSim`): 열린 노선은 간격마다 시작 칸이 비었을 때 한 대, 앞차와 1칸 띄움(다른 노선 탈것 포함), 정류장에서 `waitSec` 동안 문 열기(막혀 있으면 정차 확정 안 함), 주인공 칸은 끝까지 피함. 교차로 교착은 **엇갈린 방향 탈것에만 6초** 막히면 겹쳐 지나간다(`STUCK_RELEASE_SEC`; 같은 방향 줄·버스 뒤·주인공 앞은 그대로 선다). 처음 들어올 때 90초 미리 돌린다.
+
+**런타임**(`src/player/playSceneTransit.ts`): 1/30초 고정 걸음, 스프라이트 원점 = 발자국 왼쪽 아래, 맵 칸 크기 비율로 확대, 깊이 `characterDepth("same", y)`. `playerCanStep` 이 탈것 몸을 막고, `performAction` 이 상자보다 먼저 `tryBoardTransit`(정류장에 문 연 탈것 칸을 보고 「조사」 → `transferTo`). 테스트 훅 `window.__oprnTransit()`(노선·탈것 key·사각·프레임·막힌 초).
+
+**조수 도구**(`src/editor/tools/transitTools.ts`, 도메인 map): `inspect_map_transit`(차도 띠·레일 줄·노선·120초 시험) · `set_map_transit`(auto = 1층 `jp-lane-road` 에서 맵 끝→끝 곧은 띠를 찾아 좌측통행 차 흐름, `busStops` = 버스 머리가 서는 차선 칸, `tram` = 2층 `jp-tram-rail-h/v` 레일 — 4칸 안에 나란한 두 레일이면 복선 양방향, 단선은 한 방향 / routes = 칸 경로 직접 / removeRouteIds / clear). 차·버스 몸이 차도 밖이면 `off-road` 로 거절, 정류장이 차선 위가 아니면 차선 행을 알려 주며 거절. 띠 찾기 순수 함수 `src/project/transitAuto.ts`. `jpCityPolicy` 의 노출 도구·상세 순서 ⑤에 들어 있다.
+
+**편집기**: 맵 설정 → 「탈것(차·버스·전차)」 칸(`renderTransitTab`) — 찾은 차도 안내, 「차 흐름 자동으로 깔기」(도구와 같은 `planMapTransit`), 「노면전차도 깔기」(레일이 있을 때), 노선 켜고 끄기·지우기, 차 간격 슬라이더. 정류장·순환선·지하철은 조수(routes)로. 증거 `verify-shots/jp-city/transit-editor/`(캡처 `scripts/content/jp-city/qa/editor-transit.capture.mjs`, netns 에서 dev 서버를 띄워 store 에 픽스처를 `replaceProject` — `isLoaded()` 전에 넣으면 늦게 끝난 새 프로젝트 불러오기가 덮는다).
+
+**런타임 QA**: `node scripts/qa/runtime/transit.probe.mjs`(netns: `unshare -rn sh -c 'ip link set lo up; …'`). 픽스처는 `transit-fixture.mts` 가 **조수 도구 실물**로 小学校 맵에 auto + 学校前 버스 정류장을 깔고 지하철역 맵을 넣는다. 15축: 노선 도달·그려짐·동/서 흐름(막힌 차 제외)·픽셀 변화·주인공 칸 안 덮음·주인공 앞 정지·버스 정차/문/타기·다른 맵에서 치움·지하철 정차/문/타기. 증거 `verify-shots/jp-city/transit-runtime/`.
+
+## 노면전차 거리·지하철역 블록 + さくら町駅 예제 (2026-10-07)
+
+- `blocks/transit_street.py`(`BLOCK_ORDER` 일곱째): 레일 `jp-tram-rail-h/v`(2층)·차막이 `jp-tram-rail-end`·정류장 섬 `jp-tram-stop`(서쪽행 궤도 남쪽, 2칸)·導流帯 `jp-tram-stop-zebra`·가선 `jp-tram-wire-h`(4층, 레일 행 −5)·전주·지하철 출입구 `jp-subway-entrance`(입구 anchor). 단면(북→남): 보도 3 · 동쪽행 차로 3 · 레일 2 · 사이 1 · 레일 2 · 섬 2 · 서쪽행 차로 3 · 보도 3. 관문 `transit` 진행 중(가선·전주는 3/4 투영에서 남북 팔이 기둥과 겹치므로 복선 사이 중앙 기둥으로 바꾸는 중).
+- `blocks/transit_station.py`(여덟째): 콘코스 바닥·흰 타일 벽·천장 보·개찰구(9칸, 통로 홀수 열)·ラチ 칸막이·매표기·역무실·계단 두 방향(anchor)·평기둥 / 승강장 바닥·뒷벽·광고·역명판·선로(1층 막힘 2줄)·승강장 끝(점자 띠 + 内方線)·번호 기둥·의자·LED·매단 역명판.
+- 예제 `scripts/content/jp-city/maps/station.mjs`: 콘코스 26×14 ↔ 승강장 44×13(계단 anchor 칸 이동 이벤트), 승강장 지하철 노선 `subway-sakura-east`(맵 밖 서쪽 → 머리 x 38 에서 12초 정차 → `board` 学校前). 점자 유도 블록은 `groupLineL2("jp-tactile", …)`. 출구 계단의 지상 목적지는 환경 변수 `STATION_EXIT_MAP/X/Y`(기본 상점가 맵).
+- 엔진 변조(`engine_dump.mts` 9절 `transit_station`): `fare-gate-bypass`(개찰 통로를 막고도 승강장 계단에 도달 — 칸막이 뺌) · `anchor-blocked`(계단 앞 의자).
+
 ## 실제 거리 조사 (2026-10-06)
 
 `tiledata/jp-city/research/` — 상점가·역 앞·요코초 / 주택가 생활도로·가로 시설 / 건물 유형별 치수 / 도트 게임 선례 웹 조사 4편(출처 URL)과 요약 `README.md`(축척 1칸≈0.9~1m, 「일본」 신호 우선순위·흔한 실수, 블록 구성, 현재 번들 대조, 다음 작업 순서). 새 건물·소품·거리 키트를 그리기 전에 먼저 읽는다.
 
-## AI 참고문서 (8용도 · 55쪽 · 그림 147장)
+## AI 참고문서 (10용도 · 61쪽 · 그림 167장)
 
 계약 `tiledata/AI-REFERENCE-CONTRACT.md` 8항목을 모두 채운 번들 소유 참고문서다. 범위는 **지금 있는 부품만**(오토타일 17세트 · `build_jp_city_building` · 도로 키트 29 · 상가 키트: 레시피 25·문 9·소품 142 · 손 도트 건물 77 · 손 도트 거리 시설 60)이다. 공원은 전용 키트 없이 소품(나무·놀이기구·벤치)으로 짓는다.
 
@@ -242,6 +285,8 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 | `jp-shop` | 5 | 15 | 레시피·문·소품 사전(칸 번호 전체) · 문 앞 접근칸·오류 3건 |
 | `jp-buildings-hand` | 5 | 13 | 손 도트 건물 77종(단품 69·상점가 줄 8, 셔터 가게는 출입구 없음) 쓰는 법·통행·줄지어 세우기 · 분류별 사전(칸 번호 전체·도달) · 정답 조립 3(상점가 단품·주택가·벽 맞댄 줄 키트) · 오류 2(`door-access-blocked`·`wall-overwritten`) |
 | `jp-street-hand` | 3 | 9 | 손 도트 거리 시설 60종: 층(전봇대·전선 4층·노면 2층)·전봇대/전선 공식(전선 x = 전봇대 x + 3)·생활도로 노면·집 앞 담 · 사전(칸 번호 전체·`layer`·`rules`) · 정답 조립 1(전체 1~4층 배열) · 오류 3(`upper-overwritten`·`pole-arm-overwritten`·`door-access-blocked`) · 엔진 실측 `engine_dump.mts` 의 `streetHand` |
+| `jp-school` | 3 | 10 | 손 도트 小学校 33종: 층(트랙 선 2층)·배치 순서·빈칸 규칙 · 사전(칸 번호 전체) · 예제 맵 jp-city-school 전체 1~4층 배열 · 오류 3(`overlay-in-base-layer`·`door-access-blocked`·`anchor-blocked`) |
+| `jp-transit` | 3 | 10 | 탈것 14종·노면전차·지하철: `set_map_transit` 쓰는 법·좌측통행 칸 규칙·정류장·도구 거절 코드 · 키트 사전(거리+역) · さくら町駅 콘코스·승강장 전체 배열과 지하철 노선 · 탈것 도감·실제 런타임 화면 · 오류 2(`fare-gate-bypass`·`anchor-blocked`) |
 | `jp-errors` | 3 | 1 | 코드 → 문서·그림 지도 · 변조 좌표 전체표 · 엔진 판정 대 정의 층 설명 정정(전/후) |
 
 ### 굽는 법 (한 줄)
@@ -255,6 +300,6 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - `bake_refs.py` 는 쓰기 전에 문서의 키트 배열을 정의와 대조하고(205종), 정의에 없는 키트 id·범위 밖 칸 번호·그림 파일 부재·긴 변 820px 초과·128색 초과를 막는다. 같은 입력이면 같은 바이트(JSON·PNG 해시 두 번 실행 일치).
 - 오류 코드(`autotile-stale` `wrong-layer` `road-gap` `arm-misaligned` `overlay-in-base-layer` `door-access-blocked` `back-over-front` `building-in-lower-layer`)는 문서 수준 검사 이름이다. 건물 도구 코드(`TOO_NARROW` 등)만 런타임 코드다. 검사 범위는 구조·층·통행이고 이벤트 실행·미적 품질·모델 성공률은 주장하지 않는다.
 - 층 정정(2026-10-03, **정의 정정 완료**): 그룹 `defaultLayer` 와 엔진 칸 홈이 어긋난 칸이 있었다(투명 덧그림 5그룹 74칸 = 그룹 lower·엔진 upper, 소품·육교 8그룹의 아래층 칸 103개 = 그룹 upper·엔진 lower). **엔진이 정본**이다 — 엔진은 커스텀 타일셋의 칸 홈을 칸 단위(`tileLayerHome`: 잠긴 칸의 `defaultLayer`, 아니면 `priority`)로만 정하고 그룹 `defaultLayer` 는 홈 판정에 안 쓴다(칸 쪽 값은 처음부터 엔진과 일치). 그래서 굽기 `bake_lib.derive_group_layer` 가 **그룹 층을 멤버 칸 홈에서 유도**한다(전부 위 `upper`·전부 아래 `lower`·섞이면 `mixed`+`layerHome: perCell`) — 투명 덧그림 5그룹 → `upper`, 소품 7그룹(`street` `green` `gate` `shrine` `stairs` `storefront` `play`)·`underpass-footbridge` → `mixed`. 정의 검사 `group-layer-vs-tile-home` 가 일치를 굽기마다 지키고, `engine_dump.mts` 가 엔진 함수로 다시 잰다(어긋남 0). 칸 번호·시트 PNG·`pins.json`·칸 `priority`/`passability` 는 불변. **동작 변화 하나**: 위층 그룹은 `fill_region` 재료가 아니므로(`tileVocabulary.isFlatFillGroup`) 투명 덧그림 5그룹의 `fill_region`(예: `layer:"2"` 로 깔던 경로)은 이제 `material-not-found` 로 거부되고 `paint_tiles` layer "2" 만 남는다(그룹 `placementRules` 에 적어 둠). 이미 만든 프로젝트의 사본은 형태 서명이 그룹 층을 안 봐 갱신되지 않는다(새 프로젝트부터; 칠하는 결과는 칸 홈이 정하므로 같다).
-- 계단 54칸(`star` + stair·계단·사다리 태그)은 정정 대상이 아니다 — 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`). 처음 어긋남으로 센 것은 덤프의 기대값 오류였고 `engine_dump.mts` 가 이 규칙을 안다.
+- 계단 63칸(54 + 지하철역 계단 9, `star` + stair·계단·사다리 태그)은 정정 대상이 아니다 — 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`). 처음 어긋남으로 센 것은 덤프의 기대값 오류였고 `engine_dump.mts` 가 이 규칙을 안다.
 - 한계(문서에 명시): 도로 키트 칸(3616~)은 오토타일 멤버가 아니라 이음새에서 끊긴다 · 예제 3개(`machiya_izakaya` `L_machiya_annex` `L_flats_lot`)는 도구가 `DECO_CLASH` 로 거부한다 · `stamp_layer_block` 은 3층 오토타일을 재성형하지 않는다 · 투명 덧그림을 layer "1"·"3" 로 칠하면 도구가 3층으로 돌려 놓고 재성형하지 않는다.
 - 새 블록·키트 계열을 더하면 `bake_refs.py` 에 용도·문서를 덧붙이고 이 표를 갱신한다. `finalize` 가 **모든 키트가 문서에 나왔는지** 단언하므로 문서 없이 키트만 더하면 굽기가 실패한다(키트 id 접두로 계열을 가르는 정규식은 `jp-prop-` 처럼 **하이픈까지** 써야 한다 — `jp-prop` 만 쓰면 `jp-propane` 이 빠진다).
