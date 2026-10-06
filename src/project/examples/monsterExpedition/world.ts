@@ -44,7 +44,7 @@ export interface ExpeditionManifest {
 }
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
-export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string } = {}): ExpeditionManifest {
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[] } = {}): ExpeditionManifest {
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
@@ -537,7 +537,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     }
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
     if (g.key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
-    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, i === 0 && options.firstGymType ? options.firstGymType : g.type, i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
+    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? g.type, i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
       [text(g.after, g.leader), { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text(`${g.badge}를 받았다! 다음 길이 열렸다.`)], puzzleSwitch, audio.trainerBattle);
     const leaderEvent = map.events.find(e => e.id.endsWith("_leader"))!;
     const previous = i === 0 ? "mx_starter" : `mx_badge_${i}`;
