@@ -49,6 +49,10 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 - 쓰기 경로: `setTileBackingOverride(tileset, tile, "auto" | "none" | <타일 id>)`.
   `"auto"` 는 필드를 지워 하네스 판정으로 되돌린다.
 - 읽기 경로: `userTileBackingOverride` (사용자 확정만), `tileBackingTile` (정책 기본값 포함).
+- 커스텀(번들) 타일셋 홈 판정(`tileLayerHome`): 사용자 지정 → `layerBacking`+`defaultLayer`가 함께 적힌 칸은 그 층 →
+  `source: bundled-default` 칸 중 자기 `structureKits`가 `upperTiles`로만 쓰는 칸은 upper → `priority`.
+  몬스터 키트는 울타리·눈더미·침엽수·눈사람·표지판을 priority=lower 로 두어 조수 칠하기가 1층에 깔고 검게 뚫렸다(2026-10-06).
+  `tile_erase`의 바닥 복원도 역할표가 없으면 받침으로 선언된 칸을 지면으로 본다.
 - 받침은 **렌더 합성 전용**이다. `map.lowerTiles` 슬롯을 덮어쓰지 않고 통행 판정
   (`tilePassability`)도 바꾸지 않는다.
 

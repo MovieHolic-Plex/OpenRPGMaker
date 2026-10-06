@@ -899,7 +899,9 @@ function describeProgress(driver: Driver, goal: Goal): string {
 /** 한 목표에서 수련 후 재도전하는 최대 횟수. */
 const MAX_TRAINING_ROUNDS = 10;
 /** 수련 한 번의 걸음 묶음 수(묶음당 40걸음). */
-const MAX_TRAINING_CHUNKS = 40;
+const MAX_TRAINING_CHUNKS = 100;
+/** 수련 걸음 묶음 — 묶음마다 체력을 본다. 40걸음이면 얼음 동굴에서 한 묶음에 142→33 까지 깎여 센터 가는 길에 쓰러졌다. */
+const TRAINING_CHUNK_STEPS = 16;
 
 function leadLevel(session: PlaySession): number {
   return Math.max(0, ...(session.monsterParty ?? []).map((id) => session.monsterInstances?.[id]?.level ?? 0));
@@ -1018,7 +1020,9 @@ function healAtCenter(driver: Driver, nearMapId?: string): void {
 }
 
 /** 풀숲에서 오가며 리더 몬스터를 target 레벨까지 올린다. 실패하면 이유. */
-function train(driver: Driver, target: number, knockedOut = 0): string | null {
+function train(driver: Driver, target: number, knockedOut = 0, heals = 0): string | null {
+  // 앞 묶음이 이미 목표에 닿은 뒤 회복·재시도로 다시 들어오면 할 일이 없다 — 예전엔 0묶음 뒤 「LvN 에서 오르지 않습니다」로 끝났다.
+  if (leadLevel(driver.last.session) >= target) return null;
   const ground = trainingGround(driver.project, driver.last.session, driver.badGrounds);
   if (!ground) return `리더 Lv${leadLevel(driver.last.session)} 이 수련할 풀숲으로 가는 길이 없습니다.`;
   const startLevel = leadLevel(driver.last.session);
@@ -1031,7 +1035,7 @@ function train(driver: Driver, target: number, knockedOut = 0): string | null {
       if (knockedOut >= 3) return `수련하러 가다 세 번 쓰러졌습니다: ${why}`;
       driver.recover = undefined;
       checkpoint(driver);
-      return train(driver, target, knockedOut + 1);
+      return train(driver, target, knockedOut + 1, heals);
     };
     for (const hop of ground.route) {
       const failure = fireEvent(driver, hop.event, hop.visit);
@@ -1047,7 +1051,7 @@ function train(driver: Driver, target: number, knockedOut = 0): string | null {
     if (!walked.ok) return walked.reason;
     for (let chunk = 0; chunk < MAX_TRAINING_CHUNKS && leadLevel(driver.last.session) < target; chunk++) {
       if (Date.now() > driver.deadline) return "자동 플레이 시간 상한 초과";
-      const paced = tryCommit(driver, Array.from({ length: 40 }, (_, i) => ({ kind: "move" as const, dir: i % 2 === 0 ? "right" as const : "left" as const })));
+      const paced = tryCommit(driver, Array.from({ length: TRAINING_CHUNK_STEPS }, (_, i) => ({ kind: "move" as const, dir: i % 2 === 0 ? "right" as const : "left" as const })));
       if (!paced.ok) return paced.reason;
       // 걸음 묶음이 조우·전투로 길어지므로 묶음마다 저장한다.
       checkpoint(driver);
@@ -1056,7 +1060,16 @@ function train(driver: Driver, target: number, knockedOut = 0): string | null {
         driver.badGrounds.set(ground.mapId, startLevel);
         if (knockedOut >= 3) return `${driver.project.maps[ground.mapId]?.name ?? ground.mapId} 에서 수련하다 세 번 쓰러졌습니다.`;
         driver.recover = undefined;
-        return train(driver, target, knockedOut + 1);
+        return train(driver, target, knockedOut + 1, heals);
+      }
+      // 체력이 60% 아래면 센터에 들렀다 온다 — 지친 리더는 한 방에 쓰러질 야생마다 도망만 쳐서 경험치를 못 얻었다
+      // (2026-10-06: 8번길에서 40묶음 내내 Lv53 그대로, 1관 타입만 바꾼 판에서 8관 패배).
+      const lead = driver.last.session.monsterInstances?.[driver.last.session.monsterParty?.[0] ?? ""];
+      if (lead && heals < 12 && monsterCurrentHp(driver.project, lead) < monsterMaxHp(driver.project, lead) * 0.6) {
+        driver.recover = undefined;
+        checkpoint(driver);
+        healAtCenter(driver, ground.mapId);
+        return train(driver, target, knockedOut, heals + 1);
       }
     }
     if (leadLevel(driver.last.session) <= startLevel) return `${driver.project.maps[ground.mapId]?.name ?? ground.mapId} 에서 수련해도 Lv${startLevel} 에서 오르지 않습니다.`;
@@ -1072,7 +1085,7 @@ function train(driver: Driver, target: number, knockedOut = 0): string | null {
   }
 }
 
-function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, healed = false): AutoPlayStepTrace {
+function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, healed = false, walkRetries = 0): AutoPlayStepTrace {
   const { project } = driver;
   const visit = goal.visit;
   const targetMap = visit.page.map?.id;
@@ -1108,6 +1121,12 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
       const problem = train(driver, leadLevel(driver.last.session) + 2);
       if (problem) return trace(goal.label, false, `가는 길에 쓰러진 뒤 수련 실패: ${problem}`, driver, hop.visit.where);
       return executeGoal(driver, goal, escaped, trained + 1);
+    }
+    // 수련 횟수를 다 쓴 뒤에도 길에서 쓰러졌으면 센터에서 깨어난 그대로(회복됨) 다시 걸어 본다 — 레벨이 아니라 도망 운이다.
+    if (!moved && project.system?.monsterCollection === true && walkRetries < 3
+      && driver.last.log.slice(logStart).some((line) => line.startsWith("defeat recovery"))) {
+      checkpoint(driver);
+      return executeGoal(driver, goal, escaped, trained, healed, walkRetries + 1);
     }
     if (failure) return trace(goal.label, false, `문 ${hop.event.name ?? hop.event.id} → ${hop.to}: ${failure}`, driver, hop.visit.where);
     if (!moved) {

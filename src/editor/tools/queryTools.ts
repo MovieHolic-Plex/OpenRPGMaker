@@ -748,15 +748,18 @@ const checkReachabilityTool: ToolDefinition = {
       mapId: { type: "string" },
       from: COORD_SCHEMA,
       targets: { type: "array", description: "[{x,y}...]", items: COORD_SCHEMA },
+      // 모델이 길찾기처럼 from/to 로 부르는 일이 잦다(2026-10-06 실편집기 두 판 모두 to 로 불러 인자 실패) — 한 점이면 to 도 받는다.
+      to: { ...COORD_SCHEMA, description: "목표가 한 점이면 targets 대신 써도 된다." },
     },
-    required: ["mapId", "from", "targets"],
+    required: ["mapId", "from"],
   },
   run(project, args): ToolExecResult {
     const mapId = args.mapId as string;
     if (!project.maps[mapId]) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: "map-not-found", mapId });
     // The runner checks only the outer shape; malformed points are argument
     // failures, never negative artifact evidence from the reachability BFS.
-    const targets = args.targets as ReachPoint[];
+    const targets = (Array.isArray(args.targets) ? args.targets : args.to !== undefined ? [args.to] : null) as ReachPoint[] | null;
+    if (!targets || targets.length === 0) throw new ToolError("targets([{x,y}...]) 또는 to({x,y})가 필요합니다.", { code: "invalid-args", mapId });
     const points = [["from", args.from], ...targets.map((point, index) => [`targets[${index}]`, point])] as const;
     for (const [path, point] of points) {
       const errors = validateArgs(COORD_SCHEMA, point);

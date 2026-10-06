@@ -59,7 +59,10 @@ export function composeTown(project: Project, map: GameMap, t: TownTemplate, ske
       put(x, y, group.variantMap[String(group.neighborhood === 8 ? 255 : 15)]!, "lower");
     } else if ("tile" in legend) {
       const tile = pick(legend.tile, x, y);
-      put(x, y, tile, tileset.tileMeta?.[tile]?.defaultLayer === "upper" ? "upper" : "lower");
+      // 키트가 덧그림으로만 쓰는 칸(표지판 등)도 위층 — 1층에 두면 투명 부분이 검게 뚫린다(2026-10-06 숲속·달맞이 표지판).
+      const kitUpperOnly = tileset.structureKits?.some(k => k.rows.some(r => r.upperTiles?.includes(tile)))
+        && !tileset.structureKits.some(k => k.rows.some(r => r.tiles.includes(tile)));
+      put(x, y, tile, tileset.tileMeta?.[tile]?.defaultLayer === "upper" || kitUpperOnly ? "upper" : "lower");
     } else if ("prop" in legend) {
       const kit = tileset.structureKits?.find(k => k.name === legend.prop);
       if (!kit) throw Error(`Town sketch ${map.id}: no structure kit ${legend.prop}`);
