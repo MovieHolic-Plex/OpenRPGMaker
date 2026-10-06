@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "abyss-jade-turtle",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "c10f16230c211a99b49bd7c933e81c0dd34ff3c88f8e5b32fb9b19b0491bfd94",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "6ba982dacdfe2489e0f6b53a2b0057469a404a0aacd2f22738749e25e0fa648c",
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-06T12:29:59.636656+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "22fff7c23ab5fee0416965f9c15d25f58ab34c667154862634f8f1d075dd5820",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-jade-turtle-after-repair-two.png",
+  "nativeContactPngSha256": "fad3288d155cb492d8603c4d8e523d27331a76677da89e5f31c44c733232abf2",
+  "nativeWriterFilesRead": {
+    "author.py": "01165733235635df42730484b368d664ab7ccdbab371eea7ba64de1ae2d60b56",
+    "repair.py": "d2f00c5bf2f577b791001d0469bddf97bbe77c122cc8952a105b0749f58bcfbb",
+    "apply_native_edits.py": "b716bcf40e4b2c1e5265c71467cd6dec65f79da24167d922cfbdba3c3cba34fe"
+  },
+  "observations": "Actually reopened all18 native1x/nearest2x1632x1272 unresized after second repair. Standing shell has more stepped rounded right contour, curved dark shadow boundary and low dark rim band; attack forward carapace now overhangs short compressed neck with near front brace and visible smaller far clawed forefoot. Shell/body contrast remains broad and low detail, hit/idle changes subdued. Skill_b has dark open-mouth-intended pixels with connected short cyan origin and two wider rightward expanding curved water outline paths; exact mouth readability and dome quality remain under fresh independent review. Distinct folded closed-lid-intended sleep without broken plate vs collapsed dead with cracked shell, angled drooping stun head vs tucked poison head. Read whole original author.put/save/allmoduleflow, targeted repair.apply/fullmoduleflow, current apply_native_edits fullmoduleflow: explicit native y/x/literal row replacement in all selected dome-impact-mouth files; no geometry/automaticwholeframe transforms/tweens. The author does not call repair itself; source notes record author.py then repair.py then apply_native_edits.py then read-only render/diagnostics. New compare_revision/diagnostics read current/before images/grids only, no art writes. All18 currentnative PNG/source matched. Fresh independent keeper still pending; no Allow claim.",
+  "actualIndependentReviewJob": "b43c2de9-62a9-4a81-999e-304620b946a6",
+  "clarificationAfterActualIndependentReview": "Fresh actual review supports shell volume and two large water waves gathering at the actual mouth tip. Remaining rework4: attack shell appears deformed, neck/front limbs crowded, stun head loses idle proportions, sleep limbs/head too similar to dead at1x. Draft remains false."
+}
