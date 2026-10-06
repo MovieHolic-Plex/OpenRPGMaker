@@ -206,7 +206,7 @@
 - **배선 `harness.py --theme <테마> --run <run> wire`**(`lib/wire.py`): 관문 통과한 굽기 → `public/assets/monster-kit/<테마>.png`, `src/assets/monsterKit/<테마>.json`
   (TilesetDef 모양 + 구조 킷 `mk-<테마>-<물체>` + 참고문서), `index.json`, `src/project/defaults/monsterKitSheets.generated.ts`(정적 import 표 — 손으로 고치지 않는다).
   `src/assets/monsterKitAssets.ts` 가 번들 칩셋 목록(`bundled.ts`)·칸 수·열 수에 끼우고, `src/project/defaults/monsterKit.ts` 가 새 프로젝트(`bundledEasyRpgTilesetBase`)와
-  기존 프로젝트(`ensureBundledTilesets` → `ensureMonsterKitTileset`)에 심는다. 계열은 `oprn-atlas`. 칸 수가 바뀌면(다시 구움) 칸 표를 통째로 번들 것으로, 같으면 빠진 `mk-` 킷만 더한다.
+  기존 프로젝트(`ensureBundledTilesets` → `ensureMonsterKitTileset`)에 심는다. 계열은 `oprn-monster`(2026-10-06, 그 전 사본은 `oprn-atlas` 그대로 — 기존 프로젝트는 손대지 않는다). 에메랄드 재채색은 `oprn-monster-emerald`. 칸 수가 바뀌면(다시 구움) 칸 표를 통째로 번들 것으로, 같으면 빠진 `mk-` 킷만 더한다.
 - **참고문서**(`lib/refdocs.py`, `tiledata/AI-REFERENCE-CONTRACT.md`): 용도 `mk-<테마>` 하나에 안내(읽는 순서·레시피와 `DOC_MODULES` 머리말의 장소 문법·칠하는 법·견본 목록·도달 검사·정상/오류 쌍),
   칸 사전(0기준 번호·라벨·통행·홈 층·지형 태그·오토타일 full 번호·물체), 물체 전체 배열, 견본마다 전체 배열 + 원본 해상도 그림(`public/assets/monster-kit/references/<테마>/`).
   오류 그림은 `kitlib.negative(f, code, 설명, 망가뜨리기, 시작, 목표)` — 엔진 도달 검사가 **실제로 잡은** 망가진 맵만 남는다. 견본 설명은 `kitlib.describe` 또는 레시피 `MAP_NOTES`.

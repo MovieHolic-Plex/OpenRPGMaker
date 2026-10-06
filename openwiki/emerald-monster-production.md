@@ -4,8 +4,17 @@ User intent is a reusable editor assistant capability, with Starlight Islands as
 the dogfood campaign. Read `docs/content/emerald-monster-production-contract.md`
 for the full acceptance matrix. Applying a skin alone is insufficient.
 
-`configureEmeraldMonsterTiles` adopts the seven `emerald_monster_*` native variants
-after world authoring, and in assistant campaign repair. It changes map tileset IDs
+**Tile tone (2026-10-06 user decision): new campaigns stay on the bright `monster_*`
+kit (tone A).** `createMonsterExpedition` and `build_monster_game` repair no longer call
+`configureEmeraldMonsterTiles`; projects already on `emerald_monster_*` (e.g. canonical
+Starlight) keep them. The two kits are separate tileset families — `oprn-monster` and
+`oprn-monster-emerald` (`tilesetFamily.ts`) — so the family gate never mixes them in one
+game, and neither mixes with beodeul (`oprn-atlas`). `applyGenrePreset("monster-collect")`
+moves an untouched blank start map onto `monster_overworld` so the first map fixes the family.
+The emerald *style* profile (UI, dialogue, opening, professor) is independent of tile tone.
+
+`configureEmeraldMonsterTiles` (manual adoption only, `scripts/content/adopt-emerald-monster.mjs`)
+adopts the seven `emerald_monster_*` native variants. It changes map tileset IDs
 without changing a single raster index, event, start position or session value.
 Each variant inherits the actual author's passability, priority, terrain, kits and
 groups; this matters because canonical Starlight priority differs from the shipped

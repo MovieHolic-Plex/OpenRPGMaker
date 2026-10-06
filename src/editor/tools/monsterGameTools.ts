@@ -3,7 +3,6 @@ import { ToolError } from './types';
 import { configureEmeraldMonsterStyle, EMERALD_MONSTER_AUTHORING_GUIDE } from '@/project/emeraldMonsterStyle';
 import { configureEmeraldMonsterOpening, configureEmeraldMonsterPortraitMotion } from '@/project/emeraldMonsterOpening';
 import { configureEmeraldMonsterCast } from '@/project/emeraldMonsterCast';
-import { configureEmeraldMonsterTiles } from '@/project/emeraldMonsterTiles';
 import { configureEmeraldMonsterCreatureArt } from '@/project/emeraldMonsterCreatureArt';
 import { configureMonsterPresentation } from '@/project/monsterPresentation';
 import { repairExpeditionNpcLayout } from '@/project/examples/monsterExpedition/npcLayout';
@@ -38,7 +37,6 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       const moved=p.system.monsterCampaign.id==='starlight-islands'?repairExpeditionNpcLayout(p):[];
       if(p.system.monsterCampaign.id==='starlight-islands'){repairExpeditionResidents(p);repairExpeditionShopPrices(p);}
       configureEmeraldMonsterCast(p);
-      configureEmeraldMonsterTiles(p);
       const updatedCreatureAssets = configureEmeraldMonsterCreatureArt(p, args.replaceCreatureArt === true).length;
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
       else if(p.meta.oprnOpeningBook?.portraitResourceId==='oprn_emerald_professor'&&!p.meta.oprnOpeningBook.portraitMotion)configureEmeraldMonsterPortraitMotion(p);

@@ -4,6 +4,8 @@ import { createMonsterKitTileset } from "./monsterKit";
 import type { TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
+export const EMERALD_MONSTER_KIT_FAMILY = "oprn-monster-emerald";
+
 export function isEmeraldMonsterKitTexture(textureKey: string): boolean {
   return !!emeraldMonsterKitSheet(textureKey);
 }
@@ -16,6 +18,8 @@ export function createEmeraldMonsterKitTileset(textureKey: string): TilesetDef {
   tileset.id = sheet.id;
   tileset.name = sheet.name;
   tileset.image = { type: "bundled", id: sheet.textureKey };
+  // 같은 칸 배치의 재채색이지만 그림 톤이 달라 한 게임에 섞으면 안 된다.
+  tileset.family = EMERALD_MONSTER_KIT_FAMILY;
   // Reference pointers hide local categories. Own complete inherited assembly docs
   // plus Emerald native examples instead of a pointer to another reference owner.
   delete tileset.referenceSourceTilesetId;

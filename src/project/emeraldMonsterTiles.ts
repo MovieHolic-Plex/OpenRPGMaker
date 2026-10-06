@@ -20,6 +20,7 @@ export function configureEmeraldMonsterTiles(project: Project): number {
       adopted.id = sheet.id;
       adopted.name = fresh.name;
       adopted.image = fresh.image;
+      adopted.family = fresh.family;
       const have = new Set((adopted.referenceDocuments ?? []).map(category => category.id));
       adopted.referenceDocuments = adopted.referenceDocuments?.length === 0 ? [] : [
         ...(adopted.referenceDocuments ?? []),

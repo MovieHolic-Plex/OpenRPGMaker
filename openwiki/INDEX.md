@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **161쪽 / 5372KB / 약 1,562,719 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **161쪽 / 5373KB / 약 1,562,946 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1179,12 +1179,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L97` Opening and victory
 - `L110` 2026-10-04 delivery evidence
 
-### `openwiki/emerald-monster-production.md` — 7KB · 105줄 · ~1,708 토큰
+### `openwiki/emerald-monster-production.md` — 7KB · 114줄 · ~1,890 토큰
 
-- `L38` Original title key art
-- `L53` Field cast
-- `L68` Existing authored animation compatibility
-- `L85` 2026-10-04 canonical adoption and publication
+- `L47` Original title key art
+- `L62` Field cast
+- `L77` Existing authored animation compatibility
+- `L94` 2026-10-04 canonical adoption and publication
 
 ### `openwiki/emerald-runtime-surfaces.md` — 10KB · 102줄 · ~2,456 토큰
 
@@ -1637,7 +1637,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L130` 실제 Pi 조수 제작 오프닝 · revision11 (2026-10-03)
 - `L159` Native creature refinement · 2026-10-04
 
-### `openwiki/monster-kit-origin.md` — 37KB · 259줄 · ~11,094 토큰
+### `openwiki/monster-kit-origin.md` — 37KB · 259줄 · ~11,139 토큰
 
 - `L6` 위치
 - `L17` 단계

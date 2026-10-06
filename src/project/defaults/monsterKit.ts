@@ -7,8 +7,8 @@ import { monsterKitSheet } from "@/assets/monsterKitAssets";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
-/** 몬스터 수집 시트는 코드로 찍은 생성 칩셋 계열이다(맵·칩셋 계열 검사가 다른 계열과 섞지 않게). */
-export const MONSTER_KIT_FAMILY = "oprn-atlas";
+/** 몬스터 수집 시트는 자기 계열이다 — 버들항 등 다른 생성 칩셋과도, 에메랄드풍 재채색과도 섞이지 않게(2026-10-06 연속성 결정). */
+export const MONSTER_KIT_FAMILY = "oprn-monster";
 
 type SheetData = {
   id: string; name: string; tileSize: number; tilesPerRow: number; count: number;

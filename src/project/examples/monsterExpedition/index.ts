@@ -11,7 +11,6 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { configureEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening";
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
-import { configureEmeraldMonsterTiles } from "@/project/emeraldMonsterTiles";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 export function createMonsterExpedition() {
@@ -52,7 +51,7 @@ export function createMonsterExpedition() {
   // The shared campaign and editor tool must produce the same coherent profile.
   // Apply after world creation so the intro names the actual starting place.
   configureEmeraldMonsterStyle(project);
-  configureEmeraldMonsterTiles(project);
+  // Tiles stay on the bright monster_* kit (tone A, 2026-10-06); emerald_monster_* is kept only for projects already on it.
   configureEmeraldMonsterCast(project);
   configureEmeraldMonsterOpening(project);
   // The canonical loader checks command IDs, tiles, assets and all DB references.

@@ -90,7 +90,14 @@ describe("genre pack registry contract", () => {
     for (const { project, receipt } of results) {
       expect(receipt.authoredContentSeeded).toBe(false);
       expect(receipt.appliedSystemGenre).toBe(project.system.genre);
-      expect(project.maps).toEqual(blank.maps);
+      // 몬스터 수집만 손대지 않은 빈 시작 맵을 몬스터 칩셋 풀밭으로 옮긴다(칩셋 계열을 첫 맵에서 정한다).
+      if (project.system.genre === "monster-collect") {
+        const start = project.maps.map_blank_start!;
+        expect(start.tilesetId).toBe("monster_overworld");
+        expect(start.lowerTiles.every((tile) => tile === 0)).toBe(true);
+        expect({ ...start, tilesetId: blank.maps.map_blank_start!.tilesetId, tileSize: blank.maps.map_blank_start!.tileSize, lowerTiles: blank.maps.map_blank_start!.lowerTiles })
+          .toEqual(blank.maps.map_blank_start);
+      } else expect(project.maps).toEqual(blank.maps);
       expect(project.database.crops).toEqual(blank.database.crops);
     }
   });
