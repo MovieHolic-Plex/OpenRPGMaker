@@ -139,10 +139,16 @@ for(const entry of cases){
     await page.screenshot({path:resolve(dir,'same-context-reloaded.png')});await page.waitForTimeout(3500);
     videoEnd=(Date.now()-videoOrigin)/1000;await context.close();context=null;
     editor=await newEditor(browser,host.url,projectDir,{});page=editor.page;context=editor.context;
-    const reloaded=stored(projectDir),loaded=editor.loads.find(l=>l.sha256===applied.sha256);
+    // 재로드 때 공용 자료(공용 DB 캐릭터 등)가 그사이 늘었으면 부팅 정규화가 한 번 더 저장한다 — 2026-10-06 r9·r10 실측: 다른 세션이
+    // shared_charset_actor 하나를 게시해 rev 가 하나 올랐고 맵·DB 는 같았다. 그 경우만 다시 저장된 문서를 기준으로 비교한다.
+    const reloaded=stored(projectDir);
+    const libraryResync=applied.sha256!==reloaded.sha256&&reloaded.revision===applied.revision+1
+      &&applied.project.meta?.bootNormalization?.lib!==reloaded.project.meta?.bootNormalization?.lib
+      &&isDeepStrictEqual(applied.project.maps,reloaded.project.maps)&&isDeepStrictEqual(applied.project.database,reloaded.project.database);
+    const loaded=editor.loads.find(l=>l.sha256===applied.sha256)??(libraryResync?editor.loads.find(l=>l.sha256===reloaded.sha256):undefined);
     if(resultMap)await showMap(page,resultMap);await page.screenshot({path:resolve(dir,'reloaded.png')});
     proof.persistence={projectId:before.projectId,afterRevision:applied.revision,reloadedRevision:reloaded.revision,afterSha256:applied.sha256,reloadedSha256:reloaded.sha256,
-      sameTarget:before.projectId===reloaded.projectId,sameStoredDocument:applied.sha256===reloaded.sha256,
+      sameTarget:before.projectId===reloaded.projectId,sameStoredDocument:applied.sha256===reloaded.sha256||libraryResync,libraryResync,
       newContextLoadedSameMaps:Boolean(loaded)&&isDeepStrictEqual(applied.project.maps,loaded.maps),newContextLoadedSameDatabase:Boolean(loaded)&&isDeepStrictEqual(applied.project.database,loaded.database)};
     proof.passed=proof.correctMode&&proof.existingMapsPreserved&&proof.startPreserved&&proof.persistence.sameStoredDocument&&proof.persistence.newContextLoadedSameMaps&&proof.persistence.newContextLoadedSameDatabase&&proof.events.some(e=>e.type==='done')&&!/마치지 못했/.test(proof.status?.lastStatus??'')&&!proof.events.some(e=>['error','stream_error'].includes(e.type))&&!proof.errors.length;
     writeRuntimeProject(projectDir,resolve(dir,'live.json'));

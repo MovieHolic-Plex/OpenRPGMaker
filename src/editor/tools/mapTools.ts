@@ -529,7 +529,7 @@ const paintTiles: ToolDefinition = {
     const autoNote = paintResult.autoTiles > 0 ? `클러스터 동반 ${paintResult.autoTiles}타일 자동 포함` : null;
     const warnings = [...(routedNote ? [routedNote] : []), ...(skippedNote ? [skippedNote] : []), ...(warning ? [warning] : [])];
     return {
-      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${paintLayerName(layerNo)}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
+      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${paintLayerName(layerNo)}, ${paintResult.touched.length}칸)${routedNote ? ` — ${layerNo === 1 ? "하위" : "상위"} 전용 칩 자동 라우팅` : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
       warnings: warnings.length > 0 ? warnings : undefined,
       // Snapshot the executed layer: later tile-rule edits must not reinterpret this receipt.
       data: Object.freeze({ effectiveLayer: toolLayerLabel(layerNo), autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length }),

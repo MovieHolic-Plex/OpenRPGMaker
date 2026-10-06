@@ -20,6 +20,21 @@ export function tilesetHasLayerClassification(tileset: TilesetDef): boolean {
     : tileset.priority.includes("upper");
 }
 
+const kitUpperOnlyCache = new WeakMap<TilesetDef, ReadonlySet<number>>();
+/** 이 타일셋의 구조 키트가 upperTiles 로만 쓰고 tiles(1층)로는 한 번도 쓰지 않는 칸. */
+function bundledKitUpperOnlyTiles(tileset: TilesetDef): ReadonlySet<number> {
+  let set = kitUpperOnlyCache.get(tileset);
+  if (set) return set;
+  const upper = new Set<number>(), lower = new Set<number>();
+  for (const kit of tileset.structureKits ?? []) for (const row of kit.rows ?? []) {
+    for (const tile of row.tiles ?? []) if (tile >= 0) lower.add(tile);
+    for (const tile of row.upperTiles ?? []) if (tile >= 0) upper.add(tile);
+  }
+  set = new Set([...upper].filter((tile) => !lower.has(tile)));
+  kitUpperOnlyCache.set(tileset, set);
+  return set;
+}
+
 export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome {
   // 공백은 어느 레이어 붓이든 그 레이어에 쓴다. priority[-1] 폴백이 lower 로
   // 떨어지면 덧그림 지우개가 바닥을 비운다.
@@ -34,6 +49,9 @@ export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome 
     // 바닥 없이 검은 칸이 됐다(2026-10-06 실제 편집기 이어 고치기).
     const meta = tileset.tileMeta?.[tile];
     if (meta?.layerBacking !== undefined && (meta.defaultLayer === "upper" || meta.defaultLayer === "lower")) return meta.defaultLayer;
+    // 번들 키트가 덧그림(upperTiles)으로만 쓰는 칸(침엽수 spine_a·눈사람 등)도 priority 는 lower 다 — 1층에 칠하면 투명 부분이 검게 뚫렸다
+    // (2026-10-06 r10b). 번들 칸에 한해 그 타일셋 자신의 키트가 쓰는 층을 따른다.
+    if (meta?.source === "bundled-default" && bundledKitUpperOnlyTiles(tileset).has(tile)) return "upper";
     if (!tilesetHasLayerClassification(tileset)) return "both";
     return tileset.priority[tile] ?? "lower";
   }
