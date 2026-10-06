@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:33:54.568455+00:00",
+  "passed": false,
+  "key": "golden-bell-monk/fifty-v1",
+  "binding": "2dd475a000045033606614b4ccf8f687fee4ee959d1dac3bcd2a79c8349cea6b",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-golden-bell-monk-before-initial-review.png",
+  "nativeContactPngSha256": "939efd6a7a42fb96c5fa01bcfe32fff798140d3cd2de11eefa6dc603cbaeef50",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "151b9ce5bc40b4ec4b642efb20e898865588d8ca69e3bec6842b32d5ea276ad0"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized. Baldadult/quietsmallright3/4face/broadwarmgraybrown robe/redchestbeads/attachedbronzehandbell/smallstrawsandals. Bellarmdrawnback/crouchedforwardstep/extendedbellstrike/retract, backwardhead/shoulderhit andlowfoldedhorizontaldead distinct fromseatedclosedeyesleep. Goldenbellmouthcore/two layeredgoldripple paths andthree residualfragments. Poisonhandthroat+sickshoulder greenparticles, droopedstunwithgoldstars andfoldedsleepsame groundedfeet/bell. Pairedstatechanges restrained, independentresultpending. Read full write_grids body/allcallnames/moduleflow: blank64canvas plusper-pose explicit start_y/x/literalrows, validation andfullgridwritingonly. No generatedgeometry/wholeframe transform. Render calls onlynativePNG/GIF/diagnosticpacking andreadback. All18nativePNG RGBA exactlymatch ASCII/palette. NoAllow/pass claim."
+}

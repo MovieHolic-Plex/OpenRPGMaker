@@ -428,3 +428,14 @@ keep 요약 관찰은 유지한다. 실전 접촉·피해·타이밍 완료를 �
 근거:thirty-one-passed-proof.json,root-review-blue-robe-spear-master.json,
 native-contact-blue-robe-spear-master.*,browser-proof-blue-robe-spear-master.json,
 progress-skill_b-blue-robe-spear-master.*,지속 출처31종. 전체50 완료/게임 설치를 주장하지 않는다.
+
+## 금종승 초기 원본·검수 · 통과 수31/50 유지
+
+감독이 금종승 실제18자세 native1배/최근접2배864×696 시트를 직접 열고 author_rows.write_grids
+전체 쓰기 본문·호출·모듈 흐름과 render의 PNG/GIF/실제 디코딩 본문을 읽었다. 직접 지정
+start_y/x/ASCII 행이며18PNG는 실제 팔레트/격자와 같다. 실제 최초 독립 rework는 전진과
+닮은 종 타격의 별도 접촉 각도 및 들린 쓰러짐 머리/긴 목을 지적했다. 초기 시트와 실제 job/result,
+감독 draft(false)를 보존한다. 붙은 손/종과 같은 바닥선을 유지한 채 강한 종 타격 끝과 쉬듯
+낮아진 머리/목의 실제 군집을 별도 교정 중이며 합격 수에 넣지 않는다. 전체50 목표는 같다.
+근거:root-draft-review-golden-bell-monk.json,draft-native-contact-golden-bell-monk-before-initial-review.*,
+draft-independent-rework-golden-bell-monk-initial.json.
