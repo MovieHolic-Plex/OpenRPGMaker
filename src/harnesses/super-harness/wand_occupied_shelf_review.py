@@ -214,12 +214,22 @@ def run(out):
     if record['status']!='done' or not record['ok']:raise ValueError('Native review did not finish')
     verdict=json.loads(record['review'])
     if verdict.get('candidateSha256')!=vacancy.SHELF_SHA:raise ValueError('Verdict not bound to original source')
-    vacancy.save(out/'receipt.json',dict(status='reviewed-not-selected',item=ITEM,originalCandidate='h2-A',
+    pack=Path(record['brief'])/'review'/'A-a1'
+    if record['phase']=='review2':
+        second=pack.with_name('A-a1-2')
+        first=json.loads((pack/'verdict.json').read_text())
+        if first.get('verdict')!='PASS' or first.get('candidateSha256')!=vacancy.SHELF_SHA:
+            raise ValueError('First required native verdict invalid')
+        verdict_files=[dict(phase='review',file=str(pack/'verdict.json'),sha256=vacancy.sha(pack/'verdict.json')),
+                       dict(phase='review2',file=str(second/'verdict.json'),sha256=vacancy.sha(second/'verdict.json'))]
+    else:
+        verdict_files=[dict(phase='review',file=str(pack/'verdict.json'),sha256=vacancy.sha(pack/'verdict.json'))]
+    vacancy.save(out/'receipt.json',dict(requiredNativeVerdicts=verdict_files,status='reviewed-not-selected',item=ITEM,originalCandidate='h2-A',
         originalSourceSha256=vacancy.SHELF_SHA,candidate=str(candidate),candidateSha256=vacancy.sha(candidate),
         verdict=verdict,initialVerdictFile=str(out/'initial-READ-verdict.json'),
         initialVerdictSha256=vacancy.sha(out/'initial-READ-verdict.json'),
-        verdictFile=str(Path(record['brief'])/'review/A-a1/verdict.json'),
-        verdictSha256=vacancy.sha(Path(record['brief'])/'review/A-a1/verdict.json'),
+        verdictFile=verdict_files[-1]['file'],
+        verdictSha256=verdict_files[-1]['sha256'],
         contextEvidenceFile=str(out/'context-evidence.json'),contextEvidenceSha256=vacancy.sha(out/'context-evidence.json'),
         inputManifestSha256=vacancy.sha(out/'input-manifest.json'),fullRoomApproved=False,runtimePassed=False,
         publicRegistered=False,canonicalReload=False,selection=None))
