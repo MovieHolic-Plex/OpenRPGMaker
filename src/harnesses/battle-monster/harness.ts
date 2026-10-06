@@ -13,6 +13,8 @@ export const BATTLE_MONSTER_HARNESS = defineHarness({
   doc: "openwiki/harnesses/battle-monster.md",
   stages: [
     { id: "wave", title: "AI 병렬 제작", summary: "격리된 후보에서 GPT high가 기본·스킬·상태이상을 저작하고 독립 검수 후 완성 후보만 게시한다." },
+    { id: "accept-batch", title: "위임된 일괄 Allow", summary: "사용자의 명시적 일괄 통과 지시와 종 목록이 있을 때 현재 픽셀 검사·독립 keep를 확인해 대시보드 API로 Allow한다. 이후 사용자 Deny/Modify는 보존한다." },
+    { id: "audit-batch", title: "전체 배치 재읽기", summary: "계획의 모든 종을 실제 원본·현재 독립 keep·단계별 Allow·native PNG/GIF 픽셀/시간·선택 ZIP 재읽기로 확인한다. 하나라도 부족하면 전체 실패다." },
     { id: "serve", title: "결과 선택 대시보드", summary: "사용자는 그림과 움직임을 보고 Allow/Modify/Deny만 선택한다. 선택 저장·AI 수정·검수·선택 팩은 서버에서 이어진다." },
     { id: "pilot", title: "시범 후보", summary: "기존 조선 5종의 직접 찍은 원본을 승인되지 않은 후보로 가져온다." },
     { id: "init", title: "제작 지시", summary: "종·크기·실루엣·팔레트·동작 계약을 새 후보 작업 폴더에 고정한다." },

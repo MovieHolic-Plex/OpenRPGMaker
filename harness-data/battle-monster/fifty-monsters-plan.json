@@ -1,0 +1,323 @@
+{
+  "version": 1,
+  "objective": "그래 한 50개 만들고 전부 통과시켜",
+  "count": 50,
+  "interpretation": "50 new distinct species, all18 literal poses/8GIFs, real technical PASS and current independent visual keep, then Allow under explicit user delegation. Existing choices remain preserved.",
+  "candidate": "fifty-v1",
+  "authorModel": "gpt-6.1-sol",
+  "reviewerModel": "gpt-6.1-sol",
+  "effort": "high",
+  "pilot": [
+    "golden-antler-deer",
+    "bronze-bell-wraith",
+    "sun-gold-phoenix"
+  ],
+  "roster": [
+    {
+      "id": "golden-antler-deer",
+      "name": "금각사슴",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "jade-mantis",
+      "name": "옥날사마귀",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "iron-beak-crane",
+      "name": "철취학",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "mist-tail-lynx",
+      "name": "안개삵",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "red-jawed-wolf",
+      "name": "붉은턱늑대",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "moss-back-badger",
+      "name": "이끼등오소리",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "snow-wing-owl",
+      "name": "설익부엉이",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "fire-scale-viper",
+      "name": "화린독사",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "stone-shell-tortoise",
+      "name": "바위등거북",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "reed-blade-weasel",
+      "name": "갈잎족제비",
+      "cell": 64,
+      "category": "beast"
+    },
+    {
+      "id": "lantern-goblin",
+      "name": "초롱도깨비",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "bronze-bell-wraith",
+      "name": "청동종귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "silk-loom-specter",
+      "name": "비단직조귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "lotus-marsh-wraith",
+      "name": "연못수귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "ink-brush-oni",
+      "name": "먹붓귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "moon-disk-spirit",
+      "name": "월륜정령",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "plum-blossom-spirit",
+      "name": "매화정",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "jade-lantern-serpent",
+      "name": "옥등사",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "ember-mask-goblin",
+      "name": "잿불탈귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "frost-ribbon-maiden",
+      "name": "서리영녀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "storm-kite-spirit",
+      "name": "풍뢰연귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "thorn-crown-demon",
+      "name": "가시관마귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "red-pine-guardian",
+      "name": "적송목령",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "dusk-paper-falcon",
+      "name": "황혼부적매",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "soul-drum-dokkaebi",
+      "name": "혼고도깨비",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "golden-grain-spirit",
+      "name": "황금이삭귀",
+      "cell": 96,
+      "category": "yokai"
+    },
+    {
+      "id": "red-tassel-swordswoman",
+      "name": "홍영검희",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "blue-robe-spear-master",
+      "name": "청포창객",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "jade-flute-martial-artist",
+      "name": "옥적무인",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "black-lotus-assassin",
+      "name": "흑련자객",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "silk-fan-sorceress",
+      "name": "비단선술사",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "golden-bell-monk",
+      "name": "금종승",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "white-hair-saber-master",
+      "name": "백발도객",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "crimson-bow-huntress",
+      "name": "적궁궁녀",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "mountain-herbalist-fighter",
+      "name": "산야약객",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "spirit-lantern-medium",
+      "name": "혼등무녀",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "iron-gauntlet-brawler",
+      "name": "철권무인",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "silver-sword-matron",
+      "name": "은검여협",
+      "cell": 64,
+      "category": "human"
+    },
+    {
+      "id": "sun-gold-phoenix",
+      "name": "일금봉황",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "abyss-jade-turtle",
+      "name": "심연현무",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "storm-horn-kirin",
+      "name": "뇌각기린",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "moon-frost-dragon",
+      "name": "월상빙룡",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "red-armor-gatekeeper",
+      "name": "적갑문지기",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "thousand-year-pine-king",
+      "name": "천년송왕",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "abyss-nine-eye-spider",
+      "name": "심연구목거미",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "bronze-cauldron-demon",
+      "name": "청동정마",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "snow-mane-lion",
+      "name": "설갈사자왕",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "jade-armor-scorpion",
+      "name": "옥갑전갈왕",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "sea-pearl-serpent",
+      "name": "해주영사",
+      "cell": 128,
+      "category": "boss"
+    },
+    {
+      "id": "golden-feather-garuda",
+      "name": "금익대붕",
+      "cell": 128,
+      "category": "boss"
+    }
+  ],
+  "authorization": {
+    "source": "current-thread-user-goal",
+    "originalUserText": "그래 한 50개 만들고 전부 통과시켜",
+    "covers": "only these50 new species; allows defect repairs and delegated Allow after actual checks; later user Modify/Deny overrides",
+    "humanMouseClickClaim": false
+  }
+}

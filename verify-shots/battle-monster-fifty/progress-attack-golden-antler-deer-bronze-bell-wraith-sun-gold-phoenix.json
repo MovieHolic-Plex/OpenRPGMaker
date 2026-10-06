@@ -1,0 +1,29 @@
+[
+  {
+    "monster": "golden-antler-deer",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/golden-antler-deer/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "d0f23a1fd03c22b009adf018e6417e25fe89084a1ee4985dc92a19b048298393",
+    "cell": 64,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "bronze-bell-wraith",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/bronze-bell-wraith/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "0f9d2751c36bc9a36f28c4773fa69047092965c6ab0d0b7d7a431e92606c83aa",
+    "cell": 96,
+    "pose": "attack",
+    "writtenGridCount": 9,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/sun-gold-phoenix/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "be6353e2d4076e70bac2668a890411e1b1a6c4eea70132f91b28cd465a9b25cf",
+    "cell": 128,
+    "pose": "attack",
+    "writtenGridCount": 11,
+    "completedOrApprovedClaim": false
+  }
+]

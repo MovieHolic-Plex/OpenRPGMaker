@@ -1,0 +1,480 @@
+{
+  "goal": "그래 한 50개 만들고 전부 통과시켜",
+  "expectedSpecies": 50,
+  "completedOrPassedSpecies": 0,
+  "allSpeciesComplete": false,
+  "firstPilotSpecies": [
+    "golden-antler-deer",
+    "bronze-bell-wraith",
+    "sun-gold-phoenix"
+  ],
+  "queuedRemaining": 47,
+  "baselineDecisionRows": 52,
+  "baselineLedgerUnchanged": true,
+  "actualInitialAudit": {
+    "at": "2026-10-06T03:51:24.704955+00:00",
+    "expectedSpecies": 50,
+    "passedSpecies": 0,
+    "posesVerified": 0,
+    "motionGifsVerified": 0,
+    "duplicateIdleImages": false,
+    "passed": false,
+    "items": [
+      {
+        "key": "golden-antler-deer/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-mantis/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "iron-beak-crane/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "mist-tail-lynx/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-jawed-wolf/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moss-back-badger/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "snow-wing-owl/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "fire-scale-viper/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "stone-shell-tortoise/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "reed-blade-weasel/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "lantern-goblin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "bronze-bell-wraith/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "silk-loom-specter/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "lotus-marsh-wraith/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "ink-brush-oni/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moon-disk-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "plum-blossom-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-lantern-serpent/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "ember-mask-goblin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "frost-ribbon-maiden/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "storm-kite-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "thorn-crown-demon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-pine-guardian/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "dusk-paper-falcon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "soul-drum-dokkaebi/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-grain-spirit/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-tassel-swordswoman/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "blue-robe-spear-master/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-flute-martial-artist/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "black-lotus-assassin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "silk-fan-sorceress/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-bell-monk/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "white-hair-saber-master/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "crimson-bow-huntress/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "mountain-herbalist-fighter/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "spirit-lantern-medium/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "iron-gauntlet-brawler/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "silver-sword-matron/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "sun-gold-phoenix/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "abyss-jade-turtle/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "storm-horn-kirin/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "moon-frost-dragon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "red-armor-gatekeeper/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "thousand-year-pine-king/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "abyss-nine-eye-spider/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "bronze-cauldron-demon/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "snow-mane-lion/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "jade-armor-scorpion/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "sea-pearl-serpent/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      },
+      {
+        "key": "golden-feather-garuda/fifty-v1",
+        "passed": false,
+        "error": "Not yet published."
+      }
+    ]
+  },
+  "firstDelegatedAcceptanceRead": {
+    "at": "2026-10-06T03:45:28.384581+00:00",
+    "records": [
+      {
+        "key": "golden-antler-deer/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "jade-mantis/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "iron-beak-crane/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "mist-tail-lynx/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "red-jawed-wolf/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "moss-back-badger/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "snow-wing-owl/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "fire-scale-viper/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "stone-shell-tortoise/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "reed-blade-weasel/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "lantern-goblin/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "bronze-bell-wraith/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "silk-loom-specter/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "lotus-marsh-wraith/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "ink-brush-oni/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "moon-disk-spirit/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "plum-blossom-spirit/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "jade-lantern-serpent/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "ember-mask-goblin/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "frost-ribbon-maiden/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "storm-kite-spirit/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "thorn-crown-demon/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "red-pine-guardian/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "dusk-paper-falcon/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "soul-drum-dokkaebi/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "golden-grain-spirit/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "red-tassel-swordswoman/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "blue-robe-spear-master/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "jade-flute-martial-artist/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "black-lotus-assassin/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "silk-fan-sorceress/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "golden-bell-monk/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "white-hair-saber-master/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "crimson-bow-huntress/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "mountain-herbalist-fighter/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "spirit-lantern-medium/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "iron-gauntlet-brawler/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "silver-sword-matron/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "sun-gold-phoenix/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "abyss-jade-turtle/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "storm-horn-kirin/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "moon-frost-dragon/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "red-armor-gatekeeper/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "thousand-year-pine-king/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "abyss-nine-eye-spider/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "bronze-cauldron-demon/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "snow-mane-lion/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "jade-armor-scorpion/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "sea-pearl-serpent/fifty-v1",
+        "state": "not-ready"
+      },
+      {
+        "key": "golden-feather-garuda/fifty-v1",
+        "state": "not-ready"
+      }
+    ]
+  }
+}

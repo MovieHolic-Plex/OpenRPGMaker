@@ -160,7 +160,7 @@ class Dashboard:
                     continue
             making = 0
             if self.root == (REPO / 'qa-runs/harnesses/battle-monster').resolve():
-                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave', 'battle-monster-baram-quality-wave', 'battle-monster-ornate-boss-wave'):
+                for wave in ('battle-monster-human-wave', 'battle-monster-extra-motion-wave', 'battle-monster-reference-wave', 'battle-monster-silhouette-wave', 'battle-monster-baram-quality-wave', 'battle-monster-ornate-boss-wave', 'battle-monster-fifty-wave'):
                     for task in (REPO / 'qa-runs' / wave / 'tasks').glob('*.json'):
                         making += load(task)['state'] in ('queued', 'running')
             selected = {}
@@ -203,8 +203,9 @@ class Dashboard:
                 if (job['id'], phase) not in existing:
                     ledger['decisions'].append({'candidate': job['key'], 'phase': phase,
                         'choice': {'allow': 'keep', 'modify': 'rework', 'deny': 'discard'}[job['action']],
-                        'binding': binding, 'by': 'dashboard-user', 'note': job['note'] or job['action'],
-                        'at': job['createdAt'], 'requestId': job['id']})
+                        'binding': binding, 'by': job.get('by', 'dashboard-user'), 'note': job['note'] or job['action'],
+                        'at': job['createdAt'], 'requestId': job['id'],
+                        **({'delegatedGoal': job['delegatedGoal']} if job.get('delegatedGoal') else {})})
             save(self.harness.ledger_path, ledger)
 
     def decide(self, payload):
@@ -231,12 +232,35 @@ class Dashboard:
                 raise ChoiceError('새 결과나 선택이 있습니다. 갱신된 그림을 보고 다시 선택해 주세요.')
             if action == 'allow' and not snapshot['ready']:
                 raise ChoiceError('AI가 결과를 준비 중입니다. 잠시 후 다시 확인해 주세요.')
+            delegated = payload.get('delegatedGoal')
+            if delegated is not None:
+                plan_path = REPO / 'harness-data/battle-monster/fifty-monsters-plan.json'
+                plan = load(plan_path)
+                expected = {'planSha256': sha(plan_path.read_bytes()),
+                            'originalUserText': plan['authorization']['originalUserText']}
+                permitted = {r['id'] + '/' + plan['candidate'] for r in plan['roster']}
+                if (self.root != (REPO / 'qa-runs/harnesses/battle-monster').resolve()
+                        or delegated != expected or plan['authorization']['source'] != 'current-thread-user-goal'
+                        or snapshot['key'] not in permitted or action != 'allow' or snapshot['phase'] != 'suite'
+                        or expected['originalUserText'] not in note):
+                    raise ChoiceError('현재 사용자가 위임한 제작 목록과 원문을 확인해 주세요.')
+                if snapshot['choice'] in ('deny', 'modify'):
+                    raise ChoiceError('사용자가 나중에 선택한 Deny/Modify를 유지합니다.')
+                report = load(directory / 'check-suite.json')
+                review = self.harness.current_critique(directory, 'suite', report)
+                if (not report['pass'] or report['binding'] != snapshot['bindings']['suite']
+                        or not review or review['recommendation'] != 'keep'
+                        or any(sha((directory / name).read_bytes()) != digest
+                               for name, digest in report['images'].items())):
+                    raise ChoiceError('현재 원본의 픽셀 검사와 실제 독립 시각 keep가 먼저 필요합니다.')
             jobs = self.jobs()
             for phase, binding in snapshot['bindings'].items():
                 if self.harness.pixels(directory, phase)[2]['binding'] != binding:
                     raise ChoiceError('그림이 변경되었습니다. 갱신된 결과를 보고 선택해 주세요.')
             job = {'id': request_id, 'key': snapshot['key'], 'action': action, 'note': note.strip(),
                    'bindings': snapshot['bindings'], 'phase': snapshot['phase'], 'createdAt': stamp(), 'state': 'recording'}
+            if delegated is not None:
+                job.update(by='user-delegated-goal', delegatedGoal=delegated)
             if action == 'modify' or (action == 'allow' and snapshot['phase'] == 'idle'):
                 job['target'] = directory.parent.name + '/rev-' + request_id.replace('-', '')[:16]
             save(path, job)

@@ -177,6 +177,47 @@ Allow/Modify/Deny를 AI가 만들거나 기존 인간형 선택에서 이관하�
 
 ## 새 후보 저작
 
+### 사용자가 명시한 일괄 통과 (2026-10-06)
+
+사용자 목표 「그래 한 50개 만들고 전부 통과시켜」의 신규50종은
+`harness-data/battle-monster/fifty-monsters-plan.json`과 `FIFTY-MONSTERS-DIRECTION.md`에 고정한다.
+짐승10·요괴16·인간형12·대형 보스12이며 기존23종/판정은 보존한다.
+원본64/96/128, 각18자세·8GIF로 전체900자세·400GIF를 목표로 한다.
+
+기본 `wave`의 미감 재작업 금지는 그대로다. 이번처럼 사용자가 모든 결과의 통과를 명시했을 때만
+`--visual-repairs 4 --visual-repair-authorization <사용자 원문 파일>`을 쓴다.
+실제 현재 독립 검수의 rework 좌표를 작가에게 전달하며 원본/검수 PNG/결과/교정 지시를
+`visual-repairs/<회차>/`에 보존한다. 실제 새 원본으로 별도 검수를 받아 keep일 때만 게시한다.
+원본이 그대로이거나, 검수가 stale이거나, 교정 제한을 넘으면 실패로 남긴다.
+판정 파일을 바꾸거나 검수 결과를 keep로 해석해서 통과시키지 않는다.
+금각사슴·청동종귀·일금봉황의 실제 원본을 먼저 보고 나머지47종으로 이어간다.
+
+`accept-batch`는 일반 화면의 자동 선택 기능이 아니다. 현재 사용자 목표의 명시적 위임과
+종 목록/원문 파일을 받고, 현재 원본의 픽셀 PASS/실제 시각 keep/대시보드 binding을 읽기 전용으로
+확인한 뒤 표준 `/api/decision`에 Allow를 요청한다. notes에 사용자 원문과 위임을 남긴다.
+서버도 고정된 현재50종 계획/원문/계획 해시와 현재 실제 keep를 검증한다.
+요청과 ledger의 `by: user-delegated-goal`/`delegatedGoal`로 직접 클릭과 위임을 구별한다.
+실제 사용자가 마우스로50번 눌렀다고 주장하지 않는다. 기존 다른 종이나 이후 사용자
+Deny/Modify는 변경하지 않는다. UUID는 plan/key/binding으로 고정해 재시도 시 중복 판정을 막는다.
+대시보드가 기존 요청 journal/ledger를 저장하고 선택 팩을 만든다.
+
+```bash
+npm run harness -- battle-monster accept-batch \
+  --plan harness-data/battle-monster/fifty-monsters-plan.json \
+  --authorization qa-runs/battle-monster-fifty-wave/authorization.txt \
+  --out qa-runs/battle-monster-fifty-wave/delegated-allow.json
+```
+
+실제 제작 수에는 `battle-monster-fifty-wave/tasks`를 포함한다. 원본/독립 검수/현재 선택/팩 재읽기로
+전체50종을 확인하기 전까지 목표 완료로 보고하지 않는다.
+
+`audit-batch --plan <계획 JSON> --out <근거 JSON>`은 게시된 각 종의18격자를 읽고 현재 실제 keep,
+3단계의 현재 Allow, native 3×6 PNG 각 칸,8GIF의 프레임 픽셀/노출 시간, 현재 요청이 만든
+선택 ZIP과 포함된 PNG/GIF를 다시 읽는다. 소스/검수/ledger를 쓰거나 모델을 호출하지 않는다.
+정확한 계획 수만큼 모두 통과하고 idle 이미지 중복이 없을 때만 exit0/`passed:true`다.
+미게시/미선택/검수 불일치/팩 작업 중이면 그 종의 부족한 근거를 기록하고 전체 exit1이다.
+이 확인이 직접 저작/미감/실전 전투를 대신하지는 않는다. 실제 그림과 저작 코드는 감독이 별도로 본다.
+
 시드 `harness-data/battle-monster/seed.json`은 사람이 쓴다. 다른 분위기는 같은 형식의
 `--seed /absolute/seed.json`을 쓴다. 종 ID/resourceId, cell(64/96/128), grounded, motion,
 idleFrameMs, 실루엣, 공격 자세, 스킬 역할을 적는다. motion은 `pixelEnemySheets.ts`의 7종이다.

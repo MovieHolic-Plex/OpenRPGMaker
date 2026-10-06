@@ -18,8 +18,11 @@ def produce(args, monster):
     final = args.publish / monster / args.candidate
     if final.exists():
         report = harness.bake(final, 'suite')
-        if not report['pass'] or not harness.current_critique(final, 'suite', report):
+        review = harness.current_critique(final, 'suite', report)
+        if not report['pass'] or not review:
             raise ValueError('Existing published result is not this complete reviewed candidate.')
+        if args.visual_repairs and review['recommendation'] != 'keep':
+            raise ValueError('Published result lacks visual keep; preserve it and use a new repair candidate.')
         state.update(state='done', finishedAt=state.get('finishedAt', stamp()), candidate=monster + '/' + args.candidate)
         save(task, state)
         return state
@@ -76,6 +79,48 @@ def produce(args, monster):
                 raise ValueError('; '.join(report['errors']))
             if not harness.current_critique(directory, 'suite', report):
                 harness.work(directory, 'critique', 'suite')
+            review = harness.current_critique(directory, 'suite', report)
+            if args.visual_repairs:
+                while review['recommendation'] != 'keep':
+                    count = state.get('visualRepairCount', 0)
+                    if count >= args.visual_repairs:
+                        raise ValueError('Visual repair limit reached; result remains unpublished, not passed.')
+                    archive = directory / 'visual-repairs' / f'{count + 1:03d}'
+                    if archive.exists():
+                        raise ValueError('Interrupted visual repair archive exists; inspect the live job before resuming.')
+                    shutil.copytree(directory / 'source', archive / 'source')
+                    shutil.copytree(directory / 'preview/suite', archive / 'review-images')
+                    save(archive / 'critique-suite.json', review)
+                    save(archive / 'repair-direction.json', {
+                        'authorization': args.visual_repair_authorization.read_text(encoding='utf-8'),
+                        'priorBinding': report['binding'], 'priorReviewJob': review['jobId'],
+                        'issues': review['issues'], 'startedAt': stamp(),
+                    })
+                    state.update(visualRepairCount=count + 1, step='visual-repair',
+                                 priorReviewJob=review['jobId'], priorBinding=report['binding'])
+                    save(task, state)
+                    shutil.copyfile(directory / 'preview/suite/checker.png', directory / 'reference.png')
+                    harness.args.note = (getattr(args, 'note', '')
+                        + '\nUser explicitly requested all batch results pass inspection. Repair this existing draft; '
+                          'do not invent approval or edit reviewer results. Preserve good poses, identity and palette. '
+                          'Inspect the attached current sheet and directly fix the following specific native-pixel issues: '
+                        + str(review['issues'])
+                        + '\nReviewer observations: ' + review['summary'])
+                    repaired = harness.work(directory, 'author', 'complete')
+                    if not repaired['pass']:
+                        raise ValueError('Visual correction failed pixel contract: ' + '; '.join(repaired['errors']))
+                    if repaired['binding'] == report['binding']:
+                        raise ValueError('Visual correction did not change the reviewed source.')
+                    report = repaired
+                    state.update(step='independent-review', binding=report['binding'])
+                    save(task, state)
+                    harness.work(directory, 'critique', 'suite')
+                    review = harness.current_critique(directory, 'suite', report)
+                    if not review:
+                        raise ValueError('Independent review is missing or stale.')
+                state.update(visualRecommendation='keep', visualReviewJob=review['jobId'],
+                             binding=report['binding'])
+                save(task, state)
             brief, frames, _ = harness.pixels(directory, 'suite')
             bake_motions(directory, brief, frames)
             if final.exists():
@@ -99,11 +144,20 @@ def main():
     parser.add_argument('--candidate', default='motions-v1')
     parser.add_argument('--workers', type=int, default=3, choices=(1,2,3))
     parser.add_argument('--actions', action='store_true')
+    parser.add_argument('--visual-repairs', type=int, default=0, choices=range(0, 9),
+                        help='Explicitly authorized coordinate repairs; require real visual keep before publishing.')
+    parser.add_argument('--visual-repair-authorization', type=Path,
+                        help='UTF-8 original user instruction authorizing batch inspection and repairs.')
     notes = parser.add_mutually_exclusive_group()
     notes.add_argument('--note', default='', help='Shared art direction for every candidate.')
     notes.add_argument('--note-file', type=Path, help='UTF-8 shared art direction; retained during technical repairs.')
     parser.add_argument('monsters', nargs='+')
     args = parser.parse_args()
+    if args.visual_repairs:
+        if args.actions or not args.visual_repair_authorization:
+            parser.error('Visual repairs require a new complete candidate and explicit user authorization file.')
+        if not args.visual_repair_authorization.read_text(encoding='utf-8').strip():
+            parser.error('Visual repair authorization must contain the actual user instruction.')
     if args.note_file:
         args.note = args.note_file.read_text(encoding='utf-8')
     args.work = args.work.resolve(); args.publish = args.publish.resolve()

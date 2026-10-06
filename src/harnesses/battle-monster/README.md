@@ -34,3 +34,12 @@ AI는 `wave`에서 격리된 18자세 후보를 만들고 독립 검수 후 게�
 
 `wave --note '아트 방향'` / `wave --note-file <UTF-8 파일>`로 같은 웨이브의 공통
 외형/복식 지시를 전달한다. 두 옵션은 배타적이며 기술 오류 재수정에도 공통 지시를 유지한다.
+
+사용자가 모든 결과의 통과를 명시한 batch만 `wave --visual-repairs N
+--visual-repair-authorization <사용자 원문 파일>`로 지적 좌표를 직접 교정하고 새 독립 keep 후 게시한다.
+이전 원본·실제 rework/검수 PNG를 남기고 제한에 닿으면 실패로 남긴다. 기본 wave는 동일하다.
+`accept-batch --plan <종 목록/사용자 목표 JSON> --authorization <원문> --out <근거 JSON>`은
+현재 픽셀 PASS/실제 keep가 있는 계획 내 후보만 대시보드 API로 위임된 Allow를 반영한다.
+실제 사용자의 이후 Deny/Modify와 다른 종은 보존하고, notes에 원문/위임을 남긴다.
+`audit-batch --plan <계획> --out <근거>`는 전체 종의 현재 원본·실제 keep·단계별 Allow·native
+PNG/GIF 픽셀/시간·선택 ZIP을 읽기 전용으로 확인하며 하나라도 부족하면 전체 실패를 반환한다.
