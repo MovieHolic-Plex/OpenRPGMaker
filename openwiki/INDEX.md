@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **147쪽 / 5125KB / 약 1,494,002 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **147쪽 / 5126KB / 약 1,494,380 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/beodeul-city.md` | 51KB | 5KB | 370 | ~15,285 |
+| `openwiki/beodeul-city.md` | 52KB | 5KB | 375 | ~15,663 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,067 |
 | `openwiki/editor-ai-panel.md` | 636KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4052 | ~186,195 |
 | `openwiki/editor-ai-tools.md` | 343KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 2805 | ~99,293 |
@@ -61,7 +61,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/ai-workflow.md` | 5 | `20260709000000_ai_activity_logs.sql`, `src/ai/plannerSkip.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/atlas-biome-interior.md` | 3 | `.loop.json`, `.loop.png`, `interior-merged-palette.html` |
 | `openwiki/battle-impact-contact.md` | 1 | `verify-shots/battle-impact/README.md` |
-| `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
+| `openwiki/beodeul-city.md` | 2 | `bundle-assistant-skills.mjs`, `routePropPolicy.ts` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
 | `openwiki/charset-actor-harness.md` | 42 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `delivery-readback.json`, `delivery.json`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `novelty-transfers.json`, `novelty.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
@@ -308,37 +308,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 51KB · 370줄 · ~15,285 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 52KB · 375줄 · ~15,663 토큰 · 통째읽기 잘림
 
 - `L8` 기본 타일셋 (2026-09-30)
-  - `L24` 빠른 집·도로 도구 (2026-10-03)
-  - `L39` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L65` 무엇이 어디에 있나
-- `L85` 칸 자르기 규칙
-- `L97` 정본 저장·재로드 (2026-09-28)
-- `L105` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L116` 결과 (2026-09-28, 두 번)
-- `L136` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L140` 무엇을 더했나
-  - `L153` 예시 배치 둘과 배치 자
-  - `L164` 참고문서 (v7)
-  - `L170` 정본 (v7)
-  - `L174` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L196` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L201` 무엇을 더했나
-  - `L217` 배우며 찾은 것
-  - `L225` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L245` 정본 (v8)
-- `L249` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L267` 남은 것
-- `L278` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L289` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L302` 칸·키트
-  - `L325` 기존 프로젝트
-  - `L331` 참고문서 (조수)
-  - `L338` 화면 증거
-  - `L342` 남은 것
-- `L347` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L29` 빠른 집·도로 도구 (2026-10-03)
+  - `L44` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L70` 무엇이 어디에 있나
+- `L90` 칸 자르기 규칙
+- `L102` 정본 저장·재로드 (2026-09-28)
+- `L110` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L121` 결과 (2026-09-28, 두 번)
+- `L141` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L145` 무엇을 더했나
+  - `L158` 예시 배치 둘과 배치 자
+  - `L169` 참고문서 (v7)
+  - `L175` 정본 (v7)
+  - `L179` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L201` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L206` 무엇을 더했나
+  - `L222` 배우며 찾은 것
+  - `L230` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L250` 정본 (v8)
+- `L254` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L272` 남은 것
+- `L283` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L294` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L307` 칸·키트
+  - `L330` 기존 프로젝트
+  - `L336` 참고문서 (조수)
+  - `L343` 화면 증거
+  - `L347` 남은 것
+- `L352` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
 
 ### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,787 토큰
 
