@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.144.2 — 2026-10-06
+
+### 수정
+
+- **wild-route** — 버들항 도로를 모랫길·숲 벽으로 다시 깐다 (`aa082d9`)
+- apply native review dimensions per item and slot (#2210) (`f63348a`)
+- accumulate dedicated art batches before assembling demos (#2209) (`d35301e`)
+- accumulate dedicated art batches before assembling demos (`838d705`)
+- recover dedicated native art and resume independent review (#2207) (`1926aea`)
+
+### 문서
+
+- **openwiki** — regenerate INDEX after rebase (`65cdc27`)
+
 ## 0.144.1 — 2026-10-06
 
 ### 수정
