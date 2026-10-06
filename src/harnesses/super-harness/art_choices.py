@@ -100,6 +100,18 @@ def prepare(data, cid):
                     'caution': '실제 칩으로 조립한 비교용 예시입니다. 완성 맵·통행 검사 결과는 아닙니다.'})
             group['description'] = '같은 배치의 실제 조립 예시로 크기·접합·동선을 비교합니다.'
             groups.append(group)
+        elif receipt.get('harness') == 'charset-actor' and receipt.get('scope') == 'theme-actors':
+            for actor in receipt['actors']:
+                for r in actor['sources'] + actor['sheets'] + [actor['preview']]: verified(root, r)
+                if not actor.get('machineReady') or len(actor['sheets']) != 2:
+                    raise ValueError('인물 걷기·행동 기술 납품이 모두 필요합니다.')
+                groups.append(dict(id='actor:'+actor['id'],title=actor['title'],requiresContextReview=True,
+                    description='같은 전용 인물의 걷기와 행동 포즈입니다. 공간 접합 검수 전입니다.',
+                    candidates=[dict(id='native',title=actor['title'],passed=True,nativeHarness='charset-actor',
+                        nativeSheets=actor['sheets'],sheet=actor['sheets'][0],sources=[receipt_ref,*actor['sources']],
+                        images=[dict(actor['preview'],label='걷기 12프레임'),dict(actor['sheets'][1],label='직접 저작 행동 포즈')],
+                        summary='기술 검사 통과 · 공간 시각 검수 전',reasons=[],repairFixes=[],
+                        caution='사람의 Allow나 실제 공간의 접촉 검수를 뜻하지 않습니다.')]))
         elif receipt.get('harness') == 'interior-props' and receipt.get('runs') and cid != 'underground-prison':
             # Receipt paths own generic spaces. Prison round numbers are not a schema.
             by_item = {}

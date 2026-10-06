@@ -170,6 +170,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 GPT가 12프레임을 전부 직접 저작한다. 작업은 터미널과 독립적으로 계속된다.
 - `recipe` — 남긴 제작 기준: --source-run RUN으로 사람이 현재 남긴 그림·원본·작업 지시·도구 해시를 보존한다. produce --recipe ID 또는 --seed-run RUN으로 같은 계열을 1명씩 만든다.
 - `bulk` — 묶음 저작: manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다.
+- `actions` — 행동 포즈: produce REQUEST --out DIR로 검증된 걷기 원본의 머리·발을 보존하며 팔·도구 동작을 직접 저작한다. check는 격자·팔레트·접지·PNG/GIF를 확인하며 선택/설치는 별도다.
 - `check` — 픽셀 검사: 12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다.
 - `views` — 그림 굽기: 현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다.
 - `audit` — 투명 결손 QA: --run RUN으로 모든 12프레임을 체커·흰색·검정 배경에서 펼치고 결손 좌표·출하 PNG 재읽기를 기록한다. --refresh-previews로 동일 픽셀의 진단 GIF를 추가한다.
