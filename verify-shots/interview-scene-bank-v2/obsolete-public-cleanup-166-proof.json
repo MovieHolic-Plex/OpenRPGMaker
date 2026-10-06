@@ -1,0 +1,31 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 731,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--wild--team--secret--habitat",
+      "sourceSha256": "13b6ec21de3abb29cba58fa27a3a6d052060c0cbd83e8c86293ffdc90a276051",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat-13b6ec21de3a.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--secret--habitat-2-13b6ec21de3a.png",
+      "replacementPublished": true,
+      "replacementSha256": "64a79e9fbd91304bc8418d7a12fb9860a22d1c0dd4829c3f2423dad42ef4e45d",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-166"
+    },
+    {
+      "key": "monster--wild--team--secret--case",
+      "sourceSha256": "6ebe3bcc6441f15766ea724ece9514563371e2022a8e1d30b96428f05ff74942",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case-6ebe3bcc6441.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--secret--case-2-6ebe3bcc6441.png",
+      "replacementPublished": true,
+      "replacementSha256": "d6259ec53ebc5aa038c34ac202118e3c99f499bdec2f0c2ba440e6195281eb88",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-166"
+    }
+  ],
+  "resolvedCumulative": 136
+}

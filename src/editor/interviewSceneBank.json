@@ -1814,10 +1814,20 @@
       "sha256": "8b7d4aa27e5a872134f930ad1d20e598e4a1365c32b52217b21a1ec9c0dd6e24",
       "promptSha256": "8091db7e8fbf8869287e57cd7f0f722c454b88f7663ec020560f8acf8428b001"
     },
+    "monster--wild--collect--secret--habitat--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--habitat--short-bcde153f5f89.png",
+      "sha256": "bcde153f5f89355cfda9905d5e072b93e2b63a65b0039044525453d209096c75",
+      "promptSha256": "fdb1881d1a4e81a7a45107ad258e208f1beb92b42db48c4850168fbed86501c6"
+    },
     "monster--wild--collect--secret--case": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--case-ec3773f8cf22.png",
       "sha256": "ec3773f8cf22729c451b6207feb62c14a48eab6a05f4d5073c309a30b8bb446f",
       "promptSha256": "f0925943c4948a88be901549d8bf50a1727608c326d869049ccf512cc35e9aa3"
+    },
+    "monster--wild--collect--secret--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--case--episode-26efba46d72a.png",
+      "sha256": "26efba46d72a5e1247697cc317e6c861a74f6cb7dd7a9f8e896f8a32eef835c9",
+      "promptSha256": "c7098c5b72937c15c5a6e86cf198dc0d657bdd1eb21d410fe77770868daa1ed7"
     },
     "monster--wild--collect--warm": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm-349b4cfcc95d.png",
@@ -1899,20 +1909,85 @@
       "sha256": "2189d7384003be6c65c035c26f1cf05033b1449f12914a5f4b74ab5ab5e04ef2",
       "promptSha256": "ac229ff7669ca4b1d96c616aef0e907f9a9dadee3cd1cdb4e79babd1138785f4"
     },
+    "monster--wild--team--bright--case": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case-6890d5b6cc0a.png",
+      "sha256": "6890d5b6cc0a9289db13f2d04787ce0a2cf66e434a1b559e11df65d4271dcda1",
+      "promptSha256": "3a67f606d178f750ead2003ca9583c95c376c0ba93500b68f94559449bfefbc3"
+    },
+    "monster--wild--team--bright--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case--scene-012ccf493179.png",
+      "sha256": "012ccf4931796acb7209c5edb2f1425213a9c6d1b16321ca444002c04621aa22",
+      "promptSha256": "76468d8b5f4a57c51c51359510ec870fe49ce69c2dc3df2eceaf3ed6f3d7a870"
+    },
+    "monster--wild--team--bright--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case--episode-250c7812c097.png",
+      "sha256": "250c7812c097232289bcb0363302d2466ad2df1c71b8557456b397da2a4dbe58",
+      "promptSha256": "ad016342328b851445879b9cb88e521bef6adb597db9216e8158edcbf8d85212"
+    },
+    "monster--wild--team--bright--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case--short-a14fc02b3007.png",
+      "sha256": "a14fc02b3007652f5b69907bfd0a2c662e48bd5d1b8e3fbe0d083846a7be95ed",
+      "promptSha256": "0b6e6fe98ea6e04bd80d2c14fda310eb67b86bd057f75b21bfe04b4dd0773b81"
+    },
     "monster--wild--team--secret": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret-8d911727dea9.png",
       "sha256": "8d911727dea9dd5925abedd3bb9c3f8077814b310e1c312358c4e2d3921930aa",
       "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b"
     },
+    "monster--wild--team--secret--route": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route-eb6b3a8eb5ee.png",
+      "sha256": "eb6b3a8eb5ee12fc5abe210fe14b1b3036eb2937c507a5002108a55c6663942b",
+      "promptSha256": "21cafe6c70e64a9fadbadc5957eb544ef5f6f052a59389c607afe2d7bafc9101"
+    },
+    "monster--wild--team--secret--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route--episode-4a64894080ee.png",
+      "sha256": "4a64894080ee07bc0528c63b88fb13827827cfd90a3d795f5bddda9ca8975e00",
+      "promptSha256": "ff3d492cc424659151e7a55d5f94c1208a66741cc6d0d5a05181dda21941237a"
+    },
+    "monster--wild--team--secret--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route--short-f684d10bd2fd.png",
+      "sha256": "f684d10bd2fd96c380485438c8445131be55cfff1dffaa694c332eb465f5d91f",
+      "promptSha256": "f7e799468d77ae29a074c68fd0500ed53502007ce2f48be30ffb612f1154b5c1"
+    },
     "monster--wild--team--secret--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat-13b6ec21de3a.png",
-      "sha256": "13b6ec21de3abb29cba58fa27a3a6d052060c0cbd83e8c86293ffdc90a276051",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat-64a79e9fbd91.png",
+      "sha256": "64a79e9fbd91304bc8418d7a12fb9860a22d1c0dd4829c3f2423dad42ef4e45d",
       "promptSha256": "94aa7187c38914dbb505617cda32aaf845aff56cbf6e62b182ed4c554f0bf21e"
     },
+    "monster--wild--team--secret--habitat--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat--scene-77ab89a5044c.png",
+      "sha256": "77ab89a5044c4f5b603ec2fa6e69037b6fae6d58a019227c0dcbe3ca8abe5215",
+      "promptSha256": "53816d14b36e9f33261e9dfcd1103664ede4706dedeece22b27d7b805b7f6ad9"
+    },
+    "monster--wild--team--secret--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat--episode-76245e4823e5.png",
+      "sha256": "76245e4823e58c076513fcec76d27caa6cc1a7496b485199c1f894ab551b818e",
+      "promptSha256": "af5f009ab38ae03dfe18a93cd67c71607a4b10f0fb33a33aefaf56b62578af5d"
+    },
+    "monster--wild--team--secret--habitat--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat--short-61446b744f6d.png",
+      "sha256": "61446b744f6df78f48a6ef1e7ea856b6712cf10129fc5ad17dadcb5f095085ec",
+      "promptSha256": "b0d2365de8e8c222fe10699c3a3a029f50405e0c599e2b07a1f29d42a572a7de"
+    },
     "monster--wild--team--secret--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case-6ebe3bcc6441.png",
-      "sha256": "6ebe3bcc6441f15766ea724ece9514563371e2022a8e1d30b96428f05ff74942",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case-d6259ec53ebc.png",
+      "sha256": "d6259ec53ebc5aa038c34ac202118e3c99f499bdec2f0c2ba440e6195281eb88",
       "promptSha256": "7dceea3f3e7a171f3cb2e597f3fb0e61c540b604baf0a43e5233e09d585924ad"
+    },
+    "monster--wild--team--secret--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case--scene-7701d53efd70.png",
+      "sha256": "7701d53efd708b117392cba9e6f0743b8f266f29516d569dbc1ee91109f06c92",
+      "promptSha256": "5d6e5be8ef3563a088afa114e0062d6d2789bfef80f8753ff60462beeab5a82d"
+    },
+    "monster--wild--team--secret--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case--episode-84cc2d79c4ba.png",
+      "sha256": "84cc2d79c4ba1aba0b9debed89347cc1e81f8c6319c219fceb00af6493bb3efa",
+      "promptSha256": "3bca03777a5ac2ad840c93d3aa111a2c21c49db74eb5b0c000d1b5d14e4e95d4"
+    },
+    "monster--wild--team--secret--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--case--short-2c1d468f3edc.png",
+      "sha256": "2c1d468f3edc3e3304561787cb0f612ea75d8b7492e28c6cbcb7adc5a01b79cc",
+      "promptSha256": "0f8e9fc6f379946ee11dda3a00713e2267dd2efca60be37c8c1003add4f52bdf"
     },
     "monster--wild--team--warm": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm-458980bfdb1c.png",
@@ -1920,19 +1995,39 @@
       "promptSha256": "39b87ca4ab07dca1f52ca3ee041c5ebafdf0f40aad33313eb4834daf2d5d2a72"
     },
     "monster--wild--team--warm--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route-2e93fa4868cf.png",
-      "sha256": "2e93fa4868cf9c5e01afc9a93707cc72e0ed13790dac7c0346633bda361b6435",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route-24de4c12f83b.png",
+      "sha256": "24de4c12f83b74050de44857c236c9e09576b8c205aac14823bba6fc7a4bc96a",
       "promptSha256": "a86ea53e84da65b81d512ef87bb81f6e4e23f2975b0314838c7b5f7fb47bceb0"
     },
+    "monster--wild--team--warm--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--scene-de161f1a7303.png",
+      "sha256": "de161f1a7303de2dde2b1528dbdb5280ad4d3510bcbe055444be45fd60019a50",
+      "promptSha256": "0273148a2156c8acee594f5f176221eb2b17cf5e1df2c214d42609a2405479df"
+    },
+    "monster--wild--team--warm--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--episode-60e9dab8b694.png",
+      "sha256": "60e9dab8b694ecd42a47ba3964a18d2a9acebf2316354526287f4b9f4164a919",
+      "promptSha256": "86cbfe0ccab225132774abf7709cf1b1c581a3707c614b6e50da3de66bb6923d"
+    },
+    "monster--wild--team--warm--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--short-42f0b122e42f.png",
+      "sha256": "42f0b122e42f88fc93aa5e717e4e82758dba064786cdea36053f95a4746aac3c",
+      "promptSha256": "70e5f6b92b233e2247ee75fd902123769299367503fe58dee50aba0ea846e3e8"
+    },
     "monster--wild--team--warm--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--habitat-e2016ad69a1c.png",
-      "sha256": "e2016ad69a1c561ff4373be5544cf2d7a46cf8c1e0a5a6249925c5f0a683c6e3",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--habitat-7393881f2b59.png",
+      "sha256": "7393881f2b59313c177bf58bb97412e297aa4caca75fff60d3684f65c81f25a0",
       "promptSha256": "118ad9feafd8f75ad906f1dffee5184fe13bde3358b81fc74cd56697d892593d"
     },
     "monster--wild--team--warm--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--case-c619ad0986d4.png",
-      "sha256": "c619ad0986d40b296d10ca4e6d24da4949e926d9b7f1d7f9066062762845af4c",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--case-d8d9fc94dc43.png",
+      "sha256": "d8d9fc94dc4317f327e9b6c41856c9ccba39538312a613bd5ac844775be77b67",
       "promptSha256": "d9917887335fe0193002047fb86d304d64ed028a0defdedcd4a42f7be1b8b813"
+    },
+    "monster--wild--team--warm--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--warm--case--episode-e4fc0b40e811.png",
+      "sha256": "e4fc0b40e8110701cc33790092e890769e34dac1ef6a5c51e1cded5b143dfa4b",
+      "promptSha256": "4bee588e5f1a5735b071436f4c83ec53584cb6831a475b56fc1f81a61795146b"
     },
     "monster--wild--partner": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner-96c463a05576.png",
@@ -1945,18 +2040,33 @@
       "promptSha256": "8ab2de752e88931b64a18556360a0f3a9d58e5a9f2c37f2cc5af1f1126e0a44f"
     },
     "monster--wild--partner--bright--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route-020655179d11.png",
-      "sha256": "020655179d11e1a62cb769f94331d356e1874400b9498d82ae8b0f07398297d9",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route-a6268f23c0ed.png",
+      "sha256": "a6268f23c0ed6136b7699361e63876488700a22315123a14d7c9e8b827e4674d",
       "promptSha256": "62bed7459bc71349dda3920c958a5a34f645a159c39e8a14cfb4eeb79753d084"
     },
+    "monster--wild--partner--bright--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route--scene-0fa13a8a6613.png",
+      "sha256": "0fa13a8a6613bd2504e573023db3ba17a6033938403c67055645853024626121",
+      "promptSha256": "48c76b3003094619c2c65c47a64332a017dab9b6877a33289c92bae19d97639e"
+    },
+    "monster--wild--partner--bright--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route--episode-e2a3c5f05035.png",
+      "sha256": "e2a3c5f0503580be55bf4fad053a7ddc8988ec91fd13266df44b3db0d245df22",
+      "promptSha256": "29b7f7459a33995bc03f109392b82577b81ea8670fb4e47c01ccbfef2ab2d4b3"
+    },
     "monster--wild--partner--bright--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--habitat-df6751935b57.png",
-      "sha256": "df6751935b574ebe7162deca8c5bb5e724cc500b93eb590e0fd2875388371291",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--habitat-e9185fcac43a.png",
+      "sha256": "e9185fcac43a0ac3c519d028021ba0db05a63917868dcd7f0ed22f89fbf63cdb",
       "promptSha256": "8f4c12f10f4374f30d37ae6b790081c797abb8615654077a30bb2ea169fa0e84"
     },
+    "monster--wild--partner--bright--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--habitat--episode-039074f92f1f.png",
+      "sha256": "039074f92f1f22e9a3863e5dc26a059c7589094b3ffee10a9a01ee6c37491b26",
+      "promptSha256": "7726357f41696e65a038a6c27a93002b6b2e2d100d5a81bfdbee0ca202831fa6"
+    },
     "monster--wild--partner--bright--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--case-d3c5e1b643e5.png",
-      "sha256": "d3c5e1b643e54752a0b9d7647f8ef8b3edf4a9b2b021c27fa2ab7ea5dc4bb38d",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--case-423771af6891.png",
+      "sha256": "423771af68919841fc7c18c23f96d6dc2e09f5034b540542aa1c7d6ccb1ca0fe",
       "promptSha256": "c930388428cea2abd219145c93b4a6b0e800b09dce98f44dd54334a87ca2121a"
     },
     "monster--wild--partner--secret": {
@@ -1965,29 +2075,24 @@
       "promptSha256": "aa79d44ea477af209e575d0d01a0b4d45c7f37d12ea12ea7797408ed71413ee0"
     },
     "monster--wild--partner--secret--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--route-fadf25017630.png",
-      "sha256": "fadf25017630acc29e3f13ec0f56588df35520396dfef5ed8a3a43ca274bc383",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--route-352b1587eb4c.png",
+      "sha256": "352b1587eb4c4ef92d5e46c1f259c20d28a69aee4d98f02b9807b729f96d528e",
       "promptSha256": "cd37b0a28e484bb10031c7d02b0cd4a80db636f7e9f70ef6b348de27910691ba"
     },
-    "monster--wild--partner--secret--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--habitat-817523bceb1a.png",
-      "sha256": "817523bceb1a61748093bd03eff4d3c8f960d26719c489231e9934c55b70401a",
-      "promptSha256": "034b8a280e14da9090385f1558bfe1e5c7d349aa359188c15bf8917e57efd8c2"
+    "monster--wild--partner--secret--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--route--episode-807e782fca3c.png",
+      "sha256": "807e782fca3cdff6bc388886df1b7141dce289ef2eacc0ef59767326d8a59652",
+      "promptSha256": "4ced551dd0ded22efff11e399f09f98cd6179eed9e614e63ef4ec43ad2cf9ab5"
     },
-    "monster--wild--partner--secret--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--case-33b700475010.png",
-      "sha256": "33b70047501021ce16e7581e89892299b1bc23292cc4c602cd50acbda3511f83",
-      "promptSha256": "8f93679108959977503b24ee53ffadb6dec2dc24ca995c62a405fed16530ad1c"
+    "monster--wild--partner--secret--habitat": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--habitat-513af9b2aadb.png",
+      "sha256": "513af9b2aadb5d5c7acc6c13f899313ae95ae970a7d0ac6300553b9fc35b18b5",
+      "promptSha256": "034b8a280e14da9090385f1558bfe1e5c7d349aa359188c15bf8917e57efd8c2"
     },
     "monster--wild--partner--warm": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--warm-6d53357b6d59.png",
       "sha256": "6d53357b6d5985d19f5ef5010a1d4f209b794c4a7318dd88eb6ab3d61c7f8ddd",
       "promptSha256": "9f87b3d4160e1a3454ffcd5307c93f5bba4d6b3acc659d4e51312cb460904e85"
-    },
-    "monster--wild--partner--warm--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--warm--route-5d2f1f10c1e6.png",
-      "sha256": "5d2f1f10c1e6dd2c41336b90236d38959d701c0bf2e460b1968ff6bf3a8f901c",
-      "promptSha256": "c65c3a664a2b93af68ab7d9a0a11d57f887d5e4f6034b3a7f37002dc72f4ff45"
     },
     "monster--wild--partner--warm--habitat": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--partner--warm--habitat-d5fdd81de453.png",

@@ -1,0 +1,79 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 742,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--wild--team--warm--habitat",
+      "sourceSha256": "e2016ad69a1c561ff4373be5544cf2d7a46cf8c1e0a5a6249925c5f0a683c6e3",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--warm--habitat-e2016ad69a1c.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--warm--habitat-1-e2016ad69a1c.png",
+      "replacementPublished": true,
+      "replacementSha256": "7393881f2b59313c177bf58bb97412e297aa4caca75fff60d3684f65c81f25a0",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    },
+    {
+      "key": "monster--wild--team--warm--case",
+      "sourceSha256": "c619ad0986d40b296d10ca4e6d24da4949e926d9b7f1d7f9066062762845af4c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--warm--case-c619ad0986d4.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--warm--case-1-c619ad0986d4.png",
+      "replacementPublished": true,
+      "replacementSha256": "d8d9fc94dc4317f327e9b6c41856c9ccba39538312a613bd5ac844775be77b67",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat",
+      "sourceSha256": "df6751935b574ebe7162deca8c5bb5e724cc500b93eb590e0fd2875388371291",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--habitat-df6751935b57.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--bright--habitat-1-df6751935b57.png",
+      "replacementPublished": true,
+      "replacementSha256": "e9185fcac43a0ac3c519d028021ba0db05a63917868dcd7f0ed22f89fbf63cdb",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    },
+    {
+      "key": "monster--wild--partner--bright--case",
+      "sourceSha256": "d3c5e1b643e54752a0b9d7647f8ef8b3edf4a9b2b021c27fa2ab7ea5dc4bb38d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--case-d3c5e1b643e5.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--bright--case-1-d3c5e1b643e5.png",
+      "replacementPublished": true,
+      "replacementSha256": "423771af68919841fc7c18c23f96d6dc2e09f5034b540542aa1c7d6ccb1ca0fe",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    },
+    {
+      "key": "monster--wild--partner--secret--route",
+      "sourceSha256": "fadf25017630acc29e3f13ec0f56588df35520396dfef5ed8a3a43ca274bc383",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--route-fadf25017630.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--secret--route-2-fadf25017630.png",
+      "replacementPublished": true,
+      "replacementSha256": "352b1587eb4c4ef92d5e46c1f259c20d28a69aee4d98f02b9807b729f96d528e",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    },
+    {
+      "key": "monster--wild--partner--secret--habitat",
+      "sourceSha256": "817523bceb1a61748093bd03eff4d3c8f960d26719c489231e9934c55b70401a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--partner--secret--habitat-817523bceb1a.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner--secret--habitat-2-817523bceb1a.png",
+      "replacementPublished": true,
+      "replacementSha256": "513af9b2aadb5d5c7acc6c13f899313ae95ae970a7d0ac6300553b9fc35b18b5",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-170"
+    }
+  ],
+  "resolvedCumulative": 144
+}

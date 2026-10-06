@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--team--secret--habitat--scene,monster--wild--team--secret--habitat--episode,monster--wild--team--secret--case--episode,monster--wild--team--secret--route--short,monster--wild--team--bright--case--scene,monster--wild--team--secret--habitat--short"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 731,
+  "manifestSha256": "3a5dbec2c92fe82aa2262cfdb6ce4205641eca53146d2b3b63daa643ef73e3a6",
+  "finishedAt": "2026-10-06T13:22:42.948878+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-731-click-proof.json",
+  "completeWholePlan": false
+}

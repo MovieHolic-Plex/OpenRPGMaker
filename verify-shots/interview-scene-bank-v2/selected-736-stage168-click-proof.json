@@ -1,0 +1,241 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 736,
+  "targets": [
+    "monster--wild--team--secret--route--episode",
+    "monster--wild--team--warm--route--scene",
+    "monster--wild--team--warm--route--episode",
+    "monster--wild--team--warm--route--short",
+    "monster--wild--partner--bright--route--scene",
+    "monster--wild--partner--bright--route--episode"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "monster--wild--team--secret--route--episode",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 22.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 10.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--team",
+          "ms": 10.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team-049ea8dedbe9.png"
+        },
+        {
+          "key": "monster--wild--team--secret",
+          "ms": 7.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--secret-8d911727dea9.png"
+        },
+        {
+          "key": "monster--wild--team--secret--route",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route-eb6b3a8eb5ee.png"
+        },
+        {
+          "key": "monster--wild--team--secret--route--episode",
+          "ms": 11.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route--episode-4a64894080ee.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--team--warm--route--scene",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 6.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 9.599999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--team",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team-049ea8dedbe9.png"
+        },
+        {
+          "key": "monster--wild--team--warm",
+          "ms": 4.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm-458980bfdb1c.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route-24de4c12f83b.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route--scene",
+          "ms": 4.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--scene-de161f1a7303.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--team--warm--route--episode",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 6.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--team",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team-049ea8dedbe9.png"
+        },
+        {
+          "key": "monster--wild--team--warm",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm-458980bfdb1c.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route-24de4c12f83b.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route--episode",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--episode-60e9dab8b694.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--team--warm--route--short",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 11,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--team",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team-049ea8dedbe9.png"
+        },
+        {
+          "key": "monster--wild--team--warm",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm-458980bfdb1c.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route-24de4c12f83b.png"
+        },
+        {
+          "key": "monster--wild--team--warm--route--short",
+          "ms": 6,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--team--warm--route--short-42f0b122e42f.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--partner--bright--route--scene",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--partner",
+          "ms": 5.400000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner-96c463a05576.png"
+        },
+        {
+          "key": "monster--wild--partner--bright",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright-e72f17af10f8.png"
+        },
+        {
+          "key": "monster--wild--partner--bright--route",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route-a6268f23c0ed.png"
+        },
+        {
+          "key": "monster--wild--partner--bright--route--scene",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route--scene-0fa13a8a6613.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--partner--bright--route--episode",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 4.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--partner",
+          "ms": 7.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner-96c463a05576.png"
+        },
+        {
+          "key": "monster--wild--partner--bright",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright-e72f17af10f8.png"
+        },
+        {
+          "key": "monster--wild--partner--bright--route",
+          "ms": 7,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route-a6268f23c0ed.png"
+        },
+        {
+          "key": "monster--wild--partner--bright--route--episode",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--partner--bright--route--episode-e2a3c5f05035.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

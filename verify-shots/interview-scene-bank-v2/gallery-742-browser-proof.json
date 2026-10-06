@@ -1,0 +1,132 @@
+{
+  "results": [
+    {
+      "width": 320,
+      "images": [
+        {
+          "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        }
+      ],
+      "state": {
+        "count": "742 / 1457",
+        "pressed": 1,
+        "width": 288,
+        "scrollWidth": 288
+      }
+    },
+    {
+      "width": 736,
+      "images": [
+        {
+          "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        }
+      ],
+      "state": {
+        "count": "742 / 1457",
+        "pressed": 1,
+        "width": 704,
+        "scrollWidth": 704
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "publishedSnapshot": 742,
+  "screens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage170-gallery-320.png",
+      "sha256": "bafda97cb9f089f786f7afcf28603f7012a96bbc942c07ea39fe18e5176cdced",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage170-gallery-736.png",
+      "sha256": "f12729cb501f2f0fc89a85882e8e2837616c63ebd8330ac006f3b685e90bc5ce",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage170-gallery-latest-320.png",
+      "sha256": "71f3c7dcbe44db8e20456e92ae5e7de6c91669ce3b12832632bffe58cc43e0a5",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-742-stage170-gallery-latest-736.png",
+      "sha256": "705cc304b14edace2d3eab1fc2b6932b6b7282236a971b6604a98ea7cfbd7356",
+      "rootViewed": true
+    }
+  ],
+  "scope": "Eight actual published representative natives; preview-only WEBP scaling, production native PNG unchanged. Four settled gallery screenshots directly root viewed; not fresh audit of all742."
+}

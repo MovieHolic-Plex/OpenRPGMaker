@@ -1,0 +1,352 @@
+{
+  "batch": "v2-production-167",
+  "passedAttempts": 5,
+  "rejectedAttempts": 5,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-167",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-167-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:31:14.168841+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-167-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-167",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-167-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:31:41.776495+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-167-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-167",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-167",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:31:41.812754+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--team--warm--habitat",
+      "nativeSha256": "c8a338ed726348a70a61a24a0d9c774705ccabb084d2794110223fbdc7a46bc5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "2b6d90d7296c75e0273f73f341f88dc121931f3c4e6be4e493cb3ebb0b426f75",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native and actual original warmHAB parent: main climbing ramp x48-62 has meaningful descending right face/foot hidden after60.3; read-only NEAREST diagnostic clipped at actual controls stops inside its principal slope/foot. composition false ONLY. Three actual OPEN LEFT habitat passages, net/open EMPTY basket/helpful cloth/OPEN water and entire physical LEFT trail present; fresh outdoor upper habitat court differs from original indoor three-arch/right arena. No scope/identity added; native unchanged."
+      ],
+      "note": "OWN full request/native and actual original warmHAB parent: main climbing ramp x48-62 has meaningful descending right face/foot hidden after60.3; read-only NEAREST diagnostic clipped at actual controls stops inside its principal slope/foot. composition false ONLY. Three actual OPEN LEFT habitat passages, net/open EMPTY basket/helpful cloth/OPEN water and entire physical LEFT trail present; fresh outdoor upper habitat court differs from original indoor three-arch/right arena. No scope/identity added; native unchanged."
+    },
+    {
+      "key": "monster--wild--team--warm--case",
+      "nativeSha256": "365fe442a405e89a420742b9ecea22beda31641115cb357f72b1f670e2a13fe0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7a935b7d87480b9dc308e870d4a2e02cbc65378a66933de0c3827a2b844413a5",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native and actual original warmCASE parent: main ramp x55-70 has substantial body behind actual controls60.3; composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket/helpful cloth/OPEN water LEFT, whole physical trail LEFT and other principal stations present. Independent side refuge court differs from original indoor foreground kit/right arena. No scope/identity added."
+      ],
+      "note": "OWN full request/native and actual original warmCASE parent: main ramp x55-70 has substantial body behind actual controls60.3; composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket/helpful cloth/OPEN water LEFT, whole physical trail LEFT and other principal stations present. Independent side refuge court differs from original indoor foreground kit/right arena. No scope/identity added."
+    },
+    {
+      "key": "monster--wild--team--secret--route--scene",
+      "nativeSha256": "cb64503defd07baf3083268aa191c183b025f5eebe24f5fc6324106f986c14a7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8271256cdf77e5a40ea534ff4e6c980284480d3a1cd7c0b027d7905674f91d70",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": false
+      },
+      "findings": [
+        "OWN full request/native and actual current164 secretROUTE parent reopened directly: lowerLEFT large capturekit, upperLEFT village, vertical left-center physical trail and midLEFT station row retain essentially same camera/focal depth/architecture organization as parent. Removing the lake/right setting is insufficient for independently composed first-encounter shot. distinctShot false ONLY. Net/open EMPTY basket, full LEFT route/village/tracks and whole three stations before60.3 all correct; no growth/ending/identity. Preserve original attempt and note current comparison, no byte-copy allegation."
+      ],
+      "note": "OWN full request/native and actual current164 secretROUTE parent reopened directly: lowerLEFT large capturekit, upperLEFT village, vertical left-center physical trail and midLEFT station row retain essentially same camera/focal depth/architecture organization as parent. Removing the lake/right setting is insufficient for independently composed first-encounter shot. distinctShot false ONLY. Net/open EMPTY basket, full LEFT route/village/tracks and whole three stations before60.3 all correct; no growth/ending/identity. Preserve original attempt and note current comparison, no byte-copy allegation."
+    },
+    {
+      "key": "monster--wild--team--secret--route--episode",
+      "nativeSha256": "4a64894080ee07bc0528c63b88fb13827827cfd90a3d795f5bddda9ca8975e00",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "67203f112d8914c366caba4becdb4b3eb6d8772d5ab2ee3dc91ad615a766e8fa",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native and actual current164 secretROUTE parent: empty leaf-lined nest/open water/plain WHITE cloth focal upperLEFT, capturekit nearUPPERLEFT and large stations foregroundLEFT, continuous route to whole upperLEFT different village, all actual paw groups LEFT before60.3. Deep moonlit, no identity/return. Care focal depth and foreground-station camera materially differ from parent giant lowerLEFT kit/midLEFT station row/right lake. All seven directly inspected."
+    },
+    {
+      "key": "monster--wild--team--warm--route",
+      "nativeSha256": "24de4c12f83b74050de44857c236c9e09576b8c205aac14823bba6fc7a4bc96a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d01fb11fdd143c8851e752346aa68cd18dbc5c8d7bc20baf0a9b7fe6f8fcf1f8",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-monster--wild--team--warm--route.png",
+          "sha256": "154d3564df80962072ef600307a60215252076d6b41ca7483da5d4d94ee15f5f",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Same-KEY narrow ramp edit: OWN full request/new native/actual166 failed target/current original warmROUTE parent seen. Whole ramp farLEFT x18-30, other stations entirely before60.3; full net/open EMPTY basket/helpful cloth/OPEN water LEFT; physical LEFT trail and continuous route to whole different upperLEFT village correct. Warm, no scope/identity. All seven directly inspected again; no inherited pass. Recompare held children against this actual new parent."
+    },
+    {
+      "key": "monster--wild--team--warm--case--short",
+      "nativeSha256": "6e5d38dec13da6560e81ab6e80b42c101badb802628a171497080a463a3a37c7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "989aaa31fbc0e268041d8706f39f20952cde126869bf7fe1afdcc038ddb7c298",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native and actual167 warmCASE parent: principal ramp x65-75 behind controls60.3; composition false ONLY. Actual OPEN LEFT homebase/local refuge/loose rope/tipped EMPTY pail LEFT, entire physical return trail LEFT, full net/open EMPTY basket/OPEN water and independent CREAM folded rectangle FLAT ON same worktop OUTSIDE basket correct. Fresh closer side return porch and expanded foreground worktop differ from parent small court kit/upperLEFT refuge. No growth/identity. Parent also fails composition so descendants remain held."
+      ],
+      "note": "OWN full request/native and actual167 warmCASE parent: principal ramp x65-75 behind controls60.3; composition false ONLY. Actual OPEN LEFT homebase/local refuge/loose rope/tipped EMPTY pail LEFT, entire physical return trail LEFT, full net/open EMPTY basket/OPEN water and independent CREAM folded rectangle FLAT ON same worktop OUTSIDE basket correct. Fresh closer side return porch and expanded foreground worktop differ from parent small court kit/upperLEFT refuge. No growth/identity. Parent also fails composition so descendants remain held."
+    },
+    {
+      "key": "monster--wild--partner--bright--route--scene",
+      "nativeSha256": "0fa13a8a6613bd2504e573023db3ba17a6033938403c67055645853024626121",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5650f7175c2a7d9a6c1abf67e97745d6fd5a06eada454208f4ba52f17618200f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native and actual original partner brightROUTE parent: whole different upperLEFT village via continuous LEFT woodland path, full net/open EMPTY basket/plain helpful soft cloth/OPEN water in sheltered EMPTY trust nook LEFT, whole physical LEFT trail before60.3. Clear daylight, first-ready kit, no growth/return/team stations/collectionjar/identity. New outdoor foreground trust worktop and LEFT village differ from original indoor giant upperLEFT workbench/RIGHT village and bridge. All seven directly inspected."
+    },
+    {
+      "key": "monster--wild--partner--bright--route--episode",
+      "nativeSha256": "e2a3c5f0503580be55bf4fad053a7ddc8988ec91fd13266df44b3db0d245df22",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "9c4fe9bb8ff147ef8fcd783acfa2fcaec0c792a5fc552e41d8365330dbffd91f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native and actual original partner brightROUTE parent: actual EMPTY leaf-lined growth nest/OPEN water/plain WHITE care cloth LEFT BESIDE net/open EMPTY basket, whole different upperLEFT village/continuous LEFT route and whole LEFT physical pads before60.3. Daylight, sheltered empty trust nook, no TEAM stations/jar/body/return. Low care foreground and smaller upperLEFT capture bench differ from original indoor giant workbench/right village. Also differs from167 first-ready sibling in foreground care focal depth. All seven directly inspected."
+    },
+    {
+      "key": "monster--wild--partner--bright--route--short",
+      "nativeSha256": "f81a7ca404e0ff3e239be711eb3069e0d354a1aebc7b8d84115d6acfa1534e1a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "50e004490d7c34b30fd3cd0de351160c1fd8d1ad5b64ea24fdb35f693051b79c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native and actual original partner brightROUTE parent: last large physical return pad/toe group x53-65 has meaningful pad hidden after actual controls60.3, composition false ONLY. OPEN LEFT homebase, independent CREAM fold FLAT ON same capture worktop OUTSIDE basket, full net/open EMPTY basket/OPEN water LEFT and whole different upperLEFT village/continuous route present. Clear daylight/sheltered EMPTY trust nook, no TEAM arena/collectionjar/growth/body. New close reverse porch/worktop differs from original indoor giant upperLEFT workbench/right village. No false missing ending failure."
+      ],
+      "note": "OWN full request/native and actual original partner brightROUTE parent: last large physical return pad/toe group x53-65 has meaningful pad hidden after actual controls60.3, composition false ONLY. OPEN LEFT homebase, independent CREAM fold FLAT ON same capture worktop OUTSIDE basket, full net/open EMPTY basket/OPEN water LEFT and whole different upperLEFT village/continuous route present. Clear daylight/sheltered EMPTY trust nook, no TEAM arena/collectionjar/growth/body. New close reverse porch/worktop differs from original indoor giant upperLEFT workbench/right village. No false missing ending failure."
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat--scene",
+      "nativeSha256": "3ead691093c9dd98fe0e8ad706c765b5a6bda5bb906653a2680498775047e53a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8df076674348facb0aa429abd764b5b1b6f7ccb8b71f3da397827f818e31ca9d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native and actual original partner brightHAB parent: three actual OPEN walkable wetland/forest/ruin views and shared court wholly meaningful LEFT before60.3; outer ruin support beyond boundary is background, actual view/core passage visible. Full net/open EMPTY basket/plain helpful cloth/OPEN water in sheltered EMPTY trust nook LEFT, full physical LEFT trail. Daylight, first-ready kit, no growth/return/teamstations/jar/identity. New outdoor foreground court/compact LEFT passages differs from original indoor full-width three arches/RIGHT ruin. All seven directly inspected."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

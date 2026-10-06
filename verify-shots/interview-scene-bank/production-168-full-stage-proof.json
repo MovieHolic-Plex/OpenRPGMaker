@@ -1,0 +1,385 @@
+{
+  "batch": "v2-production-168",
+  "passedAttempts": 3,
+  "rejectedAttempts": 7,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-168",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:36:44.063776+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-168",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:37:10.359927+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-168",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:41:22.764663+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-168",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:45:18.041339+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-168-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-168",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-168"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:45:18.319446+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--partner--bright--route",
+      "nativeSha256": "a6268f23c0ed6136b7699361e63876488700a22315123a14d7c9e8b827e4674d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d24b4228e23fbae6bb997e7974a2addc42df312fc59305f0b52b353d49bd3350",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native/actual original partner brightROUTE parent: high woodland clearing with tiny upperLEFT net/open EMPTY basket/helpercloth/OPEN water and continuous LEFT physical path to whole different LEFT village, all core pads/roofs/doors before60.3. EMPTY shared trust nook/shelter, daylight, no TEAM stations/jar/growth/return/identity. Fresh steep high shot/tiny supplies on clearing floor materially differs from old indoor giant left workbench/right village; root all seven inspected."
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat",
+      "nativeSha256": "df01454cc3e563510942df0536099844c2050413feed640164cf846bd758132b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3822bc2ca622a28568803acc42dd92b3f76bcbe975120c33d28b3f6619732a7e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native/actual original partner brightHAB parent: meaningful actual RUIN opening/view x57-65 partly hidden after60.3; composition false ONLY. Wetland/forest views, net/open EMPTY basket/helpercloth/OPEN water in empty sheltered trust nook LEFT, whole LEFT pawtrace present. Fresh outdoor side outpost/large terrain mouths differs from old full-width enclosed three-arch hall. No scope/identity/team/jar; no false missing ruin or kit claim."
+      ],
+      "note": "OWN full request/native/actual original partner brightHAB parent: meaningful actual RUIN opening/view x57-65 partly hidden after60.3; composition false ONLY. Wetland/forest views, net/open EMPTY basket/helpercloth/OPEN water in empty sheltered trust nook LEFT, whole LEFT pawtrace present. Fresh outdoor side outpost/large terrain mouths differs from old full-width enclosed three-arch hall. No scope/identity/team/jar; no false missing ruin or kit claim."
+    },
+    {
+      "key": "monster--wild--team--secret--case--short",
+      "nativeSha256": "d12c584970be47fb3096f048c14b3ccdb27ab822f7f03c13cdd299858131484d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "55881f43148bdf80331f6f1f7d120c29d51d5a8b4dad4a97cdb158aea8f9295b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-monster--wild--team--secret--case--short.png",
+          "sha256": "dbccb29bec7f1daddb998bec0bb5aea6c1776a0fc2456e77d85f8d01306e915c",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Same-KEY ramp edit OWN full request/new native/actual166 target/current165 secretCASE parent plus read-only background diagnostic: main ramp now whole farLEFT, other stations and entire physical return pads before60.3; OPEN local refuge/rope/tipped EMPTY pail and independent CREAM fold FLAT ON same capture worktop OUTSIDEbasket correct. But actual distinct tiny distant settlement with roofs/lit windows in RIGHT valley contradicts OWN no different village/local event. allChoices false ONLY. This was present in the failed target too; do not claim ramp remained unresolved. No identity/growth. Native unchanged."
+      ],
+      "note": "Same-KEY ramp edit OWN full request/new native/actual166 target/current165 secretCASE parent plus read-only background diagnostic: main ramp now whole farLEFT, other stations and entire physical return pads before60.3; OPEN local refuge/rope/tipped EMPTY pail and independent CREAM fold FLAT ON same capture worktop OUTSIDEbasket correct. But actual distinct tiny distant settlement with roofs/lit windows in RIGHT valley contradicts OWN no different village/local event. allChoices false ONLY. This was present in the failed target too; do not claim ramp remained unresolved. No identity/growth. Native unchanged."
+    },
+    {
+      "key": "monster--wild--team--warm--case",
+      "nativeSha256": "c39812a2a1e12064e476c8c9120d6939d1e7c62351ef672799590e1153faf628",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "98362b0b41c84c41ba68250bc0b9157f6c0ced222d14a0782e0c2d6987faf114",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-167-monster--wild--team--warm--case.png",
+          "sha256": "365fe442a405e89a420742b9ecea22beda31641115cb357f72b1f670e2a13fe0",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Same-KEY ramp edit OWN full request/new native/actual167 target/original warmCASE parent: principal ramp correctly farLEFT, but last upright principal post x59-63 has meaningful body/foot hidden after60.3; composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket/helpercloth/OPEN water and whole physical trace LEFT correct. Warm, no scope/identity; independent outdoor local court differs from old indoor kit/right arena. All seven rechecked, no inherited pass."
+      ],
+      "note": "Same-KEY ramp edit OWN full request/new native/actual167 target/original warmCASE parent: principal ramp correctly farLEFT, but last upright principal post x59-63 has meaningful body/foot hidden after60.3; composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket/helpercloth/OPEN water and whole physical trace LEFT correct. Warm, no scope/identity; independent outdoor local court differs from old indoor kit/right arena. All seven rechecked, no inherited pass."
+    },
+    {
+      "key": "monster--wild--team--secret--route--scene",
+      "nativeSha256": "2583a8e559f0aa93e78011d8104d403ef2cc601fc4b23643b22eb0882b653dce",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "bea337c41c557780a491f9e433409531f239059dc1c359e823a0e4da38bdf85a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": false,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Explicit no-reference experiment OWN full request/native/current164 secretROUTE parent: top-down tiny upperLEFT capturekit/midLEFT whole stations/lowerLEFT village and curving physical trace radically change camera; distinctShot true. However ground/rock shade softly blends with fine stippling instead of deliberate coarse hard square cluster ramps at normal size, strict pixelArt cannot pass. Meaningful village roofs also clipped at native left/bottom edges, composition false. All selected motifs present, no growth/ending/identity/text. No supplied-image reference recorded and no post-filter/resize of native. Requires reauthoring pixel craft and whole village framing."
+      ],
+      "note": "Explicit no-reference experiment OWN full request/native/current164 secretROUTE parent: top-down tiny upperLEFT capturekit/midLEFT whole stations/lowerLEFT village and curving physical trace radically change camera; distinctShot true. However ground/rock shade softly blends with fine stippling instead of deliberate coarse hard square cluster ramps at normal size, strict pixelArt cannot pass. Meaningful village roofs also clipped at native left/bottom edges, composition false. All selected motifs present, no growth/ending/identity/text. No supplied-image reference recorded and no post-filter/resize of native. Requires reauthoring pixel craft and whole village framing."
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat--episode",
+      "nativeSha256": "039074f92f1f22e9a3863e5dc26a059c7589094b3ffee10a9a01ee6c37491b26",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "93df5d86eb547e23dfb293ed0377b43c1996ac8aab2868421eee9bf6af47058b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native/actual168 partnerHAB candidate parent and original old parent: whole three OPEN walkable LEFT habitats below care platform, actual EMPTY leaf-lined nest/open water/plain WHITE cloth BESIDE full net/open EMPTY basket at upperLEFT, entire physical pads LEFT before60.3. EMPTY trust nook/daylight/no TEAM stations/jar/body/return. Raised care platform/terrain openings underneath materially changes depth/camera from candidate parent giant lowerLEFT kit/mid-right ruin and old enclosed full-width arches. All seven inspected. Candidate parent fails composition, so held."
+    },
+    {
+      "key": "monster--wild--partner--bright--habitat--short",
+      "nativeSha256": "a3e8990dbe425ef55154ec838470a90380e7678c013ae12f174e0f3ce12d3da5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "92e73c8ccf919d63beb1a20748acbf252e145e4c67c3cce699f9947a10e4ff4e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OWN full request/native/actual168 partnerHAB candidate parent: OPEN LEFT homebase, independent CREAM fold FLAT ON same capture worktop OUTSIDEbasket, full net/open EMPTY basket/water/trustcloth LEFT, full physical return trace before60.3. Three actual OPEN walkable LEFT wetland/forest/ruin views; meaningful ruin doorway/core view before60.3 while outer tower support is background. New close reverse homebase with expanded return worktop contrasts candidate parent side outpost/large exposed ruins. No growth/identity/team/jar. All seven inspected; parent fails composition so held."
+    },
+    {
+      "key": "monster--wild--partner--bright--case--scene",
+      "nativeSha256": "eac52ade65a529cbe37be2a11d56c344d4cbe2b158eaab76c805a1b88e3f48b4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "92a3f36d04b14753f0a79f90b6b1f77d619565846a00a2ff94e4c0d66695e496",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native/actual original partner brightCASE parent: last large physical paw pad/toes x58-66 has meaningful group hidden after controls60.3; composition false ONLY. Actual OPEN local refuge/loose rope/tipped EMPTY wooden pail, full net/open EMPTY basket/plain soft helpful cloth/open water in EMPTY trust nook LEFT present. Clear daylight/first-ready, no growth/return/different village/team/jar/identity. Fresh outdoor side refuge/worktop differs from old inside threshold. No false missing refuge/kit claim."
+      ],
+      "note": "OWN full request/native/actual original partner brightCASE parent: last large physical paw pad/toes x58-66 has meaningful group hidden after controls60.3; composition false ONLY. Actual OPEN local refuge/loose rope/tipped EMPTY wooden pail, full net/open EMPTY basket/plain soft helpful cloth/open water in EMPTY trust nook LEFT present. Clear daylight/first-ready, no growth/return/different village/team/jar/identity. Fresh outdoor side refuge/worktop differs from old inside threshold. No false missing refuge/kit claim."
+    },
+    {
+      "key": "monster--wild--partner--bright--case--episode",
+      "nativeSha256": "9b72cadb99ce1460f2224b16fd8e29f921c9f2c8272eb2bbdfbeac9734e0ab31",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f67346337af011237bf3c0e84d4686c58f2cce6a732e0878fc8c6396d36e5924",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native/actual original partner brightCASE parent: last very large physical pad/toe group x57-64 at bottom is meaningfully behind60.3 and cropped at native bottom; composition false ONLY. Actual OPEN local refuge/rope/tipped EMPTY pail LEFT, net/open EMPTY basket, actual EMPTY leaf-lined nest/open water/plain WHITE cloth BESIDEkit LEFT express first growth/trust. No TEAM/jar/body/return/different village. Fresh low care foreground/outdoor refuge differs from old inside threshold. No false missing growth props."
+      ],
+      "note": "OWN full request/native/actual original partner brightCASE parent: last very large physical pad/toe group x57-64 at bottom is meaningfully behind60.3 and cropped at native bottom; composition false ONLY. Actual OPEN local refuge/rope/tipped EMPTY pail LEFT, net/open EMPTY basket, actual EMPTY leaf-lined nest/open water/plain WHITE cloth BESIDEkit LEFT express first growth/trust. No TEAM/jar/body/return/different village. Fresh low care foreground/outdoor refuge differs from old inside threshold. No false missing growth props."
+    },
+    {
+      "key": "monster--wild--partner--bright--case--short",
+      "nativeSha256": "49273cca185a33929fe8cefa8da50d5163e838d83a1d213efd606c04591f274d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b386f5842c2dd9f471ea6b52042d074689e90b9a5dec05a7d6c2298788da19d9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "OWN full request/native/actual original partner brightCASE parent plus read-only threshold diagnostic: OPEN LEFT homebase and whole physical return trail LEFT, net/open EMPTY basket/open water LEFT, independent CREAM rectangle FLAT ON same capture worktop OUTSIDEbasket all correct. But threshold tipped gray hollow object cannot be verified as required wooden pail from actual material/silhouette; allChoices false, uncertainty is rejection. Loose rope present. Do not falsely call missing ending or behind-controls trail; latestChoice true. Independent outdoor close reverse porch differs from original indoor threshold. No growth/team/jar/body/different village. Native unchanged."
+      ],
+      "note": "OWN full request/native/actual original partner brightCASE parent plus read-only threshold diagnostic: OPEN LEFT homebase and whole physical return trail LEFT, net/open EMPTY basket/open water LEFT, independent CREAM rectangle FLAT ON same capture worktop OUTSIDEbasket all correct. But threshold tipped gray hollow object cannot be verified as required wooden pail from actual material/silhouette; allChoices false, uncertainty is rejection. Loose rope present. Do not falsely call missing ending or behind-controls trail; latestChoice true. Independent outdoor close reverse porch differs from original indoor threshold. No growth/team/jar/body/different village. Native unchanged."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 736,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

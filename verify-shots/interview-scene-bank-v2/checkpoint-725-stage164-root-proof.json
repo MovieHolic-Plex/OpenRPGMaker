@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 725,
+  "remainingAtSnapshot": 732,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T12:52:48.924736+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 725,
+      "manifestSha256": "547097e687e484e58d8e4b675b49ae07a401efe7905b9e016f5592e95045cd3c",
+      "finishedAt": "2026-10-06T12:52:27.710062+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-725-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--team--bright--case,monster--wild--team--secret--route,monster--wild--collect--secret--habitat--short,monster--wild--team--bright--case--episode,monster--wild--collect--secret--case--episode,monster--wild--team--bright--case--short"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 725,
+      "manifestSha256": "547097e687e484e58d8e4b675b49ae07a401efe7905b9e016f5592e95045cd3c",
+      "finishedAt": "2026-10-06T12:52:47.524942+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-725-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--collect--secret--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--collect--secret--habitat--short.png",
+      "sha256": "ea6b4ed4aca96f524ef323c4e4471f5fa9b0b657f76ce4745fc879148ea0663f",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--collect--secret--case--episode.png",
+      "sha256": "ee33acd322220555bd5ada087440851794f8f9ed832dda97f73bee5e723ffc03",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--team--bright--case.png",
+      "sha256": "8b2e680470c1055c0584dcb5a520180aa01fcb2a8517389a4af7377749d3b1b7",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--team--bright--case--episode.png",
+      "sha256": "b460595a77f274e332fce981e0e31280a5277036c13065013d9f2e6c7de04557",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--team--bright--case--short.png",
+      "sha256": "012d083b85ac49dfe4c88103d629f1f1cdfccf69f5c89d1e459e87bf75300bf6",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--secret--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-725-stage164-selected-monster--wild--team--secret--route.png",
+      "sha256": "b967e5d03e107c47e914019947f8f6d1b494c8a3b264ebe0acf89933e251a6fa",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 34,
+  "scope": "725 file/record integrity, six production-dialog paths and six settled screens actually viewed by root. Five original corrective reviews already officially applied before build: two old parent visibility failures and three163 child near-repeat comparisons against actual164 new parents. Original warm-team-route source visibility failure privately confirmed but still pending official review until this frozen snapshot is preserved. Left-caption overlap remains. Not all725 fresh visual audit/fullappboot/AIhandoff/all1457 completion.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-725-stage164-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-725-stage164-click-proof.json"
+  }
+}

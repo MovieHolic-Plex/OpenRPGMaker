@@ -1,8 +1,8 @@
 {
   "scope": "Every currently published background; remaining planned keys are explicitly incomplete",
   "planned": 1457,
-  "published": 742,
-  "remaining": 715,
+  "published": 725,
+  "remaining": 732,
   "styleVersion": 2,
   "catalogSignature": "7bad381b",
   "allPublishedIntegrityChecksPassed": true,
@@ -425,16 +425,19 @@
     "monster--wild--partner--bright--case--episode",
     "monster--wild--partner--bright--case--scene",
     "monster--wild--partner--bright--case--short",
+    "monster--wild--partner--bright--habitat--episode",
     "monster--wild--partner--bright--habitat--scene",
     "monster--wild--partner--bright--habitat--short",
+    "monster--wild--partner--bright--route--episode",
+    "monster--wild--partner--bright--route--scene",
     "monster--wild--partner--bright--route--short",
-    "monster--wild--partner--secret--case",
     "monster--wild--partner--secret--case--episode",
     "monster--wild--partner--secret--case--scene",
     "monster--wild--partner--secret--case--short",
     "monster--wild--partner--secret--habitat--episode",
     "monster--wild--partner--secret--habitat--scene",
     "monster--wild--partner--secret--habitat--short",
+    "monster--wild--partner--secret--route--episode",
     "monster--wild--partner--secret--route--scene",
     "monster--wild--partner--secret--route--short",
     "monster--wild--partner--warm--case--episode",
@@ -443,17 +446,31 @@
     "monster--wild--partner--warm--habitat--episode",
     "monster--wild--partner--warm--habitat--scene",
     "monster--wild--partner--warm--habitat--short",
-    "monster--wild--partner--warm--route",
     "monster--wild--partner--warm--route--episode",
     "monster--wild--partner--warm--route--scene",
     "monster--wild--partner--warm--route--short",
+    "monster--wild--team--bright--case--scene",
     "monster--wild--team--bright--route--scene",
+    "monster--wild--team--secret--case",
+    "monster--wild--team--secret--case--episode",
+    "monster--wild--team--secret--case--scene",
+    "monster--wild--team--secret--case--short",
+    "monster--wild--team--secret--habitat",
+    "monster--wild--team--secret--habitat--episode",
+    "monster--wild--team--secret--habitat--scene",
+    "monster--wild--team--secret--habitat--short",
+    "monster--wild--team--secret--route--episode",
     "monster--wild--team--secret--route--scene",
+    "monster--wild--team--secret--route--short",
+    "monster--wild--team--warm--case--episode",
     "monster--wild--team--warm--case--scene",
     "monster--wild--team--warm--case--short",
     "monster--wild--team--warm--habitat--episode",
     "monster--wild--team--warm--habitat--scene",
     "monster--wild--team--warm--habitat--short",
+    "monster--wild--team--warm--route--episode",
+    "monster--wild--team--warm--route--scene",
+    "monster--wild--team--warm--route--short",
     "mystery--missing--evidence--danger--case--episode",
     "mystery--missing--evidence--danger--case--scene",
     "mystery--missing--evidence--danger--case--short",
@@ -3400,13 +3417,6 @@
       "height": 941
     },
     {
-      "key": "monster--wild--team--bright--case--scene",
-      "sha256": "012ccf4931796acb7209c5edb2f1425213a9c6d1b16321ca444002c04621aa22",
-      "generationPromptSha256": "f61ef9f32ed06bc3fd1b46d4696d3868353a46eeef3401d65f7c74ad0e471ab3",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "monster--wild--team--bright--case--episode",
       "sha256": "250c7812c097232289bcb0363302d2466ad2df1c71b8557456b397da2a4dbe58",
       "generationPromptSha256": "87b575a9dd350a1c07dc112fcbee188a6207d96f01d0330d2c506677dfbcf0cc",
@@ -3435,76 +3445,6 @@
       "height": 941
     },
     {
-      "key": "monster--wild--team--secret--route--episode",
-      "sha256": "4a64894080ee07bc0528c63b88fb13827827cfd90a3d795f5bddda9ca8975e00",
-      "generationPromptSha256": "67203f112d8914c366caba4becdb4b3eb6d8772d5ab2ee3dc91ad615a766e8fa",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--route--short",
-      "sha256": "f684d10bd2fd96c380485438c8445131be55cfff1dffaa694c332eb465f5d91f",
-      "generationPromptSha256": "2554be75d4d117742db35e602f1e0a03324be057f35e57ea5aee5370c09f3227",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--habitat",
-      "sha256": "64a79e9fbd91304bc8418d7a12fb9860a22d1c0dd4829c3f2423dad42ef4e45d",
-      "generationPromptSha256": "73f7b8f1f6a6aee98a59eb5df8c3ed2b9943c034447dccd1be4886c234f467ab",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--habitat--scene",
-      "sha256": "77ab89a5044c4f5b603ec2fa6e69037b6fae6d58a019227c0dcbe3ca8abe5215",
-      "generationPromptSha256": "7b36e32efc05a46547da1dfc6424db0da4a03356735964dc1ea6712dfc592580",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--habitat--episode",
-      "sha256": "76245e4823e58c076513fcec76d27caa6cc1a7496b485199c1f894ab551b818e",
-      "generationPromptSha256": "be0ffa598e6010f7bafea3ce6302a1f72f39290063b989a060e3dbd5ef27fee6",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--habitat--short",
-      "sha256": "61446b744f6df78f48a6ef1e7ea856b6712cf10129fc5ad17dadcb5f095085ec",
-      "generationPromptSha256": "2437744117268d2731a0b4b411258bd372944c5b75aa4b05eb8a84a920edd7ae",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--case",
-      "sha256": "d6259ec53ebc5aa038c34ac202118e3c99f499bdec2f0c2ba440e6195281eb88",
-      "generationPromptSha256": "d112a100e675ac979b14ad7cd4f804c195c9d71eb26e2d4ae8101610a0abab25",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--case--scene",
-      "sha256": "7701d53efd708b117392cba9e6f0743b8f266f29516d569dbc1ee91109f06c92",
-      "generationPromptSha256": "2c4b1de8ccf5ea934b43aedd974b5e73b9f9306595fd32213d4a1c75e4de4dcf",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--case--episode",
-      "sha256": "84cc2d79c4ba1aba0b9debed89347cc1e81f8c6319c219fceb00af6493bb3efa",
-      "generationPromptSha256": "e24bf1fdbe723de704f48666e394a8a3e29f9abd3280ab4c76722eeb0d99240d",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--secret--case--short",
-      "sha256": "2c1d468f3edc3e3304561787cb0f612ea75d8b7492e28c6cbcb7adc5a01b79cc",
-      "generationPromptSha256": "feafbcad91f3eb0e16e98af822f9a47512ab6b90d998bf11b07e0030040cafec",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "key": "monster--wild--team--warm",
       "sha256": "458980bfdb1c21bb0103d4bc4172cae24b7e9fef84d42a8b9331c1d07639adb2",
       "generationPromptSha256": "86c24dffee6f089050e81823a6ee347ba2a5af7acd6a0707a3d8994edab78ce5",
@@ -3513,50 +3453,22 @@
     },
     {
       "key": "monster--wild--team--warm--route",
-      "sha256": "24de4c12f83b74050de44857c236c9e09576b8c205aac14823bba6fc7a4bc96a",
-      "generationPromptSha256": "d01fb11fdd143c8851e752346aa68cd18dbc5c8d7bc20baf0a9b7fe6f8fcf1f8",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--warm--route--scene",
-      "sha256": "de161f1a7303de2dde2b1528dbdb5280ad4d3510bcbe055444be45fd60019a50",
-      "generationPromptSha256": "b3d2bb8d0db1337ec4c5d81bc7129880b407a21a7b2d8cf3feb53073ac837989",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--warm--route--episode",
-      "sha256": "60e9dab8b694ecd42a47ba3964a18d2a9acebf2316354526287f4b9f4164a919",
-      "generationPromptSha256": "52ba9d46a7e2c8e2f0c3f2ca68a8883da53c2ebca35a217c5121806752562edd",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--warm--route--short",
-      "sha256": "42f0b122e42f88fc93aa5e717e4e82758dba064786cdea36053f95a4746aac3c",
-      "generationPromptSha256": "d355df96b260dfba60b7c1e7e07d2616801acf08b4e102ed5cc68ebe0913636d",
+      "sha256": "2e93fa4868cf9c5e01afc9a93707cc72e0ed13790dac7c0346633bda361b6435",
+      "generationPromptSha256": "c3631849ebee3078f110627752690fe446f8b6d1c12a27f2cf16291ba0fdfb61",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--team--warm--habitat",
-      "sha256": "7393881f2b59313c177bf58bb97412e297aa4caca75fff60d3684f65c81f25a0",
-      "generationPromptSha256": "9cc4104f63249f3d87fb88eecb1d68f4383525f6343855749fe1aeee4b5a57a3",
+      "sha256": "e2016ad69a1c561ff4373be5544cf2d7a46cf8c1e0a5a6249925c5f0a683c6e3",
+      "generationPromptSha256": "117deea3cfc91a85c43e9cabdf3cc27ba4ea9eb43b74af012c5b84b279400f0e",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--team--warm--case",
-      "sha256": "d8d9fc94dc4317f327e9b6c41856c9ccba39538312a613bd5ac844775be77b67",
-      "generationPromptSha256": "70a031d7011818fd5c12e98b919ced6751501b506ee06aa9c18f6110b68a7811",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--team--warm--case--episode",
-      "sha256": "e4fc0b40e8110701cc33790092e890769e34dac1ef6a5c51e1cded5b143dfa4b",
-      "generationPromptSha256": "98ca25449234e4f100e0e564880bda26498d85179d0f5db18e3354c212e0a923",
+      "sha256": "c619ad0986d40b296d10ca4e6d24da4949e926d9b7f1d7f9066062762845af4c",
+      "generationPromptSha256": "8a0969accc3c9e7435c0b3165f31d72aaa5f03de86d5ea708a2704a53cf4043c",
       "width": 1672,
       "height": 941
     },
@@ -3576,43 +3488,22 @@
     },
     {
       "key": "monster--wild--partner--bright--route",
-      "sha256": "a6268f23c0ed6136b7699361e63876488700a22315123a14d7c9e8b827e4674d",
-      "generationPromptSha256": "d24b4228e23fbae6bb997e7974a2addc42df312fc59305f0b52b353d49bd3350",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--partner--bright--route--scene",
-      "sha256": "0fa13a8a6613bd2504e573023db3ba17a6033938403c67055645853024626121",
-      "generationPromptSha256": "5650f7175c2a7d9a6c1abf67e97745d6fd5a06eada454208f4ba52f17618200f",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--partner--bright--route--episode",
-      "sha256": "e2a3c5f0503580be55bf4fad053a7ddc8988ec91fd13266df44b3db0d245df22",
-      "generationPromptSha256": "9c4fe9bb8ff147ef8fcd783acfa2fcaec0c792a5fc552e41d8365330dbffd91f",
+      "sha256": "020655179d11e1a62cb769f94331d356e1874400b9498d82ae8b0f07398297d9",
+      "generationPromptSha256": "77a4edd2cbc495b4f4ff3a561bf9d3514949fd9c8ba76abebb043120318daefd",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--partner--bright--habitat",
-      "sha256": "e9185fcac43a0ac3c519d028021ba0db05a63917868dcd7f0ed22f89fbf63cdb",
-      "generationPromptSha256": "6e66c3f1ffbf81a5022f75b24cbc6cf6066d3b33680b9766c7ec869b1bf141a1",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--partner--bright--habitat--episode",
-      "sha256": "039074f92f1f22e9a3863e5dc26a059c7589094b3ffee10a9a01ee6c37491b26",
-      "generationPromptSha256": "93df5d86eb547e23dfb293ed0377b43c1996ac8aab2868421eee9bf6af47058b",
+      "sha256": "df6751935b574ebe7162deca8c5bb5e724cc500b93eb590e0fd2875388371291",
+      "generationPromptSha256": "9af91dd2712168596743826f973058e8ff1821ed38b0438004bd3edb134d1d20",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--partner--bright--case",
-      "sha256": "423771af68919841fc7c18c23f96d6dc2e09f5034b540542aa1c7d6ccb1ca0fe",
-      "generationPromptSha256": "549770207869e9e0388a134a705dc895295c99510be439b79203a1cca94ef0d9",
+      "sha256": "d3c5e1b643e54752a0b9d7647f8ef8b3edf4a9b2b021c27fa2ab7ea5dc4bb38d",
+      "generationPromptSha256": "4ffebe6e93b9e1c75336609e614647d3e47472152004418b1cec17b129fd9d68",
       "width": 1672,
       "height": 941
     },
@@ -3625,22 +3516,22 @@
     },
     {
       "key": "monster--wild--partner--secret--route",
-      "sha256": "352b1587eb4c4ef92d5e46c1f259c20d28a69aee4d98f02b9807b729f96d528e",
-      "generationPromptSha256": "46fb1dffc1078fabb0395e5419ae6b27b51b3265aba184bffbe56da96d88d752",
-      "width": 1672,
-      "height": 941
-    },
-    {
-      "key": "monster--wild--partner--secret--route--episode",
-      "sha256": "807e782fca3cdff6bc388886df1b7141dce289ef2eacc0ef59767326d8a59652",
-      "generationPromptSha256": "263e45a1763b23c3044ad96c628144672684dadddb0ee17429f1fbf6881ab9c0",
+      "sha256": "fadf25017630acc29e3f13ec0f56588df35520396dfef5ed8a3a43ca274bc383",
+      "generationPromptSha256": "fdabaeb2fc79776e7d4af1640499daab7ad342f0f86fee53712f8ccc3ba81242",
       "width": 1672,
       "height": 941
     },
     {
       "key": "monster--wild--partner--secret--habitat",
-      "sha256": "513af9b2aadb5d5c7acc6c13f899313ae95ae970a7d0ac6300553b9fc35b18b5",
-      "generationPromptSha256": "b009878c0443517b8e7789870e2d9802ec4ae66ff88ede915398bd51f709c6ae",
+      "sha256": "817523bceb1a61748093bd03eff4d3c8f960d26719c489231e9934c55b70401a",
+      "generationPromptSha256": "bc41120e59c670eed2632de56772b9942c448d3d3d4394fe124f7ed0e9eacb58",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--secret--case",
+      "sha256": "33b70047501021ce16e7581e89892299b1bc23292cc4c602cd50acbda3511f83",
+      "generationPromptSha256": "813b6b80221ce23212a049da4cc469eee103f8c46ce4c544a11d380d7b461eb1",
       "width": 1672,
       "height": 941
     },
@@ -3648,6 +3539,13 @@
       "key": "monster--wild--partner--warm",
       "sha256": "6d53357b6d5985d19f5ef5010a1d4f209b794c4a7318dd88eb6ab3d61c7f8ddd",
       "generationPromptSha256": "60dcb5ac73d8fafaef804baa15e953182aa51a4a1f091d414b4f9452c15469f6",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "key": "monster--wild--partner--warm--route",
+      "sha256": "5d2f1f10c1e6dd2c41336b90236d38959d701c0bf2e460b1968ff6bf3a8f901c",
+      "generationPromptSha256": "72c4a7864df35abea19dce25e2cba22ddb4e15437f77c99be7a13716d19d87f1",
       "width": 1672,
       "height": 941
     },

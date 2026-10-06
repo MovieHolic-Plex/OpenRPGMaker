@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--team--warm--route--scene,monster--wild--team--warm--route--episode,monster--wild--team--warm--route--short,monster--wild--team--secret--route--episode,monster--wild--partner--bright--route--scene,monster--wild--partner--bright--route--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 736,
+  "manifestSha256": "b7315a56b291fa3820492658510f9af79941fd539ac732d4d0413c9248f2404e",
+  "finishedAt": "2026-10-06T13:50:44.500637+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-736-click-proof.json",
+  "completeWholePlan": false
+}

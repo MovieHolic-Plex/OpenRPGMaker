@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 736,
+  "remainingAtSnapshot": 721,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T13:50:45.961369+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 736,
+      "manifestSha256": "b7315a56b291fa3820492658510f9af79941fd539ac732d4d0413c9248f2404e",
+      "finishedAt": "2026-10-06T13:50:24.169689+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-736-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--team--warm--route--scene,monster--wild--team--warm--route--episode,monster--wild--team--warm--route--short,monster--wild--team--secret--route--episode,monster--wild--partner--bright--route--scene,monster--wild--partner--bright--route--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 736,
+      "manifestSha256": "b7315a56b291fa3820492658510f9af79941fd539ac732d4d0413c9248f2404e",
+      "finishedAt": "2026-10-06T13:50:44.500637+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-736-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--team--secret--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--team--secret--route--episode.png",
+      "sha256": "a65cfca15548ed2f27f4dafd8491934bc0b1563c84dc1504e0dba7a71d57f747",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--warm--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--team--warm--route--scene.png",
+      "sha256": "0ff97dc59639aa4e5dc1e89b04879b6db72a3f1e5ecd60b504398bbe50e79939",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--warm--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--team--warm--route--episode.png",
+      "sha256": "116a2b4ca8c67b4e42cc6bbe96ad4547a60a28a42fea421652bbd26020bb3a61",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--warm--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--team--warm--route--short.png",
+      "sha256": "36555f83bab4b89b54fa9a4bb0492ea1a1d6d4ea28a302a040e118929d6e4f3b",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--bright--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--partner--bright--route--scene.png",
+      "sha256": "8511d93ca29146ebe84e481cf825854ed22ada71a506030905b57f88349e1283",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--partner--bright--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-736-stage168-selected-monster--wild--partner--bright--route--episode.png",
+      "sha256": "d7a7b6c1e726130f23105dae2d3890ba4ad820b2a9da6f60dae6226f18241dbc",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "736 published native/record integrity and six production-dialog paths, six settled screens actually viewed by root. Prior164-168 corrective reviews actually applied before this FULL build; private169 secret partner parent visibility audits and167 bright partner habitat child/new169 parent near-repeat comparison pending official review only after this snapshot preserved. Left caption overlap remains. No all736 fresh visual audit, no all-published click rescan/fullappboot/AIhandoff claim.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-736-stage168-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-736-stage168-click-proof.json"
+  }
+}

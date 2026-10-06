@@ -1,0 +1,399 @@
+{
+  "batch": "v2-production-166",
+  "passedAttempts": 4,
+  "rejectedAttempts": 6,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-166",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:08:09.061254+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-166",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:08:36.387834+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-166",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:13:15.644340+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-166",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:17:55.290236+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-166-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-166",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-166"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T13:17:55.725159+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--team--warm--route",
+      "nativeSha256": "154d3564df80962072ef600307a60215252076d6b41ca7483da5d4d94ee15f5f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "28cf7080baf9a775d10d21bc125097614270219acc71e0e6eeaae7566297b0ec",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Direct OWN full request/native/actual original parent: main climbing ramp x51-63 has meaningful lower-right descending face/foot behind actual controls60.3; composition false ONLY. Whole different upperLEFT village and continuous LEFT route, full net/open EMPTY basket/helpful soft cloth/OPEN water LEFT, whole physical LEFT impressions and other main tactical stations present. New near-left court/upperLEFT village differs from original entire right arena/right destination. No scope/identity invented."
+      ],
+      "note": "Direct OWN full request/native/actual original parent: main climbing ramp x51-63 has meaningful lower-right descending face/foot behind actual controls60.3; composition false ONLY. Whole different upperLEFT village and continuous LEFT route, full net/open EMPTY basket/helpful soft cloth/OPEN water LEFT, whole physical LEFT impressions and other main tactical stations present. New near-left court/upperLEFT village differs from original entire right arena/right destination. No scope/identity invented."
+    },
+    {
+      "key": "monster--wild--team--secret--case--episode",
+      "nativeSha256": "84cc2d79c4ba1aba0b9debed89347cc1e81f8c6319c219fceb00af6493bb3efa",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e24bf1fdbe723de704f48666e394a8a3e29f9abd3280ab4c76722eeb0d99240d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-165-monster--wild--team--secret--case--episode.png",
+          "sha256": "c7385938b8685aee766a49576cddacc84f4d5d30b3066d0040728e10d231081a",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Same-KEY narrow edit, direct OWN full request/new native/failed source/actual165 secretCASE parent: whole main climbing ramp moved farLEFT; whole posts/hurdle before60.3. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket/whole LEFT physical impressions and EMPTY leaf-lined nest/open water/plain WHITE soft cloth GROUND BESIDE kit LEFT remain. Fresh low care foreground differs from parent side hut/centralLEFT kit/farUPPERLEFT stations. All seven reinspected, no inherited pass."
+    },
+    {
+      "key": "monster--wild--team--secret--case--short",
+      "nativeSha256": "dbccb29bec7f1daddb998bec0bb5aea6c1776a0fc2456e77d85f8d01306e915c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e72885cd7d171b028b8aab6b450aaab304acf9802b3580c2acbd1e43348c566d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-165-monster--wild--team--secret--case--short.png",
+          "sha256": "753faa1a268be3e7a5a258c7c2ae583b3da571d199fa92dfbbb1151552ced11e",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Same-KEY paw-trail edit, direct OWN full request/new native/failed source/actual165 secretCASE parent plus read-only ramp diagnostic clipped at60.3: physical return trail now LEFT and old bottom-center/right impressions removed, but actual climbing ramp still extends past controls and diagnostic clipping stops inside its lower-right plank face/foot. composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket, independent CREAM fold ON same worktop OUTSIDE basket LEFT correct. No false unresolved paw or missing-ending failure; native unchanged."
+      ],
+      "note": "Same-KEY paw-trail edit, direct OWN full request/new native/failed source/actual165 secretCASE parent plus read-only ramp diagnostic clipped at60.3: physical return trail now LEFT and old bottom-center/right impressions removed, but actual climbing ramp still extends past controls and diagnostic clipping stops inside its lower-right plank face/foot. composition false ONLY. OPEN local refuge/loose rope/tipped EMPTY pail LEFT, full net/open EMPTY basket, independent CREAM fold ON same worktop OUTSIDE basket LEFT correct. No false unresolved paw or missing-ending failure; native unchanged."
+    },
+    {
+      "key": "monster--wild--team--warm--route--episode",
+      "nativeSha256": "60e9dab8b694ecd42a47ba3964a18d2a9acebf2316354526287f4b9f4164a919",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "52ba9d46a7e2c8e2f0c3f2ca68a8883da53c2ebca35a217c5121806752562edd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-165-monster--wild--team--warm--route--episode.png",
+          "sha256": "d8093151f9747bfb6d0c69bf4afdc20a6f4cfaaf18356d0b6b7e3cfefef19156",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Same-KEY paw edit, direct OWN full request/new native/failed source and actual166 warmROUTE candidate parent: all physical pad/toe impressions relocated farLEFT with no old center/right prints. Whole different upperLEFT village, continuous route, full net/open EMPTY basket, EMPTY leaf-lined nest/open water/plain WHITE care cloth BESIDE kit LEFT, entire main stations before60.3 correct. UpperLEFT large care kit and foreground stations differ from actual parent lowerLEFT kit/midLEFT stations. All seven reinspected; parent itself currently fails composition so child publication must be held."
+    },
+    {
+      "key": "monster--wild--team--warm--route--short",
+      "nativeSha256": "42f0b122e42f88fc93aa5e717e4e82758dba064786cdea36053f95a4746aac3c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d355df96b260dfba60b7c1e7e07d2616801acf08b4e102ed5cc68ebe0913636d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        },
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-165-monster--wild--team--warm--route--short.png",
+          "sha256": "5ce2dacf376ba93b17d710ff92e729fb78bc58c9e97531f435f82c7881105365",
+          "role": "same-key failed original edit target"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Same-KEY return-paw edit, direct OWN full request/new native/failed source and actual166 warmROUTE candidate parent: entire actual return trace LEFT, old bottom/right prints removed. OPEN LEFT homebase, independent CREAM fold ON same worktop OUTSIDE basket, full net/open EMPTY basket/helpful OPEN water LEFT, whole different upperLEFT village and main stations before60.3 present. Close open homebase/expanded foreground worktop and far upper stations differ from parent no-near-entrance smaller kit/mid stations. All seven reinspected; parent currently fails composition, so held."
+    },
+    {
+      "key": "monster--wild--team--warm--habitat--scene",
+      "nativeSha256": "e8227c048da6b957e3847c2a6add056482834fe1cd795a6c056ff3886fe7542a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "1747c9cec69bdac76d1017a398f2ebe1f2c17edbcb2e43d126644a78dbe1db29",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Direct OWN full request/native/actual original warmHAB parent: main climbing ramp x45-62 has meaningful lower-right descending face/foot behind controls60.3, composition false ONLY. THREE whole actual OPEN wetland/forest/ruin views LEFT with shared walkable court, full net/open EMPTY basket/helpful cloth/OPEN water LEFT, entire physical impressions LEFT, other main stations present. First-ready kit, no growth/return. New outdoor sloped court differs from original indoor three arches/right arena."
+      ],
+      "note": "Direct OWN full request/native/actual original warmHAB parent: main climbing ramp x45-62 has meaningful lower-right descending face/foot behind controls60.3, composition false ONLY. THREE whole actual OPEN wetland/forest/ruin views LEFT with shared walkable court, full net/open EMPTY basket/helpful cloth/OPEN water LEFT, entire physical impressions LEFT, other main stations present. First-ready kit, no growth/return. New outdoor sloped court differs from original indoor three arches/right arena."
+    },
+    {
+      "key": "monster--wild--team--warm--habitat--episode",
+      "nativeSha256": "679f743584e187ccbccb81656f2ea34368ebca7fdfe2a12accbc20237efc62b9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "cfc4df1565312aa3b50d20af0be5e661ee1ee1bfc75eac21675b69bec5436b8d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Direct OWN full request/native/actual original warmHAB parent: physical trail last very large pad/toe group x56-63 at bottom has meaningful pad hidden behind controls60.3, composition false ONLY. THREE actual OPEN LEFT habitat views, whole main stations LEFT, full net/open EMPTY basket, actual EMPTY leaf-lined nest/open water/plain WHITE soft cloth BESIDE kit LEFT correctly express growth. New low outdoor care foreground differs from original enclosed three-arch/right arena. No false missing care/ramp/view claim."
+      ],
+      "note": "Direct OWN full request/native/actual original warmHAB parent: physical trail last very large pad/toe group x56-63 at bottom has meaningful pad hidden behind controls60.3, composition false ONLY. THREE actual OPEN LEFT habitat views, whole main stations LEFT, full net/open EMPTY basket, actual EMPTY leaf-lined nest/open water/plain WHITE soft cloth BESIDE kit LEFT correctly express growth. New low outdoor care foreground differs from original enclosed three-arch/right arena. No false missing care/ramp/view claim."
+    },
+    {
+      "key": "monster--wild--team--warm--habitat--short",
+      "nativeSha256": "4bf1fa3e9cb8ad3097ab17bdda1b1c87fee2e70d8b083f0c7c6d4d618db8d330",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "beccb3949eee49640dced7045a570241be22ef1a001c22e346037a6f4463c4b4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Direct OWN full request/native/actual original warmHAB parent: main climbing ramp x52-63 has meaningful descending right face/foot behind controls60.3, composition false ONLY. THREE whole actual OPEN habitat views LEFT, OPEN LEFT homebase, entire physical return trail before60.3, full net/open EMPTY basket/helpful OPEN water and independent CREAM fold ON same worktop OUTSIDE basket LEFT correct. Fresh reverse open-porch return worktop differs from original indoor three arches/right arena; no false missing homebase/fold/identity."
+      ],
+      "note": "Direct OWN full request/native/actual original warmHAB parent: main climbing ramp x52-63 has meaningful descending right face/foot behind controls60.3, composition false ONLY. THREE whole actual OPEN habitat views LEFT, OPEN LEFT homebase, entire physical return trail before60.3, full net/open EMPTY basket/helpful OPEN water and independent CREAM fold ON same worktop OUTSIDE basket LEFT correct. Fresh reverse open-porch return worktop differs from original indoor three arches/right arena; no false missing homebase/fold/identity."
+    },
+    {
+      "key": "monster--wild--team--warm--case--scene",
+      "nativeSha256": "5ecd358c8d2995515c51ce2fe29efd5136fe6fdf8e61216060e1decd01f58410",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "44c2453c442f3d51733e54ab631b796183f5fd9e760818c11dbe7dd5718f9fa0",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Direct OWN full request/native/actual original warmCASE parent: main climbing ramp x55-71 has substantial body behind controls60.3, composition false ONLY. OPEN LEFT local refuge/loose rope/tipped EMPTY pail at threshold, full net/open EMPTY basket/helpful soft cloth/OPEN water LEFT, entire physical LEFT impressions and other tactical stations present. First-ready kit no growth/return/identity. New outdoor readykit/refuge court differs from original indoor shelter/right arena."
+      ],
+      "note": "Direct OWN full request/native/actual original warmCASE parent: main climbing ramp x55-71 has substantial body behind controls60.3, composition false ONLY. OPEN LEFT local refuge/loose rope/tipped EMPTY pail at threshold, full net/open EMPTY basket/helpful soft cloth/OPEN water LEFT, entire physical LEFT impressions and other tactical stations present. First-ready kit no growth/return/identity. New outdoor readykit/refuge court differs from original indoor shelter/right arena."
+    },
+    {
+      "key": "monster--wild--team--warm--case--episode",
+      "nativeSha256": "e4fc0b40e8110701cc33790092e890769e34dac1ef6a5c51e1cded5b143dfa4b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "98ca25449234e4f100e0e564880bda26498d85179d0f5db18e3354c212e0a923",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Direct OWN full request/native/actual original warmCASE parent: OPEN LEFT local refuge/loose rope/tipped EMPTY pail, full net/open EMPTY basket/physical LEFT traces. Entire main hurdle/posts/climbing ramp before60.3. EMPTY leaf-lined nest/open water/plain WHITE soft care cloth on low adjacent worktop/platform BESIDE kit LEFT correct; no ONsamebench care requirement. Fresh steep high local-care foreground and upperLEFT stations differ from original indoor near giant kit/right arena. No identity/return invented."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 731,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

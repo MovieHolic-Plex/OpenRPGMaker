@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "scripts/qa/interview-scene-bank-integrity.py"
+  ],
+  "kind": "integrity",
+  "returncode": 0,
+  "published": 742,
+  "manifestSha256": "66fac8814be6340db81fc3d0e8c5a3d116336178fc9d5c14c8a19b6a319b1da3",
+  "finishedAt": "2026-10-06T14:18:00.244763+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-742-integrity-proof.json",
+  "completeWholePlan": false
+}

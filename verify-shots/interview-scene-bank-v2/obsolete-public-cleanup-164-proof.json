@@ -1,0 +1,31 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 725,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--wild--team--bright--case",
+      "sourceSha256": "9a85d5ab738bc363eeaa6b24249e521908260e286dbbc20806b5b64c0173f340",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case-9a85d5ab738b.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--bright--case-1-9a85d5ab738b.png",
+      "replacementPublished": true,
+      "replacementSha256": "6890d5b6cc0a9289db13f2d04787ce0a2cf66e434a1b559e11df65d4271dcda1",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-164"
+    },
+    {
+      "key": "monster--wild--team--secret--route",
+      "sourceSha256": "040c07b0a10cf0bb17cd8d76ccda7502110d4cf1137004822fc69891be4376aa",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route-040c07b0a10c.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--wild--team--secret--route-3-040c07b0a10c.png",
+      "replacementPublished": true,
+      "replacementSha256": "eb6b3a8eb5ee12fc5abe210fe14b1b3036eb2937c507a5002108a55c6663942b",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-164"
+    }
+  ],
+  "resolvedCumulative": 134
+}
