@@ -29,6 +29,11 @@ export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome 
   if (override) return override;
   // Arbitrary atlases have no RM2K tile-number semantics. Explicit priority is authoritative.
   if (isCustomTileset(tileset)) {
+    // 받침(layerBacking)까지 적힌 칸은 저자가 층을 정한 덧그림이다(몬스터 키트의 울타리·눈더미·얼음 바위 71칸).
+    // priority 는 그 칸을 lower 로 두어, 조수가 3층으로 칠한 눈더미가 「상위 전용 칩 자동 라우팅」으로 1층에 놓여
+    // 바닥 없이 검은 칸이 됐다(2026-10-06 실제 편집기 이어 고치기).
+    const meta = tileset.tileMeta?.[tile];
+    if (meta?.layerBacking !== undefined && (meta.defaultLayer === "upper" || meta.defaultLayer === "lower")) return meta.defaultLayer;
     if (!tilesetHasLayerClassification(tileset)) return "both";
     return tileset.priority[tile] ?? "lower";
   }
