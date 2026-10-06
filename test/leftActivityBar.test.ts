@@ -74,10 +74,10 @@ describe("left activity bar", () => {
     expect(workspace.isCollapsed()).toBe(false);
   });
 
-  it("lists all five panes, renders a pane only when it is opened, and restores the saved one", () => {
+  it("lists every pane, renders a pane only when it is opened, and restores the saved one", () => {
     mount();
     const bar = [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-activity-bar"] button')].map((b) => b.dataset.testid);
-    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-favorites", "sidebar-progress", "sidebar-links", "sidebar-inspect"]);
+    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-favorites", "sidebar-progress", "sidebar-links", "sidebar-workshop", "sidebar-store", "sidebar-inspect"]);
     expect(find("left-progress-pane")?.childElementCount).toBe(0);
     find("sidebar-progress")?.click();
     expect(workspace.root.dataset.pane).toBe("progress");
