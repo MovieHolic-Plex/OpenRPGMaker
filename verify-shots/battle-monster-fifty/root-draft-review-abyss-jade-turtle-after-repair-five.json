@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T13:20:31.591039+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "573afee0e62dbebb014c4a2543e42afe10efa9e827a7be40750ca6e26913dcf8",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-jade-turtle-after-repair-five.png",
+  "nativeContactPngSha256": "6241524b7eafaea4897deb7f88c2b6f6a17e727683ffe076d18e8dd51b460dc1",
+  "nativeWriterFilesRead": {
+    "author.py": "01165733235635df42730484b368d664ab7ccdbab371eea7ba64de1ae2d60b56",
+    "repair.py": "d2f00c5bf2f577b791001d0469bddf97bbe77c122cc8952a105b0749f58bcfbb",
+    "apply_native_edits.py": "b716bcf40e4b2c1e5265c71467cd6dec65f79da24167d922cfbdba3c3cba34fe",
+    "apply_round_rim_rest.py": "40815c0553c7add33365c71088a90fb79bba29462d8c6f47efe9a4ad9ef01b0c",
+    "apply_shoulder_water.py": "0992dec8796b55cbc7850ce011be5b14bda3d4fe51b4c899265478df9f072697",
+    "apply_rigid_shell_rounded_stun.py": "4849788bef468123c9750b90ba4cfa17c9a3eb50261a03c71c558d21135a7832"
+  },
+  "observations": [
+    "All18 current fifth-repair native128 cells actually opened at original1x+nearest2x. Fifth repair has coherent large jade/gold shell with a rounder right lower rim; the near shoulder links the lowered neck to a braced claw and a smaller far limb remains separately outlined.",
+    "The stunned head now has a compact rounded snout, quiet closed-eye mark and attached shorter jaw, with small pair droop. Closed-eye low sleep folds paws under the neck; death rests extended limbs and a slack body. Mouth opens into two separate pale blue water arcs, then residual splashes.",
+    "Initial author and prior four native repair writers retain the exact previously read full-method hashes. New shoulder/water and rigid-shell/rounded-stun writers were read completely: directly replace individually authored selected row spans in named frames; no geometry, whole-frame image transforms, body generators or tweening. Read the new read-only diagnostic helper entirely.",
+    "Retain broad sparsely textured shell planes, subtle idle/state pair differences and dark far-limb contrast. Fresh fifth-repair independent verdict is pending at this root view; preceding fourth-repair rework belongs to its previous binding and cannot pass this one."
+  ],
+  "claimScope": "Actual fifth-repair native/source viewing only. No independent keep, Allow, archive completion or species completion claimed."
+}

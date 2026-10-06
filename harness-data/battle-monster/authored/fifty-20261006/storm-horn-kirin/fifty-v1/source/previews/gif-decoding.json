@@ -1,0 +1,120 @@
+{
+  "idle": {
+    "sequence": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "idle_b"
+    ],
+    "decodedFrames": 4,
+    "decodedHoldsMs": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "sha256": "5b927de0f7beba9461a1fab25e9918202f202afcc24f6551103846d879607673"
+  },
+  "attack": {
+    "sequence": [
+      "idle_a",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "idle_b"
+    ],
+    "decodedFrames": 6,
+    "decodedHoldsMs": [
+      240,
+      260,
+      110,
+      180,
+      200,
+      240
+    ],
+    "sha256": "477230091aeb53528b4af706a23296443667d536e816f8a98d1aac30057966e6"
+  },
+  "hit": {
+    "sequence": [
+      "idle_a",
+      "hit",
+      "recover",
+      "idle_a"
+    ],
+    "decodedFrames": 4,
+    "decodedHoldsMs": [
+      280,
+      220,
+      180,
+      300
+    ],
+    "sha256": "e54a5a1047a8e224cce6f6f861f4460fd2a6291cf5a8bf5d072236d3595ae42e"
+  },
+  "dead": {
+    "sequence": [
+      "idle_a",
+      "hit",
+      "dead"
+    ],
+    "decodedFrames": 3,
+    "decodedHoldsMs": [
+      240,
+      160,
+      1000
+    ],
+    "sha256": "41163e8b44335b74b336b240d1296ea77854616fff25be0d7b5b23ed43a1b5da"
+  },
+  "skill": {
+    "sequence": [
+      "skill_a",
+      "skill_b",
+      "skill_c",
+      "idle_a"
+    ],
+    "decodedFrames": 4,
+    "decodedHoldsMs": [
+      380,
+      260,
+      300,
+      240
+    ],
+    "sha256": "a122b192c64a0770d6cf8857e779455a6cdd98a435c6afdb58fc57a7102e000b"
+  },
+  "poison": {
+    "sequence": [
+      "poison_a",
+      "poison_b"
+    ],
+    "decodedFrames": 2,
+    "decodedHoldsMs": [
+      430,
+      430
+    ],
+    "sha256": "89b402b4fed60fd82f14296d6325407eba07aaa519be070f8aa6ac8bd00ad51d"
+  },
+  "stun": {
+    "sequence": [
+      "stun_a",
+      "stun_b"
+    ],
+    "decodedFrames": 2,
+    "decodedHoldsMs": [
+      480,
+      480
+    ],
+    "sha256": "6a10002fb23f5788fde9b812701a65ccfa82ec05fa06988c926bdd7eeec6052f"
+  },
+  "sleep": {
+    "sequence": [
+      "sleep_a",
+      "sleep_b"
+    ],
+    "decodedFrames": 2,
+    "decodedHoldsMs": [
+      700,
+      700
+    ],
+    "sha256": "8b82bdac33d02e516aecf216afd7d26efce90667ecf9736f3821df36e1de0f07"
+  }
+}

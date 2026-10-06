@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/harnesses/battle-monster/sun-gold-phoenix/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "bd0d7066fc4107008ca839c81d64e988e12e6ed330db878da1a744c84315aec8",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T13:19:59.605122+00:00",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "storm-horn-kirin",
+    "source": "qa-runs/harnesses/battle-monster/storm-horn-kirin/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "6625c098c9e53680c46f880b9ec1ae324e9e5b96d3fdeabb8d2bd228f0b64608",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T13:19:59.605122+00:00",
+    "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moon-frost-dragon",
+    "source": "qa-runs/harnesses/battle-monster/moon-frost-dragon/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "917cb8546f0cca2ee902cbc7dd4be6b4876d7ffb833225e3716c29ee4f8ed092",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T13:19:59.605122+00:00",
+    "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+    "entireGoalCompleteClaim": false
+  }
+]

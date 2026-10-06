@@ -1,0 +1,782 @@
+{
+  "attack": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3164,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3164,
+        "bbox": [
+          4,
+          57,
+          126,
+          124
+        ]
+      }
+    ]
+  },
+  "dead": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2285,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2285,
+        "bbox": [
+          13,
+          82,
+          126,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3736,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3736,
+        "bbox": [
+          8,
+          18,
+          110,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3682,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3682,
+        "bbox": [
+          9,
+          19,
+          109,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3671,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3671,
+        "bbox": [
+          8,
+          18,
+          111,
+          124
+        ]
+      }
+    ]
+  },
+  "windup": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3228,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3228,
+        "bbox": [
+          6,
+          47,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "hit": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3329,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3329,
+        "bbox": [
+          10,
+          24,
+          101,
+          124
+        ]
+      }
+    ]
+  },
+  "move": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3129,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3129,
+        "bbox": [
+          5,
+          49,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "recover": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3388,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3388,
+        "bbox": [
+          8,
+          31,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "stun_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2585,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2487,
+        "bbox": [
+          10,
+          66,
+          126,
+          124
+        ]
+      },
+      {
+        "pixels": 55,
+        "bbox": [
+          88,
+          46,
+          98,
+          54
+        ]
+      },
+      {
+        "pixels": 43,
+        "bbox": [
+          109,
+          39,
+          117,
+          46
+        ]
+      }
+    ]
+  },
+  "sleep_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2818,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2818,
+        "bbox": [
+          11,
+          46,
+          121,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2892,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2823,
+        "bbox": [
+          10,
+          50,
+          119,
+          124
+        ]
+      },
+      {
+        "pixels": 21,
+        "bbox": [
+          118,
+          89,
+          122,
+          93
+        ]
+      },
+      {
+        "pixels": 21,
+        "bbox": [
+          115,
+          42,
+          119,
+          46
+        ]
+      },
+      {
+        "pixels": 16,
+        "bbox": [
+          115,
+          81,
+          119,
+          86
+        ]
+      },
+      {
+        "pixels": 11,
+        "bbox": [
+          121,
+          47,
+          124,
+          50
+        ]
+      }
+    ]
+  },
+  "skill_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3950,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3950,
+        "bbox": [
+          7,
+          9,
+          108,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3945,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3945,
+        "bbox": [
+          5,
+          2,
+          117,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3093,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3056,
+        "bbox": [
+          10,
+          40,
+          121,
+          124
+        ]
+      },
+      {
+        "pixels": 16,
+        "bbox": [
+          114,
+          81,
+          118,
+          84
+        ]
+      },
+      {
+        "pixels": 11,
+        "bbox": [
+          110,
+          35,
+          113,
+          38
+        ]
+      },
+      {
+        "pixels": 10,
+        "bbox": [
+          113,
+          75,
+          116,
+          78
+        ]
+      }
+    ]
+  },
+  "sleep_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2839,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2839,
+        "bbox": [
+          11,
+          44,
+          121,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 3630,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 3607,
+        "bbox": [
+          8,
+          20,
+          117,
+          124
+        ]
+      },
+      {
+        "pixels": 14,
+        "bbox": [
+          120,
+          31,
+          123,
+          36
+        ]
+      },
+      {
+        "pixels": 9,
+        "bbox": [
+          110,
+          15,
+          113,
+          19
+        ]
+      }
+    ]
+  },
+  "stun_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "paletteSymbols": [
+      "O",
+      "b",
+      "c",
+      "d",
+      "e",
+      "g",
+      "h",
+      "j",
+      "k",
+      "l",
+      "n",
+      "r",
+      "s",
+      "t",
+      "v",
+      "w"
+    ],
+    "ink": 2687,
+    "borderInk": [],
+    "components": [
+      {
+        "pixels": 2589,
+        "bbox": [
+          9,
+          64,
+          126,
+          124
+        ]
+      },
+      {
+        "pixels": 55,
+        "bbox": [
+          101,
+          37,
+          111,
+          45
+        ]
+      },
+      {
+        "pixels": 43,
+        "bbox": [
+          115,
+          51,
+          123,
+          58
+        ]
+      }
+    ]
+  }
+}

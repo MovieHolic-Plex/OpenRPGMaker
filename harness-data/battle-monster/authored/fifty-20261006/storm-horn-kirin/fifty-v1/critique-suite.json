@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Inspected the four supplied PNGs at native 1x and nearest-neighbor 3x, including the eighteen labeled poses on light, dark and checker backgrounds. The tall jade quadruped, single gold horn, two ears, blue mane and four staggered hooves remain recognizable; the three-quarter read comes chiefly from the near/far leg separation, while the face is mostly profile. Broad upper-left jade highlights, lower/right teal shadows and gold highlight/shadow bands give readable volume and distinct materials. Far legs and hooves have weaker contrast on dark, but remain traceable. No obvious accidental transparent holes, broken body connections or missing contour sections are visible. Supporting hooves share the ground line; raised far feet read as depth or motion. Windup crouches, move extends the rear push, attack levels the actual horn, recover raises the neck, hit recoils and dead folds onto the ground. Skill preparation flares at the horn tip; contact has two branching lightning arms connected to that horn; recovery leaves short sparks. Poison sag, head-drooping stun with stars, and folded-neck sleep are distinct body states with small pair changes, rather than simple tints. No hand or separate tool applies. No blocking pixel repair identified. These still previews cannot establish animation timing, foot sliding or battle contact, and PNGs cannot authenticate literal palette-index authorship. This is a visual recommendation, not a geometry-only approval or a candidate selection.",
+  "issues": [],
+  "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "87549c644f928b99eb7c9d637e108c33710923336a5483c6f9c4e6548854215d",
+    "preview/suite/light.png": "0f100cb87a90528c25c92c4f7a57a107501ece553ad4261fc4052a68ccc8f52b",
+    "preview/suite/dark.png": "612da4f30e3686eff76f1c2da8f29bca0341465479008276c2d0d883fe425efc",
+    "preview/suite/checker.png": "923cc09f31d6b91039329f5a19543e0d720bfea78897db219850b3265957f974"
+  },
+  "jobId": "2b43abec-697a-4b12-a562-3e7a82b6a32a",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T13:17:42.470920+00:00",
+  "userApproved": false
+}

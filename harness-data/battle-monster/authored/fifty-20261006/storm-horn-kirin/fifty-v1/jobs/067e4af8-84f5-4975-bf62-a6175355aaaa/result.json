@@ -1,0 +1,30 @@
+{
+  "recommendation": "rework",
+  "summary": "Inspected the four supplied actual PNGs at native 1x and the existing nearest-neighbor 3x panels. The jade quadruped, single gold horn, two ears, blue dorsal mane and gold throat/belly plates are recognizable, with substantial cell occupancy. Broad upper-left highlights and underside shadows give useful volume; gold and jade remain distinguishable on light, dark and checker backgrounds. Four legs and hoof offsets are visible, although distant dark hooves lose contrast on the dark background. No obvious accidental interior transparency holes or detached body parts were visible. Idle changes are restrained; windup compresses the hind legs, move extends the push, attack spreads the stride, and recover raises the neck. Planted near hooves visually meet the shared ground line; raised far feet can read as perspective or motion. The remaining concerns are the predominantly profile anatomy, the upward horn aim at attack contact, and incomplete branching of the lower skill bolt. Skill preparation, discharge and residual sparks are distinct, and the discharge visibly joins the actual horn tip. Poison bubbles, stun stars and the sleeping head are recognizable rather than color tints, but poison and stun rely heavily on particles over very similar crouched body poses. Sleep remains distinct from the flatter dead collapse. This is a static pose preview: battle contact, timing, sliding, looping and effect playback were not observed. PNG appearance cannot establish literal palette-index authorship or certify the full source/runtime contract. This recommendation is visual feedback; the user retains the selection decision.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 89,
+      "y": 48,
+      "message": "The narrow muzzle and cheek read almost entirely in profile; the torso also has little visible front-facing shoulder plane. Add a small distinct muzzle end plane and a 2-3 pixel near-cheek/shoulder depth plane, with consistent near/far limb overlap, to establish the requested front-and-side 3/4 view. Carry that anatomy through the other poses."
+    },
+    {
+      "pose": "attack",
+      "x": 112,
+      "y": 61,
+      "message": "The horn still slopes upward above the snout while the legs make a broad running stride, weakening the intended horn-first ram at the contact pose. Lower the head/horn aim by several native pixels and show a compressed neck-to-shoulder thrust so the horn tip clearly leads the forward impact. Preserve its connected root and the planted support hoof."
+    },
+    {
+      "pose": "skill_b",
+      "x": 102,
+      "y": 55,
+      "message": "The large effect is attached at the horn tip, but the downward/right zigzag is an unbranched ribbon; only the upper stroke has clear forks. Add a substantial diverging fork to the lower bolt around this bend and separate the two bolt paths visually at their shared horn origin. Retain continuous gold-white pixels from the real horn tip."
+    },
+    {
+      "pose": "stun_a",
+      "x": 80,
+      "y": 89,
+      "message": "The low neck and compressed four-leg stance are too similar to poison; stars provide most of the state distinction. Redraw the front support with a visible stagger or knee buckle and a different drooping head angle, then vary that imbalance in stun_b. Keep a supporting hoof on the shared ground line so the pair reads as dazed instability rather than another poison crouch."
+    }
+  ]
+}

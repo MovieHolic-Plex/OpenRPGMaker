@@ -1,0 +1,55 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the four supplied actual PNGs at native 1x and their existing nearest 3x previews. The large right-facing silhouette, gold horn, two ears, blue mane and four staggered hooves are recognizable. Broad jade light/shadow planes and gold highlights mostly support upper-left lighting; near/far legs give modest depth, although the head reads mostly in profile. Ground contacts remain readable, and hit and dead have distinct silhouettes. Skill preparation, branching discharge and residual sparks are distinct and visibly originate at the actual horn; poison bubbles, stun stars and closed-eye crouched sleep are distinguishable states rather than recolors. Rework is recommended for background holes at the dorsal-mane/body junction and for a dash sequence whose windup lacks a compressed hind-leg push and whose contact pose trails all legs instead of showing a wide forward step. The sleep pair is distinguishable from other states, but its high, taut neck weakens the impression of relaxed sleep. This is a visual recommendation, not a user selection or geometry approval. Static pose previews cannot establish motion timing, actual battle contact, literal pxgrid authorship or exact palette/alpha compliance.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 45,
+      "y": 70,
+      "message": "Fill the isolated background pixels at (45,70), (46,70), (47,69) and (51,66) at the dorsal-mane/body junction with connected jade body or appropriate dark mane pixels. These are enclosed pinholes visible against both light and dark backgrounds; preserve the intentional open space between the legs."
+    },
+    {
+      "pose": "idle_b",
+      "x": 44,
+      "y": 70,
+      "message": "Close the small enclosed background pocket around x44-48, y70-71 where the dorsal mane joins the torso. Continue the body plane beneath the mane so this junction does not open and close across idle frames; inspect the corresponding small gaps in idle_c around (45,71)-(48,72)."
+    },
+    {
+      "pose": "recover",
+      "x": 49,
+      "y": 74,
+      "message": "Fill the enclosed gap across x49-52 at y74 and the isolated background pixel at (53,71) in the dorsal-mane/neck junction. Keep the mane outline joined to an opaque body surface through recovery."
+    },
+    {
+      "pose": "windup",
+      "x": 34,
+      "y": 104,
+      "message": "Redraw the rear hock around this region into a compressed bend with the rear hoof braced under the haunch. Currently the legs already sweep backward much like the travel pose, so the intended hind-leg preload is weak. Retain a planted support hoof at the ground baseline."
+    },
+    {
+      "pose": "attack",
+      "x": 85,
+      "y": 102,
+      "message": "Redraw one foreleg from the shoulder through a bent joint into a wide rightward step, with a readable hoof ahead of the shoulder. Both front and rear pairs currently trail left in parallel, so contact reads as a stretched slide rather than a forceful horn ram. Preserve the lowered connected neck/horn and the planted hoof baseline."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 83,
+      "y": 89,
+      "message": "Relax the raised neck/head by lowering the muzzle toward the folded forelegs and carrying the closed eyelid and connected mane through the bend; continue that resting silhouette in sleep_b. The current crouch has closed eyes but retains a long, taut, upward-pointing attack-like neck, weakening sleep readability at 1x."
+    }
+  ],
+  "binding": "5c2ae9d303fa3ecb7b7db57069492fb73d4f46adeed342ef0088bc69c5ba1132",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "92b05d94172ddcaab06515a3fb69863ae04900556c73fc58ee9d2dfce02e632b",
+    "preview/suite/light.png": "a9890c7d9083d4252f0d0020a56516b55f86262070f10322808343ff9f2e64ba",
+    "preview/suite/dark.png": "9a8602e2b9e1d898c7e6194060cbe45111ce7184dd230b68c1b99bb2e7e8bd99",
+    "preview/suite/checker.png": "193b2725d7ed79322bcad43f96e5d8af38979585ed7dedc56eeee948c1cc9871"
+  },
+  "jobId": "a6bb8e45-179c-42aa-89ec-961eb153ff51",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T12:04:57.022795+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,99 @@
+{
+  "nativeFrames": 18,
+  "uniqueGrids": 18,
+  "paletteEntries": 18,
+  "pngAlpha": {
+    "attack": [
+      0,
+      255
+    ],
+    "dead": [
+      0,
+      255
+    ],
+    "idle_a": [
+      0,
+      255
+    ],
+    "idle_c": [
+      0,
+      255
+    ],
+    "idle_b": [
+      0,
+      255
+    ],
+    "windup": [
+      0,
+      255
+    ],
+    "hit": [
+      0,
+      255
+    ],
+    "move": [
+      0,
+      255
+    ],
+    "recover": [
+      0,
+      255
+    ],
+    "stun_b": [
+      0,
+      255
+    ],
+    "sleep_b": [
+      0,
+      255
+    ],
+    "poison_b": [
+      0,
+      255
+    ],
+    "skill_a": [
+      0,
+      255
+    ],
+    "skill_b": [
+      0,
+      255
+    ],
+    "poison_a": [
+      0,
+      255
+    ],
+    "sleep_a": [
+      0,
+      255
+    ],
+    "skill_c": [
+      0,
+      255
+    ],
+    "stun_a": [
+      0,
+      255
+    ]
+  },
+  "lowestInk": {
+    "attack": 124,
+    "dead": 124,
+    "idle_a": 124,
+    "idle_c": 124,
+    "idle_b": 124,
+    "windup": 124,
+    "hit": 124,
+    "move": 124,
+    "recover": 124,
+    "stun_b": 124,
+    "sleep_b": 124,
+    "poison_b": 124,
+    "skill_a": 124,
+    "skill_b": 124,
+    "poison_a": 124,
+    "sleep_a": 124,
+    "skill_c": 124,
+    "stun_a": 124
+  }
+}

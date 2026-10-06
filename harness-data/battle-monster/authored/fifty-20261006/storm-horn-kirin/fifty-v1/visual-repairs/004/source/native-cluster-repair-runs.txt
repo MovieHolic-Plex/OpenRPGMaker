@@ -1,0 +1,39 @@
+# Native cluster repairs; 0-based y x literal ASCII, individually selected.
+@attack
+# Gold upper ridge, shaded solid taper, and forehead base.
+74 124 OO
+75 118 OOOOOOvwO
+76 112 OOOOOOwvvvvkgOO
+77 108 OOOOwvvvvkkggOO...
+78 105 OOwvvvvkkkkggOO.
+79 105 OvvvkkkkggOO
+80 105 OkkkggOO
+81 105 OggOO
+# Two named punctures, preserving the open inter-leg spaces.
+113 22 O
+111 85 O
+@hit
+117 51 O
+118 53 O
+# Short ankle collar and compact lifted far hoof, bottom at y121.
+118 86 ngkknnO
+119 87 OnrrnnnO
+120 87 OnnnnnnO
+121 88 OOOOOO
+@dead
+94 24 O
+95 25 t
+@skill_b
+120 80 O
+@skill_c
+# Individually authored curve: jade, shadow and gold remain coherent
+# through the faulty row and the adjoining abruptly stepped plate edge.
+75 72 lljjttssggkvvkO..
+76 72 llljjttssggkvvkO.
+77 72 llljjttssggkvvkO.
+78 71 llljjttssggkvvkO.
+79 71 lljjttssggkvvkO..
+80 70 jjjttssggkvvkO
+81 69 jjjttssggkvvkO
+@stun_a
+119 67 .

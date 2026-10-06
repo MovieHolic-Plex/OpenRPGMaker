@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재40/50 통과
+# 신규50종 제작 · 현재41/50 통과
 
 ## 최초 두 종 확인
 
@@ -697,3 +697,13 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 현재 합격 **40/50종 · 720자세 · 320GIF**. 동물10/요괴16/사람12(여성6)/보스2, 남은10종은128px 대형보스다. 원래 결정52행/선택8건은 보존됐고 새 위임120행/전체172행이다. 기존 정식 minor11건은 유지한다. 전체50 완료는 false다.
 - 현무 네 번째 수정의 새 실제 `3e56c79a-cadc-46d0-aff4-a69d9ca2ae22` rework3건(공격 갑각의 늘어나는 인상, 기절 두 머리의 모호한 주둥이)을 원문/실제 작업과 before-fifth source snapshot으로 보존했다. 그 네 번째 수정 원본18자세를 감독이 열었다는 주장은 하지 않았다. 다섯 번째 수정 중이며, 최종 keeper 원본에는 별도 전체 감독 검토가 필요하다. 기린 넷째 수정과 적갑문지기 최초 저작도 이어진다.
 - 근거: `forty-passed-proof.json`, `root-review-moon-frost-dragon.json`, `browser-proof-moon-frost-dragon.json`, `source-archive-proof.json`.
+
+## 41번째 신규 몬스터 · 뇌각기린 · 2026-10-06 13:23 UTC
+
+- 기린 네 번째 수정의 실제 독립 검수 `2b43abec-697a-4b12-a562-3e7a82b6a32a`는 **keep / 정식 issues0건**이다. 현재 binding `74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575`와 실제 terminal GPT6.1sol/high 작업, 기술 PASS, 네 검수 그림 해시가 일치한다. 이전 실제 rework6/4/8/3건은 보존됐다.
+- 감독이 현재 원본18자세를1632×1272 화면의 원본1배와 nearest2배로 열고, 현재 native writer 세 파일의 전체 main/모듈 흐름을 읽었다. 골격을 생성하거나 프레임 전체를 이동시키지 않고 명시적 frame/y/x/문자 도트 행을 적용한다. 근경 어깨/가슴과 먼 발굽 명도, 굽힘→뿔 돌격→회복, 뿔에서 갈라지는 번개, 독/기절/수면의 별도 몸 자세를 확인했다. 얼굴은 주로 측면이고 먼 다리의 어두운 배경 대비와 상태 쌍 변화는 작다는 실제 검수 한계를 유지한다.
+- 선택된 팩/원본 PNG18/디코딩 GIF8/현재 source와 정본 source archive41종을 다시 읽었다. 실제 데스크톱 정지 화면과375/320px 화면을 감독이 열어 확인했다. GIF8개/정지·재생/같은 배율 사람 비교, 페이지 오류0/가로 넘침0, 선택 버튼 미클릭이다.
+- 현재 합격 **41/50종 · 738자세 · 328GIF**. 동물10/요괴16/사람12(여성6)/보스3, 남은9종은128px 대형 보스다. 원래 결정52행/선택8건 보존, 새 위임123행/전체175행, 기존 정식 minor11건 유지. 전체50 완료는 false다.
+- 봉황/기린/빙룡의 현재 기술 원본을 검객과 동일 배율로 나란히 보인 실제 중간판을 사용자에게 제공했다. 서로 다른 불꽃/번개/얼음 발원점과 몸 크기를 확인할 수 있다.
+- 현무 다섯 번째 수정 원본18자세와 현재 저작 메서드를 실제로 열고 초안으로 보존했다. 새 독립 검수 `9d2adda2-c97a-4ec8-92d8-93b7b26c4804`는 **rework1건**: 앞 갑각/어깨 들이받기 동작을 분명히 하고 머리를 갑각 쪽으로 접어 넣으며 앞발을 지지하도록 한다. 실제 지적/작업/before-sixth source를 보존했고 여섯 번째 수정 중이다. 적갑문지기와 천년송왕도 실제 고정 모델로 저작 중이다.
+- 근거: `forty-one-passed-proof.json`, `root-review-storm-horn-kirin.json`, `browser-proof-storm-horn-kirin.json`, `source-archive-proof.json`, `root-draft-review-abyss-jade-turtle-after-repair-five.json`, `draft-independent-rework-abyss-jade-turtle-after-repair-five.json`.

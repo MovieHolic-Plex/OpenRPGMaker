@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "e86ce0b32612e213e8189cfd0cd3eff8a79239bc6a1860a9919d565981e42321",
+  "priorReviewJob": "0f1c4b1f-9072-46f5-b15e-59ccf48233ad",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 67,
+      "y": 84,
+      "message": "The shoulder and chest read as a flat lateral silhouette, making the torso closer to profile than the requested front/side 3/4 view. Around x60-79, y76-98, author a distinct near-shoulder volume and a narrow far chest plane, with the far foreleg visibly rooted behind that plane. Carry this depth relationship through the other poses."
+    },
+    {
+      "pose": "attack",
+      "x": 106,
+      "y": 79,
+      "message": "The gold horn becomes a short thin wedge during the dash: idle runs roughly from (89,42) to (109,19), while attack runs roughly from (106,81) to (125,75). Preserve the recognizable rigid horn's length and base thickness when lowering it; redraw its gold shadow/highlight bands and shift the head/neck left as needed to keep the tip inside the one-pixel border. Reconcile the same shortening in windup and move."
+    },
+    {
+      "pose": "idle_a",
+      "x": 81,
+      "y": 117,
+      "message": "On the dark preview, the far front hoof and lower leg nearly merge into the background, weakening the four-legged read. Add a small existing slate-blue midtone cluster to the hoof's upper-left face near x79-84, y114-119, and clarify its ankle overlap with the near leg. Apply the same restrained separation to the far hind hoof and corresponding idle frames while retaining the dark underside and outline."
+    }
+  ],
+  "startedAt": "2026-10-06T12:57:06.906379+00:00"
+}

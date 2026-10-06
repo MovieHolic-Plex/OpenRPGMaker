@@ -1,0 +1,32 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "42ea63693408eb733850dc653613a95d29241e96a52193545575eab7c50ab7ea",
+  "priorReviewJob": "067e4af8-84f5-4975-bf62-a6175355aaaa",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 89,
+      "y": 48,
+      "message": "The narrow muzzle and cheek read almost entirely in profile; the torso also has little visible front-facing shoulder plane. Add a small distinct muzzle end plane and a 2-3 pixel near-cheek/shoulder depth plane, with consistent near/far limb overlap, to establish the requested front-and-side 3/4 view. Carry that anatomy through the other poses."
+    },
+    {
+      "pose": "attack",
+      "x": 112,
+      "y": 61,
+      "message": "The horn still slopes upward above the snout while the legs make a broad running stride, weakening the intended horn-first ram at the contact pose. Lower the head/horn aim by several native pixels and show a compressed neck-to-shoulder thrust so the horn tip clearly leads the forward impact. Preserve its connected root and the planted support hoof."
+    },
+    {
+      "pose": "skill_b",
+      "x": 102,
+      "y": 55,
+      "message": "The large effect is attached at the horn tip, but the downward/right zigzag is an unbranched ribbon; only the upper stroke has clear forks. Add a substantial diverging fork to the lower bolt around this bend and separate the two bolt paths visually at their shared horn origin. Retain continuous gold-white pixels from the real horn tip."
+    },
+    {
+      "pose": "stun_a",
+      "x": 80,
+      "y": 89,
+      "message": "The low neck and compressed four-leg stance are too similar to poison; stars provide most of the state distinction. Redraw the front support with a visible stagger or knee buckle and a different drooping head angle, then vary that imbalance in stun_b. Keep a supporting hoof on the shared ground line so the pair reads as dazed instability rather than another poison crouch."
+    }
+  ],
+  "startedAt": "2026-10-06T12:27:36.838082+00:00"
+}

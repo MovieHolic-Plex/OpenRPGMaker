@@ -1,0 +1,56 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "fb13d072222fe4a23bea64d45366d234820ff2b7613da79e2aa78915b72faf6a",
+  "priorReviewJob": "26407bbf-d703-449d-baac-0cfe4cb4608a",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 112,
+      "y": 76,
+      "message": "The striking horn becomes an almost one-pixel pale line, losing the thick gold base and shaded taper visible in idle and windup. Rebuild the native gold base and taper from the forehead toward the right-hand tip, preserving recognizable horn mass through the lowering motion and the cell-edge margin."
+    },
+    {
+      "pose": "attack",
+      "x": 85,
+      "y": 111,
+      "message": "Close the isolated transparent pixel at (85,111) inside the diagonal front-leg junction and the similar pixel at (22,113) inside the rear-leg junction. Continue the neighboring leg shadow or outline cluster through these pixels; preserve the larger intentional gaps between legs."
+    },
+    {
+      "pose": "hit",
+      "x": 51,
+      "y": 117,
+      "message": "Fill the enclosed single transparent pixels at (51,117) and (53,118) along the recoiling rear-leg/hoof overlap with the appropriate dark contour cluster. They read as tiny background punctures in an otherwise solid diagonal limb."
+    },
+    {
+      "pose": "hit",
+      "x": 90,
+      "y": 120,
+      "message": "The far front leg finishes as a pointed diagonal strip around (89..92,119..120), while the other feet retain recognizable hoof blocks. Author a compact dark hoof cap and a clear ankle transition here; retain the intentional raised/recoiling placement rather than stretching the foot down to the near-foot baseline."
+    },
+    {
+      "pose": "dead",
+      "x": 24,
+      "y": 94,
+      "message": "Close the transparent pixels at (24,94) and (25,95), where the upper rump/mane contour cuts into the jade body. Join the mane boundary and adjacent jade shading into a continuous solid cluster; these punctures are separate from the larger intentional spaces beneath the collapsed body."
+    },
+    {
+      "pose": "skill_b",
+      "x": 80,
+      "y": 120,
+      "message": "Fill the enclosed transparent pixel at (80,120) within the bent front-foot cluster with the neighboring hoof/outline color so the supporting foot remains solid during discharge. Keep the intentional branching spaces within the lightning unchanged."
+    },
+    {
+      "pose": "skill_c",
+      "x": 80,
+      "y": 77,
+      "message": "The throat's jade/shadow/gold bands jump several pixels left for row y=77 and return immediately at y=78, producing a horizontal cut through the neck at 3x. Reconnect these bands into coherent native clusters around (77..88,75..81), and retain the short residual-current accents at the horn tip."
+    },
+    {
+      "pose": "stun_a",
+      "x": 67,
+      "y": 119,
+      "message": "Remove the isolated dark outline pixel at (67,119) floating in the transparent gap below the belly. It is disconnected from every limb and reads as debris, unlike the intentional gold stun stars above the head."
+    }
+  ],
+  "startedAt": "2026-10-06T12:47:10.408982+00:00"
+}

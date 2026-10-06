@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>뇌각기린 · 18자세 / 8동작</title>
+<style>
+:root{--scale:2;--bg:#1d2636;--ink:#e5edee}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,sans-serif}header{padding:20px 28px;border-bottom:1px solid #78848d}h1{font-size:24px;margin:0 0 4px}p{margin:6px 0}main{padding:20px 28px}nav{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}button,select{font:inherit;padding:6px 12px;border:1px solid #78848d;border-radius:5px;background:var(--bg);color:var(--ink)}h2{font-size:19px}.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(128px * var(--scale) + 30px),1fr));gap:16px}figure{margin:0;padding:12px;border:1px solid #77818b;border-radius:8px;text-align:center}img{width:calc(128px * var(--scale));height:calc(128px * var(--scale));image-rendering:pixelated;display:block;margin:0 auto}figcaption{margin-top:8px}.checker figure{background-color:#485568;background-image:repeating-conic-gradient(#647084 0% 25%,#384454 0% 50%);background-size:32px 32px}.checker figcaption{background:#1d2636;color:#e5edee;border-radius:4px}.note{font-size:14px;max-width:900px}a{color:inherit}summary{cursor:pointer}details{margin:26px 0}
+</style>
+<header><h1>뇌각기린</h1><p>원본 128px · 비취 사족 / 금뿔 / 푸른 등갈기 · 18자세 / 8동작</p>
+<nav><label>크기 <select id="scale"><option value="1">1배</option><option value="2" selected>2배</option><option value="3">3배</option></select></label><label>배경 <select id="background"><option value="dark">어두운</option><option value="light">밝은</option><option value="checker">체커</option></select></label><button id="pause">GIF 멈춤</button><a href="AUTHORING.md">저작 기록</a><a href="TIMING.md">시간표</a></nav></header>
+<main><h2>8동작 GIF</h2><div class="gallery" id="clips"></div><h2>18개 원본 자세</h2><div class="gallery" id="poses"></div>
+<details><summary>전체 확인판과 원본 시트</summary><p><a href="previews/native-1x.png">18자세 1배</a> · <a href="previews/eight-gifs-decoded-1x.png">실제 GIF 프레임 1배</a> · <a href="previews/dark-3x.png">어두운 확대</a> · <a href="previews/light-3x.png">밝은 확대</a> · <a href="previews/checker-3x.png">체커 확대</a></p><p><a href="previews/battle-sheet.png">기본 3×3 투명 시트</a> · <a href="previews/actions-sheet.png">추가 3×3 투명 시트</a></p></details>
+<p class="note">이 페이지는 그림 비교용입니다. 독립 검수 판정이나 사용자 선택을 기록하지 않습니다.</p></main>
+<script>
+const clips=[['idle','대기','idle_a'],['attack','공격','idle_a'],['hit','피격','idle_a'],['dead','쓰러짐','dead'],['skill','뇌각격','skill_a'],['poison','독','poison_a'],['stun','기절','stun_a'],['sleep','수면','sleep_a']];
+const poses=['idle_a','idle_b','idle_c','windup','move','attack','recover','hit','dead','skill_a','skill_b','skill_c','poison_a','poison_b','stun_a','stun_b','sleep_a','sleep_b'];
+function card(root,file,label){const figure=document.createElement('figure'),im=document.createElement('img'),caption=document.createElement('figcaption');im.src='previews/'+file;im.alt=label;caption.textContent=label;figure.append(im,caption);root.append(figure);return im;}
+const animationImages=clips.map(([name,label,still])=>({image:card(document.querySelector('#clips'),name+'.gif',label),name,still}));
+for(const pose of poses)card(document.querySelector('#poses'),pose+'.png',pose);
+document.querySelector('#scale').onchange=e=>document.documentElement.style.setProperty('--scale',e.target.value);
+document.querySelector('#background').onchange=e=>{const checker=e.target.value==='checker';document.body.classList.toggle('checker',checker);document.documentElement.style.setProperty('--bg',e.target.value==='light'?'#eee7da':'#1d2636');document.documentElement.style.setProperty('--ink',e.target.value==='light'?'#18232b':'#e5edee');};
+let paused=false;document.querySelector('#pause').onclick=e=>{paused=!paused;for(const a of animationImages)a.image.src='previews/'+(paused?a.still+'.png':a.name+'.gif');e.target.textContent=paused?'GIF 재생':'GIF 멈춤';};
+</script></html>

@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-06T13:22:39.500456+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "Viewed all four supplied actual PNGs, including the suite panels at native 1x and nearest 3x. The substantial round jade shell, gold grooves, small gold eye, blue-black body and wave-shaped tail give a coherent turtle silhouette. Broad upper-left highlights and darker right planes provide readable volume, though the shell is quite upright. Four legs and the long neck visibly join the body; no obvious accidental outline breaks or transparent body holes were observed on the three backgrounds. Spaces between legs and the curled tail opening in collapsed poses read as intentional. Near feet maintain a consistent ground level; higher far feet are compatible with perspective. Windup crouches, move extends the rear leg, recover rises, hit retracts, and dead collapses with a shell crack. The attack frame is distinct but reads chiefly as a low-neck step rather than the specified massive shell-shoulder shove, which is the reason for recommending rework. Skill preparation gathers cyan energy at the front shell/head, the two large curved water waves connect to the open mouth region, and recovery lowers the neck with three residual splashes. Poison has a lowered posture with purple bubbles, stun has a visibly drooping neck with stars, and sleep has a collapsed resting posture with a folded neck; these are distinct states rather than simple tints or unrelated attacks. Sleep is close to dead at 1x, but its raised folded neck and uncracked shell distinguish it. There is no hand, weapon or tool requiring attachment. This is a static pose-preview review: actual battle timing, dash displacement, animated continuity and contact were not observed, and literal-grid authorship cannot be established from PNGs alone. This recommendation is advisory; the user retains selection.",
+    "issues": [
+      {
+        "pose": "attack",
+        "x": 88,
+        "y": 94,
+        "message": "Strengthen the shell-shoulder impact around the front rim and neck root. The current exposed head remains ahead of the rim and the near foreleg reads as a supporting step, so the silhouette does not clearly show a shell bash. Redraw the neck/head tucked back toward the shell, project the leading shoulder/rim farther right, and brace the near foreleg ahead of the body while retaining its grounded sole around y=123. Keep the neck-to-shoulder pixels continuous and preserve the shell volume and gold-groove layout across move, attack and recover."
+      }
+    ],
+    "binding": "573afee0e62dbebb014c4a2543e42afe10efa9e827a7be40750ca6e26913dcf8",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "0be07c79049d3bd7bf38dd866db6ba2f43707ebc9abf520cafae7d3570e53a62",
+      "preview/suite/dark.png": "ee8c8c040007c6232e1738b0e7c8a2eaf72bc21f64d98ef33b05374ebeb8dcac",
+      "preview/suite/checker.png": "8d003a833d687b294c44d177a01f10016b76b6d87db905045132f8d1afdb7bd7"
+    },
+    "jobId": "9d2adda2-c97a-4ec8-92d8-93b7b26c4804",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T13:19:59.545307+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "9d2adda2-c97a-4ec8-92d8-93b7b26c4804",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T13:15:30.275749+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/jobs/9d2adda2-c97a-4ec8-92d8-93b7b26c4804",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "10c061735b4a76c44c6e5ea480e70bc2cc2eac5d0598f0e84f1caccc92ecfd36",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+      "preview/suite/light.png": "0be07c79049d3bd7bf38dd866db6ba2f43707ebc9abf520cafae7d3570e53a62",
+      "preview/suite/dark.png": "ee8c8c040007c6232e1738b0e7c8a2eaf72bc21f64d98ef33b05374ebeb8dcac",
+      "preview/suite/checker.png": "8d003a833d687b294c44d177a01f10016b76b6d87db905045132f8d1afdb7bd7"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T13:19:58.713507+00:00"
+  },
+  "preservedBeforeSixthRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/visual-repairs/006/source",
+  "priorRootNative18Viewing": "root-draft-review-abyss-jade-turtle-after-repair-five.json",
+  "claimScope": "Actual fifth-repair independent rework and previous root native/source viewing; no keeper/Allow/completion claim."
+}

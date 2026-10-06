@@ -1,0 +1,25 @@
+# Horn-tip bridge retained; narrow shared junction, separated upper/lower roots.
+@skill_b
+34 92 vwwwwv
+35 93 vwwwv..vwwv
+36 94 vwwwv...vwwv
+37 94 vwwwv....vwwv
+38 94 vwwwv.....vwwwv
+# Lower-bolt elbow at x102/y55 divides into a tapering right branch.
+53 106 vwvv
+54 106 vwwwvv
+55 104 vwwwwwwv
+56 106 vwwwwwwv
+57 108 vwwwwwwv
+58 110 vwwwwwwv
+59 112 vwwwwv
+60 111 vwwwv
+61 109 vwwwv
+62 109 vwwwv
+63 111 vwwwv
+64 113 vwwwv
+65 115 vwwwv
+66 117 vwwv
+67 119 vwv
+68 120 vw
+69 121 v

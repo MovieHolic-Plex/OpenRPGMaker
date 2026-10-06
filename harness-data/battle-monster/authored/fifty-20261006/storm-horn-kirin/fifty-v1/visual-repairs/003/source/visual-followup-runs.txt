@@ -1,0 +1,49 @@
+# Changes selected after opening the current PNGs, not component-based fill.
+@skill_a
+# Matching dorsal junction pinholes in the charge frame, separately selected.
+70 44 jjj
+71 47 j
+@attack
+# One unintended abdomen/upper-thigh pinhole created by the step redraw.
+105 69 j
+@sleep_a
+# Complete the opaque cheek/neck overlap, preserving the space below the throat.
+97 82 jj
+# Remove the first head pass's spare eye pixel; the final lid is only x91..93.
+105 89 j
+# The first head pass overlapped the ears; restore two folded ear silhouettes above brow.
+91 85 OO
+92 84 OljtO
+93 84 OljjtO
+94 85 OljjtsO
+95 86 OljjtsO
+96 86 OjjtsO
+97 87 OjtsO
+98 87 jjtsO
+92 91 OO
+93 91 OjtO
+94 91 OjtO
+95 91 OjttO
+96 90 OjttO
+97 89 OjttO
+98 89 jjttO
+@sleep_b
+96 82 jj
+97 81 jjj
+98 84 j
+100 95 jj
+92 86 OO
+93 85 OljtO
+94 85 OljjtO
+95 86 OljjtsO
+96 87 OljjtsO
+97 87 OjjtsO
+98 88 OjtsO
+99 88 jjtsO
+93 92 OO
+94 92 OjtO
+95 92 OjtO
+96 92 OjttO
+97 91 OjttO
+98 90 OjttO
+99 90 jjttO

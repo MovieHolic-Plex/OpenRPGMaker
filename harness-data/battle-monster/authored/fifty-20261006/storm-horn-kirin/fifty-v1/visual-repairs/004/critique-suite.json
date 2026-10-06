@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs at native scale and inspected the suite's exact nearest-neighbor 3x panels. The jade quadruped, long neck, gold horn and belly plates, two ears and blue mane are recognizable; the upright body fills the cell well. Broad upper-left highlights and darker lower planes separate the materials. No obvious accidental transparent holes or detached anatomical pieces were visible; openings between bent legs appear intentional. Hooves provide visible baseline support, although the far feet lose contrast on the dark background. Windup compresses the legs, move extends the rear push, attack lowers the horn, recover raises the neck, hit recoils and dead collapses. The dash horn visibly loses length and thickness, and the torso needs clearer 3/4 depth. Skill preparation sparks, the large upward/downward branched discharge and residual current originate at the actual horn. Poison crouches with purple bubbles, stun droops with stars, and sleep folds the neck and legs; these are distinct pose states rather than simple tints, with subtle differences within each pair. This recommendation is visual feedback, not a user selection. Still pose previews cannot verify animation timing, foot sliding, opponent contact, battle scale or literal pxgrid authorship; geometry validity alone is not visual approval.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 67,
+      "y": 84,
+      "message": "The shoulder and chest read as a flat lateral silhouette, making the torso closer to profile than the requested front/side 3/4 view. Around x60-79, y76-98, author a distinct near-shoulder volume and a narrow far chest plane, with the far foreleg visibly rooted behind that plane. Carry this depth relationship through the other poses."
+    },
+    {
+      "pose": "attack",
+      "x": 106,
+      "y": 79,
+      "message": "The gold horn becomes a short thin wedge during the dash: idle runs roughly from (89,42) to (109,19), while attack runs roughly from (106,81) to (125,75). Preserve the recognizable rigid horn's length and base thickness when lowering it; redraw its gold shadow/highlight bands and shift the head/neck left as needed to keep the tip inside the one-pixel border. Reconcile the same shortening in windup and move."
+    },
+    {
+      "pose": "idle_a",
+      "x": 81,
+      "y": 117,
+      "message": "On the dark preview, the far front hoof and lower leg nearly merge into the background, weakening the four-legged read. Add a small existing slate-blue midtone cluster to the hoof's upper-left face near x79-84, y114-119, and clarify its ankle overlap with the near leg. Apply the same restrained separation to the far hind hoof and corresponding idle frames while retaining the dark underside and outline."
+    }
+  ],
+  "binding": "e86ce0b32612e213e8189cfd0cd3eff8a79239bc6a1860a9919d565981e42321",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "bd1d5744b8f941f96f8d1bb48357a4d32cdb8ef01d197795aa67a6d90b3b4a27",
+    "preview/suite/light.png": "04724b2fe4f4dd07e53a72becd2806246bb0fc3b08198d5158dc724b7fd5154d",
+    "preview/suite/dark.png": "5add6f6e122179f1da036a085470bbc059c853fc73ede3f32c57ca203209b73f",
+    "preview/suite/checker.png": "e43a9c6411bafee5c6b91109fab6173b9387d6745a5c05e8ea2a5b988237aee0"
+  },
+  "jobId": "0f1c4b1f-9072-46f5-b15e-59ccf48233ad",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T12:57:06.879159+00:00",
+  "userApproved": false
+}

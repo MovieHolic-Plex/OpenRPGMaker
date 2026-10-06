@@ -1,0 +1,141 @@
+# Explicit native coordinates, y x literal-run. No propagation to other frames.
+@idle_a
+66 51 b
+69 47 b
+70 45 jjj
+@idle_b
+69 47 b
+70 44 jjjj
+71 47 jj
+@idle_c
+71 45 jjj
+72 48 j
+@recover
+70 54 b
+71 53 b
+73 51 bb
+74 49 jjjj
+@windup
+# Clear only the old two rear legs below the retained haunch.
+105 18 ......................................
+106 18 ......................................
+107 18 ......................................
+108 18 ......................................
+109 18 ......................................
+110 18 ......................................
+111 18 ......................................
+112 18 ......................................
+113 18 ......................................
+114 18 ......................................
+115 18 ......................................
+116 18 ......................................
+117 18 ......................................
+118 18 ......................................
+119 18 ......................................
+120 18 ......................................
+121 18 ......................................
+122 18 ......................................
+123 18 ......................................
+124 18 ......................................
+# Far thigh turns right; darker hock folds back beneath the belly.
+105 43 OstttttO
+106 44 OstttttO
+107 45 OstttttO
+108 46 OstttttO
+109 47 OsttttO
+110 47 OsttttO
+111 46 OsttttO
+112 45 OsttttO
+113 44 OsttttO
+114 43 OsttttO
+115 42 OstttO
+116 42 OgkkgO
+117 41 OnrrrnnO
+118 41 OnrrrnnO
+119 41 OnrrnnnO
+120 41 OnnnnnnO
+121 42 OOOOOO
+# Near haunch carries a wide thigh into a compressed knee, then a braced hock.
+105 29 OljjjjjttssO
+106 30 OljjjjjttssO
+107 31 OljjjjjttssO
+108 32 OljjjjjttssO
+109 33 OljjjjjttssO
+110 34 OljjjjjttssO
+111 35 OljjjjjttsO
+112 35 OljjjjttssO
+113 35 OlljjttssO
+114 34 OlljjttssO
+115 33 OljjjttssO
+116 32 OljjjttssO
+117 31 OljjjttssO
+118 30 OgkvvvkkgO
+119 29 OgkvvvkkggO
+120 28 OnrrrrrrnnO
+121 28 OnrrrrrrnnO
+122 28 OnrrrrrnnnO
+123 28 OnnnnnnOnnO
+124 29 OOOOOO.OOO
+@attack
+# Keep torso/abdomen through y106; remove the former parallel trailing forelegs.
+104 72 ...............................................
+105 69 ..................................................
+106 65 ......................................................
+107 50 .....................................................................
+108 50 .....................................................................
+109 50 .....................................................................
+110 50 .....................................................................
+111 50 .....................................................................
+112 50 .....................................................................
+113 50 .....................................................................
+114 50 .....................................................................
+115 50 .....................................................................
+116 50 .....................................................................
+117 50 .....................................................................
+118 50 .....................................................................
+119 50 .....................................................................
+120 50 .....................................................................
+121 50 .....................................................................
+122 50 .....................................................................
+123 50 .....................................................................
+124 50 .....................................................................
+# Near shoulder to forward knee. Gold chest edge remains above the upper leg.
+102 80 ljjttssOgkvvkO
+103 78 ljjjttssOgkvvkO
+104 72 OljjjjjjjjttssOgkgO
+105 70 OljjjjjjjjjttssOggO
+106 67 OljjjjjjjjjjjttssOO
+107 66 OljjjjttssOOljjjttssO
+# Far foreleg is under the shoulder, visibly separate from the wide near step.
+108 75 OstttttO
+109 76 OstttttO
+110 77 OstttttO
+111 78 OsttttO
+112 79 OsttttO
+113 80 OsttttO
+114 81 OstttO
+115 82 OstttO
+116 83 OgkkgO
+117 83 OnrrrrnnO
+118 83 OnrrrrnnnO
+119 83 OnrrrnnnnO
+120 83 OnnnnnnnnO
+121 84 OOOOOOOO
+# Near thigh extends right, knee compresses, broad shin plants a hoof ahead of shoulder.
+108 77 OljjjjjjttssO
+109 80 OljjjjjjttssO
+110 83 OljjjjjjttssO
+111 86 OljjjjjjttsO
+112 89 OlljjjjttsO
+113 92 OlljjjttssO
+114 94 OljjjttssO
+115 95 OljjjttssO
+116 96 OljjjttssO
+117 97 OljjjttssO
+118 98 OljjjttssO
+119 99 OgkvvvvkkgO
+120 99 OgkvvvkkggOO
+121 99 OnrrrrrrrnnnO
+122 99 OnrrrrrrnnnnO
+123 99 OnnnnnnnOnnnO
+124 100 OOOOOOO.OOOO
