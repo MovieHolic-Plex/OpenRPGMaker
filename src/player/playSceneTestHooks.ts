@@ -1,4 +1,5 @@
 import { characterBaseOrigin } from "./characterOrigin";
+import { transitDebugState } from "@/player/playSceneTransit";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot, type RuntimeActionReceipt, type RuntimeDomOverlay } from "@/player/runtimeDom";
@@ -86,6 +87,8 @@ type TestHookWindow = Window & {
   /** 구름 그림자 레이어 관측. 계측이 꺼진 씬에는 없다. */
   __oprnCloudShadows?: () => CloudShadowDebug;
   __oprnSunlight?: () => ReturnType<typeof sunlightDiagnostics>;
+  /** 맵 탈것(버스·전차·차량 흐름) 관측 — 노선·탈것 사각·정차·막힌 초. 탈것 없는 맵은 null. */
+  __oprnTransit?: () => ReturnType<typeof transitDebugState>;
   /** 이 훅들을 심은 씬. 옛 씬의 shutdown 이 새 씬의 훅을 지우지 않게 하는 소유권 표다. */
   __oprnHooksScene?: Phaser.Scene;
 
@@ -278,6 +281,7 @@ export function installPlaySceneTestHooks(
   w.__oprnPerf = () => perfCountersDebug(scene);
   w.__oprnCloudShadows = () => cloudShadowsDebug(scene);
   w.__oprnSunlight = () => sunlightDiagnostics(scene);
+  w.__oprnTransit = () => transitDebugState(scene as PlaySceneContext);
   w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
 
   w.__oprnActionCombat = () => actionCombatDebug(scene);
@@ -388,6 +392,7 @@ export function installPlaySceneTestHooks(
     delete w.__oprnEmotes;
     delete w.__oprnCloudShadows;
     delete w.__oprnSunlight;
+    delete w.__oprnTransit;
     delete w.__oprnHooksScene;
 
     delete w.__oprnSetActorVitals;

@@ -131,6 +131,10 @@
   - 교사: RC 3~4층, 한쪽 복도형. 층고 약 3.6m(→40px), 교실 7×9m(정면 약 10칸), 복도 1.8~2.1m.
   - 체육관: 하부 RC + 상부 철골, 20×28~25×30m, 천장 7m 이상.
   - 교문: 문기둥, 교명판, 미닫이 철문 (일반적 구성).
+  - 校庭(2026-10-07 보강): 가운데 운동장(다진 흙·砂 — 도시 학교는 ダスト舗装·ウォークトップ), **둘레에** 나무·놀이기구(鉄棒·ジャングルジム·うんてい·ブランコ·すべり台·砂場·タイヤ)·朝礼台, 부속으로 屋外プール·学級農園·観賞池(ビオトープ)·飼育小屋. 운동장 맨흙은 비어 있는 것이 기능이다 — 놀이기구는 가장자리에 모은다.
+    출처: [Wikipedia 校庭](https://ja.wikipedia.org/wiki/%E6%A0%A1%E5%BA%AD), [多摩スポーツ施設 学校校庭舗装 施工例](https://www.tamasp.jp/%E6%96%BD%E5%B7%A5%E4%BE%8B/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E5%B7%A5%E4%BA%8B/%E5%AD%A6%E6%A0%A1%E6%A0%A1%E5%BA%AD%E8%88%97%E8%A3%85/)
+  - 학교 수영장: 25m × 12~13m(6~7코스), 탈의실 → 샤워·발 씻는 곳 → 데크 순서로 들어가고 둘레는 철망 (일반적 구성).
+  - 놀이기구 밑·통로는 ゴムチップ(고무 칩) 포장을 부분적으로 쓰고, 일부를 芝生로 바꾼 학교도 있다. 출처: [ユリ工業 ゴムチップ 校庭](https://www.yurikougyou.jp/blog/blog/188684), [多摩スポーツ施設 学校校庭舗装 施工例](https://www.tamasp.jp/%E6%96%BD%E5%B7%A5%E4%BE%8B/%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%89%E5%B7%A5%E4%BA%8B/%E5%AD%A6%E6%A0%A1%E6%A0%A1%E5%BA%AD%E8%88%97%E8%A3%85/), [芝生化 연구(大阪府立大)](https://www.kobe-park.or.jp/wp/wp-content/uploads/2020/03/2137c7e5a2b0f448f7af4e18e00f9b2e.pdf)
   - 출처: [文科省 사례](https://www.mext.go.jp/a_menu/shisetu/shuppan/06100416/003.pdf), [横浜市](https://www.city.yokohama.lg.jp/business/nyusatsu/kakukukyoku/2020/sekkei/kenchiku/hutamatagawasyou.files/0017_20200507.pdf), [kenchiku-guide](https://kenchiku-guide.com/school-ceiling-height-3m-reason/)
 - **소방서**
   - 차고: 보 밑 5m 이상(→55px), 셔터.

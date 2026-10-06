@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 6926,
+  "count": 8048,
   "tilesPerRow": 48,
-  "rows": 145,
+  "rows": 168,
   "sheetPx": [
    768,
-   2320
+   2688
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 3770,
-  "legacy": 19,
+  "block_cells": 4681,
+  "legacy": 230,
   "legacy_ids": [
    5137,
    5275,
@@ -24,15 +24,16 @@
    6590,
    6592,
    6608,
-   6613,
-   6617,
-   6629,
-   6630,
-   6636,
-   6637,
    6645,
    6653,
-   6707
+   6686,
+   6688,
+   6707,
+   6929,
+   6930,
+   6931,
+   6932,
+   6933
   ],
   "unused_source": 110,
   "people_reserved": 155,
@@ -44,40 +45,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 3770
+   "block": 4681
   }
  },
  "pc_counts": {
-  "star": 4477,
-  "solid": 1435,
-  "floor": 384,
-  "solidfloor": 155,
-  "flat": 301,
+  "star": 4767,
+  "solid": 1675,
+  "floor": 455,
+  "solidfloor": 331,
+  "flat": 435,
   "blank": 155
  },
  "kits": {
-  "total": 352,
+  "total": 419,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 176
+   "block-kit": 243
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 176
+  "block_kit": 243
  },
  "groups": {
-  "total": 175,
+  "total": 203,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 22
+   "block": 50
   }
  },
  "autotiles": {
@@ -108,14 +109,20 @@
    "autotiles_lines",
    "roads",
    "buildings",
-   "street_hand"
+   "street_hand",
+   "school",
+   "transit_street",
+   "transit_station"
   ],
   "merged": [
    "autotiles_ground",
    "autotiles_lines",
    "roads",
    "buildings",
-   "street_hand"
+   "street_hand",
+   "school",
+   "transit_street",
+   "transit_station"
   ],
   "missing": [],
   "on_disk_not_in_order": [],
@@ -154,16 +161,40 @@
    },
    {
     "name": "street_hand",
-    "cells": 383,
+    "cells": 453,
     "autotiles": 0,
     "groups": 1,
-    "kits": 60,
-    "notes": "손 도트 거리 소품 60종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
+    "kits": 62,
+    "notes": "손 도트 거리 소품 62종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
+   },
+   {
+    "name": "school",
+    "cells": 620,
+    "autotiles": 0,
+    "groups": 3,
+    "kits": 33,
+    "notes": "손 도트 小学校 교정 33종(校庭 흙 바닥·트랙 선·철봉·조례대·게양대·정글짐·운제·타이어·골대·방구망·체육 창고·百葉箱·사육장·화단·나팔꽃·자전거 보관대·二宮金次郎像·수영장). 바닥(흙·수영장 데크·물)은 1층, 트랙 선은 2층 투명 덧그림, 나머지 3층. 한계: 교사 실내 없음, 밤 조명 없음."
+   },
+   {
+    "name": "transit_street",
+    "cells": 85,
+    "autotiles": 0,
+    "groups": 3,
+    "kits": 10,
+    "notes": "노면전차 레일·차막이·안전지대 정류장·가선·전주, 지하철 출입구. 레일은 2층 투명 덧그림, 가선은 4층."
+   },
+   {
+    "name": "transit_station",
+    "cells": 136,
+    "autotiles": 0,
+    "groups": 22,
+    "kits": 22,
+    "notes": "지하철역(콘코스·승강장) 손 도트 22키트. 콘코스: 흰 타일 벽 2줄 → 매표기·계단(위)·역무실은 벽을 품고 벽 줄에 붙인다. 개찰구는 9칸 가로로 콘코스를 막고 홀수 열로 지나간다. 승강장: 뒷벽 3줄 → 선로 2줄(solidfloor) → 승강장 끝 1줄 → 바닥. 열차(jp-subway, 30칸)는 선로 2줄을 발자국으로 쓴다 → 승강장은 32칸 이상. 역명판은 8×3 뒷벽 변형(16px 글자라 6칸에 안 들어감) — 열차가 서면 가려지므로 기둥 사이에 매단 역명판(6×2)을 함께 둔다. 맨 위 줄에 천장 보(jp-subway-ceiling)를 가로로 깐다. 개찰구 양옆은 칸막이(jp-subway-fence)로 벽·기둥까지 막는다. 기둥은 콘코스 = pillar-plain, 승강장 = pillar(번호판). 점자 유도 블록은 바닥 타일이 아니라 장면 합성 때 그리는 선이다: 출구 계단 → 매표기 → 개찰 통로 → 내려가는 계단, 승강장은 끝 줄의 점자 블록에서 계단 쪽으로 가지를 낸다."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 352,
+  "kits_checked": 419,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -178,7 +209,7 @@
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
-   "mark": 14,
+   "mark": 16,
    "bwall": 4,
    "bwallf": 3,
    "gatepost": 1,
@@ -194,7 +225,32 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 1
+   "school": 9,
+   "tetsubo": 1,
+   "noboribou": 1,
+   "ichirinsha": 1,
+   "fujidana": 1,
+   "biotope": 1,
+   "tsutsuji": 2,
+   "chorei": 1,
+   "flagpoles": 1,
+   "jungle": 1,
+   "unte": 1,
+   "tires": 1,
+   "goal": 2,
+   "ball": 1,
+   "souko": 1,
+   "hyakuyoubako": 1,
+   "shiiku": 1,
+   "kadan": 1,
+   "asagao": 1,
+   "bike": 1,
+   "ninomiya": 1,
+   "teaarai": 1,
+   "gakkyuen": 1,
+   "pool": 1,
+   "tram": 9,
+   "subway": 23
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -204,9 +260,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6926,
-  "kits_checked": 352,
-  "groups_checked": 175,
+  "tiles_checked": 8048,
+  "kits_checked": 419,
+  "groups_checked": 203,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -221,10 +277,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "036ebe52fa7bdcae85bc5718c4a48f48c16b9f75",
+ "sheet_hash": "e5cacc08ff1a3a652a5d0c2aaa7717ea60db4c34",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 352,
+  "kits_checked": 419,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -239,7 +295,7 @@
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
-   "mark": 14,
+   "mark": 16,
    "bwall": 4,
    "bwallf": 3,
    "gatepost": 1,
@@ -255,7 +311,32 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 1
+   "school": 9,
+   "tetsubo": 1,
+   "noboribou": 1,
+   "ichirinsha": 1,
+   "fujidana": 1,
+   "biotope": 1,
+   "tsutsuji": 2,
+   "chorei": 1,
+   "flagpoles": 1,
+   "jungle": 1,
+   "unte": 1,
+   "tires": 1,
+   "goal": 2,
+   "ball": 1,
+   "souko": 1,
+   "hyakuyoubako": 1,
+   "shiiku": 1,
+   "kadan": 1,
+   "asagao": 1,
+   "bike": 1,
+   "ninomiya": 1,
+   "teaarai": 1,
+   "gakkyuen": 1,
+   "pool": 1,
+   "tram": 9,
+   "subway": 23
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -265,9 +346,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 6926,
-  "kits_checked": 352,
-  "groups_checked": 175,
+  "tiles_checked": 8048,
+  "kits_checked": 419,
+  "groups_checked": 203,
   "autotiles_checked": 17
  },
  "files": {

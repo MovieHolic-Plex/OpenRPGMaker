@@ -526,6 +526,17 @@ export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSe
   }, { scope: "map", mapId });
 }
 
+/** 맵 위 탈것 노선(차 흐름·버스·노면전차·전철·지하철)을 통째로 바꾼다. null 또는 빈 노선이면 지운다. */
+export function setMapTransit(mapId: MapId, transit: import("@/project/mapTransit").MapTransit | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (!transit || transit.routes.length === 0) delete map.transit;
+    else map.transit = structuredClone(transit);
+  }, { scope: "map", mapId });
+}
+
 export function setMapSunlight(mapId: MapId, patch: Partial<import("@/project/sunlight").MapSunlight> | null): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {

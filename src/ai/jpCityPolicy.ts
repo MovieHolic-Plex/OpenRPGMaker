@@ -18,8 +18,8 @@ export function isJpCityTilesetDef(tileset: Pick<TilesetDef, "image"> | undefine
 
 /** 사용자가 칩셋을 직접 가리킨 식별자·이름 — 이 경우 PAW 전용 게이트도 물러선다(modernTilesetPolicy.requestsModernMap). */
 const NAMES_JP_CITY_RE = /jp[_-]city|oprn-jp|일본\s*도시\s*(?:칩셋|타일셋|\(도트\))/iu;
-/** 일본 거리 풍경 요청 — jp_city 가 이 저장소에서 그 일을 하는 유일한 번들이다(주택가·역·공원·신사 그림은 아직 없다). */
-const JP_STREET_RE = /일본(?:풍|식)?\s*(?:상가|상점가|상점\s*거리|쇼핑\s*거리|편의점|이자카야|골목|동네\s*거리|거리|주택가)/u;
+/** 일본 거리 풍경 요청 — jp_city 가 이 저장소에서 그 일을 하는 유일한 번들이다(상가·주택가·학교·지하철역·노면전차 거리). */
+const JP_STREET_RE = /일본(?:풍|식)?\s*(?:상가|상점가|상점\s*거리|쇼핑\s*거리|편의점|이자카야|골목|동네\s*거리|거리|주택가|(?:초등)?학교|소학교|지하철(?:역)?|전철역|역\s*앞|노면\s*전차|버스\s*정류장)/u;
 
 export function namesJpCityTileset(text: string | undefined): boolean {
   return !!text && NAMES_JP_CITY_RE.test(text);
@@ -67,6 +67,7 @@ export function scopeUsesJpCity(project: Pick<Project, "tilesets" | "maps">, map
 export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
   "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
   "create_map", "fill_region", "lay_path", "paint_tiles", "stamp_object", "check_reachability", "show_map_region", "ask_tileset_change",
+  "set_map_transit", "inspect_map_transit", "import_region_reference",
 ];
 
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */
@@ -91,6 +92,10 @@ export const JP_CITY_DETAIL_LINE =
   + "③ 건물 — 문 앞 바닥(보도)을 먼저 깔고, 뒷줄(맵 위쪽) 건물부터 build_jp_city_building({x,y=건물 발(왼쪽 아래),w,floors,ground,roof,…}). 건물 사각형(위로 높이만큼)이 겹치지 않게 발 y 를 높이+1 이상 띄운다(도구는 겹침을 거부하지 않는다). 오류가 나면 맵은 안 바뀐다 — 코드·좌표대로 고쳐 다시 부른다. "
   + "완성 예제 25개는 list_jp_city_building_parts({example}) 로 받아 x,y 만 더한다. "
   + "④ 투명 덧그림(중앙선·차선 점선·횡단보도·점자블록)은 paint_tiles layer \"2\" 로만 칠한다(1·3 층 요청은 3층으로 돌려져 모양이 안 맞는다). "
+  + "⑤ 탈것 — 길을 다 깐 뒤 set_map_transit({auto:{}}) 가 맵 끝에서 끝까지 이어진 생활도로에 좌측통행 차 흐름을 깐다(게임에서 실제로 달리고 주인공 앞에서 선다). "
+  + "버스 정류장은 auto.busStops:[{x,y=버스 머리가 서는 차선 칸,name,board}], 노면전차는 2층 레일 jp-tram-rail-h 를 맵 끝까지 깔고 auto.tram:true(복선이면 양방향), 굽은 길·순환선·지하철은 routes 로 칸 경로. "
+  + "탈것 그림을 타일로 찍지 않는다. 쓰는 법·칸 규칙은 참고문서 용도 jp-transit(jp-transit-rules), 깐 뒤 inspect_map_transit 로 확인. "
+  + "학교·지하철역은 완성 장소(jp-city-school-68x48 등, import_region_reference)와 jp-school·jp-transit 문서의 예제 배열을 본뜬다. "
   + "확인은 check_reachability·show_map_region·run_lint. 건물·소품을 낱칸 번호로 칠하지 않는다.";
 
 /** 시스템 프롬프트에 붙일 줄들. */
@@ -110,6 +115,6 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
       + "길과 땅은 fill_region/lay_path·stamp_object(kit:jp_city/jp-road-…), 건물은 build_jp_city_building 이 짓는다. 낱칸 번호로 건물을 칠하지 않는다.",
     where,
     "순서: 땅(보도 연석·생활도로·잔디; 먼저 " + JP_START_READ_LIST + ") → 도로 교차로 키트 stamp_object → 문 앞 보도 → 뒷줄 건물부터 build_jp_city_building(list_jp_city_building_parts 로 id·완성 예제, 사각형이 겹치지 않게 발 y 를 높이+1 이상 띄운다) → "
-      + "투명 덧그림은 paint_tiles layer \"2\" → check_reachability 로 문 앞 도달, show_map_region 으로 눈 확인.",
+      + "투명 덧그림은 paint_tiles layer \"2\" → check_reachability 로 문 앞 도달, show_map_region 으로 눈 확인 → 차·버스가 다니는 거리면 set_map_transit({auto:{}})(정류장은 auto.busStops).",
   ].join("\n");
 }

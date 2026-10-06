@@ -1,0 +1,630 @@
+{
+ "map": {
+  "id": "jp-city-station-concourse",
+  "size": [
+   26,
+   14
+  ]
+ },
+ "start": [
+  12,
+  5
+ ],
+ "poles": [],
+ "deco": {
+  "placed": 0,
+  "skipped": 0
+ },
+ "doors": {
+  "n": 0,
+  "allReached": true,
+  "failing": []
+ },
+ "anchors": {
+  "n": 4,
+  "allReached": true,
+  "failing": []
+ },
+ "solid": {
+  "cells": 94,
+  "openByEngine": 0,
+  "open": []
+ },
+ "autotiles": {
+  "lane": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "rail": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "fence": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  }
+ },
+ "layers": {
+  "overlaps": 0,
+  "issues": [],
+  "l2": 23,
+  "l3": 163,
+  "l4": 0
+ },
+ "emptiness": {
+  "worst17x13": 0,
+  "worstAt": null,
+  "ignore": [],
+  "max": null,
+  "skippedWindows": 0
+ },
+ "reach": {
+  "reachable": 244
+ },
+ "placed": 66,
+ "ok": true,
+ "placedList": [
+  {
+   "id": "jp-subway-ticket",
+   "x": 2,
+   "y": 1,
+   "w": 6,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-stairs-up",
+   "x": 11,
+   "y": 1,
+   "w": 4,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-office",
+   "x": 19,
+   "y": 1,
+   "w": 4,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 0,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 1,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 2,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 3,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 4,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 5,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 6,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 7,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 8,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 9,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 10,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 11,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 12,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 13,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 14,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 15,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 16,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 17,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 18,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 19,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 20,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 21,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 22,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 23,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 24,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 25,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 0,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 1,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 8,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 9,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 10,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 15,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 16,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 17,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 18,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 23,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 24,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-wall",
+   "x": 25,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar-plain",
+   "x": 4,
+   "y": 5,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar-plain",
+   "x": 21,
+   "y": 5,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-sign-exit",
+   "x": 16,
+   "y": 5,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-gates",
+   "x": 8,
+   "y": 8,
+   "w": 9,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 0,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 1,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 2,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 3,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 4,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 5,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 6,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 7,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 17,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 18,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 19,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 20,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 21,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 22,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 23,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 24,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-fence",
+   "x": 25,
+   "y": 9,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar-plain",
+   "x": 4,
+   "y": 10,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar-plain",
+   "x": 21,
+   "y": 10,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-sign-line",
+   "x": 6,
+   "y": 10,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-stairs-down",
+   "x": 11,
+   "y": 11,
+   "w": 4,
+   "h": 3,
+   "layer": 3
+  }
+ ],
+ "doorList": [],
+ "anchorList": [
+  {
+   "b": "exit-stairs",
+   "x": 12,
+   "y": 3,
+   "passable": true,
+   "reached": true
+  },
+  {
+   "b": "exit-stairs",
+   "x": 13,
+   "y": 3,
+   "passable": true,
+   "reached": true
+  },
+  {
+   "b": "platform-stairs",
+   "x": 12,
+   "y": 13,
+   "passable": true,
+   "reached": true
+  },
+  {
+   "b": "platform-stairs",
+   "x": 13,
+   "y": 13,
+   "passable": true,
+   "reached": true
+  }
+ ]
+}

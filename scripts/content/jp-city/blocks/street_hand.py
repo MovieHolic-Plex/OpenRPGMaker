@@ -98,12 +98,22 @@ def _pole_wood(c):
     c.R(19, 60, 10, 14, K('shiro', 1)); c.R(20, 62, 8, 4, K('aka', 0)); c.HL(20, 68, 8, K('sumi', 2)); c.HL(20, 70, 6, K('sumi', 2))   # 옛 광고판
 
 
+WIRE_BOTTOM = 46        # 키트 높이 3칸(48px) 안 — 처짐이 이보다 내려가면 잘려 끊긴 조각이 된다(2026-10-07 학교 관문 지적)
+
+
 def wire(c, x0, x1, y0, y1, sag, col):
+    """두 점 사이 처진 전선. 처짐은 키트 바닥(WIRE_BOTTOM)을 넘지 않게 줄이고, 이웃 화소 사이 세로 틈은 메워 끊기지 않게 한다."""
     n = max(1, x1 - x0)
+    sag = max(0.0, min(sag, WIRE_BOTTOM - max(y0, y1)))
+    prev = None
     for i in range(n + 1):
         t = i / n
-        y = y0 + (y1 - y0) * t + sag * 4 * t * (1 - t)
-        c.P(x0 + i, int(round(y)), col)
+        y = int(round(y0 + (y1 - y0) * t + sag * 4 * t * (1 - t)))
+        if prev is not None and abs(y - prev) > 1:
+            step = 1 if y > prev else -1
+            for yy in range(prev + step, y, step): c.P(x0 + i - 1 if step > 0 and t <= 0.5 else x0 + i, yy, col)
+        c.P(x0 + i, y, col)
+        prev = y
 
 
 WIRE_SPANS = tuple(range(5, 21))
@@ -177,16 +187,62 @@ def _bus(c):
 
 
 # ─────────────────────────── 노면 표시(flat, 캐릭터 밑) ───────────────────────────
-@prop('mark-30', '노면 「30」 주황(세로로 긴 규제 표시)', 2, 4, other='flat', tags=['노면', '속도', '생활도로'],
-      rules='생활도로 차선 한가운데. 남→북으로 달리는 차가 읽는 방향(글자 아래가 남쪽). 가로 1.2m × 세로 5m 라 아주 길쭉하다.')
-def _m30(c):
+def _draw30(c, x0=0, y0=0):
+    """세로로 긴 「30」(남북 길용 원형). 3 은 오른쪽 세로획 + 짧은 가운데 획 + 모서리를 깎아 「ヨ」 와 구별한다."""
     o = K('daidai', 1); d = K('daidai', 0)
-    # 3: 폭 12, 높이 56  /  0: 폭 12
-    def seg(x, y, w, h): c.R(x, y, w, h, o); c.HL(x, y + h - 1, w, d)
+    def seg(x, y, w, h): c.R(x0 + x, y0 + y, w, h, o); c.HL(x0 + x, y0 + y + h - 1, w, d)
     x = 3
-    seg(x, 4, 12, 3); seg(x + 9, 4, 3, 28); seg(x + 2, 29, 10, 3); seg(x + 9, 30, 3, 28); seg(x, 55, 12, 3)
+    seg(x, 4, 10, 3); seg(x + 9, 6, 3, 24); seg(x + 4, 29, 7, 3); seg(x + 9, 31, 3, 23); seg(x, 55, 10, 3)
+    seg(x, 7, 3, 4); seg(x, 50, 3, 5)                                                            # 3 의 위·아래 갈고리(왼쪽 끝이 안쪽으로)
+    for (px, py) in ((x + 10, 5), (x + 11, 6), (x + 10, 56), (x + 11, 55)): c.P(x0 + px, y0 + py, o)   # 둥근 오른쪽 모서리
     x = 18
-    seg(x, 4, 12, 3); seg(x, 4, 3, 54); seg(x + 9, 4, 3, 54); seg(x, 55, 12, 3)
+    seg(x + 1, 4, 10, 3); seg(x, 6, 3, 50); seg(x + 9, 6, 3, 50); seg(x + 1, 55, 10, 3)
+
+
+@prop('mark-30', '노면 「30」 주황(세로로 긴 규제 표시 · 남북 길)', 2, 4, other='flat', tags=['노면', '속도', '생활도로'],
+      rules='남북 생활도로 차선 한가운데. 남→북으로 달리는 차가 읽는 방향(글자 아래가 남쪽). 가로 1.2m × 세로 5m 라 아주 길쭉하다. 동서 길은 jp-mark-30-e·jp-mark-30-w.')
+def _m30(c):
+    _draw30(c)
+
+
+@prop('mark-30-e', '노면 「30」 주황 + 側溝·흰 선(동서 길 · 동쪽행 차선, 글자 위가 동쪽)', 4, 2, other='flat', tags=['노면', '속도', '생활도로'],
+      rules='폭 4칸 동서 생활도로의 위 두 줄(동쪽행 차선, 좌측통행)에 둔다 — 윗줄에 側溝 뚜껑·흰 선(jp-mark-edge-n 과 같은 그림)이 들어 있어 가장자리 줄을 끊지 않는다. 글자는 흰 선과 길 가운데 사이 차선 안, 동쪽으로 달리는 운전자가 읽는다(글자 위 = 동쪽). 서쪽행 차선은 jp-mark-30-w(아래 두 줄).')
+def _m30e(c):
+    _m30_lane(c, -1, 'n')
+
+
+@prop('mark-30-w', '노면 「30」 주황 + 側溝·흰 선(동서 길 · 서쪽행 차선, 글자 위가 서쪽)', 4, 2, other='flat', tags=['노면', '속도', '생활도로'],
+      rules='폭 4칸 동서 생활도로의 아래 두 줄(서쪽행 차선, 좌측통행)에 둔다 — 아랫줄에 흰 선·側溝 뚜껑(jp-mark-edge-s 와 같은 그림)이 들어 있다. 글자는 길 가운데와 흰 선 사이 차선 안, 서쪽으로 달리는 운전자가 읽는다(글자 위 = 서쪽). 동쪽행 차선은 jp-mark-30-e(위 두 줄).')
+def _m30w(c):
+    _m30_lane(c, 1, 's')
+
+
+def _draw30n(c, x0=0, y0=0):
+    """차선 안에 들어가는 좁은 「30」(폭 15px · 길이 54px). 동서 길 차선은 흰 선을 빼면 18px 뿐이라 원형(26px)이 넘친다."""
+    o = K('daidai', 1); d = K('daidai', 0)
+    def seg(x, y, w, h): c.R(x0 + x, y0 + y, w, h, o); c.HL(x0 + x, y0 + y + h - 1, w, d)
+    x = 0
+    seg(x, 4, 6, 3); seg(x + 4, 6, 2, 24); seg(x + 1, 29, 4, 3); seg(x + 4, 31, 2, 23); seg(x, 55, 6, 3)
+    seg(x, 7, 2, 3); seg(x, 51, 2, 4)                                                           # 3 의 위·아래 갈고리
+    x = 9
+    seg(x + 1, 4, 4, 3); seg(x, 6, 2, 50); seg(x + 4, 6, 2, 50); seg(x + 1, 55, 4, 3)
+
+
+def _m30_lane(c, k, side):
+    """좁은 「30」 을 돌려 차선 띠에 놓고, 길 가장자리 줄(側溝·흰 선)을 같은 키트에 그린다."""
+    t = Cv(32, 64); _draw30n(t, x0=8)
+    r = np.rot90(t.a, k)
+    rows = np.where(r[..., 3].any(axis=1))[0]
+    g = r[rows[0]:rows[-1] + 1]
+    top = 15 if side == 'n' else 1                                                              # n: 흰 선(12~13) 아래 · s: 흰 선(18~19) 위
+    band = c.a[top:top + g.shape[0], :64]
+    m = g[..., 3] > 0
+    band[m] = g[m]
+    for i in range(4):
+        if side == 'n': _gutter(c, 16 * i, 0, 16, 6)
+        else: _gutter(c, 16 * i, 26, 16, 6)
+    if side == 'n': _line(c, 0, 12, 64, 2)
+    else: _line(c, 0, 18, 64, 2)
 
 
 def _gutter(c, x, y, w, h, grate=False):
