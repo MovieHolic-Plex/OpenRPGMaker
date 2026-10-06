@@ -135,11 +135,25 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 
 ## 화면 디자인
 
-- 기준 문서는 `store-server/DESIGN.md` 다(2026-10-06 「밤의 상점 진열대」 개편). 웹(`store-server/public/app.css`)과 편집기 창(`src/styles/database/assetStore/assetStore.css`)이 같은 토큰을 쓴다.
-- 어두운 바탕에 도트 그림을 `pixelated` 로 띄우고, 제목·라벨·단추만 도트 글꼴 Galmuri11 Bold(OFL, `store-server/public/galmuri11-bold.woff2`)로 쓴다. 문단은 고딕이다.
-- 웹 첫 화면은 맨 앞 상품 그림을 크게 거는 진열창이다. 그래서 대표 그림(미리보기 첫 장)에 작업용 설명 글자가 박혀 있으면 바로 눈에 띈다.
-  - 「일본 도시」는 그래서 판본 2에서 대표 그림을 `public/assets/store-covers/jp-city-street.png`(상가 거리 장면)로 바꿨다. 시드(`seedBundles.ts`)도 같은 그림을 먼저 쓴다.
-- 카드에는 표시를 「조수 사용 가능」 하나만 그림 위에 둔다. 받기 수가 0이면 「새로 올라옴」으로 쓴다.
+- 기준 문서는 `store-server/DESIGN.md` 다(2026-10-06 두 번째 개편 「그림이 주인공인 어두운 상점」). 웹(`store-server/public/app.css`)과 편집기 창(`src/styles/database/assetStore/assetStore.css`)이 같은 색·모서리를 쓴다.
+- 첫 「밤의 상점 진열대」(도트 글꼴 제목·계단 모서리·도트 그림자)는 사용자가 「허접하다」고 해서 걷어 냈다. 도트 글꼴은 로고 「OPRN」에만 남았다.
+- 웹 첫 화면: 추천 진열(조수 사용 가능 팩, 썸네일로 넘김·7초 자동, `public/store.js`) → 소개 → 종류 타일(종류마다 최신 표지) → 선반 넷(조수용 타일셋·캐릭터·얼굴·새로 올라온 것) → 작가 안내.
+  - 주소에 `q`·`kind`·`grade`·`sort`·`page` 중 하나라도 있으면 진열 대신 목록 화면(왼쪽 거르기 + 격자)이다. `/?kind=` 이 「모든 에셋」 목록이다.
+- 상품 화면: 갤러리(썸네일 고르기) · 받는 법 세 단계 · 정보표(라이선스·내용·판본·크기·지원 언어) · 설명 · **들어 있는 것**(최신 판본 매니페스트의 그림 48장까지, 소리는 재생기) · 크레딧 · 판본 · 신고 · 같은 종류.
+- 편집기 창: 왼쪽 막대(화면 넷·종류·「조수 사용 가능만」) + 위 찾기칸 + 추천 진열 + 격자 + 오른쪽 상세(갤러리). testid 는 예전 것을 그대로 쓴다.
+- 대표 그림(미리보기 첫 장)이 카드·진열을 정한다. 작업용 글자가 박힌 그림을 첫 장에 두지 않는다(「일본 도시」 판본 2에서 `public/assets/store-covers/jp-city-street.png` 로 바꿈).
+
+## 다국어 (2026-10-06)
+
+- 지원 언어는 편집기와 같은 넷: ko·en·ja·zh(간체). 종류·라이선스 이름은 `src/assetStore/format.ts` 의 `STORE_KIND_NAMES`·`STORE_LICENSE_NAMES` 하나를 웹과 편집기가 같이 쓴다.
+  - 편집기 번역 카탈로그의 짧은 낱말(「음악」=Audio, 「전체」=Entire, 「{0}개」={0})은 스토어 문맥과 뜻이 달라서, 스토어 창은 종류 이름을 공용 표에서 고르고 「모든 종류」「에셋 {0}개」처럼 다른 원문을 쓴다.
+- 웹 글자: `store-server/src/web/i18n.ts`(문구 표 + 약관·저작권·개인정보 네 언어판, 한국어가 기준). 언어 결정은 `?lang=`(쿠키 `oprn_store_lang` 1년) → 쿠키 → `Accept-Language` → 영어. `hreflang` 대체 링크를 단다. `upload.js` 문구는 양식의 `data-msg-*` 로 받는다.
+- 상품 글: 매니페스트 `locales`(언어별 title·summary·description, 선택) → `store_items.locales`(마이그레이션 004). API 는 `?lang=` 또는 `Accept-Language` 로 그 언어판을, 없으면 원문을 준다. `languages` 는 locales 의 키다.
+  - 서버 오류 문구는 한국어다. 웹 오류 화면은 한국어가 아니면 상태 번호만 알린다.
+  - 다른 언어 화면에서는 한글 태그와 「들어 있는 것」의 한글 그림 이름을 숨긴다(그림 이름은 마우스 제목으로 남는다). 크레딧 문장은 게임에 그대로 들어가는 글이라 원문 그대로 둔다.
+- 편집기 창은 `storeBridge().catalog/item` 에 `lang: getLocale()` 을 넘긴다(Electron 스키마·클라이언트까지 통과). 서버가 고른 상품 글은 `translate="no"` 로 DOM 번역기를 막는다. 받은 기록의 원문 제목은 지금 목록에 같은 상품이 있으면 그 언어판으로 보인다.
+- 공식 상품 21개의 네 언어 글은 `store-server/scripts/library_locales.py`(한국어 제목이 키). 이미 올린 상품은 `refresh_library.py` 로 새 판본을 낸다 — 글·(캐릭터 상품의) 표지만 바꾸고 내용은 최신 판본 그대로, 같으면 판본을 만들지 않는다. 상품·판본은 분당 20번이 상한이라 3.5초씩 쉰다.
+  - 운영 작가 이름은 「OPRN」(예전 「OPRN 운영」, `store_users.display_name` 직접 수정).
 
 ## 공용 캐릭터 그림 진열 (2026-10-06)
 
@@ -149,6 +163,7 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - 라이선스는 CC BY 4.0 이다(원본 얼굴·걷기 칩 뼈대가 EasyRPG RTP CC BY 4.0). 흉상·전신·새 걷기 칩은 「AI 생성」 표시를 단다.
 - 흉상·전신 에셋 id 에 `-bust`/`-full` 이 남아 있어 프로젝트에 넣으면 대화창이 그 모양으로 바뀐다(`facePresentationForResource`).
 - 운영에 올릴 때는 `admin-link.mjs` 토큰으로 `--link-token`. 분당 blob 상한(1500)에 걸리면 스크립트가 기다렸다가 다시 보낸다.
+- 표지(`showcase`)는 4:3 1200×900 격자를 꽉 채우고 가운데 둔다. 얼굴 4×3(정수 배율), 흉상 4×2, 전신 6×2, 걷기 칩은 어두운 바탕에 그림자.
 - 아직 안 올린 것: 전투 도트(적 140종·파티 시트). 전투 시트는 런타임이 정해진 칸 규격·리소스 id 로 읽으므로, 스토어로 넣었을 때 전투에서 바로 쓰이는지 먼저 확인해야 한다.
 
 ## 함정

@@ -210,7 +210,7 @@ ${detail.previews.length > 1 ? `<div class="thumbs">${detail.previews.map((sha, 
   const images = extras.inside.filter((asset) => asset.mime.startsWith("image/"));
   const sounds = extras.inside.filter((asset) => asset.mime.startsWith("audio/"));
   const inside = extras.inside.length > 0 ? `<section class="block"><div class="block-head"><h2>${t("insideTitle")}</h2><span class="result-line">${esc(t("items", extras.insideTotal))}</span></div>
-${images.length > 0 ? `<div class="inside">${images.map((asset) => `<figure title="${esc(asset.name)}"><img src="${blobUrl(asset.blob)}" alt="${esc(asset.name)}" loading="lazy" decoding="async"><figcaption>${esc(asset.name)}</figcaption></figure>`).join("")}</div>` : ""}
+${images.length > 0 ? `<div class="inside">${images.map((asset) => `<figure title="${esc(asset.name)}"><img src="${blobUrl(asset.blob)}" alt="${esc(asset.name)}" loading="lazy" decoding="async">${lang === "ko" ? `<figcaption>${esc(asset.name)}</figcaption>` : ""}</figure>`).join("")}</div>` : ""}
 ${sounds.length > 0 ? `<ul class="inside-audio">${sounds.map((asset) => `<li><span>${icon("note")}${esc(asset.name)}</span><audio controls preload="none" src="${blobUrl(asset.blob)}"></audio></li>`).join("")}</ul>` : ""}
 ${extras.insideTotal > extras.inside.length ? `<p class="result-line more">${esc(t("insideMore", extras.insideTotal - extras.inside.length))}</p>` : ""}</section>` : "";
   const reasons = (Object.keys(REASON_KEYS) as (keyof typeof REASON_KEYS)[]).map((reason) => `<option value="${reason}">${t(REASON_KEYS[reason])}</option>`).join("");
@@ -227,7 +227,9 @@ ${extras.insideTotal > extras.inside.length ? `<p class="result-line more">${esc
 <div><dt>${t("version")}</dt><dd>${detail.latestVersion}</dd></div>
 ${latest ? `<div><dt>${t("updated")}</dt><dd>${esc(formatDate(lang, latest.createdAt))}</dd></div><div><dt>${t("size")}</dt><dd>${fileSize(latest.bytes)}</dd></div>` : ""}
 ${languages.length > 0 ? `<div><dt>${t("languages")}</dt><dd>${languages.map((code) => esc(LANG_NAMES[code])).join(" · ")}</dd></div>` : ""}</dl>`;
-  const tags = detail.tags.length > 0 ? `<p class="tags">${detail.tags.map((tag) => `<a href="/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`).join("")}</p>` : "";
+  // 태그는 작가가 쓴 낱말이다. 다른 언어 화면에서는 한글 태그를 빼고 보인다.
+  const shownTags = lang === "ko" ? detail.tags : detail.tags.filter((tag) => !/[\uAC00-\uD7A3]/.test(tag));
+  const tags = shownTags.length > 0 ? `<p class="tags">${shownTags.map((tag) => `<a href="/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`).join("")}</p>` : "";
   const body = `${notice}${reported ? `<p class="notice ok" data-testid="report-done">${t("reportDone")}</p>` : ""}
 <nav class="crumbs" aria-label="breadcrumb"><a href="/">${t("breadcrumbStore")}</a><span aria-hidden="true">/</span><a href="/?kind=${detail.kind}">${esc(kindLabel(lang, detail.kind))}</a></nav>
 <article class="detail">${gallery}<aside class="info">

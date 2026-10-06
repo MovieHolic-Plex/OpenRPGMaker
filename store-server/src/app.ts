@@ -227,7 +227,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     if (detail.status !== "removed" && detail.latestVersion > 0) {
       try {
         const manifest = await versionManifest(db, detail.slug, detail.latestVersion, v.auth?.user ?? null);
-        const assets = Object.values(manifest.content.assets ?? {});
+        const assets = Object.values(manifest.content.assets ?? {}).sort((x, y) => x.id.localeCompare(y.id));
         insideTotal = assets.length;
         inside = assets.slice(0, 48).map((asset) => ({ name: asset.name || asset.id, blob: asset.blob, mime: asset.mime }));
       } catch (error) {
