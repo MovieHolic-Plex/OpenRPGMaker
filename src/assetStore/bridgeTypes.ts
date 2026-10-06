@@ -1,5 +1,5 @@
 /** 렌더러가 보는 데스크톱 스토어 다리(preload `window.oprn.store`). 구현: electron/main/assetStore.ts. */
-import type { StoreCatalogPage, StoreItemDetail, StoreItemSummary, StoreItemStatus, StorePackManifest } from "./format";
+import type { StoreCatalogPage, StoreItemDetail, StoreItemSummary, StoreItemStatus, StoreLocale, StorePackManifest } from "./format";
 
 export interface StoreUser { readonly id: number; readonly email: string; readonly displayName: string; readonly role: string }
 export interface StoreStatus { readonly url: string; readonly user: StoreUser | null; readonly loggedIn: boolean; readonly tokenPersistent: boolean }
@@ -20,8 +20,8 @@ export type MyStoreItem = StoreItemSummary & { readonly status: StoreItemStatus;
 export interface OprnStoreBridge {
   status(): Promise<StoreStatus>;
   setUrl(input: { url: string }): Promise<StoreStatus>;
-  catalog(input: { q?: string; kind?: string; grade?: "" | "single" | "pack"; sort?: "" | "new" | "popular"; page?: number }): Promise<StoreCatalogPage>;
-  item(input: { slug: string }): Promise<StoreItemDetail>;
+  catalog(input: { q?: string; kind?: string; grade?: "" | "single" | "pack"; sort?: "" | "new" | "popular"; page?: number; lang?: StoreLocale }): Promise<StoreCatalogPage>;
+  item(input: { slug: string; lang?: StoreLocale }): Promise<StoreItemDetail>;
   blob(input: { sha256: string }): Promise<Uint8Array>;
   installed(): Promise<InstalledStoreItem[]>;
   install(input: { slug: string; version?: number }): Promise<InstalledStoreItem>;

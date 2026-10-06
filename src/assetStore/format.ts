@@ -26,6 +26,32 @@ export const STORE_KIND_LABELS: Readonly<Record<StoreItemKind, string>> = {
   picture: "그림", music: "음악", sound: "효과음", pack: "묶음",
 };
 
+/** 스토어가 지원하는 언어(편집기 i18n 과 같은 넷). zh 는 간체. */
+export const STORE_LOCALES = ["ko", "en", "ja", "zh"] as const;
+export type StoreLocale = (typeof STORE_LOCALES)[number];
+export const isStoreLocale = (value: unknown): value is StoreLocale => typeof value === "string" && (STORE_LOCALES as readonly string[]).includes(value);
+/** 종류·라이선스의 언어별 이름. 웹 스토어와 편집기 스토어 창이 같이 쓴다(편집기 번역 카탈로그를 거치지 않는다). */
+export const STORE_KIND_NAMES: Readonly<Record<StoreItemKind, Readonly<Record<StoreLocale, string>>>> = {
+  tileset: { ko: "타일셋", en: "Tilesets", ja: "タイルセット", zh: "图块集" },
+  character: { ko: "캐릭터", en: "Characters", ja: "キャラクター", zh: "角色" },
+  face: { ko: "얼굴·초상", en: "Faces & portraits", ja: "顔グラ・立ち絵", zh: "头像与立绘" },
+  battler: { ko: "전투 그림", en: "Battlers", ja: "バトラー", zh: "战斗图" },
+  picture: { ko: "그림", en: "Pictures", ja: "ピクチャー", zh: "图片" },
+  music: { ko: "음악", en: "Music", ja: "音楽", zh: "音乐" },
+  sound: { ko: "효과음", en: "Sound effects", ja: "効果音", zh: "音效" },
+  pack: { ko: "묶음", en: "Bundles", ja: "バンドル", zh: "合集" },
+};
+export const STORE_LICENSE_NAMES: Readonly<Record<StoreLicense, Readonly<Record<StoreLocale, string>>>> = {
+  "CC0": { ko: "CC0 — 조건 없이 자유 사용", en: "CC0 — free to use, no conditions", ja: "CC0 — 条件なしで自由に使用", zh: "CC0 — 无条件自由使用" },
+  "CC-BY-4.0": { ko: "CC BY 4.0 — 저작자 표기 후 자유 사용", en: "CC BY 4.0 — free to use with attribution", ja: "CC BY 4.0 — クレジット表記で自由に使用", zh: "CC BY 4.0 — 署名后自由使用" },
+  "CC-BY-SA-4.0": { ko: "CC BY-SA 4.0 — 저작자 표기, 같은 조건으로 공유", en: "CC BY-SA 4.0 — attribution, share alike", ja: "CC BY-SA 4.0 — クレジット表記・同条件で共有", zh: "CC BY-SA 4.0 — 署名，以相同方式共享" },
+  "OPRN-GAME": { ko: "OPRN 게임 사용 — 게임 안에서는 자유, 원본 파일 재배포 금지", en: "OPRN Game Use — free inside games; no redistribution of source files", ja: "OPRN ゲーム使用 — ゲーム内では自由、元ファイルの再配布は禁止", zh: "OPRN 游戏使用 — 游戏内自由使用，禁止再分发原始文件" },
+};
+export const STORE_LICENSE_SHORT: Readonly<Record<StoreLicense, string>> = { "CC0": "CC0", "CC-BY-4.0": "CC BY 4.0", "CC-BY-SA-4.0": "CC BY-SA 4.0", "OPRN-GAME": "OPRN Game" };
+/** 상품 글의 다른 언어판. 기본 글(title·summary·description)은 작가가 쓴 언어 그대로 두고 여기에 번역을 더한다. */
+export interface StoreLocalizedText { title: string; summary: string; description: string }
+export type StoreLocalizedTexts = Partial<Record<StoreLocale, StoreLocalizedText>>;
+
 /** 등급: 참고문서가 있는 타일셋이 하나라도 있으면 pack(「조수 사용 가능」). 서버가 판정한다. */
 export type StoreGrade = "single" | "pack";
 export type StoreItemStatus = "pending" | "visible" | "hidden" | "removed";
@@ -85,6 +111,8 @@ export interface StorePackManifest {
   license: StoreLicense;
   aiGenerated: boolean;
   credits: string;
+  /** 다른 언어판(선택). 없는 언어는 기본 글을 보여 준다. */
+  locales?: StoreLocalizedTexts;
   content: StorePackContent;
   previews: string[];
   blobs: StoreBlobRef[];
@@ -118,6 +146,8 @@ export interface StoreItemSummary {
   cover: string | null;
   downloads: number;
   updatedAt: string;
+  /** 이 상품 글이 있는 언어(기본 글의 언어는 모른다 — 번역이 있는 언어만). */
+  languages?: StoreLocale[];
 }
 export interface StoreItemDetail extends StoreItemSummary {
   description: string;
@@ -232,6 +262,15 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
   if (!includes(STORE_ITEM_KINDS, m.kind)) errors.push("종류가 올바르지 않습니다.");
   if (!includes(STORE_LICENSES, m.license)) errors.push("라이선스를 골라야 합니다.");
   if (typeof m.aiGenerated !== "boolean") errors.push("AI 생성 여부(aiGenerated)를 밝혀야 합니다.");
+  if (m.locales !== undefined) {
+    if (!isRecord(m.locales)) errors.push("locales 는 언어별 글 객체여야 합니다.");
+    else for (const [locale, text] of Object.entries(m.locales)) {
+      if (!isStoreLocale(locale)) { errors.push(`지원하지 않는 언어입니다: ${locale.slice(0, 12)}`); continue; }
+      if (!isRecord(text) || !isString(text.title, STORE_LIMITS.title, 2) || !isString(text.summary, STORE_LIMITS.summary) || !isString(text.description, STORE_LIMITS.description)) {
+        errors.push(`${locale} 글은 제목 2~${STORE_LIMITS.title}자, 소개 ${STORE_LIMITS.summary}자, 설명 ${STORE_LIMITS.description}자 이하여야 합니다.`);
+      }
+    }
+  }
 
   const blobs = new Map<string, StoreBlobRef>();
   if (!Array.isArray(m.blobs) || m.blobs.length === 0 || m.blobs.length > STORE_LIMITS.blobs) {
@@ -307,4 +346,10 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
   // 문자열 안에 data URL 이 남아 있으면 안 된다(전부 blob 으로 빼야 한다). 크기 제한을 우회하는 길이다.
   if (content && JSON.stringify(content).includes('"data:')) errors.push("매니페스트에 data: URL 이 남아 있습니다. blob 으로 빼야 합니다.");
   return errors.length > 0 ? { ok: false, errors } : { ok: true, value: m as unknown as StorePackManifest };
+}
+
+/** 요청 언어의 글. 그 언어판이 없으면 기본 글. */
+export function localizedText(base: StoreLocalizedText, locales: StoreLocalizedTexts | null | undefined, locale: StoreLocale | null | undefined): StoreLocalizedText {
+  const found = locale ? locales?.[locale] : undefined;
+  return found ? { title: found.title, summary: found.summary, description: found.description } : base;
 }

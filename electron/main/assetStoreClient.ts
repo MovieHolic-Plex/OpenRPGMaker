@@ -87,14 +87,15 @@ export class AssetStoreClient {
     return body as T;
   }
 
-  catalog(query: { q?: string; kind?: string; grade?: string; sort?: string; page?: number }): Promise<StoreCatalogPage> {
+  catalog(query: { q?: string; kind?: string; grade?: string; sort?: string; page?: number; lang?: string }): Promise<StoreCatalogPage> {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== "" && value !== null) params.set(key, String(value));
     return this.json<StoreCatalogPage>(`/api/v1/items?${params}`);
   }
 
-  item(slug: string): Promise<StoreItemDetail> {
-    return this.json<StoreItemDetail>(`/api/v1/items/${encodeURIComponent(slug)}`);
+  /** lang 을 주면 그 언어판 제목·소개를 받는다(없으면 원문). 설치 기록에는 lang 없이 받은 원문을 쓴다. */
+  item(slug: string, lang?: string): Promise<StoreItemDetail> {
+    return this.json<StoreItemDetail>(`/api/v1/items/${encodeURIComponent(slug)}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`);
   }
 
   me(): Promise<{ user: StoreUser; items: (StoreItemDetail & { status: string })[] }> {

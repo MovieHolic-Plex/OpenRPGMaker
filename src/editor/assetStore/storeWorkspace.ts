@@ -6,10 +6,11 @@
 import "@/styles/database/assetStore/index.css";
 import type { InstalledStoreItem, MyStoreItem, StoreLoginStart, StoreProgressEvent, StoreStatus } from "@/assetStore/bridgeTypes";
 import {
-  STORE_ITEM_KINDS, STORE_KIND_LABELS, STORE_LICENSE_LABELS, STORE_LICENSES,
+  STORE_ITEM_KINDS, STORE_KIND_NAMES, STORE_LICENSE_NAMES, STORE_LICENSE_SHORT, STORE_LICENSES,
   type StoreCatalogPage, type StoreItemDetail, type StoreItemKind, type StoreItemSummary, type StoreLicense,
 } from "@/assetStore/format";
 import { storeCredits, storeItemsInProject } from "@/assetStore/pack";
+import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -141,7 +142,7 @@ async function loadCatalog(): Promise<void> {
   state.loading = true;
   render();
   const { q, kind, grade, sort, page } = state.query;
-  const catalog = await guard(() => storeBridge()!.catalog({ q, kind, grade, sort, page }));
+  const catalog = await guard(() => storeBridge()!.catalog({ q, kind, grade, sort, page, lang: getLocale() }));
   state.loading = false;
   if (catalog) {
     state.catalog = catalog;
@@ -154,7 +155,7 @@ async function openDetail(slug: string): Promise<void> {
   state.selected = slug;
   state.detail = null;
   render();
-  const detail = await guard(() => storeBridge()!.item({ slug }));
+  const detail = await guard(() => storeBridge()!.item({ slug, lang: getLocale() }));
   if (detail && state.selected === slug) {
     state.detail = detail;
     state.latest.set(slug, detail.latestVersion);
@@ -222,7 +223,12 @@ function render(): void {
   clearChildren(host);
   host.append(el("section", {
     class: "store", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "에셋 스토어" }, dataset: { testid: "store", tab: state.tab },
-    children: [header(), state.error ? errorBanner(state.error) : null, el("div", { class: "store-main", children: [body()] }), footer()].filter(Boolean) as HTMLElement[],
+    children: [
+      header(),
+      ...(state.error ? [errorBanner(state.error)] : []),
+      el("div", { class: "store-body", children: [sidebar(), el("div", { class: "store-main", children: [body()] })] }),
+      footer(),
+    ],
   }));
   const main = host.querySelector(".store-main");
   if (main) main.scrollTop = scroll;
@@ -232,17 +238,57 @@ function render(): void {
 
 function header(): HTMLElement {
   const user = state.status?.user;
+  const search = el("input", {
+    class: "store-search", attrs: { type: "search", placeholder: "타일셋, 캐릭터, 음악 찾기", value: state.query.q, "aria-label": "찾기" },
+    dataset: { testid: "store-search", focusKey: "search" },
+    on: { keydown: (event) => {
+      if ((event as KeyboardEvent).key !== "Enter") return;
+      state.query.q = (event.target as HTMLInputElement).value;
+      state.query.page = 1;
+      state.tab = "browse";
+      void loadCatalog();
+    } },
+  });
   return el("header", { class: "store-head", children: [
-    el("h2", { class: "store-title", children: [el("span", { class: "store-mark", attrs: { "aria-hidden": "true" } }), "에셋 스토어"] }),
-    el("nav", { class: "store-tabs", attrs: { role: "tablist" }, children: (Object.keys(TAB_LABELS) as Tab[]).map((tab) => el("button", {
-      class: "store-tab" + (tab === state.tab ? " is-active" : ""), attrs: { type: "button", role: "tab", "aria-selected": String(tab === state.tab) },
-      dataset: { testid: `store-tab-${tab}` }, text: tab === "installed" && state.installed.length > 0 ? `${TAB_LABELS[tab]} ${state.installed.length}` : TAB_LABELS[tab],
-      on: { click: () => switchTab(tab) },
-    })) }),
+    el("h2", { class: "store-title", children: [el("span", { class: "store-mark", attrs: { "aria-hidden": "true" } }), el("span", { class: "store-title-text", children: [el("b", { text: "OPRN", attrs: { translate: "no" } }), el("small", { text: "에셋 스토어" })] })] }),
+    el("div", { class: "store-search-wrap", children: [search] }),
     el("div", { class: "store-account", children: user
-      ? [el("span", { class: "store-user", dataset: { testid: "store-user" }, text: user.displayName }), el("button", { class: "store-link", text: "로그아웃", attrs: { type: "button" }, on: { click: () => void logout() } })]
+      ? [el("span", { class: "store-user", dataset: { testid: "store-user" }, attrs: { translate: "no" }, text: user.displayName }), el("button", { class: "store-link", text: "로그아웃", attrs: { type: "button" }, on: { click: () => void logout() } })]
       : [el("button", { class: "store-button small", text: "로그인", attrs: { type: "button" }, dataset: { testid: "store-login" }, on: { click: () => void startLogin() } })] }),
     el("button", { class: "store-close", text: "닫기", attrs: { type: "button", "aria-label": "스토어 닫기" }, on: { click: closeAssetStore } }),
+  ] });
+}
+
+/** 왼쪽 막대: 위는 화면(탭), 아래는 둘러보기 거르기(종류·조수 사용 가능·정렬). */
+function sidebar(): HTMLElement {
+  const tabCount = (tab: Tab): string => tab === "installed" && state.installed.length > 0 ? String(state.installed.length)
+    : tab === "project" ? String(storeItemsInProject(store.getCurrent()).length || "") : "";
+  const tabs = el("nav", { class: "store-tabs", attrs: { role: "tablist", "aria-label": "스토어 화면" }, children: (Object.keys(TAB_LABELS) as Tab[]).map((tab) => el("button", {
+    class: "store-tab" + (tab === state.tab ? " is-active" : ""), attrs: { type: "button", role: "tab", "aria-selected": String(tab === state.tab) },
+    dataset: { testid: `store-tab-${tab}`, tab },
+    children: [el("span", { class: `store-tab-icon is-${tab}`, attrs: { "aria-hidden": "true" } }), el("span", { class: "store-tab-label", text: TAB_LABELS[tab] }), el("span", { class: "store-tab-count", text: tabCount(tab) })],
+    on: { click: () => switchTab(tab) },
+  })) });
+  if (state.tab !== "browse") return el("aside", { class: "store-side", children: [tabs] });
+  const setQuery = (patch: Partial<State["query"]>) => { Object.assign(state.query, { page: 1 }, patch); state.selected = null; state.detail = null; void loadCatalog(); };
+  const kindRow = (label: string, active: boolean, onClick: () => void, testid?: string) => el("button", {
+    class: "store-side-row" + (active ? " is-on" : ""), text: label, attrs: { type: "button", "aria-pressed": String(active) }, ...(testid ? { dataset: { testid } } : {}),
+    on: { click: onClick },
+  });
+  const packOn = state.query.grade === "pack";
+  return el("aside", { class: "store-side", children: [
+    tabs,
+    el("h3", { class: "store-side-head", text: "종류" }),
+    el("div", { class: "store-side-list", children: [
+      kindRow("모든 종류", !state.query.kind, () => setQuery({ kind: "" })),
+      ...STORE_ITEM_KINDS.map((kind) => kindRow(kindName(kind), state.query.kind === kind, () => setQuery({ kind }), `store-kind-${kind}`)),
+    ] }),
+    el("h3", { class: "store-side-head", text: "거르기" }),
+    el("button", {
+      class: "store-toggle" + (packOn ? " is-on" : ""), attrs: { type: "button", "aria-pressed": String(packOn) }, dataset: { testid: "store-filter-pack" },
+      children: [el("span", { class: "store-knob", attrs: { "aria-hidden": "true" } }), el("span", { text: "조수 사용 가능만" })],
+      on: { click: () => setQuery({ grade: packOn ? "" : "pack" }) },
+    }),
   ] });
 }
 
@@ -291,8 +337,15 @@ function badges(item: Pick<StoreItemSummary, "grade" | "aiGenerated">): HTMLElem
   ] });
 }
 
+/** 종류·라이선스 이름은 공용 표에서 화면 언어로 고른다(번역 카탈로그의 짧은 낱말 「음악」=Audio 같은 다른 뜻을 피한다). */
+const kindName = (kind: StoreItemKind): string => STORE_KIND_NAMES[kind][getLocale()];
+const licenseName = (license: StoreLicense): string => STORE_LICENSE_NAMES[license][getLocale()];
+
 /** 받기 수가 0인 상품에 「받기 0」을 붙이면 인기 없는 물건처럼 보인다 — 새 상품이라고 쓴다. */
 const downloadsText = (downloads: number) => downloads > 0 ? `받기 ${downloads}` : "새로 올라옴";
+
+/** 서버가 고른 언어로 온 상품 글(제목·소개·작가)은 데이터다 — 편집기 번역기가 다시 손대지 않게 한다. */
+const DATA = { translate: "no" } as const;
 
 function cover(sha: string | null, kind: string, alt: string): HTMLElement {
   if (!sha) return el("span", { class: "store-cover-icon" + (kind === "music" || kind === "sound" ? " is-sound" : ""), attrs: { "aria-hidden": "true" } });
@@ -307,41 +360,48 @@ function installState(slug: string): { installed: InstalledStoreItem | null; inP
 }
 
 function browseView(): HTMLElement {
-  const search = el("input", {
-    class: "store-search", attrs: { type: "search", placeholder: "타일셋, 캐릭터, 음악 찾기", value: state.query.q, "aria-label": "찾기" },
-    dataset: { testid: "store-search", focusKey: "search" },
-    on: { keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") { state.query.q = (event.target as HTMLInputElement).value; state.query.page = 1; void loadCatalog(); } } },
-  });
-  const chip = (label: string, active: boolean, onClick: () => void, testid?: string) => el("button", {
-    class: "store-chip" + (active ? " is-on" : ""), text: label, attrs: { type: "button", "aria-pressed": String(active) }, ...(testid ? { dataset: { testid } } : {}),
-    on: { click: onClick },
-  });
   const setQuery = (patch: Partial<State["query"]>) => { Object.assign(state.query, { page: 1 }, patch); void loadCatalog(); };
-  const filters = el("div", { class: "store-filters", children: [
-    search,
-    el("div", { class: "store-chips", children: [
-      chip("전체", !state.query.kind, () => setQuery({ kind: "" })),
-      ...STORE_ITEM_KINDS.map((kind) => chip(STORE_KIND_LABELS[kind], state.query.kind === kind, () => setQuery({ kind }), `store-kind-${kind}`)),
-    ] }),
-    el("div", { class: "store-chips", children: [
-      chip("조수 사용 가능만", state.query.grade === "pack", () => setQuery({ grade: state.query.grade === "pack" ? "" : "pack" }), "store-filter-pack"),
-      chip("최신", state.query.sort === "", () => setQuery({ sort: "" })),
-      chip("인기", state.query.sort === "popular", () => setQuery({ sort: "popular" })),
-    ] }),
-  ] });
   const items = state.catalog?.items ?? [];
+  const plain = !state.query.q && !state.query.kind && !state.query.grade && state.query.page === 1;
+  const featured = plain ? items.find((item) => item.grade === "pack" && item.cover) ?? null : null;
+  const heading = state.query.q ? `「${state.query.q}」 결과` : state.query.kind && (STORE_ITEM_KINDS as readonly string[]).includes(state.query.kind) ? kindName(state.query.kind as StoreItemKind) : "모든 에셋";
+  const sortChip = (label: string, active: boolean, sort: "" | "popular") => el("button", {
+    class: "store-chip" + (active ? " is-on" : ""), text: label, attrs: { type: "button", "aria-pressed": String(active) }, on: { click: () => setQuery({ sort }) },
+  });
   const grid = items.length > 0
     ? el("div", { class: "store-grid", dataset: { testid: "store-grid" }, children: items.map(card) })
     : el("p", { class: "store-empty", text: state.loading ? "불러오는 중…" : state.catalog ? "찾는 에셋이 없습니다." : "스토어에 연결하지 못했습니다." });
   const pages = state.catalog ? Math.max(1, Math.ceil(state.catalog.total / state.catalog.pageSize)) : 1;
   const pager = pages > 1 ? el("div", { class: "store-pager", children: [
-    el("button", { text: "← 이전", attrs: { type: "button", ...(state.query.page <= 1 ? { disabled: "" } : {}) }, on: { click: () => { state.query.page -= 1; void loadCatalog(); } } }),
+    el("button", { class: "store-button ghost small", text: "← 이전", attrs: { type: "button", ...(state.query.page <= 1 ? { disabled: "" } : {}) }, on: { click: () => { state.query.page -= 1; void loadCatalog(); } } }),
     el("span", { text: `${state.query.page} / ${pages}` }),
-    el("button", { text: "다음 →", attrs: { type: "button", ...(state.query.page >= pages ? { disabled: "" } : {}) }, on: { click: () => { state.query.page += 1; void loadCatalog(); } } }),
+    el("button", { class: "store-button ghost small", text: "다음 →", attrs: { type: "button", ...(state.query.page >= pages ? { disabled: "" } : {}) }, on: { click: () => { state.query.page += 1; void loadCatalog(); } } }),
   ] }) : null;
   return el("div", { class: "store-browse" + (state.selected ? " has-detail" : ""), children: [
-    el("div", { class: "store-list", children: [filters, grid, ...(pager ? [pager] : [])] }),
+    el("div", { class: "store-list", children: [
+      ...(featured && !state.selected ? [hero(featured)] : []),
+      el("div", { class: "store-results-head", children: [
+        el("div", { children: [el("h3", { text: heading, attrs: state.query.q ? DATA : {} }), el("p", { class: "store-hint", text: `에셋 ${state.catalog?.total ?? 0}개` })] }),
+        el("div", { class: "store-chips", children: [sortChip("최신", state.query.sort === "", ""), sortChip("인기", state.query.sort === "popular", "popular")] }),
+      ] }),
+      grid,
+      ...(pager ? [pager] : []),
+    ] }),
     ...(state.selected ? [detailView()] : []),
+  ] });
+}
+
+/** 첫 화면 맨 위 진열: 조수가 바로 쓰는 팩 하나를 크게. */
+function hero(item: StoreItemSummary): HTMLElement {
+  return el("button", { class: "store-hero", attrs: { type: "button" }, dataset: { testid: "store-hero", slug: item.slug }, on: { click: () => void openDetail(item.slug) }, children: [
+    el("span", { class: "store-hero-art", children: [cover(item.cover, item.kind, item.title)] }),
+    el("span", { class: "store-hero-copy", children: [
+      el("span", { class: "store-kind", text: `추천 · ${kindName(item.kind)}` }),
+      el("strong", { class: "store-hero-title", attrs: DATA, text: item.title }),
+      el("span", { class: "store-summary", attrs: DATA, text: item.summary }),
+      badges(item),
+      el("span", { class: "store-hero-cta", children: [el("span", { class: "store-button", text: "자세히 보기" }), el("span", { class: "store-price", text: "무료" })] }),
+    ] }),
   ] });
 }
 
@@ -359,9 +419,9 @@ function card(item: StoreItemSummary): HTMLElement {
         ...(tag ? [el("span", { class: "store-card-state", text: tag })] : []),
       ] }),
       el("span", { class: "store-card-body", children: [
-        el("span", { class: "store-card-kind", children: [STORE_KIND_LABELS[item.kind], ...(item.aiGenerated ? [el("span", { class: "store-card-ai", text: "AI 생성" })] : [])] }),
-        el("strong", { class: "store-card-title", text: item.title }),
-        el("span", { class: "store-card-foot", children: [el("span", { text: item.author }), el("span", { text: downloadsText(item.downloads) })] }),
+        el("strong", { class: "store-card-title", attrs: DATA, text: item.title }),
+        el("span", { class: "store-card-kind", children: [el("span", { attrs: DATA, text: item.author }), kindName(item.kind), ...(item.aiGenerated ? [el("span", { class: "store-card-ai", text: "AI 생성" })] : [])] }),
+        el("span", { class: "store-card-foot", children: [el("span", { class: "store-price", text: "무료" }), el("span", { text: downloadsText(item.downloads) })] }),
       ] }),
     ],
   });
@@ -388,31 +448,48 @@ function actionButtons(slug: string, title: string): HTMLElement {
 
 function detailView(): HTMLElement {
   const detail = state.detail;
-  const close = el("button", { class: "store-link store-detail-close", text: "닫기 ✕", attrs: { type: "button" }, on: { click: () => { state.selected = null; state.detail = null; render(); } } });
+  const close = el("button", { class: "store-detail-close", text: "닫기", attrs: { type: "button", "aria-label": "상품 닫기" }, on: { click: () => { state.selected = null; state.detail = null; render(); } } });
   if (!detail) return el("aside", { class: "store-detail", dataset: { testid: "store-detail" }, children: [close, el("p", { class: "store-empty", text: "불러오는 중…" })] });
   const info = installState(detail.slug);
-  const previews = detail.previews.length > 0 ? detail.previews : [];
+  const previews = detail.previews;
+  const main = el("figure", { class: "store-gallery-main" });
+  const showPreview = (index: number) => {
+    clearChildren(main);
+    main.append(previews.length > 0
+      ? fillStoreImage(el("img", { attrs: { alt: `${detail.title} 미리보기 ${index + 1}` } }) as HTMLImageElement, previews[index] ?? null)
+      : cover(null, detail.kind, detail.title));
+    for (const [i, thumb] of [...thumbs.children].entries()) thumb.classList.toggle("is-on", i === index);
+  };
+  const thumbs = el("div", { class: "store-gallery-thumbs", children: previews.length > 1 ? previews.map((sha, index) => el("button", {
+    class: "store-gallery-thumb", attrs: { type: "button", "aria-label": `미리보기 ${index + 1}` }, on: { click: () => showPreview(index) },
+    children: [fillStoreImage(el("img", { attrs: { alt: "" } }) as HTMLImageElement, sha)],
+  })) : [] });
+  showPreview(0);
   return el("aside", { class: "store-detail", dataset: { testid: "store-detail", slug: detail.slug }, children: [
     close,
-    el("div", { class: "store-gallery", children: previews.length > 0
-      ? previews.map((sha, index) => el("figure", { class: index === 0 ? "is-main" : "", children: [fillStoreImage(el("img", { attrs: { alt: `${detail.title} 미리보기 ${index + 1}` } }) as HTMLImageElement, sha)] }))
-      : [el("figure", { class: "is-main", children: [cover(null, detail.kind, detail.title)] })] }),
-    el("p", { class: "store-kind", text: STORE_KIND_LABELS[detail.kind] }),
-    el("h3", { class: "store-detail-title", dataset: { testid: "store-detail-title" }, text: detail.title }),
-    el("p", { class: "store-by", text: `${detail.author} · ${downloadsText(detail.downloads)} · 판본 ${detail.latestVersion}` }),
+    el("div", { class: "store-gallery", children: [main, thumbs] }),
+    el("p", { class: "store-kind", text: kindName(detail.kind) }),
+    el("h3", { class: "store-detail-title", dataset: { testid: "store-detail-title" }, attrs: DATA, text: detail.title }),
+    el("p", { class: "store-by", children: [el("span", { attrs: DATA, text: detail.author }), el("span", { text: downloadsText(detail.downloads) }), el("span", { text: `판본 ${detail.latestVersion}` })] }),
     badges(detail),
-    el("p", { class: "store-summary", text: detail.summary }),
-    actionButtons(detail.slug, detail.title),
-    ...(info.inProject !== null ? [el("p", { class: "store-hint", text: `이 프로젝트에 판본 ${info.inProject}이 들어 있습니다.` })] : []),
-    el("dl", { class: "store-facts", children: [
-      el("dt", { text: "라이선스" }), el("dd", { text: STORE_LICENSE_LABELS[detail.license] }),
-      el("dt", { text: "들어 있는 것" }), el("dd", { text: `타일셋 ${detail.counts.tilesets} · 에셋 ${detail.counts.assets} · 참고문서 ${detail.counts.referenceDocuments}` }),
+    el("p", { class: "store-summary", attrs: DATA, text: detail.summary }),
+    el("div", { class: "store-get", children: [
+      el("div", { class: "store-get-head", children: [el("span", { class: "store-price big", text: "무료" }), el("span", { class: "store-license-pill", text: STORE_LICENSE_SHORT[detail.license] })] }),
+      actionButtons(detail.slug, detail.title),
+      ...(info.inProject !== null ? [el("p", { class: "store-hint", text: `이 프로젝트에 판본 ${info.inProject}이 들어 있습니다.` })] : []),
     ] }),
-    ...(detail.description ? [el("h4", { text: "설명" }), el("p", { class: "store-pre", text: detail.description })] : []),
-    ...(detail.credits ? [el("h4", { text: "크레딧 표기" }), el("p", { class: "store-pre", text: detail.credits }), el("p", { class: "store-hint", text: "게임의 타이틀 「크레딧」 창에 자동으로 들어갑니다." })] : []),
-    el("p", { class: "store-hint", text: `웹: ${state.status?.url ?? ""}/items/${detail.slug}` }),
+    el("dl", { class: "store-facts", children: [
+      el("div", { children: [el("dt", { text: "라이선스" }), el("dd", { text: licenseName(detail.license) })] }),
+      el("div", { children: [el("dt", { text: "들어 있는 것" }), el("dd", { text: `타일셋 ${detail.counts.tilesets} · 에셋 ${detail.counts.assets} · 참고문서 ${detail.counts.referenceDocuments}` })] }),
+    ] }),
+    ...(detail.description ? [el("h4", { text: "설명" }), el("p", { class: "store-pre", attrs: DATA, text: detail.description })] : []),
+    ...(detail.credits ? [el("h4", { text: "크레딧 표기" }), el("p", { class: "store-pre", attrs: DATA, text: detail.credits }), el("p", { class: "store-hint", text: "게임의 타이틀 「크레딧」 창에 자동으로 들어갑니다." })] : []),
+    el("p", { class: "store-hint", children: ["웹: ", el("span", { attrs: DATA, text: `${state.status?.url ?? ""}/items/${detail.slug}` })] }),
   ] });
 }
+
+/** 받은 기록·프로젝트 기록에는 원문 제목이 남는다. 지금 목록에 그 상품이 있으면 화면 언어판 제목을 쓴다. */
+const localTitle = (slug: string, title: string): string => state.catalog?.items.find((item) => item.slug === slug)?.title ?? title;
 
 function installedView(): HTMLElement {
   if (state.installed.length === 0) return el("p", { class: "store-empty", text: "아직 받은 것이 없습니다. 둘러보기에서 받으면 모든 프로젝트에서 쓸 수 있습니다." });
@@ -421,7 +498,7 @@ function installedView(): HTMLElement {
     return el("div", { class: "store-row", dataset: { testid: `store-installed-${item.slug}` }, children: [
       el("span", { class: "store-cover small", children: [cover(item.cover, item.kind, item.title)] }),
       el("span", { class: "store-row-body", children: [
-        el("strong", { text: item.title }),
+        el("strong", { attrs: DATA, text: localTitle(item.slug, item.title) }),
         el("span", { class: "store-card-meta", text: `${item.author} · 판본 ${item.version}${info.update ? ` (판본 ${state.latest.get(item.slug)} 있음)` : ""} · ${item.license}${info.inProject !== null ? " · 이 프로젝트에 있음" : ""}` }),
       ] }),
       actionButtons(item.slug, item.title),
@@ -436,7 +513,7 @@ function projectView(): HTMLElement {
   return el("div", { class: "store-project", children: [
     el("div", { class: "store-rows", dataset: { testid: "store-project-items" }, children: items.map((item) => el("div", { class: "store-row", children: [
       el("span", { class: "store-row-body", children: [
-        el("strong", { text: item.title }),
+        el("strong", { attrs: DATA, text: localTitle(item.slug, item.title) }),
         el("span", { class: "store-card-meta", text: `${item.origin.author} · 판본 ${item.version} · ${item.origin.license}${item.origin.aiGenerated ? " · AI 생성 포함" : ""} · 타일셋 ${item.tilesetIds.length} · 에셋 ${item.assetIds.length}` }),
       ] }),
     ] })) }),
@@ -506,10 +583,10 @@ function uploadView(): HTMLElement {
       el("label", { children: ["한 줄 소개", bind("summary", { maxlength: "160" })] }),
       el("label", { children: ["설명", bind("description", { rows: "3", maxlength: "8000" }, true)] }),
       el("label", { children: ["종류", el("select", { dataset: { testid: "store-upload-kind" }, on: { change: (event) => { form.kind = (event.target as HTMLSelectElement).value as StoreItemKind; } },
-        children: STORE_ITEM_KINDS.map((kind) => el("option", { value: kind, text: STORE_KIND_LABELS[kind], attrs: form.kind === kind ? { selected: "" } : {} })) })] }),
+        children: STORE_ITEM_KINDS.map((kind) => el("option", { value: kind, text: kindName(kind), attrs: form.kind === kind ? { selected: "" } : {} })) })] }),
       el("label", { children: ["태그(쉼표로 구분)", bind("tags", { placeholder: "숲, 마을, 16px" })] }),
       el("fieldset", { children: [el("legend", { text: "라이선스" }), ...STORE_LICENSES.map((license) => el("label", { class: "store-radio", children: [
-        el("input", { attrs: { type: "radio", name: "store-license", ...(form.license === license ? { checked: "" } : {}) }, on: { change: () => { form.license = license; } } }), STORE_LICENSE_LABELS[license],
+        el("input", { attrs: { type: "radio", name: "store-license", ...(form.license === license ? { checked: "" } : {}) }, on: { change: () => { form.license = license; } } }), licenseName(license),
       ] }))] }),
       el("fieldset", { children: [el("legend", { text: "AI 생성 여부 (필수)" }), ...([["yes", "AI 도구로 만든 부분이 있다"], ["no", "전부 직접 만들었다"]] as const).map(([value, label]) => el("label", { class: "store-radio", children: [
         el("input", { attrs: { type: "radio", name: "store-ai", ...(form.ai === value ? { checked: "" } : {}) }, dataset: { testid: `store-upload-ai-${value}` }, on: { change: () => { form.ai = value; } } }), label,

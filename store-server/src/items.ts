@@ -3,6 +3,8 @@ import {
   STORE_ITEM_KINDS,
   STORE_LICENSES,
   STORE_PACK_SCHEMA,
+  isStoreLocale,
+  localizedText,
   packGrade,
   referenceDocumentCount,
   slugify,
@@ -13,6 +15,8 @@ import {
   type StoreItemStatus,
   type StoreItemSummary,
   type StoreLicense,
+  type StoreLocale,
+  type StoreLocalizedTexts,
   type StorePackManifest,
 } from "../../src/assetStore/format";
 import { basicTilesetFor } from "../../src/assetStore/pack";
@@ -25,11 +29,16 @@ import { HttpError } from "./http";
 
 const PAGE_SIZE = 24;
 
-function summary(row: Record<string, unknown>): StoreItemSummary {
+const rowLocales = (row: Record<string, unknown>): StoreLocalizedTexts => (row.locales ?? {}) as StoreLocalizedTexts;
+const rowText = (row: Record<string, unknown>, lang: StoreLocale | null | undefined) =>
+  localizedText({ title: String(row.title), summary: String(row.summary), description: String(row.description ?? "") }, rowLocales(row), lang);
+
+function summary(row: Record<string, unknown>, lang?: StoreLocale | null): StoreItemSummary {
+  const text = rowText(row, lang);
   return {
     slug: String(row.slug),
-    title: String(row.title),
-    summary: String(row.summary),
+    title: text.title,
+    summary: text.summary,
     kind: row.kind as StoreItemKind,
     grade: row.grade === "pack" ? "pack" : "single",
     license: row.license as StoreLicense,
@@ -40,12 +49,13 @@ function summary(row: Record<string, unknown>): StoreItemSummary {
     cover: (row.cover_sha as string | null) ?? null,
     downloads: Number(row.downloads),
     updatedAt: new Date(row.updated_at as string).toISOString(),
+    languages: Object.keys(rowLocales(row)).filter(isStoreLocale),
   };
 }
 
 const ITEM_SELECT = "select i.*, u.display_name as author_name from store_items i join store_users u on u.id = i.author_id";
 
-export interface CatalogQuery { q?: string; kind?: string; grade?: string; sort?: string; page?: number }
+export interface CatalogQuery { q?: string; kind?: string; grade?: string; sort?: string; page?: number; lang?: StoreLocale | null; pageSize?: number }
 
 export async function listCatalog(db: Db, query: CatalogQuery): Promise<{ items: StoreItemSummary[]; total: number; page: number; pageSize: number }> {
   const where = ["i.status = 'visible'"];
@@ -53,15 +63,29 @@ export async function listCatalog(db: Db, query: CatalogQuery): Promise<{ items:
   const q = query.q?.trim().slice(0, 80);
   if (q) {
     args.push(`%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`);
-    where.push(`(i.title ilike $${args.length} or i.summary ilike $${args.length} or array_to_string(i.tags, ' ') ilike $${args.length} or u.display_name ilike $${args.length})`);
+    where.push(`(i.title ilike $${args.length} or i.summary ilike $${args.length} or i.locales::text ilike $${args.length} or array_to_string(i.tags, ' ') ilike $${args.length} or u.display_name ilike $${args.length})`);
   }
   if (query.kind && (STORE_ITEM_KINDS as readonly string[]).includes(query.kind)) { args.push(query.kind); where.push(`i.kind = $${args.length}`); }
   if (query.grade === "pack" || query.grade === "single") { args.push(query.grade); where.push(`i.grade = $${args.length}`); }
   const order = query.sort === "popular" ? "i.downloads desc, i.updated_at desc" : "i.updated_at desc";
   const page = Number.isFinite(query.page) ? Math.max(1, Math.min(500, Math.floor(query.page!))) : 1;
+  const size = Math.max(1, Math.min(PAGE_SIZE, Math.floor(query.pageSize ?? PAGE_SIZE)));
   const total = await db.query(`select count(*)::int as n from store_items i join store_users u on u.id = i.author_id where ${where.join(" and ")}`, args);
-  const rows = await db.query(`${ITEM_SELECT} where ${where.join(" and ")} order by ${order} limit ${PAGE_SIZE} offset ${(page - 1) * PAGE_SIZE}`, args);
-  return { items: rows.rows.map(summary), total: Number(total.rows[0].n), page, pageSize: PAGE_SIZE };
+  const rows = await db.query(`${ITEM_SELECT} where ${where.join(" and ")} order by ${order} limit ${size} offset ${(page - 1) * size}`, args);
+  return { items: rows.rows.map((row) => summary(row, query.lang)), total: Number(total.rows[0].n), page, pageSize: size };
+}
+
+/** 첫 화면용: 종류별 공개 상품 수와 대표 표지. */
+export async function catalogOverview(db: Db): Promise<{ total: number; kinds: { kind: StoreItemKind; count: number; cover: string | null }[] }> {
+  const { rows } = await db.query(
+    `select kind, count(*)::int as n, (array_agg(cover_sha order by updated_at desc) filter (where cover_sha is not null))[1] as cover
+     from store_items where status = 'visible' group by kind`,
+  );
+  const kinds = STORE_ITEM_KINDS.flatMap((kind) => {
+    const row = rows.find((r) => r.kind === kind);
+    return row ? [{ kind, count: Number(row.n), cover: (row.cover as string | null) ?? null }] : [];
+  });
+  return { total: kinds.reduce((sum, k) => sum + k.count, 0), kinds };
 }
 
 /** 보이는 범위: visible·hidden 은 누구나(숨김은 목록에서만 빠진다), pending·removed 는 작가·관리자만. */
@@ -76,14 +100,14 @@ export async function findItem(db: Db | Tx, slug: string): Promise<Record<string
   return rows[0] ?? null;
 }
 
-export async function itemDetail(db: Db, slug: string, viewer: User | null): Promise<StoreItemDetail & { authorId: number; hiddenBy: string | null }> {
+export async function itemDetail(db: Db, slug: string, viewer: User | null, lang?: StoreLocale | null): Promise<StoreItemDetail & { authorId: number; hiddenBy: string | null }> {
   const row = await findItem(db, slug);
   if (!row || !canView(row, viewer)) throw new HttpError(404, "상품을 찾지 못했습니다.", "not_found");
   const versions = await db.query("select version, created_at, manifest_sha256, total_bytes from store_versions where item_id = $1 order by version desc", [row.id]);
   const counts = (row.counts ?? {}) as StoreItemDetail["counts"];
   return {
-    ...summary(row),
-    description: String(row.description),
+    ...summary(row, lang),
+    description: rowText(row, lang).description,
     credits: String(row.credits),
     previews: (row.previews as string[]) ?? [],
     status: row.status as StoreItemStatus,
@@ -172,10 +196,10 @@ export async function createItem(db: Db, config: StoreConfig, store: BlobStore, 
     }
     if (!slug) throw new HttpError(503, "주소를 만들지 못했습니다. 다시 시도해 주세요.", "slug");
     const { rows } = await tx.query(
-      `insert into store_items (slug, author_id, title, summary, description, credits, kind, grade, license, ai_generated, tags, status, first_visible_at, cover_sha, previews, counts)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, case when $12 = 'visible' then now() end, $13, $14, $15) returning id`,
+      `insert into store_items (slug, author_id, title, summary, description, credits, kind, grade, license, ai_generated, tags, status, first_visible_at, cover_sha, previews, counts, locales)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, case when $12 = 'visible' then now() end, $13, $14, $15, $16) returning id`,
       [slug, author.id, manifest.title, manifest.summary, manifest.description, manifest.credits, manifest.kind, packGrade(manifest.content),
-        manifest.license, manifest.aiGenerated, manifest.tags, status, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest)],
+        manifest.license, manifest.aiGenerated, manifest.tags, status, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest), manifest.locales ?? {}],
     );
     const itemId = Number(rows[0].id);
     await insertVersion(tx, itemId, 1, manifest, totalBytes);
@@ -203,9 +227,9 @@ export async function addVersion(db: Db, config: StoreConfig, store: BlobStore, 
     if (status !== row.status) await tx.query("update store_items set status=$2 where id=$1", [row.id, status]);
     await tx.query(
       `update store_items set title=$2, summary=$3, description=$4, credits=$5, kind=$6, grade=$7, license=$8, ai_generated=$9, tags=$10,
-       latest_version=$11, cover_sha=$12, previews=$13, counts=$14, updated_at=now() where id=$1`,
+       latest_version=$11, cover_sha=$12, previews=$13, counts=$14, locales=$15, updated_at=now() where id=$1`,
       [row.id, manifest.title, manifest.summary, manifest.description, manifest.credits, manifest.kind, packGrade(manifest.content), manifest.license,
-        manifest.aiGenerated, manifest.tags, version, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest)],
+        manifest.aiGenerated, manifest.tags, version, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest), manifest.locales ?? {}],
     );
     await audit(tx, auth.user.id, "version", Number(row.id), { version, status });
     return { slug, version, status };
@@ -278,12 +302,12 @@ export async function recordDownload(db: Db, slug: string, clientKey: string): P
   });
 }
 
-export async function myItems(db: Db, user: User): Promise<(StoreItemSummary & { status: StoreItemStatus; hiddenBy: string | null })[]> {
+export async function myItems(db: Db, user: User, lang?: StoreLocale | null): Promise<(StoreItemSummary & { status: StoreItemStatus; hiddenBy: string | null })[]> {
   const { rows } = await db.query(`${ITEM_SELECT} where i.author_id = $1 order by i.updated_at desc`, [user.id]);
-  return rows.map((row) => ({ ...summary(row), status: row.status as StoreItemStatus, hiddenBy: (row.hidden_by as string | null) ?? null }));
+  return rows.map((row) => ({ ...summary(row, lang), status: row.status as StoreItemStatus, hiddenBy: (row.hidden_by as string | null) ?? null }));
 }
 
-export async function adminQueue(db: Db): Promise<{ pending: StoreItemSummary[]; reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[] }> {
+export async function adminQueue(db: Db, lang?: StoreLocale | null): Promise<{ pending: StoreItemSummary[]; reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[] }> {
   const pending = await db.query(`${ITEM_SELECT} where i.status = 'pending' order by i.created_at`);
   const reported = await db.query(
     `${ITEM_SELECT} where i.status in ('visible','hidden') and exists (select 1 from store_reports r where r.item_id = i.id and r.status = 'open') order by i.updated_at desc`,
@@ -291,9 +315,9 @@ export async function adminQueue(db: Db): Promise<{ pending: StoreItemSummary[];
   const result = [];
   for (const row of reported.rows) {
     const reports = await db.query("select reason, detail, created_at from store_reports where item_id = $1 and status = 'open' order by created_at", [row.id]);
-    result.push({ ...summary(row), status: String(row.status), reports: reports.rows.map((r) => ({ reason: String(r.reason), detail: String(r.detail), createdAt: new Date(r.created_at).toISOString() })) });
+    result.push({ ...summary(row, lang), status: String(row.status), reports: reports.rows.map((r) => ({ reason: String(r.reason), detail: String(r.detail), createdAt: new Date(r.created_at).toISOString() })) });
   }
-  return { pending: pending.rows.map(summary), reported: result };
+  return { pending: pending.rows.map((row) => summary(row, lang)), reported: result };
 }
 
 /** 웹에서 낱장 하나를 올릴 때: 서버가 에셋 하나짜리 팩(타일셋이면 기본 타일셋 포함)으로 감싼다. */

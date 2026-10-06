@@ -24,7 +24,9 @@ import urllib.request
 from http.cookiejar import CookieJar
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
+
+from library_locales import locales_for
 
 REPO = Path(__file__).resolve().parents[2]
 PUBLIC = REPO / "public"
@@ -32,6 +34,7 @@ SOURCES = json.loads((REPO / "scripts/shared-face-expression-sources.json").read
 CHARSET_ACCEPTED = REPO / "harness-data/charset-actor/accepted"
 LAWN = REPO / "harness-data/charset-actor/lawn16.png"
 BG = (24, 26, 38, 255)
+SHOWCASE_BG = (22, 25, 34, 255)
 
 EXPRESSIONS = ["base", "smile", "happy", "content", "surprised", "embarrassed", "doubtful", "serious",
                "annoyed", "angry", "sad", "crying", "worried", "determined", "shy", "wink"]
@@ -87,6 +90,34 @@ def board(images: list[Image.Image], cols: int, size: tuple[int, int], pixel: bo
     return png_bytes(canvas)
 
 
+def showcase(images: list[Image.Image], cols: int, rows: int, pixel: bool, shadow: bool = False, size: tuple[int, int] = (1200, 900), pad: int = 28) -> bytes:
+    """표지(카드 4:3): 그림을 cols×rows 격자로 가득 놓고 격자 전체를 가운데에 둔다. 도트는 모두 같은 정수 배율."""
+    images = [image.convert("RGBA") for image in images[:cols * rows]]
+    rows = (len(images) + cols - 1) // cols
+    canvas = Image.new("RGBA", size, SHOWCASE_BG)
+    cell = ((size[0] - pad * (cols + 1)) / cols, (size[1] - pad * (rows + 1)) / rows)
+    max_w, max_h = max(i.width for i in images), max(i.height for i in images)
+    scale = min(cell[0] / max_w, cell[1] / max_h)
+    if pixel:
+        scale = max(1, int(scale))
+    placed = [image.resize((max(1, round(image.width * scale)), max(1, round(image.height * scale))), Image.NEAREST if pixel else Image.LANCZOS) for image in images]
+    cw, ch = round(max_w * scale), round(max_h * scale)
+    gap_x = (size[0] - cols * cw) / (cols + 1)
+    gap_y = (size[1] - rows * ch) / (rows + 1)
+    draw = ImageDraw.Draw(canvas)
+    for index, image in enumerate(placed):
+        col, row = index % cols, index // cols
+        count_in_row = min(cols, len(placed) - row * cols)
+        offset = (cols - count_in_row) * (cw + gap_x) / 2  # 마지막 줄이 모자라면 가운데로
+        x0 = round(gap_x + col * (cw + gap_x) + offset + (cw - image.width) / 2)
+        y0 = round(gap_y + row * (ch + gap_y) + (ch - image.height))
+        if shadow:
+            foot = y0 + image.height
+            draw.ellipse((x0 + image.width * .18, foot - image.height * .07, x0 + image.width * .82, foot + image.height * .03), fill=(10, 12, 18, 255))
+        canvas.alpha_composite(image, (x0, y0))
+    return png_bytes(canvas)
+
+
 class Item:
     def __init__(self, title: str, summary: str, description: str, kind: str, tags: list[str], credits: str, ai: bool, license_: str = "CC-BY-4.0"):
         self.title, self.summary, self.description, self.kind, self.tags, self.credits, self.ai, self.license = title, summary, description, kind, tags, credits, ai, license_
@@ -112,6 +143,7 @@ class Item:
             "schema": "oprn-store-pack/1", "title": self.title, "summary": self.summary, "description": self.description,
             "tags": self.tags, "kind": self.kind, "license": self.license, "aiGenerated": self.ai, "credits": self.credits,
             "content": {"assets": self.assets, "tilesets": {}}, "previews": self.previews[:6],
+            **({"locales": locales} if (locales := locales_for(self.title, self.summary, self.description)) else {}),
             "blobs": [{"sha256": key, "mime": mime, "bytes": len(data)} for key, (data, mime) in self.blobs.items()],
         }
 
@@ -149,12 +181,12 @@ def face_items() -> list[Item]:
                 data = (PUBLIC / f"assets/shared/faceset/{stem}/{index:02d}.png").read_bytes()
                 faces.add_asset(f"{stem}-face-{index:02d}", f"{source['name']} · {expression_label}", "faceset", data, image_meta(data, face=True))
         base = [Image.open(PUBLIC / f"assets/shared/faceset/{s['stem']}/00.png") for s in sets]
-        faces.add_preview(board(base, 4 if len(base) <= 12 else 6, (960, 720), True))
+        faces.add_preview(showcase(base, 4, 3, True))
         first = [Image.open(PUBLIC / f"assets/shared/faceset/{sets[0]['stem']}/{i:02d}.png") for i in range(16)]
         faces.add_preview(board(first, 6, (960, 720), True))
         items.append(faces)
 
-        for mode, mode_label, box_cols in (("bust", "흉상", 4), ("full", "전신", 8)):
+        for mode, mode_label, box_cols in (("bust", "흉상", 4), ("full", "전신", 6)):
             item = Item(
                 f"{mode_label} 16표정 — {label} ({len(sets)}명)",
                 f"대화창 {mode_label} 그림. 얼굴 16표정과 같은 사람·같은 표정. {names}",
@@ -168,8 +200,8 @@ def face_items() -> list[Item]:
                     data = (PUBLIC / f"assets/shared/portraits/{folder}/{mode}-{expression}.png").read_bytes()
                     item.add_asset(f"{folder}-{mode}-{expression}", f"{source['name']} · {mode_label} {expression_label}", "faceset", data, image_meta(data))
             folders = [s["stem"].removesuffix("-expressions") for s in sets]
-            lineup = [Image.open(PUBLIC / f"assets/shared/portraits/{f}/{mode}-base.png") for f in folders[:8]]
-            item.add_preview(board(lineup, box_cols, (1200, 900), False))
+            lineup = [Image.open(PUBLIC / f"assets/shared/portraits/{f}/{mode}-base.png") for f in folders[:box_cols * 2]]
+            item.add_preview(showcase(lineup, box_cols, 2, False))
             one = [Image.open(PUBLIC / f"assets/shared/portraits/{folders[0]}/{mode}-{e}.png") for e in EXPRESSIONS[:8]]
             item.add_preview(board(one, 4, (1200, 900), False))
             items.append(item)
@@ -218,7 +250,7 @@ def character_items() -> list[Item]:
             number = start // 8 + 1
             names = ", ".join(records[start + i]["name"] for i in range(len(chunk)))
             item.add_asset(f"oprn-people-chars-{number}", f"새 마을 사람 {number} · {names}"[:120], "charset", data, image_meta(data))
-        item.add_preview(board(fronts, 7, (1200, 900), True, lawn))
+        item.add_preview(showcase(fronts, 7, 3, True, shadow=True))
         for key in list(item.assets)[:3]:
             sheet = Image.open(io.BytesIO(item.blobs[item.assets[key]["blob"]][0]))
             item.add_preview(board([sheet], 1, (1200, 900), True, lawn))
@@ -237,7 +269,7 @@ def character_items() -> list[Item]:
         monsters.add_asset(f"oprn-monster{n}", f"OPRN 몬스터 {n} · {label}", "charset", data, image_meta(data))
         sheet = Image.open(io.BytesIO(data)).convert("RGBA")
         fronts.extend(front_frame(sheet, i) for i in range(8))
-    monsters.add_preview(board(fronts, 8, (1200, 900), True, lawn))
+    monsters.add_preview(showcase(fronts, 8, 3, True, shadow=True))
     for key in monsters.assets:
         monsters.add_preview(board([Image.open(io.BytesIO(monsters.blobs[monsters.assets[key]["blob"]][0]))], 1, (1200, 900), True, lawn))
     items.append(monsters)
