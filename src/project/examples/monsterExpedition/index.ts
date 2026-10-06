@@ -13,7 +13,10 @@ import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening"
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
-export function createMonsterExpedition() {
+/** firstGymType: 기획서의 첫 체육관 타입(「바위 체육관」) — 관장 동료만 그 타입으로 바꾼다. 맵·장치는 그대로. */
+export interface ExpeditionOptions { readonly firstGymType?: string }
+
+export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   const project = createExpeditionSeed();
   const hero = project.database.actors.find(a => a.id === DEFAULT_ACTOR_ID)!;
   const character = hero.characterResourceId;
@@ -41,7 +44,7 @@ export function createMonsterExpedition() {
   project.session.monsterInstances = {};
   project.session.monsterParty = [];
   project.session.monsterBox = [];
-  const manifest = authorExpeditionWorld(project);
+  const manifest = authorExpeditionWorld(project, options);
   const usedTilesets = new Set(Object.values(project.maps).map(map => map.tilesetId));
   project.tilesets = Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => usedTilesets.has(id)));
   project.database.monsterSpecies = project.database.monsterSpecies?.filter(s => s.id.startsWith("mx_species_"));
