@@ -1,0 +1,134 @@
+{
+ "stage": "school",
+ "verdict": "fail",
+ "reviewerVerdict": "fail",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 1,
+ "seconds": 237,
+ "focus": "小学校 교정 예제 맵(58×48)과 교정 키트 24종. 트랙 안쪽은 운동장이라 비어 있는 것이 정상(빈칸 판정에서 트랙 안은 제외해 판단). 교사·체육관은 기존 승인 건물 키트. 보고의 emptiness 수치는 트랙 안 때문. 실제 일본 小学校 교정의 신호(게양대·조례대·二宮金次郎像·百葉箱·鉄棒·雲梯·ジャングルジム·飼育小屋·プール·防球ネット·校門·校名石)가 맞는지, 3/4 시점, 축척, 배치 동선을 본다.",
+ "files": {
+  "verify-shots/jp-city/school-1x.png": "141737df6e85bf901df97f4192392379503c683238a4152c0e2a5bfe6937f91a",
+  "verify-shots/jp-city/school-crop-nw.png": "b4a01e76fb73de9a025e32ac59e670ab3ca4dd4d71ed75658c0ec68985bebb3e",
+  "verify-shots/jp-city/school-crop-ne.png": "2241d0687aa3ea0035086fdd8f3fc2780c79240b1ae8b2baea5c5fd9ad3eee4e",
+  "verify-shots/jp-city/school-crop-sw.png": "10c55ac97d873c2276f6b7ab2d8e7a2daa93037599f553fc318e8aeedf2f5bff",
+  "verify-shots/jp-city/school-crop-e.png": "ebed4137c28b366559b0c3eb700ae5418e5f61a175f7ef7c01c1fde973b1b772",
+  "tiledata/jp-city/blocks/school/_all-x2.png": "5a8e271eff39e1093f7c09e7cb268f3c9bbd8dc5bf1174e5ae2301c559125515",
+  "scripts/content/jp-city/maps/out/school.report.json": "799a4d1aa945a6ea503613e92938a730ccc6b5f0322db55b5e03419ddb415a75",
+  "scripts/content/jp-city/maps/school.mjs": "ede86b527f4ca9f2b60ea74666d7b297c60be490efe990d83387ed3fa49282b7"
+ },
+ "findings": [
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "tryPut sakura (17,32) 4x6, zelkova (24,32); verify-shots/jp-city/school-crop-sw.png",
+   "problem": "수관이 트랙 아래 흰 선(L2)을 덮어 경기장이 가려진다. 리포트 overlaps 0 은 L2/L3 교차를 세지 않는다",
+   "fix": "두 나무를 트랙 범위(x2-31,y19-33) 밖으로, 예컨대 y>=35 의 담장 쪽으로 옮기고 트랙 칸 L3 점유를 금지 영역에 추가"
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "jp-prop-vending-aka (41,15) 2x2",
+   "problem": "소학교 교정 안에 음료 자판기가 있다",
+   "fix": "삭제. 그 자리는 수돗가(手洗い場) 같은 학교 소품으로 채운다"
+  },
+  {
+   "severity": "major",
+   "file": "tiledata/jp-city/blocks/school/namestone (64x32)",
+   "where": "맵 (39-42,40-41)",
+   "problem": "「小学校」 글자가 읽힌다(글자 금지 위반). 담장 안에 놓였다",
+   "fix": "글자 없는 음각 판 무늬로 다시 그리고 교문 기둥이나 길 쪽 담장 바깥면 (44-46,43) 부근으로 옮긴다"
+  },
+  {
+   "severity": "major",
+   "file": "tiledata/jp-city/blocks/school/pool (320x176)",
+   "where": "맵 (37,2) 20x11, 수면 약 16x5칸",
+   "problem": "수면 16x5m 로 표준 25x12m 학교 수영장에 크게 못 미친다(1칸=1m 축척 위반)",
+   "fix": "수면 25x12칸 이상(키트 약 29x17칸)으로 다시 그리고 북동 구역 배치를 다시 잡는다"
+  },
+  {
+   "severity": "major",
+   "file": "tiledata/jp-city/blocks/school/jungle-gym (48x64)",
+   "where": "맵 placedList jungle-gym",
+   "problem": "정면 격자만 있고 윗면 격자가 없다(3/4 시점 위반)",
+   "fix": "위쪽에 짧아 보이는 가로대 격자 윗면을 추가하고 남쪽 면은 한 단 어둡게 칠한다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/out/school.report.json",
+   "where": "doors.n=3",
+   "problem": "코드상 문 칸 5개(12,12)(28,12)(31,12)(46,12)(47,12)와 수가 다르다",
+   "fix": "문 열거를 키트 메타와 대조해 5칸 모두 도달성 검사에 넣는다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "track-l (2,19) 30x15",
+   "problem": "한 바퀴 약 75m 로 실제 트랙의 절반 이하",
+   "fix": "seed/README 에 압축 축척으로 명시하거나 트랙을 키운다"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/school/ninomiya (16x32)",
+   "where": "맵 (24,15) 부근",
+   "problem": "녹색 덩어리가 화분처럼 읽힌다",
+   "fix": "갈색 청동 인물 실루엣(장작 지게)을 2칸 높이 돌 받침 위에"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "jp-kadan 7회",
+   "problem": "같은 화단 반복. 학급원이 화단으로만 되어 있다",
+   "fix": "학급원은 이랑 흙 밭 키트로, 화단은 2~3개만"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "gate (43,43), 개구부 (45-46,43)",
+   "problem": "개구부 2칸, 진입로 4칸",
+   "fix": "개구부를 4칸으로 맞춘다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "(48-56,13-18)",
+   "problem": "트랙 밖의 빈 흙바닥",
+   "fix": "수돗가·백엽상·나무 등 목적 있는 시설을 놓거나 수영장 확장 자리로 쓴다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "bike-shelter (50,39) 6x3",
+   "problem": "소학생은 자전거로 등교하지 않는다",
+   "fix": "교직원용 차양으로 바꾸거나 삭제"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/school/flagpoles (48x96)",
+   "where": "맵 (2,13)",
+   "problem": "게양대 2개, 보통은 3개",
+   "fix": "3개로"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/school/goal-l, goal-r (48x80)",
+   "where": "맵 (5,29)(26,29)",
+   "problem": "비스듬한 옆면이 아이소 측면처럼 보인다",
+   "fix": "윗면 가로대와 정면 그물이 보이는 3/4 정면 투영으로"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "poleRow y47, xs 0,15,30,37,55",
+   "problem": "간격 15/15/7/18 불규칙",
+   "fix": "금지 구간을 피해 15칸 안팎 등간격으로"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "ball-net x2..30 step4 y42; 미사용 jp-school-track",
+   "problem": "똑같은 불투명 패널 7장 반복. 쓰지 않는 키트가 남아 있다",
+   "fix": "네트는 반투명 기둥과 그물 연속 키트로. 쓰지 않는 track 키트는 지우거나 정리"
+  }
+ ],
+ "report": "학교 단계를 검수한 결과 **불합격**입니다. major 5건, minor 11건이 나왔습니다.\n\n## major\n1. **트랙 위에 나무가 있다.** 남서쪽 벚나무 (17,32)와 느티나무 (24,32)의 수관이 트랙 아래쪽 흰 선을 덮습니다(`school-crop-sw.png`). 리포트의 `overlaps 0`은 L2 트랙 선과 L3 수관이 겹치는 경우를 세지 않습니다. 리포트 숫자가 이 결함을 가리고 있습니다.\n2. **교정 안에 자판기가 있다.** `jp-prop-vending-aka` (41,15)가 학급원 화단 옆, 수영장 앞 포장길에 서 있습니다. 일본 소학교 교정에 빨간 음료 자판기는 두지 않습니다. 교정을 상점가처럼 보이게 하는 신호입니다.\n3. **교명석에 글자가 있고 자리도 틀렸다.** `jp-school-namestone`에 「小学校」가 읽히게 그려져 있어 jp-city의 「글자 금지」 규칙을 어깁니다. 위치도 담장 안 (39-42,40-41)입니다. 실제로는 교문 기둥이나 길 쪽 담장 바깥면에 붙습니다.\n4. **수영장이 너무 작다.** 물 부분이 약 16×5칸, 곧 16×5m입니다(`school-crop-ne.png`). 학교 수영장 표준은 25×12~13m인데 레인 5개가 폭 5m 안에 들어가 있습니다. 1칸 ≈ 1m 축척과 맞지 않습니다.\n5. **정글짐이 3/4 시점이 아니다.** `jungle-gym` 48×64가 정면 격자만 보이고 윗면(위쪽 가로대 격자)이 없습니다. 시점 계약 위반입니다.\n\n## minor\n- 문 수가 맞지 않습니다. 리포트는 `doors n:3`인데 코드 주석에는 문 칸이 5개입니다(昇降口 1, 체육관 2, 수영장 2). 도달성 검사가 실제 문을 모두 셌는지 확인할 수 없습니다.\n- 트랙이 30×15칸으로 한 바퀴 약 75m입니다. 실제 소학교 트랙은 100~200m입니다. 압축 축척이라면 그렇다고 명시해야 합니다.\n- 二宮金次郎像이 1칸 받침 위의 녹색 덩어리로 보여 화분처럼 읽힙니다.\n- 화단 `jp-kadan`을 7번 반복했습니다. 학급원은 이랑 진 흙 밭이어야 합니다.\n- 교문 개구부는 2칸인데 들어오는 길은 4칸입니다.\n- 동쪽 (48-56,13-18) 흙바닥이 비어 있습니다. 트랙 안쪽이 아닌 진짜 빈 땅입니다.\n- 자전거 거치대가 있는데 소학생은 자전거로 등교하지 않습니다. 교직원용 차양이 아니면 지우십시오.\n- 국기 게양대가 2개입니다. 보통은 국기·교기·시기를 다는 3개입니다.\n- 축구 골대의 옆면이 비스듬해서 아이소 측면처럼 보입니다.\n- 전봇대 간격이 15/15/7/18칸으로 불규칙합니다.\n- 방구 네트가 똑같은 불투명 패널 7장의 기계적 반복입니다. 그리고 `jp-school-track` 키트를 만들어 놓고 쓰지 않았습니다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[\n{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"tryPut sakura (17,32) 4x6, zelkova (24,32); verify-shots/jp-city/school-crop-sw.png\",\"problem\":\"수관이 트랙 아래 흰 선(L2)을 덮어 경기장이 가려진다. 리포트 overlaps 0 은 L2/L3 교차를 세지 않는다\",\"fix\":\"두 나무를 트랙 범위(x2-31,y19-33) 밖으로, 예컨대 y>=35 의 담장 쪽으로 옮기고 트랙 칸 L3 점유를 금지 영역에 추가\"},\n{\"severity\":\"major\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"jp-prop-vending-aka (41,15) 2x2\",\"problem\":\"소학교 교정 안에 음료 자판기가 있다\",\"fix\":\"삭제. 그 자리는 수돗가(手洗い場) 같은 학교 소품으로 채운다\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/blocks/school/namestone (64x32)\",\"where\":\"맵 (39-42,40-41)\",\"problem\":\"「小学校」 글자가 읽힌다(글자 금지 위반). 담장 안에 놓였다\",\"fix\":\"글자 없는 음각 판 무늬로 다시 그리고 교문 기둥이나 길 쪽 담장 바깥면 (44-46,43) 부근으로 옮긴다\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/blocks/school/pool (320x176)\",\"where\":\"맵 (37,2) 20x11, 수면 약 16x5칸\",\"problem\":\"수면 16x5m 로 표준 25x12m 학교 수영장에 크게 못 미친다(1칸=1m 축척 위반)\",\"fix\":\"수면 25x12칸 이상(키트 약 29x17칸)으로 다시 그리고 북동 구역 배치를 다시 잡는다\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/blocks/school/jungle-gym (48x64)\",\"where\":\"맵 placedList jungle-gym\",\"problem\":\"정면 격자만 있고 윗면 격자가 없다(3/4 시점 위반)\",\"fix\":\"위쪽에 짧아 보이는 가로대 격자 윗면을 추가하고 남쪽 면은 한 단 어둡게 칠한다\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/out/school.report.json\",\"where\":\"doors.n=3\",\"problem\":\"코드상 문 칸 5개(12,12)(28,12)(31,12)(46,12)(47,12)와 수가 다르다\",\"fix\":\"문 열거를 키트 메타와 대조해 5칸 모두 도달성 검사에 넣는다\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"track-l (2,19) 30x15\",\"problem\":\"한 바퀴 약 75m 로 실제 트랙의 절반 이하\",\"fix\":\"seed/README 에 압축 축척으로 명시하거나 트랙을 키운다\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/blocks/school/ninomiya (16x32)\",\"where\":\"맵 (24,15) 부근\",\"problem\":\"녹색 덩어리가 화분처럼 읽힌다\",\"fix\":\"갈색 청동 인물 실루엣(장작 지게)을 2칸 높이 돌 받침 위에\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"jp-kadan 7회\",\"problem\":\"같은 화단 반복. 학급원이 화단으로만 되어 있다\",\"fix\":\"학급원은 이랑 흙 밭 키트로, 화단은 2~3개만\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"gate (43,43), 개구부 (45-46,43)\",\"problem\":\"개구부 2칸, 진입로 4칸\",\"fix\":\"개구부를 4칸으로 맞춘다\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"(48-56,13-18)\",\"problem\":\"트랙 밖의 빈 흙바닥\",\"fix\":\"수돗가·백엽상·나무 등 목적 있는 시설을 놓거나 수영장 확장 자리로 쓴다\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"bike-shelter (50,39) 6x3\",\"problem\":\"소학생은 자전거로 등교하지 않는다\",\"fix\":\"교직원용 차양으로 바꾸거나 삭제\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/blocks/school/flagpoles (48x96)\",\"where\":\"맵 (2,13)\",\"problem\":\"게양대 2개, 보통은 3개\",\"fix\":\"3개로\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/blocks/school/goal-l, goal-r (48x80)\",\"where\":\"맵 (5,29)(26,29)\",\"problem\":\"비스듬한 옆면이 아이소 측면처럼 보인다\",\"fix\":\"윗면 가로대와 정면 그물이 보이는 3/4 정면 투영으로\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"poleRow y47, xs 0,15,30,37,55\",\"problem\":\"간격 15/15/7/18 불규칙\",\"fix\":\"금지 구간을 피해 15칸 안팎 등간격으로\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/maps/school.mjs\",\"where\":\"ball-net x2..30 step4 y42; 미사용 jp-school-track\",\"problem\":\"똑같은 불투명 패널 7장 반복. 쓰지 않는 키트가 남아 있다\",\"fix\":\"네트는 반투명 기둥과 그물 연속 키트로. 쓰지 않는 track 키트는 지우거나 정리\"}\n]}\n```"
+}

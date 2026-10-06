@@ -2,12 +2,12 @@
  "map": {
   "id": "jp-city-school",
   "size": [
-   58,
+   68,
    48
   ]
  },
  "start": [
-  45,
+  34,
   45
  ],
  "poles": [
@@ -15,16 +15,16 @@
    "row": 47,
    "xs": [
     0,
-    15,
-    30,
-    37,
-    55
+    20,
+    39,
+    49,
+    65
    ],
-   "cover": 5.2
+   "cover": 5.8
   }
  ],
  "deco": {
-  "placed": 8,
+  "placed": 7,
   "skipped": 0
  },
  "doors": {
@@ -33,13 +33,13 @@
   "failing": []
  },
  "solid": {
-  "cells": 305,
+  "cells": 341,
   "openByEngine": 0,
   "open": []
  },
  "autotiles": {
   "lane": {
-   "cells": 232,
+   "cells": 272,
    "mismatch": 0,
    "ex": []
   },
@@ -49,7 +49,7 @@
    "ex": []
   },
   "fence": {
-   "cells": 194,
+   "cells": 212,
    "mismatch": 0,
    "ex": []
   }
@@ -57,21 +57,21 @@
  "layers": {
   "overlaps": 0,
   "issues": [],
-  "l2": 271,
-  "l3": 1082,
-  "l4": 189
+  "l2": 291,
+  "l3": 1134,
+  "l4": 212
  },
  "emptiness": {
-  "worst17x13": 0.846,
+  "worst17x13": 0.873,
   "worstAt": [
-   8,
-   19
+   32,
+   24
   ]
  },
  "reach": {
-  "reachable": 2189
+  "reachable": 2411
  },
- "placed": 56,
+ "placed": 51,
  "ok": true,
  "placedList": [
   {
@@ -92,10 +92,10 @@
   },
   {
    "id": "jp-pool",
-   "x": 37,
-   "y": 2,
-   "w": 20,
-   "h": 11,
+   "x": 38,
+   "y": 1,
+   "w": 29,
+   "h": 17,
    "layer": 3
   },
   {
@@ -123,11 +123,11 @@
    "layer": 3
   },
   {
-   "id": "jp-kadan",
-   "x": 19,
-   "y": 16,
-   "w": 4,
-   "h": 1,
+   "id": "jp-chorei-dai",
+   "x": 16,
+   "y": 17,
+   "w": 3,
+   "h": 2,
    "layer": 3
   },
   {
@@ -139,26 +139,10 @@
    "layer": 3
   },
   {
-   "id": "jp-hyakuyoubako",
-   "x": 34,
-   "y": 16,
-   "w": 1,
-   "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-kadan",
-   "x": 37,
-   "y": 16,
-   "w": 4,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-prop-vending-aka",
-   "x": 41,
+   "id": "jp-teaarai",
+   "x": 26,
    "y": 15,
-   "w": 2,
+   "w": 4,
    "h": 2,
    "layer": 3
   },
@@ -169,14 +153,6 @@
    "w": 30,
    "h": 15,
    "layer": 2
-  },
-  {
-   "id": "jp-chorei-dai",
-   "x": 16,
-   "y": 17,
-   "w": 3,
-   "h": 2,
-   "layer": 3
   },
   {
    "id": "jp-goal-l",
@@ -197,7 +173,7 @@
   {
    "id": "jp-tetsubo",
    "x": 3,
-   "y": 36,
+   "y": 35,
    "w": 5,
    "h": 2,
    "layer": 3
@@ -268,152 +244,144 @@
   },
   {
    "id": "jp-souko",
-   "x": 33,
-   "y": 19,
+   "x": 38,
+   "y": 21,
    "w": 4,
    "h": 3,
    "layer": 3
   },
   {
    "id": "jp-tetsubo",
-   "x": 38,
-   "y": 20,
+   "x": 43,
+   "y": 22,
    "w": 5,
    "h": 2,
-   "layer": 3
-  },
-  {
-   "id": "jp-jungle-gym",
-   "x": 33,
-   "y": 25,
-   "w": 3,
-   "h": 4,
    "layer": 3
   },
   {
    "id": "jp-unte",
-   "x": 37,
-   "y": 25,
+   "x": 49,
+   "y": 22,
    "w": 5,
    "h": 2,
    "layer": 3
   },
   {
-   "id": "jp-prop-sandbox",
-   "x": 38,
-   "y": 29,
-   "w": 3,
+   "id": "jp-hyakuyoubako",
+   "x": 56,
+   "y": 21,
+   "w": 1,
    "h": 2,
    "layer": 3
   },
   {
-   "id": "jp-kadan",
-   "x": 33,
-   "y": 34,
-   "w": 4,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-kadan",
-   "x": 38,
-   "y": 34,
-   "w": 4,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-kadan",
-   "x": 33,
-   "y": 36,
-   "w": 4,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-kadan",
-   "x": 38,
-   "y": 36,
-   "w": 4,
-   "h": 1,
-   "layer": 3
-  },
-  {
-   "id": "jp-prop-bench",
-   "x": 34,
-   "y": 39,
-   "w": 2,
-   "h": 1,
-   "layer": 3
-  },
-  {
    "id": "jp-prop-swing",
-   "x": 48,
-   "y": 19,
+   "x": 59,
+   "y": 21,
    "w": 3,
    "h": 3,
    "layer": 3
   },
   {
    "id": "jp-prop-slide",
-   "x": 52,
-   "y": 19,
+   "x": 63,
+   "y": 21,
    "w": 3,
    "h": 3,
    "layer": 3
   },
   {
+   "id": "jp-jungle-gym",
+   "x": 38,
+   "y": 28,
+   "w": 3,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-sandbox",
+   "x": 42,
+   "y": 30,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-gakkyuen",
+   "x": 47,
+   "y": 29,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-gakkyuen",
+   "x": 53,
+   "y": 29,
+   "w": 5,
+   "h": 3,
+   "layer": 3
+  },
+  {
    "id": "jp-shiiku-goya",
-   "x": 48,
-   "y": 33,
+   "x": 38,
+   "y": 36,
    "w": 4,
    "h": 3,
    "layer": 3
   },
   {
+   "id": "jp-kadan",
+   "x": 43,
+   "y": 37,
+   "w": 4,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bench",
+   "x": 48,
+   "y": 37,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
    "id": "jp-bike-shelter",
-   "x": 50,
-   "y": 39,
+   "x": 60,
+   "y": 40,
    "w": 6,
    "h": 3,
    "layer": 3
   },
   {
    "id": "jp-prop-tree-ginkgo",
-   "x": 49,
-   "y": 24,
+   "x": 59,
+   "y": 27,
    "w": 4,
    "h": 6,
    "layer": 3
   },
   {
    "id": "jp-prop-tree-sakura",
-   "x": 53,
-   "y": 25,
+   "x": 63,
+   "y": 27,
    "w": 4,
    "h": 6,
    "layer": 3
   },
   {
    "id": "jp-prop-tree-sakura",
-   "x": 53,
-   "y": 31,
-   "w": 4,
-   "h": 6,
-   "layer": 3
-  },
-  {
-   "id": "jp-prop-tree-sakura",
-   "x": 17,
-   "y": 32,
+   "x": 52,
+   "y": 35,
    "w": 4,
    "h": 6,
    "layer": 3
   },
   {
    "id": "jp-prop-tree-zelkova",
-   "x": 24,
-   "y": 32,
+   "x": 56,
+   "y": 35,
    "w": 4,
    "h": 6,
    "layer": 3
@@ -436,18 +404,10 @@
   },
   {
    "id": "jp-school-gate-l",
-   "x": 43,
+   "x": 31,
    "y": 41,
-   "w": 6,
+   "w": 8,
    "h": 3,
-   "layer": 3
-  },
-  {
-   "id": "jp-school-namestone",
-   "x": 39,
-   "y": 40,
-   "w": 4,
-   "h": 2,
    "layer": 3
   },
   {
@@ -460,7 +420,7 @@
   },
   {
    "id": "jp-pole",
-   "x": 15,
+   "x": 20,
    "y": 38,
    "w": 3,
    "h": 10,
@@ -468,7 +428,7 @@
   },
   {
    "id": "jp-pole",
-   "x": 30,
+   "x": 39,
    "y": 38,
    "w": 3,
    "h": 10,
@@ -476,7 +436,7 @@
   },
   {
    "id": "jp-pole",
-   "x": 37,
+   "x": 49,
    "y": 38,
    "w": 3,
    "h": 10,
@@ -484,41 +444,41 @@
   },
   {
    "id": "jp-pole",
-   "x": 55,
+   "x": 65,
    "y": 38,
    "w": 3,
    "h": 10,
    "layer": 4
   },
   {
-   "id": "jp-wire-15",
+   "id": "jp-wire-20",
    "x": 3,
    "y": 38,
-   "w": 12,
+   "w": 17,
    "h": 3,
    "layer": 4
   },
   {
-   "id": "jp-wire-15",
-   "x": 18,
+   "id": "jp-wire-19",
+   "x": 23,
    "y": 38,
-   "w": 12,
+   "w": 16,
    "h": 3,
    "layer": 4
   },
   {
-   "id": "jp-wire-7",
-   "x": 33,
+   "id": "jp-wire-10",
+   "x": 42,
    "y": 38,
-   "w": 4,
+   "w": 7,
    "h": 3,
    "layer": 4
   },
   {
-   "id": "jp-wire-18",
-   "x": 40,
+   "id": "jp-wire-16",
+   "x": 52,
    "y": 38,
-   "w": 15,
+   "w": 13,
    "h": 3,
    "layer": 4
   }

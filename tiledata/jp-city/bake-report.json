@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 7407,
+  "count": 7582,
   "tilesPerRow": 48,
-  "rows": 155,
+  "rows": 158,
   "sheetPx": [
    768,
-   2480
+   2528
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 4251,
-  "legacy": 19,
+  "block_cells": 4281,
+  "legacy": 164,
   "legacy_ids": [
    5137,
    5275,
@@ -32,7 +32,8 @@
    6637,
    6645,
    6653,
-   6707
+   6707,
+   6929
   ],
   "unused_source": 110,
   "people_reserved": 155,
@@ -44,15 +45,15 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 4251
+   "block": 4281
   }
  },
  "pc_counts": {
-  "star": 4559,
-  "solid": 1536,
-  "floor": 402,
-  "solidfloor": 225,
-  "flat": 511,
+  "star": 4577,
+  "solid": 1547,
+  "floor": 407,
+  "solidfloor": 317,
+  "flat": 415,
   "blank": 155
  },
  "kits": {
@@ -164,7 +165,7 @@
    },
    {
     "name": "school",
-    "cells": 481,
+    "cells": 511,
     "autotiles": 0,
     "groups": 2,
     "kits": 24,
@@ -204,7 +205,7 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 8,
+   "school": 6,
    "tetsubo": 1,
    "chorei": 1,
    "flagpoles": 1,
@@ -220,6 +221,8 @@
    "asagao": 1,
    "bike": 1,
    "ninomiya": 1,
+   "teaarai": 1,
+   "gakkyuen": 1,
    "pool": 1
   },
   "mismatched_kits": 0,
@@ -227,10 +230,14 @@
   "mismatched_ids": []
  },
  "definition_checks": {
-  "violations": 0,
-  "by_code": {},
-  "examples": {},
-  "tiles_checked": 7407,
+  "violations": 1,
+  "by_code": {
+   "group-empty": 1
+  },
+  "examples": {
+   "group-empty": "jp:school-track"
+  },
+  "tiles_checked": 7582,
   "kits_checked": 376,
   "groups_checked": 177,
   "autotiles_checked": 17
@@ -247,7 +254,7 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "0cf7de444641422539ebba36988d2bf011038d98",
+ "sheet_hash": "935a73433e5eef5a976b5eec8bb063d7b73dd740",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 376,
@@ -281,7 +288,7 @@
    "jizo": 1,
    "torii": 1,
    "gas": 1,
-   "school": 8,
+   "school": 6,
    "tetsubo": 1,
    "chorei": 1,
    "flagpoles": 1,
@@ -297,6 +304,8 @@
    "asagao": 1,
    "bike": 1,
    "ninomiya": 1,
+   "teaarai": 1,
+   "gakkyuen": 1,
    "pool": 1
   },
   "mismatched_kits": 0,
@@ -304,10 +313,14 @@
   "mismatched_ids": []
  },
  "definition_checks_from_files": {
-  "violations": 0,
-  "by_code": {},
-  "examples": {},
-  "tiles_checked": 7407,
+  "violations": 1,
+  "by_code": {
+   "group-empty": 1
+  },
+  "examples": {
+   "group-empty": "jp:school-track"
+  },
+  "tiles_checked": 7582,
   "kits_checked": 376,
   "groups_checked": 177,
   "autotiles_checked": 17

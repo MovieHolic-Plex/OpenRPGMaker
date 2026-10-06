@@ -1,0 +1,90 @@
+{
+ "stage": "vehicles",
+ "verdict": "fail",
+ "reviewerVerdict": "fail",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 1,
+ "seconds": 255,
+ "focus": "움직이는 탈것 14종(승용 5색·경차 2·택시·경트럭·2t 박스·노선버스·노면전차·통근 전철·지하철) 스프라이트. 계약은 SPEC.md. 한 줄 = 한 탈것, 순서 right·left·up·down·right_open·left_open. 왼쪽 살색·남색 막대는 사람 16×24 눈금. 일본 차량다운지(좌측통행: 운전석 오른쪽, 노선버스 앞문·가운데문 왼쪽 면, 일본 택시 지붕 행등, 경차 노란 번호판 등), 3/4 시점(위·아래 프레임은 윗면, 옆 프레임도 지붕 윗면이 보이는지), 축척, 기존 칩셋과 화풍 일치, 프레임 방향 오류(up 은 뒤꽁무니가 화면 아래)를 본다.",
+ "files": {
+  "tiledata/jp-city/vehicles/preview-road-x3.png": "09063e2c7b9caeaf3be510326c6d0581e79df45082d72154526f4d1bc33d86b0",
+  "tiledata/jp-city/vehicles/preview-rail-x3.png": "f2400edc79bc8bfbcdff5ef884c5fc2b9001678b010411633b986bf314c3dea0",
+  "scripts/content/jp-city/vehicles/SPEC.md": "8771097df76ae2feb44ca892649bcbab2a6ee01aa2522e02feb369505785ff3c",
+  "scripts/content/jp-city/vehicles/cars.py": "1ab657e485ce3df09e7e041229a6446383d0a1cf2fdc239c44f4bc37c10df189",
+  "scripts/content/jp-city/vehicles/heavy.py": "0404442a22516515bdd6f5b4f674b52a103b23d6cb99a8c04cd8906d3e331bb9",
+  "src/assets/jpCityVehicles.json": "88368be1e3dbf9eed966444eae1bef5f8385000924414c789e063851b0bda7b6"
+ },
+ "findings": [
+  {
+   "severity": "blocker",
+   "file": "scripts/content/jp-city/vehicles/heavy.py",
+   "where": "bus_side() 문 배치 for dx in (66,116); 프레임 right, right_open (preview-road 노선버스)",
+   "problem": "오른쪽 진행 프레임의 남쪽 면은 차량 오른쪽(운전석 쪽)인데 승강문을 그려, 일본 좌측통행 버스의 '문은 차량 왼쪽' 규칙을 어긴다",
+   "fix": "front_right=False일 때만 문을 그리고, right/right_open 남쪽 면은 창만 있는 벽으로 한다. right_open은 right와 같게 하거나 계약에서 제외한다"
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/vehicles/cars.py",
+   "where": "_sedan_right() → _pv_car(); 승용·택시·경차·경트럭·2t 측면 프레임",
+   "problem": "측면이 순수 옆모습이고 지붕 윗면은 1–2px 하이라이트뿐이라 3/4 시점이 아니다. 같은 묶음 버스(윗면 11px)와도 시점이 다르다",
+   "fix": "지붕·보닛 윗면 띠를 6–10px 더하고 왼쪽 위가 밝은 명암 단계를 준다"
+  },
+  {
+   "severity": "major",
+   "file": "src/assets/jpCityVehicles.json",
+   "where": "승용 right 프레임 bbox y8–45",
+   "problem": "차 높이 약 38px로 24px 사람 척도의 1.6배다. 실제 1.5m 차 대 1.7m 사람 비율에 어긋난다",
+   "fix": "남쪽 면 옆모습을 20–22px로 줄이고 남는 높이는 윗면 띠에 쓴다"
+  },
+  {
+   "severity": "major",
+   "file": "src/assets/jpCityVehicles.json",
+   "where": "kind:kei 항목 length 5 (cars.py _kei_*)",
+   "problem": "경차(3.4m 이하, 약 3.5칸)가 승용차와 같은 5칸이라 경차로 읽히지 않는다",
+   "fix": "L=4(64×48, 32×80)로 하거나 발자국 안에서 차체를 눈에 띄게 짧게 그린다"
+  },
+  {
+   "severity": "major",
+   "file": "scripts/content/jp-city/vehicles/cars.py",
+   "where": "측면 창 유리색(heavy.py 측면 창 포함)",
+   "problem": "측면 유리는 연한 청보라, 위·아래 프레임은 남색으로 다르다. SPEC의 어두운 유리를 어기고 방향 전환 때 색이 튄다",
+   "fix": "측면도 어두운 garasu 톤으로 통일하고 하이라이트는 1–2px만 둔다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/build_vehicles.py",
+   "where": "preview-road",
+   "problem": "SPEC이 요구하는 기존 jp-prop-car-* 비교가 없어 축척·화풍 일치를 검증할 수 없다",
+   "fix": "jp-prop-car-* 한 대를 같은 배율로 나란히 굽는다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/cars.py",
+   "where": "승용 색 목록 silver/white",
+   "problem": "은색과 흰색이 거의 구별되지 않는다",
+   "fix": "은색을 한 단계 어둡고 차갑게 한다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/heavy.py",
+   "where": "rail_side() 2호차 지붕 팬터그래프 (preview-rail-x3)",
+   "problem": "끊어진 사선 낙서 모양이라 집전 장치로 읽히지 않는다",
+   "fix": "_panto_diamond를 재사용하거나 같은 마름모 구조로 그린다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/heavy.py",
+   "where": "rail_side() DOORS=(16,53,91,129)",
+   "problem": "10m 차량에 문 4개로 문 사이 창이 지나치게 압축된다",
+   "fix": "3문으로 줄이거나 SPEC에 압축 규칙을 명시한다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/heavy.py",
+   "where": "tram_side()·rail_side() open 프레임",
+   "problem": "열린 문이 양쪽 진행 방향 모두의 남쪽 면에 나타난다",
+   "fix": "승강장 쪽 정의에 맞춰 한쪽만 열거나 계약 문서에 의도를 적는다"
+  }
+ ],
+ "report": "# jp_city 탈것 14종 적대적 검수 — 판정: 불합격\n\n차단 결함 1건과 주요 결함 4건이 있어 불합격이다. 미리보기를 확대해 칸 단위로 보고, `cars.py`·`heavy.py` 코드와 `jpCityVehicles.json`에서 잰 값으로 확인했다. 검사 보고서 숫자는 근거로 쓰지 않았다.\n\n## 차단 (blocker)\n\n**1. 노선버스 승강문이 운전석 쪽에 있다** — `scripts/content/jp-city/vehicles/heavy.py` `bus_side()`, 프레임 right·right_open\n- 문제: 문 위치를 앞쪽 기준 `for dx in (66, 116)`으로 잡고, 방향과 상관없이 양쪽 프레임 모두에 그린다.\n  - 오른쪽으로 달리는 프레임에서 화면 아래 남쪽 면은 차량의 오른쪽, 즉 운전석 쪽이다. 그래서 right·right_open에서는 승강문이 운전석 쪽 차체에 그려진다.\n  - 일본 좌측통행 노선버스는 앞문·가운데 문이 차량 왼쪽(보도 쪽)에만 있다. 일본 거리라는 신호를 정면으로 어긴다.\n- 고칠 것:\n  - `front_right=False`일 때만 문을 그린다(이때 남쪽 면이 차량 왼쪽이다).\n  - `front_right=True`에서는 창만 있는 벽으로 그린다.\n  - right_open은 right와 같게 하거나, 계약에서 \"남쪽 면에 문 없음\"으로 정의한다.\n\n## 주요 (major)\n\n**2. 승용·택시·경차·트럭 측면 프레임에 지붕 윗면이 없다** — `cars.py` `_sedan_right()` → `_pv_car()`(lib `parts_vehicles.car()`)와 경차·트럭 측면\n- 문제: 측면은 옆모습 윤곽뿐이고, 지붕 위에 1–2px 하이라이트만 있다. 3/4 시점이라면 윗면이 면으로 읽혀야 하는데 그렇지 않다. 같은 묶음의 버스는 윗면 띠가 11px(y6–16)라 시점도 서로 다르다.\n- 고칠 것: 지붕·보닛 윗면 띠를 6–10px 더하고, 밝은 쪽이 왼쪽 위가 되게 명암 단계를 준다. 버스와 같은 높이 비율로 맞춘다.\n\n**3. 승용차 측면이 사람보다 훨씬 크다** — `src/assets/jpCityVehicles.json` 승용 right 프레임\n- 문제: 그려진 영역이 y8–45로 높이 약 38px다. 사람 척도 막대는 24px이다. 실제 승용차는 약 1.5m, 사람은 약 1.7m인데 그림에서는 차가 사람의 1.6배다.\n- 고칠 것: 남쪽 면 옆모습을 20–22px로 줄이고, 남는 높이는 2번의 윗면 띠에 쓴다.\n\n**4. 경차가 승용차와 같은 길이다** — JSON `kind:\"kei\"`의 `length: 5`, `cars.py`의 `_kei_*`\n- 문제: 경차 규격은 3.4m 이하라 약 3.5칸이다. 승용차와 같은 5칸이면 경차로 읽히지 않는다. 노란 번호판만으로는 크기 차이가 전달되지 않는다.\n- 고칠 것: L=4로 한다(측면 64×48, 위·아래 32×80). 발자국을 유지해야 한다면 차체를 발자국 안에서 눈에 띄게 짧게 그린다.\n\n**5. 측면과 위·아래 프레임의 유리색이 다르다** — `cars.py`·`heavy.py` 측면 창\n- 문제: 측면 유리는 연한 청보라, 위·아래 프레임 유리는 남색이다. SPEC은 어두운 유리를 요구하며, 같은 차가 방향을 바꿀 때 색이 튄다.\n- 고칠 것: 측면 창도 어두운 `garasu` 톤으로 통일하고, 반사 하이라이트는 1–2px만 둔다.\n\n## 경미 (minor)\n\n**6. 기존 키트 자동차와 나란히 둔 비교가 없다** — `build_vehicles.py`, 미리보기 `preview-road`\n- 문제: SPEC은 기존 `jp-prop-car-*` 키트 차량 옆에 놓은 비교를 요구하지만 미리보기에 없다. 그래서 축척·화풍 일치를 검증할 수 없다.\n- 고칠 것: `jp-prop-car-*` 한 대와 새 승용차를 같은 배율로 나란히 굽는다.\n\n**7. 은색과 흰색 승용차가 거의 구별되지 않는다** — `cars.py` 승용 색 목록\n- 고칠 것: 은색 차체를 한 단계 어둡게 하고 차가운 회색으로 기울인다.\n\n**8. 통근 전철 2호차의 팬터그래프가 끊어진 낙서처럼 보인다** — `heavy.py` `rail_side()`, `preview-rail-x3` 2호차 지붕\n- 문제: 8px 남짓한 끊긴 사선 획으로, 집전 장치로 읽히지 않는다.\n- 고칠 것: 노면전차의 `_panto_diamond`를 재사용하거나 같은 마름모 구조로 그린다.\n\n**9. 철도 차량 10m에 문이 4개다** — `heavy.py` `rail_side()`의 `DOORS=(16,53,91,129)`\n- 문제: 실제 4문 차량은 20m급이다. 10m에 4문이면 문 사이 창이 지나치게 압축된다.\n- 고칠 것: 3문으로 줄이거나, SPEC에 \"길이 압축, 문 수 유지\"를 명시한다.\n\n**10. 노면전차·전철의 열린 문 프레임이 양쪽 면 모두에서 열린다** — `heavy.py` `tram_side()`·`rail_side()`의 open 프레임\n- 고칠 것: 승강장 쪽 정의에 맞춰 한쪽 면만 열리게 하거나, 계약 문서에 의도를 적는다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"blocker\", \"file\": \"scripts/content/jp-city/vehicles/heavy.py\", \"where\": \"bus_side() 문 배치 for dx in (66,116); 프레임 right, right_open (preview-road 노선버스)\", \"problem\": \"오른쪽 진행 프레임의 남쪽 면은 차량 오른쪽(운전석 쪽)인데 승강문을 그려, 일본 좌측통행 버스의 '문은 차량 왼쪽' 규칙을 어긴다\", \"fix\": \"front_right=False일 때만 문을 그리고, right/right_open 남쪽 면은 창만 있는 벽으로 한다. right_open은 right와 같게 하거나 계약에서 제외한다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/vehicles/cars.py\", \"where\": \"_sedan_right() → _pv_car(); 승용·택시·경차·경트럭·2t 측면 프레임\", \"problem\": \"측면이 순수 옆모습이고 지붕 윗면은 1–2px 하이라이트뿐이라 3/4 시점이 아니다. 같은 묶음 버스(윗면 11px)와도 시점이 다르다\", \"fix\": \"지붕·보닛 윗면 띠를 6–10px 더하고 왼쪽 위가 밝은 명암 단계를 준다\"},\n{\"severity\": \"major\", \"file\": \"src/assets/jpCityVehicles.json\", \"where\": \"승용 right 프레임 bbox y8–45\", \"problem\": \"차 높이 약 38px로 24px 사람 척도의 1.6배다. 실제 1.5m 차 대 1.7m 사람 비율에 어긋난다\", \"fix\": \"남쪽 면 옆모습을 20–22px로 줄이고 남는 높이는 윗면 띠에 쓴다\"},\n{\"severity\": \"major\", \"file\": \"src/assets/jpCityVehicles.json\", \"where\": \"kind:kei 항목 length 5 (cars.py _kei_*)\", \"problem\": \"경차(3.4m 이하, 약 3.5칸)가 승용차와 같은 5칸이라 경차로 읽히지 않는다\", \"fix\": \"L=4(64×48, 32×80)로 하거나 발자국 안에서 차체를 눈에 띄게 짧게 그린다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/vehicles/cars.py\", \"where\": \"측면 창 유리색(heavy.py 측면 창 포함)\", \"problem\": \"측면 유리는 연한 청보라, 위·아래 프레임은 남색으로 다르다. SPEC의 어두운 유리를 어기고 방향 전환 때 색이 튄다\", \"fix\": \"측면도 어두운 garasu 톤으로 통일하고 하이라이트는 1–2px만 둔다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/build_vehicles.py\", \"where\": \"preview-road\", \"problem\": \"SPEC이 요구하는 기존 jp-prop-car-* 비교가 없어 축척·화풍 일치를 검증할 수 없다\", \"fix\": \"jp-prop-car-* 한 대를 같은 배율로 나란히 굽는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/cars.py\", \"where\": \"승용 색 목록 silver/white\", \"problem\": \"은색과 흰색이 거의 구별되지 않는다\", \"fix\": \"은색을 한 단계 어둡고 차갑게 한다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/heavy.py\", \"where\": \"rail_side() 2호차 지붕 팬터그래프 (preview-rail-x3)\", \"problem\": \"끊어진 사선 낙서 모양이라 집전 장치로 읽히지 않는다\", \"fix\": \"_panto_diamond를 재사용하거나 같은 마름모 구조로 그린다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/heavy.py\", \"where\": \"rail_side() DOORS=(16,53,91,129)\", \"problem\": \"10m 차량에 문 4개로 문 사이 창이 지나치게 압축된다\", \"fix\": \"3문으로 줄이거나 SPEC에 압축 규칙을 명시한다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/heavy.py\", \"where\": \"tram_side()·rail_side() open 프레임\", \"problem\": \"열린 문이 양쪽 진행 방향 모두의 남쪽 면에 나타난다\", \"fix\": \"승강장 쪽 정의에 맞춰 한쪽만 열거나 계약 문서에 의도를 적는다\"}\n]}\n```"
+}

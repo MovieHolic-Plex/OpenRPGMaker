@@ -76,16 +76,6 @@ def _stadium(c, cx0, cx1, cy, r, col, gap=0):
         put(int(round(cx1 - r * math.cos(a))), int(round(cy - r * math.sin(a))))
 
 
-@prop('school-track', '운동장 트랙 흰 선(200m 두 줄·출발선)', 24, 12, other='flat', tags=['학교', '운동장', '트랙'],
-      rules='校庭 흙 바닥 위 2층(투명 덧그림). 키트 왼쪽 위 = 트랙 바깥 사각의 왼쪽 위. 가운데는 비어 있다(축구 골대·조례대를 둘 수 있다). 걸을 수 있다.')
-def _track(c):
-    col = K('shiro', 1)
-    _stadium(c, 96, 287, 96, 88, col); _stadium(c, 96, 287, 96, 70, col, gap=4)
-    for y in range(26, 44): c.P(192, 8 + y - 26 + 0, None)
-    for y in range(8, 27): c.P(191, y, col); c.P(192, y, col)                       # 출발·결승선(위 직선 위)
-    for k in range(4): c.HL(186, 10 + k * 4, 3, col)                                # 출발 순서 눈금
-
-
 @prop('school-track-l', '운동장 트랙 흰 선(큰 판 30×15)', 30, 15, other='flat', tags=['학교', '운동장', '트랙'],
       rules='校庭 흙 바닥 위 2층(투명 덧그림). 넓은 운동장용. 키트 왼쪽 위 = 트랙 바깥 사각 왼쪽 위. 안쪽 양 끝에 골대 한 쌍을 둔다. 걸을 수 있다.')
 def _track_l(c):
@@ -147,15 +137,18 @@ def _flags(c):
       rules='교정·공원 놀이 구역. 아래 두 줄(앞면) 막힘, 위 두 줄(윗면·뒤)은 뒤로 지나간다.')
 def _jungle(c):
     cols = ('aka', 'kii', 'sora', 'midori')
-    X = (4, 17, 30, 43); TOP, FRONT, BOT = 10, 30, 62           # 윗면은 TOP~FRONT(뒤로 갈수록 위), 앞면은 FRONT~BOT
-    for k, x in enumerate(X):                                   # 윗면 깊이선(뒤로 뻗은 대) — 앞 기둥과 같은 x
-        c.VL(x, TOP, FRONT - TOP, K(cols[(k + 1) % 4], 2)); c.VL(x + 1, TOP, FRONT - TOP, K(cols[(k + 1) % 4], 0)); c.VL(x - 1, TOP, FRONT - TOP, OL); c.VL(x + 2, TOP, FRONT - TOP, OL)
-    for k, y in enumerate((TOP, TOP + 10, FRONT)):              # 윗면 가로대(뒤·가운데·앞)
-        pipe_h(c, 3, 46, y, cols[k % 4], 2)
-    for k, y in enumerate((FRONT + 10, FRONT + 21)):            # 앞면 가로대
-        pipe_h(c, 3, 46, y, cols[(k + 2) % 4], 1)
-    for k, x in enumerate(X):                                   # 앞면 기둥
-        pipe_v(c, x, FRONT, BOT, cols[(k + 1) % 4], 1, 2)
+    X = (4, 17, 30, 43); TOP, FRONT, BOT = 15, 30, 62            # 윗면 TOP~FRONT: 세 칸 깊이를 5px 씩 눌러 그린다(앞면 칸은 ~11px)
+    for k, y in enumerate((TOP, TOP + 5, TOP + 10, FRONT)):      # 윗면 가로대 넷(뒤→앞) — 가장 밝은 단, 1px 굵기 + 윤곽
+        col = cols[k % 4]
+        c.HL(3, y, 44, K(col, 3)); c.HL(3, y + 1, 44, K(col, 1)); c.HL(3, y - 1, 44, OL)
+    for k, x in enumerate(X):                                    # 윗면 깊이 대 — 밝게, 앞면 기둥보다 가늘게(1px)
+        c.VL(x, TOP, FRONT - TOP, K(cols[(k + 1) % 4], 3)); c.VL(x + 1, TOP, FRONT - TOP, OL)
+    for k, y in enumerate((FRONT + 11, FRONT + 22)):             # 앞면 가로대 — 한 단 어둡게(남향 그늘)
+        pipe_h(c, 3, 46, y, cols[(k + 2) % 4], 0)
+    for k, x in enumerate(X):                                    # 앞면 기둥(굵게 2px, 어둡게)
+        pipe_v(c, x, FRONT, BOT, cols[(k + 1) % 4], 0, 2)
+    pipe_h(c, 3, 46, FRONT, cols[3], 2)                           # 윗면·앞면 경계(앞 윗 가로대)
+    c.R(4, BOT - 1, 42, 1, K('yuka', -1))
     shadow(c, 2, BOT, 46)
 
 
@@ -220,9 +213,9 @@ def _goal_r(c):
 @prop('ball-net', '防球ネット 방구망(높은 녹색 그물, 이어 붙임)', 4, 5, solid=[(i, 4) for i in range(4)], tags=['학교', '운동장', '그물'],
       rules='운동장과 길·교사 사이 경계(남쪽 길가 담 안쪽). 가로로 x + 4 씩 이어 붙인다. 아래 줄 막힘.', role='fence', repeat='x')
 def _net(c):
-    for y in range(4, 76):
+    for y in range(4, 76):                                  # 성긴 마름모(6px) — 뒤 바닥이 비쳐 보인다
         for x in range(0, 64):
-            if (x + y) % 4 == 0 or (x - y) % 4 == 0: c.P(x, y, K('midori', -1))
+            if (x + y) % 6 == 0 or (x - y) % 6 == 0: c.P(x, y, K('midori', 0))
     c.HL(0, 4, 64, K('midori', 0)); c.HL(0, 3, 64, OL)
     pipe_v(c, 1, 2, 78, 'conc', 1, 3)
     c.HL(0, 76, 64, K('midori', -2)); c.HL(0, 77, 64, OL)
@@ -301,7 +294,7 @@ def _asagao(c):
         c.R(x + 1, 0, 3, 2, K('murasaki' if k % 3 else 'sora', 2))
 
 
-@prop('bike-shelter', '自転車置き場 자전거 보관대(지붕)', 6, 3, solid=[(i, 2) for i in range(6)], tags=['학교', '자전거', '보관대'],
+@prop('bike-shelter', '自転車置き場 교직원 자전거 보관대(지붕)', 6, 3, solid=[(i, 2) for i in range(6)], tags=['학교', '자전거', '보관대'],
       rules='정문 안쪽·교사 옆(교직원·고학년용). 지붕 밑 두 줄은 뒤로 지나간다, 아래 줄 막힘.')
 def _bikes(c):
     W = 96
@@ -324,105 +317,146 @@ def _bikes(c):
 @prop('ninomiya', '二宮金次郎像(장작 지고 책 읽는 동상)', 1, 2, solid=[(0, 1)], tags=['학교', '동상'],
       rules='교정 화단 곁·정문 안쪽. 막힘.')
 def _ninomiya(c):
-    b = 'ki'
+    b = 'renga'                                                                                               # 청동(갈색 단)
     c.R(2, 20, 12, 10, K('conc', 1)); c.HL(2, 20, 12, K('conc', 3)); c.VL(13, 20, 10, K('conc', -1)); c.HL(1, 19, 14, OL); c.VL(1, 20, 10, OL); c.VL(14, 20, 10, OL); c.HL(1, 30, 14, OL)
-    c.R(4, 9, 7, 8, K(b, -1)); c.R(10, 7, 4, 8, K(b, -2)); c.HL(10, 7, 4, K(b, 0))                              # 몸 + 등의 장작
-    for j in (8, 10, 12): c.HL(10, j, 4, K(b, 1))
-    c.R(5, 3, 5, 5, K(b, 0)); c.HL(5, 3, 5, K(b, 1)); c.P(5, 5, K(b, -2))                                        # 머리(숙임)
-    c.R(3, 10, 4, 3, K('kinari', 1)); c.HL(3, 10, 4, K(b, 1))                                                    # 책
-    c.R(5, 17, 2, 3, K(b, -2)); c.R(8, 17, 2, 3, K(b, -2))
-    for (x, y) in ((4, 2), (10, 6), (3, 9), (14, 8)): c.P(x, y, OL)
-    c.VL(3, 4, 13, OL); c.VL(14, 7, 10, OL)
+    c.R(3, 21, 10, 2, K('conc', 2))                                                                           # 받침 윗면
+    # 등에 진 장작 다발(머리 뒤로 어깨보다 넓게 솟는다)
+    c.R(3, 2, 10, 8, K(b, -1))
+    for j in (3, 5, 7): c.HL(3, j, 10, K(b, 1)); c.P(3, j, K(b, 2))
+    c.HL(2, 1, 12, OL); c.VL(2, 2, 8, OL); c.VL(13, 2, 8, OL)
+    # 머리(책을 보느라 숙임)
+    c.R(6, 5, 4, 4, K(b, 0)); c.HL(6, 5, 4, K(b, 2)); c.P(6, 6, K(b, 1)); c.HL(6, 8, 4, K(b, -2))
+    c.HL(5, 4, 6, OL); c.VL(5, 5, 4, OL); c.VL(10, 5, 4, OL)
+    # 몸(기모노) — 아래로 조금 넓어진다, 왼쪽 빛
+    c.R(5, 9, 6, 7, K(b, 0)); c.VL(5, 9, 7, K(b, 1)); c.VL(10, 9, 7, K(b, -2)); c.HL(5, 12, 6, K(b, -1))
+    c.VL(4, 9, 7, OL); c.VL(11, 9, 7, OL)
+    # 두 손에 펼친 책(밝은 면)
+    c.R(6, 10, 4, 2, K(b, 3)); c.P(8, 10, K(b, 1)); c.HL(6, 9, 4, OL)
+    # 걷는 다리·짚신
+    c.R(6, 16, 1, 3, K(b, -1)); c.R(9, 16, 1, 3, K(b, -1)); c.HL(5, 16, 6, OL); c.VL(5, 16, 3, OL); c.VL(7, 16, 3, OL); c.VL(8, 16, 3, OL); c.VL(10, 16, 3, OL)
+    c.HL(5, 19, 3, K(b, -2)); c.HL(8, 19, 3, K(b, -2))
 
 
-@prop('school-gate-l', '正門 小学校 정문(높은 기둥·접힌 철문)', 6, 3, solid=[(0, 2), (5, 2), (1, 2), (4, 2)], tags=['학교', '정문'],
-      rules='학교 담(철망·블록 담)의 정문 자리. 가운데 두 칸(x 2·3)이 열린 문(지나감), 양 기둥·접힌 철문 칸은 막힘. 곁에 jp-school-namestone.')
+@prop('school-gate-l', '正門 小学校 정문(높은 기둥·접힌 철문, 너비 4칸)', 8, 3, solid=[(0, 2), (1, 2), (6, 2), (7, 2)], tags=['학교', '정문'],
+      rules='학교 담(철망·블록 담)의 정문 자리. 가운데 네 칸(x 2~5)이 열린 문(진입로 폭 4칸과 맞춘다), 양 기둥·접힌 철문 칸은 막힘. 오른쪽 기둥에 세로 명판(글자 없음).')
 def _gate_l(c):
-    for px in (1, 81):                                                                                       # 기둥(콘크리트 + 갓돌)
+    for px in (1, 113):                                                                                      # 기둥(콘크리트 + 갓돌)
         c.R(px, 6, 14, 42, K('conc', 1)); c.VL(px, 6, 42, K('conc', 2)); c.VL(px + 13, 6, 42, K('conc', -1))
         for j in range(12, 46, 8): c.HL(px, j, 14, K('conc', 0))
         c.R(px - 1, 2, 16, 4, K('conc', 2)); c.HL(px - 1, 2, 16, K('conc', 3)); c.HL(px - 1, 5, 16, K('conc', -1))
         c.HL(px - 2, 1, 18, OL); c.VL(px - 2, 2, 4, OL); c.VL(px + 15, 2, 4, OL); c.VL(px - 1, 6, 42, OL); c.VL(px + 14, 6, 42, OL)
         c.R(px + 4, 14, 6, 4, K('kii', 1)); c.HL(px + 4, 14, 6, K('kii', 2))                                   # 문등
-    c.R(85, 22, 6, 18, K('ita', 1)); c.VL(85, 22, 18, K('ita', 2))                                            # 오른쪽 기둥 명판(세로 나무판)
-    for j in range(25, 38, 3): c.HL(86, j, 4, K('sumi', 1))
-    for x0 in (16, 64):                                                                                      # 접힌 아코디언 철문
+    c.R(117, 22, 6, 18, K('ita', 1)); c.VL(117, 22, 18, K('ita', 2)); c.VL(116, 22, 18, OL); c.VL(123, 22, 18, OL)   # 오른쪽 기둥 세로 명판(무늬만)
+    for j in range(25, 38, 3): c.HL(119, j, 2, K('ita', -1))
+    for x0 in (16, 96):                                                                                      # 접힌 아코디언 철문
         c.R(x0, 24, 16, 22, K('tekko', 2)); c.HL(x0, 24, 16, K('tekko', 3)); c.HL(x0, 45, 16, K('tekko', -1))
         for i in range(x0 + 1, x0 + 16, 3): c.VL(i, 25, 20, K('tekko', 0)); c.P(i + 1, 34, K('tekko', 3))
         c.VL(x0 - 1, 24, 22, OL); c.VL(x0 + 16, 24, 22, OL); c.HL(x0, 23, 16, OL)
-    c.R(32, 44, 32, 4, K('tekko', 0)); c.HL(32, 45, 32, K('tekko', -2))                                       # 바닥 레일
-    shadow(c, 0, 48 - 1, 96)
+    c.R(32, 44, 64, 4, K('tekko', 0)); c.HL(32, 45, 64, K('tekko', -2))                                       # 바닥 레일
+    shadow(c, 0, 48 - 1, 128)
 
 
-@prop('school-namestone', '校名碑 학교 이름 돌(小学校)', 4, 2, solid=[(0, 1), (1, 1), (2, 1), (3, 1)], tags=['학교', '정문', '이름'],
-      rules='정문 곁 담 안쪽(교정 쪽). 아래 줄 막힘.')
-def _namestone(c):
-    c.R(2, 6, 60, 20, K('conc', 0)); c.HL(2, 6, 60, K('conc', 2)); c.HL(2, 7, 60, K('conc', 1)); c.VL(2, 6, 20, K('conc', 2)); c.VL(61, 6, 20, K('conc', -2))
-    c.R(4, 9, 56, 16, K('conc', -1))
-    SP.text(c, 6, 9, '小学校', K('shiro', 1), step=19)
-    c.HL(1, 5, 62, OL); c.VL(1, 6, 20, OL); c.VL(62, 6, 20, OL)
-    c.R(0, 26, 64, 4, K('conc', 1)); c.HL(0, 26, 64, K('conc', 2)); c.HL(0, 29, 64, K('conc', -2)); c.HL(0, 30, 64, OL)
-    shadow(c, 0, 31, 64)
+@prop('teaarai', '手洗い場 수돗가(긴 개수대·수도꼭지 줄)', 4, 2, solid=[(i, 1) for i in range(4)], tags=['학교', '수돗가'],
+      rules='교사·운동장 사이, 정문 길 곁. 아래 줄 막힘(개수대), 윗줄은 뒤 배관이라 뒤로 지나간다.')
+def _teaarai(c):
+    c.R(3, 10, 58, 3, K('tekko', 1)); c.HL(3, 10, 58, K('tekko', 3)); c.HL(2, 9, 60, OL); c.HL(2, 13, 60, OL)   # 뒤 급수관
+    for x in range(8, 60, 9):                                                                                # 수도꼭지
+        c.R(x, 13, 2, 5, K('tekko', 2)); c.P(x, 17, K('tekko', 0)); c.VL(x - 1, 13, 5, OL); c.VL(x + 2, 13, 5, OL)
+        c.R(x - 1, 14, 4, 2, K('sora', 2)); c.HL(x - 1, 14, 4, K('shiro', 2))                                  # 손잡이(물색)
+    c.R(2, 18, 60, 6, K('conc', 3)); c.HL(2, 18, 60, K('shiro', 1))                                           # 개수대 윗면(테두리)
+    c.R(5, 19, 54, 4, K('conc', 0)); c.HL(5, 19, 54, K('conc', -1))                                           # 우묵한 안쪽
+    c.R(2, 24, 60, 6, K('conc', 1)); c.HL(2, 24, 60, K('conc', 2)); c.HL(2, 29, 60, K('conc', -2))           # 앞면
+    c.HL(1, 17, 62, OL); c.VL(1, 18, 12, OL); c.VL(62, 18, 12, OL); c.HL(1, 30, 62, OL)
+    shadow(c, 1, 31, 62)
+
+
+@prop('gakkyuen', '学級園 학급 밭(이랑·새싹·나무 팻말)', 5, 3, solid=[(x, y) for x in range(5) for y in range(1, 3)], tags=['학교', '밭', '학급원'],
+      rules='교정 가장자리·정문 길 곁. 낮은 나무 테두리 안 이랑 셋. 윗줄(뒤 팻말 줄)만 지나간다.')
+def _gakkyuen(c):
+    W = 80
+    c.R(2, 18, W - 4, 26, K('soil', -1))                                                                      # 흙
+    for k in range(3):                                                                                       # 이랑(밝은 등성이 + 어두운 고랑)
+        y = 21 + k * 8
+        c.HL(4, y, W - 8, K('soil', 1)); c.HL(4, y + 1, W - 8, K('soil', 0)); c.HL(4, y + 4, W - 8, K('soil', -2))
+        for x in range(7 + k * 3, W - 6, 6):                                                                  # 새싹
+            c.P(x, y - 1, K('midori', 2)); c.P(x - 1, y, K('midori', 1)); c.P(x + 1, y, K('midori', 0))
+    c.R(0, 16, W, 2, K('ita', 2)); c.HL(0, 16, W, K('ita', 3)); c.HL(0, 15, W, OL)                            # 테두리(윗면)
+    c.R(0, 44, W, 3, K('ita', 0)); c.HL(0, 44, W, K('ita', 1)); c.HL(0, 47, W, OL)
+    c.VL(0, 16, 31, K('ita', 1)); c.VL(W - 1, 16, 31, K('ita', -1))
+    for x0 in (10, 44):                                                                                      # 학급 팻말(무늬만)
+        c.R(x0, 4, 14, 8, K('shiro', 1)); c.HL(x0, 4, 14, K('shiro', 2)); c.HL(x0 + 2, 7, 10, K('conc', 0)); c.HL(x0 + 2, 9, 7, K('conc', 0))
+        c.HL(x0 - 1, 3, 16, OL); c.HL(x0 - 1, 12, 16, OL); c.VL(x0 - 1, 4, 8, OL); c.VL(x0 + 14, 4, 8, OL)
+        c.R(x0 + 6, 12, 2, 6, K('ita', 0)); c.VL(x0 + 5, 12, 6, OL); c.VL(x0 + 8, 12, 6, OL)
 
 
 # ─────────────────────────── 수영장 ───────────────────────────
-PW, PH = 20, 11
+PW, PH = 29, 17
+WX0, WY0, WX1, WY1 = 2, 3, 27, 15        # 물 칸 [WX0, WX1) × [WY0, WY1) = 25 × 12 (25m 6코스)
+ENT = (14, 15)                           # 남쪽 철망 입구 칸
 
 
 def _pool_ground(c):
-    """1층: 데크(밝은 콘크리트) + 물(막힘 solidfloor 칸). 물 = 칸 (2..17, 3..8)."""
+    """1층: 데크(밝은 콘크리트) + 물(막힘 solidfloor 칸). 물 = 칸 (2..26, 3..14) 25×12 = 25m 6코스."""
     W, H = PW * 16, PH * 16
     c.R(0, 0, W, H, K('conc', 2))
     for x in range(0, W, 16): c.VL(x, 0, H, K('conc', 1))
     for y in range(0, H, 16): c.HL(0, y, W, K('conc', 1))
-    x0, y0, x1, y1 = 32, 48, 18 * 16, 9 * 16
+    x0, y0, x1, y1 = WX0 * 16, WY0 * 16, WX1 * 16, WY1 * 16
     c.R(x0, y0, x1 - x0, y1 - y0, K('sora', 1))
     c.R(x0, y0, x1 - x0, 5, K('sora', -1)); c.HL(x0, y0 + 5, x1 - x0, K('sora', 0))                             # 북쪽 벽 안쪽 면(남향) + 그늘
     for y in range(y0 + 10, y1, 3):                                                                              # 잔물결
         for x in range(x0 + ((y * 5) % 11), x1, 11): c.HL(x, y, 3, K('sora', 2))
-    for k in range(1, 5):                                                                                        # 코스 줄(흰·빨강 부표)
-        yy = y0 + 5 + k * (y1 - y0 - 5) // 5
+    lanes = 6
+    for k in range(1, lanes):                                                                                    # 코스 줄(흰·빨강 부표)
+        yy = y0 + 5 + k * (y1 - y0 - 5) // lanes
         for x in range(x0, x1, 2): c.P(x, yy, K('aka', 1) if (x // 8) % 2 else K('shiro', 2))
+    for k in range(lanes):                                                                                       # 바닥 코스 선(짙은 물색)
+        yy = y0 + 5 + (2 * k + 1) * (y1 - y0 - 5) // (2 * lanes)
+        c.HL(x0 + 24, yy, x1 - x0 - 48, K('sora', -1))
     c.HL(x0 - 1, y0 - 1, x1 - x0 + 2, K('conc', 3)); c.VL(x0 - 1, y0, y1 - y0, K('conc', 3))
     c.HL(x0, y1, x1 - x0, K('conc', 0)); c.VL(x1, y0, y1 - y0, K('conc', 0))
-    for k in range(5):                                                                                           # 출발대(서쪽)
-        yy = y0 + 2 + k * (y1 - y0 - 6) // 5
+    for k in range(lanes):                                                                                       # 출발대(서쪽, 코스마다)
+        yy = y0 + 6 + k * (y1 - y0 - 8) // lanes
         c.R(18, yy, 12, 7, K('shiro', 1)); c.HL(18, yy, 12, K('shiro', 2)); c.HL(18, yy + 6, 12, K('conc', 0)); c.VL(17, yy, 7, OL)
+    for xx in (x0 + 40, x1 - 40):                                                                               # 사다리(물 안 손잡이)
+        c.VL(xx, y0 - 3, 6, K('tekko', 3)); c.VL(xx + 5, y0 - 3, 6, K('tekko', 3)); c.HL(xx, y0 - 3, 6, OL)
 
 
-@prop('pool', 'プール 25m 학교 수영장(물·코스 줄·출발대·철망·탈의실)', PW, PH,
+@prop('pool', 'プール 25m 학교 수영장(물 25×12·6코스·출발대·철망·탈의실)', PW, PH,
       solid=[(x, 0) for x in range(PW)] + [(x, 1) for x in range(PW)] + [(0, y) for y in range(PH)] + [(PW - 1, y) for y in range(PH)]
-            + [(x, PH - 1) for x in range(PW) if x not in (9, 10)],
-      ground=_pool_ground, ground_solid=[(x, y) for x in range(2, 18) for y in range(3, 9)],
+            + [(x, PH - 1) for x in range(PW) if x not in ENT],
+      ground=_pool_ground, ground_solid=[(x, y) for x in range(WX0, WX1) for y in range(WY0, WY1)],
       tags=['학교', '수영장'], role='building',
-      rules='교정 구석(체육관 곁). 가장자리 철망·북쪽 탈의실은 막힘, 남쪽 철망 가운데 두 칸(x 9·10)이 입구(발 씻는 곳). 물(1층 solidfloor)은 들어가지 못한다. 데크는 걸음.')
+      rules=f'교정 구석(체육관 곁). 가장자리 철망·북쪽 탈의실은 막힘, 남쪽 철망 가운데 두 칸(x {ENT[0]}·{ENT[1]})이 입구(발 씻는 곳). 물(1층 solidfloor, 25×12칸)은 들어가지 못한다. 데크는 걸음.')
 def _pool(c):
     W, H = PW * 16, PH * 16
-    # 북쪽 탈의실 + 뒤 철망(위 두 줄)
+    # 북쪽 뒤 철망(위 두 줄) + 가운데 탈의실
     c.R(0, 2, W, 22, K('midori', -1))
     for y in range(4, 24):
         for x in range(0, W):
             if (x + y) % 4 == 0 or (x - y) % 4 == 0: c.P(x, y, K('midori', 1))
-    c.R(96, 0, 128, 28, K('kinari', 1)); c.HL(96, 0, 128, K('conc', 2)); c.HL(96, 3, 128, K('conc', 0)); c.VL(96, 0, 28, K('kinari', 2)); c.VL(223, 0, 28, K('kinari', -1))
-    for x0 in (106, 170): c.R(x0, 10, 16, 18, K('ita', -1)); c.VL(x0 + 13, 18, 3, K('tekko', 2)); c.VL(x0 - 1, 10, 18, OL); c.VL(x0 + 16, 10, 18, OL)
-    c.R(136, 8, 24, 8, K('garasu', 1)); c.HL(136, 8, 24, K('garasu', 3)); c.VL(147, 8, 8, K('conc', 1))
-    c.HL(95, -1, 130, OL); c.VL(95, 0, 29, OL); c.VL(224, 0, 29, OL); c.HL(0, 28, W, K('conc', 0)); c.HL(0, 29, W, OL)
+    hx0, hx1 = W // 2 - 88, W // 2 + 88
+    c.R(hx0, 0, hx1 - hx0, 28, K('kinari', 1)); c.HL(hx0, 0, hx1 - hx0, K('conc', 2)); c.HL(hx0, 3, hx1 - hx0, K('conc', 0)); c.VL(hx0, 0, 28, K('kinari', 2)); c.VL(hx1 - 1, 0, 28, K('kinari', -1))
+    for x0 in (hx0 + 14, hx1 - 30): c.R(x0, 10, 16, 18, K('ita', -1)); c.VL(x0 + 13, 18, 3, K('tekko', 2)); c.VL(x0 - 1, 10, 18, OL); c.VL(x0 + 16, 10, 18, OL)
+    for x0 in (hx0 + 50, hx0 + 98): c.R(x0, 8, 24, 8, K('garasu', 1)); c.HL(x0, 8, 24, K('garasu', 3)); c.VL(x0 + 11, 8, 8, K('conc', 1))
+    c.HL(hx0 - 1, -1, hx1 - hx0 + 2, OL); c.VL(hx0 - 1, 0, 29, OL); c.VL(hx1, 0, 29, OL); c.HL(0, 28, W, K('conc', 0)); c.HL(0, 29, W, OL)
     # 옆 철망(세로 기둥 + 망)
     for x0 in (0, W - 16):
         for y in range(24, H - 12):
             for x in range(x0 + 4, x0 + 12):
                 if (x + y) % 4 == 0: c.P(x, y, K('midori', 0))
         pipe_v(c, x0 + 7, 22, H - 12, 'midori', 0, 2)
-    # 남쪽 철망(앞) — 가운데 입구 두 칸 비움
+    # 남쪽 철망(앞) — 입구 두 칸 비움
+    ex0, ex1 = ENT[0] * 16, (ENT[1] + 1) * 16
     for y in range(H - 26, H - 2):
         for x in range(0, W):
-            if 144 <= x < 176: continue
+            if ex0 <= x < ex1: continue
             if (x + y) % 4 == 0 or (x - y) % 4 == 0: c.P(x, y, K('midori', 0))
-    for x0, x1 in ((0, 144), (176, W)):
+    for x0, x1 in ((0, ex0), (ex1, W)):
         c.HL(x0, H - 27, x1 - x0, K('midori', 1)); c.HL(x0, H - 28, x1 - x0, OL); c.HL(x0, H - 2, x1 - x0, OL)
         for px in range(x0 + 2, x1, 32): pipe_v(c, px, H - 28, H - 2, 'midori', 0, 2)
-    for px in (142, 176): pipe_v(c, px, H - 30, H - 2, 'tekko', 1, 3)
-    c.R(147, H - 10, 26, 6, K('sora', 0)); c.HL(147, H - 10, 26, K('conc', 3))                                    # 발 씻는 곳
+    for px in (ex0 - 2, ex1): pipe_v(c, px, H - 30, H - 2, 'tekko', 1, 3)
+    c.R(ex0 + 3, H - 10, ex1 - ex0 - 6, 6, K('sora', 0)); c.HL(ex0 + 3, H - 10, ex1 - ex0 - 6, K('conc', 3))      # 발 씻는 곳
 
 
 # ─────────────────────────── 굽기 ───────────────────────────
