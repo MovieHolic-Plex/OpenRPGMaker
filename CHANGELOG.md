@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.145.0 — 2026-10-06
+
+### 기능
+
+- bind multi-actor theme requirements to complete native deliveries (#2217) (`aaed648`)
+- produce and collect native theme actor action poses (#2212) (`9f5a1a3`)
+
+### 수정
+
+- show native previews from the current approved content directory (#2221) (`5053374`)
+- disambiguate perspective flags for production slots (#2220) (`5adc802`)
+- preserve sealed actor manifest bytes across native production (#2219) (`34750fb`)
+- bind production review measurements to each native slot (#2218) (`ace5d9e`)
+- require complete actor action frames in space demo states (#2215) (`e08ede6`)
+- collect current native images without mixing historical attempts (#2214) (`abfe449`)
+- reject standing-furniture contracts for ground tiles before drawing (#2213) (`1250b68`)
+
 ## 0.144.2 — 2026-10-06
 
 ### 수정
