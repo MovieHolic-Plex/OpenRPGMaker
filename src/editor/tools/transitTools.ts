@@ -23,9 +23,16 @@ const TRACK_KITS = ["jp-subway-track"];
 const vehicleIds = (): string[] => transitVehicleCatalog().map((v) => v.id);
 const vehicleLine = (): string => transitVehicleCatalog().map((v) => `${v.id}(${v.kind}, 길이 ${v.length}칸)`).join(", ");
 
+/** 차가 지나가도 되는 길 칸 = 생활도로 묶음 + 횡단보도(묶음·길 4줄 키트) + 「생활도로」 이름표 키트 칸. 횡단보도로 끊긴 간선도 한 띠로 본다. */
+const CROSSWALK_GROUPS = ["jp-crosswalk-ew", "jp-crosswalk-ns"];
+const CROSSWALK_KITS = ["jp-road-lane-crosswalk-h", "jp-road-lane-crosswalk-v"];
 function laneTileSet(project: Project, map: GameMap): Set<number> {
   const ts = project.tilesets[map.tilesetId];
-  return new Set(ts?.autotileGroups?.find((g) => g.id === LANE_GROUP)?.memberTileIds ?? []);
+  const out = new Set<number>();
+  for (const g of ts?.autotileGroups ?? []) if (g.id === LANE_GROUP || CROSSWALK_GROUPS.includes(g.id)) for (const t of g.memberTileIds) out.add(t);
+  for (const t of kitTileSet(project, map, CROSSWALK_KITS, "tiles")) out.add(t);
+  (ts?.tileMeta ?? []).forEach((m, i) => { if ((m?.label ?? "").startsWith("생활도로")) out.add(i); });
+  return out;
 }
 function kitTileSet(project: Project, map: GameMap, kitIds: readonly string[], layer: "tiles" | "upperTiles" | "both"): Set<number> {
   const ts = project.tilesets[map.tilesetId];
