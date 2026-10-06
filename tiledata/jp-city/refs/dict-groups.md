@@ -1,6 +1,6 @@
 # 일본 도시 — 타일 그룹 사전 (203개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8048칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8054칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
 역할별 개수: building 26, fence 6, prop 88, roof 17, terrain 28, wall 35, water 3.
@@ -193,7 +193,7 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:school-ground","name":"校庭 흙 바닥","role":"terrain","layer":"lower","n":3,"from":6926,"to":6928},
 {"id":"jp:school-track","name":"운동장 트랙 선","role":"terrain","layer":"upper","n":114,"from":7034,"to":7415},
 {"id":"jp:tram-rail","name":"노면전차 궤도(투명 덧그림)","role":"terrain","layer":"upper","n":6,"from":7794,"to":7799},
-{"id":"jp:tram-stop","name":"노면전차 정류장·가선·전주","role":"prop","layer":"mixed","n":53,"from":7812,"to":8042},
+{"id":"jp:tram-stop","name":"노면전차 정류장·가선·전주","role":"prop","layer":"mixed","n":35,"from":7812,"to":8053},
 {"id":"jp:subway-entrance","name":"지하철 출입구","role":"building","layer":"mixed","n":26,"from":7849,"to":8047},
 {"id":"jp:subway-floor","name":"지하 콘코스 바닥(밝은 회색 대형 타일)","role":"terrain","layer":"lower","n":1,"from":7870,"to":7870},
 {"id":"jp:subway-platform","name":"승강장 바닥(회색 엇갈림 타일)","role":"terrain","layer":"lower","n":1,"from":7871,"to":7871},

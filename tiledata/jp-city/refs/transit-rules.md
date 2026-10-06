@@ -1,6 +1,6 @@
 # 일본 도시 — 탈것·노면전차·지하철 쓰는 법 (노선·차선 칸·정류장·역 맵)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8048칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8054칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 맵의 `transit` 설정(노선 목록)이 게임에서 실제로 탈것을 움직인다. 탈것은 주인공 앞에서 서고(주인공을 밀거나 덮지 않는다), 정류장에서 문을 열고(`*_open` 그림),
 `board` 가 있는 정류장에서는 탈것 옆에서 「조사」하면 그 맵·칸으로 옮겨 간다. 상태는 저장하지 않는다(맵에 들어올 때마다 90초 미리 돌린 상태로 시작).
@@ -45,18 +45,20 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | `jp-subway` | 지하철(은·보라 띠, 3량) | subway | 30칸 | right, left, right_open, left_open |
 버스·노면전차·전철·지하철의 문은 **차의 왼쪽 면**에만 있다(좌측통행 승강) — 화면에 보이는 남쪽 면은 서쪽으로 갈 때의 왼쪽 면이다. 동쪽으로 가는 차의 `right_open` 은 `right` 와 같은 그림(문이 반대쪽)이다.
 
-## 노면전차 거리 (키트 10종, 그림 `jp-img-transit-street-scene`)
+## 노면전차 거리 (키트 8종, 그림 `jp-img-transit-street-scene`)
 - 단면(북→남): 보도 3 · 동쪽행 차로 3 · 동쪽행 레일 2 · 사이 1 · 서쪽행 레일 2 · 서쪽행 안전지대 섬 2(`jp-tram-stop`, 동쪽 끝 導流帯 `jp-tram-stop-zebra`) · 서쪽행 차로 3 · 보도 3. 차로 폭 3칸 = 차 몸 2칸 + 여유.
 - 레일 `jp-tram-rail-h`/`-v` 는 **2층**(투명 덧그림 — 아스팔트 위). 1층에 찍으면 아스팔트가 사라진다.
-- 가선 `jp-tram-wire-h` 는 **4층**, 레일 행에서 **북쪽으로 5행**(약 5.5m 높이의 3/4 투영). 전주 `jp-tram-pole-n`(북쪽 보도, 팔이 남쪽)·`jp-tram-pole-s`(남쪽 보도, 팔이 북쪽)의 팔 끝이 가선과 만난다.
+- 가선 `jp-tram-wire-h`(2칸 반복)는 **4층**, 동행·서행 궤도 각각 윗행 **−5행**. 센터 전주 `jp-tram-pole-c`(1×9)는 복선 사이 빈 행에 밑동을 두고(키트 윗행 = 동행 궤도 윗행 −6), 16~24칸 간격으로 세운다. 보도에는 전주를 세우지 않는다(출입문·간판 앞을 막는다).
+- 단선 종점은 그 선로 동쪽 끝에 차막이 `jp-tram-rail-end`.
 - 지하철 출입구 `jp-subway-entrance` 는 보도 안쪽(연석에서 2칸 이상)에 두고, 입구(anchor) 칸에 지하철역 콘코스로 가는 이동 이벤트를 둔다.
-- 노면전차 노선: `auto.tram` 또는 routes kind `tram` — 정류장 칸은 섬 옆 레일 칸.
+- 노면전차 노선: `auto.tram` 또는 routes kind `tram` — 정류장은 섬 옆 레일 칸, `at:"center"` 로 섬 가운데 칸을 준다.
+- 버스 정류장: `auto.busStops:[{x: 정문 가운데 x, y: 그 앞 차선 행, at:"center"}]` — 버스 문이 정문 앞에 온다.
 
 ## 지하철역 (키트 22종, 예제 맵 さくら町駅)
 - 콘코스(맨 위부터): 천장 보 `jp-subway-ceiling` 1줄 → 흰 타일 벽 2줄(매표기·출구 계단·역무실이 벽에 붙는다) → 바닥 → 개찰구 `jp-subway-gates`(9칸, 통로 = 홀수 열) — **양옆은 칸막이 `jp-subway-fence` 로 벽·기둥까지 막는다** → 승강장 계단 `jp-subway-stairs-down`.
 - 승강장(맨 위부터): 천장 보 → 뒷벽 3줄(광고·역명판) → 선로 `jp-subway-track` 2줄(1층, 막힘) → 승강장 끝 `jp-subway-edge` 1줄(점자 블록, 걸음) → 바닥(기둥·의자·LED·매단 역명판·올라가는 계단).
 - 점자 유도 블록은 2층 오토타일 `jp-tactile` 선: 출구 계단 → 매표기 / 개찰 통로 → 승강장 계단, 승강장은 끝 줄에서 계단 쪽 갈래.
-- 지하철 노선: routes kind `subway`, 선로 위 행(머리 행 = 선로 윗줄)을 맵 밖 → 맵 밖으로. 열차 30칸이 승강장 앞에 서도록 정류장 칸(머리)을 고르고 `board` 에 내릴 곳(다른 역·지상)을 준다.
+- 지하철 노선: `set_map_transit` 의 `auto.subway:{board:{mapId,x,y}, stopName, centerX}` 하나로 깐다 — 1층 선로를 찾아 30칸 열차가 맵 밖에서 들어와 몸 가운데가 `centerX`(기본 맵 가운데, 보통 승강장 계단 앞)에 서서 문을 연다. 직접 줄 때는 routes kind `subway`, 머리 행 = 선로 윗줄, 정류장은 `at:"center"` + 몸 가운데 칸. 결과 요약의 「서면 몸 x a~b」 로 확인한다.
 - 이동: 계단 입구(anchor) 칸에 `transfer` 이벤트(playerTouch). 예제는 콘코스 승강장 계단 ↔ 승강장 올라가는 계단, 출구 계단 → 지상.
 
 ## 예제 맵 도달 (콘코스, 엔진 `isPassable`, 시작 (12,5), 도달 칸 244)

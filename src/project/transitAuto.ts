@@ -7,7 +7,7 @@
 //   폭 4칸 이상이면 좌측통행 두 방향(laneOffsetFor), 2~3칸이면 한 방향(동쪽·남쪽행)만.
 // - 노면전차: 2층의 레일(tram-rail-h 2줄 / tram-rail-v 2열) 칸이 이룬 곧은 선, 가장자리에서 가장자리까지.
 // 막다른 길·굽은 길·고리 노선은 여기서 만들지 않는다 — set_map_transit 의 routes 로 직접 준다.
-import { laneOffsetFor, type MapTransitRoute, type MapTransitStop, type TransitDir } from "./mapTransit";
+import { laneOffsetFor, transitVehicle, type MapTransitRoute, type MapTransitStop, type TransitDir } from "./mapTransit";
 
 export interface RoadBand {
   axis: "ew" | "ns";
@@ -99,6 +99,12 @@ export function straightPathIndex(path: ReadonlyArray<{ x: number; y: number }>,
   return i >= 0 && i <= Math.abs(b.y - a.y) ? i : null;
 }
 
+/** 정류장 (x, y) 가 가리키는 것: head = 탈것 머리 칸, center = 서 있을 때 몸 가운데 칸(정문·계단 앞에 문을 맞출 때). */
+export type StopAnchor = "head" | "center";
+/** 몸 가운데 칸 번호 → 머리 칸 번호. 경로 칸 번호는 진행 방향으로 늘고 몸은 머리 뒤(작은 번호)로 뻗는다. */
+export const headIndexFromCenter = (centerIndex: number, length: number): number => centerIndex + Math.floor((length - 1) / 2);
+const busLength = (): number => transitVehicle("jp-bus-city")?.length ?? 9;
+
 export const DEFAULT_CAR_MIX = ["jp-car-white", "jp-car-silver", "jp-car-kei-yellow", "jp-car-black", "jp-car-taxi", "jp-car-red", "jp-truck-kei", "jp-car-blue", "jp-car-kei-mint", "jp-truck-box"];
 
 export interface AutoTrafficOptions {
@@ -106,7 +112,7 @@ export interface AutoTrafficOptions {
   headwaySec?: number;
   vehicles?: string[];
   /** 버스 정류장: (x, y) = 버스 머리가 서는 차선 칸. 그 칸을 지나는 방향의 띠에 버스 노선을 하나 만든다. */
-  busStops?: Array<{ x: number; y: number; name?: string; waitSec?: number; board?: MapTransitStop["board"] }>;
+  busStops?: Array<{ x: number; y: number; at?: StopAnchor; name?: string; waitSec?: number; board?: MapTransitStop["board"] }>;
   busHeadwaySec?: number;
   /** 띠마다 차를 보낼지 거르는 함수(기본: 가장자리→가장자리 띠만). */
   accept?: (band: RoadBand) => boolean;
@@ -131,7 +137,8 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
   for (const stop of opts.busStops ?? []) {
     const lane = lanes.find((l) => straightPathIndex(l.path, stop.x, stop.y) !== null);
     if (!lane) { unmatchedStops.push({ x: stop.x, y: stop.y }); continue; }
-    const index = straightPathIndex(lane.path, stop.x, stop.y)!;
+    const raw = straightPathIndex(lane.path, stop.x, stop.y)!;
+    const index = stop.at === "center" ? headIndexFromCenter(raw, busLength()) : raw;
     let bus = busByLane.get(lane.id);
     if (!bus) {
       bus = { id: `bus-${lane.id.slice("traffic-".length)}`, name: "시내버스", kind: "bus", path: lane.path.map((p) => ({ ...p })), vehicles: ["jp-bus-city"], headwaySec: opts.busHeadwaySec ?? 35, stops: [] };
