@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-06T06:02:59.778983+00:00",
+  "expectedSpecies": 50,
+  "qualifiedSpecies": 8,
+  "actualCurrentModelHandles": [
+    {
+      "pid": 1483948,
+      "cwd": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content",
+      "actualCmdlineVerified": true
+    },
+    {
+      "pid": 1697257,
+      "cwd": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content",
+      "actualCmdlineVerified": true
+    },
+    {
+      "pid": 1742917,
+      "cwd": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content",
+      "actualCmdlineVerified": true
+    }
+  ],
+  "currentTurnClassification": "progress: three actual18-pose draft sources produced; root opened actual18-pose sheets and native writer bodies. Wolf and badger technicalPASS proven; actual badger independent rework3 issues and new coordinate repair live. Latest note-file steering updated for future author/repair calls. Full50 remains active.",
+  "nativeDraftPoses": 54,
+  "actualBadgerIndependentReviewJob": "e3de8f19-5d91-4a7c-a029-913a1ea7a8f5",
+  "actualBadgerRecommendation": "rework",
+  "actualBadgerRepairJob": "c0b3bdef-c193-4ddc-b125-13cca831e7de",
+  "actualWolfCriticJob": "1b1e6e11-3f30-4e76-8166-70bb5b202eb6",
+  "entireGoalCompleteClaim": false
+}

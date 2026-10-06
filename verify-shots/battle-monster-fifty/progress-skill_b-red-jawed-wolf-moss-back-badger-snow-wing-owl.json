@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "red-jawed-wolf",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/red-jawed-wolf/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "236b824f7a7ed22f85952aeedfe05f903a277c2040f5a4e3b489fe7f2ebe5404",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T05:47:01.071058+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "moss-back-badger",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/moss-back-badger/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "eb0e0c11dd9513f1aab4facb785134ee9db2ccbfdbd12da0b1f858ba13a3ee33",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T05:47:01.071058+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "snow-wing-owl",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/snow-wing-owl/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "81e760c861b638e6d4ef16b8aaa5419fcf070bfb29d17da4badb7a2daee16cee",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T05:47:01.071058+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
