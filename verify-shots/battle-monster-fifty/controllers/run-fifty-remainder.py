@@ -5,7 +5,7 @@ repo=Path(__file__).resolve().parents[1];os.chdir(repo);sys.path.insert(0,str(re
 from pipeline import load,save,stamp
 work=repo/'qa-runs/battle-monster-fifty-wave';plan=load(repo/'harness-data/battle-monster/fifty-monsters-plan.json');early=['jade-mantis','lantern-goblin'];human=['red-tassel-swordswoman'];external=early+human
 ids=[r['id'] for r in plan['roster'] if r['id'] not in plan['pilot']+external and load(work/'tasks'/(r['id']+'.json'))['state']!='done']
-base=['npm','run','harness','--','battle-monster','wave','--work','qa-runs/battle-monster-fifty-wave','--candidate',plan['candidate'],'--visual-repairs','4','--visual-repair-authorization','qa-runs/battle-monster-fifty-wave/authorization.txt','--note-file','qa-runs/battle-monster-fifty-wave/direction.txt']
+base=['npm','run','harness','--','battle-monster','wave','--work','qa-runs/battle-monster-fifty-wave','--candidate',plan['candidate'],'--visual-repairs','8','--visual-repair-authorization','qa-runs/battle-monster-fifty-wave/authorization.txt','--note-file','qa-runs/battle-monster-fifty-wave/direction.txt']
 statefile=work/'remainder-controller.json';old=load(statefile) if statefile.exists() else {};history=work/'dispatcher-before-adaptive.json'
 if not history.exists():save(history,old)
 s={'state':'running','startedAt':stamp(),'remainingSpecies':len(ids),'externalSpecies':external,'goalSpeciesCount':50,'maxModelConcurrency':3,'requiresActualVisualKeep':True,'runs':[]};save(statefile,s)

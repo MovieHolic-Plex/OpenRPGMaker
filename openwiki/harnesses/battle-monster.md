@@ -224,6 +224,8 @@ npm run harness -- battle-monster accept-batch \
 기존 wave의 실제 PID/시작 식별자가 종료된 뒤 같은 후속 서비스의 배차기를 바꾼다. 후속은
 초기/여성 작업의 실제 producer MainPID·진행 상태와 live model PID를 함께 세어 남는1/2/3개
 자리만 쓴다. 외부 작업이 끝나면 나머지를3명 풀로 이어간다.50종/합격 기준은 동일하다.
+후속의 실제 지적 교정은 최대8번이며 초기4번 제한에 닿은 후보도 같은 보존 원본/count에서
+이어간다. 매번 새 검수 keep가 필요하고8번 후에도 rework이면 미게시 실패로 남는다.
 
 현재50종 작업의 임시 `oprn-battle-fifty-observer-20261006` 실행기는 게시된 현재 keep를 읽고
 기존 `accept-batch`/`audit-batch` 단계와 실제 브라우저 캡처·출처 재로드를 이어간다. 원본을 그리거나
