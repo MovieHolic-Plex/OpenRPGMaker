@@ -221,7 +221,18 @@ def accept(data, cid, result):
                       if c.get('nativeHarness') == 'charset-actor'}
         new_actions = added_action_frames(root, inputs.get('layout', {}).get('layout', {}))
         for gid, candidate_id in components.items():
-            added = originals[gid][candidate_id].get('actorFrames', {}).get('requiredNewActionFrames', [])
+            candidate = originals[gid][candidate_id]
+            added = candidate.get('actorFrames', {}).get('requiredNewActionFrames', [])
+            # Older prepared manifests predate requiredNewActionFrames. Their
+            # already-bound native request remains authoritative after a reload.
+            if candidate.get('nativeHarness') == 'charset-actor':
+                request_path = str(Path(candidate['nativeSheets'][1]['path']).parent.parent / 'request.json')
+                request_ref = next((r for r in candidate['sources'] if r['path'] == request_path), None)
+                if request_ref:
+                    order = choices.read(choices.verified(root, request_ref))
+                    previous = set(order.get('preserveActions', {}).get('frames', []))
+                    if previous:
+                        added = [f['id'] for f in candidate['actorFrames']['actions'] if f['id'] not in previous]
             if added: new_actions.setdefault(gid, set()).update(added)
         new_action_uses = {gid: set() for gid in new_actions}
         for index, recipe_ref in enumerate(recipes):
