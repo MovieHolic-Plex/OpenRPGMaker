@@ -98,10 +98,13 @@ async function fight(label, { capture = false } = {}) {
     }
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
     if (!ready) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
+    // 적 체력은 화면 HUD 글자(「현재/최대」)에서 읽는다 — 플레이어가 보는 그 값.
     const enemyHp = await page.evaluate(() => {
-      const snap = window.__oprnHooksScene?.battleRuntime?.snapshot?.();
-      const enemy = snap?.enemies?.find((e) => !e.defeated);
-      return enemy ? enemy.hp / enemy.maxHp : null;
+      for (const node of document.querySelectorAll('[data-testid^="battle-enemy-hp-"]')) {
+        const [hp, max] = (node.textContent ?? "").split("/").map(Number);
+        if (max > 0 && hp > 0) return hp / max;
+      }
+      return null;
     });
     await page.waitForFunction(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battleDirectorStep === "command", undefined, { timeout: 30000 }).catch(() => {});
     if (capture && (enemyHp === null || enemyHp <= 0.5) && await page.locator('[data-testid="actor-command-item"]').isEnabled()) {
@@ -200,6 +203,20 @@ try {
     step("capture", owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned}`, await shot("08-after-capture"));
   }
 
+  // 포획전에서 지친 동료를 마을 회복 센터 직원에게 맡긴다(플레이어가 하듯) — 지친 채 트레이너에게 졌다.
+  const heal = async () => {
+    const center = Object.values(project.maps).find((map) => map.events.some((event) => /_center_nurse$/.test(event.id)) && map.id.startsWith(start.currentMapId));
+    const nurse = center?.events.find((event) => /_center_nurse$/.test(event.id));
+    if (!center || !nurse) return false;
+    const spot = besideOf(center.id, nurse);
+    await teleport(center.id, spot.x, spot.y);
+    await talk(spot.dir);
+    await pressEnterUntil(async () => !(await present("dialogue-box")), 40);
+    const healthy = await live();
+    return healthy.party.every((m) => m.currentHp === undefined || m.currentHp > 0);
+  };
+  step("heal", await heal(), "회복 센터 직원", await shot("08b-healed"));
+
   // 도로 트레이너 — 이 도로의 전투 이벤트 하나.
   const trainer = route.events.find((event) => JSON.stringify(event.pages).includes('"battleProcessing"'));
   if (trainer) {
@@ -211,7 +228,7 @@ try {
     await shot("09-trainer-battle");
     const log = started ? await fight("10-trainer") : [];
     const after = await state();
-    step("trainer", started, `${trainer.id}: ${log.length}턴 → battleResult ${after.battleResult}`, await shot("11-after-trainer"));
+    step("trainer", started && after.battleResult === "victory", `${trainer.id}: ${log.length}턴 → battleResult ${after.battleResult}`, await shot("11-after-trainer"));
   }
 
   // 1관 관장 — 퍼즐 스위치와 리더 레벨은 디버그로 맞춘다(체육관 퍼즐·수련은 자동 플레이가 증명).

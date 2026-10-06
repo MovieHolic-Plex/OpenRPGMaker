@@ -52,6 +52,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
   const sources = new Map<string, Template>();
   const entries = new Map<string, Point>();
   const reserved = new Map<string, Set<string>>();
+  const doorSpots = new Map<string, Point>();
   const speciesById = new Map((project.database.monsterSpecies ?? []).map(s => [s.id, s]));
   const coord = (p: Point) => `${p.x},${p.y}`;
   const reserve = (map: GameMap, p: Point) => reserved.get(map.id)!.add(coord(p));
@@ -80,6 +81,16 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
     if (role === "town" && TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
+    // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
+    // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
+    if (source === "overworld/cave") {
+      // 쓰지 않는 아래층 구멍도 길처럼 읽히므로 함께 바닥으로.
+      const sand = new Set([...Object.entries(t.names).filter(([n]) => n.startsWith("cave_sand")).map(([, v]) => v), t.names.hole_down!]);
+      const floor = ["cave_floor0", "cave_floor1", "cave_floor2", "cave_floor3"].map(n => t.names[n]!);
+      map.lowerTiles.forEach((tile, i) => { if (sand.has(tile)) map.lowerTiles[i] = floor[(i * 7 + (i >> 3)) % floor.length]!; });
+      const ladder = map.lowerTiles.indexOf(t.names.ladder_up!);
+      if (ladder >= 0) doorSpots.set(map.id, { x: ladder % map.width, y: Math.floor(ladder / map.width) });
+    }
     if (source === "overworld/route") {
       const clearing = autotileGroupsForTileset(project.tilesets[map.tilesetId]).find(g => g.id === "clearing")!;
       const sand = new Set(Object.entries(t.names).filter(([n]) => n.startsWith("sand_at")).map(([, v]) => v));
@@ -195,11 +206,12 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const ca = connected(a).filter(p => reachA.has(coord(p))), cb = connected(b);
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
     const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
-    const atB = anchor(b, { x: b.width >> 1, y: b.height - 2 }, cb);
+    const drawnDoor = doorSpots.get(b.id);
+    const atB = drawnDoor ?? anchor(b, { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);
     const landA = harborExit ? { x: harborExit.x, y: harborExit.y + (b.id === id("river") ? 1 : -1) } : nearest(a, { x: atA.x, y: atA.y + 1 }, ca, true);
     reserve(a, landA);
-    const landB = nearest(b, { x: atB.x, y: atB.y - 1 }, cb, true);
+    const landB = nearest(b, { x: atB.x, y: atB.y + (drawnDoor ? 1 : -1) }, cb, true);
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
     // Visible, inspectable signposts explain interior route entrances.
@@ -291,7 +303,9 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     if (!pool.length) pool = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && (!type || s.types.includes(type)));
     if (!pool.length) throw Error(`No roster habitat/type ${habitat}/${type}`);
     const representatives = [...pool].sort((a, b) => b.stage - a.stage).filter((s, i, all) => all.findIndex(other => other.family === s.family) === i);
-    return Array.from({ length: count }, (_, i) => representatives[i % representatives.length]!.id);
+    // 계통이 모자라면 같은 계통의 앞 단계로 채운다 — 7관과 사천왕이 같은 장막인형만 셋·넷 내보냈다(2026-10-06 시각 QA).
+    const roster = [...representatives, ...[...pool].sort((a, b) => b.stage - a.stage).filter(s => !representatives.includes(s))];
+    return Array.from({ length: count }, (_, i) => roster[i % roster.length]!.id);
   }
 
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
