@@ -72,11 +72,17 @@ def inspect(order_file, actions_file, root):
         for p in dict.fromkeys(paths): native.append(dict(path=str(p.relative_to(root)),sha256=sha(p)))
         sheets=[dict(path=str(p.relative_to(root)),sha256=sha(p))
                 for p in [w/'views/sheet_rgba.png',folder/'views/sheet.png']]
-        for sheet in sheets:
-            with Image.open(root/sheet['path']) as image: image.verify()
+        fw, fh = action_contract['canvas']
+        for sheet, size in zip(sheets, [(72,128),(fw*len(proof['frames']),fh)]):
+            with Image.open(root/sheet['path']) as image:
+                if image.size != size: raise ValueError(row['key']+': native 프레임 시트 크기 불일치')
+                image.verify()
+        action_frames = [dict(frame, rect=[index * fw, 0, fw, fh], anchor=action_contract['origin'])
+                         for index, frame in enumerate(proof['frames'])]
         actors.append(dict(id=row['key'],title=row['name'],machineReady=True,sources=native,
                            sheets=sheets,frame=[24,32],actionFrame=read(action['request'])['canvas'],
-                           actions=proof['frames'],preview=dict(path=str((w/'views/sheet_x8.png').relative_to(root)),sha256=sha(w/'views/sheet_x8.png'))))
+                           walkAnchor=[12,31],actions=action_frames,
+                           preview=dict(path=str((w/'views/sheet_x8.png').relative_to(root)),sha256=sha(w/'views/sheet_x8.png'))))
     return dict(version=1,harness='charset-actor',scope='theme-actors',theme=manifest['theme'],
                 actors=actors,independentSceneReview=False,humanDecision=None)
 
