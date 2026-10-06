@@ -826,3 +826,12 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 통과 **48/50종 · 864자세 · 384GIF**. 동물10/요괴16/사람12(성인 여성6)/보스10. 현재 root48/source48/browser48 및 원래 결정52행/선택8건 보존, 새 위임144행/전체196행이다. 대시보드 Allow56는 기존8+신규48. 기존 정식 minor11건 유지. 전체50 완료는 false다.
 - 남은128px 설갈사자왕은 셋째 수정, 금익대붕은 첫 수정이다. 현재 원본을 실제 다시 열고 모든 바뀐 writer를 읽은 뒤 새 실제 독립 keeper가 필요하다. 아직 초안이며 전체50에 넣지 않는다.
 - 근거: `forty-eight-passed-proof.json`, `fifty-scope-contract-proof.json`, `root-review-jade-armor-scorpion.json`, `root-draft-review-jade-armor-scorpion-after-repair-three.json`, `browser-proof-jade-armor-scorpion.json`, `source-archive-proof.json`.
+
+
+## 2026-10-06 16:43 UTC — 남은 두 보스의 실제 수정18자세와 독립 재검수
+
+- 금익대붕 첫 수정의 실제18자세를 원본1배/nearest2배로 열고 현재 native writer2개/readonly helper2개의 모든 메서드·모듈 흐름을 확인했다. 발가락/굽은 발톱, 공격 움켜쥠, 두 날개 충전 핵과 부리에서 분리된 회수 잔광, 숙인 수면 머리는 개선됐다. 새1389행 repair는 자기 불변 original-before-repair의 명시적 x/y/문자 행과 투명 여백만 쓰며 골격 생성/전체 이동/보간이 없다.
+- 실제 GPT6.1sol/high `21ee8079-bd51-48f1-984a-379df3c52535` rework6건은 넓은 주깃 분리/앞 날개 살과 깃 부채/세 꼬리깃/준비 목-가슴 연결/굵은 세 깃 칼날과 실제 발사 주깃/수면 부리다. before-second source·terminal 작업·검수4PNG·실제 감독18자세를 동일 binding으로 보존했다. 둘째 수정 중이며 keeper가 아니다.
+- 설갈사자왕 셋째 수정의 실제18자세를 원본1배/nearest2배로 열고 현재 native writer4개/readonly helper5개의 전체 메서드·흐름을 확인했다. 새 joint_revision는 자기 before-joint-repair와 명시적 joint-*.runs의 y/x/팔레트 검증 후 픽셀 행만 쓴다. 발목/뒷다리 관절·독 자세의 말린 앞발·쓰러진 갈기의 곡선 연결·입 안 충전 핵을 확인했다. 새로운 두 readonly helper는 nearest 진단 crop과 native 구조/실제 진단GIF 픽셀/시간만 읽는다.
+- 실제 독립 `ac422354-7701-4f8a-9bdd-42ac4c4de484` rework3건은 평평하게 끊겨 보이는 먼 앞다리 상단, 수면의 사각 접힌 다리, 갈기의 일반 파란 음영에 섞이는 충전 핵이다. before-fourth source·terminal 작업·검수4PNG·실제 감독18자세를 동일 binding으로 보존했다. 넷째 수정 중이며 keeper가 아니다.
+- 실제 세128px 보스의 스킬 원본(두 냉기 숨결/꼬리 독/세 황금 빛줄기)을64px 검객과 동일2배로 비교하여 사용자에게 보여 주었다. 전갈만 현재 통과, 사자/대붕은 제작 중으로 표시했다. 현재 **48/50종·864자세·384GIF**, 전체50 미완료를 유지한다. 실제 rework를 통과로 세거나 기준을 낮추지 않았다.

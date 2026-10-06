@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-06T16:39:00.056237+00:00",
+  "passed": false,
+  "key": "snow-mane-lion/fifty-v1",
+  "binding": "49fa5271d1325d56fd225f49e1419c10a8c1bd0de1019ed643a8dff5136677f3",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-snow-mane-lion-after-repair-three.png",
+  "nativeContactPngSha256": "ed81864a38fc7bf8a2596afa6d765e80acd752dbd63edd42322fa4caebdf2a33",
+  "nativeWriterFilesRead": {
+    "repair.py": "8e3aef2a0b870f25631cf7d7bfa319eff41f2c64b38974e57cf6d0510733751d",
+    "joint_revision.py": "eb1c35fe4bd99b38eba8d360c7d60b4a4fb447b232229d46f7bf3af32f07484f",
+    "revise_mane.py": "85d5c858c2f50587c5519368b5eb790dc77c5a029233d50795c1b6f2f7892ed7",
+    "author.py": "c48a1c4e9c98d53997b27c9afc90028fd7688113264e19e1ae741763f3fdc34d"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "1843105d168c568ce4a002562ace697b631a954ffab012b151c45dbd92404270",
+    "joint_focus.py": "1b21a2944bc526d30b58c85aec120baf129da934736306965ae840dfb4f039c7",
+    "record_revision.py": "378db2a4f4078e6ce4496af974d198a9ac5b3c860f661ca754a1d714867fee33",
+    "inspect.py": "94360501f6fcbe546b5ef0f25147b4cf15204c4034e04e2f806f5f6df1569183",
+    "observe_joints.py": "55cde46b7b283bc0e45a5080964005df525b54b2f832ee03cbfafa56305673ae"
+  },
+  "observations": [
+    "Actually opened all18 third-repair native128 poses at original1632x1272/native1x/nearest2x. Same pale gold-eyed lion/turquoise tail/gold neck collar; upper-left cream highlights and blue underside planes. Forelimbs now have tapered wrist bends and toe masses, rear legs visible hock bends rather than parallel poles, consistently through idle/actions. Long cream locks join more of the short blue slashes, although the large pale mane remains rounded shield-like at native1x.",
+    "Windup bends knees and lowers neck; move steps with wider fore/hind stride; attack extends connected broad paw/open jaw, recover folds far forepaw and hit contracts forelegs/body. Poison now has a connected curled raised far paw instead of a pointed stump while retaining the drooped knee/eye and bubbles. Dead mane upper contour is now flatter curved fallen locks, connected through gold collar to low right muzzle rather than the old long opposing diagonal slab; clearly distinct from folded upright sleep neck.",
+    "Skill preparation now has a small dark opening containing the cyan muzzle core; contact has two thick cyan mouth-attached breath curls and open jaw, recovery closes jaw with three separate snow chips. Gold stun stars/closed-eye head lean versus poison bubbles/curled paw versus folded no-symbol sleep remain distinct; paired breathing/reactive changes are restrained. Native1x preparation core remains a tiny cluster. Static poses cannot establish dash/playback/target contact.",
+    "Actually read whole new joint_revision.py native writer with complete immutable before-joint-repair loading, chosen joint-*.runs literal y/x/palette validation, row assignment and native save calls. Current original author/repair/revise_mane full-method hashes remain already read. Current native writers4/read-only helpers5 exact bytes match actual reading. Also read whole joint_focus/observe_joints diagnostic modules: nearest native PNG crops/checker boards, native components/palette/border/baseline/hash/differences and decoded opaque diagnosticGIF hold/pixel correspondence. No procedural anatomy/whole-frame transform/tween; selected transparent native GIFs require harness verification separately."
+  ],
+  "actualIndependentRecommendation": "rework",
+  "claimScope": "Actual third-repair native18/full4 current native writers and actual GPT6.1sol/high rework3; not a keeper/selection/completion.",
+  "actualIndependentReviewJob": "ac422354-7701-4f8a-9bdd-42ac4c4de484",
+  "actualIndependentIssues": [
+    {
+      "pose": "idle_a",
+      "x": 98,
+      "y": 95,
+      "message": "The far foreleg starts with a long flat horizontal cap at y=95, x=92..105; its only upper attachment is the diagonal step from (91,94) to (92,95). The transparent notch above the cap makes the limb look cut off beneath the jaw. Replace this cap with a tapered upper-leg cluster joined by a visibly wider overlap to the chest behind the mane, preserving the separation between the two forelegs. Carry the repaired anatomical join into idle_b/idle_c and the standing skill/status poses that reuse this shape."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 58,
+      "y": 118,
+      "message": "The lower body around x=49..65, y=110..124 resolves as a tall rectangular blue/white block with a straight base and little folded-limb definition. Shape the haunch/hock with stepped contours and a curved shadow cluster, then distinguish the tucked paw with a toe edge and small claw pixels. Preserve the ground line and collar connection. Apply the same anatomical treatment to sleep_b while retaining its breathing change."
+    },
+    {
+      "pose": "skill_a",
+      "x": 69,
+      "y": 51,
+      "message": "The cyan charging patch around x=67..72, y=49..55 blends into nearby blue mane accents at 1x, so preparation reads mainly as a slightly opened idle mouth. Give this existing core a compact bright cyan-white center and a darker surrounding fur cluster so its boundary reads clearly, using the existing palette and preserving the mane silhouette. Keep skill_b's mouth-originating gusts and skill_c's closed-jaw recovery."
+    }
+  ],
+  "actualIndependentSummary": "Reviewed all four supplied PNGs, including the native 128px portrait and the sheets' native 1x and nearest 3x views on light, dark and checker backgrounds. The broad ivory mane, blue underside shadows, gold eye/collar and teal tail tip read consistently; upper-left highlights give the rump and mane volume. The body fills the cell, standing support paws share a ground line, and the collar, tail and attacking forepaw remain visibly connected. Windup lowers the mane, move widens the stride, attack opens the jaw and extends a paw, and recover retracts it. Skill contact shows two curved cyan gusts originating at the actual mouth; recovery closes the jaw and leaves three shards. Poison has drool and a lifted paw, stun has closed eyes/head changes and stars, and sleep folds the body down: these are distinct pose states rather than whole-body tints or unrelated attacks. Rework is recommended for the narrowly joined, flat-topped far foreleg, block-shaped folded sleep limbs, and weak visual separation of the charging core from ordinary mane shading. No conspicuous accidental interior transparent holes were visible across the three backgrounds, but diagonal connectivity does not establish convincing anatomy. These static pose previews cannot establish animation timing, playback continuity, actual battle grounding/contact, or the claimed authoring process. This recommendation is advisory; user selection remains separate.",
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/visual-repairs/004/source"
+}

@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-06T16:38:04.913797+00:00",
+  "passed": false,
+  "key": "golden-feather-garuda/fifty-v1",
+  "actualCritique": {
+    "recommendation": "rework",
+    "summary": "제공된 portrait/light/dark/checker 실제 PNG의 native 1배 패널과 nearest 3배 패널을 확인했다. 몸이 셀 높이를 충분히 채우고, 오른쪽을 보는 두 눈·은백 부리/목털·회은 발은 읽힌다. 왼쪽 위 밝은 면과 아래쪽 갈색 그림자의 방향도 대체로 일관되며 세 배경에서 외곽이 유지된다. 대기/회복/상태 자세의 발끝은 y=124에 접지하고 공격 발톱은 다리에서 이어진다. 다만 양 날개가 넓은 맹금의 깃보다 삼각 판과 꺾인 리본처럼 보이고, 세 꼬리깃의 폭과 분리가 부족하다. windup에는 목 아래와 몸통 사이에 수평 절단처럼 보이는 투명 노치가 있다. 준비→벌림→앞발 움켜쥠→회수는 정지 자세로 구분되지만 날개와 목의 형태 변화가 커 해부 구조의 연속성이 약하다. skill_a의 금백 핵은 실제 위쪽 날개 끝에 붙고 skill_b의 세 빛줄기도 금색 날개 덩어리에 닿지만, 중간 발사점은 넓은 날개 가장자리이며 세 효과 모두 큰 깃 칼날보다 가는 광선으로 읽힌다. skill_c의 두 분리된 잔광은 회수 단계로 읽힌다. 독은 열린 부리/처진 날개와 기포, 기절은 웅크림/닫힌 눈과 별, 수면은 더 숙인 머리/닫힌 눈으로 구분되며 단순 색조 변경이나 별개 공격으로 보이지 않는다. 수면에서는 부리 형태가 지나치게 소실된다. 이 결과는 수정 참고 의견이며 사람의 선택을 대신하지 않는다. 정지 자세 프리뷰만 검수했으므로 실제 전투 표시 크기, 돌격 이동, 240ms 루프의 연결감, 저작 방식/모델 출처는 확인할 수 없다. 기하 검사 통과를 시각 승인으로 간주하지 않았다. 아래 좌표는 각 128×128 자세 셀의 native 픽셀이다.",
+    "issues": [
+      {
+        "pose": "idle_a",
+        "x": 32,
+        "y": 39,
+        "message": "위쪽 날개의 긴 직선 테두리와 중앙 접힘선이 삼각 판/돛처럼 읽힌다. (9..61, 10..55) 날개 영역의 끝을 연결된 굵은 주깃 3개 이상으로 나누고, 끝의 계단 윤곽과 겹침 그림자를 직접 찍어 황금 깃의 넓은 면을 만들 것. idle_b/c 및 recover에서도 같은 깃의 개수와 위치 관계를 유지할 것."
+      },
+      {
+        "pose": "idle_a",
+        "x": 30,
+        "y": 88,
+        "message": "앞쪽 날개가 어깨에서 내려오는 가는 막대와 팔꿈치/손 같은 끝으로 보인다. (18..47, 78..108)의 꺾인 부분을 넓은 깃 부채로 바꾸고 깃 끝을 나누어, (65,57) 어깨까지 금색 날개 살과 윤곽이 이어지게 할 것. 은백색 선은 목털 뿌리에서 끝나도록 정리하여 날개를 가로지르는 띠처럼 보이지 않게 할 것."
+      },
+      {
+        "pose": "idle_a",
+        "x": 34,
+        "y": 110,
+        "message": "아래 왼쪽 꼬리가 큰 삼각 깃과 가는 사선 조각으로 겹쳐 세 개의 큰 꼬리깃을 세기 어렵다. (7..58, 98..122)에서 가운데 가는 깃의 폭을 늘리고 세 끝의 방향과 어두운 겹침선을 분리하되, 각 깃의 뿌리는 몸 뒤쪽에 계속 연결할 것. windup/move에서 보이는 세 갈래와 대응되게 유지할 것."
+      },
+      {
+        "pose": "windup",
+        "x": 78,
+        "y": 70,
+        "message": "(73..83, 68..71)의 투명 노치 아래 몸통이 y=72에서 수평으로 시작하여 목/가슴이 잘린 것처럼 보인다. 목털 아래에서 몸통으로 내려오는 금갈색 가슴을 가늘어지는 픽셀 덩어리로 이어 채우고 오른쪽 목 윤곽도 연속되게 다시 찍을 것. 날개 사이의 의도된 빈 공간과 구분할 것."
+      },
+      {
+        "pose": "skill_b",
+        "x": 63,
+        "y": 43,
+        "message": "중간 광선은 넓은 위쪽 날개의 가장자리에서 나와 별도의 깃 끝이 발사점으로 읽히지 않는다. 이 위치에 끝이 분명한 실제 황금 주깃을 만들고 금백 핵→깃 끝→칼날의 접점을 이어 찍을 것. 오른쪽 세 효과는 현재 1~3px 광선처럼 가늘므로 각각 5~8px 정도의 넓은 깃 몸통, 중심 축, 뾰족한 끝으로 저작하여 큰 세 깃 칼날이 되게 할 것. skill_a의 충전 위치와 skill_c의 두 잔광 방향도 대응시킬 것."
+      },
+      {
+        "pose": "sleep_a",
+        "x": 91,
+        "y": 78,
+        "message": "숙인 머리의 은백색 부리가 목털과 합쳐져 둥근 턱처럼 보이며 맹금 얼굴이 소실된다. (84..94, 74..83)에 짧게 아래로 굽은 닫힌 부리 끝과 어두운 부리/목털 경계를 남길 것. sleep_b도 동일한 부리 구조를 유지하면서 고개 각도와 호흡 변화만 이어갈 것."
+      }
+    ],
+    "binding": "04288aa32761ab9346fb47d446fd3b8881b12ddcfc7ebec3f9cc15ec349b47a8",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "172a368825d2147e8d115e5d736190c9bba3d5a1134febe9fa9f5b191ad8480d",
+      "preview/suite/light.png": "0130a27c0fe7128b7bbe87b14eeef81360e369fcdbee37cfa2ddae315e3856d0",
+      "preview/suite/dark.png": "0bf6fb37806acf7b48bad8de54e662a597fdfe978f11348effcdeeba3c53d412",
+      "preview/suite/checker.png": "d941d18074c273af6c1975c77d1d7eb72fb7a94c776a796b4b1b84fcf28a7b22"
+    },
+    "jobId": "21ee8079-bd51-48f1-984a-379df3c52535",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T16:37:10.340011+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "21ee8079-bd51-48f1-984a-379df3c52535",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T16:32:28.834375+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/jobs/21ee8079-bd51-48f1-984a-379df3c52535",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "7e033776515ea3c25abca6c1479018ab69ae0a1c0f5c6e8ba07f82c2e85518df",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "172a368825d2147e8d115e5d736190c9bba3d5a1134febe9fa9f5b191ad8480d",
+      "preview/suite/light.png": "0130a27c0fe7128b7bbe87b14eeef81360e369fcdbee37cfa2ddae315e3856d0",
+      "preview/suite/dark.png": "0bf6fb37806acf7b48bad8de54e662a597fdfe978f11348effcdeeba3c53d412",
+      "preview/suite/checker.png": "d941d18074c273af6c1975c77d1d7eb72fb7a94c776a796b4b1b84fcf28a7b22"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T16:37:09.528526+00:00"
+  },
+  "preservedBeforeNextRepairSource": "qa-runs/battle-monster-fifty-wave/candidates/golden-feather-garuda/fifty-v1/visual-repairs/002/source",
+  "rootNative18ReviewOfThisSnapshotClaim": true,
+  "claimScope": "Actual first-repair native18/full2 current native writers and actual GPT6.1sol/high rework6; not a keeper/selection/completion."
+}
