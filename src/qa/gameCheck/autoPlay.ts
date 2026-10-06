@@ -989,21 +989,25 @@ function reachableGrass(project: Project, session: PlaySession): { x: number; y:
 }
 
 /** 가장 가까운 회복 직원(조사하면 recoverAll 하는 이벤트)에게 가서 말을 건다. 못 가면 조용히 넘어간다. */
-function healAtCenter(driver: Driver): void {
+function healAtCenter(driver: Driver, nearMapId?: string): void {
   const session = driver.last.session;
-  let best: { event: GameEvent; visit: CommandVisit; route: Door[] } | null = null;
+  // 싸울 맵이 주어지면 그 맵에서 가장 가까운 센터 — 수련터 곁 센터에서 회복하고 야생 길을 거슬러 오면 챔피언 앞에서 다시 지쳐 있었다.
+  const distance = (mapId: string, route: Door[]) => nearMapId ? (routeTo(driver.project, mapId, nearMapId, session)?.length ?? Infinity) * 100 + route.length : route.length;
+  let best: { event: GameEvent; visit: CommandVisit; route: Door[]; score: number } | null = null;
   for (const map of Object.values(driver.project.maps)) {
     for (const event of map.events ?? []) {
       if (triggerOf(event, session) !== "action") continue;
       const commands = activeCommands(event, session);
       if (!commands?.some((command) => command.kind === "recoverAll")) continue;
       const route = routeTo(driver.project, session.currentMapId, map.id, session);
-      if (!route || (best && route.length >= best.route.length)) continue;
+      if (!route) continue;
+      const score = distance(map.id, route);
+      if (best && score >= best.score) continue;
       const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
       const ref: PageRef = { map, event, page, pageIndex: page ? event.pages!.indexOf(page) : -1, trigger: page?.trigger ?? event.trigger, conditions: page?.conditions ?? [], commands };
       let visit: CommandVisit | undefined;
       visitPageCommands(ref, (entry) => { if (!visit && entry.command.kind === "recoverAll") visit = entry; });
-      if (visit) best = { event, visit, route };
+      if (visit) best = { event, visit, route, score };
     }
   }
   if (!best) return;
@@ -1068,7 +1072,7 @@ function train(driver: Driver, target: number, knockedOut = 0): string | null {
   }
 }
 
-function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0): AutoPlayStepTrace {
+function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, healed = false): AutoPlayStepTrace {
   const { project } = driver;
   const visit = goal.visit;
   const targetMap = visit.page.map?.id;
@@ -1076,14 +1080,6 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0): 
   if (!targetMap || !event) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);
   if (Date.now() > driver.deadline) return trace(goal.label, false, "자동 플레이 시간 상한 초과", driver, visit.where);
-  // 관장·트레이너 앞에서는 실제 플레이어처럼 센터에서 회복하고 간다 — 사천왕 넷을 연달아 치르고 기술 횟수가 바닥난 채
-  // 챔피언에게 Lv99 로 졌다(2026-10-06). 무작위 인카운터 전 회복 여부(소모전 판정)와는 별개다.
-  // 수련 뒤에도 같다 — 풀숲에서 기술 횟수를 쓰고 바로 다시 도전했다.
-  if (project.system?.monsterCollection === true && wornOut(project, driver.last.session)
-    && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
-    healAtCenter(driver);
-    checkpoint(driver);
-  }
   const route = routeTo(project, driver.last.session.currentMapId, targetMap, driver.last.session);
   if (!route) {
     // 출구 없는 꿈 맵은 스위치 아이템(볼 꼬집기)의 자동 공통 이벤트로만 방으로 돌아온다.
@@ -1119,6 +1115,15 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0): 
     }
   }
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "맵에 들어오며 충족됨", driver, visit.where);
+  // 관장·트레이너 앞에 닿았는데 지쳤으면 실제 플레이어처럼 그 맵에서 가장 가까운 센터에 들렀다 다시 온다 — 사천왕 넷을
+  // 연달아 치르거나 수련터에서 야생 길을 거슬러 오느라 기술 횟수가 바닥난 채 챔피언에게 Lv97 로 졌다(2026-10-06).
+  // 무작위 인카운터 전 회복(소모전 판정)과는 별개다. 한 목표에 한 번만(회복이 안 되는 게임에서 맴돌지 않게).
+  if (!healed && project.system?.monsterCollection === true && wornOut(project, driver.last.session)
+    && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
+    healAtCenter(driver, targetMap);
+    checkpoint(driver);
+    return executeGoal(driver, goal, escaped, trained, true);
+  }
   const logBefore = driver.last.log.length;
   const failure = fireEvent(driver, event, visit);
   if (failure && /걸어갈 길이 없습니다/u.test(failure)) {

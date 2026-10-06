@@ -53,6 +53,14 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
   const entries = new Map<string, Point>();
   const reserved = new Map<string, Set<string>>();
   const doorSpots = new Map<string, Point>();
+  const exitHints = new Map<string, Point>();
+  function drawnExit(map: GameMap, t: Template): Point | undefined {
+    const exits = new Set(Object.entries(t.names).filter(([n]) => /_exit$|_mat(_|$)/.test(n) && !/edge_mat/.test(n)).map(([, v]) => v));
+    for (let y = map.height - 1; y >= map.height - 3; y--) for (let x = 0; x < map.width; x++) {
+      if (exits.has(map.lowerTiles[y * map.width + x]!)) return { x, y };
+    }
+    return undefined;
+  }
   const speciesById = new Map((project.database.monsterSpecies ?? []).map(s => [s.id, s]));
   const coord = (p: Point) => `${p.x},${p.y}`;
   const reserve = (map: GameMap, p: Point) => reserved.get(map.id)!.add(coord(p));
@@ -102,7 +110,10 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     sources.set(map.id, t);
     reserved.set(map.id, new Set());
     const gymStart = source.startsWith("gyms/") ? { x: ["grass", "ice", "dojo", "ghost"].some(k => source.endsWith(k)) ? 8 : 9, y: source.endsWith("grass") || source.endsWith("ice") ? 19 : source.endsWith("dojo") ? 18 : 17 } : undefined;
-    const p = gymStart ?? anchor(map, { x: map.width >> 1, y: map.height - 2 });
+    // 템플릿이 그려 둔 출구(「…_exit」·문 앞 매트)에 드나든다 — 가운데로 셈하면 유적·탑에서 그린 출구 옆 칸에 문이 섰다(2026-10-06).
+    const drawn = drawnExit(map, t);
+    if (drawn) exitHints.set(map.id, drawn);
+    const p = gymStart ?? anchor(map, drawn ?? { x: map.width >> 1, y: map.height - 2 });
     entries.set(map.id, p);
     reserve(map, p);
     manifest.maps.push({ id: map.id, name, template: source, entry: p, role });
@@ -200,6 +211,21 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     return seen;
   }
 
+  // 트레이너가 설 자리 — 풀숲(조우)·계단·턱·출구 판 위나 문 곁, 길목에는 세우지 않는다. 시각 QA(2026-10-06)에서
+  // 트레이너가 풀숲 한가운데·산길 돌계단·유적 출구 판 위에 서 있었다. 그런 칸이 없으면 예전처럼 가장 가까운 칸.
+  function standSpot(map: GameMap, wanted: Point): Point {
+    const meta = project.tilesets[map.tilesetId]?.tileMeta ?? [];
+    const busy = (tile: number | undefined) => tile !== undefined && tile >= 0 && /키 큰 풀|계단|stairs|턱|출구|매트|mat\(/i.test(meta[tile]?.label ?? "");
+    const doors = map.events.filter(e => e.id.includes("_to_"));
+    const before = walkable(map).size;
+    const fits = (p: Point) => !busy(map.lowerTiles[p.y * map.width + p.x]) && !busy(map.upperTiles[p.y * map.width + p.x])
+      && doors.every(d => Math.max(Math.abs(d.x - p.x), Math.abs(d.y - p.y)) > 2)
+      && !reserved.get(map.id)!.has(coord(p)) && !map.events.some(e => e.x === p.x && e.y === p.y);
+    const candidates = connected(map).filter(fits)
+      .sort((a, b) => Math.abs(a.x - wanted.x) + Math.abs(a.y - wanted.y) - Math.abs(b.x - wanted.x) - Math.abs(b.y - wanted.y));
+    return candidates.find(p => walkable(map, p).size === before - 1) ?? nearest(map, wanted, connected(map), true);
+  }
+
   function connect(a: GameMap, b: GameMap, required?: string): void {
     // 이미 선 표지판·사람 뒤로 문을 두지 않는다 — 새순·달그림자 마을에서 둘째 북쪽 문이 첫 표지판에 막혔다(2026-10-06).
     const reachA = walkable(a);
@@ -207,7 +233,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
     const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
     const drawnDoor = doorSpots.get(b.id);
-    const atB = drawnDoor ?? anchor(b, { x: b.width >> 1, y: b.height - 2 }, cb);
+    const atB = drawnDoor ?? anchor(b, exitHints.get(b.id) ?? { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);
     const landA = harborExit ? { x: harborExit.x, y: harborExit.y + (b.id === id("river") ? 1 : -1) } : nearest(a, { x: atA.x, y: atA.y + 1 }, ca, true);
     reserve(a, landA);
@@ -398,7 +424,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
-      const at = nearest(map, { x: 3 + i * 7, y: 6 + i * 8 }, connected(map), true);
+      const at = standSpot(map, { x: 3 + i * 7, y: 6 + i * 8 });
       // 첫 길의 트레이너는 그 길 풀숲의 종을 한두 레벨 아래로 — 스타터 한 마리로 넘을 수 있어야 한다(Lv4~6 바람삐가 풀 스타터를 이겼다).
       const first = r.level <= 6;
       const team = first ? Array.from({ length: i === 2 ? 2 : 1 }, (_, k) => wildPool[(i + k) % wildPool.length]!) : pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1);

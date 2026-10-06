@@ -2664,8 +2664,15 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     ? project.database.items.filter((item) => item.captureProfile && (snapshot.eventState.inventory[item.id] ?? 0) > 0).sort((a, b) => a.price - b.price)[0]
     : undefined;
   const throwBall: ActorCommand[] = ball && target ? [{ kind: "capture", captureItemId: ball.id, targetEnemyId: target.id }] : [];
+  // 이길 수 없는 야생에게서는 도망친다(플레이어가 하듯) — 8번길의 벌레/에스퍼 야생이 풀/에스퍼 Lv52 리더를
+  // 매번 한 방에 눕혀 수련하러 가는 길에서 세 번 쓰러졌다(2026-10-06). 다음 한 방에 쓰러지고 먼저 눕히지 못할 때만.
+  const threat = active && target ? Math.max(0, ...(target.skillIds ?? [])
+    .map((skillId) => skills.get(skillId))
+    .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
+    .map((skill) => predictSkillDamageFor(project, target, skill, active).amount)) : 0;
+  const run: ActorCommand[] = tactics?.catchable && active && target && threat >= active.hp && bestDamage(active) < target.hp ? [{ kind: "escape" }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
-    ? [...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    ? [...run, ...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
