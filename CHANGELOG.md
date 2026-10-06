@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.148.0 — 2026-10-06
+
+### 기능
+
+- prepare lossless native actor assets for playable space demos (`3dee886`)
+
+### 수정
+
+- retain full scene scope when repairing completed space demos (`926bf84`)
+- preserve approved partial assets and validate native brief paths (`dba898d`)
+- retain native frame definitions in shared content libraries (`139d55c`)
+- preserve player native charset anchors across session changes (`e356481`)
+- keep native component review independent of later scene assembly (`d55f8a5`)
+- retain native anchors on route swaps and followers (`cd186e0`)
+- preserve authored frame anchors for native action sprites (`a135cd5`)
+
 ## 0.147.0 — 2026-10-06
 
 ### 기능
