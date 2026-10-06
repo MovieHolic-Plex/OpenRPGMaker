@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재36/50 통과
+# 신규50종 제작 · 현재37/50 통과
 
 ## 최초 두 종 확인
 
@@ -530,3 +530,35 @@ ASCII/팔레트가 같고 최종 공개 원본/writer/시트 해시가 실제 �
 근거:thirty-six-passed-proof.json,root-review-spirit-lantern-medium.json,
 native-contact-spirit-lantern-medium.*,browser-proof-spirit-lantern-medium.json,
 draft-independent-rework-crimson-bow-huntress-initial.json,지속 출처36종.
+
+
+## 적궁궁녀 한 차례 교정 후 통과 · 실제37/50 · 철권무인 초기 교정
+
+궁수의 실제 활시위 위 끝 간격과 짧은 넓은 섬광을 별도 실제 호출로 직접 고친 뒤 새 독립
+GPT 6.1 sol/high keep를 받았다. 감독이 수정된18자세 native1배/최근접2배864×696 원본
+시트를 직접 열고 author_rows.frame/replace_rows/pixels/revise_pixels.apply 전체 본문·
+모듈 흐름·호출을 읽었다. 각 자세의 시위는 활 끝에 닿고 기술은 실제 활의 발사점에서
+오른쪽으로 긴 진홍 축/밝은 중심/화살촉으로 이어진다. 넓은 섬광은 제거됐다. 얼굴/검은 묶음
+머리/붉은 끈/청록 옷/회갈 바지/화살통/활의 기본 공격·피격·쓰러짐·상태 자세를 유지했다.
+명시적 자세별 시위 좌표 및31개 기술 행 문자열만 직접 저장했고 형상 생성/몸 전체 변환이
+없다. 최종 공개 원본/writer/시트 해시가 실제 열람한 교정본과 같으며18PNG는 원본 격자와
+같다. 새 keep의 실제 minor3개(공격/기술의 발사 손·목 경계, 쓰러진 활의 굽은 형태 판독)를
+보존한다. 이를 고쳤다고 주장하지 않는다. 초기 rework/draft(false)와 교정본 시트를 보존했다.
+
+철권무인의 초기 실제18자세를 직접 열고 author_pixels.write_sources 전체 본문과
+pose_rows/action_rows/chosen_revisions 전체 모듈 흐름·호출을 읽었다. 실제 최초 독립
+rework3지적은 수면 두 장의 아직 경계하는 듯한 눈/들린 턱과 쓰러짐의 깨어 기대는 듯한
+얼굴·받친 권갑이었다. 원본 시트/감독 draft(false)/실제 job/result를 보존하고 초기 감독
+기록의 감긴 눈 표현은 판독 확정이 아니었음을 명시했다. 눈꺼풀·턱·목·받친 팔을 직접
+교정하고 새 검수 전에는 통과로 세지 않는다. 권갑/근접 공격·기술과 다른 상태는 유지한다.
+
+현재37/50/666자세/296GIF/전체false다. 같은37종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+감독의 현재 원본 그림/저작 방식을 확인했다. 원래52판정/8선택 보존, 신규111행은 사용자
+목표 위임 Allow다. 화린독사·매화정 각1개/옥적무인2개/비단선술사1개/적궁궁녀3개로
+현재 실제 minor8개를 보존한다. 남은13종은 사람형2종/128px 보스11종이다.
+심연현무128의 실제 별도 저작이 시작했고 철권무인 교정·은검여협 저작은 계속한다.
+전체50 완료/게임 설치·실전 접촉·피해 동기화 완료를 주장하지 않는다.
+근거:thirty-seven-passed-proof.json,root-review-crimson-bow-huntress.json,
+native-contact-crimson-bow-huntress.*,browser-proof-crimson-bow-huntress.json,
+draft-independent-rework-iron-gauntlet-brawler-initial.json,지속 출처37종.

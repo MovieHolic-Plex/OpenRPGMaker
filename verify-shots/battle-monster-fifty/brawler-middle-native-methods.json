@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T11:18:03.892757+00:00",
+  "passed": false,
+  "key": "iron-gauntlet-brawler/fifty-v1",
+  "nativeWriterMethodsActuallyRead": {
+    "author_pixels.py": "c3569b95c68af4f19aee5e413998d8bdf52279edb66e5dda8a2eb6e246299588",
+    "pose_rows.py": "03c562850757a8cf0459fe694736474fa642a505546b7336df27ad9c89482dbc",
+    "action_rows.py": "a788bab13d0fa7bc4de0d077195ccdd55542610cab945c92155a395c6e331998",
+    "chosen_revisions.py": "c170c588c2f73575ac7ae7bacf6f81652c2d92ac375e5234204b75a88c92d1c8"
+  },
+  "observations": "Read complete author.write_sources body/allmoduleflow/calls andpose/action/revision literalrecords. Blank64canvas, each independentlychosen top/y+explicit x+pixelstring row; individuallychosenfullrowrevisions only, boundspalettechecks. No bodygeometry/automaticwholeframe transformation. RendereronlynativePNG/GIF/diagnostics/decodedreadback. Authorstilllive, finalbinding/all18nativevisualnotclaimed.",
+  "approvalClaim": false
+}

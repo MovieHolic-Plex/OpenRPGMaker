@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "crimson-bow-huntress",
+    "source": "qa-runs/harnesses/battle-monster/crimson-bow-huntress/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "9807dec5e663bbb7f008eb11e6280dd0d08b92ba214a8140cc111f7bd4141f9b",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:23:31.281849+00:00",
+    "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+    "entireGoalCompleteClaim": false
+  }
+]

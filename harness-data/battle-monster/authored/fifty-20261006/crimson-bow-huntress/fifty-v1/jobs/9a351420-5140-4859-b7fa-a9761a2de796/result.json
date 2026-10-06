@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed all four supplied PNGs directly, including the native 1x sprites and supplied nearest-neighbor 3x panels. The right-facing adult SD archer has a consistent ponytail, ribbon, quiver, teal clothing and two readable shoes. Broad hair, face, sleeve and trouser clusters support upper-left lighting; dark hair and shoe outlines lose some contrast on the dark background. No obvious accidental transparent hole through the body was visible. Standing and crouching feet appear grounded, and the fallen pose reads as lying down. Windup, stepping release, recovery and recoil are distinguishable; hands visibly connect to the arms and bow. Poison has a guarded, hunched posture, stun has closed eyes and a slack posture, and sleep crouches with closed eyes: these are readable states rather than simple recolors. Their pairs show small positional changes. The skill core and residual sparks originate at the bow, but skill_b reads as a short broad flash rather than the contracted long crimson arrow. Several bow strings visibly stop short of the upper nock. Rework recommendation is advisory; the user retains selection. Static pose previews cannot establish playback timing, actual battle placement, literal-grid authorship, or full source palette/alpha compliance; geometry approval alone would not resolve these visual issues.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 49,
+      "y": 27,
+      "message": "The gold string starts at (49,27), below and left of the upper bow nock around (50-51,24), leaving a visible transparent gap. Extend it upward with explicit stepped string pixels through approximately (49,26) and (50,25) to meet the nock. Preserve the connected grip and lower endpoint. Apply the same endpoint-to-nock check to the other bow poses; the recovery and sleep previews also show the floating upper string endpoint."
+    },
+    {
+      "pose": "skill_b",
+      "x": 57,
+      "y": 31,
+      "message": "The white/orange/red cluster around the arrow seat expands vertically into a broad triangular flash and has only a short forward reach. Recompose the native effect as an elongated crimson shaft with a distinct right-facing arrowhead, rooted at the actual bow arrow seat near (53,31). Reduce the upper/lower flare lobes around y23-38; shift the firing composition left if needed to leave room for the long arrow while retaining the one-pixel cell margin and continuous hand-to-bow connection."
+    }
+  ]
+}

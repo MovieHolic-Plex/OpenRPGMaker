@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-06T11:21:09.408728+00:00",
+  "passed": false,
+  "key": "crimson-bow-huntress/fifty-v1",
+  "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-crimson-bow-huntress-after-repair-one.png",
+  "nativeContactPngSha256": "3afe735ab0758bd6e76d0d0ee2614a245e4eb23c0571860a8c6e753d0d0b6cdc",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "c8329fa2d777abd6f6c46192eed85c5fc8fa1fda13f1fad0988cc7f5553a26d9",
+    "revise_pixels.py": "1465409e3709121edd3442ca78aa286d60744cf3dadaa7f4fe54914bbf34d370"
+  },
+  "observations": "Actually opened repaired18 native1x/nearest2x864x696 unresized. Sameadultwoman/longdarkhair/redbinding/tealjacket/darktrousers/redbow+quiver. Uppergoldstring nowcontinues tonock inidle/closed-eyeseatedsleep/recovery andotherbowposes. Skill_b bowrootedhorizontalcrimsonshaft+goldbrightcenter+rightpointedarrowhead, shorterbodyfiringcompositionleavesrightspace; broadverticalflashremoved. Windupdrawnstring/steppedadvance/release/retract, face/shoulderleanhit andlowhorizontaldead distinctfromseatedsleep. Poisonmouthhand+greentealparticles, stars/slackstun, sleepingheadshoulderchanges. Read fullframe/replace_rows/pixels/apply bodies/allmoduleflow/calls. Literalblank64 rowtranscription andindividuallychoseny/x/ink patches includingnew31skillruns andnockpixels. No generatedgeometry/automaticwholeframe transformation. UnchangedrendereronlyPNG/GIF/diagnostics/decodedreadback. All18nativePNG match ASCII/palette. Initialactualreworkpreserved; freshindependentdecisionrequired."
+}

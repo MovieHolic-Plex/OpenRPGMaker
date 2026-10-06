@@ -1,0 +1,239 @@
+{
+  "phase": "suite",
+  "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+  "sources": {
+    "brief.json": "2a7049662dc0b7a176408eb2bc18fbcd50428f4c2615e3c1e925e84953cf658d",
+    "source/palette.json": "1ba86bfbe9840cf957609c96edc6e394859b0a5ccb2785d5bbff57c32215de1c",
+    "source/poses/idle_a.pxgrid": "cf5e9c1314a5eb605a96e1dcc7bef906821c7d58b72e8c2013470b303ad092e5",
+    "source/poses/idle_b.pxgrid": "70f5124f6117dd06f86b0e714caf0fffccc5d49d31d93d14b3959c627f7abd59",
+    "source/poses/idle_c.pxgrid": "c0cf49fdc2d0705a4af7a4541a7b6e308b79c4d670e87a54aca0f91d3e85db04",
+    "source/poses/windup.pxgrid": "be8d7da715fbde4281e8f8de7efa59623626cbb828e4253751226eef0e513218",
+    "source/poses/move.pxgrid": "8279cf64fd590831470880a89705b1b4562e57f9f21b5b53ffe33c24613fa7d7",
+    "source/poses/attack.pxgrid": "8dad6933ec9f3bc1c8fc6044bc3a50287ef93b88e3461ee674053fc29025b2d2",
+    "source/poses/recover.pxgrid": "771dfc0c0e6897f7af6e0bab812f2160c548528c0b2748f77b536860afb72400",
+    "source/poses/hit.pxgrid": "17eb30ec67d9874adb2fe811cbdd899a9f5d5755b542b986b6f166cd7f8e8983",
+    "source/poses/dead.pxgrid": "44cfc8525e49771da4aa01f48e0f769d26825841cdd44bc28b0083b2d12de9d2",
+    "source/actions/skill_a.pxgrid": "1a2e8a506316bc3fc17912080e85cd01043665a34192a9debfaf61794c61a5fe",
+    "source/actions/skill_b.pxgrid": "9807dec5e663bbb7f008eb11e6280dd0d08b92ba214a8140cc111f7bd4141f9b",
+    "source/actions/skill_c.pxgrid": "b091c9083237a9bddb7bcc5b1a4ef2e5eede9c80c0206e8eabc7246370756744",
+    "source/actions/poison_a.pxgrid": "3cb5c6783ba67b38e0d56ac8a649fc356584914ff06e1a0708c966571e1af08f",
+    "source/actions/poison_b.pxgrid": "9d199c80a84d19cd267dc918676fad8e5b214c209dded778e80080fd13558911",
+    "source/actions/stun_a.pxgrid": "d96791de2b1328f46eb8f51207b46bcb4a2e07526ea3ba472d1b5ec0817afa3a",
+    "source/actions/stun_b.pxgrid": "3dd8270d0ef26d21279d59b5c0384a89444c8992d1d9ee38cdb5841bac81d927",
+    "source/actions/sleep_a.pxgrid": "e5d65a9568698907f75a38cce66593c8d841c176718e39356f1850a9ee8b3159",
+    "source/actions/sleep_b.pxgrid": "6f1a5fc9ba743a763f016c01a2d0f53c8e08f08c8e5aeb9a28437148733bf101"
+  },
+  "frames": {
+    "idle_a": {
+      "bboxExclusive": [
+        18,
+        8,
+        58,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "dac6d0d8c9891fcce3f226e0c87dc330b199e9d4f30e278f30bae260f1b50e73"
+    },
+    "idle_b": {
+      "bboxExclusive": [
+        18,
+        8,
+        58,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "697386a9eb72402f5f61c0c0fce469f8fb8e6c9b01e76a01ac2caa1d23b4de90"
+    },
+    "idle_c": {
+      "bboxExclusive": [
+        18,
+        8,
+        58,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "cfcf6e57895dbaae3257013617a99da429fb846132068d3b785488bb066a61b9"
+    },
+    "windup": {
+      "bboxExclusive": [
+        17,
+        8,
+        59,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "8e03e24d020ba0b7d05a67e255a387983f373ac97a3805f5647a9fff147880c4"
+    },
+    "move": {
+      "bboxExclusive": [
+        12,
+        9,
+        60,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "ae60b2f025cd9d8643a5c49c4b08bcae3fc833a67fe8dc5c1bf44aecd8148c00"
+    },
+    "attack": {
+      "bboxExclusive": [
+        9,
+        8,
+        63,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "c96d945ae2386bcc4e8442c24efc26ef563a247ec4502e521fe01083b6b72683"
+    },
+    "recover": {
+      "bboxExclusive": [
+        19,
+        8,
+        59,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "241c175802c2e05e18533788ce445814ed9c0821c0c06c370f65095db7b84078"
+    },
+    "hit": {
+      "bboxExclusive": [
+        13,
+        11,
+        55,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "ec2d7023280cb94ac1f845f4e5ecd276ee2aa7d7532401f76925e9ab38f17dba"
+    },
+    "dead": {
+      "bboxExclusive": [
+        8,
+        37,
+        62,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "f8fe6c47ed354aac35c47d822e110abb970ee4a29678bc1479ac522e169f2a21"
+    },
+    "skill_a": {
+      "bboxExclusive": [
+        17,
+        8,
+        59,
+        61
+      ],
+      "opaqueColors": 18,
+      "rgbaSha256": "d9803870d7eb3a727e5584d66fea650e078fe841ecc4c8e9a415c9eff89a0b95"
+    },
+    "skill_b": {
+      "bboxExclusive": [
+        8,
+        8,
+        63,
+        61
+      ],
+      "opaqueColors": 18,
+      "rgbaSha256": "ff49ebaaeccd7b4690a766a5d1cd0d33cd026fc2434ec70f2c21c79237c191bf"
+    },
+    "skill_c": {
+      "bboxExclusive": [
+        19,
+        9,
+        62,
+        61
+      ],
+      "opaqueColors": 18,
+      "rgbaSha256": "25c1c13c2d0e0e8f57faac15fc3e64d6e512d12ce57157029eb7f0627661dcda"
+    },
+    "poison_a": {
+      "bboxExclusive": [
+        17,
+        12,
+        60,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "3e54635c1d4c22541c0dbdc4facc664a569096baa2106c2e1fd9b7e848084b12"
+    },
+    "poison_b": {
+      "bboxExclusive": [
+        18,
+        14,
+        60,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "bcda0b9b374ed1a763825f901968f4cc8b4d86367db1dca062bd34d8069b0301"
+    },
+    "stun_a": {
+      "bboxExclusive": [
+        10,
+        8,
+        54,
+        61
+      ],
+      "opaqueColors": 17,
+      "rgbaSha256": "cfae676b69a37464fe759ab1fd05cf6027680561fee4a9e38acb22fa4c1edb05"
+    },
+    "stun_b": {
+      "bboxExclusive": [
+        10,
+        8,
+        56,
+        61
+      ],
+      "opaqueColors": 17,
+      "rgbaSha256": "fd858ff3067e4dc226bdc599f8a3720fcc3484f481051877238928c900493c8c"
+    },
+    "sleep_a": {
+      "bboxExclusive": [
+        18,
+        20,
+        57,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "883e9c2cf34c4407d2cd64e7f4585a535469927a6ed9175664de68f6d549765f"
+    },
+    "sleep_b": {
+      "bboxExclusive": [
+        18,
+        21,
+        57,
+        61
+      ],
+      "opaqueColors": 16,
+      "rgbaSha256": "8b7e354421d08933dfae03b53d9de290a2cc0d1fcc618e06d931ef3cfd85d505"
+    }
+  },
+  "errors": [],
+  "pass": true,
+  "limitations": [
+    "격자·서로 다른 해시는 직접 저작/좋은 그림/자연스러운 동작의 증거가 아님",
+    "자세 미리보기는 실제 전투 이동·스킬·피해 검증이 아님"
+  ],
+  "images": {
+    "preview/suite/attack.png": "4783e8fa6d8cfc9a4005b332f3de1fa532374d29df35d95367754c94f43d12f0",
+    "preview/suite/checker.png": "8a223b007be0da5790a177c926117fef30701c0b9f95e5ba9102568cc107c0f2",
+    "preview/suite/dark.png": "69205c09c3de545ed1abca57b6b27e9bdf10f4a4e86b34228d6c7c0566ebe35e",
+    "preview/suite/dead.png": "1524ca156510688133a82e96d83cf1343b8b569838db0e63441515367e5733d6",
+    "preview/suite/hit.png": "518ee64593587b87d0ae226f4aee17b0dbfa9b0518626eb080893fabf37eea15",
+    "preview/suite/idle_a.png": "ed77b5528b48ab2c42fcdf9edc51a0d3e087ce3005fc4b26a7394cbf32f5b99d",
+    "preview/suite/idle_b.png": "f37831d45a7164df65c0e82e75beac2343752790369173de1ff23afb1654e087",
+    "preview/suite/idle_c.png": "f4e96c883565b4f4a3a936f6d469ef135412bad54916e5c574f7082cb556dbd8",
+    "preview/suite/light.png": "a290f9c22c6c0ac73e26246f19c2f7249885af0ad8a7713c8b1ef3076f13a713",
+    "preview/suite/move.png": "8b1e47955644e25b7e7f7d98019cde9be2ca58ab6b6e8cd48626d46d95597418",
+    "preview/suite/poison_a.png": "b3c78fa6206e5f62250559683e034727aad1caa1db274d98940a8a1dd2d838cd",
+    "preview/suite/poison_b.png": "c6f3aeb8a486a7bfe49f6f3a45dfece6a956886b60ff844ed030d28035970056",
+    "preview/suite/portrait.png": "ed77b5528b48ab2c42fcdf9edc51a0d3e087ce3005fc4b26a7394cbf32f5b99d",
+    "preview/suite/recover.png": "19700a3fb702bb331ca30659d540d8624993f43b2c814dcaf42c07cba5987580",
+    "preview/suite/sheet.png": "8d684131b52f1e817b5db630927d5b4c008d8a32719a85f9ed45211d2b14a7f1",
+    "preview/suite/skill_a.png": "9114fb2a5e098653d90857e5a70f617ba5a6e6e2725231cb93976bfa7ea55639",
+    "preview/suite/skill_b.png": "d146243aa597744771959294cfccba913ebb660f213a02fa11a26a8ac7afcd1a",
+    "preview/suite/skill_c.png": "b648fd413b4cf2d0d1be9f27cc808dc8d9123d51c3813eb879de104c594f7e09",
+    "preview/suite/sleep_a.png": "192186bdfc1429e2fedd679b775e85a96357bdd9cd5a0107894172c57a584902",
+    "preview/suite/sleep_b.png": "dd586f5cf9c68d35980580895258a0a0bf17669ab9a614f17fdb19128f9188ed",
+    "preview/suite/stun_a.png": "d127c83746836b4991f79c6ea1f8b48eff0e4c65cfb485b304da216cd895d82a",
+    "preview/suite/stun_b.png": "596422d0ff15608269bfdbb29dcf15892178b5373bf4bc618aafc5a44a9fad23",
+    "preview/suite/windup.png": "45f0d3352f373ba6d7a5ced30ae1db60101bf1249de3004fd3586d3efc4d4705"
+  }
+}

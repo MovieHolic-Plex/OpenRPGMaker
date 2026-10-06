@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>적궁궁녀 · native candidate</title>
+<style>
+body{margin:0;padding:20px;background:#d6cdc2;color:#171c29;font:14px sans-serif}h1{font-size:20px}.motions{display:grid;grid-template-columns:repeat(4,240px);gap:12px}.motion{padding:10px;background:#e8ddd1;border:1px solid #9b938d}.views{display:flex;gap:10px;align-items:end;height:148px}.native{width:64px;height:64px}.big{width:128px;height:128px;image-rendering:pixelated}.gallery{display:grid;grid-template-columns:repeat(6,154px);gap:12px;margin-top:20px}.gallery img{width:128px;height:128px;image-rendering:pixelated}.dark{background:#242733}p{max-width:960px}
+</style>
+<h1>적궁궁녀 · 18 native poses / 8 motions</h1>
+<p>Review candidate. Native images and nearest-neighbor diagnostic enlargement. No approval recorded here.</p>
+<div class="motions" id="motions"></div>
+<div class="gallery" id="gallery"></div>
+<script>
+for(const name of ['idle','attack','hit','dead','skill','poison','stun','sleep']){
+ const card=document.createElement('section');card.className='motion';
+ card.innerHTML=`<b>${name}</b><div class="views"><img class="native" src="motions/${name}.gif"><img class="big dark" src="motions/${name}.gif"></div>`;
+ document.querySelector('#motions').append(card);
+}
+for(const name of ['idle_a','idle_b','idle_c','windup','move','attack','recover','hit','dead','skill_a','skill_b','skill_c','poison_a','poison_b','stun_a','stun_b','sleep_a','sleep_b']){
+ const card=document.createElement('section');card.innerHTML=`<b>${name}</b><br><img src="previews/${name}.png">`;
+ document.querySelector('#gallery').append(card);
+}
+</script>

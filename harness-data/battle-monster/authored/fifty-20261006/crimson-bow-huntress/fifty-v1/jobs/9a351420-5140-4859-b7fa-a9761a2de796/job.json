@@ -1,0 +1,43 @@
+{
+  "id": "9a351420-5140-4859-b7fa-a9761a2de796",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T11:09:54.065357+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/jobs/9a351420-5140-4859-b7fa-a9761a2de796",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/crimson-bow-huntress/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "1553f936ac9af8bd8b78d22f35b07887ea1a0d563eef6920c9dafaeb3e9cfc73",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "d90655c1363bd625c342878c17fa11896e2e85cf378a8433d547a5bf3dda9091",
+    "preview/suite/light.png": "6eb506a64a6cdbc859968a9e063d3ae60ef124fd1cbc6365951606f8a711ae60",
+    "preview/suite/dark.png": "f72a251142e439270a24583e3f3c9d2cd373c87e74e6befb7ecfdf585b6574aa",
+    "preview/suite/checker.png": "5f026a3b1fb6ef183270e2af3c7adaf1489454a3eb7fcd311353c342cb5e9dd2"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T11:12:00.075981+00:00"
+}

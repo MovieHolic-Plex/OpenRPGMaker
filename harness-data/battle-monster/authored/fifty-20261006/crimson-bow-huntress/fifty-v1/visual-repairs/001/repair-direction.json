@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "08b270a1831bb9d69219b4103c971bd1143deee77e66a3bc6ad8b2ccac95b120",
+  "priorReviewJob": "9a351420-5140-4859-b7fa-a9761a2de796",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 49,
+      "y": 27,
+      "message": "The gold string starts at (49,27), below and left of the upper bow nock around (50-51,24), leaving a visible transparent gap. Extend it upward with explicit stepped string pixels through approximately (49,26) and (50,25) to meet the nock. Preserve the connected grip and lower endpoint. Apply the same endpoint-to-nock check to the other bow poses; the recovery and sleep previews also show the floating upper string endpoint."
+    },
+    {
+      "pose": "skill_b",
+      "x": 57,
+      "y": 31,
+      "message": "The white/orange/red cluster around the arrow seat expands vertically into a broad triangular flash and has only a short forward reach. Recompose the native effect as an elongated crimson shaft with a distinct right-facing arrowhead, rooted at the actual bow arrow seat near (53,31). Reduce the upper/lower flare lobes around y23-38; shift the firing composition left if needed to leave room for the long arrow while retaining the one-pixel cell margin and continuous hand-to-bow connection."
+    }
+  ],
+  "startedAt": "2026-10-06T11:12:00.296193+00:00"
+}

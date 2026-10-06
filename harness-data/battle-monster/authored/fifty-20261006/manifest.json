@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 36,
+  "archivedPassedSpecies": 37,
   "entireGoalComplete": false,
   "items": [
     {
@@ -365,6 +365,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "e9857deb9d6a82b12fb42720c3e6972740e6ec9f362e639d2ea888c7fd69c917"
+    },
+    {
+      "key": "crimson-bow-huntress/fifty-v1",
+      "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "f68f61053238602f1c84cf1babc872f3b16d91f5e180b3a77a47f1e0c8bf75b4"
     },
     {
       "key": "mountain-herbalist-fighter/fifty-v1",

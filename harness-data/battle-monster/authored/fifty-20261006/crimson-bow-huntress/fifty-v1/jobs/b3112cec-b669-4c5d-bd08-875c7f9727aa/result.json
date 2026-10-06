@@ -1,0 +1,24 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the four actual supplied PNGs at native 1x and nearest 3x. The adult SD huntress reads clearly facing right: black ponytail and red ribbon, teal jacket, gray-brown trousers, quiver and crimson recurve bow remain consistent. Broad hair, face and garment clusters give modest volume with generally coherent upper-left highlights. Neck, shoulders, limbs and bow-gripping hand appear connected; no obvious accidental interior transparency holes are visible on the checker. Small shoes sit consistently at the standing baseline, and the stepping, recoil and prone silhouettes are readable. Draw preparation, stride, release and recovery form a coherent sequence; the released drawing hand exists but merges visually with the neck/shoulder. Skill preparation has a warm core at the bow grip, the long red arrow emerges from that same weapon position, and recovery lowers the bow with a small red afterglow. Poison hunches and raises a hand with bubbles; stun slackens the posture with closed eyes and stars; sleep kneels with closed eyelids. These are distinct body states, not whole-body tints or unrelated attacks; paired state changes are subtle at 1x. Minor clarity repairs are listed below. This is a reviewer recommendation only; user selection remains separate. Static pose previews cannot establish animation timing, actual battle placement/contact, source pxgrid authorship, or full source palette/alpha compliance.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 28,
+      "y": 28,
+      "message": "The released drawing-hand skin cluster blends into the neck and upper shoulder at 1x. Separate its edge from the neck with a short existing outline/shadow cluster and clarify one or two finger pixels while preserving the connected bent forearm."
+    },
+    {
+      "pose": "skill_b",
+      "x": 27,
+      "y": 28,
+      "message": "As in attack, the rear release hand reads as extra neck/shoulder skin. Clarify the hand edge and wrist with the existing shadow palette so the two-hand bow action remains readable beside the bright projectile."
+    },
+    {
+      "pose": "dead",
+      "x": 35,
+      "y": 60,
+      "message": "The floor-level gold/red tool trace is too straight and merged with the body to identify the recurve bow readily at 1x. Give the fallen bow a small readable crimson curved limb and distinct grip/string cluster beside the body, keeping all pixels within the cell and clear of the shoe outline."
+    }
+  ]
+}

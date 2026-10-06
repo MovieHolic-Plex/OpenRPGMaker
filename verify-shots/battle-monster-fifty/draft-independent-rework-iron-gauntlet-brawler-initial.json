@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-06T11:24:28.264748+00:00",
+  "passed": false,
+  "key": "iron-gauntlet-brawler/fifty-v1",
+  "binding": "3071aa843778e40f936bb25b6fbc6e8358c9f1c8a4d66b3fa0c6de4d7b30f3d7",
+  "actualIndependentReview": {
+    "recommendation": "rework",
+    "summary": "Viewed all four actual PNGs, including the native 1x cells and existing nearest-neighbor 3x views. The adult SD brawler fills the cell well; right-facing three-quarter head, red headband, navy vest and paired silver gauntlets remain consistent. Broad skin and metal highlights support upper-left lighting. Neck, shoulders, punching forearm and gloves appear connected, with no obvious accidental interior transparency holes. Standing feet share a convincing ground line; the widened move/attack stance and hit recoil are readable. Dark boots lose some separation on the dark background. Skill preparation/contact/recovery are distinct, and the three unequal impact branches originate at the extended gauntlet. Poison has a chest clutch and bubbles; stun drops both arms beneath stars, so these are authored states rather than tints. The seated sleep pair retains an alert-looking face, and dead looks like an awake fighter reclining on a supporting arm. These need stronger state-specific face/head clusters. Static pose previews cannot establish animation timing, actual battle contact, or literal pxgrid authorship. This recommendation is advisory; user selection remains pending.",
+    "issues": [
+      {
+        "pose": "sleep_a",
+        "x": 34,
+        "y": 38,
+        "message": "The dark eye marks at (34-35,38) and (39-40,38) retain the resting gaze, while the head stays upright above the seated gloves. Replace them with clearly lowered, bent closed-lid clusters and lower the chin toward the chest; preserve the connected neck. At 1x this should read asleep rather than seated and watching."
+      },
+      {
+        "pose": "sleep_b",
+        "x": 34,
+        "y": 39,
+        "message": "The second sleep face repeats the same gaze one row lower: eye marks at (34-35,39) and (39-40,39). Carry the closed-lid repair into this frame, maintaining eye placement relative to the head, and keep the small breathing change in shoulders/gloves rather than reopening the alert face."
+      },
+      {
+        "pose": "dead",
+        "x": 20,
+        "y": 45,
+        "message": "The eye marks around (20-21,45) and (24-25,45), elevated face and bracing glove beneath the shoulder make the fallen pose read awake and reclining. Author visibly slack or closed eyes, drop the chin/head toward the supporting arm, and relax the forearm brace while retaining the neck-to-torso connection and floor contact."
+      }
+    ],
+    "binding": "3071aa843778e40f936bb25b6fbc6e8358c9f1c8a4d66b3fa0c6de4d7b30f3d7",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "9fa7eff70bfb08829fffdc24400a2f4ff83ab8ed2aad074be5d05798ec5f9ee0",
+      "preview/suite/light.png": "66b912ed862dc3f574ab1717da6c85a67df2537c27ae3e414b5a8de0525678f8",
+      "preview/suite/dark.png": "29e490d91f80bbb6be35e330b991db46e2be80c82bbaf2bb7abe204ad6fd1d13",
+      "preview/suite/checker.png": "9af80da3b4f7fd448abf3c7c47ce4697cf9f7b493d57fbc18d04cbecee3c2ac6"
+    },
+    "jobId": "d06caf23-4549-4f66-b7ad-c83c45b88973",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T11:23:40.255738+00:00",
+    "userApproved": false
+  },
+  "actualJob": {
+    "id": "d06caf23-4549-4f66-b7ad-c83c45b88973",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T11:21:16.075844+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-gauntlet-brawler/fifty-v1/jobs/d06caf23-4549-4f66-b7ad-c83c45b88973",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-gauntlet-brawler/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-gauntlet-brawler/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-gauntlet-brawler/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-gauntlet-brawler/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "26b30f76534daff28368cba7f761dae1b777faa9d887bff3fc85b42e95df90e2",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "9fa7eff70bfb08829fffdc24400a2f4ff83ab8ed2aad074be5d05798ec5f9ee0",
+      "preview/suite/light.png": "66b912ed862dc3f574ab1717da6c85a67df2537c27ae3e414b5a8de0525678f8",
+      "preview/suite/dark.png": "29e490d91f80bbb6be35e330b991db46e2be80c82bbaf2bb7abe204ad6fd1d13",
+      "preview/suite/checker.png": "9af80da3b4f7fd448abf3c7c47ce4697cf9f7b493d57fbc18d04cbecee3c2ac6"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T11:23:40.065381+00:00"
+  },
+  "rootDraftEvidence": "verify-shots/battle-monster-fifty/root-draft-review-iron-gauntlet-brawler.json",
+  "claimScope": "Actual initial rework; no keeper/Allow claim. Repair must receive fresh independent review."
+}

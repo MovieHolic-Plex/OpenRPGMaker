@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-06T11:23:19.070086+00:00",
+  "passed": false,
+  "key": "iron-gauntlet-brawler/fifty-v1",
+  "binding": "3071aa843778e40f936bb25b6fbc6e8358c9f1c8a4d66b3fa0c6de4d7b30f3d7",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-iron-gauntlet-brawler-before-initial-review.png",
+  "nativeContactPngSha256": "76b54a59fe616bec31df2ccdf7fac5246a86a619d6781c1acd663b9b1c7bad95",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "c3569b95c68af4f19aee5e413998d8bdf52279edb66e5dda8a2eb6e246299588",
+    "pose_rows.py": "03c562850757a8cf0459fe694736474fa642a505546b7336df27ad9c89482dbc",
+    "action_rows.py": "a788bab13d0fa7bc4de0d077195ccdd55542610cab945c92155a395c6e331998",
+    "chosen_revisions.py": "c170c588c2f73575ac7ae7bacf6f81652c2d92ac375e5234204b75a88c92d1c8"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized. Adultcompactrightface/shortdarkhair/redheadband/sleevelessnavyvest/browntrousers/largegraywhiteirongauntlets. Backfoldedneararmwindup/widesteppedadvance/extendedpunch/retractedarm, leanbackhit andlowhorizontaldead distinctfromclosedeyeseatedsleep. Whitecyanqi fromactualstrikinggauntlet/twobranches, same neararmfoldandresidualenergy recovery. Poisonmouthhand+tealparticles, slacklegs/closedeyesstunwithstarfragments, bentclosed-eyeseatedsleep slighthead/shoulderheightchange. Read complete author.write_sources/allmoduleflows/calls and3literal pose/action/revisiondata files atunchangedhashes. Explicittop/y+x+pixelrowstrings andselectedfullrowrevisions only. No geometry/automaticwholeframe transformation. Finalrendererreadsgrids andwritesPNG/GIF/diagnosticboards/decodedreadback only. All18nativePNG match ASCII/palette. Smallquieteyes andlowdarkhair/shoelines retained; actualindependentdecisionpending, noKeep/Allowclaim.",
+  "correctedRootStateObservationsAt": "2026-10-06T11:24:28.265479+00:00",
+  "correctedRootStateObservations": "Independentactualreview distinguishes the short paired darkeye marks from visibly loweredclosedlids: sleep currentlylooksseatedandwatching withuprighthead. Fallenpose face/bracinggauntlet currentlylooksawakeandreclining. Theseinitialstatesneedactualhead/chin/eye/bracepixelrepair beforepass; previous closed-eyes wordingisnotanapproval."
+}

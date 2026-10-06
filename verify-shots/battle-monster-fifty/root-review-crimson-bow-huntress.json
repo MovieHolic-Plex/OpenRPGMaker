@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-06T11:22:45.151171+00:00",
+  "passed": true,
+  "key": "crimson-bow-huntress/fifty-v1",
+  "binding": "a9f6602758e5856ba6d69360a4ebc9495c4e03d79a805faba3b26d92e2cd73bd",
+  "actualIndependentReviewJob": "b3112cec-b669-4c5d-bd08-875c7f9727aa",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "ed77b5528b48ab2c42fcdf9edc51a0d3e087ce3005fc4b26a7394cbf32f5b99d",
+    "preview/suite/light.png": "a290f9c22c6c0ac73e26246f19c2f7249885af0ad8a7713c8b1ef3076f13a713",
+    "preview/suite/dark.png": "69205c09c3de545ed1abca57b6b27e9bdf10f4a4e86b34228d6c7c0566ebe35e",
+    "preview/suite/checker.png": "8a223b007be0da5790a177c926117fef30701c0b9f95e5ba9102568cc107c0f2"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "attack",
+      "x": 28,
+      "y": 28,
+      "message": "The released drawing-hand skin cluster blends into the neck and upper shoulder at 1x. Separate its edge from the neck with a short existing outline/shadow cluster and clarify one or two finger pixels while preserving the connected bent forearm."
+    },
+    {
+      "pose": "skill_b",
+      "x": 27,
+      "y": 28,
+      "message": "As in attack, the rear release hand reads as extra neck/shoulder skin. Clarify the hand edge and wrist with the existing shadow palette so the two-hand bow action remains readable beside the bright projectile."
+    },
+    {
+      "pose": "dead",
+      "x": 35,
+      "y": 60,
+      "message": "The floor-level gold/red tool trace is too straight and merged with the body to identify the recurve bow readily at 1x. Give the fallen bow a small readable crimson curved limb and distinct grip/string cluster beside the body, keeping all pixels within the cell and clear of the shoe outline."
+    }
+  ],
+  "retainedIndependentSummary": "Reviewed the four actual supplied PNGs at native 1x and nearest 3x. The adult SD huntress reads clearly facing right: black ponytail and red ribbon, teal jacket, gray-brown trousers, quiver and crimson recurve bow remain consistent. Broad hair, face and garment clusters give modest volume with generally coherent upper-left highlights. Neck, shoulders, limbs and bow-gripping hand appear connected; no obvious accidental interior transparency holes are visible on the checker. Small shoes sit consistently at the standing baseline, and the stepping, recoil and prone silhouettes are readable. Draw preparation, stride, release and recovery form a coherent sequence; the released drawing hand exists but merges visually with the neck/shoulder. Skill preparation has a warm core at the bow grip, the long red arrow emerges from that same weapon position, and recovery lowers the bow with a small red afterglow. Poison hunches and raises a hand with bubbles; stun slackens the posture with closed eyes and stars; sleep kneels with closed eyelids. These are distinct body states, not whole-body tints or unrelated attacks; paired state changes are subtle at 1x. Minor clarity repairs are listed below. This is a reviewer recommendation only; user selection remains separate. Static pose previews cannot establish animation timing, actual battle placement/contact, source pxgrid authorship, or full source palette/alpha compliance.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-crimson-bow-huntress.png",
+  "nativeContactPngSha256": "3afe735ab0758bd6e76d0d0ee2614a245e4eb23c0571860a8c6e753d0d0b6cdc",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "c8329fa2d777abd6f6c46192eed85c5fc8fa1fda13f1fad0988cc7f5553a26d9",
+    "revise_pixels.py": "1465409e3709121edd3442ca78aa286d60744cf3dadaa7f4fe54914bbf34d370"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened repaired18 native1x/nearest2x864x696 unresized. Sameadultwoman/longdarkhair/redbinding/tealjacket/darktrousers/redbow+quiver. Uppergoldstring nowcontinues tonock inidle/closed-eyeseatedsleep/recovery andotherbowposes. Skill_b bowrootedhorizontalcrimsonshaft+goldbrightcenter+rightpointedarrowhead, shorterbodyfiringcompositionleavesrightspace; broadverticalflashremoved. Windupdrawnstring/steppedadvance/release/retract, face/shoulderleanhit andlowhorizontaldead distinctfromseatedsleep. Poisonmouthhand+greentealparticles, stars/slackstun, sleepingheadshoulderchanges. Read fullframe/replace_rows/pixels/apply bodies/allmoduleflow/calls. Literalblank64 rowtranscription andindividuallychoseny/x/ink patches includingnew31skillruns andnockpixels. No generatedgeometry/automaticwholeframe transformation. UnchangedrendereronlyPNG/GIF/diagnostics/decodedreadback. All18nativePNG match ASCII/palette. Initialactualreworkpreserved; Freshactualindependentkeep with3minorclaritysuggestions onmatchingfinalbinding. Retainmergedreleasehand/neckedges attackand skill, fallenbowcurve too straight/merged at1x, darkhair/shoecontrastandsubtlepairedstates. No minorfixclaimed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}
