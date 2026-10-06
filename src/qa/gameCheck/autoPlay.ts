@@ -140,6 +140,23 @@ function pageInputtedVariables(page: PageRef): Set<string> {
   return out;
 }
 
+/** 이 명령보다 먼저 실행되는 명령들 — 같은 목록의 앞 형제와 바깥 목록들의 앞 형제(분기 진입 전에 돈다). */
+function commandsRunBefore(visit: CommandVisit): RawCommand[] {
+  const out: RawCommand[] = [];
+  let list: readonly RawCommand[] = visit.page.commands;
+  for (let depth = 0; depth < visit.indexPath.length; depth++) {
+    const index = visit.indexPath[depth]!;
+    out.push(...list.slice(0, index));
+    const segment = visit.segments[depth];
+    if (!segment) break;
+    const owner = list[index];
+    const child = owner ? childLists(owner).find((entry) => entry.segment.kind === segment.kind
+      && JSON.stringify({ ...entry.segment, command: undefined }) === JSON.stringify({ ...segment, command: undefined })) : undefined;
+    list = child?.list ?? [];
+  }
+  return out;
+}
+
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
   // 엔딩 조건(호감)을 페이지 조건(요일)보다 먼저 채운다. 만남 잠금을 푸는 명령이
@@ -151,7 +168,14 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
       : [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
     // 이름 있는 triggerEnding 도 엔딩 conditions 를 선행으로 본다. 런타임이 조건 미달이면
     // 엔딩을 열지 않으므로, 호감 ≥ 6 없이 고백 선택지만 누르면 도달로 세면 안 된다.
-    for (const condition of ending?.conditions ?? []) reqs.push(...leafRequirements(condition, visit.page));
+    // 같은 실행 경로에서 triggerEnding 바로 앞에 켜는 스위치는 선행 조건이 아니다(2026-10-06 몬스터 원정:
+    // 챔피언 승리 분기가 mx_ending 을 켜고 곧바로 엔딩을 부르는데, 「mx_ending 을 채울 이벤트 없음」으로 계획이 끊겼다).
+    const setBefore = new Set(commandsRunBefore(visit)
+      .filter((command) => command.kind === "setSwitch" && command.value === true && typeof command.switchId === "string")
+      .map((command) => command.switchId as string));
+    for (const condition of ending?.conditions ?? []) {
+      reqs.push(...leafRequirements(condition, visit.page).filter((req) => !(req.kind === "switch" && setBefore.has(req.id))));
+    }
   }
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {

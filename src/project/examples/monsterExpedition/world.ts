@@ -242,12 +242,22 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     return Array.from({ length: count }, (_, i) => representatives[i % representatives.length]!.id);
   }
 
+  // 스타터 계통은 초반 풀숲에 나오지 않는다 — 1번길에서 풀 스타터가 같은 풀 스타터를 만나 반감 기술로 서로 2씩 깎다 졌다(2026-10-06).
+  const starterFamilies = new Set(EXPEDITION_SPECIES.filter(s => (EXPEDITION_STARTERS as readonly string[]).includes(s.id)).map(s => s.family));
+  const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
+
   function wild(map: GameMap, habitat: string, level: number): void {
-    const pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && s.stage > 0 && minimumLevel(s.id) <= level - 2).map(s => s.id);
+    const fits = (s: (typeof EXPEDITION_SPECIES)[number]) => s.stage > 0 && minimumLevel(s.id) <= level - 2 && (level >= 20 || !starterFamilies.has(s.family));
+    let pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && fits(s)).map(s => s.id);
+    // 스타터를 빼고 한 종만 남으면 이웃 서식지의 첫 단계 종을 빌려 온다(풀숲에 벌레가 섞이듯).
+    if (pool.length < 2 && neighbourHabitat[habitat]) pool = [...pool, ...EXPEDITION_SPECIES.filter(s => s.habitat === neighbourHabitat[habitat] && s.stage === 1 && fits(s)).map(s => s.id)];
     map.encounterRate = 14;
     // Named habitats prevent encounters on the transport/entry row and indoor surfaces.
     map.locations = [{ id: `${map.id}_habitat`, name: "몬스터 서식지", x: 1, y: 3, w: map.width - 2, h: map.height - 6 }];
-    map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], Math.max(3, level - i % 3), false),
+    // 첫 길은 Lv5 스타터 한 마리로 걸어 나가는 곳이라 야생을 두세 레벨 아래로 둔다.
+    // 첫 종만 Lv3, 나머지는 Lv2 — Lv3 벌레는 벌레 기술을 배워 풀 스타터를 두 배로 때린다.
+    const wildLevel = (i: number) => level <= 6 ? Math.max(2, level - (i === 0 ? 1 : 2)) : Math.max(3, level - i % 3);
+    map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], wildLevel(i), false),
       weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
   }
 

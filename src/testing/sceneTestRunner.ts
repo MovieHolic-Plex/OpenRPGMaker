@@ -3,6 +3,7 @@ import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand } from "@/battle/types";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
@@ -2540,17 +2541,31 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   const active = snapshot.actors.find((actor) => actor.id === snapshot.activeActorId || actor.recordId === snapshot.activeActorId
     || actor.monsterInstanceId === snapshot.activeActorId);
   const skills = new Map(project.database.skills.map((skill) => [skill.id, skill]));
+  const target = snapshot.enemies.find((enemy) => enemy.id === targetEnemyId);
+  // 상성까지 본 예상 피해 순 — 위력만 보면 같은 풀 타입에게 반감되는 풀 기술을 고집하다 졌다(2026-10-06 몬스터 원정 1번길).
+  const expected = (skill: NonNullable<ReturnType<typeof skills.get>>): number =>
+    active && target ? Math.max(0, predictSkillDamageFor(project, active, skill, target).amount) : (skill.power ?? 0);
   const damaging = (active?.skillIds ?? [])
     .map((skillId) => skills.get(skillId))
     .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
-    .sort((a, b) => (b.power ?? 0) - (a.power ?? 0));
+    .sort((a, b) => expected(b) - expected(a) || (b.power ?? 0) - (a.power ?? 0));
+  // 몬스터 게임의 플레이어는 체력이 바닥나면 가방의 회복약을 쓴다(교수가 다섯 개를 쥐여 준다).
+  const potion = project.system.battleModel === "gen1" && active && active.hp > 0 && active.hp <= active.maxHp * 0.3
+    ? project.database.items
+      .filter((item) => (item.hpRecovery.flat > 0 || item.hpRecovery.percentMax > 0) && !item.onlyUsableInMenu && !item.onlyEffectiveOnDeadActors
+        && (item.occasion === "always" || item.occasion === "battle") && (snapshot.eventState.inventory[item.id] ?? 0) > 0)
+      .sort((a, b) => a.price - b.price)[0]
+    : undefined;
+  const healSelf: ActorCommand[] = potion && active ? [{ kind: "item", itemId: potion.id, targetEnemyId }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
-    ? [...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    ? [...healSelf, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
     const after = headlessBattleSnapshot(runtime);
-    if (after.phase !== "actorCommand" || after.activeActorId !== snapshot.activeActorId || after.result) return;
+    // 턴제 전투는 한 수에 적 행동까지 끝나 같은 배우의 명령 단계로 돌아온다 — 턴·타임라인이 움직였으면 받아들여진 수다.
+    if (after.phase !== "actorCommand" || after.activeActorId !== snapshot.activeActorId || after.result
+      || after.turn !== snapshot.turn || after.timeline.length !== snapshot.timeline.length) return;
   }
   // 어떤 수도 안 받아 주면 방어로 턴을 넘긴다(무한 대기 방지).
   runtime.performActorCommand({ kind: "defend" });
