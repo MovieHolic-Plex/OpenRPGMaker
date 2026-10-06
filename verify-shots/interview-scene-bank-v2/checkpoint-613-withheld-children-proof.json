@@ -1,0 +1,282 @@
+{
+  "scope": "Read-only actual ledger and manifest observation; approved children behind rejected ancestors are withheld. No new unit test or synthetic ledger mutation.",
+  "published": 613,
+  "withheld": [
+    {
+      "key": "romance--town--talk--warm--single--episode",
+      "candidate": {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single--episode-3-2343623e85bb.png",
+        "sha256": "2343623e85bb38d0c1c9b34b3dc25f009a66b40211df0f5478ccf66ada505c2c",
+        "promptSha256": "a485c373c066b73a5e078cd2fef08ac79436de17fc30cbf7f5aa8d872eb05370",
+        "generationPromptSha256": "d41040959c8220f9ccb63e44f297f22bca91f2c9f8a6f10964d2dcc28c5c5617",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "2343623e85bb38d0c1c9b34b3dc25f009a66b40211df0f5478ccf66ada505c2c",
+          "promptSha256": "a485c373c066b73a5e078cd2fef08ac79436de17fc30cbf7f5aa8d872eb05370",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "PASS fullnative/OWNexact/newsinglecandidate and warmparent opened: TWO wholeEMPTYbacks/seats/LOWtable/actualbareBOX/TWOuprightOPENhandledmugs BLUE+cream PLUS THIRD tippedWHITE eventcup/visibleREDspill/SEPARATE softWHITEdryingcloth SAMEBOXtable. ActualOPENLEFTgardenGATE/oneintimatepassage/warmMIDflowers/ordinaryneighborhouses/bare nearfloor/no foregroundpots or near framingposts. Independent high oblique garden eventcamera vs parentwarm broad sunsetvillage and135single lateralwall; allmainessentialsbefore60.3/hardpixels/noidentity/glyph."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 341544,
+          "findings": []
+        }
+      },
+      "rejectedAncestor": {
+        "key": "romance--town--talk--warm--single",
+        "sourceSha256": "d29a6687fbac2e9f7e65c992b5b1f775a5608161ba66435c621503ad03b07c6a",
+        "review": {
+          "sourceSha256": "d29a6687fbac2e9f7e65c992b5b1f775a5608161ba66435c621503ad03b07c6a",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "FAIL fullnative/OWNexact/currentwarmparent opened: actualrequired OPEN gardenGATE/passage behindsamepair is CLOSED. ExactlyTWO fullbackedEMPTYchairs/separateLOWtable/smallbareBOX/TWOuprightOPENmugs/warmMIDflowers/bare nearfloor/native and new compact lateralhousewallcamera otherwise. Do not mislabel this as wholeRIGHTchair/foregroundpot failure; those arefixed."
+          ],
+          "notes": "FAIL fullnative/OWNexact/currentwarmparent opened: actualrequired OPEN gardenGATE/passage behindsamepair is CLOSED. ExactlyTWO fullbackedEMPTYchairs/separateLOWtable/smallbareBOX/TWOuprightOPENmugs/warmMIDflowers/bare nearfloor/native and new compact lateralhousewallcamera otherwise. Do not mislabel this as wholeRIGHTchair/foregroundpot failure; those arefixed."
+        }
+      }
+    },
+    {
+      "key": "romance--town--talk--warm--single--short",
+      "candidate": {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single--short-1-9ec758aecb7b.png",
+        "sha256": "9ec758aecb7bae822c9e69724bcda5f3d61d034a6dc3bf8950cdca536aec872a",
+        "promptSha256": "4ee7f2bd4242246786c272c32c643a22c694185837c9920bfeee8df639fd213a",
+        "generationPromptSha256": "a87ee3c1068d74bd85d41e4126263e5a445f850048a0e313611903b4d72d0188",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9ec758aecb7bae822c9e69724bcda5f3d61d034a6dc3bf8950cdca536aec872a",
+          "promptSha256": "4ee7f2bd4242246786c272c32c643a22c694185837c9920bfeee8df639fd213a",
+          "reviewer": "Codex direct original visual inspection: v2-production-133",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "PASS root full native/own exact/new singlecandidate and actualwarmparent opened: two fullEMPTY backedchairs/separateLOWtable/smallbareBOX/TWO uprightOPENhandledmugs, softCREAM wavy foldedstack SAMEtable and actualCLOSED wooden gardenGATE directlybehind samepair. AllprimaryLEFT beforecontrols/warmMIDflowers/native/noidentity/noText. Distinct high head-on intimate gate composition vs side-on OPENgate singlecandidate; no forcedspill/masks/trustalternatives."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 524366,
+          "findings": []
+        }
+      },
+      "rejectedAncestor": {
+        "key": "romance--town--talk--warm--single",
+        "sourceSha256": "d29a6687fbac2e9f7e65c992b5b1f775a5608161ba66435c621503ad03b07c6a",
+        "review": {
+          "sourceSha256": "d29a6687fbac2e9f7e65c992b5b1f775a5608161ba66435c621503ad03b07c6a",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "FAIL fullnative/OWNexact/currentwarmparent opened: actualrequired OPEN gardenGATE/passage behindsamepair is CLOSED. ExactlyTWO fullbackedEMPTYchairs/separateLOWtable/smallbareBOX/TWOuprightOPENmugs/warmMIDflowers/bare nearfloor/native and new compact lateralhousewallcamera otherwise. Do not mislabel this as wholeRIGHTchair/foregroundpot failure; those arefixed."
+          ],
+          "notes": "FAIL fullnative/OWNexact/currentwarmparent opened: actualrequired OPEN gardenGATE/passage behindsamepair is CLOSED. ExactlyTWO fullbackedEMPTYchairs/separateLOWtable/smallbareBOX/TWOuprightOPENmugs/warmMIDflowers/bare nearfloor/native and new compact lateralhousewallcamera otherwise. Do not mislabel this as wholeRIGHTchair/foregroundpot failure; those arefixed."
+        }
+      }
+    },
+    {
+      "key": "romance--town--talk--secret--single--scene",
+      "candidate": {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single--scene-1-c9c4819dd854.png",
+        "sha256": "c9c4819dd8540a71060ebadd7d6aabfb826e27b401ef63356c3e4224eec44831",
+        "promptSha256": "7933796a5fad8c74ce3ad4a7094ecc2768f4429d4fba3a2373497c425f0fa393",
+        "generationPromptSha256": "74e6775b8e7f35c94154e24df8b3d31a3bb2bb1397b488e235a09848682818c8",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c9c4819dd8540a71060ebadd7d6aabfb826e27b401ef63356c3e4224eec44831",
+          "promptSha256": "7933796a5fad8c74ce3ad4a7094ecc2768f4429d4fba3a2373497c425f0fa393",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "PASS fullnative/OWNexact/currentOLDsingle8286421b8522 opened: TWO fullEMPTYbackedchairs/LOWtable/smallBROWNBOX graysoftcloth visiblyOVERtop+SIDE exposedfrontlatch/TWOuprightOPENhandledmugs; oneOPENLEFTgardenGATE/intimate enclosed house-side passage/ordinaryneighborhouses at NIGHT/hardmoonlight bands. Tree trunk/flowers are MIDGROUND behind nearerpairedchairs, not between camera andfurniture; bare architecturalnearstonefloor. UntouchedFIRSTmeeting/noending/event/person/glyph. New house-side shelteredgarden-entry camera vsOLD largeINDOORfrontpair/RIGHTview; allmainessentialsbeforecontrols."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 239894,
+          "findings": []
+        }
+      },
+      "rejectedAncestor": {
+        "key": "romance--town--talk--secret--single",
+        "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+        "review": {
+          "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct OLDnative/OWN archivedrequest actualcontrols audit: continuation136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+          ],
+          "notes": "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+        }
+      }
+    },
+    {
+      "key": "romance--town--talk--secret--single--episode",
+      "candidate": {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single--episode-1-a0ffd9b1a8ff.png",
+        "sha256": "a0ffd9b1a8ffb92619361b37eee8e8366f9373fdce58bc30e0a60cb83257df35",
+        "promptSha256": "40027b2dbd914413be8e9a11316bd83fb97215521cf0f5b56aa058b42ab11a9c",
+        "generationPromptSha256": "4be2720043239df6e9f9a3ff93ffc22dcf996c3a45ffe25358ddc208da04d538",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a0ffd9b1a8ffb92619361b37eee8e8366f9373fdce58bc30e0a60cb83257df35",
+          "promptSha256": "40027b2dbd914413be8e9a11316bd83fb97215521cf0f5b56aa058b42ab11a9c",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "PASS fullnative/OWNexact/currentOLDsingle8286421b8522 opened: fullLEFTfacingEMPTYpair/separateLOWtable, actualBROWNcommonBOX GRAYoverTOP+SIDES exposedfrontlatch, TWOuprightOPENmugs cream+BLUE and additionaltippedWHITEcup/visibleREDspill/separateWHITEdryingcloth SAMEtable. OPENLEFTneighbor gate/oneintimate enclosedhouse-side NIGHTpassage/native/bare nearfloor/noidentity/glyph. Fresh closer diagonal eventshot vs135FIRSTmeeting andOLD indoorfrontpair. Decorative RIGHTwindow is not required PERSview and does not cause failure; mainwholebacks/seats/props LEFTbeforecontrols."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 289803,
+          "findings": []
+        }
+      },
+      "rejectedAncestor": {
+        "key": "romance--town--talk--secret--single",
+        "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+        "review": {
+          "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct OLDnative/OWN archivedrequest actualcontrols audit: continuation136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+          ],
+          "notes": "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+        }
+      }
+    },
+    {
+      "key": "romance--town--talk--secret--single--short",
+      "candidate": {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single--short-1-e8e810a9998c.png",
+        "sha256": "e8e810a9998cd32178aad076820557e1a26e6c61bb53b4b2dd2c414df04d9bff",
+        "promptSha256": "7e2fc540a4b9f1b007f75c7b0a526c266c023acec5ab780778d54b74a199520d",
+        "generationPromptSha256": "0ca27de5598c436d9cb296c87c77dacbe6554de079b303ecd73b2beca46f8793",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e8e810a9998cd32178aad076820557e1a26e6c61bb53b4b2dd2c414df04d9bff",
+          "promptSha256": "7e2fc540a4b9f1b007f75c7b0a526c266c023acec5ab780778d54b74a199520d",
+          "reviewer": "Codex direct original visual inspection: v2-production-135",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "PASS fullnative/OWNexact/currentOLDsingle8286421b8522 opened: TWO fullEMPTYbacks/seats/LOWtable/TWOuprightOPENmugs/actualBROWNBOX distinctSOFTGRAYoverTOP+SIDE, separateSOFTCREAM wavyfoldedSTACK SAMEtable, actualCLOSEDending gardenGATE directlybehind SAMEpair atLEFT, nightordinaryneighbors/bare nearfloor/hardpixels/noidentity/glyph. ExtraLEFTopen ordinaryside gate is not the required ending gate; OWNactualrequest does not explicitly prohibit any extra open architecture, no retro ZERO-open-gates rule imposed. Singlepairednook/noY/no alternate pairedroutes. New highnear-overhead closedgardenend shot vsOLD enclosedindoorfrontpair."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 245766,
+          "findings": []
+        }
+      },
+      "rejectedAncestor": {
+        "key": "romance--town--talk--secret--single",
+        "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+        "review": {
+          "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+          "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+          "reviewer": "Codex direct OLDnative/OWN archivedrequest actualcontrols audit: continuation136",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+          ],
+          "notes": "ROOTactuallyopened fullOLDnative AND OWNexact archivedrequest. Required actualPRIVATE continuous OPENdoor passage/view at RIGHTapprox68-99 entirely hidden by actualcontrols60.3; rightpairedchair outerBACK/SEAT also clipped. OWNrequest requires fullyvisiblepairedplaces/private passage, original is confinednightinterior otherwise correct. Only composition changed; priorPASS/native/exactrequest preserved."
+        }
+      }
+    }
+  ],
+  "completeWholePlan": false
+}

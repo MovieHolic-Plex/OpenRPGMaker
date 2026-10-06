@@ -1,0 +1,34 @@
+{
+  "scope": "All 612 published fixed-choice prefixes and opening clicked through actual isolated production dialog; six default settled screenshots, six selected screenshots and four gallery screenshots directly opened by root. Not full app boot, AI handoff, every original visual verdict or completion of 1457. Known old secret-perspectives parent needs replacement for right-side essential chair/window concealment.",
+  "published": 613,
+  "remaining": 844,
+  "planned": 1457,
+  "actualClicks": 2961,
+  "paths": 612,
+  "errors": [],
+  "generatedRequests": 0,
+  "actualBrowserExit": 0,
+  "snapshotUnchanged": true,
+  "manifestSha256": "73abbf95855c90edc50b850996efceaa388c74127cd3f3f94e1fa2dc534c1bba",
+  "allDefaultScreenshotsRootViewed": [
+    "all-published-palace-perspectives.png",
+    "all-published-town-choice-routes.png",
+    "all-published-monster-collection-route.png",
+    "all-published-campus-memory-warm-routes-ending.png",
+    "all-published-campus-memory-secret-perspectives-event.png",
+    "all-published-campus-memory-bittersweet-single-ending.png"
+  ],
+  "defaultScreenshotSha256": {
+    "all-published-palace-perspectives.png": "b89cc869c6cd13d6733e4041b1a56316d6537baa95b81ddfc8b1f63d08d0df02",
+    "all-published-town-choice-routes.png": "f885a71c9bcfa218595106fb8ad22bc4a3974eb2a44fdce4d5129cf161b17d7a",
+    "all-published-monster-collection-route.png": "e0a6101169cb7fc14cd4d7be97da416c5bad327874bb066bf73b6535c6f936aa",
+    "all-published-campus-memory-warm-routes-ending.png": "cd75c6143580fab4d31089c3214566ff8a29008b39c69cb9a4f4ef6afd0abf3c",
+    "all-published-campus-memory-secret-perspectives-event.png": "bebf22c152a5588e6a3de53606aa75317e6d19f3bea835b69a2a582bef8b8d8f",
+    "all-published-campus-memory-bittersweet-single-ending.png": "50edef2fe7cabf2161bfa1a8454f4561332ef00a91d07b2294b77ce9d6a4bebd"
+  },
+  "selectedScopeProof": "checkpoint-613-selected-root-visual-proof.json",
+  "galleryScopeProof": "gallery-613-root-visual-proof.json",
+  "firstUnifiedExecExit": 143,
+  "relaunch": "Detached supervisor, actual inner browser exit zero and frozen-source qualification completed; no fabricated outer unified-exec zero.",
+  "completeWholePlan": false
+}

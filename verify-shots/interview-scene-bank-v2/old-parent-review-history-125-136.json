@@ -1,0 +1,498 @@
+{
+  "scope": "Actual OLD source own-contract audits, preserve prior PASS; source originals and request receipts retained privately. Future extra constraints not retroactively applied.",
+  "histories": [
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-129-history.json",
+      "history": {
+        "key": "romance--palace--choice--bittersweet--single",
+        "sourceSha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+        "exactGenerationPromptSha256": "9051a7f34c5ec2afc94ca1e6b702b76dff697f321dcf68f89287592a03b70f5e",
+        "actualPriorReview": {
+          "sourceSha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+          "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original compared to parent: near-left pair of fully visible vacant red/blue chairs and unique closed common box, two clear eye masks, opposing private doors with closed books/scarf. Autumn leaves/wet palace floor and continuous intimate passage. New nearer off-center staged alcove rather than parent wide central balustrade shot; hard clusters and no figures/text."
+        },
+        "negativeReview": {
+          "sourceSha256": "dcb254d53a403c21b98d95fa9b424608de5bea225dcaaf556d2eb42e8c749f20",
+          "promptSha256": "b9a80cc6bb3ebd8a507f7faa95e1f7985177d9fd0b65479e039fbfd0abcb5f3f",
+          "reviewer": "Codex direct OLD exact/native parent audit before129",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "FAIL OLD full native/actual exact request opened: right PRIMARY chair back about64-75% and seat54-69%, entire PRIVATE SCARF door/stand about88-100% hidden by actual controls60.3. Actual selected BOX MASK2/full facing EMPTY pair/PRIVATE BOOK vs SCARF doors/wet AUTUMN/spent brown leaves/native otherwise present. No retro forced counts/gray cloth/left40/wall corner/no arbitrary autumn leaf ban. Actual functional BOX front closures/door knobs not glyph."
+          ],
+          "notes": "FAIL OLD full native/actual exact request opened: right PRIMARY chair back about64-75% and seat54-69%, entire PRIVATE SCARF door/stand about88-100% hidden by actual controls60.3. Actual selected BOX MASK2/full facing EMPTY pair/PRIVATE BOOK vs SCARF doors/wet AUTUMN/spent brown leaves/native otherwise present. No retro forced counts/gray cloth/left40/wall corner/no arbitrary autumn leaf ban. Actual functional BOX front closures/door knobs not glyph."
+        }
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-131-history.json",
+      "history": {
+        "key": "romance--palace--choice--bittersweet--routes",
+        "priorReview": {
+          "sourceSha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+          "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+          "reviewer": "Codex direct original visual inspection: v2-production-032",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original: new staggered internal staircase fork connecting three different paired nooks, front mask pair retained; closed book by top-left actual private door versus folded scarf by top-right door. Bare walls with no former banners, wet floor and brown leaves. Continuous real architecture, sharply pixelled chairs/props, no figures/text."
+        },
+        "negativeReview": {
+          "sourceSha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+          "promptSha256": "0cc64c0b597602617374c22dc2985585b6a1df4d4d205cb0c9fad62998f3a3cb",
+          "reviewer": "Codex direct old original and exact OLD request audit: continuation131",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT directly opened full actual native AND OWN archived exact original request: FOUR actual paired nooks/EIGHT seats total (near MASK pair, center commonBOX pair, upper LEFT BOOK pair, upper RIGHT SCARF pair), despite actual OLD request THREE nooks EACH a pair. Actual upper RIGHT whole primary pair and private SCARF doorway approximately80-94 percent are hidden by current actual controls starting60.3. Required separate immediate private BOOK/SCARF alternatives are on these paired nook tables, not distinct own threshold stands; no retro new cloth/color/window/left40 counts imposed. Old request itself requires the three pair structure and visible private alternatives. Autumn wet floor/spent leaves/native otherwise."
+          ],
+          "notes": "ROOT directly opened full actual native AND OWN archived exact original request: FOUR actual paired nooks/EIGHT seats total (near MASK pair, center commonBOX pair, upper LEFT BOOK pair, upper RIGHT SCARF pair), despite actual OLD request THREE nooks EACH a pair. Actual upper RIGHT whole primary pair and private SCARF doorway approximately80-94 percent are hidden by current actual controls starting60.3. Required separate immediate private BOOK/SCARF alternatives are on these paired nook tables, not distinct own threshold stands; no retro new cloth/color/window/left40 counts imposed. Old request itself requires the three pair structure and visible private alternatives. Autumn wet floor/spent leaves/native otherwise."
+        },
+        "originalFile": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--routes-2-a04d4245ffbc.png",
+        "sourceSha256": "a04d4245ffbc8eac9e18ec4dbf5b11d8ffa58a898dc3593feb09b93c1fbcc21c",
+        "generationPromptSha256": "376bf21025aaa6d4f90ace9dc0b194f39abc78468be96b6993c0baf5938dd3c5",
+        "officialApplied": false
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-132-history.json",
+      "history": {
+        "key": "romance--palace--choice--bittersweet--perspectives",
+        "sourceSha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+        "generationPromptSha256": "54ca5a17b7bbfd506253b8d4aa5d2071a230ed69af2cc6c7a712be391a2a4fbe",
+        "originalFile": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--perspectives-1-4d224f4f087b.png",
+        "actualPriorReview": {
+          "sourceSha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+          "promptSha256": "e1d99f39c5a6a012fca1fa2d9f7d8459dee12724f21899419cbf3bb58bdb0071",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: oblique sheltered palace alcove; unique closed common box and two eye masks between fully visible empty seats, window and two differently framed doorways around same event; left closed books and right folded scarf preserve consequential trust alternatives. Wet floor/autumn leaves retain lingering departure, independent elevated shot."
+        },
+        "negativeReview": {
+          "sourceSha256": "4d224f4f087b3e301b2e03b981671eddb8b002a9dbf64de92c30b915131e5414",
+          "promptSha256": "e1d99f39c5a6a012fca1fa2d9f7d8459dee12724f21899419cbf3bb58bdb0071",
+          "reviewer": "Codex direct OLD native and OWN archived exact request audit: continuation132",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT actually opened full OLD native and OWN archived exact request: required RIGHT primary back/seat approx63-77 percent and private SCARF door/stand approx83-100 percent behind actual controls60.3. Common supposedly plain shared keepsake BOX has conspicuous ornate isolated GOLD floral crest/mark on LID/front, cannot certify plain/no-heraldry under actual OLD request; functional small latch alone exempt. Actual MASK2/commonBOX/pair/privateBOOKdoor/autumnwetbrownleaves/window+distinctdoor otherwise. No retro new left40/windowcorner/gray/count restriction imposed. This old source is judged against its own request."
+          ],
+          "notes": "ROOT actually opened full OLD native and OWN archived exact request: required RIGHT primary back/seat approx63-77 percent and private SCARF door/stand approx83-100 percent behind actual controls60.3. Common supposedly plain shared keepsake BOX has conspicuous ornate isolated GOLD floral crest/mark on LID/front, cannot certify plain/no-heraldry under actual OLD request; functional small latch alone exempt. Actual MASK2/commonBOX/pair/privateBOOKdoor/autumnwetbrownleaves/window+distinctdoor otherwise. No retro new left40/windowcorner/gray/count restriction imposed. This old source is judged against its own request."
+        },
+        "officialApplied": false
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-132-town-history.json",
+      "history": {
+        "key": "romance--town--talk--warm--single",
+        "sourceSha256": "1c209755a8b2399ee7443a215f59a4a29d3dadecf59f9406c12bf92a06482833",
+        "generationPromptSha256": "d07a17aef735550ae46f4f376779d196531f68756c2a222886c8a65d278c3445",
+        "originalFile": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--single-3-1c209755a8b2.png",
+        "actualPriorReview": {
+          "sourceSha256": "1c209755a8b2399ee7443a215f59a4a29d3dadecf59f9406c12bf92a06482833",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-033",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Native original compared to parent and two rejected attempts: new internal high-oblique timber entry room with diagonal pair and square table, side window toward neighbor gates and private passage behind. One common closed keep between fully visible empty chairs, warm preparations, hard pixel clusters. No former central sunset horizon/frontal outdoor terrace."
+        },
+        "negativeReview": {
+          "sourceSha256": "1c209755a8b2399ee7443a215f59a4a29d3dadecf59f9406c12bf92a06482833",
+          "promptSha256": "8a851e85c8eb718a6c28db9115abc9d42dfc582a8b91b48842373657fccfa3f7",
+          "reviewer": "Codex direct OLD native and OWN exact request audit: continuation132-town",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT actually opened full OLD native and OWN archived exact request: whole RIGHT PRIMARY chair BACK approx71-78 percent and seat58-74 percent are hidden by actual controls60.3. Actual old request BOTH backs and full seats ENTIRELY VISIBLE; actual private continuous horizontal passage/right gate view approx74-91 likewise concealed. Old ordinary rural timber interior/neighbor LEFT window/gates/BOX/wholeleftchair/warm MIDflowers/native otherwise. No retro mugs, mask, exact counts, left40, grayfabric, plain lid motif ban or different camera constraint imposed. Functional box front latch not glyph."
+          ],
+          "notes": "ROOT actually opened full OLD native and OWN archived exact request: whole RIGHT PRIMARY chair BACK approx71-78 percent and seat58-74 percent are hidden by actual controls60.3. Actual old request BOTH backs and full seats ENTIRELY VISIBLE; actual private continuous horizontal passage/right gate view approx74-91 likewise concealed. Old ordinary rural timber interior/neighbor LEFT window/gates/BOX/wholeleftchair/warm MIDflowers/native otherwise. No retro mugs, mask, exact counts, left40, grayfabric, plain lid motif ban or different camera constraint imposed. Functional box front latch not glyph."
+        }
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-133-history.json",
+      "history": {
+        "key": "romance--town--talk--warm--routes",
+        "sourceSha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+        "generationPromptSha256": "ca2b0503b8ecec892877d8d7939a309ac7728ff1092c282c0a08b79cdb103714",
+        "originalFile": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--routes-1-1b957ec9698e.png",
+        "actualPriorReview": {
+          "sourceSha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+          "promptSha256": "a7a28fb61def0ccfd1e06c77af9a10ced3f04e1604e39f7cb3c2088feb84b1d4",
+          "reviewer": "Codex direct original visual inspection: v2-production-031",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Direct native view: small ordinary neighboring homes, real stone path fork connecting three distinct paired vacant dialogue nooks with different cups/closed objects, inviting flowers and sunset. Entire chair seats readable, all planes hard pixel shading. Elevated three-way staging differs from parent single terrace."
+        },
+        "negativeReview": {
+          "sourceSha256": "1b957ec9698eed45c7bdb5a660d65b9da853e1515594c447d154a6246fc823ae",
+          "promptSha256": "a7a28fb61def0ccfd1e06c77af9a10ced3f04e1604e39f7cb3c2088feb84b1d4",
+          "reviewer": "Codex direct OLD native and OWN exact request audit: continuation133",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT actually opened full OLD native AND its own archived exact request: complete far RIGHT paired nook approx76-100 percent, BOTH full backed chairs and seats, is hidden by current actual controls60.3. OLD actual THREE nooks each PAIR and real branching walkway otherwise present, LEFT primarypair/middlepair visible; actual closedBOX/book/mug variety present. No retro future EXACT2 mugs/books/masks/gray/private book-scarf alternatives/left40 constraint. Warm ruralneighbor architecture/light/MIDflowers/native otherwise. Review fails only actual essential third pair visibility, not a decorative leg/rim."
+          ],
+          "notes": "ROOT actually opened full OLD native AND its own archived exact request: complete far RIGHT paired nook approx76-100 percent, BOTH full backed chairs and seats, is hidden by current actual controls60.3. OLD actual THREE nooks each PAIR and real branching walkway otherwise present, LEFT primarypair/middlepair visible; actual closedBOX/book/mug variety present. No retro future EXACT2 mugs/books/masks/gray/private book-scarf alternatives/left40 constraint. Warm ruralneighbor architecture/light/MIDflowers/native otherwise. Review fails only actual essential third pair visibility, not a decorative leg/rim."
+        },
+        "officialApplied": false
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-134-history.json",
+      "history": {
+        "key": "romance--palace--choice--bittersweet",
+        "candidateBefore": {
+          "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-2-ca0155c4c05d.png",
+          "sha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
+          "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+          "generationPromptSha256": "de1430d94686dba11c79840262130af4e973985e54f989466c0145e1b3a658cf",
+          "attempt": 2,
+          "review": {
+            "sourceSha256": "ca0155c4c05d0c870e09fb252b8ec25499bb3890f27a4ef332d0a36b2222d86d",
+            "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+            "reviewer": "Codex direct original visual inspection: v2-production-029",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native replacement opened: opposing private doors and respective book/scarf alternatives, common closed box/two masks and vacant chairs, wet quiet autumn courtyard/brown leaves at empty threshold. Bare stone no flags/text/people/blur; new small alcove vs old open hall."
+          },
+          "gate": {
+            "ok": true,
+            "width": 1672,
+            "height": 941,
+            "colors": 231023,
+            "findings": []
+          }
+        },
+        "exactGenerationRequest": "qa-runs/harnesses/interview-scene-bank/de1430d94686dba11c79840262130af4e973985e54f989466c0145e1b3a658cf.prompt.txt",
+        "nativeOriginal": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-2-ca0155c4c05d.png"
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejection-134-town-history.json",
+      "history": {
+        "key": "romance--town--talk--warm--perspectives",
+        "candidateBefore": {
+          "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives-2-023bff6fa9c7.png",
+          "sha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+          "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+          "generationPromptSha256": "6910c546d0d23874aeaf6fd2ed6d7f6546225f617d7822e27f47448320fd32c1",
+          "attempt": 2,
+          "review": {
+            "sourceSha256": "023bff6fa9c7403330d7e0ba3df577dd113623a467b8fcd02f0e04755699c4b9",
+            "promptSha256": "1ba6e2306c0b4ff525a4d589e6053def00e3657a6403dcc4847efb76c4ff79cc",
+            "reviewer": "Codex direct original visual inspection: v2-production-032",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native original: closed common box now clearly between two opposed empty seats, window and differently framed door reveal neighboring village gates around same event. Warm ordinary rural house alcove, midground flowers behind focal table, all planes sharp, new internal oblique camera compared to outdoor parent."
+          },
+          "gate": {
+            "ok": true,
+            "width": 1672,
+            "height": 941,
+            "colors": 408937,
+            "findings": []
+          }
+        },
+        "exactGenerationRequest": "qa-runs/harnesses/interview-scene-bank/6910c546d0d23874aeaf6fd2ed6d7f6546225f617d7822e27f47448320fd32c1.prompt.txt",
+        "nativeOriginal": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm--perspectives-2-023bff6fa9c7.png"
+      }
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejections-125-127-history.json",
+      "history": [
+        {
+          "key": "romance--palace--choice--warm--perspectives",
+          "sourceSha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+          "generationPromptSha256": "5c94fd748f6c4bba9b9f58f7a07eaf92ca498c92dfa0ec28bd28e0320991bfc7",
+          "exactOriginalFile": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm--perspectives-2-e4b0466829b4.png",
+          "actualPriorReview": {
+            "sourceSha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+            "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+            "reviewer": "Codex direct original visual inspection: v2-production-031",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native view: elevated alcove, one closed common box between two fully visible opposed chairs with two masks; actual opposed doorways carry books versus scarf, window and doorway provide contrasting same-event views; warm flowers midground, sharp bare floor. New elevated framing differs from frontal parent."
+          },
+          "currentNegativeReview": {
+            "sourceSha256": "e4b0466829b49388d463eb23633cee94597268fa531638c15f9a951d4efa4f79",
+            "promptSha256": "a1c74ef0d8484eda49c5b09b0bdba1aa6b738248ade27b079d6bfbd2103cc7f4",
+            "reviewer": "Codex direct OLD exact/native parent audit during125",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": false,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "FAIL OLD exact request/full native reopened: actual common BOX/MASK2/two full opposed seats, warm MID flowers/two private doors and OWN BOOK/SCARF alternative stands are present, but right primary seat about62-78% and entire private SCARF door/stand about77-100% hidden by controls60.3. Actual request asks side WINDOW but center view is OPEN balcony with no glazing; no actual glazed side window distinguishable. No retro imposed perpendicular wall corner/left40/new count. Functional candle/BOX latches not glyph."
+            ],
+            "notes": "FAIL OLD exact request/full native reopened: actual common BOX/MASK2/two full opposed seats, warm MID flowers/two private doors and OWN BOOK/SCARF alternative stands are present, but right primary seat about62-78% and entire private SCARF door/stand about77-100% hidden by controls60.3. Actual request asks side WINDOW but center view is OPEN balcony with no glazing; no actual glazed side window distinguishable. No retro imposed perpendicular wall corner/left40/new count. Functional candle/BOX latches not glyph."
+          }
+        },
+        {
+          "key": "romance--palace--choice--secret--single",
+          "sourceSha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+          "generationPromptSha256": "338ddc97f03982a293527b28ae4263dd8c4004320cf4297bd713a119602ab5cb",
+          "exactOriginalFile": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--single-1-c522802ec836.png",
+          "actualPriorReview": {
+            "sourceSha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+            "promptSha256": "4caedff62d6106cac3fccf3faf4ad89f4d01ef06bc0407ba5e9387060b4d1155",
+            "reviewer": "Codex direct original visual inspection: v2-production-030",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Native original opened: one full opposed empty red/blue chair pair around common closed box and two masks, continuous private moonlit palace passage, opposing actual doors with book/scarf alternatives. Secret night/hard shadows, no heraldry/text/people/blur; new intimate passage."
+          },
+          "currentNegativeReview": {
+            "sourceSha256": "c522802ec836ef84e656d9aef39c1b44d7d3488d714cb241aa0e5c5696ead10d",
+            "promptSha256": "4caedff62d6106cac3fccf3faf4ad89f4d01ef06bc0407ba5e9387060b4d1155",
+            "reviewer": "Codex direct OLD exact/native parent audit during125",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": false,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "FAIL OLD exact request/full native reopened: right primary back and seat about62-77%, entire right private SCARF door/stand about89-100% hidden by actual controls60.3. Actual OLD mood explicitly partly concealed keepsake but common plain BOX fully exposed. No retro requirement for specific gray cloth color; original concealment requirement itself missing. Two masks/full paired places/two private doors and OWN BOOK SCARF stands/moonlit/native otherwise; no banner/glyph present."
+            ],
+            "notes": "FAIL OLD exact request/full native reopened: right primary back and seat about62-77%, entire right private SCARF door/stand about89-100% hidden by actual controls60.3. Actual OLD mood explicitly partly concealed keepsake but common plain BOX fully exposed. No retro requirement for specific gray cloth color; original concealment requirement itself missing. Two masks/full paired places/two private doors and OWN BOOK SCARF stands/moonlit/native otherwise; no banner/glyph present."
+          }
+        },
+        {
+          "key": "romance--palace--choice--secret--routes",
+          "sourceSha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+          "generationPromptSha256": "7425e925045a0cc3a66c299366dc0952a799f537bf90e12b6683a090b286ae2c",
+          "exactOriginalFile": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret--routes-2-0725b3a2166c.png",
+          "actualPriorReview": {
+            "sourceSha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+            "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+            "reviewer": "Codex direct original visual inspection: v2-production-031",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native view: night confined palace, real fork leads to three separate paired vacant nooks with varied closed box/pitcher arrangements; masks remain near and actual opposing private doors have closed books versus folded scarf. Hard moon-shadow clusters and no humans/writing. Branched architecture differs from frontal pair parent."
+          },
+          "currentNegativeReview": {
+            "sourceSha256": "0725b3a2166c96fbadf3ebe2929a1cb1dbf4f50c98c36c389e38c67fe72562f3",
+            "promptSha256": "6e1ce6c098049c9e6731f73859d127e9ec25fcd3dfa0b3041d2c36b3cb9c9c53",
+            "reviewer": "Codex direct OLD exact/native parent audit before127",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": false,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "FAIL OLD exact/full native reopened: THREE rear paired nooks plus extra near MASK/CANDLE paired nook produce FOUR primary nooks/EIGHT seats, whereas actual OLD request asks THREE paired nooks. Entire right rear pair about69-84% and private SCARF doorway/stand about85-100% hidden by controls60.3. Actual native center BOX gold emblem and left CLOSED book gold rosette cannot confidently certify as functional hardware under exact plain/emblem/glyph ban. Secret night/real Y/actual BOOK versus SCARF threshold alternatives native otherwise; no retro forced round mugs/color/left40/GRAY drape. Concealment judged only actual old partly-concealed requirement, not newly prescribed cloth color."
+            ],
+            "notes": "FAIL OLD exact/full native reopened: THREE rear paired nooks plus extra near MASK/CANDLE paired nook produce FOUR primary nooks/EIGHT seats, whereas actual OLD request asks THREE paired nooks. Entire right rear pair about69-84% and private SCARF doorway/stand about85-100% hidden by controls60.3. Actual native center BOX gold emblem and left CLOSED book gold rosette cannot confidently certify as functional hardware under exact plain/emblem/glyph ban. Secret night/real Y/actual BOOK versus SCARF threshold alternatives native otherwise; no retro forced round mugs/color/left40/GRAY drape. Concealment judged only actual old partly-concealed requirement, not newly prescribed cloth color."
+          }
+        }
+      ]
+    },
+    {
+      "file": "qa-runs/harnesses/interview-scene-bank/old-parent-rejections-136-history.json",
+      "history": [
+        {
+          "key": "romance--town--talk--secret--single",
+          "candidateBefore": {
+            "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-2-8286421b8522.png",
+            "sha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+            "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+            "generationPromptSha256": "60badff462885f4b95302d55365069dbcd6928cc10c422cf38d407e69fcb77a0",
+            "attempt": 2,
+            "review": {
+              "sourceSha256": "8286421b85225b537bde48b7b0864e2e7c346315aa3061baa08296840879124b",
+              "promptSha256": "ffca57317dea6d10667aea0d8e53f69f9cee4d7a1d461f3150ce2a03f9ea6eda",
+              "reviewer": "Codex direct original visual inspection: v2-production-032",
+              "checks": {
+                "pixelArt": true,
+                "composition": true,
+                "allChoices": true,
+                "latestChoice": true,
+                "identityUnset": true,
+                "noText": true,
+                "distinctShot": true
+              },
+              "findings": [],
+              "notes": "Native original: genuinely inside private rural house at night; fully visible facing empty seats around one closed box partly concealed by cloth, narrow door to neighbor gates/continuous private passage and side window; distinct hard moon-shadow bands, sparse lamplight. Fresh lateral interior staging replaces outdoor parent camera."
+            },
+            "gate": {
+              "ok": true,
+              "width": 1672,
+              "height": 941,
+              "colors": 180212,
+              "findings": []
+            }
+          },
+          "exactGenerationRequest": "qa-runs/harnesses/interview-scene-bank/60badff462885f4b95302d55365069dbcd6928cc10c422cf38d407e69fcb77a0.prompt.txt",
+          "nativeOriginal": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--single-2-8286421b8522.png"
+        },
+        {
+          "key": "romance--town--talk--secret--routes",
+          "candidateBefore": {
+            "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-2-c902af7b07bb.png",
+            "sha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+            "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+            "generationPromptSha256": "c4581d2fbb52bc084caed3835f0ab1e75e9596d1277616fc5b71f57c91cc9f9f",
+            "attempt": 2,
+            "review": {
+              "sourceSha256": "c902af7b07bb715abe5659416bcebcb3b4dc49e881222131f4f704f8969682a2",
+              "promptSha256": "c998ac78d35a0c9b4b5468a47d73ffff08aa25de07c40c56111b84de7344513f",
+              "reviewer": "Codex direct original visual inspection: v2-production-032",
+              "checks": {
+                "pixelArt": true,
+                "composition": true,
+                "allChoices": true,
+                "latestChoice": true,
+                "identityUnset": true,
+                "noText": true,
+                "distinctShot": true
+              },
+              "findings": [],
+              "notes": "Native original: continuous confined night house hall branches toward three distinct paired empty dialogue nooks with different closed-box/cup/flower preparations; near keep partly hidden by cloth. Neighbor houses through narrow windows, hard moon-shadow bands, new forked interior camera; no humans or writing."
+            },
+            "gate": {
+              "ok": true,
+              "width": 1672,
+              "height": 941,
+              "colors": 191515,
+              "findings": []
+            }
+          },
+          "exactGenerationRequest": "qa-runs/harnesses/interview-scene-bank/c4581d2fbb52bc084caed3835f0ab1e75e9596d1277616fc5b71f57c91cc9f9f.prompt.txt",
+          "nativeOriginal": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret--routes-2-c902af7b07bb.png"
+        }
+      ]
+    }
+  ]
+}

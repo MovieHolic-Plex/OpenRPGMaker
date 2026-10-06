@@ -1,0 +1,18 @@
+{
+  "scope": "Root directly opened all three selected 605 production interview screenshots; actual selected paths only, not all-published605/full app boot/AI handoff",
+  "published": 605,
+  "paths": 3,
+  "clicks": 18,
+  "generatedRequests": 0,
+  "passed": true,
+  "rootViewedScreenshots": [
+    "verify-shots/interview-scene-bank-v2/selected-romance--palace--choice--bittersweet--single--short.png",
+    "verify-shots/interview-scene-bank-v2/selected-romance--palace--choice--warm--routes--short.png",
+    "verify-shots/interview-scene-bank-v2/selected-romance--palace--choice--bittersweet--perspectives--episode.png"
+  ],
+  "notes": [
+    "All three selected settled backgrounds expose their paired seating, selected objects, and appropriate closure/event before actual right panel. Bottom100px is isolated test-host area, not product fullscreen evidence. Left production caption overlaps a portion of near chair details in route and perspective scenes; do not claim zero overlay.",
+    "Latest complete bank click audit remains the separate594 snapshot. Town talk warm route old current source has pending negative visual review and will be withdrawn before next build.605 is a frozen technical checkpoint, not a claim all current art passed a new root visual audit."
+  ],
+  "timeUtc": "2026-10-06T03:59:49.763054+00:00"
+}

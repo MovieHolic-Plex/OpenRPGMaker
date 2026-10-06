@@ -1,0 +1,133 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 605,
+  "targets": [
+    "romance--palace--choice--warm--routes--short",
+    "romance--palace--choice--bittersweet--single--short",
+    "romance--palace--choice--bittersweet--perspectives--episode"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "romance--palace--choice--warm--routes--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 39.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 21.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--choice",
+          "ms": 13.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice-53dc287a8293.png"
+        },
+        {
+          "key": "romance--palace--choice--warm",
+          "ms": 30,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--warm-aad9bca07853.png"
+        },
+        {
+          "key": "romance--palace--choice--warm--routes",
+          "ms": 25,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--warm--routes-9123bd355291.png"
+        },
+        {
+          "key": "romance--palace--choice--warm--routes--short",
+          "ms": 18.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--warm--routes--short-526b7d18d99b.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--palace--choice--bittersweet--single--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 16.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 17,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--choice",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice-53dc287a8293.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet",
+          "ms": 35.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-ca0155c4c05d.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet--single",
+          "ms": 18.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--single-3f705246913b.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet--single--short",
+          "ms": 14.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--single--short-6c034cfb3a6f.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--palace--choice--bittersweet--perspectives--episode",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 17.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 9.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--choice",
+          "ms": 22,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice-53dc287a8293.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet",
+          "ms": 42.40000009536743,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-ca0155c4c05d.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet--perspectives",
+          "ms": 13,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--perspectives-95f1a1a42b6a.png"
+        },
+        {
+          "key": "romance--palace--choice--bittersweet--perspectives--episode",
+          "ms": 16.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--choice--bittersweet--perspectives--episode-e7b15fd38e03.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

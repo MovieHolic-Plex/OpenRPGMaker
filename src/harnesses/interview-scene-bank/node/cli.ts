@@ -132,7 +132,11 @@ export async function run(argv: string[]): Promise<number> {
       const requests = resolve(dataDir, 'requests'); mkdirSync(requests, { recursive: true });
       const scenes: Record<string, { url: string; sha256: string; promptSha256: string }> = {};
       const hashes = new Set<string>();
-      for (const spec of plan) if (approved(spec.key)) {
+      const approvedKeys = new Set(plan.filter(spec => approved(spec.key)).map(spec => spec.key));
+      // A rejected earlier answer must not leave an unreachable approved child in the app.
+      const reachable = (key: string) => key.split('--').every((_, index, parts) =>
+        approvedKeys.has(parts.slice(0, index + 1).join('--')));
+      for (const spec of plan) if (reachable(spec.key)) {
         const c = latest(spec.key)!;
         // Recheck bytes at publication, never trust an old gate receipt.
         const source = sourceFile(spec.key, c);

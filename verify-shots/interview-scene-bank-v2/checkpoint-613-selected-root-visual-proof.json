@@ -1,0 +1,19 @@
+{
+  "scope": "Six selected published paths only; root opened all six settled production-dialog screenshots. No full app boot or AI handoff claim. Thin outer chair rim and left caption overlap are visible; no whole primary chair back/seat or required doorway/view concealed by right controls.",
+  "published": 613,
+  "paths": 6,
+  "actualClicks": 36,
+  "errors": [],
+  "generatedRequests": 0,
+  "rootScreenshotFiles": [
+    "selected-romance--palace--choice--secret--routes--short.png",
+    "selected-romance--palace--choice--bittersweet--routes--short.png",
+    "selected-romance--palace--choice--bittersweet--perspectives--short.png",
+    "selected-romance--town--talk--warm--routes--episode.png",
+    "selected-romance--town--talk--warm--perspectives--scene.png",
+    "selected-romance--town--talk--warm--perspectives--episode.png"
+  ],
+  "rootViewed": true,
+  "manifestSha256": "73abbf95855c90edc50b850996efceaa388c74127cd3f3f94e1fa2dc534c1bba",
+  "completeWholePlan": false
+}
