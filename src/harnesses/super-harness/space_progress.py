@@ -12,6 +12,7 @@ import sqlite3
 import time
 
 import activity
+import actor_progress
 import art_execution
 import gates
 import sh
@@ -206,6 +207,7 @@ def describe(c, item):
         imageNote=image_note,
         native=progress['counts'], nativeAvailable=progress['available'], nativeOutputAgeSeconds=progress['outputAgeSeconds'],
         layoutVerdict=fresh_verdict, missing=[g.get('what') or g.get('id') for g in gaps][:12], missingCount=len(gaps),
+        actorActions=actor_progress.snapshot(sh.DATA, cid),
         events=activity.events(cid), updated=time.time())
 
 
