@@ -834,3 +834,8 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - `terrainLandingRecovery.ts` recovers only a player footprint whose originally passable authored floor was made solid by `session.mapOverrides`. Completed `changeTile` events call it once after all commands; save restoration calls it after session reconciliation. Vehicles, explicit through routes, intentional authored wall starts, and still-passable enclosed rooms are preserved. Candidate floors are local (radius 8), respect active blocking events and footprint passage, and need an exit. Device flags and changed tiles are never undone. No safe candidate means no relocation. Correct device authoring still keeps the operator outside its changed cells; the campaign pivot is now (8,17).
 - `showBattleAdmissionError` marks only `BATTLE_MONSTER_PARTY_EMPTY` overlays as recoverable. Restoring a real party refresh clears that marked error; unrelated errors persist. Applying a new loaded session clears the prior session's transient overlay. Event, wild, field-spawn, and scheduled battles share this presentation.
 - Scene simulation intentionally does not use terrain recovery. It must expose an unsafe authored operator position; shipping recovery and corrected authoring are separate safeguards.
+
+이동 경로의 그래픽 교체·동료 생성/재사용에도 같은 기준점을 적용한다. 주인공은 기존에
+지원하는 288×256 업로드 charset을 사용하며, upload id와 같은 SpriteDef에 발 기준점을
+기록하면 생성/자원 변경/세션 복원에 반영한다. 다른 키의 upload alias 또는 자유 크기
+행동 시트가 주인공 걷기 자원이 되는 기능은 포함하지 않는다.

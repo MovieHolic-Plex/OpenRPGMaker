@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { validateAssets } from "@/project/io/shapeResourceFields";
+import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import type { PlaySession } from "@/project/session";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { setCharacterBaseOrigin } from "@/player/characterOrigin";
 import { applyCharacterLift, clearCharacterLift } from "@/player/characterHop";
@@ -24,6 +26,21 @@ describe("native action frame ground anchor", () => {
         texture: "native-action-sheet", frame: 47, origin: { x: 0.5, y: 31 / 40 },
       });
     }
+  });
+
+  it("resolves a native walking anchor for the player without applying it to a fallback", () => {
+    const project = createBlankProject();
+    const actor = project.database.actors[0];
+    actor.characterResourceId = "native-walk";
+    project.assets.uploaded["native-walk"] = { id: "native-walk", name: "Native walk", kind: "charset",
+      dataUrl: "data:image/png;base64,", meta: { width: 288, height: 256 } };
+    project.assets.sprites["native-walk"] = { ...action, id: "native-walk",
+      image: { type: "uploaded", id: "native-walk" }, frames: 144,
+      frameWidth: 24, frameHeight: 32, anchor: { x: 12, y: 31 } };
+    const session = { ...project.session, partyActorIds: [actor.id] } as PlaySession;
+    expect(resolvePlayerSpriteResource(project, session).origin).toEqual({ x: 0.5, y: 31 / 32 });
+    actor.characterResourceId = "missing-resource";
+    expect(resolvePlayerSpriteResource(project, session).origin).toBeUndefined();
   });
 
   it("keeps the same ground contact through scaled hop, landing and switching back to a walk sheet", () => {
