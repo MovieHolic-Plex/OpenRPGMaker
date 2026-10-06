@@ -12,6 +12,7 @@ import sqlite3
 import time
 
 import activity
+import art_execution
 import gates
 import sh
 import store
@@ -52,7 +53,8 @@ def native(cid):
         if request.get('harness') == 'interior-props':
             data_dir = local(root, request['data'])
             seed = sh.read_json(data_dir / 'seed.json', {}) or {}
-            content = local(root, seed.get('contentRoot', '.'))
+            content = ((art_execution.prop_content_root(root, request) or root)
+                       if request.get('layout') else local(root, seed.get('contentRoot', '.')))
             database = data_dir / 'harness.sqlite'
             with sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=1) as db:
                 db.row_factory = sqlite3.Row

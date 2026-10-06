@@ -10,6 +10,16 @@ import subprocess
 import sys
 
 
+def prop_content_root(root, request):
+    """Resolve the same approved content directory for execution and observation."""
+    import art_layout
+    layout = json.loads(art_layout.verified(root, request['layout']).read_text())
+    roots = {art_layout.verified(root, ref).parents[3] for ref in layout['sources']
+             if ref['path'].endswith('/tiledata/hand-interior/new/items.json')}
+    if len(roots) > 1: raise ValueError('여러 소품 콘텐츠 루트가 섞인 주문서')
+    return next(iter(roots)) if roots else None
+
+
 def prepare(root, request, resume=False):
     root = Path(root).resolve()
     if not isinstance(request, dict):
@@ -48,12 +58,8 @@ def prepare(root, request, resume=False):
         env['PROP_HARNESS_CODEX_BIN'] = cli
         # Prepared content can live below art-output. Resolve its approved seed,
         # never inherit the unrelated global prop picker's content directory.
-        import art_layout
-        layout = json.loads(art_layout.verified(root, request['layout']).read_text())
-        roots = {art_layout.verified(root, ref).parents[3] for ref in layout['sources']
-                 if ref['path'].endswith('/tiledata/hand-interior/new/items.json')}
-        if len(roots) > 1: raise ValueError('여러 소품 콘텐츠 루트가 섞인 주문서')
-        if roots: env['PROP_HARNESS_CONTENT_ROOT'] = str(next(iter(roots)))
+        content_root = prop_content_root(root, request)
+        if content_root: env['PROP_HARNESS_CONTENT_ROOT'] = str(content_root)
         command = ['src/harnesses/interior-props/harness.py', 'pool']
     elif harness == 'modern-chipset':
         round_id = request.get('round')

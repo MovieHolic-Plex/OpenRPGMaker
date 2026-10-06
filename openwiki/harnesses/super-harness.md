@@ -885,3 +885,8 @@ stepped 계단·시점·윗면 측정의 슬롯별 위치를 명시한다. 기�
 production의 topMin>0 슬롯은 깊이1칸이라도 side_elevation을 실제 그림에 근거한
 boolean으로 기록한다. 일반 단일 기물의 null 예외와 섞지 않는다. 지팡이 가게 문 4슬롯이
 독립 PASS인데 null로 기록되어 native 검사에서 일괄 반려되던 형식 충돌을 방지한다.
+
+진행 화면의 native PNG는 `art_execution.prop_content_root`로 실행기와 동일한
+승인 layout.sources의 items.json 콘텐츠 경로를 읽는다. seed.contentRoot가 없는
+새 격리 묶음을 워크트리 루트로 잘못 돌려 옛 hN-A.png를 보여주지 않는다.
+legacy layout 없는 관찰만 이전 seed 경로를 사용하며 시각 미리보기로 게이트를 대체하지 않는다.
