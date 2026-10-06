@@ -1,53 +1,74 @@
 {
  "stage": "school",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 6,
- "seconds": 118,
- "focus": "小学校 교정 예제 맵(68×48)과 교정 키트 33종 — 6회차. 5회차 major(「30」 두 개가 길 가운데에 같은 높이로 걸침)를 고쳤다: jp-mark-30-e/-w 를 차선 안에 들어가는 좁은 글자로 다시 그리고 키트에 側溝·흰 선을 넣어, 동쪽행은 위 두 줄 y44~45, 서쪽행은 아래 두 줄 y46~47 에 찍는다(sw 크롭). 규칙 문구 좌표를 코드와 맞췄다(수영장 길 y20~21, 입구 (51,19)(52,19)). 체육관 뒤까지 생울타리를 이었다. 빈칸: 바탕 = 교정 흙 A·B·C 만, 1~3층만, 트랙 사각은 분모 제외, 상한 0.4 — 보고 0.397, 건너뛴 창 수를 report.emptiness.skippedWindows 로 보고. 축척: 교사·트랙은 의도된 압축 축척, 수영장은 실제 25m.",
+ "rounds": 8,
+ "seconds": 137,
+ "focus": "小学校 교정 예제 맵(68×48) — 8회차. 7회차는 통과(blocker·major 0, minor 6)했다. 그 뒤 kitmap.mjs 에만 덧붙이는 변경이 있었다: finish() 가 events·transit 옵션을 받고(기본 [] / 없음), 2층 오토타일 선 도우미 groupLineL2 를 더했다(지하철역 맵용). 학교 맵 출력(school.map.json·report)은 바이트 단위로 같다. 그림·school.mjs·street_hand.py 는 7회차와 같다. 이 변경이 학교 맵 검사·생성을 깨지 않는지 본다.",
  "files": {
-  "verify-shots/jp-city/school-1x.png": "8afa79044abca2b752ac4c63659e3e4d4fba65f4908a881955f8c9b8e1c70ebb",
+  "verify-shots/jp-city/school-1x.png": "c5b41d691f578249d6024de79eb8ed9b5b36a003f98b3432e64ceeef02197113",
   "verify-shots/jp-city/school-crop-nw.png": "b17a10d52035fb106da50e11b6a1d320eaa645dc422499af190ad4113e6da827",
   "verify-shots/jp-city/school-crop-ne.png": "31b5d7a98e4432a604f22e6708926ac4717067f394cf32d202899c7368ca1b21",
-  "verify-shots/jp-city/school-crop-sw.png": "fbd212b23f8589e29bb3b6f97991065470de15dd632d9037efb4086964d5b6c5",
-  "verify-shots/jp-city/school-crop-e.png": "32cd14791715ff3a70aec45f8c7c4b4ada79c582c4f42e20e89d534c703e0ca9",
+  "verify-shots/jp-city/school-crop-sw.png": "f68fc6cd6c97c418ed969e7aca0fa5ebfb778f2c96b5e5346adc98e9da68452d",
+  "verify-shots/jp-city/school-crop-e.png": "650695d962f07a241815ded830a9f073a38a4709a700e9e12da86266575e5f77",
   "tiledata/jp-city/blocks/school/_all-x2.png": "1c557fb610a643c9e31bffcf8f4d7915ad5bc47e094fe4eecde5ad04b939869a",
-  "scripts/content/jp-city/maps/out/school.report.json": "0773db18af4cf83f8d046a3e7f977a5a103ee64c7657f7d9bc6e7e232f58ef46",
-  "scripts/content/jp-city/maps/school.mjs": "3b977f4ebd276744b355cc16a582d2cf7b2ae6f20d45d1a9d440df208ded2675",
-  "scripts/content/jp-city/maps/kitmap.mjs": "6b5ff331cb8a38915e8d7d1c228ce7be1f0e95f140865b7b0e896a76ea047d0d",
-  "scripts/content/jp-city/blocks/street_hand.py": "76c8bd4ec896645d5c8024d2d2e36a96ad7b9cff4616c0484bde8fb3367fdc85",
+  "scripts/content/jp-city/maps/out/school.report.json": "d4d6f7206563eb11a740b9957d686a0a217244f17f82e6124aee605ae1a9f774",
+  "scripts/content/jp-city/maps/school.mjs": "0f5e89034f433ba8b1749f017ffe4f950966f51d630d770456051e257d819ec0",
+  "scripts/content/jp-city/maps/kitmap.mjs": "d5f7c0f47a8a5e8b23486877dfc08685972f606098b2e26d06d9fd25ee909b29",
+  "scripts/content/jp-city/blocks/street_hand.py": "9d22922c42118b169bbf086b8cb8d072e81ba7c5199b28c3eb24826379c4d1e7",
   "tiledata/jp-city/research/03-building-types-dimensions.md": "60696e94efc6bae856734151e4bd06adc0842942e27655167cf6b32d956265ec"
  },
  "findings": [
   {
-   "severity": "major",
+   "severity": "minor",
    "file": "scripts/content/jp-city/maps/school.mjs",
-   "where": "43행 hedge-gym, 그림 school-1x.png x≈28·x≈37 칸, y1~2 (px≈452~462, 596~608 / y16~48)",
-   "problem": "체육관 뒤에 생울타리를 이었다고 했지만, 나무가 차지한 칸을 빼는 필터(!m.own3) 때문에 1칸 폭 세로 조각 두 개만 남았다. 줄로 이어지지 않고, 담쟁이나 오토타일 결함처럼 보인다. 설명과 그림이 다르다.",
-   "fix": "나무 세 그루(24·29·33, y1)를 한 줄 아래(y3 이상)로 내리고 울타리를 y1~2에 23~36 연속으로 깔거나, 울타리를 나무 그늘보다 아래 층에 깔아 나무 사이로 이어 보이게 한다. 이을 수 없다면 고립 조각을 지우고 설명에서 '체육관 뒤까지'를 뺀다. 고립 1칸 폭 울타리 조각을 잡는 검사(연속 길이 ≥3)도 보고서에 더한다."
+   "where": "동남 자전거 보관소 주변 철쭉 (60,39)/(63,39)/(59,42)",
+   "problem": "철쭉 덩이가 보관소 지붕 처마 줄 y41에 걸치고, 외톨이 철쭉이 기둥에 닿아 잎과 지붕이 겹쳐 보인다",
+   "fix": "덩이를 y≤38로 올리거나 보관소 좌우 바깥 x≤57 / x≥66으로 옮기고, (59,42)는 지운다. 보관소 사각형 ±1칸을 철쭉 금지 구역으로 둔다"
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/maps/out/school.report.json",
-   "where": "emptiness.worst17x13 0.397 / max 0.4 / skippedWindows 314",
-   "problem": "상한에 0.003 차이로 붙어 있고, 전체 창 1,872개 중 314개를 건너뛴 값이다. 최악 창 (17,27)은 트랙 동쪽 끝 흙밭이다.",
-   "fix": "트랙 동쪽 x31~33, y20~33 흙 띠에 동선과 맞는 것(조회대·스탠드 계단 등)을 두거나, 그 띠만큼 트랙 키트 폭을 넓혀 여유를 0.35 아래로 만든다."
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "남쪽 담 밑 y42, x46/47/54/59",
+   "problem": "낱개 철쭉 4개가 흩뿌린 점으로 읽혀 화단의 의도가 없다",
+   "fix": "2~3개짜리 덩이 두 곳으로 묶거나, 담을 따라 이어지는 생울타리(jp-hedge) 한 줄로 바꾼다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "SOUTH_TREES x39–55, 공 그물 x2–26, x≈37 철쭉 줄",
+   "problem": "나무와 그물이 같은 4칸 간격으로 반복되고, 철쭉이 일렬로 서서 기계 배치로 읽힌다",
+   "fix": "나무 간격을 3/4/5칸으로 섞고 한 그루를 빼서 벤치를 둔다. 그물은 5개로 줄여 간격을 비대칭으로 하고, 철쭉 줄은 2+1로 끊는다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "hedge-north x1–22, y1–2",
+   "problem": "생울타리가 같은 지그재그 무늬를 끝까지 되풀이한다",
+   "fix": "가운데에 끊김(교사 뒤 통로) 1곳을 두거나, 높이가 다른 변형·수목 한 그루를 섞어 주기를 깬다"
   },
   {
    "severity": "minor",
    "file": "scripts/content/jp-city/blocks/street_hand.py",
-   "where": "jp-mark-30-e / jp-mark-30-w 의 「3」 글자",
-   "problem": "「3」 가운데 획이 1~2px짜리 돌기뿐이라 글자가 ⊔나 괄호로 읽힌다.",
-   "fix": "가운데 획을 글자 폭의 절반쯤(3~4px)으로 늘려 「3」으로 읽히게 한다."
+   "where": "_draw30n (맵 (8,44)/(52,46))",
+   "problem": "「3」이 괄호처럼 읽히고 숫자 비율이 약하다. 조사 기준인 세로로 아주 길쭉한 주황 「30」에 못 미친다",
+   "fix": "「3」의 가운데 가로획을 오른쪽 끝까지 잇고, 세로 높이를 폭의 2.5배 이상으로 늘린다. 「0」은 속을 비운 길쭉한 타원으로 한다"
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/blocks/school/_all-x2.png",
-   "where": "jp-goal 좌·우 (시트 중단 700~880px, 맵 x≈6, x≈26, y≈25)",
-   "problem": "골대 옆면이 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.",
-   "fix": "정면 3/4 규약에 맞게 골대 옆틀을 수직으로 세우고, 깊이는 윗면 크로스바 띠로만 보이게 한다."
+   "file": "scripts/content/jp-city/maps/school.mjs",
+   "where": "emptyIgnore 트랙 사각형 x2–31, y19–33",
+   "problem": "가장 빈 창 0.397 @[17,27]이 제외 사각형 안에 있어, 운동장 북쪽 바깥 띠가 빈칸 검사에서 보이지 않는다",
+   "fix": "제외 사각형을 트랙 타원 외곽(라인 바깥 1칸)으로 좁히고 다시 검사한다. 넘치면 트랙 북쪽 띠에 조회대·라인기 같은 운동장 소품 1~2개를 둔다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/kitmap.mjs",
+   "where": "groupLineL2 (finish 위 새 함수)",
+   "problem": "L2 덮어쓰기 검사와 fail이 없고, 맵 밖 칸을 말없이 버린다. 그룹별 칸을 누적하지 않아 여러 번 호출하면 이음매 모양이 틀릴 수 있고, report.autotiles 모양 검사(maskAudit)도 받지 않는다. 학교 맵은 쓰지 않으나 역 맵 jp-tactile 오류를 리포트가 못 잡는다",
+   "fix": "groupLine과 같게 만든다: L2[idx]가 이미 차 있으면 fail(), 맵 밖 칸도 fail(). lineCellsL2[gid]에 누적한 뒤 전체로 shapeGroup하고, report.autotiles에 L2 그룹 maskAudit를 추가한다"
   }
  ],
- "report": "## school 6회차 검수: 불합격\n\n**지난 회차 major(「30」 표시)는 고쳐졌다.** 1배 그림을 8배로 키워 칸 단위로 확인했다.\n- 동쪽행 `jp-mark-30-e`(x8)는 위 차선 안에 있다. 그림 기준 y≈719~734px, 길 중앙(≈736px)보다 위다.\n- 서쪽행 `jp-mark-30-w`(x52)는 아래 차선 안에 있다. y≈737~752px.\n- 좌측통행 기준으로 운전자 쪽에서 읽히는 방향도 맞다. 동쪽행은 「3」이 북쪽, 서쪽행은 「3」이 남쪽에 온다. 숫자는 진행 방향으로 길쭉하게 늘어나 있다.\n- 규칙 문구 좌표(수영장 앞 포장 y20~21, 탈의동 입구 (51,19)(52,19))도 그림과 맞다.\n\n**새 major가 하나 있다. 체육관 뒤 생울타리가 실제로는 이어지지 않았다.** 「체육관 뒤까지 생울타리를 이었다」는 설명과 그림이 다르다.\n- `school.mjs:43`은 `!m.own3[...]`로 나무가 차지한 칸을 뺀다.\n- 그 결과 남은 것은 x≈28과 x≈37(y1~2)의 1칸 폭 세로 조각 두 개뿐이다. 그 사이에는 벚나무·느티나무 그늘 아래 맨흙만 있다.\n- 이 조각들은 담쟁이나 오토타일 오류처럼 보이고, 울타리로 읽히지 않는다.\n- `autotiles.jp-hedge.mismatch: 0`은 오토타일 모양만 맞는지 본 수치라서 이 결함을 잡지 못한다.\n\n**minor는 세 가지다.**\n- **빈칸 비율:** 0.397은 상한 0.4에 거의 붙어 있다. 그런데 17×13 창 1,872개 중 314개를 건너뛰고 낸 값이다.\n- **「3」 글자:** 가운데 획이 1~2px짜리 돌기뿐이라 숫자보다 괄호(⊔)처럼 읽힌다.\n- **골대:** 트랙 골대 두 개(`jp-goal-*`)가 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"43행 hedge-gym, 그림 school-1x.png x≈28·x≈37 칸, y1~2 (px≈452~462, 596~608 / y16~48)\", \"problem\": \"체육관 뒤에 생울타리를 이었다고 했지만, 나무가 차지한 칸을 빼는 필터(!m.own3) 때문에 1칸 폭 세로 조각 두 개만 남았다. 줄로 이어지지 않고, 담쟁이나 오토타일 결함처럼 보인다. 설명과 그림이 다르다.\", \"fix\": \"나무 세 그루(24·29·33, y1)를 한 줄 아래(y3 이상)로 내리고 울타리를 y1~2에 23~36 연속으로 깔거나, 울타리를 나무 그늘보다 아래 층에 깔아 나무 사이로 이어 보이게 한다. 이을 수 없다면 고립 조각을 지우고 설명에서 '체육관 뒤까지'를 뺀다. 고립 1칸 폭 울타리 조각을 잡는 검사(연속 길이 ≥3)도 보고서에 더한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/school.report.json\", \"where\": \"emptiness.worst17x13 0.397 / max 0.4 / skippedWindows 314\", \"problem\": \"상한에 0.003 차이로 붙어 있고, 전체 창 1,872개 중 314개를 건너뛴 값이다. 최악 창 (17,27)은 트랙 동쪽 끝 흙밭이다.\", \"fix\": \"트랙 동쪽 x31~33, y20~33 흙 띠에 동선과 맞는 것(조회대·스탠드 계단 등)을 두거나, 그 띠만큼 트랙 키트 폭을 넓혀 여유를 0.35 아래로 만든다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/street_hand.py\", \"where\": \"jp-mark-30-e / jp-mark-30-w 의 「3」 글자\", \"problem\": \"「3」 가운데 획이 1~2px짜리 돌기뿐이라 글자가 ⊔나 괄호로 읽힌다.\", \"fix\": \"가운데 획을 글자 폭의 절반쯤(3~4px)으로 늘려 「3」으로 읽히게 한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/school/_all-x2.png\", \"where\": \"jp-goal 좌·우 (시트 중단 700~880px, 맵 x≈6, x≈26, y≈25)\", \"problem\": \"골대 옆면이 비스듬한 평행사변형으로 그려져 아이소 느낌이 약간 난다.\", \"fix\": \"정면 3/4 규약에 맞게 골대 옆틀을 수직으로 세우고, 깊이는 윗면 크로스바 띠로만 보이게 한다.\"}\n]}\n```"
+ "report": "## 판정: 학교 맵 8회차 — 통과 (blocker·major 없음, minor 7)\n\n이번 판의 변경은 `kitmap.mjs` 한 곳뿐이고, 학교 맵 결과에는 영향이 없다. 지난 판 minor 6건은 손대지 않아 그대로 남아 있다. 새 헬퍼 `groupLineL2` 에서 minor 1건이 새로 나왔다.\n\n### 학교 맵이 그대로인지 확인한 근거\n- **맵 결과물:** `out/school.map.json` 을 다시 생성했더니 지난 판과 바이트 단위로 같았다(md5 `981268cb…`).\n- **나머지 입력:** report, `school.mjs`, `street_hand.py`, 검증 그림, 관문 기록의 해시가 7회차와 같다.\n- **시트 재굽기 영향 없음:** 시트를 03:16 에 다시 구웠다. 그 시트로 다시 렌더한 그림이 `school-1x.png` 와 픽셀 단위로 같다. 그래서 그림 비교도 유효하다.\n- **학교 맵 생성에 영향 없음:** `school.mjs` 는 `groupLineL2` 도, `events`·`transit` 인자도 쓰지 않는다. `finish()` 는 `transit` 이 없으면 그 키를 아예 넣지 않는다. 학교 맵 생성 경로는 바뀌지 않았다.\n\n### 지난 판 지적 다시 확인 (모두 미수정, 그림이 같아 그대로 남음)\n1. **자전거 보관소 주변 철쭉 겹침.** 동남쪽 철쭉 덩이 (60,39)/(63,39)가 지붕 처마 줄 y41 에 걸친다. 외톨이 (59,42)도 기둥에 닿는다. 크롭 그림 `school-crop-e` 오른쪽 아래에서 지붕과 잎이 겹쳐 보인다.\n2. **y42 줄의 외톨이 철쭉.** x46/47/54/59 의 낱개 철쭉 4개가 담 밑에 흩뿌린 점으로 읽힌다.\n3. **기계적인 반복.**\n   - 남쪽 나무가 x39–55 에 4칸 간격으로 서 있다.\n   - 공 그물 7개가 x2–26 에 4칸 간격이다.\n   - x≈37 에 철쭉 4개가 일렬로 서 있다.\n4. **북쪽 생울타리.** hedge-north(x1–22, y1–2)가 같은 지그재그 무늬를 끝까지 되풀이한다.\n5. **노면 「30」.** `_draw30n` 의 「3」이 괄호처럼 읽히고, 숫자 비율도 약하다. 조사 문서 기준인 「세로로 아주 길쭉」에 못 미친다.\n6. **빈칸 검사 사각.** 가장 빈 창 17×13(0.397, 위치 [17,27])이 빈칸 검사에서 뺀 트랙 사각형 안에 있다. 그래서 운동장 북쪽 바깥 띠는 검사에서 보이지 않는다.\n\n### 새 지적\n7. **`groupLineL2` 의 안전장치 부족.** 기존 L3 헬퍼 `groupLine`·`fenceLine` 은 칸이 이미 차 있으면 `fail()` 하고, 칸을 누적해 모양 검사(maskAudit) 대상에 넣는다. `groupLineL2` 에는 이런 장치가 없다.\n   - 이미 L2 에 있는 칸을 말없이 덮어쓴다.\n   - 맵 밖 칸을 말없이 버린다.\n   - 같은 그룹을 여러 번 호출하면 칸이 누적되지 않아 이음매 모양이 틀릴 수 있다.\n   - `report.autotiles` 의 모양 검사도 받지 않는다.\n\n   지금은 역 맵(`station.mjs` 51·85행의 `jp-tactile`)만 쓰므로 학교 맵에는 해가 없다. 다만 역 맵의 점자블록 모양 오류를 리포트가 잡지 못한다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"동남 자전거 보관소 주변 철쭉 (60,39)/(63,39)/(59,42)\", \"problem\": \"철쭉 덩이가 보관소 지붕 처마 줄 y41에 걸치고, 외톨이 철쭉이 기둥에 닿아 잎과 지붕이 겹쳐 보인다\", \"fix\": \"덩이를 y≤38로 올리거나 보관소 좌우 바깥 x≤57 / x≥66으로 옮기고, (59,42)는 지운다. 보관소 사각형 ±1칸을 철쭉 금지 구역으로 둔다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"남쪽 담 밑 y42, x46/47/54/59\", \"problem\": \"낱개 철쭉 4개가 흩뿌린 점으로 읽혀 화단의 의도가 없다\", \"fix\": \"2~3개짜리 덩이 두 곳으로 묶거나, 담을 따라 이어지는 생울타리(jp-hedge) 한 줄로 바꾼다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"SOUTH_TREES x39–55, 공 그물 x2–26, x≈37 철쭉 줄\", \"problem\": \"나무와 그물이 같은 4칸 간격으로 반복되고, 철쭉이 일렬로 서서 기계 배치로 읽힌다\", \"fix\": \"나무 간격을 3/4/5칸으로 섞고 한 그루를 빼서 벤치를 둔다. 그물은 5개로 줄여 간격을 비대칭으로 하고, 철쭉 줄은 2+1로 끊는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"hedge-north x1–22, y1–2\", \"problem\": \"생울타리가 같은 지그재그 무늬를 끝까지 되풀이한다\", \"fix\": \"가운데에 끊김(교사 뒤 통로) 1곳을 두거나, 높이가 다른 변형·수목 한 그루를 섞어 주기를 깬다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/street_hand.py\", \"where\": \"_draw30n (맵 (8,44)/(52,46))\", \"problem\": \"「3」이 괄호처럼 읽히고 숫자 비율이 약하다. 조사 기준인 세로로 아주 길쭉한 주황 「30」에 못 미친다\", \"fix\": \"「3」의 가운데 가로획을 오른쪽 끝까지 잇고, 세로 높이를 폭의 2.5배 이상으로 늘린다. 「0」은 속을 비운 길쭉한 타원으로 한다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/school.mjs\", \"where\": \"emptyIgnore 트랙 사각형 x2–31, y19–33\", \"problem\": \"가장 빈 창 0.397 @[17,27]이 제외 사각형 안에 있어, 운동장 북쪽 바깥 띠가 빈칸 검사에서 보이지 않는다\", \"fix\": \"제외 사각형을 트랙 타원 외곽(라인 바깥 1칸)으로 좁히고 다시 검사한다. 넘치면 트랙 북쪽 띠에 조회대·라인기 같은 운동장 소품 1~2개를 둔다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/kitmap.mjs\", \"where\": \"groupLineL2 (finish 위 새 함수)\", \"problem\": \"L2 덮어쓰기 검사와 fail이 없고, 맵 밖 칸을 말없이 버린다. 그룹별 칸을 누적하지 않아 여러 번 호출하면 이음매 모양이 틀릴 수 있고, report.autotiles 모양 검사(maskAudit)도 받지 않는다. 학교 맵은 쓰지 않으나 역 맵 jp-tactile 오류를 리포트가 못 잡는다\", \"fix\": \"groupLine과 같게 만든다: L2[idx]가 이미 차 있으면 fail(), 맵 밖 칸도 fail(). lineCellsL2[gid]에 누적한 뒤 전체로 shapeGroup하고, report.autotiles에 L2 그룹 maskAudit를 추가한다\"}\n]}\n```"
 }

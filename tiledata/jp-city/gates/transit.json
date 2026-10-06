@@ -3,124 +3,143 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 1,
- "seconds": 236,
- "focus": "노면전차(路面電車) 궤도·안전지대 정류장 섬·가공 전차선·전주, 지하철 거리 출입구(transit_street 7종)와 지하철역 콘코스(개찰구·발매기·계단·출구 안내·역무실·기둥)·승강장(뒷벽·駅名標·선로 홈·가장자리·벤치·LED, transit_station 18종). 승강장 그림에는 이미 관문을 통과한 지하철 스프라이트를 한 번 얹어 축척을 확인했다. 실제 일본의 노면전차 정류장(安全地帯)·지하철역(自動改札·券売機·駅名標·黄色い点字ブロック·ホーム端 흰 선)다운지, 3/4 시점, 축척(사람 16×24, 칸 1m), 화풍(jp_city 기존 그림)을 본다.",
+ "rounds": 2,
+ "seconds": 368,
+ "focus": "노면전차 거리·지하철역 블록 — 2회차. 1회차 지적 반영: 가선을 궤도 행 −5(약 5.5m) 높이로, 전주는 보도에 세우고 팔을 궤도 쪽으로(pole-n 팔 남쪽·pole-s 팔 북쪽), 단면을 보도3·동행 차로3·복선(2+1+2)·서행 안전지대 섬2(동쪽 끝 導流帯·표지봉)·서행 차로3·보도3 으로, 섬 2칸·승차 띠 전체 보임, 차막이 다시 그림, 지하철 출입구 지붕 깊이 1.5칸·계단 명암, 레일 대비, 건물 줄. 역: 개찰구 양옆 ラチ 칸막이, 난간 1m, 점자 유도 블록(2층 jp-tactile 오토타일), 개찰 플랩, 평기둥, 内方線, 천장 보, 매단 역명판. 새로: 실제 예제 맵 station-concourse·station-platform(maps/station.mjs, 엔진 검사 통과)과 출하 플레이어에서 찍은 실제 런타임 화면(subway-stop.png = 승강장에 선 지하철, t0.png = 学校前 길의 차·버스). 차·버스·전차·지하철 그림 자체는 이미 탈것 관문을 통과했다.",
  "files": {
-  "tiledata/jp-city/blocks/transit_street/scene-street-x3.png": "90834cd22facf93ac7e28998c8966a6bf5deb08a3e7ae9c73f97620d1f6ac248",
-  "tiledata/jp-city/blocks/transit_street/_all-x2.png": "df89369db7ba78162073d01fc9695e84153165e07bc0cb6174b0583a263c6060",
-  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "ed8f7359d9211cece4cfeb7750117c97f51a8c848d849630eab5bb89f052bb79",
-  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "8cfe86d8324ebfc01f50df38138b175156900a887a6d8443bfcad521b2a94107",
-  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "8affd74432024e29fc7cdf4e76e2fc6b238e8026d034437a3f345eb52400be41",
-  "scripts/content/jp-city/blocks/transit_street.py": "d4c379c64a8731f51b354fa9b65cdd2eb92472c51b6a652a31ac8a0fe91e697d",
-  "scripts/content/jp-city/blocks/transit_station.py": "00f765f5f0e1a32a6f3c6c7397e75858d42fd631ed35f737a177478b6a98d90f"
+  "tiledata/jp-city/blocks/transit_street/scene-street-x3.png": "31710d2dd1281f36519231816921e904fdf3c4718cb035c90cafc21ab204ff14",
+  "tiledata/jp-city/blocks/transit_street/_all-x2.png": "b97e3e8c55add6ac625e1f52b1bf37723f4185d273d9b4774de5a6bb5b2e06d3",
+  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "3002e5c0b3233a1adf69b84bb957b5941d5d0430986f2f74c806d15cc9b583a0",
+  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "42d2599fbc58b2331b88f67914ce091d33e64eb08221d7c7a03f22cac5348da6",
+  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "bb7060723867edf3ea91ec50eb7b73a104d626beb0ff57c096c53116a0d5c283",
+  "verify-shots/jp-city/station-concourse-x3.png": "c1a2ff5780ef5b66b0ad8a48786a5b44fcbc4d5435857ebe821f5c180ea01459",
+  "verify-shots/jp-city/station-platform-x3.png": "f1a84eb4537b24f63af63ed6b8f02341515e6119ec6a8aa049f19f8312ace528",
+  "verify-shots/jp-city/transit-runtime/subway-stop.png": "25ee37727e87aee14656af077794d663362c13dfe5dd93b5633642d4c77a0027",
+  "verify-shots/jp-city/transit-runtime/t0.png": "125b8a9ea31f18e2c6a764597028b9be3d4e4add467884220de3c6ed38c27632",
+  "scripts/content/jp-city/blocks/transit_street.py": "a6ad9817238c97701d64ca91e7683c69fdf53defcc0358ec6306769facc4e6e0",
+  "scripts/content/jp-city/blocks/transit_station.py": "454781e227b8bb1b22f74b682c0852bacc89d46577f67ceb2fc99604a20cef32",
+  "scripts/content/jp-city/maps/station.mjs": "17e42965403fbe40143ae983de3cc537948dcdd78b7e3668241783ac1fdaada1"
  },
  "findings": [
   {
    "severity": "blocker",
    "file": "scripts/content/jp-city/blocks/transit_street.py",
-   "where": "tram-wire-h(WIRE_Y=22, 1x2)·tram-pole(AY=36 팔 동쪽 38px); scene-street-x3.png 가선 y≈530·전주 팔 y≈495·궤도 중심 y≈622",
-   "problem": "접촉선이 궤도 위 약 2m라 3/4에서 지면 연석·제3궤조로 읽히고, 전주 팔(약 5.5m)과 높이가 다르며, 팔이 동쪽(옆)으로 뻗어 행거가 궤도가 아닌 안전지대 섬 위에 매달린다",
-   "fix": "가선 높이를 약 5.5m(궤도 행 기준 −88px)로 통일해 전선 타일을 궤도 북쪽 5~6칸 행에 두고, 전주는 북쪽 보도에 세워 팔을 남쪽 궤도 위로 뻗게 하거나 스팬선으로 바꿔 행거를 전선 높이에 맞춘다"
+   "where": "가선(WIRE_Y, 트랙 −5행) · scene-street-x3.png y≈155–170, y≈504",
+   "problem": "가선이 바닥 위 어두운 가로선 하나라 노면 표시·연석으로 읽힌다. 선로와 이어 주는 단서(행어·스팬 와이어·그림자)가 없다",
+   "fix": "선 아래 1px 반사줄을 넣고 길에 오프셋 그림자 점선을 깐다. jp-tram-wire-hanger 와 스팬 와이어로 양쪽 기둥 팔 끝에 실제로 건다"
   },
   {
-   "severity": "major",
-   "file": "tiledata/jp-city/blocks/transit_street/scene-street-x3.png",
-   "where": "연석 y≈380 → 점선 y≈483 → 레일 y≈590",
-   "problem": "차로 하나가 약 2칸(2m)이라 자동차(5칸 길이)·버스가 다닐 수 없는 비율이다",
-   "fix": "궤도와 연석 사이 차로를 최소 3칸으로 넓히고 장면 도로 행(8..18)을 2~3행 늘린다"
+   "severity": "blocker",
+   "file": "scripts/content/jp-city/blocks/transit_street.py",
+   "where": "draw_pole pole-s 2×13 (top94 root104 tip1) · scene x≈200–215 y420–750 · _all-x2 x465–520",
+   "problem": "팔이 기둥 꼭대기보다 103px 위로 비스듬히 솟아 두 선로와 차로를 가로지른다. 휜 가로등·낚싯대로 읽힌다",
+   "fix": "기둥을 가선 행 높이까지 세우고, 팔은 꼭대기 1~2px 아래에서 수평 브래킷으로 그린다. 끝은 가선 행에 맞춘다"
   },
   {
    "severity": "major",
    "file": "scripts/content/jp-city/blocks/transit_street.py",
-   "where": "tram-stop(12x3, ISL_FRONT=36); 장면 (9,14), 레일 y≈665~점선 y≈818",
-   "problem": "안전지대 섬이 남쪽 차로를 거의 다 차지해 남은 폭이 약 2m이고, 導流帯 사선과 安全地帯 표지가 없다",
-   "fix": "섬 깊이를 2칸으로 줄이거나 도로를 넓히고, 차가 오는 쪽(좌측통행 기준 서쪽) 끝에 導流帯 사선 타일 2~3칸과 安全地帯 표지봉을 더한다"
-  },
-  {
-   "severity": "major",
-   "file": "tiledata/jp-city/blocks/transit_street/scene-street-x3.png",
-   "where": "섬 북쪽 가장자리. 노란 점자 띠가 x≈825–1005에만 보임",
-   "problem": "코드는 띠를 전체 폭에 그리지만 같은 스프라이트의 지붕·간판이 덮어 승차 모서리가 끊겨 읽힌다",
-   "fix": "승차 가장자리를 지붕 투영보다 북쪽에 두거나 지붕 깊이를 줄여 띠 전체가 보이게 한다"
+   "where": "draw_pole pole-n 2×7 (root14→tip81) · _all-x2 x395–445",
+   "problem": "팔이 아래로 기울어 땅으로 가는 지선처럼 읽힌다",
+   "fix": "수평 브래킷과 애자를 달고, 끝을 가선 행에 맞춘다"
   },
   {
    "severity": "major",
    "file": "scripts/content/jp-city/blocks/transit_street.py",
-   "where": "tram-rail-end 2x2(줄무늬 윗면 y0..21, 앞면 y22..28); scene-street-x3.png x≈1590",
-   "problem": "차막이가 평면도처럼 읽히고(앞면 7px), 도로 한가운데 장면 끝에 놓여 길이 막힌 것처럼 보인다",
-   "fix": "윗면을 4~6px로 줄이고 앞면을 16px 높이 기둥과 줄무늬 판으로 다시 그린다. 장면에서는 빼고 궤도를 화면 밖까지 잇는다"
+   "where": "render_scene 북쪽 기둥 배치 · くすり·편의점·ランドリー·ラーメン 앞",
+   "problem": "기둥이 출입문과 간판 바로 앞을 막는다",
+   "fix": "건물 사이 틈·벽면 칸 x로 옮기고 연석 1칸 안에 세운다"
   },
   {
    "severity": "major",
    "file": "scripts/content/jp-city/blocks/transit_street.py",
-   "where": "subway-entrance 4x4(지붕 윗면 y0..7, 파란 띠 y8..25, 흰 띠 y26..41); scene-street-x3.png 입구 y335 대 연석 370",
-   "problem": "지붕 윗면이 0.5칸뿐이라 사실상 정면도이고(3/4 위반), 안쪽 계단이 셔터처럼 읽히며, 입구가 연석에서 1칸도 안 떨어져 도로를 향한다",
-   "fix": "지붕을 1.5~2칸 깊이(윗면+처마)로 다시 그리고, 계단은 아래로 갈수록 어두운 디딤판과 밝은 앞 모서리로 그린다. 입구를 보도 안쪽으로 2칸 이상 물리거나 동·서로 돌린다"
+   "where": "render_scene 북쪽 연석 192px → 실선 228px, 점선 연석+6px",
+   "problem": "동쪽 방향 차로가 36px(약 2.25칸=2.25m)이다. 점선이 연석에 붙어 의미가 없다. 1회차 미해결",
+   "fix": "lane_e 를 3칸 이상으로 늘리고 점선을 빼거나 路側帯 실선으로 바꾼다"
   },
   {
    "severity": "major",
    "file": "tiledata/jp-city/blocks/transit_street/scene-street-x3.png",
-   "where": "북쪽 보도(깊이 약 7.7칸), 편의점·지하철 입구",
-   "problem": "보도가 넓고 텅 비었고, 편의점과 입구가 포장면 한가운데 떠 있어 뒤쪽에도 빈 포장이 깔린다. 편의점 지붕 깊이가 약 2m라 승인 건물들과 화풍이 어긋난다",
-   "fix": "보도를 2~3칸으로 줄이고 건물을 보도 뒤 경계에 붙인 뒤 그 뒤를 건물·벽으로 채운다. 편의점은 승인된 상가 키트 비율로 맞춘다"
+   "where": "북쪽 띠 전체(건물 뒤·사이)",
+   "problem": "빈 포장 위에 건물이 떠 있고 편의점 지붕 윗면이 약 2칸이다. 1회차 미해결",
+   "fix": "건물 몸체를 장면 끝까지 채우거나 뒷담을 둔다. 틈에는 실외기·자판기·자전거를 넣는다. 편의점 지붕 윗면은 1칸 이하로"
   },
   {
    "severity": "major",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png",
-   "where": "개찰구 줄 양 끝. 개찰구와 기둥 사이 약 2칸 빈 바닥",
-   "problem": "subway-gates 규칙(양옆은 벽이나 울타리로 막는다)을 지키지 않아 표 없이 옆으로 지나갈 수 있다",
-   "fix": "ラチ 울타리 프롭(1x1, 막힌 칸)을 만들어 개찰구 양옆을 벽까지 막거나 개찰구를 7대로 늘린다"
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "콘코스 tactile (13,4)→(13,10), (6,5)→(12,5)",
+   "problem": "승강장 계단 (12–13,13)까지 3행이 끊긴다. 출구 계단 앞에 점형 블록이 없다. 매표기 앞이 아니라 1칸 아래에서 끝나고 역무실 가지가 없다",
+   "fix": "(13,10)→(13,12)를 잇고 계단 입구 앞 점형 2칸을 둔다. (12–13,4)를 점형으로 바꾼다. 매표기 앞 4행 가지와 (13,5)→(19,5) 역무실 가지를 추가한다"
   },
   {
-   "severity": "major",
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/transit_street/scene-street-x3.png",
+   "where": "섬식 정류장 y510–550",
+   "problem": "난간이 노란 점자 띠 앞에 겹친다",
+   "fix": "난간은 섬 바깥 가장자리에만, 점자 띠는 안쪽에 둔다"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/transit_street/jp-tram-rail-end.png",
+   "where": "_all-x2 x130–190",
+   "problem": "여전히 평면도·정면 블록이고 장면에서 빠져 실제 사용 모습이 검증되지 않았다",
+   "fix": "윗면(침목·레일 끝)과 남면(노랑·검정 앞판)을 3/4로 나눠 그린다. 예제 장면에 넣는다"
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/blocks/transit_street/jp-subway-entrance.png",
+   "where": "옆벽 y46–67 (_all-x2 x900–1018)",
+   "problem": "옆벽에 윗면이 거의 없어 지붕과 시점이 어긋난다",
+   "fix": "옆벽 위에 2~3px 밝은 윗면 띠를 남북으로 넣는다"
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "승강장 tactile (24,7)→(24,11)+(23,11) · subway-stop.png x370–445 y590–615",
+   "problem": "유도선이 계단 개구부(21–22)가 아니라 동남 모서리 옆에서 끝난다",
+   "fix": "11행 가지를 (21,11)까지 늘리고 (21–22,11)을 점형 블록으로"
+  },
+  {
+   "severity": "minor",
    "file": "scripts/content/jp-city/blocks/transit_station.py",
-   "where": "stair_sides의 box(c, x0+1, 5, 14, 42, OL); scene-concourse-x3.png stairs-down",
-   "problem": "계단 둘레 난간벽 높이가 약 42px(≈2.6m)라 1m 난간이 아니라 칸막이벽으로 보인다",
-   "fix": "앞면을 16px로 낮추고 윗면은 3~4px 콘크리트와 손스침으로 그린다. 계단 구멍 북쪽 끝도 같은 난간으로 막는다"
+   "where": "edge_strip 95행 c.HL(x0, y0+15, w, K('kii',1))",
+   "problem": "内方線이 1px라 x3에서도 거의 안 보인다",
+   "fix": "2px로 늘리고 아래 1px 어두운 그늘을 넣는다"
   },
   {
-   "severity": "major",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png",
-   "where": "콘코스 바닥 전체",
-   "problem": "일본 역에 반드시 있는 노란 誘導ブロック이 없어 바닥이 기계적인 빈 판이다",
-   "fix": "1x1 노란 줄 블록·점 블록 바닥 타일을 만들어 출구 계단→매표기→개찰 통로→내려가는 계단을 잇는다"
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "승강장 역명판 (18,3) · subway-stop.png y100–175",
+   "problem": "역명판이 벽 밑단을 넘어 선로 구역까지 내려와 전차 지붕에 아래 띠가 잘린다",
+   "fix": "벽 윗줄 안으로 올리거나 높이를 줄여 차량 지붕선 위에 둔다"
   },
   {
    "severity": "minor",
    "file": "scripts/content/jp-city/blocks/transit_station.py",
-   "where": "gate_body 문짝(x+14, 2x6px)",
-   "problem": "문짝이 2px 노란 점이라 통로가 막혔는지 열렸는지 읽히지 않는다",
-   "fix": "통로 쪽으로 3~4px 나온 회색 문짝을 양쪽에 그리고 통로 바닥에 1px 밝은 선을 넣는다"
+   "where": "승강장 기둥 번호판 · subway-stop.png x800–830 y370–400",
+   "problem": "번호 글자가 「ヨ/3」처럼 깨져 읽힌다",
+   "fix": "5px 숫자 글꼴로 다시 찍거나 노선색 원으로 바꾼다"
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png",
-   "where": "기둥 x 6·18·30, 번호판 「3」(d_pillar digit)",
-   "problem": "콘코스 기둥 모두에 같은 승강장 번호가 찍혀 의미가 없다",
-   "fix": "번호판 없는 subway-pillar-plain 변형을 콘코스에 쓰고 번호판 기둥은 승강장에만 쓴다"
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "콘코스 sign-line (6,11)",
+   "problem": "のりば 안내판에 방향 화살표가 없다(계단은 오른쪽 (11,13))",
+   "fix": "판 오른쪽 끝에 → 화살표를 넣는다"
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png",
-   "where": "승강장 끝 노란 점자 띠",
-   "problem": "내방선(内方線)이 없다",
-   "fix": "노란 띠 안쪽(남쪽)에 1px 노란 실선을 더한다"
+   "file": "scripts/content/jp-city/blocks/transit_station.py",
+   "where": "gate_body 문짝 5×6, 3px 돌출",
+   "problem": "개찰 문짝이 흰 실선으로만 보여 개찰기로 읽히는 힘이 약하다",
+   "fix": "4~5px 돌출, 붉은·회색 2톤으로 그리고 통로 밝은 선과 겹치지 않게 한다"
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png",
-   "where": "LED판·역명판 매다는 봉, 기둥 윗부분",
-   "problem": "천장이 없어 매단 물건과 기둥이 3m 허공에서 끊긴다",
-   "fix": "승강장 맨 위 행에 천장 보 타일(어두운 띠와 조명 줄)을 깔아 봉과 기둥이 닿게 한다"
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png",
-   "where": "역명판(subway-station-sign 8x3)",
-   "problem": "역명판 대부분이 열차 뒤에 가려 보이지 않는다",
-   "fix": "승강장 쪽 기둥 사이(열차 앞)에 두거나 선로 건너편 벽 높은 곳으로 옮긴다"
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "콘코스 10–13행 x0–9·x17–25, 승강장 11–12행 전 폭·x8–18·x27–43",
+   "problem": "목적 없는 빈 바닥이 넓다",
+   "fix": "맵을 줄이거나 코인로커·키오스크·화장실·자판기·엘리베이터로 채운다"
   }
  ],
- "report": "## 노면전차 거리 (transit_street)\n\n1. **[blocker] 가선 높이와 위치가 틀렸다.**\n   - 위치: `scene-street-x3.png` 궤도 위 가로선(y≈530)과 전주 팔(y≈495). 코드는 `transit_street.py`의 `tram-wire-h`(WIRE_Y=22, 1×2 칸)와 `tram-pole`(AY=36, 팔이 동쪽으로 38px).\n   - 문제 1: 접촉선이 궤도 중심(y≈622)보다 약 2m 위에 그려져 있다. 3/4 투영에서는 연석·제3궤조·낮은 울타리처럼 읽힌다.\n   - 문제 2: 전주 팔은 약 5.5m 높이에 있어서 전선과 높이가 맞지 않는다.\n   - 문제 3: 팔이 동쪽(옆)으로 뻗어서 행거가 궤도가 아니라 안전지대 섬 위에 매달린다.\n   - 수정:\n     - 접촉선 높이를 한 값으로 통일한다(약 5.5m = 궤도 행 기준 −88px). 전선 타일은 궤도에서 북쪽으로 5~6칸 떨어진 행에 둔다. 필요하면 1×6 세로 타일로 키운다.\n     - 전주는 궤도 북쪽 보도 쪽에 세우고, 팔을 남쪽(궤도 위)으로 뻗게 한다. 3/4 시점에서는 짧은 위쪽 팔로 그린다. 또는 가로 스팬선(span wire)으로 바꾼다.\n     - 팔 끝 행거가 전선 높이에 닿게 맞춘다.\n\n2. **[major] 차로 폭이 비현실적이다.**\n   - 위치: `scene-street-x3.png` 연석(y≈380)에서 점선(y≈483), 점선에서 레일(y≈590)까지.\n   - 문제: 차로 하나가 약 2m(≈2칸)뿐이다. 자동차가 5칸 길이인데 폭 2칸 차로는 어색하다. 버스는 지나가지 못한다.\n   - 수정: 궤도와 연석 사이 차로를 최소 3칸(≈3m)으로 넓힌다. 장면의 도로 행(8..18)을 2~3행 늘린다.\n\n3. **[major] 안전지대 섬이 남쪽 차로를 다 먹고, 표지도 없다.**\n   - 위치: `scene-street-x3.png` 섬 (9,14), 12×3 칸. 코드는 `tram-stop`(ISL_FRONT=36).\n   - 문제 1: 섬이 레일(y≈665)부터 점선(y≈818)까지를 채운다. 남은 남쪽 차로는 약 2m이다.\n   - 문제 2: 일본 노면전차 정류장의 필수 요소가 없다. 차가 오는 쪽의 導流帯(흰 사선 줄무늬)와 安全地帯 표지(파란 바탕 흰 삼각)다.\n   - 수정: 섬 깊이를 2칸으로 줄이거나 도로를 넓힌다. 차가 오는 쪽 끝(일본은 좌측통행이므로 섬 서쪽)에 導流帯 사선 바닥 타일 2~3칸과 安全地帯 표지봉을 더한다.\n\n4. **[major] 섬 노란 점자 띠가 지붕과 간판에 덮인다.**\n   - 위치: `scene-street-x3.png` 섬 북쪽 가장자리. 노란 띠가 x≈825–1005에만 보인다. 코드는 섬 전체 폭에 띠를 그린다.\n   - 문제: 같은 스프라이트 안에서 지붕과 간판이 승차 가장자리 띠를 가린다. 승차 모서리가 끊겨 읽힌다.\n   - 수정: 승차 쪽 가장자리를 지붕 투영보다 북쪽에 둔다. 또는 지붕 깊이를 줄여 띠 전체가 보이게 한다.\n\n5. **[major] 차막이(tram-rail-end)가 평면도 시점이고, 놓인 자리도 틀렸다.**\n   - 위치: `scene-street-x3.png` x≈1590. 코드는 `tram-rail-end` 2×2(y0..21 노랑·검정 줄무늬 윗면, y22..28 앞면).\n   - 문제 1: 줄무늬가 위에서 내려다본 평면처럼 넓다. 앞면은 7px뿐이라 서 있는 차막이로 읽히지 않는다.\n   - 문제 2: 도로 한가운데 장면 끝에 놓여서 길이 막힌 것처럼 보인다. 노면전차 노선은 보통 거리 중간에서 끝나지 않는다.\n   - 수정: 윗면을 4~6px로 줄이고, 앞면을 1m(16px) 높이의 기둥과 줄무늬 판으로 다시 그린다. 장면에서는 빼고, 궤도를 화면 밖까지 이어서 그린다.\n\n6. **[major] 지하철 출입구가 거의 정면도다.**\n   - 위치: `scene-street-x3.png`와 `_all-x2.png`의 subway-entrance. 코드는 4×4 스프라이트(지붕 윗면 y0..7, 파란 띠 y8..25, 흰 띠 y26..41).\n   - 문제 1: 지붕 윗면이 0.5칸뿐이다. 3/4 기준(윗면과 남쪽 면이 함께 보일 것)에 미달한다.\n   - 문제 2: 안쪽 계단이 셔터처럼 읽힌다.\n   - 문제 3: 입구가 도로 쪽을 향하는데, 연석까지 1칸도 안 된다(y335 대 370).\n   - 수정:\n     - 지붕을 1.5~2칸 깊이로 다시 그린다(밝은 윗면과 앞 처마).\n     - 계단은 아래로 갈수록 어두워지는 디딤판으로 그린다. 디딤판마다 밝은 앞 모서리를 둔다.\n     - 장면에서는 입구를 보도 안쪽으로 2칸 이상 물린다. 또는 입구를 보도 방향(동·서)으로 돌린다.\n\n7. **[major] 북쪽 보도가 넓고 텅 비었다.**\n   - 위치: `scene-street-x3.png` 북쪽 보도. 깊이가 약 7.7칸이다.\n   - 문제 1: 편의점과 출입구가 포장면 한가운데 떠 있다. 둘의 뒤쪽에도 포장면이 깔려 있다.\n   - 문제 2: 편의점 지붕 깊이가 약 2m뿐이다. 승인된 건물들과 화풍이 어긋난다.\n   - 수정: 보도를 2~3칸으로 줄인다. 건물을 보도 뒤 경계에 붙이고, 그 뒤는 다른 블록이나 건물 벽으로 채운다. 편의점은 승인된 상가 키트 비율에 맞춘다.\n\n## 지하철역 (transit_station)\n\n8. **[major] 개찰선이 콘코스를 막지 못해 옆으로 돌아갈 수 있다.**\n   - 위치: `scene-concourse-x3.png` 개찰구 줄 양 끝. 개찰구와 기둥 사이에 2칸쯤 빈 바닥이 있다.\n   - 문제: 코드 규칙(`subway-gates` rules)은 \"양옆은 벽이나 울타리로 막는다\"인데 장면이 이를 지키지 않았다. 표 없이 지나갈 수 있는 맵이 된다.\n   - 수정: 개찰구 양옆에서 벽까지 ラチ 울타리(1×1, 막힌 칸) 프롭을 만들어 이어 붙인다. 또는 개찰구를 7대로 늘린다.\n\n9. **[major] 내려가는 계단 난간벽이 너무 높다.**\n   - 위치: `scene-concourse-x3.png` stairs-down. 코드는 `stair_sides`의 `box(c, x0+1, 5, 14, 42, OL)`이다.\n   - 문제: 높이가 약 42px(≈2.6m)라 1m 난간이 아니라 벽처럼 보인다. 3/4에서 윗면이 좁고 긴 띠가 되어 칸막이벽으로 읽힌다.\n   - 수정: 벽 앞면을 16px(1m)로 줄인다. 윗면은 콘크리트 두께 3~4px와 손스침으로 그린다. 계단 구멍 둘레는 뒤쪽(북쪽)도 같은 난간으로 막는다.\n\n10. **[major] 점자 유도 블록이 없다.**\n    - 위치: `scene-concourse-x3.png` 전체.\n    - 문제: 일본 역에는 계단·개찰구·매표기를 잇는 노란 誘導ブロック이 반드시 있다. 콘코스가 기계적인 빈 바닥이다.\n    - 수정: 1×1 노란 줄 블록과 점 블록 바닥 타일을 만든다. 출구 계단 → 매표기 → 개찰 통로 하나 → 내려가는 계단을 잇게 깐다.\n\n11. **[minor] 개찰기 문짝이 읽히지 않는다.**\n    - 위치: `gate_body`의 문짝(x+14, 2×6px, 접힘).\n    - 문제: 문짝이 2px 노란 점이라 x3 장면에서도 개찰기 사이 통로가 막혔는지 열렸는지 구분되지 않는다.\n    - 수정: 통로 쪽으로 3~4px 나온 회색 문짝을 양쪽에 그린다. 통로 바닥에는 1px 밝은 선을 넣어 통로를 표시한다.\n\n12. **[minor] 콘코스 기둥에 승강장 번호판이 붙어 있다.**\n    - 위치: `scene-concourse-x3.png` 기둥(x 6, 18, 30). 코드는 `d_pillar`의 `digit(..., 3, ...)`이다.\n    - 문제: 콘코스 기둥 모두에 「3」이 찍혀 있어 의미가 없다.\n    - 수정: 번호판 없는 콘코스용 변형(`subway-pillar-plain`)을 만든다. 번호판 기둥은 승강장에만 쓴다.\n\n13. **[minor] 승강장 점자 띠에 내방선이 없다.**\n    - 위치: `scene-platform-train-x3.png` 승강장 끝 노란 띠.\n    - 문제: 일본 승강장의 점자 블록에는 승강장 안쪽에 내방선(内方線)이 있다. 이 띠에는 없다.\n    - 수정: 노란 띠 안쪽(남쪽)에 1px 노란 실선을 더한다.\n\n14. **[minor] LED판·역명판·기둥이 3m에서 끊긴다.**\n    - 위치: `scene-platform-train-x3.png` LED판과 역명판의 매다는 봉, 기둥 윗부분.\n    - 문제: 천장 없이 허공에서 끝나서 매단 물건이 떠 보인다.\n    - 수정: 승강장 맨 위 행에 천장 보 타일(어두운 띠와 조명 줄)을 깐다. 봉과 기둥이 거기에 닿게 한다.\n\n15. **[minor] 역명판이 대부분 열차에 가려진다.**\n    - 위치: `scene-platform-train-x3.png` 역명판.\n    - 문제: 역명판 대부분이 열차 뒤에 가려 보이지 않는다.\n    - 수정: 역명판을 승강장 쪽 기둥 사이(열차 앞)에 둔다. 또는 선로 건너편 벽 높은 곳에 다시 배치한다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"blocker\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"tram-wire-h(WIRE_Y=22, 1x2)·tram-pole(AY=36 팔 동쪽 38px); scene-street-x3.png 가선 y≈530·전주 팔 y≈495·궤도 중심 y≈622\", \"problem\": \"접촉선이 궤도 위 약 2m라 3/4에서 지면 연석·제3궤조로 읽히고, 전주 팔(약 5.5m)과 높이가 다르며, 팔이 동쪽(옆)으로 뻗어 행거가 궤도가 아닌 안전지대 섬 위에 매달린다\", \"fix\": \"가선 높이를 약 5.5m(궤도 행 기준 −88px)로 통일해 전선 타일을 궤도 북쪽 5~6칸 행에 두고, 전주는 북쪽 보도에 세워 팔을 남쪽 궤도 위로 뻗게 하거나 스팬선으로 바꿔 행거를 전선 높이에 맞춘다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"연석 y≈380 → 점선 y≈483 → 레일 y≈590\", \"problem\": \"차로 하나가 약 2칸(2m)이라 자동차(5칸 길이)·버스가 다닐 수 없는 비율이다\", \"fix\": \"궤도와 연석 사이 차로를 최소 3칸으로 넓히고 장면 도로 행(8..18)을 2~3행 늘린다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"tram-stop(12x3, ISL_FRONT=36); 장면 (9,14), 레일 y≈665~점선 y≈818\", \"problem\": \"안전지대 섬이 남쪽 차로를 거의 다 차지해 남은 폭이 약 2m이고, 導流帯 사선과 安全地帯 표지가 없다\", \"fix\": \"섬 깊이를 2칸으로 줄이거나 도로를 넓히고, 차가 오는 쪽(좌측통행 기준 서쪽) 끝에 導流帯 사선 타일 2~3칸과 安全地帯 표지봉을 더한다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"섬 북쪽 가장자리. 노란 점자 띠가 x≈825–1005에만 보임\", \"problem\": \"코드는 띠를 전체 폭에 그리지만 같은 스프라이트의 지붕·간판이 덮어 승차 모서리가 끊겨 읽힌다\", \"fix\": \"승차 가장자리를 지붕 투영보다 북쪽에 두거나 지붕 깊이를 줄여 띠 전체가 보이게 한다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"tram-rail-end 2x2(줄무늬 윗면 y0..21, 앞면 y22..28); scene-street-x3.png x≈1590\", \"problem\": \"차막이가 평면도처럼 읽히고(앞면 7px), 도로 한가운데 장면 끝에 놓여 길이 막힌 것처럼 보인다\", \"fix\": \"윗면을 4~6px로 줄이고 앞면을 16px 높이 기둥과 줄무늬 판으로 다시 그린다. 장면에서는 빼고 궤도를 화면 밖까지 잇는다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"subway-entrance 4x4(지붕 윗면 y0..7, 파란 띠 y8..25, 흰 띠 y26..41); scene-street-x3.png 입구 y335 대 연석 370\", \"problem\": \"지붕 윗면이 0.5칸뿐이라 사실상 정면도이고(3/4 위반), 안쪽 계단이 셔터처럼 읽히며, 입구가 연석에서 1칸도 안 떨어져 도로를 향한다\", \"fix\": \"지붕을 1.5~2칸 깊이(윗면+처마)로 다시 그리고, 계단은 아래로 갈수록 어두운 디딤판과 밝은 앞 모서리로 그린다. 입구를 보도 안쪽으로 2칸 이상 물리거나 동·서로 돌린다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"북쪽 보도(깊이 약 7.7칸), 편의점·지하철 입구\", \"problem\": \"보도가 넓고 텅 비었고, 편의점과 입구가 포장면 한가운데 떠 있어 뒤쪽에도 빈 포장이 깔린다. 편의점 지붕 깊이가 약 2m라 승인 건물들과 화풍이 어긋난다\", \"fix\": \"보도를 2~3칸으로 줄이고 건물을 보도 뒤 경계에 붙인 뒤 그 뒤를 건물·벽으로 채운다. 편의점은 승인된 상가 키트 비율로 맞춘다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png\", \"where\": \"개찰구 줄 양 끝. 개찰구와 기둥 사이 약 2칸 빈 바닥\", \"problem\": \"subway-gates 규칙(양옆은 벽이나 울타리로 막는다)을 지키지 않아 표 없이 옆으로 지나갈 수 있다\", \"fix\": \"ラチ 울타리 프롭(1x1, 막힌 칸)을 만들어 개찰구 양옆을 벽까지 막거나 개찰구를 7대로 늘린다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"stair_sides의 box(c, x0+1, 5, 14, 42, OL); scene-concourse-x3.png stairs-down\", \"problem\": \"계단 둘레 난간벽 높이가 약 42px(≈2.6m)라 1m 난간이 아니라 칸막이벽으로 보인다\", \"fix\": \"앞면을 16px로 낮추고 윗면은 3~4px 콘크리트와 손스침으로 그린다. 계단 구멍 북쪽 끝도 같은 난간으로 막는다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png\", \"where\": \"콘코스 바닥 전체\", \"problem\": \"일본 역에 반드시 있는 노란 誘導ブロック이 없어 바닥이 기계적인 빈 판이다\", \"fix\": \"1x1 노란 줄 블록·점 블록 바닥 타일을 만들어 출구 계단→매표기→개찰 통로→내려가는 계단을 잇는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"gate_body 문짝(x+14, 2x6px)\", \"problem\": \"문짝이 2px 노란 점이라 통로가 막혔는지 열렸는지 읽히지 않는다\", \"fix\": \"통로 쪽으로 3~4px 나온 회색 문짝을 양쪽에 그리고 통로 바닥에 1px 밝은 선을 넣는다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png\", \"where\": \"기둥 x 6·18·30, 번호판 「3」(d_pillar digit)\", \"problem\": \"콘코스 기둥 모두에 같은 승강장 번호가 찍혀 의미가 없다\", \"fix\": \"번호판 없는 subway-pillar-plain 변형을 콘코스에 쓰고 번호판 기둥은 승강장에만 쓴다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png\", \"where\": \"승강장 끝 노란 점자 띠\", \"problem\": \"내방선(内方線)이 없다\", \"fix\": \"노란 띠 안쪽(남쪽)에 1px 노란 실선을 더한다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png\", \"where\": \"LED판·역명판 매다는 봉, 기둥 윗부분\", \"problem\": \"천장이 없어 매단 물건과 기둥이 3m 허공에서 끊긴다\", \"fix\": \"승강장 맨 위 행에 천장 보 타일(어두운 띠와 조명 줄)을 깔아 봉과 기둥이 닿게 한다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png\", \"where\": \"역명판(subway-station-sign 8x3)\", \"problem\": \"역명판 대부분이 열차 뒤에 가려 보이지 않는다\", \"fix\": \"승강장 쪽 기둥 사이(열차 앞)에 두거나 선로 건너편 벽 높은 곳으로 옮긴다\"}\n]}\n```"
+ "report": "**적대 검수: jp_city 노면전차(transit_street)·지하철역(transit_station) 2회차**\n\n판정은 **불합격(fail)**이다. 블로커 2건과 메이저 5건이 남아 있다. 좌표는 x3 확대 그림 기준이고 칸은 16px이다.\n\n### 노면전차 거리 `scripts/content/jp-city/blocks/transit_street.py` · `tiledata/jp-city/blocks/transit_street/`\n\n1. **[blocker] 가선이 여전히 머리 위 전선으로 읽히지 않는다.**\n   - 위치: `scene-street-x3.png`의 y≈155–170(차도 위)과 y≈504(북쪽 보도 위). 둘 다 어두운 가로선 하나다.\n   - 문제: 선로와 이어 주는 시각 단서가 없다. 노면 표시나 연석 그림자로 읽힌다. 1회차 지적 그대로다.\n   - 고치는 법: 선 아래에 1px 밝은 반사줄을 넣고, 길에 2~3px 오프셋 그림자 점선을 깐다. 그리고 매다는 선(hanger)과 지지선(span wire)으로 양쪽 기둥 팔 끝에 실제로 걸어 높이를 증명한다. 지금은 `jp-tram-wire-hanger` 칸을 장면에 쓰지 않고 있다.\n\n2. **[blocker] 남쪽 기둥(pole-s)의 팔이 불가능한 모양이다.**\n   - 위치: `transit_street.py`의 `draw_pole` 2×13 변형(top 94, root 104, tip 1). 장면 x≈200–215 y420–750, `_all-x2` x465–520.\n   - 문제: 기둥 꼭대기(y420)에서 가는 막대가 103px 위로 비스듬히 솟아 (260,150)까지 간다. 두 선로와 차로를 가로지른다. 기둥보다 팔이 훨씬 높아 휜 가로등이나 낚싯대로 읽힌다.\n   - 고치는 법: 팔은 기둥 꼭대기 1~2px 아래에서 수평(또는 1px 처짐)으로 뻗고, 끝이 가선 줄(트랙 −5행)에 닿아야 한다. 3/4에서 높이 차는 북쪽 이동으로만 표현한다. 기둥 자체를 가선 높이까지 세우고(남측 13행 그대로라면 top이 가선 행과 같아야 한다) 팔은 짧은 수평 브래킷으로 그린다.\n\n3. **[major] 북쪽 기둥(pole-n)의 팔이 아래로 기울어 지선(guy wire)처럼 읽힌다.**\n   - 위치: `draw_pole` 2×7 변형(root 14 → tip 81). `_all-x2` x395–445에서 팔 끝이 y165 땅 쪽으로 내려간다.\n   - 고치는 법: 위 2번과 같다. 끝이 땅이 아니라 가선 행에 맞춰야 하고, 수평 브래킷과 애자(흰 점)를 단다.\n\n4. **[major] 북쪽 기둥이 가게 간판과 출입문 바로 앞에 서 있다.**\n   - 위치: 장면 북쪽 보도의 くすり·편의점·ランドリー·ラーメン 앞.\n   - 문제: 문 앞을 막고 간판을 가린다. 실제 일본 거리에서는 기둥을 차도 쪽 연석 가까이, 가게 경계(벽 사이) 위에 세운다.\n   - 고치는 법: 기둥 x를 건물 사이 틈이나 벽면 칸으로 옮기고, y는 연석에서 1칸 안으로 둔다.\n\n5. **[major] 동쪽 방향 차로 폭이 여전히 약 2.25칸이다.**\n   - 위치: `render_scene` 북쪽 연석 192px → 실선 228px(36px). 점선이 연석에서 6px 떨어져 있다. 장면 기준 연석 y≈90, 점선 y≈117, 실선 y≈207.\n   - 문제: 1칸=1m 기준으로 차로 2.25m는 승용차 폭이다. 1회차 「차로 ~2m」 지적이 미해결이다. 서쪽 방향은 3칸으로 고쳤지만 동쪽만 남았다. 연석에 붙은 점선은 의미 없는 표시다.\n   - 고치는 법: lane_e를 3칸 이상으로 늘린다(walk_n 9 → 차로 12 시작이면 연석–선로 사이 최소 3행). 점선을 빼거나 路側帯 실선으로 바꾼다.\n\n6. **[major] 북쪽 거리 풍경이 미해결이다.** 건물 뒤와 사이가 빈 포장이고, 건물이 광장 위에 떠 있으며, 편의점 지붕 깊이가 약 2칸이다.\n   - 위치: `scene-street-x3.png` 북쪽 띠 전체.\n   - 고치는 법: 건물 북쪽 몸체를 장면 위 끝까지 채우거나 뒷골목 벽과 담을 둔다. 건물 사이 1칸 틈에는 실외기·자판기·자전거를 넣는다. 편의점 지붕 윗면은 1칸 이하로 줄이거나 승인된 상가 키트의 처마 깊이에 맞춘다.\n\n7. **[minor] 섬식 정류장 난간이 노란 점자 띠 앞(남쪽)에 겹쳐 그려진다.**\n   - 위치: 장면 y510–550.\n   - 고치는 법: 난간은 섬 바깥 가장자리(차로 쪽)에만 두고, 점자 띠는 그 안쪽에 둔다.\n\n8. **[minor] 레일 끝(jp-tram-rail-end)이 여전히 평면도·정면 블록이다.**\n   - 위치: `_all-x2` x130–190. 장면에서는 빠져 있어 실제 사용 모습을 검증하지 못했다.\n   - 고치는 법: 윗면(레일 두 줄이 끝나는 침목)과 남면(노랑·검정 띠 앞판)을 3/4로 나누어 그린다. 쓰는 예제 장면을 하나 붙인다.\n\n9. **[minor] 지하철 출입구 옆벽에 윗면이 거의 없다.**\n   - 위치: `jp-subway-entrance.png`, `_all-x2` x900–1018. 옆벽 y46–67이 정면 판만 있다.\n   - 고치는 법: 옆벽 위에 2~3px 밝은 윗면 띠를 남북으로 넣어, 지붕 윗면과 같은 시점으로 맞춘다.\n\n### 지하철역 `scripts/content/jp-city/blocks/transit_station.py` · `scripts/content/jp-city/maps/station.mjs`\n\n10. **[major] 콘코스 점자 유도선이 끊겨 있고 목적지에 닿지 않는다.**\n    - 위치: `station.mjs` 콘코스의 tactile 지정 (13,4)→(13,10)과 (6,5)→(12,5).\n    - 문제:\n      - 승강장 계단 입구 (12–13,13)까지 3행이 비어 있다. 개찰구에서 승강장 계단으로 가는 경로가 끊긴다.\n      - 출구 계단 입구 칸 (12–13,3) 앞에 경고(점형) 블록이 없다.\n      - 가지가 매표기(x2–7, 3행) 앞이 아닌 1칸 아래 (6,5)에서 끝난다.\n      - 역무실(19,3)로 가는 가지가 없다.\n    - 고치는 법: (13,10)→(13,12)를 잇고 승강장 계단 입구 앞에 점형 블록 2칸을 놓는다. 출구 계단 앞 (12–13,4)를 점형으로 바꾼다. 매표기 앞 4행으로 가지를 올리고, (13,5)→(19,5)→역무실 앞 가지를 추가한다.\n\n11. **[minor] 승강장 점자 L자가 계단 입구가 아니라 계단 동남쪽 모서리 옆에서 끝난다.**\n    - 위치: `station.mjs` 승강장 (24,7)→(24,11)+(23,11). 실행 화면 `transit-runtime/subway-stop.png` x370–445 y590–615.\n    - 문제: 계단 개구부(21–22, 남쪽 면)는 x265–360인데 유도선이 닿지 않는다.\n    - 고치는 법: 11행 가지를 (21,11)까지 늘리고, (21–22,11)을 점형 블록으로 바꾼다.\n\n12. **[minor] 内方線이 1px `kii` 선이라 x3에서도 거의 안 보인다.**\n    - 위치: `transit_station.py` `edge_strip` 95행 `c.HL(x0, y0+15, w, K('kii',1))`.\n    - 고치는 법: 2px로 늘리고 바닥과 명도 차를 키운다(`kii` 2 + 아래 1px `conc` 0 그늘).\n\n13. **[minor] 큰 역명판(さくら町)이 벽 밑단을 넘어 선로 구역까지 내려오고, 들어온 전차 지붕에 아래 녹색 띠가 잘린다.**\n    - 위치: 승강장 맵 (18,3). 실행 화면 y100–175.\n    - 고치는 법: 역명판을 벽 윗줄(1–2행) 안으로 올린다. 또는 판 높이를 줄여 차량 지붕선보다 위에 둔다.\n\n14. **[minor] 승강장 기둥 번호판 글자가 「ヨ/3」처럼 깨져 읽힌다.**\n    - 위치: 실행 화면 기둥 x800–830 y370–400.\n    - 고치는 법: 5px 숫자 글꼴로 「3」을 다시 찍거나, 번호 대신 노선색 원(●)을 쓴다.\n\n15. **[minor] 「のりば」 안내판(6,11)에 방향 화살표가 없다.** 승강장 계단은 오른쪽(11,13)에 있다.\n    - 고치는 법: 판 오른쪽 끝에 → 화살표를 넣는다.\n\n16. **[minor] 개찰기 사이 문짝(flap)이 읽히지 않는다.**\n    - 위치: `gate_body`의 회색 문짝 5×6이 통로로 3px만 나와 x3에서 흰 실선처럼 보인다.\n    - 고치는 법: 문짝을 4~5px 돌출시키고 붉은·회색 2톤으로 그린다. 통로 바닥 밝은 선(x+17)과 겹치지 않게 한다.\n\n17. **[minor] 빈 바닥이 넓다.**\n    - 위치:\n      - 콘코스 10–13행의 좌우(x0–9, x17–25)\n      - 승강장 벤치 남쪽 11–12행 전 폭\n      - 승강장 x8–18과 x27–43\n    - 고치는 법: 맵을 줄이거나(승강장 13 → 11행) 목적 있는 시설로 채운다. 예: 콘코스에는 코인로커·키오스크·화장실 입구, 승강장에는 자판기·쓰레기통·엘리베이터를 둔다.\n\n### 1회차 지적 재확인\n\n다음 항목은 해소를 확인했다:\n- 계단 난간: 앞면이 16px로 줄었다(`stair_sides`·`parapet_front`).\n- 개찰 옆 ラチ: 9행에 깔렸다.\n- 섬식 정류장의 導流帯 지브라가 있고, 노란 띠가 가려지지 않는다.\n- 서쪽 방향 차로가 3칸이 됐다.\n- 출구 계단이 셔터가 아니라 계단으로 읽힌다.\n\n다음 항목은 미해소이며 위에 다시 올렸다:\n- 가선 높이·기둥 팔 → 1·2·3번\n- 동쪽 방향 차로 → 5번\n- 북쪽 보도가 비고 건물이 뜨는 문제, 편의점 지붕 깊이 → 6번\n- 레일 끝(buffer stop) 평면도 → 8번\n- 콘코스 점자 → 10번\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"blocker\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"가선(WIRE_Y, 트랙 −5행) · scene-street-x3.png y≈155–170, y≈504\", \"problem\": \"가선이 바닥 위 어두운 가로선 하나라 노면 표시·연석으로 읽힌다. 선로와 이어 주는 단서(행어·스팬 와이어·그림자)가 없다\", \"fix\": \"선 아래 1px 반사줄을 넣고 길에 오프셋 그림자 점선을 깐다. jp-tram-wire-hanger 와 스팬 와이어로 양쪽 기둥 팔 끝에 실제로 건다\"},\n{\"severity\": \"blocker\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"draw_pole pole-s 2×13 (top94 root104 tip1) · scene x≈200–215 y420–750 · _all-x2 x465–520\", \"problem\": \"팔이 기둥 꼭대기보다 103px 위로 비스듬히 솟아 두 선로와 차로를 가로지른다. 휜 가로등·낚싯대로 읽힌다\", \"fix\": \"기둥을 가선 행 높이까지 세우고, 팔은 꼭대기 1~2px 아래에서 수평 브래킷으로 그린다. 끝은 가선 행에 맞춘다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"draw_pole pole-n 2×7 (root14→tip81) · _all-x2 x395–445\", \"problem\": \"팔이 아래로 기울어 땅으로 가는 지선처럼 읽힌다\", \"fix\": \"수평 브래킷과 애자를 달고, 끝을 가선 행에 맞춘다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"render_scene 북쪽 기둥 배치 · くすり·편의점·ランドリー·ラーメン 앞\", \"problem\": \"기둥이 출입문과 간판 바로 앞을 막는다\", \"fix\": \"건물 사이 틈·벽면 칸 x로 옮기고 연석 1칸 안에 세운다\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/blocks/transit_street.py\", \"where\": \"render_scene 북쪽 연석 192px → 실선 228px, 점선 연석+6px\", \"problem\": \"동쪽 방향 차로가 36px(약 2.25칸=2.25m)이다. 점선이 연석에 붙어 의미가 없다. 1회차 미해결\", \"fix\": \"lane_e 를 3칸 이상으로 늘리고 점선을 빼거나 路側帯 실선으로 바꾼다\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"북쪽 띠 전체(건물 뒤·사이)\", \"problem\": \"빈 포장 위에 건물이 떠 있고 편의점 지붕 윗면이 약 2칸이다. 1회차 미해결\", \"fix\": \"건물 몸체를 장면 끝까지 채우거나 뒷담을 둔다. 틈에는 실외기·자판기·자전거를 넣는다. 편의점 지붕 윗면은 1칸 이하로\"},\n{\"severity\": \"major\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"콘코스 tactile (13,4)→(13,10), (6,5)→(12,5)\", \"problem\": \"승강장 계단 (12–13,13)까지 3행이 끊긴다. 출구 계단 앞에 점형 블록이 없다. 매표기 앞이 아니라 1칸 아래에서 끝나고 역무실 가지가 없다\", \"fix\": \"(13,10)→(13,12)를 잇고 계단 입구 앞 점형 2칸을 둔다. (12–13,4)를 점형으로 바꾼다. 매표기 앞 4행 가지와 (13,5)→(19,5) 역무실 가지를 추가한다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_street/scene-street-x3.png\", \"where\": \"섬식 정류장 y510–550\", \"problem\": \"난간이 노란 점자 띠 앞에 겹친다\", \"fix\": \"난간은 섬 바깥 가장자리에만, 점자 띠는 안쪽에 둔다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_street/jp-tram-rail-end.png\", \"where\": \"_all-x2 x130–190\", \"problem\": \"여전히 평면도·정면 블록이고 장면에서 빠져 실제 사용 모습이 검증되지 않았다\", \"fix\": \"윗면(침목·레일 끝)과 남면(노랑·검정 앞판)을 3/4로 나눠 그린다. 예제 장면에 넣는다\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/transit_street/jp-subway-entrance.png\", \"where\": \"옆벽 y46–67 (_all-x2 x900–1018)\", \"problem\": \"옆벽에 윗면이 거의 없어 지붕과 시점이 어긋난다\", \"fix\": \"옆벽 위에 2~3px 밝은 윗면 띠를 남북으로 넣는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"승강장 tactile (24,7)→(24,11)+(23,11) · subway-stop.png x370–445 y590–615\", \"problem\": \"유도선이 계단 개구부(21–22)가 아니라 동남 모서리 옆에서 끝난다\", \"fix\": \"11행 가지를 (21,11)까지 늘리고 (21–22,11)을 점형 블록으로\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"edge_strip 95행 c.HL(x0, y0+15, w, K('kii',1))\", \"problem\": \"内方線이 1px라 x3에서도 거의 안 보인다\", \"fix\": \"2px로 늘리고 아래 1px 어두운 그늘을 넣는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"승강장 역명판 (18,3) · subway-stop.png y100–175\", \"problem\": \"역명판이 벽 밑단을 넘어 선로 구역까지 내려와 전차 지붕에 아래 띠가 잘린다\", \"fix\": \"벽 윗줄 안으로 올리거나 높이를 줄여 차량 지붕선 위에 둔다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"승강장 기둥 번호판 · subway-stop.png x800–830 y370–400\", \"problem\": \"번호 글자가 「ヨ/3」처럼 깨져 읽힌다\", \"fix\": \"5px 숫자 글꼴로 다시 찍거나 노선색 원으로 바꾼다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"콘코스 sign-line (6,11)\", \"problem\": \"のりば 안내판에 방향 화살표가 없다(계단은 오른쪽 (11,13))\", \"fix\": \"판 오른쪽 끝에 → 화살표를 넣는다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"gate_body 문짝 5×6, 3px 돌출\", \"problem\": \"개찰 문짝이 흰 실선으로만 보여 개찰기로 읽히는 힘이 약하다\", \"fix\": \"4~5px 돌출, 붉은·회색 2톤으로 그리고 통로 밝은 선과 겹치지 않게 한다\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"콘코스 10–13행 x0–9·x17–25, 승강장 11–12행 전 폭·x8–18·x27–43\", \"problem\": \"목적 없는 빈 바닥이 넓다\", \"fix\": \"맵을 줄이거나 코인로커·키오스크·화장실·자판기·엘리베이터로 채운다\"}\n]}\n```"
 }

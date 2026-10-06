@@ -91,8 +91,7 @@ def edge_strip(c, x0, y0, w):
         for (dx, dy) in ((2, 1), (5, 1), (2, 4), (5, 4)):
             c.P(x0 + x + dx, y0 + 6 + dy, K('kii', 3)); c.P(x0 + x + dx + 1, y0 + 6 + dy, K('kii', 2))
             c.P(x0 + x + dx + 1, y0 + 7 + dy, K('kii', 0))
-    c.HL(x0, y0 + 14, w, K('conc', 2))
-    c.HL(x0, y0 + 15, w, K('kii', 1))                                          # 内方線(선로 반대쪽 1px 노란 선)
+    c.HL(x0, y0 + 14, w, K('kii', 2)); c.HL(x0, y0 + 15, w, K('kii', -1))      # 内方線(선로 반대쪽 2px 노란 선 + 아래 그늘)
 
 
 def track_bed(c, x0, y0, w):

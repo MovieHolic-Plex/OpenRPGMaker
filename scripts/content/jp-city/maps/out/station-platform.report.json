@@ -50,8 +50,8 @@
  "layers": {
   "overlaps": 0,
   "issues": [],
-  "l2": 6,
-  "l3": 224,
+  "l2": 8,
+  "l3": 236,
   "l4": 0
  },
  "emptiness": {
@@ -64,7 +64,7 @@
  "reach": {
   "reachable": 286
  },
- "placed": 174,
+ "placed": 180,
  "ok": true,
  "placedList": [
   {
@@ -428,10 +428,10 @@
    "layer": 3
   },
   {
-   "id": "jp-subway-station-sign",
-   "x": 18,
+   "id": "jp-subway-backwall-ad",
+   "x": 20,
    "y": 1,
-   "w": 8,
+   "w": 3,
    "h": 3,
    "layer": 3
   },
@@ -558,6 +558,46 @@
   {
    "id": "jp-subway-backwall",
    "x": 17,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 18,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 19,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 23,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 24,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 25,
    "y": 1,
    "w": 1,
    "h": 3,
@@ -1406,6 +1446,14 @@
   {
    "id": "jp-subway-station-sign-hang",
    "x": 12,
+   "y": 7,
+   "w": 6,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-station-sign-hang",
+   "x": 34,
    "y": 7,
    "w": 6,
    "h": 2,

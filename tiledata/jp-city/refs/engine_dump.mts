@@ -599,12 +599,14 @@ OUT.kitCodes = propCodes;
 
 // 예제 맵을 가진 손 도트 블록(school …) — 키트는 kit-index 의 source.block 으로 가른다. 거리 시설(8절)에서 빼고 9절에서 따로 잰다.
 const KIT_INDEX = JSON.parse(fs.readFileSync(path.join(HERE, "..", "kit-index.json"), "utf8")).kits as Record<string, { source?: { block?: string } }>;
-const EXAMPLE_BLOCKS = ["school"] as const;
+const EXAMPLE_BLOCKS = ["school", "transit_station"] as const;
 const EXAMPLE_BLOCK_OF = new Map(Object.entries(KIT_INDEX).filter(([, v]) => (EXAMPLE_BLOCKS as readonly string[]).includes(v.source?.block ?? "")).map(([k, v]) => [k, v.source!.block!]));
+/** 자기 용도(분류)를 따로 가진 블록 — 거리 시설(8절)에서 뺀다. 노면전차 거리는 예제 맵 없이 「탈것」 용도에 문서가 있다. */
+const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"]);
 
 // =============================================================================================== 8. 손 도트 거리 시설(blocks/street_hand.py): 전봇대·전선 4층 · 노면 표시 2층 · 블록 담·문기둥 3층
 {
-  const HAND = [...KITS.values()].map((k) => k.id).filter((id) => !/^jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)/.test(id) && !EXAMPLE_BLOCK_OF.has(id));
+  const HAND = [...KITS.values()].map((k) => k.id).filter((id) => !/^jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)/.test(id) && !OWN_CATEGORY_BLOCKS.has(KIT_INDEX[id]?.source?.block ?? ""));
   const up = (id: string) => kitOf(id).rows.map((r) => r.upperTiles);
   const stampL = (p: Project, id: string, x: number, y: number, layer: string) => call(p, "stamp_layer_block", { mapId: "m", x, y, layers: { [layer]: up(id) }, reshape: false });
   const W = 24, H = 18, LANE = [13, 16], HOUSE = "jp-bldg-house-hip2", HX = 3;
@@ -697,6 +699,27 @@ const EXAMPLE_BLOCK_OF = new Map(Object.entries(KIT_INDEX).filter(([, v]) => (EX
           apply: (map, rep) => { const a = (rep.anchorList as Target[])[0]!; putUpper(map, "jp-kadan", a.x - 1, a.y + 1); } },
       ],
     },
+    // 지하철역 콘코스(maps/station.mjs): 개찰구 옆 칸막이를 빼면 표 없이 승강장 계단으로 간다 · 계단 앞 의자는 계단 입구를 막는다
+    transit_station: {
+      file: "station-concourse",
+      tampers: [
+        { key: "fenceGap", code: "fare-gate-bypass", title: "개찰구 서쪽 칸막이(ラチ)를 뺌 — 개찰 통로를 안 지나고 승강장 계단에 간다",
+          apply: (map) => { for (let x = 0; x <= 7; x++) map.upperTiles[9 * map.width + x] = -1; } },
+        { key: "stairsBench", code: "anchor-blocked", title: "승강장 계단 앞에 의자 — 계단 입구(anchor)에 못 간다",
+          apply: (map) => putUpper(map, "jp-subway-bench", 11, 10) },
+      ],
+    },
+  };
+  /** 개찰 통로(개찰구 키트의 걸음 칸)를 막고도 출구 계단 → 승강장 계단에 가면 「표 없이 지나감」. */
+  const fareBypass = (p: Project, map: GameMap, rep: Record<string, unknown>): { x: number; y: number }[] => {
+    const g = (rep.placedList as { id: string; x: number; y: number; w: number; h: number }[]).find((q) => q.id === "jp-subway-gates");
+    if (!g) return [];
+    const aisles = new Set<number>(); for (let r = 0; r < g.h; r++) for (let c = 0; c < g.w; c++) aisles.add((g.y + r) * map.width + g.x + c);
+    const anchors = rep.anchorList as { b: string; x: number; y: number }[];
+    const from = anchors.find((a) => a.b === "exit-stairs")!, to = anchors.filter((a) => a.b === "platform-stairs");
+    const W = map.width, seen = new Set<number>([from.y * W + from.x]); const q = [{ x: from.x, y: from.y }];
+    while (q.length) { const c = q.pop()!; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const x = c.x + dx, y = c.y + dy, i = y * W + x; if (x < 0 || y < 0 || x >= W || y >= map.height || seen.has(i) || aisles.has(i) || !isPassable(p, map, x, y)) continue; seen.add(i); q.push({ x, y }); } }
+    return to.filter((a) => seen.has(a.y * W + a.x)).map((a) => ({ x: a.x, y: a.y }));
   };
   const blocks: Record<string, unknown> = {};
   for (const b of EXAMPLE_BLOCKS) {
@@ -725,10 +748,12 @@ const EXAMPLE_BLOCK_OF = new Map(Object.entries(KIT_INDEX).filter(([, v]) => (EX
       const bad = run(t);
       let errs: { code: string; x: number; y: number }[];
       if (t.code === "overlay-in-base-layer") errs = good.layers["1"].flatMap((v, i) => (v !== bad.layers["1"][i] ? [{ code: t.code, x: i % m0.width, y: Math.floor(i / m0.width) }] : []));
+      else if (t.code === "fare-gate-bypass") errs = fareBypass(bad.p, bad.map, rep).map((c) => ({ code: t.code, ...c }));
       else errs = bad.targets.filter((q, i) => good.targets[i]!.reached && !q.reached).map((q) => ({ code: t.code, x: q.x, y: q.y }));
       errors[t.key] = { code: t.code, title: t.title, layers: bad.layers, errors: errs, reachable: bad.reachable };
     }
-    blocks[b] = { kits, W: m0.width, H: m0.height, start, placed, good: { layers: good.layers, targets: good.targets, reachable: good.reachable }, probes, errors,
+    const bypassGood = b === "transit_station" ? fareBypass(good.p, good.map, rep) : [];
+    blocks[b] = { kits, W: m0.width, H: m0.height, start, placed, good: { layers: good.layers, targets: good.targets, reachable: good.reachable, bypass: bypassGood }, probes, errors,
       emptiness: rep.emptiness, rules: null };
   }
   OUT.exampleBlocks = blocks;

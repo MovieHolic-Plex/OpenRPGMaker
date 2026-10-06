@@ -290,7 +290,7 @@ for _t in range(COUNT):
     else: REGION[_t] = '?'
 for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
-for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock')):
+for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation')):
     for _t in PIN_BLOCK[_b]: REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -303,7 +303,7 @@ RECIPES = [k for k in KITS if k.startswith('jp-recipe-')]
 DOORS = [k for k in KITS if k.startswith('jp-door-')]
 PROPS = [k for k in KITS if k.startswith('jp-prop-')]
 KIT_INDEX = json.load(open(os.path.join(ROOT, 'tiledata', 'jp-city', 'kit-index.json'), encoding='utf-8'))['kits']
-EXAMPLE_KITS = {b: [k for k in KITS if (KIT_INDEX.get(k, {}).get('source') or {}).get('block') == b] for b in ('school',)}
+EXAMPLE_KITS = {b: [k for k in KITS if (KIT_INDEX.get(k, {}).get('source') or {}).get('block') == b] for b in ('school', 'transit_street', 'transit_station')}
 _EXAMPLE_KIT_SET = {k for v in EXAMPLE_KITS.values() for k in v}
 STREETH = [k for k in KITS if not re.match(r'jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)', k) and k not in _EXAMPLE_KIT_SET]
 assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (39, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
@@ -400,6 +400,8 @@ def doc_sheet_map():
         ('bldgblock', '손 도트 건물 키트 블록', f'손 도트 일본 건물 {sum(1 for k in KITS if k.startswith("jp-bldg-"))}종(주택·아파트·가게·음식점·상업·공공·공장)의 재료 칸. **키트로 통째 찍는다** — 용도 「손 도트 건물」'),
         ('streethand', '손 도트 거리 시설 블록', f'전봇대·전선·노면 표시·블록 담·문기둥·카포트·생활 소품·도리이 등 {len(STREETH)}종 키트의 재료 칸. **키트로 찍는다**(전봇대·전선 4층, 노면 표시 2층) — 용도 「손 도트 거리 시설」'),
         ('schoolblock', '손 도트 小学校 블록', f'교정 흙·트랙 선·놀이기구·수영장·정문 등 小学校 키트 {len(EXAMPLE_KITS["school"])}종의 재료 칸. **키트로 찍는다**(트랙 선 2층) — 용도 「손 도트 小学校」'),
+        ('transitstreet', '손 도트 노면전차 거리 블록', f'노면전차 레일·차막이·정류장 섬·導流帯·가선·전주·지하철 출입구 키트 {len(EXAMPLE_KITS["transit_street"])}종의 재료 칸. **키트로 찍는다**(레일 2층, 가선 4층) — 용도 「탈것·노면전차·지하철」'),
+        ('transitstation', '손 도트 지하철역 블록', f'콘코스·승강장 바닥·벽·선로·개찰구·칸막이·매표기·계단·역무실·기둥·천장·간판 키트 {len(EXAMPLE_KITS["transit_station"])}종의 재료 칸 — 용도 「탈것·노면전차·지하철」'),
     ]
     rows = []
     for key, name, desc in reg:
@@ -2059,7 +2061,7 @@ def doc_sch_rules():
 7. 검사: 정문 앞에서 모든 문 접근칸·수영장 입구에 도달, 막힘 칸이 엔진에서 막힘, 트랙 선이 2층.
 
 ## 빈칸
-校庭 맨흙은 아이들이 뛰는 자리라 **비어 있는 것이 기능이다**. 트랙 안은 빈칸 판정에서 빼고, 나머지 17×13 창 빈칸 상한은 0.75(마을은 0.4). 예제 맵 실측 {EB['emptiness']['worst17x13']} (창 왼쪽 위 {tuple(EB['emptiness']['worstAt'])}).
+校庭 맨흙은 아이들이 뛰는 자리라 **비어 있는 것이 기능이다**. 빈칸으로 세는 것은 바탕 흙(교정 흙 A·B·C)뿐이다(길·포장·고무 칩·물은 목적 있는 바닥). 트랙 사각은 분모에서 빼고, 나머지 17×13 창 빈칸 상한은 마을과 같은 0.4. 예제 맵 실측 {EB['emptiness']['worst17x13']} (창 왼쪽 위 {tuple(EB['emptiness']['worstAt'])}).
 놀이기구는 운동장 가운데가 아니라 **가장자리**에 모은다.
 
 ## 예제 맵 도달 (엔진 `isPassable`, 시작 = 정문 앞 생활도로 ({EB['start']['x']},{EB['start']['y']}), 도달 칸 {g['reachable']})
@@ -2153,7 +2155,7 @@ def img_sch():
         cells = [(e['x'], e['y']) for e in er[key]['errors']]
         xs = [c[0] for c in cells]; ys = [c[1] for c in cells]
         cx0 = max(0, min(xs) - 6); cy0 = max(0, min(ys) - 6); cx1 = min(W, max(xs) + 7); cy1 = min(H, max(ys) + 7)
-        if (cx1 - cx0) * T > 400: cx1 = cx0 + 400 // T
+        if (cx1 - cx0) * T > 396: cx1 = cx0 + 396 // T
         if (cy1 - cy0) * T > 760: cy1 = cy0 + 760 // T
         bi = render(er[key]['layers'], W, H)
         mark_cells(bi, cells[:200], 1, width=1)
@@ -2163,6 +2165,211 @@ def img_sch():
 
 
 img_sch()
+
+
+# ====================================================================== 분류 5e — 탈것·노면전차·지하철(blocks/transit_*.py + maps/station.mjs + 런타임 map.transit)
+TRS = EXAMPLE_KITS['transit_street']; TST = EXAMPLE_KITS['transit_station']
+EBT = EN['exampleBlocks']['transit_station']
+assert sorted(EBT['kits']) == sorted(TST), (len(EBT['kits']), len(TST))
+VEH = json.load(open(os.path.join(ROOT, 'src', 'assets', 'jpCityVehicles.json'), encoding='utf-8'))['vehicles']
+_PLAT = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-platform.map.json'), encoding='utf-8'))
+_PLAT_REP = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-platform.report.json'), encoding='utf-8'))
+_CONC = json.load(open(os.path.join(ROOT, 'scripts', 'content', 'jp-city', 'maps', 'out', 'station-concourse.map.json'), encoding='utf-8'))
+assert _PLAT_REP['ok'] and _PLAT_REP['anchors']['allReached'], _PLAT_REP['anchors']
+TRN_GROUPS = [
+    ('street', '노면전차 거리·지하철 출입구', lambda k: k in TRS),
+    ('station', '지하철역 콘코스·승강장', lambda k: k in TST),
+]
+C_TRN = new_cat('transit', f'일본 도시 · 탈것·노면전차·지하철 (키트 {len(TRS) + len(TST)}종 · 탈것 {len(VEH)}종)',
+                f'맵 위를 실제로 달리는 탈것 {len(VEH)}종(승용차·택시·경차·트럭·시내버스·노면전차·전철·지하철)을 까는 법(`set_map_transit`·`inspect_map_transit`, 좌측통행 차선 칸 규칙, 정류장·타기), '
+                f'노면전차 거리 키트 {len(TRS)}종(레일·정류장 섬·導流帯·가선·전주·지하철 출입구)과 지하철역 키트 {len(TST)}종(콘코스·승강장), 예제 맵 さくら町駅 콘코스·승강장 전체 배열, 정상/오류(표 없이 지나감·계단 막음) 그림과 좌표.')
+
+
+def doc_trn_rules():
+    er = EBT['errors']; g = EBT['good']
+    vrows = [[f"`{v['id']}`", v['name'], v['kind'], f"{v['length']}칸", ', '.join(k for k in v['frames'])] for v in VEH]
+    trows = [[t['what'], f"({t['x']},{t['y']})", '도달' if t['reached'] else '**못 감**'] for t in g['targets']]
+    return f'''# 일본 도시 — 탈것·노면전차·지하철 쓰는 법 (노선·차선 칸·정류장·역 맵)
+
+{HEAD}
+
+**무엇인가.** 맵의 `transit` 설정(노선 목록)이 게임에서 실제로 탈것을 움직인다. 탈것은 주인공 앞에서 서고(주인공을 밀거나 덮지 않는다), 정류장에서 문을 열고(`*_open` 그림),
+`board` 가 있는 정류장에서는 탈것 옆에서 「조사」하면 그 맵·칸으로 옮겨 간다. 상태는 저장하지 않는다(맵에 들어올 때마다 90초 미리 돌린 상태로 시작).
+정본: 저장 모양·시뮬레이션 `src/project/mapTransit.ts`, 길 띠 찾기 `src/project/transitAuto.ts`, 도구 `src/editor/tools/transitTools.ts`, 런타임 `src/player/playSceneTransit.ts`, 그림 목록 `src/assets/jpCityVehicles.json`(그림은 칩셋이 아니라 따로 된 탈것 시트 `/assets/jp-city/vehicles/<id>.png`).
+편집기: 맵 설정 → 「탈것(차·버스·전차)」 칸(자동 깔기·노선 켜고 끄기·지우기·차 간격).
+
+## 가장 쉬운 길 — 도구
+1. `inspect_map_transit` — 1층 생활도로(`jp-lane-road` 오토타일) 그림에서 **곧은 차도 띠**(동서: 위 끝 행·폭 / 남북: 왼쪽 끝 열·폭)와 2층 노면전차 레일 줄을 찾아 보여 준다. 맵 끝에서 끝까지 이어진 띠만 자동 대상이다.
+2. `set_map_transit {{ auto: {{}} }}` — 찾은 띠마다 좌측통행 두 방향 차 흐름(폭 4칸 이상; 2~3칸은 한 방향)을 깐다. 간격 `headwaySec`(큰길 4~6초, 한산한 주택가 10~14초).
+3. 버스: `auto.busStops: [{{x, y, name, waitSec, board}}]` — (x, y) 는 **버스 머리가 서는 차선 칸**. 그 칸을 지나는 방향 차선에 시내버스 노선이 붙는다. 정류장 칸이 차선 위가 아니면 도구가 차선 행·열을 알려 주며 거절한다.
+4. 노면전차: `auto.tram: true` — 2층 레일(`jp-tram-rail-h` 2줄 / `jp-tram-rail-v` 2열)이 맵 끝에서 끝까지 이어진 줄. **복선**(4칸 안에 나란한 두 레일)이면 좌측통행 두 방향, 단선이면 한 방향만(마주 오는 전차가 한 레일에서 비켜 갈 수 없다). 정류장 `auto.tramStops`.
+5. 굽은 길·순환 버스·전철·지하철: `routes:[{{id, kind, path:[{{x,y}}…], vehicles, loop?, count?, headwaySec?, speed?, stops:[{{x,y,name,board}}]}}]` — 칸 경로를 직접 준다.
+6. 깐 뒤 `inspect_map_transit` 로 120초 시험 결과(노선별 대수·오래 막힌 차)를 본다.
+
+## 칸 규칙(이것을 어기면 도구가 거절한다)
+{md_table(['규칙', '내용'], [
+    ['경로 칸', '탈것 **머리**가 지나는 칸, 그리고 몸 폭 2칸 중 **위/왼쪽** 칸. 가로로 달리면 몸은 (머리 행, 머리 행+1), 세로면 (머리 열, 머리 열+1). 몸 길이 = 아래 표의 길이(머리에서 뒤로)'],
+    ['좌측통행(폭 4칸 길 y0..y0+3 / x0..x0+3)', '동쪽행 = 위 두 줄(머리 행 y0) · 서쪽행 = 아래 두 줄(y0+2) · 남쪽행 = 오른쪽 두 열(x0+2) · 북쪽행 = 왼쪽 두 열(x0)'],
+    ['맵 밖', '맵 끝에서 끝으로 지나는 노선은 양 끝을 맵 밖으로 늘인다(자동은 12칸, 허용 = 가장 긴 탈것 + 8칸). 탈것이 맵 밖에서 나타나 맵 밖으로 사라진다'],
+    ['차도 밖 금지', '차·버스 노선은 맵 안 몸 칸이 모두 1층 생활도로여야 한다 — 아니면 `off-road` 로 거절(보도·건물 위를 달리는 차)'],
+    ['노선 종류 ↔ 탈것', 'road = 승용·택시·경차·트럭 · bus = 버스 · tram = 노면전차 · train = 전철 · subway = 지하철'],
+    ['정류장', '머리가 그 칸에 오면 `waitSec` 동안 서서 문을 연다. 뒤차는 1칸 띄우고 줄 선다(앞지르기 없음)'],
+    ['교차로', '가로·세로 탈것이 서로의 몸을 막으면 6초 뒤 지나간다(교착 풀기). 같은 방향 줄·주인공 앞은 끝까지 선다'],
+])}
+
+## 탈것 {len(VEH)}종 (그림 `jp-img-transit-vehicles`)
+{md_table(['id', '이름', '종류', '길이', '프레임'], vrows)}
+버스·노면전차·전철·지하철의 문은 **차의 왼쪽 면**에만 있다(좌측통행 승강) — 화면에 보이는 남쪽 면은 서쪽으로 갈 때의 왼쪽 면이다. 동쪽으로 가는 차의 `right_open` 은 `right` 와 같은 그림(문이 반대쪽)이다.
+
+## 노면전차 거리 (키트 {len(TRS)}종, 그림 `jp-img-transit-street-scene`)
+- 단면(북→남): 보도 3 · 동쪽행 차로 3 · 동쪽행 레일 2 · 사이 1 · 서쪽행 레일 2 · 서쪽행 안전지대 섬 2(`jp-tram-stop`, 동쪽 끝 導流帯 `jp-tram-stop-zebra`) · 서쪽행 차로 3 · 보도 3. 차로 폭 3칸 = 차 몸 2칸 + 여유.
+- 레일 `jp-tram-rail-h`/`-v` 는 **2층**(투명 덧그림 — 아스팔트 위). 1층에 찍으면 아스팔트가 사라진다.
+- 가선 `jp-tram-wire-h` 는 **4층**, 레일 행에서 **북쪽으로 5행**(약 5.5m 높이의 3/4 투영). 전주 `jp-tram-pole-n`(북쪽 보도, 팔이 남쪽)·`jp-tram-pole-s`(남쪽 보도, 팔이 북쪽)의 팔 끝이 가선과 만난다.
+- 지하철 출입구 `jp-subway-entrance` 는 보도 안쪽(연석에서 2칸 이상)에 두고, 입구(anchor) 칸에 지하철역 콘코스로 가는 이동 이벤트를 둔다.
+- 노면전차 노선: `auto.tram` 또는 routes kind `tram` — 정류장 칸은 섬 옆 레일 칸.
+
+## 지하철역 (키트 {len(TST)}종, 예제 맵 さくら町駅)
+- 콘코스(맨 위부터): 천장 보 `jp-subway-ceiling` 1줄 → 흰 타일 벽 2줄(매표기·출구 계단·역무실이 벽에 붙는다) → 바닥 → 개찰구 `jp-subway-gates`(9칸, 통로 = 홀수 열) — **양옆은 칸막이 `jp-subway-fence` 로 벽·기둥까지 막는다** → 승강장 계단 `jp-subway-stairs-down`.
+- 승강장(맨 위부터): 천장 보 → 뒷벽 3줄(광고·역명판) → 선로 `jp-subway-track` 2줄(1층, 막힘) → 승강장 끝 `jp-subway-edge` 1줄(점자 블록, 걸음) → 바닥(기둥·의자·LED·매단 역명판·올라가는 계단).
+- 점자 유도 블록은 2층 오토타일 `jp-tactile` 선: 출구 계단 → 매표기 / 개찰 통로 → 승강장 계단, 승강장은 끝 줄에서 계단 쪽 갈래.
+- 지하철 노선: routes kind `subway`, 선로 위 행(머리 행 = 선로 윗줄)을 맵 밖 → 맵 밖으로. 열차 30칸이 승강장 앞에 서도록 정류장 칸(머리)을 고르고 `board` 에 내릴 곳(다른 역·지상)을 준다.
+- 이동: 계단 입구(anchor) 칸에 `transfer` 이벤트(playerTouch). 예제는 콘코스 승강장 계단 ↔ 승강장 올라가는 계단, 출구 계단 → 지상.
+
+## 예제 맵 도달 (콘코스, 엔진 `isPassable`, 시작 ({EBT['start']['x']},{EBT['start']['y']}), 도달 칸 {g['reachable']})
+{md_table(['목표', '칸', '결과'], trows)}
+개찰 통로를 막고도 승강장 계단에 가는 칸(표 없이 지나감): **{len(g.get('bypass') or [])}칸**(정상 = 0).
+
+## 정상/오류 — 자동 좌표 검증 (엔진 변조 실험, 콘코스)
+{md_table(['코드', '변조', '검출 칸(맵 좌표 x,y)', '그림'], [
+    [f"`{er['fenceGap']['code']}`", er['fenceGap']['title'], ', '.join(f"({e['x']},{e['y']})" for e in er['fenceGap']['errors']) + ' (개찰 통로를 막고도 도달한 승강장 계단 입구)', '`jp-img-err-transit-fence`'],
+    [f"`{er['stairsBench']['code']}`", er['stairsBench']['title'], ', '.join(f"({e['x']},{e['y']})" for e in er['stairsBench']['errors']), '`jp-img-err-transit-stairs`'],
+])}
+도구 쪽 거절 코드: `no-road`(가장자리→가장자리 차도 없음) · `off-road`(몸이 차도 밖) · `invalid-route`(대각선 경로·두 칸보다 짧음·맵 밖 너무 멀리·노선 종류에 안 맞는 탈것) · `no-rail`(노면전차 레일 없음) · `invalid-args`(정류장이 차선·레일·경로 위가 아님).
+- **검사 범위**: 칸 번호·층·통행·도달·노선 칸(구조)만. 그림의 미감은 적대적 검증 관문(`tiledata/jp-city/gates/transit.json`·`vehicles.json`)이 본다. 런타임 움직임은 `scripts/qa/runtime/transit.probe.mjs`(출하 플레이어)가 본다 — 그림 `jp-img-transit-runtime`.
+- **레이어 정정 조건**: 레일이 1층이면 1층을 아스팔트로 다시 깔고 레일은 2층. 가선이 3층이면 4층으로(3층에 두면 아래 칸이 막히고 차보다 아래에 그려진다).
+
+## 없는 것
+탈것에 사람(운전사·승객) 없음 · 신호등 연동 없음(교차로는 서로 기다림) · 차선 바꾸기·앞지르기 없음 · 탈것 위치는 저장 안 됨 · 노면전차 가선은 그림뿐(전기 없음).
+'''
+
+
+add_doc(C_TRN, 'transit-rules', '일본 도시 · 탈것·노면전차·지하철 · 노선·차선·정류장·역', doc_trn_rules())
+
+
+def trn_item(kid):
+    it = shop_item(kid)
+    it['block'] = 'transit_street' if kid in TRS else 'transit_station'
+    it['rules'] = KITS[kid]['ai'].get('placementRules', '')
+    return it
+
+
+_TRN_ORDER = list(TRS) + list(TST)
+_chunks = []; _cur = []; _size = 0
+for _kid in _TRN_ORDER:
+    _it = trn_item(_kid); _n = len(jline(_it))
+    if _cur and _size + _n > 36000: _chunks.append(_cur); _cur = []; _size = 0
+    _cur.append(_it); _size += _n
+if _cur: _chunks.append(_cur)
+for _i, _chunk in enumerate(_chunks):
+    add_doc(C_TRN, f'transit-dict-{_i + 1}', f'일본 도시 · 노면전차·지하철 키트 사전 {_i + 1}/{len(_chunks)}', f"""# 일본 도시 — 노면전차 거리·지하철역 키트 사전 {_i + 1}/{len(_chunks)} ({len(_chunk)}종, 칸 번호 전체)
+
+{HEAD}
+
+항목: `kit` · `name` · `w`×`h` · `anchor`(발) · `parts`(입구 anchor·간판·창) · `tiles`(1층 바닥 칸, 있으면) · `upperTiles`(키트 칸 전체, `-1` = 맵을 건드리지 않는 칸) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸) ·
+`block`(그림 원본 blocks/<block>.py) · `rules`(키트에 적힌 배치 규칙). 쓰는 법은 `jp-transit-rules`, 그림 `jp-img-transit-dict-*`.
+이 문서의 키트: {', '.join(f'`{it["kit"]}`' for it in _chunk)}.
+
+{jfences(_chunk, 13000)}
+""")
+
+
+def doc_trn_ex():
+    g = EBT['good']; W = EBT['W']
+    conc = {'name': CONC_ID, 'W': W, 'H': EBT['H'], 'start': [EBT['start']['x'], EBT['start']['y']],
+            'placements': [[q['id'], q['x'], q['y'], q['layer']] for q in EBT['placed']],
+            'events': [[e['id'], e['x'], e['y'], e['pages'][0]['commands'][0]] for e in _CONC['events']],
+            **{f'layer{k}': to_rows([tnum(t) for t in g['layers'][k]], W) for k in ('1', '2', '3', '4')}}
+    PW = _PLAT['width']
+    plat = {'name': _PLAT['id'], 'W': PW, 'H': _PLAT['height'], 'start': _PLAT_REP['start'],
+            'placements': [[q['id'], q['x'], q['y'], q['layer']] for q in _PLAT_REP['placedList']],
+            'events': [[e['id'], e['x'], e['y'], e['pages'][0]['commands'][0]] for e in _PLAT['events']],
+            'transit': _PLAT['transit'],
+            **{f'layer{k}': to_rows([tnum(t) for t in _PLAT[f]], PW) for k, f in (('1', 'lowerTiles'), ('2', 'lowerOverlayTiles'), ('3', 'upperTiles'), ('4', 'upperOverlayTiles'))}}
+    return f"""# 일본 도시 — 지하철역 さくら町 예제 맵 전체 배열 (콘코스 {W}×{EBT['H']} · 승강장 {PW}×{_PLAT['height']})
+
+{HEAD}
+
+생성기 `scripts/content/jp-city/maps/station.mjs`. 콘코스는 엔진에 다시 올려 잰 배열, 승강장은 생성기 출력(검사 통과: 입구 {_PLAT_REP['anchors']['n']}칸 도달, 막힘 칸 엔진 일치).
+`placements` = [키트, 왼쪽 위 x, 왼쪽 위 y, 층], `events` = [id, x, y, 이동 명령], `transit` = 승강장 지하철 노선(그대로 `set_map_transit routes` 에 줄 수 있는 모양), `layer1`~`layer4` = 행 우선 전체 배열(-1 빈 칸).
+그림 `jp-img-transit-concourse`·`jp-img-transit-platform`, 실제 게임 화면 `jp-img-transit-runtime`.
+
+## 콘코스
+```json
+{jline(conc)}
+```
+
+## 승강장
+```json
+{jline(plat)}
+```
+"""
+
+
+CONC_ID = 'jp-city-station-concourse'
+add_doc(C_TRN, 'transit-ex', '일본 도시 · 지하철역 さくら町 예제 맵 전체 배열', doc_trn_ex())
+assert all(t['reached'] for t in EBT['good']['targets']), EBT['good']['targets']
+assert not EBT['good'].get('bypass'), EBT['good']['bypass']
+for _k in ('fenceGap', 'stairsBench'): assert EBT['errors'][_k]['errors'], f'{_k} 변조가 검출되지 않았다'
+
+
+def img_trn():
+    def kit_im(kid, k):
+        w, h, lo, upv = kit_grid(kid)
+        return up(render({'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}, w, h, bg=(0, 0, 0, 0)), k)
+    for gk, gn, f in TRN_GROUPS:
+        ids = [k for k in _TRN_ORDER if f(k)]
+        items = [(k[3:], kit_im(k, 2 if max(KITS[k]['width'], KITS[k]['height']) <= 8 else 1)) for k in ids]
+        for i, pg in enumerate(shelf_pack(items)):
+            save_img(f'transit-dict-{gk}-{i + 1}', pg, f'{gn} 키트 도감 {len(ids)}종 {i + 1}쪽(작은 키트 ×2, 큰 키트 원본, 라벨 = 키트 id 에서 `jp-` 를 뺀 것). 칸 번호는 `jp-transit-dict-*`.', C_TRN)
+    # 탈것 목록 — 오른쪽 보는 그림(문 연 그림이 있으면 옆에)
+    vitems = []
+    for v in VEH:
+        sheet = Image.open(os.path.join(ROOT, 'public', v['image'].lstrip('/'))).convert('RGBA')
+        for fk in ('right', 'right_open', 'down'):
+            fr = v['frames'].get(fk)
+            if not fr: continue
+            g = sheet.crop((fr['x'], fr['y'], fr['x'] + fr['w'], fr['y'] + fr['h']))
+            if g.width > 420: g = g.resize((g.width // 2, g.height // 2), Image.NEAREST)
+            vitems.append((f"{v['id'][3:]} {fk}", g))
+    for i, pg in enumerate(shelf_pack(vitems)):
+        save_img(f'transit-vehicles{"" if i == 0 else "-" + str(i + 1)}', pg, f'탈것 {len(VEH)}종(오른쪽·문 연·아래 보는 그림, 원본 16px 칸 기준 — 긴 열차는 ½). 칸이 아니라 따로 된 시트다 — 맵에 찍지 말고 `set_map_transit` 노선으로 달리게 한다.', C_TRN)
+    sc = Image.open(os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'transit_street', 'scene-street.png')).convert('RGBA')
+    for i, x0 in enumerate(range(0, sc.width, 800)):
+        save_img(f'transit-street-scene{"" if i == 0 else "-" + str(i + 1)}', sc.crop((x0, 0, min(sc.width, x0 + 800), min(sc.height, 800))),
+                 '노면전차 거리 단면 장면(키트 합성, 원본 해상도): 보도·동행 차로·복선 레일·서행 안전지대 섬+導流帯·서행 차로·보도, 전주 남/북 팔·가선(레일 −5행)·지하철 출입구·건물 줄. 차는 런타임이 그린다.', C_TRN)
+    W, H = EBT['W'], EBT['H']
+    full = render(EBT['good']['layers'], W, H)
+    save_img('transit-concourse', full, f'さくら町駅 콘코스 {W}×{H}칸(원본 해상도): 매표기·출구 계단·역무실·개찰구+칸막이·승강장 계단·점자 유도 블록. 배열 `jp-transit-ex`.', C_TRN)
+    pl = render({'1': _PLAT['lowerTiles'], '2': _PLAT['lowerOverlayTiles'], '3': _PLAT['upperTiles'], '4': _PLAT['upperOverlayTiles']}, _PLAT['width'], _PLAT['height'])
+    save_img('transit-platform', pl, f'さくら町駅 승강장 {_PLAT["width"]}×{_PLAT["height"]}칸(원본 해상도): 뒷벽·선로 2줄·승강장 끝·기둥·LED·매단 역명판·올라가는 계단. 지하철은 런타임이 그린다(`jp-img-transit-runtime`).', C_TRN)
+    rt = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 'subway-stop.png')).convert('RGBA')
+    rt2 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 't0.png')).convert('RGBA')
+    save_img('transit-runtime', panels([('승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다', rt.resize((rt.width * 3 // 4, rt.height * 3 // 4), Image.NEAREST))]),
+             '출하 플레이어 실제 화면(scripts/qa/runtime/transit.probe.mjs): 승강장에 선 지하철. 노선은 승강장 맵 `transit`.', C_TRN)
+    save_img('transit-runtime-road', panels([('学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스', rt2.resize((rt2.width * 3 // 4, rt2.height * 3 // 4), Image.NEAREST))]),
+             '출하 플레이어 실제 화면: 小学校 앞 생활도로에 `set_map_transit auto` 로 깐 차 흐름과 学校前 버스 정류장. 동쪽행은 위 두 줄, 서쪽행은 아래 두 줄.', C_TRN)
+    er = EBT['errors']
+    for key, nm in (('fenceGap', 'fence'), ('stairsBench', 'stairs')):
+        cells = [(e['x'], e['y']) for e in er[key]['errors']]
+        bi = render(er[key]['layers'], W, H)
+        mark_cells(bi, cells, 1, width=1)
+        if key == 'fenceGap': mark_cells(bi, [(x, 9) for x in range(0, 8)], 1, color=(255, 200, 0, 255), width=1)
+        cw = min(W, 24) * T
+        save_img(f'err-transit-{nm}', panels([(f'정상 (x 0~{cw // T - 1})', full.crop((0, 0, cw, H * T))), (f'오류 — {er[key]["title"]} · {len(cells)}칸', bi.crop((0, 0, cw, H * T)))]),
+                 f'지하철역 변조 `{er[key]["code"]}`: 왼쪽 정상/오른쪽 오류, 빨강 = 검출 칸(좌표는 `jp-transit-rules` 표){", 노랑 = 뺀 칸막이" if key == "fenceGap" else ""}. 원본 해상도.', C_TRN)
+
+
+img_trn()
 
 
 # ====================================================================== 분류 6 — 정상/오류·자동 검사(총괄)
@@ -2197,7 +2404,7 @@ _LM_UP = [t for v in _LM_UP_BY.values() for t in v]
 _LM_LO = [t for v in _LM_LO_BY.values() for t in v]
 assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
 _STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
-assert len(_STAIR_STAR) == 54, len(_STAIR_STAR)
+assert len(_STAIR_STAR) == 63, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 5·올라가는 4)
 
 
 def n_issue(lst): return len(lst)

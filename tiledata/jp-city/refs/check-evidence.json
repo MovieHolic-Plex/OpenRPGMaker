@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 30524
+   "chars": 34154
   },
   {
    "id": "jp-autotile",
@@ -44,33 +44,63 @@
   },
   {
    "id": "jp-street-hand",
-   "name": "일본 도시 · 손 도트 거리 시설 60종",
+   "name": "일본 도시 · 손 도트 거리 시설 62종",
    "documents": 3,
    "images": 9,
-   "chars": 33835
+   "chars": 34794
+  },
+  {
+   "id": "jp-school",
+   "name": "일본 도시 · 손 도트 小学校 33종",
+   "documents": 3,
+   "images": 10,
+   "chars": 73631
+  },
+  {
+   "id": "jp-transit",
+   "name": "일본 도시 · 탈것·노면전차·지하철 (키트 32종 · 탈것 14종)",
+   "documents": 3,
+   "images": 10,
+   "chars": 40446
   },
   {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15436
+   "chars": 15481
   }
  ],
  "totals": {
-  "categories": 8,
-  "documents": 55,
-  "images": 147,
-  "chars": 505337,
-  "maxDocChars": 38250,
+  "categories": 10,
+  "documents": 61,
+  "images": 167,
+  "chars": 624048,
+  "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 6642,
- "kitsEmitted": 352,
- "kitArrayItemsRoundtrip": 352,
- "unknownTokens": [],
+ "tilesEmitted": 7553,
+ "kitsEmitted": 419,
+ "kitArrayItemsRoundtrip": 419,
+ "unknownTokens": [
+  "jp-school-ex:jp-city-school-68x48",
+  "jp-transit-rules:jp-bus-city",
+  "jp-transit-rules:jp-car-black",
+  "jp-transit-rules:jp-car-blue",
+  "jp-transit-rules:jp-car-kei-mint",
+  "jp-transit-rules:jp-car-kei-yellow",
+  "jp-transit-rules:jp-car-red",
+  "jp-transit-rules:jp-car-silver",
+  "jp-transit-rules:jp-car-taxi",
+  "jp-transit-rules:jp-car-white",
+  "jp-transit-rules:jp-subway",
+  "jp-transit-rules:jp-train-commuter",
+  "jp-transit-rules:jp-tram",
+  "jp-transit-rules:jp-truck-box",
+  "jp-transit-rules:jp-truck-kei"
+ ],
  "sha256": {
-  "json": "57e967e94964579561e58f974a56f9993f69a248cc081a89e8ff40f5c8819aa8",
-  "images": "9a83f9fce983c0fa0e60c26f5880e3a6a815cc643bd17be53a800f141e3b1d85"
+  "json": "e94d4fedd0a72d7370064044a5f004401ae354a8dc72bb7e518ef090895d6d6c",
+  "images": "16f45b72002249a1b18947ab63f3c8efefee43ad52281c3bca8aff334cf593f4"
  }
 }

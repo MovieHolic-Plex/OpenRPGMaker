@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (175개)
+# 일본 도시 — 타일 그룹 사전 (203개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6926칸**, 16px 칸, 시트 768×2320px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8048칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 23, fence 5, prop 77, roof 16, terrain 20, wall 31, water 3.
+역할별 개수: building 26, fence 6, prop 88, roof 17, terrain 28, wall 35, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -188,6 +188,39 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:fumikiri-deck","name":"철도 건널목 · 바닥판","role":"terrain","layer":"lower","n":2,"from":3675,"to":3680},
 {"id":"jp:underpass-footbridge","name":"지하도 입구·육교 계단","role":"prop","layer":"mixed","n":36,"from":3684,"to":3719},
 {"id":"jp:road-sign-parts","name":"길가 표지(1×2)","role":"prop","layer":"upper","n":14,"from":3720,"to":3734},
-{"id":"jp:hand-marking","name":"손 도트 노면·길 가장자리","role":"terrain","layer":"upper","n":20,"from":6679,"to":6698}
+{"id":"jp:hand-marking","name":"손 도트 노면·길 가장자리","role":"terrain","layer":"upper","n":30,"from":6679,"to":7982},
+{"id":"jp:school-gomu","name":"遊具 밑 ゴムチップ","role":"terrain","layer":"lower","n":3,"from":7710,"to":7712},
+{"id":"jp:school-ground","name":"校庭 흙 바닥","role":"terrain","layer":"lower","n":3,"from":6926,"to":6928},
+{"id":"jp:school-track","name":"운동장 트랙 선","role":"terrain","layer":"upper","n":114,"from":7034,"to":7415},
+{"id":"jp:tram-rail","name":"노면전차 궤도(투명 덧그림)","role":"terrain","layer":"upper","n":6,"from":7794,"to":7799},
+{"id":"jp:tram-stop","name":"노면전차 정류장·가선·전주","role":"prop","layer":"mixed","n":53,"from":7812,"to":8042},
+{"id":"jp:subway-entrance","name":"지하철 출입구","role":"building","layer":"mixed","n":26,"from":7849,"to":8047},
+{"id":"jp:subway-floor","name":"지하 콘코스 바닥(밝은 회색 대형 타일)","role":"terrain","layer":"lower","n":1,"from":7870,"to":7870},
+{"id":"jp:subway-platform","name":"승강장 바닥(회색 엇갈림 타일)","role":"terrain","layer":"lower","n":1,"from":7871,"to":7871},
+{"id":"jp:subway-edge","name":"승강장 끝(흰 선 + 노란 점자 블록)","role":"terrain","layer":"lower","n":1,"from":7872,"to":7872},
+{"id":"jp:subway-track","name":"선로 바닥(레일 2줄, 통행 불가)","role":"terrain","layer":"lower","n":2,"from":7873,"to":7874},
+{"id":"jp:subway-wall","name":"콘코스 흰 타일 벽(걸레받이)","role":"wall","layer":"upper","n":2,"from":7875,"to":7876},
+{"id":"jp:subway-backwall","name":"승강장 뒷벽(타일·노선색 띠)","role":"wall","layer":"upper","n":3,"from":7877,"to":7879},
+{"id":"jp:subway-backwall-ad","name":"승강장 뒷벽 + 광고판(그림만, 글자·상표 없음)","role":"wall","layer":"upper","n":6,"from":7880,"to":7885},
+{"id":"jp:subway-station-sign","name":"역명판 「さくら町」(양옆 역 みなと·森川)","role":"wall","layer":"upper","n":24,"from":7886,"to":7909},
+{"id":"jp:subway-pillar","name":"승강장 네모 타일 기둥(번호판)","role":"prop","layer":"upper","n":3,"from":7910,"to":7912},
+{"id":"jp:subway-pillar-plain","name":"콘코스 네모 타일 기둥(번호판 없음)","role":"prop","layer":"upper","n":2,"from":7983,"to":7984},
+{"id":"jp:subway-ceiling","name":"천장 보(짙은 보 + 형광등 줄)","role":"roof","layer":"upper","n":1,"from":7985,"to":7985},
+{"id":"jp:subway-gates","name":"자동 개찰구 5대(사이 통로 4줄)","role":"prop","layer":"mixed","n":9,"from":7913,"to":7989},
+{"id":"jp:subway-fence","name":"개찰 옆 낮은 스테인리스 칸막이(ラチ)","role":"fence","layer":"upper","n":1,"from":7990,"to":7990},
+{"id":"jp:subway-ticket","name":"자동 매표기 3대 + 운임표","role":"building","layer":"upper","n":14,"from":7918,"to":7931}
+]
+```
+
+```json
+[
+{"id":"jp:subway-stairs-down","name":"내려가는 계단(승강장으로)","role":"prop","layer":"upper","n":11,"from":7932,"to":7993},
+{"id":"jp:subway-stairs-up","name":"올라가는 계단(지상 출구)","role":"prop","layer":"upper","n":10,"from":7940,"to":7996},
+{"id":"jp:subway-sign-exit","name":"천장 매단 출구 간판 「出口」","role":"prop","layer":"upper","n":6,"from":7947,"to":7952},
+{"id":"jp:subway-sign-line","name":"천장 매단 승강장 안내 「のりば」","role":"prop","layer":"upper","n":6,"from":7953,"to":7958},
+{"id":"jp:subway-office","name":"역무실 창구","role":"building","layer":"upper","n":12,"from":7959,"to":7970},
+{"id":"jp:subway-bench","name":"승강장 의자 4석","role":"prop","layer":"upper","n":3,"from":7971,"to":7973},
+{"id":"jp:subway-led","name":"천장 매단 발차 안내 LED판","role":"prop","layer":"upper","n":6,"from":7974,"to":7979},
+{"id":"jp:subway-station-sign-hang","name":"천장 매단 역명판 「さくら町」","role":"prop","layer":"upper","n":12,"from":7997,"to":8008}
 ]
 ```
