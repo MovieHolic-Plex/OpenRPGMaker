@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:08:42.626116+00:00",
+  "passed": false,
+  "key": "black-lotus-assassin/fifty-v1",
+  "binding": "7d23deccf96686682109ed3103c40c3148ba80b9ada6d79a108e4d6f3bd3fb41",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-black-lotus-assassin-before-initial-review.png",
+  "nativeContactPngSha256": "8623bde29141356a647a06f1cad786a0af72a02bc64d4bfc1453e741a8511d85",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "bfabfaa0438ba9ad6a11e53ea3483e218a1763d1673a518b08dbde47221e5c37"
+  },
+  "observations": "Opened actual18 native1x/nearest2x864x696 unresized. Adult small right-facing eyes/exposedupperface/navyblack mask+clothes/longheadtie/magentabelt/attachedshortknife. Same armed hand windup, widelegmove andforwardknifeattack/recovery. Compressedshoulder hit/low horizontal dead vsseated sleep. Hand-raised magentacore/three bentpetal paths rooted in knife/petalfragments. Purplepoison handonchest, slackstun hand/knife withstars, seatedsleep closedeyereadability andsmallpairchanges awaitindependentresult. Read full nativewriter methods/moduleflows andallcallnames. Blank64grid with explicit per-pose y/x/rowstrings; blue uses individuallyauthored revisedrows, black separatelyauthored pixelblocks. No generatedgeometry/wholeframe transforms. Render/inspect onlyPNG/GIF/diagnosticboards/readback. All18 native PNG RGBA exactlymatch ASCII/palette. Independentreview pending; noAllow/pass claim."
+}

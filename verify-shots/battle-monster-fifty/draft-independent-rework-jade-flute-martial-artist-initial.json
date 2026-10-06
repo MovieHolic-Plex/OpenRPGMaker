@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-06T10:08:42.626558+00:00",
+  "passed": false,
+  "key": "jade-flute-martial-artist/fifty-v1",
+  "actualJob": {
+    "id": "fcb62332-b261-493d-bcf6-15a86540df75",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T10:04:45.052061+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/jobs/fcb62332-b261-493d-bcf6-15a86540df75",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "88a205637d1be3219b3cc60982d079f0e86d5b637f548dd7a8ae667e49e3cf1a",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "103f728a982d9ce3ae4d375094535b20ee19957bc19fb1fb7c5228c58868403f",
+      "preview/suite/light.png": "ae0ff72c1fdcf92e6036d9236f519196f3bea92ff8bf0badf60ab4d1ecd2b60a",
+      "preview/suite/dark.png": "7fc4fcddc36ec82e2b74e0fa315b76598466555317b7f17434936235ad5a24c6",
+      "preview/suite/checker.png": "fe6a4494b9627a3c34ca108a2d77f5555c967a457c1f9c64ecca59c891b3b907"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T10:07:11.387885+00:00"
+  },
+  "actualResult": {
+    "recommendation": "rework",
+    "summary": "Inspected all four actual PNGs at native 1x and the supplied exact nearest-neighbor 3x. The full-height, right-facing SD figure has readable hair/headband, layered pale cloth, jade belt/flute and small shoes; upper-left highlights and darker right-side planes generally describe volume consistently. The standing and lunging feet meet the same baseline, the main limbs and gripping hands remain visibly connected, and no obvious accidental interior transparent holes were found across the three backgrounds. Windup, lunge, lateral strike, recovery, hit and collapse are readable; poison clutches the chest, stun droops, and sleep kneels with closed eyes, so those state families are distinct. The skill effect originates at the flute tip and has three branches of different lengths, but the flute meets the cheek beside the separately drawn mouth in preparation/contact. The sleep pair changes only five interior color pixels with identical silhouette and limb placement, giving no readable second sleep state at either scale. Recommendation is advisory; user selection remains separate. These static pose previews cannot establish actual battle contact, animation timing, authoring method or model provenance.",
+    "issues": [
+      {
+        "pose": "skill_a",
+        "x": 39,
+        "y": 23,
+        "message": "The mouth mark is at (36,23)-(37,23), while the mouthpiece starts at (41,23); two skin pixels separate the lips from the cheek-edge connection. Redraw a small right-facing lip cluster through (38,23)-(40,23) touching the mouthpiece and remove the old detached mouth mark, so the preparation visibly plays the flute rather than holding it against the cheek. Preserve the connected wrist and tip effect."
+      },
+      {
+        "pose": "skill_b",
+        "x": 37,
+        "y": 23,
+        "message": "The contact frame repeats the cheek contact: lips at (34,23)-(35,23), skin at (36,23)-(37,23), and mouthpiece at (39,23). Reauthor the lips at the right face edge around (37,23)-(38,23), directly meeting the mouthpiece; keep this relationship consistent with the repaired skill_a and retain the three tip-attached rays."
+      },
+      {
+        "pose": "sleep_b",
+        "x": 37,
+        "y": 44,
+        "message": "Compared with sleep_a, only (38,37), (39,43), (37,44), (36,45) and (35,46) change interior colors. Author a visible second sleeping pose with a small head/chin droop and a coherent shoulder or sleeve contour change, while retaining closed eyes, connected neck/hand/flute and grounded kneeling legs. The current shading substitutions do not read as a distinct state or breathing motion at 1x or 3x."
+      }
+    ],
+    "binding": "3b097e8fde564c32f794a18ce14db0687e8d78021c52d497f33e817c2ec3ad23",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "103f728a982d9ce3ae4d375094535b20ee19957bc19fb1fb7c5228c58868403f",
+      "preview/suite/light.png": "ae0ff72c1fdcf92e6036d9236f519196f3bea92ff8bf0badf60ab4d1ecd2b60a",
+      "preview/suite/dark.png": "7fc4fcddc36ec82e2b74e0fa315b76598466555317b7f17434936235ad5a24c6",
+      "preview/suite/checker.png": "fe6a4494b9627a3c34ca108a2d77f5555c967a457c1f9c64ecca59c891b3b907"
+    },
+    "jobId": "fcb62332-b261-493d-bcf6-15a86540df75",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T10:07:11.603065+00:00",
+    "userApproved": false
+  }
+}

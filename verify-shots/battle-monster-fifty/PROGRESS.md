@@ -365,3 +365,15 @@ native-contact-soul-drum-dokkaebi.*,browser-proof-soul-drum-dokkaebi.json,지속
 않는다. 근거:twenty-eight-passed-proof.json,root-review-red-pine-guardian.json,
 root-review-golden-grain-spirit.json,native-contact 두 종,현재 browser-proof 두 종,
 progress-skill_b-red-pine-guardian-golden-grain-spirit.*,지속 출처28종.
+
+## 사람형 세 종 초기 검수 · 통과 수28/50 유지
+
+감독이 청포창객·옥적무인·흑련자객의 각 실제18자세 native1배/최근접2배864×696 시트를 직접
+열고 export/frame/patch/write_frames 전체 쓰기 본문·모듈 흐름·호출을 읽었다. 직접 지정64격자
+행/좌표 군집이며18PNG는 실제 ASCII/팔레트와 정확히 같다. 각각의 원안 시트와 실제 초기
+독립 rework job/result를 보존한다. 옥적무인은 입술/피리 접점 두 자세, 청포창객은 기술/회수의
+장창 길이, 세 종 모두는 내부 옷색만 달라지는 수면 두 번째 자세의 실제 윤곽 변화를 교정 중이다.
+현재 실제 별도 교정 세 모델 체인을 유지하고 새 keep까지 합격 수에 넣지 않는다. 다음 새 저작/
+교정 호출 지침에 실제1배 수면 윤곽 변화와 도구 길이/입술 연결을 반영했다. 진행 중인 원본이나
+독립 판정을 바꾸지 않았다. 근거:세 종 root-draft-review/draft-native-contact,
+draft-independent-rework-*-initial.json,controllers/current-direction.txt. 전체50 목표는 같다.

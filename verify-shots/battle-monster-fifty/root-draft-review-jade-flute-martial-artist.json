@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:06:31.707224+00:00",
+  "passed": false,
+  "key": "jade-flute-martial-artist/fifty-v1",
+  "binding": "3b097e8fde564c32f794a18ce14db0687e8d78021c52d497f33e817c2ec3ad23",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-jade-flute-martial-artist-before-initial-review.png",
+  "nativeContactPngSha256": "df6f0da91c36d654b28f54b07e01e41d474980494175ef9e445ee529dc480438",
+  "nativeWriterFilesRead": {
+    "author.py": "632c85f32ef279f861be7b2e1cbafcd6a8a63176747492aaecd0ab3d216b3793"
+  },
+  "observations": "Opened actual18 native1x/nearest2x864x696 unresized. Adult quiet right-facing small eyes, black hair/jade headband, graywhite robes/teal belt, attached right flute/skin wrist. Flute drawn to shoulder/forward step/side strike/retraction, modest shoulder hit and low closed-eye horizontal dead distinct from closed-eye seated sleep. Three different-length cyan sound paths rooted at raised flute tip, then lowered flute and residual fragments. Poison hand toward chest/purple fragments, lowered arms/flute stun with stars, seated closed-eye sleep with small limb/robe changes. Read full frame/patch methods, all module flows/calls; separately specified row spans and explicit y/x/string patches only, no generated shapes or whole-frame transforms. All18 native PNG RGBA exactly match ASCII/palette. Current independent review pending; no Allow or passed claim."
+}

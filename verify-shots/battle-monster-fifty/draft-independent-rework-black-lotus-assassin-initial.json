@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-06T10:10:34.695972+00:00",
+  "passed": false,
+  "key": "black-lotus-assassin/fifty-v1",
+  "actualJob": {
+    "id": "d738a4cb-66bc-4867-9d93-23a48e7abe3c",
+    "stage": "critique",
+    "phase": "suite",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "startedAt": "2026-10-06T10:06:56.634360+00:00",
+    "preparedOnly": false,
+    "command": [
+      "codex",
+      "exec",
+      "--skip-git-repo-check",
+      "--ephemeral",
+      "--sandbox",
+      "workspace-write",
+      "-C",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/jobs/d738a4cb-66bc-4867-9d93-23a48e7abe3c",
+      "-m",
+      "gpt-6.1-sol",
+      "-c",
+      "model_reasoning_effort=\"high\"",
+      "--json",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/portrait.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/light.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/dark.png",
+      "-i",
+      "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/checker.png",
+      "-"
+    ],
+    "promptSha256": "495e1b1c0e14e89c7b6d16d0f3b1646dddca22d4625190c0b05a2d98af7f78f9",
+    "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+    "imageHashes": {
+      "preview/suite/portrait.png": "148714c7cb10e52b16177c494c5504d28320979f36402363cd8b7ccb2bdcba14",
+      "preview/suite/light.png": "0ca336c820689786c5e426b952feffa0d93cfa850c2c706d952e9a6a2e73afa3",
+      "preview/suite/dark.png": "e55c85abbd2138334b4525dfd758b8406318383941524a237c84c7b08d4929f3",
+      "preview/suite/checker.png": "42c3b7cf997937ab4ad70656069745f1f83f66a4083b576edee21fca387655c1"
+    },
+    "exitCode": 0,
+    "finishedAt": "2026-10-06T10:09:34.403338+00:00"
+  },
+  "actualResult": {
+    "recommendation": "rework",
+    "summary": "실제 portrait/light/dark/checker PNG의 native 1배와 최근접 3배 표시를 확인했다. 우향 3/4의 묶은 검은 머리, 남청 복면, 자주 허리띠와 두 신발은 작은 크기에서도 식별된다. 머리·얼굴·신장의 비율은 계약에 대체로 맞지만 성인 여성이라는 인상은 복면과 단순한 얼굴 때문에 제한적이다. 머리와 왼쪽 어깨의 밝은 면, 오른쪽 옷의 그림자는 왼쪽 위 광원을 지지한다. 어두운 배경에서는 머리와 신발의 외곽 대비가 약해지지만 밝은 면은 남는다. 큰 윤곽 결손이나 몸 안의 명백한 투명 구멍은 보이지 않는다. 준비의 뒤로 모은 단검, 낮은 이동, 오른쪽 찌르기와 회수는 구별되며 팔·손·단검 연결과 발 접지도 읽힌다. 피격은 벌어진 팔로 구별되지만 반동은 약하고, 쓰러짐은 바닥에 누운 몸으로 읽힌다. 스킬은 날의 자주빛 준비, 실제 단검 끝에 이어진 세 갈래 칼기, 회수와 두 파편으로 연결된다. 독은 가슴을 감싼 자세, 기절은 축 처진 팔과 별, 수면은 눈을 감은 앉은 자세로 구별되어 전체 상태가 단순 색 교체는 아니다. 다만 수면 두 프레임은 머리·몸통 외곽·손·다리·단검이 같고 머리끈 끝 12픽셀과 옷색 4픽셀만 달라, 1배에서 호흡이나 자세 변화가 읽히지 않는다. 수면 쌍의 실제 몸 움직임을 보완할 것을 추천한다. 정지 자세 미리보기 검수이며 실제 전투 배치·GIF 타이밍·재생 연속성과 pxgrid 저작 방식은 이 네 PNG만으로 확인할 수 없다. 이 추천은 사용자의 선택을 대신하지 않는다.",
+    "issues": [
+      {
+        "pose": "sleep_b",
+        "x": 39,
+        "y": 46,
+        "message": "수면 a와 비교하면 이 어깨 부근을 포함한 옷 4픽셀의 색과 머리끈 끝만 바뀌고 머리·몸통 외곽·양손·다리·단검은 그대로다. 옷색 변화에 더해 어깨와 가슴의 실제 윤곽을 1픽셀 낮추거나 수축시키고, 머리·목·옷깃을 함께 연결해 호흡의 두 번째 자세를 직접 저작한다. 바닥 y=60의 무릎·신발 접지와 손·단검 연결은 유지한다. 현재 쌍은 native 1배에서 같은 정지 수면 자세로 보인다."
+      }
+    ],
+    "binding": "7d23deccf96686682109ed3103c40c3148ba80b9ada6d79a108e4d6f3bd3fb41",
+    "phase": "suite",
+    "imageHashes": {
+      "preview/suite/portrait.png": "148714c7cb10e52b16177c494c5504d28320979f36402363cd8b7ccb2bdcba14",
+      "preview/suite/light.png": "0ca336c820689786c5e426b952feffa0d93cfa850c2c706d952e9a6a2e73afa3",
+      "preview/suite/dark.png": "e55c85abbd2138334b4525dfd758b8406318383941524a237c84c7b08d4929f3",
+      "preview/suite/checker.png": "42c3b7cf997937ab4ad70656069745f1f83f66a4083b576edee21fca387655c1"
+    },
+    "jobId": "d738a4cb-66bc-4867-9d93-23a48e7abe3c",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "finishedAt": "2026-10-06T10:09:34.611511+00:00",
+    "userApproved": false
+  }
+}

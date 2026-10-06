@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:08:42.625131+00:00",
+  "passed": false,
+  "key": "blue-robe-spear-master/fifty-v1",
+  "binding": "8b1f1180d2f6859a79bd70fcd4e1d5675f17d527a545333fd450c1b08c5939b9",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-blue-robe-spear-master-before-initial-review.png",
+  "nativeContactPngSha256": "4c8f44a3d1774216eb2c8e7463b9252fc281ed8729397ef98710525d7ce2e135",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "208eb7bc1e98dba3bca7b796604bdce947829236e87acf9dff42cadfce9a6de1"
+  },
+  "observations": "Opened actual18 native1x/nearest2x864x696 unresized. Adult small right-facing eyes/darkblue headcloth/bluegray robes/light sash, shoulder-to-hand connection and wooden goldtip spear. Low wideleg windup/forward bent knees/extended horizontal thrust/retraction, leaning hit with raised hand and lowered spear, low prone dead vsseated sleep. Spear tip gathers cyan/three different-length spear-rooted rays/return fragments. Poison hunched hand to mouth, drooping spear stun with stars. Sleep pair changes modest, closed eye readability awaits independent result. Read full nativewriter methods/moduleflows andallcallnames. Blank64grid with explicit per-pose y/x/rowstrings; blue uses individuallyauthored revisedrows, black separatelyauthored pixelblocks. No generatedgeometry/wholeframe transforms. Render/inspect onlyPNG/GIF/diagnosticboards/readback. All18 native PNG RGBA exactlymatch ASCII/palette. Independentreview pending; noAllow/pass claim."
+}
