@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-06T07:36:42.753704+00:00",
+  "passed": false,
+  "key": "plum-blossom-spirit/fifty-v1",
+  "initialBinding": "41cc662321b569bc4830dc752722523892d44ea44f3ca8b5c28fe56a79179d21",
+  "nativePosesViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-plum-blossom-spirit-initial.png",
+  "actualNativePngSha256": "c7db63f85daa19d3c61a1453145a2227129ce771e768ab4782c9020e403ef25b",
+  "currentIndependentRecommendation": "rework",
+  "actualIndependentReviewJob": "d3b96986-638f-421b-8aea-c46db80ad1d5",
+  "actualIndependentReviewIssues": [
+    {
+      "pose": "hit",
+      "x": 48,
+      "y": 38,
+      "message": "Re-pixel the head/neck/shoulder cluster into a visible backward recoil, carrying the bend into the torso around (46,55), and change the calm open-eyed face to a tense or closed-eye impact expression around (51,30). Preserve connected neck and sleeve pixels and grounded soles at y=92. The current upright head and lowered flower arm read almost like recover; the narrower skirt alone does not make the hit state clear at native 1x."
+    }
+  ],
+  "rootPreliminaryObservations": "Opened exactnative1x/nearest2x18pose compact1248x984 without resize. Adultsmall3/4 face/pinneddarkhair/white shortjacket/red flowerhem skirt; rooted blossomhand, forwardstrike vsfoldedwindup, flatfallenclosedeye vsseatedsleep. Pinkgather/fingeroriginthreepetaltraces/recoverypieces visible. Hit uprighthead andcalmface too similar to recover, agreeing with actual independent rework; pending backwardhead/neck/shoulder/torso and tenseclosedeyes. Read author_pixels.rows/new/variant/band/save full bodies: variant preservesbase literalrows, band clearschosenrows thenplacesexplicitstrings, no geometry/wholeframetransform. Renderonlydecodesnative/preview/GIF. All18 currentPNG RGBA equal canonicalASCII.",
+  "approvalClaim": false,
+  "full50CompleteClaim": false,
+  "claimScope": "Initial current source/method/native visual observation only. Not root pass/Allow/native pack/browser proof. Repair and new independent keeper still required."
+}

@@ -9,8 +9,10 @@ from PIL import Image, ImageDraw, ImageFont
 parser = argparse.ArgumentParser()
 parser.add_argument('monsters', nargs='+')
 parser.add_argument('--repo', type=Path, default=Path.cwd())
+parser.add_argument('--source-root', type=Path)
 args = parser.parse_args()
 repo = args.repo.resolve()
+source_root = (args.source_root or repo / 'qa-runs/harnesses/battle-monster').resolve()
 plan = json.loads((repo / 'harness-data/battle-monster/fifty-monsters-plan.json').read_text())
 roster = {r['id']: r for r in plan['roster']}
 names = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack',
@@ -21,7 +23,7 @@ font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 12)
 for ident in args.monsters:
     row = roster[ident]
     cell = row['cell']
-    candidate = repo / 'qa-runs/harnesses/battle-monster' / ident / plan['candidate']
+    candidate = source_root / ident / plan['candidate']
     check = json.loads((candidate / 'check-suite.json').read_text())
     palette = json.loads((candidate / 'source/palette.json').read_text())
     colors = {k: tuple(bytes.fromhex(v[1:])) + (255,) for k, v in palette.items()}
@@ -54,7 +56,7 @@ for ident in args.monsters:
     receipt = {'at': datetime.now(timezone.utc).isoformat(), 'key': ident + '/' + plan['candidate'],
                'binding': check['binding'], 'nativeCell': cell, 'nativePoses': len(proof),
                'displayScales': [1, 2], 'boardSize': list(board.size),
-               'noSourceWrites': True, 'approvalClaim': False,
+               'noSourceWrites': True, 'approvalClaim': False, 'sourceRoot': str(source_root),
                'pngSha256': hashlib.sha256(target.read_bytes()).hexdigest(), 'frames': proof}
     target.with_suffix('.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n')
     print(target.relative_to(repo))

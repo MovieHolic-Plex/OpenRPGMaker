@@ -246,6 +246,8 @@ npm run harness -- battle-monster accept-batch \
 `capture-fifty-native-contact.py <종 ID...>`는 게시된 실제18개 PNG와 ASCII/팔레트의 RGBA를
 대조한 뒤1배/최근접2배를6열3행으로 배치한다.96/128px도 긴 변2048px 안에 들어가
 이미지 도구의 긴 시트 축소를 피한다. 원본을 고치거나 통과 판정을 만들지 않는다.
+`--source-root qa-runs/battle-monster-fifty-wave/candidates`는 실제18자세/PNG가 준비된
+미게시 초안을 같은 방식으로 관찰한다. receipt에 실제 sourceRoot를 남기며 초안은 통과 수에 넣지 않는다.
 `verify-fifty-current-progress.py --out <JSON>`는 현재 감사·저장 출처 해시·실제 감독 기록·
 현재 선택 binding·8GIF/정지/재생/375/320px 브라우저 근거와 기존 판정/선택 보존을 다시 읽는다.
 부분 합격 수는 전체50 완료와 구별하며 원본 그림과 쓰기 함수의 실제 감독 열람은 여전히 필요하다.
