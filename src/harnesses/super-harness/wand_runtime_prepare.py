@@ -39,10 +39,13 @@ def freeze(root, recipes, layout, actors, out):
     scene_layout = add(layout)
     contract = root / scene_layout["runtimeContract"]
     runtime = add(contract)
-    add(layout.parent / "assembly_contract.py")
+    add(contract.parent / "assembly_contract.py")
     # Recursively bind preserved native sources/old recipes and all response slots.
     references(runtime)
-    recipe_paths = [recipes / f"space-state-{i}.recipe.json" for i in range(4)]
+    # Assemblers emit either zero-based or one-based four-state filenames.
+    start = 0 if (recipes / "space-state-0.recipe.json").exists() else 1
+    recipe_paths = [recipes / f"space-state-{i}.recipe.json" for i in range(start, start + 4)]
+    require(all(path.is_file() for path in recipe_paths), "Four complete ordered scene recipes required")
     for path in recipe_paths:
         references(add(path))
     actor_pack = add(actors)
@@ -59,7 +62,10 @@ def freeze(root, recipes, layout, actors, out):
     return manifest
 
 
-def pack(manifest, out):
+def pack(manifest, out, vacancy_receipt=None):
+    if vacancy_receipt:
+        from wand_shelf_runtime import bind_manifest
+        manifest = bind_manifest(manifest, vacancy_receipt)
     f = Frozen(manifest)
     layout, rt = f.read(manifest["layout"]), f.read(manifest["contract"])
     actors = f.read(manifest["actors"])
@@ -78,7 +84,23 @@ def pack(manifest, out):
     sources = [[f.source(s) for s in r["sources"]] for r in recipes]
     excluded = lambda path: "/native-actors/" in path or any(k in path for k in ("wandtrial_response", "wand_response_extra", "wood_shop_doors"))
     statics = [[(sources[j][o["source"]], o) for o in r["placements"] if not excluded(sources[j][o["source"]])] for j, r in enumerate(recipes)]
-    require(len({len(s) for s in statics}) == 1, "Static scene counts differ")
+    # Preserve state-specific native placements, including contact/lift pieces.
+    # Align by source + destination geometry, not list index or rectangle count.
+    keyed = []
+    keys = []
+    for entries in statics:
+        counts, mapping = {}, {}
+        for path, op in entries:
+            base = (path, tuple(op["at"]), tuple(op["rect"][2:]))
+            occurrence = counts.get(base, 0)
+            counts[base] = occurrence + 1
+            key = (*base, occurrence)
+            mapping[key] = (path, op)
+            if key not in keys:
+                keys.append(key)
+        keyed.append(mapping)
+    aligned = [(key, [mapping.get(key) for mapping in keyed]) for key in keys]
+
 
     def sprite_piece(name, frames, at, cell, priority="same", patterns=None):
         asset = p.sheet(name, frames, cell, at)
@@ -88,12 +110,11 @@ def pack(manifest, out):
         p.events.append(event(id, cell, pages, name))
         return id, asset
 
-    for i, (path, op) in enumerate(statics[0]):
-        variants = [q[i] for q in statics]
-        require(all(qpath == path and q["at"] == op["at"] and q["rect"][2:] == op["rect"][2:] for qpath, q in variants), "Static geometry changed between states")
+    for i, (_, variants) in enumerate(aligned):
+        path, op = next(q for q in variants if q is not None)
         at = [op["at"][0], op["at"][1] - 32]
         rect = op["rect"]
-        immutable = all(q["rect"] == rect for _, q in variants)
+        immutable = all(q is not None and q[1]["rect"] == rect for q in variants)
         crop = f.crop(path, rect)
         x, y = at[0] // 16, at[1] // 16
         if rect[2:] == [16, 16] and at[0] % 16 == at[1] % 16 == 0 and 0 <= x < 11 and 0 <= y < 12 and immutable:
@@ -115,9 +136,10 @@ def pack(manifest, out):
         if "wandtrial_shelves" in path and rect[2] == 16:
             # Six depth bands of a connected source: actual ground south edge.
             cell = [1 if at[0] == 16 else 9, max(4, min(9, (op["at"][1] + rect[3]) // 16 - 3))]
-        sprite_piece(Path(path).parent.name + "_" + str(i), [crop] if immutable else [f.crop(qpath, q["rect"]) for qpath, q in variants], at, cell, priority,
+        piece_id, _ = sprite_piece(Path(path).parent.name + "_" + str(i), [crop] if immutable else [f.crop(q[0], q[1]["rect"]) if q is not None else
+                (Image.new("RGBA", (rect[2], rect[3]), (0, 0, 0, 0)), "absent-native-piece") for q in variants], at, cell, priority,
                      [0] * 4 if immutable else list(range(4)))
-        operations.append({"source": path, "rect": rect, "screenTL": op["at"], "worldTL": at, "cell": cell})
+        operations.append({"eventId": piece_id, "source": path, "rect": rect, "screenTL": op["at"], "worldTL": at, "cell": cell, "allStates": immutable, "presentStates": [i for i, v in enumerate(variants) if v is not None]})
 
     # Recover north inventory from its explicit preserved native source, never
     # from a whole room screenshot. Old recipes omitted it; contract binds it.
@@ -178,8 +200,10 @@ def pack(manifest, out):
             branch += [{"kind": "setEventGraphicPattern", "eventId": id, "pattern": 0}, switch("wand_actor_busy", False)]
             # Shelf-lift preview at current actor location is explicitly isolated
             # from shelf stock; contextual removal requires a native vacant bed.
-            menus.append((pose, branch))
-        action_menu = choice(menus, "원본 행동 시연 · 선반 재고 제거는 미연결")
+            direction = {"up": "뒤쪽", "right": "오른쪽", "down": "앞쪽", "left": "왼쪽"}[pose.rsplit("-", 1)[-1]]
+            action = "치수 재기" if pose.startswith("measure-") else "지팡이 들어보기" if pose.startswith("wand-raise-") else "상자 들기 동작"
+            menus.append((action + " · " + direction, branch))
+        action_menu = choice(menus, "행동 미리보기 · 상자 꺼내기는 준비 중")
         scene_options = []
         for s, scene_state in enumerate(rt["fourStates"]):
             commands = [switch(key, s == index) for index, key in enumerate(STATE, 1)]
@@ -187,7 +211,7 @@ def pack(manifest, out):
             for door, status in zip(("entry", "staff"), scene_state[:2]):
                 commands += [switch("wand_" + door + "_closed", status == "closed"), switch("wand_" + door + "_locked", status == "locked")]
             scene_options.append((str(s + 1) + " · " + scene_state[2], commands))
-        commands = [choice([("원본 행동", [action_menu]), ("교실 상태", [choice(scene_options, "네 상태")]),
+        commands = [choice([("행동 보기", [action_menu]), ("가게 장면 바꾸기", [choice(scene_options, "가게 장면")]),
                            ("지팡이 시험", [switch("wand_response_busy", True)])], "지팡이 상점")]
         pages = [page(id + "_" + str(s), graphic(sprite), commands,
                       [] if s == 0 else [condition(STATE[s - 1])], "same", True) for s, sprite in enumerate(state_sprites)]
@@ -225,7 +249,7 @@ def pack(manifest, out):
         slots = [0, 32, 64] if name == "entry" else [96, 128, 160]
         door_frames = [f.crop(door_path, [x, 0, 32, 48]) for x in slots]
         sprite = p.sheet(name + "-door", door_frames, door["cell"], [door["sheetTopLeft"][0], door["sheetTopLeft"][1] - 32], [16, 40])
-        options = [(state, [switch("wand_" + name + "_closed", state == "closed"), switch("wand_" + name + "_locked", state == "locked")]) for state in ("open", "closed", "locked")]
+        options = [(label, [switch("wand_" + name + "_closed", state == "closed"), switch("wand_" + name + "_locked", state == "locked")]) for state, label in (("open", "열기"), ("closed", "닫기"), ("locked", "잠그기"))]
         pages = [page(name + "_open", graphic(sprite), [choice(options, "문")], priority="same"),
                  page(name + "_closed", graphic(sprite, 1), [choice(options, "닫힌 문")], [condition("wand_" + name + "_closed")], "same", True),
                  page(name + "_locked", graphic(sprite, 2), [text("잠겨 있습니다."), choice([( "잠금 해제", [switch("wand_" + name + "_locked", False), switch("wand_" + name + "_closed", True)])], "잠금")], [condition("wand_" + name + "_locked")], "same", True)]
@@ -247,7 +271,10 @@ def pack(manifest, out):
                       "reason": "Current shelf stock is baked into sheet. No native empty-bed crop exists to remove the held box without drawing/duplicate stock.",
                       "required": "hash-bound vacant native shelf slot or layered native shelf+box originals; then contextual actor contact/lift can bind its same18frame delivery"}
     for side, cell in (("west", [2, 6]), ("east", [8, 6])):
-        p.events.append(event("wand_shelf_" + side, cell, [page(side + "_shelf", commands=[text("상자 꺼내기 연결은 원본 빈 받침 슬롯을 기다리고 있습니다. 재고 중복 표시를 하지 않습니다.")])]))
+        p.events.append(event("wand_shelf_" + side, cell, [page(side + "_shelf", commands=[text("길쭉한 지팡이 상자들이 놓여 있습니다. 상자를 꺼내는 동작은 아직 준비 중입니다.")])]))
+    if manifest.get("vacancy"):
+        from wand_shelf_runtime import attach
+        shelf_bindings = attach(p, f, actors, actor_proofs, operations, MAP)
     atlas = Image.new("RGBA", (256, math.ceil(len(p.tiles) / 16) * 16), (0, 0, 0, 0))
     for i, image in enumerate(p.tiles):
         atlas.paste(image, (i % 16 * 16, i // 16 * 16))
@@ -290,12 +317,13 @@ def main():
     pack_parser = commands.add_parser("pack")
     for name in ("manifest", "out"):
         pack_parser.add_argument("--" + name, required=True, type=Path)
+    pack_parser.add_argument("--vacancy-receipt", type=Path)
     args = parser.parse_args()
     if args.command == "freeze":
         result = freeze(args.artwork_root.resolve(), args.recipes.resolve(), args.layout.resolve(), args.actors.resolve(), args.out.resolve())
         print(json.dumps({"manifest": str(args.out.resolve()), "inputFingerprint": result["inputFingerprint"]}))
     else:
-        print(json.dumps(pack(json.loads(args.manifest.read_text()), args.out.resolve())))
+        print(json.dumps(pack(json.loads(args.manifest.read_text()), args.out.resolve(), args.vacancy_receipt)))
 
 
 if __name__ == "__main__":

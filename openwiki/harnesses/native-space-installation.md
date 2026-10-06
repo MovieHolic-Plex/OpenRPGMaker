@@ -154,3 +154,17 @@ another host has it. `runtimePassed:false` remains false until separate runtime 
 has real evidence; collisions, doors, animation, visual fidelity, and playable
 objectives remain the supervisor's checks. Serve the canonical folder through the
 SQLite project host for editor preview; bridge-free previews do not resolve refs.
+
+## Isolated wand shelf vacancy request
+
+`src/harnesses/super-harness/wand_vacancy_prepare.py prepare --root <native-artwork-root> --out <new-scope>` freezes the existing shelf, original native walk/actions, scene recipe and native harness code. It queues one native candidate in scope-local content/data/picks, with all pixels locked except box5 sockets XYWH `[2,34,12,5]` and `[18,34,12,5]`. It preserves the source palette and all other shelf pixels. The source-specific paths/hashes are explicit in the entry; refreshed sources require an explicit new request.
+
+`run --out <scope>` executes the copied native interior-props draw/independent-review path. `collect --out <scope>` validates changed pixels and source colors and creates lossless actual before/contact/lift comparisons from the frozen recipe and both delivered native actors, with exact anchors and 200ms lift poses. `review-context --out <scope>` requires native PASS, creates the comparisons, invokes the configured Codex reviewer and writes a hash-bound receipt. Each actor/side comparison isolates its subject and retains native scene placements; these images are review evidence, never a flattened runtime background.
+
+The receipt is reviewed content awaiting selection. It does not select, publish, save a project or establish runtime success. Context PASS does not resolve the original full-room wall FAIL. A current hash-bound selection, current whole-scene review, runtime integration/QA and canonical save/reload remain the supervisor's responsibilities. Partial failed preparation directories are retained and must not be reused.
+
+### Reviewed shelf pickup in playable drafts (2026-10-06)
+
+`wand_runtime_prepare.py pack --vacancy-receipt <receipt.json>` accepts only native PASS plus four independently approved actor/side contexts bound to the exact candidate. `wand_shelf_runtime.py` verifies the receipt/evidence hashes and source pixels outside both box sockets, retains original native action crops/anchors, and authors contact → vacancy/held box → exact stock return plus actor return events. The opposite shelf stays occupied. Both facing the visible shelf and the floor interaction open the same menu. This requires actual runtime confirmation and does not approve the complete room or publish/save it.
+
+Scene recipes may have different placement counts per state. Draft packing aligns native pieces by source/destination/size/occurrence; absent state pieces become transparent frames. Zero-based and one-based four-state filename sequences are accepted. Contract helpers resolve relative to the runtime contract, allowing an approved frozen layout file to live in `approved-previews/`.
