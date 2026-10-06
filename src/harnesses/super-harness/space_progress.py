@@ -103,12 +103,57 @@ def native(cid):
             'outputAgeSeconds': max(0, int(time.time()-max(outputs))) if outputs else None}
 
 
+def collected(cid):
+    """Keep the last collected batch visible while its next order is prepared.
+
+    This is observation only. Match the manifest to its result bytes and current
+    theme before exposing preserved originals; never revive an approval.
+    """
+    folder = Path(sh.cdir(cid))
+    root = Path(sh.DATA) / 'art-worktrees' / cid
+    manifest = sh.read_json(folder / 'art-choices.json', {}) or {}
+    if manifest.get('demoVersion'): return [], None
+    for name in ('art-result.json', 'art-result.previous.json'):
+        path = folder / name
+        if not path.is_file() or gates.digest(path) != manifest.get('artResultSha256'): continue
+        import theme_production
+        result = sh.read_json(path, {}) or {}
+        try:
+            theme_production.require_binding(cid, result)
+        except (ValueError, KeyError, TypeError):
+            continue
+        images, verified_groups = [], []
+        for group in manifest.get('groups', []):
+            verified_candidates = []
+            for candidate in group.get('candidates', []):
+                # Validate all receipt/source evidence, not just the thumbnail.
+                try:
+                    import art_choices
+                    for ref in [candidate['sheet'], *candidate['sources']]:
+                        art_choices.verified(root, ref)
+                except (OSError, ValueError, KeyError, TypeError):
+                    continue
+                ref = dict(candidate['sheet'], label=group['title'] + ' · ' + candidate['summary'])
+                images += sh.verified_images(root, [ref], '확보한 원본 · 최종 검수 전', '확보한 칩')
+                verified_candidates.append(candidate)
+            verified_groups.append(dict(group, candidates=verified_candidates))
+        # Recompute from the bound originals, not a stale progress counter.
+        try:
+            status = theme_production.coverage_status(cid, result, dict(manifest, groups=verified_groups))
+        except (OSError, ValueError, KeyError, TypeError):
+            status = None
+        return images, status
+    return [], None
+
+
 def describe(c, item):
     cid, folder = c['id'], Path(sh.cdir(c['id']))
     plan = gates.planning_report(folder, approved=False)
     approved = gates.planning_report(folder)
     material = gates.material_report(folder)
     candidates = sh.candidate_images(cid)
+    preserved, coverage = collected(cid)
+    if preserved: candidates = preserved
     plans = sh.planning_images(cid)
     assembled = sh.demo_images(cid) or (sh.example_images(cid) if not sh.before_build(c) else [])
     reviews = {k: sh.read_json(folder / 'reviews' / f'{c["attempt"]}-{k}.json') for k in ('A', 'B')}
@@ -124,6 +169,9 @@ def describe(c, item):
     task, deliverable = TASKS.get(current, (item['note'] or item['label'], item['next']))
     if any(j['kind'] == 'art' and '결과 정리' in j['label'] for j in item['jobs']):
         task, deliverable = '제작된 그림과 검수 결과를 모으고 사용자 예시를 준비합니다.', 'Allow / Deny할 실제 예시'
+    elif current == 'art' and coverage and coverage['missing']:
+        task = f"확보한 전용 원본을 보존하고, 부족한 재료 {len(coverage['missing'])}종의 추가 제작을 준비하고 있습니다."
+        deliverable = '추가 재료 제작 → 전체 공간 데모 → 독립 검수'
     elif current == 'art' and c['reasons']:
         task = '이전 검수에서 반려된 도면·치수·시점·조립 명세를 수정하고 있습니다.'
     progress = native(cid)
@@ -136,12 +184,19 @@ def describe(c, item):
     verdict = sh.read_json(folder / 'art-layout-review.json', {}) or {}
     fresh_verdict = verdict.get('verdict') if layout.get('fingerprint') and layout.get('fingerprint') == verdict.get('fingerprint') else None
     gaps = material.get('missing', [])
+    image_note = '기획도는 배치 설명용입니다. 실제 칩·공간 그림과 별도로 셉니다.' if plans else '현재 기획도 미리보기도 아직 확인되지 않았습니다.'
+    if coverage:
+        made, missing = len(coverage['covered']), len(coverage['missing'])
+        image_note = f'전용 재료 원본 {made}/{made + missing}종 확보 · 추가 제작 {missing}종. 원본 확보는 품질 합격이나 공간 완성을 뜻하지 않습니다.'
+        requirements = sh.read_json(folder / 'planning.json', {}) or {}
+        names = {r['id']: r.get('what', r['id']) for v in requirements.get('variants', []) for r in v.get('requirements', [])}
+        gaps = [dict(id=rid, what=names.get(rid, rid)) for rid in coverage['missing']]
     drawing_count = len(candidates) + len([im for im in progress['previews'] if im['path'] not in {p['path'] for p in candidates}])
     return dict(id=cid, title=c['title'], task=task, deliverable=deliverable,
         percent=round(completed / len(milestones) * 100), completed=completed, total=len(milestones),
         milestones=[dict(label=label, done=bool(done)) for label, done in milestones],
         images=images[:8], imageCounts=dict(plans=len(plans), chips=drawing_count, spaces=len(assembled)),
-        imageNote=('기획도는 배치 설명용입니다. 실제 칩·공간 그림과 별도로 셉니다.' if plans else '현재 기획도 미리보기도 아직 확인되지 않았습니다.'),
+        imageNote=image_note,
         native=progress['counts'], nativeAvailable=progress['available'], nativeOutputAgeSeconds=progress['outputAgeSeconds'],
         layoutVerdict=fresh_verdict, missing=[g.get('what') or g.get('id') for g in gaps][:12], missingCount=len(gaps),
         events=activity.events(cid), updated=time.time())
