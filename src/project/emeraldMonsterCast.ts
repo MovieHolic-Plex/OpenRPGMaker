@@ -13,7 +13,9 @@ export function configureEmeraldMonsterCast(project: Project): void {
     project.assets.uploaded[asset.id] = { ...asset, meta: { ...asset.meta } };
   }
   const hero = project.database.actors.find(a => a.id === DEFAULT_ACTOR_ID);
-  if (hero && STOCK_HEROES.has(hero.characterResourceId ?? '')) {
+  // 이미 같은 칸이면 손대지 않는다 — 저장소에서 다시 읽은 문서는 characterIndex 0 을 빼고 오는데, 보수가 매번 0 을 다시 써서
+  // 문서 지문이 바뀌었고 「마지막 변경 뒤 read_monster_game」 완료 검사가 끝나지 않았다(2026-10-07 사막 기획서 실편집기 녹화).
+  if (hero && STOCK_HEROES.has(hero.characterResourceId ?? '') && (hero.characterResourceId !== SHEETS[0] || (hero.characterIndex ?? 0) !== 0)) {
     hero.characterResourceId = SHEETS[0];
     hero.characterIndex = 0;
   }
