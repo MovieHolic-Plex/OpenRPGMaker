@@ -8,9 +8,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from ref_house import (K, Cv, OL, hip_roof, eave, lean_to, siding, eave_shadow, sash, genkan,  # noqa: E402
                        foundation, porch, balcony, ac_unit, hero, tree, gravel, blit)
+from modern_style_bible_proof import wall_fill, vending  # noqa: E402
 
 C = 16
-MARGIN = 8            # 캔버스 좌우 여백(처마 4 + 윤곽)
+MARGIN = 8
+ROOF_H = {'hip': 32, 'gable_side': 30, 'gable_front': 40, 'shed': 22, 'flat': 32, 'none': 0}
+PARTS, ROOFS, JOINS, JOIN_H = {}, {}, {}, {}      # 확장 모듈(shop_parts 등)이 등록한다: PARTS[k](cv,cx,fy,fh,floor,item) · ROOFS[k](cv,X0,X1,top,h,r,opt) · JOINS[k](cv,X0,X1,jy,opt,r)            # 캔버스 좌우 여백(처마 4 + 윤곽)
 
 
 # ─────────────────────────── 벽 재료 ───────────────────────────
@@ -28,6 +31,8 @@ def wall(c, x, y, w, h, mat, base, kind):
         for i in range(w):
             t = base - 1 if i % 4 == 0 else base + 1 if i % 4 == 1 else base
             c.VL(x + i, y, h, K(mat, t))
+    elif kind in ('tile', 'panel', 'brick'):
+        wall_fill(c, x, y, w, h, mat, kind)
     elif kind == 'board':
         for i in range(w):
             t = base - 2 if i % 6 == 0 else base + 1 if i % 6 == 1 else base
@@ -209,10 +214,11 @@ def build(r):
     X1 = X0 + W - 1
     floors, joins, roof = r['floors'], r.get('joins', []), r['roof']
     # 세로 배치(위 → 아래 거꾸로 계산)
-    hgt = {'lean': 16, 'lean_bal': 16, 'belt': 4, 'none': 0, 'corridor': 4}
-    roof_h = {'hip': 32, 'gable_side': 30, 'gable_front': 40, 'shed': 22, 'flat': 32, 'none': 0}[roof[0]]
+    hgt = {'lean': 16, 'lean_bal': 16, 'belt': 4, 'none': 0, 'corridor': 4, **JOIN_H}
+    roof_h = ROOF_H[roof[0]] if roof[0] in ROOF_H else roof[1].get('h', 32)
     total = 6 + roof_h + 4 + sum(f['h'] for f in floors) + sum(hgt[j[0]] for j in joins) + 4 + 10
     cv = Cv(W + 2 * MARGIN + 8, total)
+    cv.doors = []                                         # 출입구 x 중심(px) — 굽기에서 entrance 부품이 된다
     y = 6 + roof_h + 4                                   # 맨 위층 벽 시작
     ys = []
     for i in range(len(floors) - 1, -1, -1):
@@ -223,6 +229,7 @@ def build(r):
     # 벽 + 부품
     for i, f in enumerate(floors):
         fy, fh = ys[i], f['h']
+        cv.floor_i = i
         wall(cv, X0, fy, W, fh, f['mat'], f['base'], f['kind'])
         slab_shadow(cv, X0, fy, W, f['mat'], f['base'])
         for it in f.get('items', []):
@@ -230,15 +237,18 @@ def build(r):
             if kind == 'sash':       # ('sash', 칸, 폭, 높이, x오프셋, y오프셋, curtain, shutter)
                 sash(cv, cx + it[4], fy + it[5], it[2], it[3], f['mat'], f['base'], curtain=it[6], shutter=it[7])
             elif kind == 'genkan':
-                genkan(cv, cx, fy, f['mat'], f['base'])
+                genkan(cv, cx, fy, f['mat'], f['base']); cv.doors.append(cx + 12)
             elif kind == 'door':
                 entry_door(cv, cx + it[2], fy + fh - 28 - 1)
+                if i == 0: cv.doors.append(cx + it[2] + 8)
             elif kind == 'garage':
                 garage(cv, cx, fy, fh, it[2])
             elif kind == 'lattice':
-                lattice_door(cv, cx, fy + fh - 29, it[2], 28)
+                lattice_door(cv, cx, fy + fh - 29, it[2], 28); cv.doors.append(cx + it[2] // 2)
             elif kind == 'ac':
                 ac_unit(cv, cx + it[2], fy + fh - 9)
+            elif kind in PARTS:
+                PARTS[kind](cv, cx, fy, fh, f, it)
             elif kind == 'grille':
                 for gx in range(cx + it[2] + 1, cx + it[2] + it[3] - 1, 2): cv.VL(gx, fy + it[4] + 1, it[5] - 2, K('tekko', 3))
     foundation(cv, X0, yf, W, vents=r.get('vents', ()))
@@ -256,6 +266,8 @@ def build(r):
                 balcony(cv, bx0, bx1, jy, jy + 12, 0, 0, 0)
         elif kind == 'belt':
             belt(cv, X0, jy, W, opt.get('mat', 'conc') if opt else 'conc')
+        elif kind in JOINS:
+            JOINS[kind](cv, X0, X1, jy, opt, r)
         elif kind == 'corridor':
             corridor(cv, X0, X1, jy)
     # 지붕
@@ -272,13 +284,17 @@ def build(r):
         shed(cv, X0 - 3, X1 + 3, top - roof_h + 2, top - 4, r['rmat'], r['rbase'])
     elif rk == 'flat':
         flat_roof(cv, X0, X1, top - roof_h, top, ro.get('mat', 'conc'), ro.get('items', ()))
+    elif rk in ROOFS:
+        ROOFS[rk](cv, X0, X1, top, roof_h, r, ro)
     for p in r.get('porch', ()):
         porch(cv, X0 + p[0], yf + 1, p[1])
+    for fn in r.get('after', ()):
+        fn(cv, dict(X0=X0, X1=X1, ys=ys, yf=yf, floors=floors))
     if 'stair' in r:
         sx, fl = r['stair']
         jy = ys[fl + 1] + floors[fl + 1]['h']
         ext_stair(cv, X0 + sx * C, jy, yf + 4, 14)
-    return cv, dict(ground=yf + 4, x0=X0, x1=X1)
+    return cv, dict(ground=yf + 4, x0=X0, x1=X1, yf=yf, y1=ys[0], doors=sorted(set(cv.doors)), nfloors=len(floors))
 
 
 # ─────────────────────────── 레시피 ───────────────────────────
