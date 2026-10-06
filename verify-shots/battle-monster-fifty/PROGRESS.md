@@ -631,3 +631,23 @@ ASCII/팔레트와 같다. 실제 초기 독립 rework2지적은 sleep_b 갑각 
 근거:thirty-nine-passed-proof.json,root-review-silver-sword-matron.json,
 native-contact-silver-sword-matron.*,browser-proof-silver-sword-matron.json,
 draft-independent-rework-abyss-jade-turtle-initial.json,지속 출처39종.
+
+
+## 현무 첫 교정본 검수 · 현재 통과39/50 유지
+
+감독이 첫 교정본의 실제18자세 native1배/최근접2배1632×1272 시트를 직접 열고
+repair.apply 전체 쓰기 본문·모듈 흐름·호출을 읽었다. 초기 author와 render는 앞서
+전체를 읽은 해시 그대로다. 명시적 두 상태의 y/x/행 문자열만 쓰고 이전 원본/변경 수를
+보존했다.18PNG는 실제 ASCII/팔레트와 같다. 수면의 파손 윤곽은 메워졌다.
+
+새 실제 독립 rework3지적은 선 갑각의 방패 같은 면/약한 둥근 돔과 아랫테 두께,
+전진하는 갑각·어깨의 충돌 질량 부족, 닫힌 입 앞에 세로로 놓인 물 리본/불명확한 입
+발원점이다. 실제 q/job/첫 교정본 시트/감독 draft(false)를 보존했다. 기존 감독 기록의
+‘mouthroot’는 의도된 주둥이 위치를 가리켰으며 열린 입의 검수 확정이 아님을 명시했다.
+별도 실제 두 번째 교정 호출로 둥근 갑각·두꺼운 아랫테·앞으로 밀치는 어깨와 압축된
+목/받침 발·열린 입에서 오른쪽으로 퍼지는 두 큰 물 파문을 직접 다시 그리는 중이다.
+통과 수는 여전히39/50/702자세/312GIF이며 새 keep 전에는 현무를 포함하지 않는다.
+기린과 빙룡의 실제 별도 저작도 계속하며 두 대기 원본을 제작 중으로 표시해 보존했다.
+근거:root-draft-review-abyss-jade-turtle-after-repair-one.json,
+draft-native-contact-abyss-jade-turtle-after-repair-one.*,
+draft-independent-rework-abyss-jade-turtle-after-repair-one.json.

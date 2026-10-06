@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "abyss-jade-turtle",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "fa8be554a126b59079976b37479c6e3814d556ff0640f64ff36fc2b31143a4f2",
+    "cell": 128,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:46:56.505445+00:00",
+    "binding": "6135ec8316fa73647d32f9edbf3560e9964a5795c7ba890531ea96eaff3ed262",
+    "entireGoalCompleteClaim": false
+  }
+]

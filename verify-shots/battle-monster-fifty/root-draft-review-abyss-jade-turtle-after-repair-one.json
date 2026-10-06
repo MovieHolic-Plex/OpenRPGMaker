@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-06T11:56:58.813584+00:00",
+  "passed": false,
+  "key": "abyss-jade-turtle/fifty-v1",
+  "binding": "6ba982dacdfe2489e0f6b53a2b0057469a404a0aacd2f22738749e25e0fa648c",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-abyss-jade-turtle-after-repair-one.png",
+  "nativeContactPngSha256": "f8aa7a7bc637fdb8249a784209ac4e364ea807520fd6bd7667ae762664ae1a5f",
+  "nativeWriterFilesRead": {
+    "author.py": "01165733235635df42730484b368d664ab7ccdbab371eea7ba64de1ae2d60b56",
+    "repair.py": "d2f00c5bf2f577b791001d0469bddf97bbe77c122cc8952a105b0749f58bcfbb"
+  },
+  "observations": "Actually opened repaired18 native1x/nearest2x1632x1272 unresized. Same128jadegoldrigidplate/connectedlongneck/fourclawedlegs/curledtail/explicitpushstride/shouldercontact/states. Sleep_b upperplate nowcontinuousroundoutline/filledshadow withoutdeadlikecrack; sleepa/b closedeyes-intended foldedlegs/lowerplate separatefromcollapseddead. Skill_b actualmouthroot withupper/lower curledcyanwater masses/thickerbluevolume/brightwhitecrests andopen spacebetweenthecurves beyondsharedmouthroot, rightcellmarginretained. Read fullrepair.apply body/allmoduleflow/calls: onlyindividuallychoseny/x/inkstrings for2actionposes withbeforebackup andchangedpixelcount. Originalauthor.put/save/allmoduleflows unchangedatpreviousactualfullreadhash; explicitrigidpartreuse/restingpartliteraltranscription, no geometry/automaticwholeframe transformation. Render/diagnostics onlyPNG/GIF/inspection/readback. All18nativePNG match ASCII/palette. Initialactual2-issue reworkandinitialdraftpreserved; freshindependentdecisionrequired.",
+  "clarifiedVisualObservationsAt": "2026-10-06T12:00:39.958158+00:00",
+  "clarifiedVisualObservations": "The new actual critic found the closed snout makes the emission origin ambiguous and reads the two curves as hookedribbons; earlier mouthroot wording described intendedsnoutlocation, not establishedopenmouth. Uprightfacetedplate/domevolume and weakshouldershove also require fresh native repair. This remainspassedFalse."
+}
