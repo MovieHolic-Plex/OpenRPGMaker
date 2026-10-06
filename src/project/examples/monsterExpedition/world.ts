@@ -91,6 +91,14 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
+    // 8번길 유적 템플릿은 출구 위 모래에 돌바닥 두 칸이 덩그러니 떠 있었다(2026-10-06 조화 검수 지적, 렌더로 확인) — 모래로 덮는다.
+    if (source === "dungeon/ruins" && !TOWN_SKETCHES[key]) {
+      const stone = new Set(["ru_fl2", "ru_fl3"].map(n => t.names[n]));
+      for (let x = 0; x < map.width; x++) {
+        const cell = (map.height - 3) * map.width + x;
+        if (stone.has(map.lowerTiles[cell]!)) map.lowerTiles[cell] = t.names[x % 2 ? "ru_sand1" : "ru_sand2"]!;
+      }
+    }
     if (source === "overworld/cave") {
       // 쓰지 않는 아래층 구멍도 길처럼 읽히므로 함께 바닥으로.
       const sand = new Set([...Object.entries(t.names).filter(([n]) => n.startsWith("cave_sand")).map(([, v]) => v), t.names.hole_down!]);
