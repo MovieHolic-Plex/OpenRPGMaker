@@ -198,6 +198,17 @@
     "selectedPackSha256": "52685c0aa679734701f63ad8b879d896a70e09673eeb9410b8eb8f2c189e9746"
   },
   {
+    "key": "storm-kite-spirit/fifty-v1",
+    "binding": "835082df80a345cebbf5aa46cd5e7fc5d1933731626a56ea9f794b085d341c29",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "2a32f89f4e4a3e83914503c4cafbe395dbdfe61ae1f611653b3522cec3f11bf6"
+  },
+  {
     "key": "red-tassel-swordswoman/fifty-v1",
     "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
     "nativeCell": 64,

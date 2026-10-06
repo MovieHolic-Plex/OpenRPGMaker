@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Inspected all four supplied actual PNGs, including native 96px views and the nearest-neighbor 3x panels on light, dark and checker backgrounds. The floating navy kite, gold rim, central spar, short connected arms and red trailing ribbons read clearly. Broad upper-left highlights and a darker right paper plane give the kite consistent material and depth; the rim and hand outlines remain readable, with no obvious accidental transparent holes through the paper. Windup narrows and tucks the body, move and attack spread the ribbons, attack extends both connected arms and places the cyan wind at the forward hand, and recover folds them back. Hit compresses the silhouette; dead flattens the kite and lays the ribbons aside, although its still-open face makes collapse clearer than unconsciousness. The three idle frames preserve the body and face while shifting the ribbon silhouette. Skill preparation raises the hands and adds gold charge at the upper vertices; contact emits two cyan/gold branches visibly attached to the upper-right kite vertex, which is the specified casting part of this creature; recovery folds the paper and leaves separated residual sparks. Poison uses pinched facial features, tucked hands and changing green bubbles; stun uses slack arms, closed eyes and moving stars; sleep uses a distinctly squashed resting kite with closed eyes and a looped ribbon. These states visibly change pose and expression rather than merely tinting the idle. The resting face reads more frontally than the attack, but the asymmetric kite plane and forward right arm establish the intended direction. Grounded feet do not apply to this airborne creature. This is a visual recommendation for the pose previews only, not a user selection or battle approval: actual animation timing, battle placement, palette-index authorship and model provenance cannot be established from these static PNGs.",
+  "issues": [],
+  "binding": "835082df80a345cebbf5aa46cd5e7fc5d1933731626a56ea9f794b085d341c29",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "2b4ee96cf4f0a55f9f996fb8ca6d420b29b5e5cce4a94a35ad3e9b2992d8680b",
+    "preview/suite/light.png": "3113453aa4ba93bea5b57e6b7c2fba54b2fb543c2d5aeb1513101705ff769da8",
+    "preview/suite/dark.png": "95a1342960d5934845d1d68a8fed6c9b501781c2d0496b8602cf10b47ded280e",
+    "preview/suite/checker.png": "b47d1cf3be5c68855eb6b58a0d886e4dcf8cb792f986f7482ee45ac82e1c8111"
+  },
+  "jobId": "7710471b-c5c3-4c9f-aee2-e7931704cdbf",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T08:37:46.039831+00:00",
+  "userApproved": false
+}

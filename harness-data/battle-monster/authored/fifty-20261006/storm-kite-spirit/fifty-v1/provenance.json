@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-06T03:35:29.534848+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "4de8584c-0113-484e-a06b-4974ddb522e8",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T08:16:28.063707+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "293b970ef1661461f02caf6828c3def040bc1bc6c6cadcc1dae5e42643fd7f50",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T08:35:44.183691+00:00"
+    },
+    {
+      "id": "7710471b-c5c3-4c9f-aee2-e7931704cdbf",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T08:35:47.951145+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/jobs/7710471b-c5c3-4c9f-aee2-e7931704cdbf",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/storm-kite-spirit/fifty-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "2d57b7b6cf42ad2e07b3725a0f7c32402c95a0e71d9d6d6216b59a3dd61a1c69",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "2b4ee96cf4f0a55f9f996fb8ca6d420b29b5e5cce4a94a35ad3e9b2992d8680b",
+        "preview/suite/light.png": "3113453aa4ba93bea5b57e6b7c2fba54b2fb543c2d5aeb1513101705ff769da8",
+        "preview/suite/dark.png": "95a1342960d5934845d1d68a8fed6c9b501781c2d0496b8602cf10b47ded280e",
+        "preview/suite/checker.png": "b47d1cf3be5c68855eb6b58a0d886e4dcf8cb792f986f7482ee45ac82e1c8111"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T08:37:45.640078+00:00"
+    }
+  ]
+}

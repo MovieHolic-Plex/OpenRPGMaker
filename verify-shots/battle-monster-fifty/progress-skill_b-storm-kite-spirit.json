@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "storm-kite-spirit",
+    "source": "qa-runs/harnesses/battle-monster/storm-kite-spirit/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "52ae4f2595739616d3ade538ae67cd84dbb86113ca8623e5fd204f7d4efb3f2e",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T08:40:34.135382+00:00",
+    "binding": "835082df80a345cebbf5aa46cd5e7fc5d1933731626a56ea9f794b085d341c29",
+    "entireGoalCompleteClaim": false
+  }
+]

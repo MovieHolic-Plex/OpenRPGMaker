@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재20/50 통과
+# 신규50종 제작 · 현재21/50 통과
 
 ## 최초 두 종 확인
 
@@ -220,3 +220,19 @@ PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정�
 근거:twenty-passed-proof.json,root-review-jade-lantern-serpent.json,native-contact-jade-lantern-serpent.*,
 실제 browser-proof 및 지속 출처20종.
 
+
+## 풍뢰연귀 최초 검수 통과 · 실제21/50
+
+풍뢰연귀는 최초 실제 독립 keep0지적을 받았다. 감독이 현재18자세 native1배/최근접2배
+시트를 직접 열고 author.frame 전체 쓰기 본문과 호출 목록을 읽었다. 남색/금색 연의
+얼굴·손과 붉은 꼬리, 접힌 준비·전진 공격·눌린 피격·기울어 누운 쓰러짐·감긴 수면,
+모서리 빛 모으기·청록/금색 번개·회수 조각을 확인했다.18PNG RGBA는 실제 ASCII/팔레트와
+정확히 같다. 직접 지정한 행과 좌표로 각 자세를 썼으며 형상 수학/전체 프레임 변환이 없다.
+
+현재21/50/378자세/168GIF/전체false다. 같은21종의 현재 Allow/선택 ZIP native
+PNG/GIF 픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px
+브라우저 오류/넘침0과 현재 감독 그림/직접 저작 방식을 확인했다. 기존52판정/8선택을
+보존했고 신규63행은 사용자 목표 위임 Allow다. 화린독사·매화정의 작은 지적 각1개를
+보존한다. 남은29종까지 목표는 동일하며 전체 완료나 게임 프로젝트 설치를 주장하지 않는다.
+근거:twenty-one-passed-proof.json,root-review-storm-kite-spirit.json,native-contact-storm-kite-spirit.*,
+실제 browser-proof,progress-skill_b-storm-kite-spirit.*,지속 출처21종.

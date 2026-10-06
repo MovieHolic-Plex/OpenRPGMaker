@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "storm-kite-spirit",
+    "name": "풍뢰연귀",
+    "cell": 96,
+    "grounded": false,
+    "motion": "hop",
+    "tier": "elite",
+    "idleFrameMs": 240,
+    "silhouette": "큰 남청 방패연이 몸인 떠 있는 요괴, 얼굴이 있는 중심 종이 면, 금 대나무 테두리, 붉은 술 꼬리와 짧은 두 손. 비행연 형태. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "연몸을 비틀어 준비 → 두 손을 내밀고 술을 벌림 → 실제 손의 바람 밀치기 → 손/술 접기.",
+    "skill": "풍뢰살: 연 꼭짓점에 금빛 기 → 꼭짓점부터 가지 두 개의 청금 번개 발사 → 종이 면을 접고 잔전류 해체.",
+    "resourceId": "jf-enemy-storm-kite-spirit",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 92,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}
