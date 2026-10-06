@@ -28,6 +28,10 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   showPicture: ["recordInGallery", "x", "y", "rotation"],
   // target(player 또는 {eventId})은 런타임이 읽는 애니메이션 대상이다(player/interpreter ShowAnimationTarget) — 폼이 위젯을 안 둘 뿐이다.
   showAnimation: ["target"],
+  // channel·fadeInMs·volume 은 런타임이 읽는 재생 필드다(player/interpreter playAudio, project/types/events.ts) — 폼이 위젯을 안 둘 뿐이다.
+  // 빠져 있으면 몬스터 원정의 배경음 복귀(playAudio channel bgm)마다 경고 89건이 났다(2026-10-06).
+  playAudio: ["channel", "fadeInMs", "volume"],
+  stopAudio: ["channel"],
   choices: ["prompt", "options", "cancelBehavior", "cancelBranch"],
   presentItem: ["prompt", "itemIds", "options", "otherwiseBranch", "cancelBranch", "consume"],
   fork: ["condition", "then", "else"],

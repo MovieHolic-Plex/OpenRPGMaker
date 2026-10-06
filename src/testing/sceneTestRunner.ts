@@ -21,6 +21,8 @@ import {
   type PlaySession,
 } from "@/project/session";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
+import { gameOverOutcome, resolveGameOverSettings } from "@/project/cinematicSettings";
+import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
@@ -1435,6 +1437,8 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           state.session.battleResult = outcome;
           state.log.push(`battle ${step.troopId}: ${outcome}`);
           if (outcome === "defeat" && !step.canLose) {
+            // 실제 플레이어(playSceneInterpreter consumeBlockingStep)는 패배 불허 전투에 지면 이벤트를 거기서 끝낸다.
+            if (recoverFromDefeatForRunner(state)) return { stop: "done" };
             killPartyForRunner(state);
             state.gameOver = true;
             // 실제 플레이어(playSceneInterpreter consumeBlockingStep)는 패배 불허 전투에 지면 이벤트를 거기서 끝낸다.
@@ -2452,7 +2456,7 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
     const map = currentMap(state);
     if (map) syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
     refreshChasers(state);
-  } else if (result === "defeat") {
+  } else if (result === "defeat" && !recoverFromDefeatForRunner(state)) {
     killPartyForRunner(state);
     state.gameOver = true;
   }
@@ -2481,11 +2485,34 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
   const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false });
   state.session.battleResult = outcome;
   state.log.push(`random encounter ${troopId}: ${outcome}`);
-  if (outcome === "defeat") {
+  if (outcome === "defeat" && !recoverFromDefeatForRunner(state)) {
     killPartyForRunner(state);
     state.gameOver = true;
   }
   return null;
+}
+
+/**
+ * 「회복 센터에서 깨어난다」 게임 오버(outcome recover)는 실제 플레이어(PlayScene.recoverFromDefeat)처럼 같은 판을
+ * 회복 지점에서 이어 간다. 몬스터 게임의 야생 패배가 러너에서는 판 끝으로 처리돼 자동 플레이가 멈췄다(2026-10-06).
+ */
+function recoverFromDefeatForRunner(state: RunnerState): boolean {
+  const settings = resolveGameOverSettings(state.project.system);
+  if (gameOverOutcome(settings) !== "recover") return false;
+  const recovered = createDefeatRecovery(state.project, state.session, settings);
+  if (!recovered) return false;
+  Object.assign(state.session, recovered);
+  resetRuntimeMapForRunner(state, recovered.currentMapId);
+  const map = currentMap(state);
+  if (map) {
+    applyMapDefaultLighting(state.session, map);
+    applyMapBgmToSession(state.session.audio, resolveMapBgm(state.project, recovered.currentMapId));
+  }
+  clearMapAutoKeys(state);
+  refreshChasers(state);
+  syncFollowCamera(state);
+  state.log.push(`defeat recovery → ${recovered.currentMapId} (${recovered.x},${recovered.y})`);
+  return true;
 }
 
 function runHeadlessBattle(
@@ -2623,7 +2650,10 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   const healSelf: ActorCommand[] = potion && active ? [{ kind: "item", itemId: potion.id, targetEnemyId }] : [];
   // 처음 보는 야생 종은 체력을 반 아래로 깎은 뒤 잡는다(파티 6마리까지).
   const species = target ? monsterSpeciesForEnemy(project, project.database.enemies.find((enemy) => enemy.id === target.recordId)) : undefined;
+  // 리더보다 한참 낮은 개체는 데려가도 싸우지 못한다 — 리더 레벨 6 아래까지만 잡는다.
+  const leadLevel = Math.max(0, ...[...snapshot.actors, ...snapshot.reserveActors].map((actor) => actor.level ?? 0));
   const ball = tactics?.catchable && target && species && !tactics.owned.has(species.id) && target.hp <= target.maxHp * 0.5
+    && (target.level ?? 0) >= leadLevel - 6
     && snapshot.actors.length + snapshot.reserveActors.length < 6
     ? project.database.items.filter((item) => item.captureProfile && (snapshot.eventState.inventory[item.id] ?? 0) > 0).sort((a, b) => a.price - b.price)[0]
     : undefined;

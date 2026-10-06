@@ -76,7 +76,10 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     // 확인 레벨에서도 못 이기는 보스는 그대로 막힘이다 — 「레벨을 올리면 이긴다」가 거짓인 한은 막힘이 맞다.
     const downgraded = new WeakSet<AutoPlayRun>();
     const downgrade = (run: AutoPlayRun) => { downgraded.add(run); return run; };
-    const encounterDefeat = (run: AutoPlayRun) => !run.ok && /random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "");
+    // 몬스터 게임은 자동 플레이가 지면 수련하고 다시 도전한다 — 회복 없이 걷다 수련 횟수를 다 쓴 실행도 소모전 신호다.
+    const monsterAttrition = project.system?.monsterCollection === true;
+    const encounterDefeat = (run: AutoPlayRun) => !run.ok && (/random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "")
+      || (monsterAttrition && /전투 패배|수련|쓰러져/u.test(run.failure?.detail ?? "")));
     const bossDefeat = (run: AutoPlayRun) => !run.ok && /이벤트 전투에서 패배해/u.test(run.failure?.detail ?? "");
     const retry = autoPlay.runs.some(encounterDefeat) ? play(true)! : undefined;
     const allRuns = [...autoPlay.runs, ...(retry?.runs ?? [])];

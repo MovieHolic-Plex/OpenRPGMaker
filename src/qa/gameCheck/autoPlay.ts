@@ -15,6 +15,7 @@ import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { initiallyOn } from "./progression";
 import { runtimeMap } from "@/project/runtimeMap";
 import { eligibleEncounterEntries } from "@/player/encounters";
+import { rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
 
@@ -41,6 +42,8 @@ interface Goal {
    * 목표들(「오늘 만남 끝」 스위치를 끄는 침대) — 차례로 돌린 뒤 세터를 다시 부른다.
    */
   readonly repeat?: { readonly resets: readonly Goal[]; readonly max: number };
+  /** 같은 맵에서 같은 조건을 채우는 다른 세터 — 고른 세터 칸까지 걸어갈 길이 없으면 차례로 시도한다(워프 판 여럿이 같은 스위치를 켠다). */
+  readonly alternatives?: readonly CommandVisit[];
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
@@ -440,6 +443,8 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
               : req.kind === "map" ? session.currentMapId === req.id
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
             ...(threshold ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
+            alternatives: candidates.filter((other) => other !== candidate && other.page.map?.id === candidate.page.map?.id
+              && requirementsOf(project, other).length <= requirementsOf(project, candidate).length),
           });
           ok = true;
           break;
@@ -508,6 +513,8 @@ interface Driver {
   committed: number;
   /** 수련 중에는 조우 직전마다 회복한다(회복 센터를 오가는 걸음을 줄인 것). */
   recover?: boolean;
+  /** 수련하다 쓰러진 맵 — 상성이 나쁜 풀숲(유령 탑의 풀·에스퍼 리더)은 다시 고르지 않는다. */
+  readonly badGrounds: Set<string>;
 }
 
 /** runAutoPlay({ recoverBeforeRandomEncounters }) 로 도는 프로젝트 — 인카운터 직전마다 파티를 회복한다. */
@@ -536,19 +543,62 @@ function run(driver: Driver, steps: SceneStep[]): SceneTestResult {
 }
 
 /**
+ * 기술 칸이 꽉 찬 몬스터가 새로 배운 기술(pendingSkillIds)을 메뉴에서 정리하듯 — 가장 약한 공격 기술보다 세면 바꾸고,
+ * 아니면 버린다. 안 하면 Lv99 가 몸통박치기·처음 풀 기술만 들고 Lv50 보스에게 졌다(2026-10-06 몬스터 원정).
+ * 바꿀 것이 없으면 null.
+ */
+function learnPendingMoves(project: Project, session: PlaySession): PlaySession | null {
+  const power = (skillId: string) => {
+    const skill = project.database.skills.find((entry) => entry.id === skillId);
+    return skill && skill.effect.kind === "damage" ? skill.power ?? 0 : -1;
+  };
+  let next: PlaySession | null = null;
+  for (const [instanceId, original] of Object.entries(session.monsterInstances ?? {})) {
+    let instance = original;
+    for (const pending of instance.pendingSkillIds ?? []) {
+      const weakest = [...(instance.skillIds ?? [])].filter((skillId) => power(skillId) >= 0).sort((a, b) => power(a) - power(b))[0];
+      const replaced = weakest && power(pending) > power(weakest) ? replacePendingMonsterSkill(project, instance, pending, weakest) : undefined;
+      const settled = replaced?.ok ? replaced : rejectPendingMonsterSkill(instance, pending);
+      if (settled.ok) instance = settled.instance;
+    }
+    if (instance === original) continue;
+    next ??= structuredClone(session);
+    next.monsterInstances[instanceId] = instance;
+  }
+  return next;
+}
+
+/**
  * 지금 세션을 저장했다가 불러온 것처럼 다음 시도의 출발점으로 삼는다. 72맵 몬스터 캠페인은 목표가 60개를 넘어
  * 매 시도를 처음부터 다시 돌리면(단계 수의 제곱) 시간 상한에 걸렸다. 맵 안 일시 상태(이벤트 위치)는
  * 실제 불러오기처럼 맵 기본값으로 돌아간다.
  */
 function checkpoint(driver: Driver): void {
-  driver.base = structuredClone(driver.last.session);
+  const learned = driver.project.system?.monsterCollection === true ? learnPendingMoves(driver.project, driver.last.session) : null;
+  if (driver.steps.length === 0 && driver.base && !learned) return;
+  driver.base = learned ?? structuredClone(driver.last.session);
   driver.committed += driver.steps.length;
   driver.steps = [];
+  // 로그·종료 상태도 새 출발점 기준으로 맞춘다 — 「이번에 새로 생긴 줄」을 앞 구간 로그 길이로 자르면 어긋난다.
+  const fresh = run(driver, []);
+  if (fresh.ok) driver.last = fresh;
 }
 
 function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: false; reason: string; result: SceneTestResult } {
   const steps = [...driver.steps, ...extra];
   const result = run(driver, steps);
+  // 걷다가 야생에게 져 회복 지점에서 깨어나면(outcome recover) 남은 걸음이 엉뚱한 맵에서 막힌다 — 깨어난 데까지는
+  // 실제로 일어난 일이므로 거기까지 확정하고 실패로 알린다. 호출자가 수련·재출발을 고른다.
+  if (!result.ok && result.failedStepIndex !== undefined && result.failedStepIndex > driver.steps.length
+    && result.log.slice(driver.last.log.length).some((line) => line.startsWith("defeat recovery"))) {
+    const kept = steps.slice(0, result.failedStepIndex);
+    const partial = run(driver, kept);
+    if (partial.ok) {
+      driver.steps = kept;
+      driver.last = partial;
+      return { ok: false, reason: `걷다가 쓰러져 ${partial.session.currentMapId} 에서 깨어났습니다(defeat recovery)`, result: partial };
+    }
+  }
   if (!result.ok) {
     let reason = result.failureReason ?? "알 수 없는 실패";
     // 게임 오버는 원인이 앞선 전투다 — 어떤 전투에서 졌는지 붙인다(몬스터 게임: 도로 조우가 너무 잦다, 파트너가 약하다).
@@ -725,7 +775,19 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   const harmless = (event: GameEvent) => triggerOf(event, session) === "none" || ((event.pages ?? []).length > 0 && (event.pages ?? []).every((page) =>
     page.priority === "below" && page.overlapForbidden !== true
     && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "")));
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event)).map((event) => `${event.x},${event.y}`).filter((cell) => !relayCells.has(cell)));
+  // 같은 맵 안으로 옮기는 접촉 판(워프 미로)은 막힌 칸이 아니라 짝 판으로 건너가는 길이다 — 피하면 워프로만 닿는
+  // 관장 방을 「길 없음」으로 봤다(2026-10-06 몬스터 원정 프리즘 체육관).
+  const warps = new Map<string, { x: number; y: number }>();
+  for (const event of map.events ?? []) {
+    if (event.id === target.id) continue;
+    const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
+    const trigger = page ? page.trigger?.kind : event.trigger?.kind;
+    if (trigger !== "playerTouch" && trigger !== "touch") continue;
+    const jump = (page?.commands ?? event.commands ?? []).find((command) => command.kind === "transfer");
+    if (jump?.kind === "transfer" && jump.mapId === mapId) warps.set(`${event.x},${event.y}`, { x: jump.x, y: jump.y });
+  }
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event)).map((event) => `${event.x},${event.y}`)
+    .filter((cell) => !relayCells.has(cell) && !warps.has(cell)));
   const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
   const previous = new Map<string, { from: string; dir: typeof DIRS[number]["dir"] }>();
@@ -741,6 +803,19 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
       if (seen.has(k) || occupied.has(k)) continue;
       if (!(nx === target.x && ny === target.y && !adjacent) && !canMove(project, map, current.x, current.y, nx, ny)) continue;
       if (nx === target.x && ny === target.y && adjacent) continue;
+      const warp = warps.get(k);
+      if (warp) {
+        const landing = key(warp.x, warp.y);
+        // 워프로 접촉 목표 칸 위에 내려앉으면 목표가 발동하지 않는다(증기 함정이 입구 문 위로 돌려보낸다).
+        if (!adjacent && warp.x === target.x && warp.y === target.y) continue;
+        seen.add(k);
+        if (seen.has(landing)) continue;
+        seen.add(landing);
+        previous.set(landing, { from: key(current.x, current.y), dir: d.dir });
+        if (isGoal(warp.x, warp.y)) { goal = warp; break; }
+        queue.push(warp);
+        continue;
+      }
       seen.add(k);
       previous.set(k, { from: key(current.x, current.y), dir: d.dir });
       if (isGoal(nx, ny)) { goal = { x: nx, y: ny }; break; }
@@ -807,7 +882,7 @@ function describeProgress(driver: Driver, goal: Goal): string {
 }
 
 /** 한 목표에서 수련 후 재도전하는 최대 횟수. */
-const MAX_TRAINING_ROUNDS = 6;
+const MAX_TRAINING_ROUNDS = 10;
 /** 수련 한 번의 걸음 묶음 수(묶음당 40걸음). */
 const MAX_TRAINING_CHUNKS = 40;
 
@@ -821,12 +896,12 @@ function troopLevel(project: Project, troopId: string): number {
   return Math.max(0, ...levels);
 }
 
-/** 지금 갈 수 있는 맵 중 야생이 리더보다 두 레벨 아래인 가장 센 풀숲(없으면 가장 약한 풀숲)과 그 안의 두 칸. */
-function trainingGround(project: Project, session: PlaySession): { mapId: string; route: Door[]; cell: { x: number; y: number } } | null {
+/** 지금 갈 수 있는 맵 중 야생이 리더보다 세 레벨 아래인 가장 센 풀숲(없으면 가장 약한 풀숲)과 그 안의 두 칸. */
+function trainingGround(project: Project, session: PlaySession, avoid: ReadonlySet<string>): { mapId: string; route: Door[]; cell: { x: number; y: number } } | null {
   const lead = leadLevel(session);
   let best: { mapId: string; route: Door[]; cell: { x: number; y: number }; level: number } | null = null;
   for (const [mapId, authored] of Object.entries(project.maps)) {
-    if (!authored.encounterTable?.length) continue;
+    if (!authored.encounterTable?.length || avoid.has(mapId)) continue;
     const route = routeTo(project, session.currentMapId, mapId, session);
     if (!route) continue;
     const map = runtimeMap(authored, session);
@@ -844,8 +919,8 @@ function trainingGround(project: Project, session: PlaySession): { mapId: string
       }
     }
     if (!cell) continue;
-    // 리더보다 두 레벨 아래까지가 안전한 수련터다. 그런 곳이 없으면 가장 약한 곳.
-    const safe = (candidate: number) => candidate <= lead - 2;
+    // 리더보다 세 레벨 아래까지가 안전한 수련터다. 그런 곳이 없으면 가장 약한 곳.
+    const safe = (candidate: number) => candidate <= lead - 3;
     const better = !best
       || (safe(level) && (!safe(best.level) || level > best.level || (level === best.level && route.length < best.route.length)))
       || (!safe(level) && !safe(best.level) && level < best.level);
@@ -876,16 +951,50 @@ function reachableGrass(project: Project, session: PlaySession): { x: number; y:
   return null;
 }
 
+/** 가장 가까운 회복 직원(조사하면 recoverAll 하는 이벤트)에게 가서 말을 건다. 못 가면 조용히 넘어간다. */
+function healAtCenter(driver: Driver): void {
+  const session = driver.last.session;
+  let best: { event: GameEvent; visit: CommandVisit; route: Door[] } | null = null;
+  for (const map of Object.values(driver.project.maps)) {
+    for (const event of map.events ?? []) {
+      if (triggerOf(event, session) !== "action") continue;
+      const commands = activeCommands(event, session);
+      if (!commands?.some((command) => command.kind === "recoverAll")) continue;
+      const route = routeTo(driver.project, session.currentMapId, map.id, session);
+      if (!route || (best && route.length >= best.route.length)) continue;
+      const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
+      const ref: PageRef = { map, event, page, pageIndex: page ? event.pages!.indexOf(page) : -1, trigger: page?.trigger ?? event.trigger, conditions: page?.conditions ?? [], commands };
+      let visit: CommandVisit | undefined;
+      visitPageCommands(ref, (entry) => { if (!visit && entry.command.kind === "recoverAll") visit = entry; });
+      if (visit) best = { event, visit, route };
+    }
+  }
+  if (!best) return;
+  for (const hop of best.route) {
+    if (fireEvent(driver, hop.event, hop.visit) || driver.last.session.currentMapId !== hop.to) return;
+  }
+  if (!fireEvent(driver, best.event, best.visit)) checkpoint(driver);
+}
+
 /** 풀숲에서 오가며 리더 몬스터를 target 레벨까지 올린다. 실패하면 이유. */
-function train(driver: Driver, target: number): string | null {
-  const ground = trainingGround(driver.project, driver.last.session);
+function train(driver: Driver, target: number, knockedOut = 0): string | null {
+  const ground = trainingGround(driver.project, driver.last.session, driver.badGrounds);
   if (!ground) return `리더 Lv${leadLevel(driver.last.session)} 이 수련할 풀숲으로 가는 길이 없습니다.`;
   const startLevel = leadLevel(driver.last.session);
   checkpoint(driver);
   driver.recover = true;
   try {
+    const logStart = driver.last.log.length;
+    const knocked = () => driver.last.log.slice(logStart).some((line) => line.startsWith("defeat recovery"));
+    const retry = (why: string) => {
+      if (knockedOut >= 3) return `수련하러 가다 세 번 쓰러졌습니다: ${why}`;
+      driver.recover = undefined;
+      checkpoint(driver);
+      return train(driver, target, knockedOut + 1);
+    };
     for (const hop of ground.route) {
       const failure = fireEvent(driver, hop.event, hop.visit);
+      if ((failure || driver.last.session.currentMapId !== hop.to) && knocked()) return retry(failure ?? "센터에서 깨어남");
       if (failure) return `문 ${hop.event.name ?? hop.event.id}: ${failure}`;
       if (driver.last.session.currentMapId !== hop.to) return `문 ${hop.event.name ?? hop.event.id} 을 썼지만 ${hop.to} 로 이동하지 않았습니다.`;
     }
@@ -901,9 +1010,21 @@ function train(driver: Driver, target: number): string | null {
       if (!paced.ok) return paced.reason;
       // 걸음 묶음이 조우·전투로 길어지므로 묶음마다 저장한다.
       checkpoint(driver);
+      // 수련 중 쓰러져 센터에서 깨어났으면 다시 풀숲으로 간다.
+      if (driver.last.session.currentMapId !== ground.mapId) {
+        driver.badGrounds.add(ground.mapId);
+        if (knockedOut >= 3) return `${driver.project.maps[ground.mapId]?.name ?? ground.mapId} 에서 수련하다 세 번 쓰러졌습니다.`;
+        driver.recover = undefined;
+        return train(driver, target, knockedOut + 1);
+      }
     }
+    if (leadLevel(driver.last.session) <= startLevel) return `${driver.project.maps[ground.mapId]?.name ?? ground.mapId} 에서 수련해도 Lv${startLevel} 에서 오르지 않습니다.`;
+    // 수련을 마치면 가까운 회복 센터에 들른다 — 회복하고, 쓰러지면 깨어날 자리(checkpointSave)도 여기로 옮긴다.
+    driver.recover = undefined;
+    checkpoint(driver);
+    healAtCenter(driver);
     // 목표 레벨에 못 미쳐도 오른 만큼으로 다시 도전한다(다음 패배가 또 수련을 부른다).
-    return leadLevel(driver.last.session) > startLevel ? null : `${driver.project.maps[ground.mapId]?.name ?? ground.mapId} 에서 수련해도 Lv${startLevel} 에서 오르지 않습니다.`;
+    return null;
   } finally {
     driver.recover = undefined;
     checkpoint(driver);
@@ -936,25 +1057,47 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0): 
     }
     return trace(goal.label, false, `${driver.last.session.currentMapId} 에서 ${project.maps[targetMap]?.name ?? targetMap}(${targetMap}) 으로 가는 문이 (현재 스위치 상태로는) 없습니다.`, driver, visit.where);
   }
+  const logStart = driver.last.log.length;
   for (const hop of route) {
     const failure = fireEvent(driver, hop.event, hop.visit);
+    const moved = !failure && driver.last.session.currentMapId === hop.to;
+    // 가는 길에 야생에게 져 회복 센터에서 깨어났으면(게임 오버 outcome recover) 수련하고 다시 간다.
+    if (!moved && project.system?.monsterCollection === true && trained < MAX_TRAINING_ROUNDS
+      && driver.last.log.slice(logStart).some((line) => line.startsWith("defeat recovery"))) {
+      const problem = train(driver, leadLevel(driver.last.session) + 2);
+      if (problem) return trace(goal.label, false, `가는 길에 쓰러진 뒤 수련 실패: ${problem}`, driver, hop.visit.where);
+      return executeGoal(driver, goal, escaped, trained + 1);
+    }
     if (failure) return trace(goal.label, false, `문 ${hop.event.name ?? hop.event.id} → ${hop.to}: ${failure}`, driver, hop.visit.where);
-    if (driver.last.session.currentMapId !== hop.to) {
+    if (!moved) {
       return trace(goal.label, false, `문 ${hop.event.name ?? hop.event.id} 을 썼지만 ${hop.to} 로 이동하지 않았습니다(현재 ${driver.last.session.currentMapId}).`, driver, hop.visit.where);
     }
   }
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "맵에 들어오며 충족됨", driver, visit.where);
   const logBefore = driver.last.log.length;
   const failure = fireEvent(driver, event, visit);
+  if (failure && /걸어갈 길이 없습니다/u.test(failure)) {
+    for (const other of goal.alternatives ?? []) {
+      const attempt = executeGoal(driver, { ...goal, visit: other, alternatives: undefined }, escaped, trained);
+      if (attempt.ok) return attempt;
+    }
+  }
   // 몬스터 게임에서 관장·트레이너에게 지면 실제 플레이어처럼 풀숲에서 레벨을 올리고 다시 도전한다.
   const lost = failure ? /battle (\S+): defeat/u.exec(failure) : driver.last.log.slice(logBefore).map((line) => /^battle (\S+): defeat$/u.exec(line)).find(Boolean);
-  if (lost && project.system?.monsterCollection === true && trained < MAX_TRAINING_ROUNDS && (failure || !goal.done?.(driver.last.session, driver.last))) {
-    const needed = troopLevel(project, lost[1]!);
-    const problem = train(driver, Math.max(leadLevel(driver.last.session) + 2, needed));
+  // 걷다가 야생에게 져 회복 지점에서 깨어난 것도 같다(그 전투가 진 상대).
+  const woke = driver.last.log.slice(logBefore).some((line) => line.startsWith("defeat recovery"));
+  const wildLoss = woke ? driver.last.log.slice(logBefore).map((line) => /^random encounter (\S+): defeat$/u.exec(line)).find(Boolean) : undefined;
+  const lostTo = lost ?? wildLoss;
+  if (lostTo && project.system?.monsterCollection === true && trained < MAX_TRAINING_ROUNDS && (failure || !goal.done?.(driver.last.session, driver.last))) {
+    const needed = troopLevel(project, lostTo[1]!);
+    const problem = train(driver, Math.max(leadLevel(driver.last.session) + 2, needed + 3));
     if (problem) return trace(goal.label, false, `${failure ?? "이벤트 전투 패배"} — 수련 실패: ${problem}`, driver, visit.where);
     return executeGoal(driver, goal, escaped, trained + 1);
   }
   if (failure) return trace(goal.label, false, failure, driver, visit.where);
+  if (lostTo && project.system?.monsterCollection === true && !goal.done?.(driver.last.session, driver.last)) {
+    return trace(goal.label, false, `이벤트 전투 패배 — 수련 ${trained}번 뒤에도 ${lostTo[1]} 을 넘지 못했습니다(리더 Lv${leadLevel(driver.last.session)}).`, driver, visit.where);
+  }
   const verdict = goal.verify?.(driver.last.session, driver.last);
   if (verdict) return { ...trace(goal.label, false, verdict, driver, visit.where), ...(goal.soft ? { soft: true } : {}) };
   for (let round = 1; goal.repeat && goal.done && !goal.done(driver.last.session, driver.last) && round < goal.repeat.max; round += 1) {
@@ -1022,7 +1165,7 @@ function starterGoal(visit: CommandVisit): Goal {
 function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = []): AutoPlayRun {
   const started = Date.now();
   const first = quietScene(project, []);
-  const driver: Driver = { project, steps: [], runs: 1, last: first, deadline, committed: 0 };
+  const driver: Driver = { project, steps: [], runs: 1, last: first, deadline, committed: 0, badGrounds: new Set() };
   const steps: AutoPlayStepTrace[] = preamble.map((detail) => ({ goal: "계획", ok: false, detail }));
   if (!first.ok) {
     const failure: AutoPlayStepTrace = { goal: "게임 시작(자동 실행 이벤트)", ok: false, detail: first.failureReason ?? "시작 실패", mapId: project.startMapId };
@@ -1031,8 +1174,24 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
   // 시작 직후 오프닝이 선택지를 붙잡고 있으면 먼저 넘긴다.
   resolveChoices(driver, []);
   let firstFailure: AutoPlayStepTrace | undefined;
-  for (const goal of goals) {
-    const step = executeGoal(driver, goal);
+  const queue = [...goals];
+  for (let index = 0; index < queue.length; index++) {
+    const goal = queue[index]!;
+    let step = executeGoal(driver, goal);
+    // 장치 순서가 정해진 퍼즐(두 번째 바위를 밀어야 첫 바위에 닿는다)은 계획 순서가 거꾸로일 수 있다 —
+    // 같은 맵의 다음 목표 하나를 먼저 하고 다시 시도한다(2026-10-06 몬스터 원정 용마루 체육관).
+    if (!step.ok && !step.soft && /걸어갈 길이 없습니다/u.test(step.detail)) {
+      for (let later = index + 1; later < Math.min(queue.length, index + 6); later++) {
+        const other = queue[later]!;
+        if (other.visit.page.map?.id !== goal.visit.page.map?.id) continue;
+        const opened = executeGoal(driver, other);
+        if (!opened.ok) continue;
+        steps.push(opened);
+        queue.splice(later, 1);
+        step = executeGoal(driver, goal);
+        break;
+      }
+    }
     steps.push(step);
     // 긴 몬스터 캠페인은 목표마다 저장 지점을 옮긴다(처음부터 다시 돌리면 시간 상한에 걸린다).
     if (step.ok && project.system?.monsterCollection === true) checkpoint(driver);
