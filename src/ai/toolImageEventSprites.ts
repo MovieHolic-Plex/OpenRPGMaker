@@ -280,16 +280,19 @@ function isCharsetDirection(value: unknown): value is CharsetDirection {
 function charsetImageUrl(project: Project, spriteId: string): string | null {
   const bundled = findCharsetAsset(spriteId);
   if (bundled) return `/${bundled.path}`;
+  // SQLite 정본(편집기·호스트)의 업로드는 dataUrl 대신 ref 로 온다 — dataUrl 만 보면 에메랄드 필드 인물이 있는 몬스터 맵 전부에서
+  // show_map_region 이 거절됐다(2026-10-06 실편집기 이어 고치기). 읽기는 uploadedAssetUrl 하나로.
   const uploaded = project.assets.uploaded[spriteId];
-  if (uploaded?.kind === "charset" && uploaded.dataUrl) return uploaded.dataUrl;
+  if (uploaded?.kind === "charset") { const url = uploadedAssetUrl(uploaded); if (url) return url; }
   const spriteDef = project.assets.sprites[spriteId];
   if (spriteDef?.image.type === "bundled") {
     const nested = findCharsetAsset(spriteDef.image.id);
     if (nested) return `/${nested.path}`;
   }
   if (spriteDef?.image.type === "uploaded") {
-    const dataUrl = project.assets.uploaded[spriteDef.image.id]?.dataUrl;
-    if (dataUrl) return dataUrl;
+    const asset = project.assets.uploaded[spriteDef.image.id];
+    const url = asset ? uploadedAssetUrl(asset) : "";
+    if (url) return url;
   }
   return null;
 }
