@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.150.0 — 2026-10-06
+
+### 기능
+
+- prepare hash-bound native wandshop runtime drafts (`fa89c8b`)
+- expose executable draft previews in space progress (`b9f557b`)
+- prepare frozen native potions runtime draft packets (`79b31e0`)
+
+### 수정
+
+- prepare absent isolated picker output directories (`2a392fa`)
+- bind draft proof to stored bytes and name missing preservation evidence (`56f3d5a`)
+- exclude mutable picker databases from drawing specifications (`5d4115d`)
+
 ## 0.149.0 — 2026-10-06
 
 ### 기능
