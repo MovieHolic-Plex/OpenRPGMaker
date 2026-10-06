@@ -1,0 +1,839 @@
+{
+  "source": "actual current selected8 native128 bosses,8GIF each; readonly local presentation",
+  "fragment": "/home/main/.codex/visualizations/2026/10/04/01a10467-e079-7e92-83c5-234af352260e/joseon-large-boss-motions.html",
+  "htmlSha256": "e4c010adabe67174a64e23b4d7f7b643c75d5288ccc5b9a3283425d4da6fad40",
+  "htmlBytes": 960167,
+  "nativeGifSources": 64,
+  "humanReference": "qa-runs/harnesses/battle-monster/wandering-swordsman/eyes-right-v4/preview/suite/portrait.png",
+  "humanReferenceSha256": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60",
+  "samePixelScale": 2,
+  "noSourceWrites": true,
+  "noChoiceButtonsClicked": true,
+  "all50CompleteClaim": false,
+  "items": [
+    {
+      "key": "sun-gold-phoenix/fifty-v1",
+      "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+      "nativeCell": 128,
+      "currentKeepJob": "d86e8b1a-5960-4442-b8fe-aa031420972e",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "5feb23445d0a532fba007f29c653b79a64e40e539999f3782953b615b02ecd94",
+          "nativeStillSha256": "8f863a7bc3d6a20f741d8448d20d158d91e76a182500e6bd242da34f74f3d877",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "c3417215c5e6e25bd61f9dbf093a143774205c9f20c1aba7dbbd0476df081b7e",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "c5df2c7d1ddd6b3af1f302dc76c715fe8a3bb303627a50decc9186abfc74e8cf",
+          "nativeStillSha256": "427d732d827a9f1078289129d6b704c7111c09c7820aa38fc7a8fdd5b7b6dea8",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "d134b319384fabf1fc61f24d59f71d02b1d60e43b7cb0b698b7de509cf0a1a08",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "da28864c4cb5f37fa6f8b6e4b1b81078c4d7362b3609814c7542da710363ace5",
+          "nativeStillSha256": "a1828008860592b19423b450448d7f4ff09ebd04a76a0dc3ed4dcf10f7861daf",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "c89fc045d1255091906e6ae43a6d9f40059f51b0afa783d3023c09028806ea17",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "b496d4293863646ac051170d13472c89096cd9fe7d7bd1ff0fab45397f301351",
+          "nativeStillSha256": "8bdedab6ac9656236423c9de843a6e0e7855d644cf0b0e9bba2bd203bb53470b",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "80019a370d0ab96fa65a5ab52315534901c1f9f2c4ef8d09f9994fa126e540db",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "779330f18043113f96a8f44ac17e74fc8ba0945ce0a82a3ba02bc49b2c6c4abc",
+          "nativeStillSha256": "c0fd0df86c387133147f44f18afe6fed29e6124ea074c1e5129341e986943383",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "a47cadcec53e84554346689639e8d4bb4641ad443c4ef6ea1f3c5dfb834591d7",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "5964b1ba14ae9beab5b4ef6a71d83b94be7ebdc9950dbfaf5672e30ebea51170",
+          "nativeStillSha256": "d97c6cac670c971aa2206ac838d6033a7ac0716b45d60273e12a14f289520f1b",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "56fe70244792461f01ff464992ad97695e9a4ee9d89d1d4dc1f0ba6fec1916d1",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "c9560faa63284460b048d0223e03b670eee8a5f460512553c075b3bbc3f40aea",
+          "nativeStillSha256": "fe1052b2099ecc1c6bba37322e25bce398949b74db49436ae2b841c76ca7baf7",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "e847fe44ed74f643ad627c6ca3b4e9f8fe66f19184bdf2d84ccdbf85bf1f904f",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "460fdd50be22827c85f79d90f86ece6ae2c6625a260b7c18fbedb41eb179afb4",
+          "nativeStillSha256": "0c29c9b17108e1dc8ad8c42593da91b163f10c11b1eead573e05e670fc7bba93",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "4030c2f9d8f4ff73b4732872ff9664953f0b7b2d4cca308b57cd20df0cc34869",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "moon-frost-dragon/fifty-v1",
+      "binding": "df6f3ee7d4a94c0b4a4e1ef117337c5c8ec5bdc86ad21b698b717a21fab7639b",
+      "nativeCell": 128,
+      "currentKeepJob": "fb1e79a9-63d0-47ed-af6d-dd1909ae2a77",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "b9afc19551505dd86961117aba66beeed0701a24b6e60973f860293c50d94b34",
+          "nativeStillSha256": "b97464b3e9cdad4e1b0be5e6197e4e37be1011dcc64b12c11d98a27c3aab0231",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "9cf405b501d76efd1d1bbe80bcac6d17b8523cc9c4fc2678d2c9596e98677ac8",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "14f71510bfd98639039f197ed6f46e3e8c6ea17e5781d02726d1662dbee299dd",
+          "nativeStillSha256": "8e9054e42446e90e41f35d4fc004be7631b7797ab0f894de41845509ba59da3c",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "7a9dc0819c7670caae7f207c6cec4028e141574923918898308fc4dcc28f0218",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "6767e92df55073a474a9617a214b5480fb4ca4dd1546054e51182ef87e260306",
+          "nativeStillSha256": "b11a3aae144edbd7a042b3449dbee9b38b6d1bcb1af4972d800571d1bf372ac4",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "260e6feb73022f7c8ee82279aa3606979a5b5961547a3db34736789668fb8387",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "c490d6dc772a069532e174ef1890bd02c289da71e00b0ef46317e15f356e0699",
+          "nativeStillSha256": "46791a927e7a480db976eea1bd6dcea7aacb84a7496e215af09e6b5612e3d6c8",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "6fc60a63ec5c156216c8d501b3b5c0d5d44269e36c30972208d068bca253ed33",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "bef0d74807a5cffa253ee12219d189aa5a58ef1bfa4248ceac222764fd6ea2bf",
+          "nativeStillSha256": "f7c70fcbe10347a02912bee3b0f1a3de30ed9589a6bbe4a91ea87adc7b25962f",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "e3af28a85cfa008f76963b0821ccf38d5662cab879684083dcd0e0ecd6a543b9",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "3b8a44c1994a7e4123d3c7fdcfe151cf988f680e88eaf1d008ca37896abb912e",
+          "nativeStillSha256": "121720b68532c35a5ba5d10eb169a79b56bd6201dd4e503a8ffa72205304dc6c",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "f3cfcbbe72eaf561313bf407ba80c8b299a7538b915603abbcb9d092bd77163a",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "2fea3ac5e92270d8e32fbbd5a50c16620fcedea9247a0f288c4166bc309086b8",
+          "nativeStillSha256": "21039da7947872208423ba3ba4ce522dda4dbecd527c7bdc22e0fd4fbeef7107",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "76bc0303dd31f3f10f116cf744eaf93d6298d4f55202a32b21f66b8d607267f9",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "7136e0c0c69d4f54b93712469daa08cf6890dac9131aa965ca37b97edf9e068c",
+          "nativeStillSha256": "b6acc6aede2710bb65f2c765dc2d68c302233a74c6acc6612d937e656874f8ea",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "85115cf2f06b367ebc8bc89e19bddddd9edfdc9a5f472a90496cb4aee263fd4a",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "storm-horn-kirin/fifty-v1",
+      "binding": "74ad63ab93b1af8a8971e5a68aa3221995d3338eff666ef762b8d7dfed461575",
+      "nativeCell": 128,
+      "currentKeepJob": "2b43abec-697a-4b12-a562-3e7a82b6a32a",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "d0ed8e49c8ca65fe2e448a26407035534bd66871802e51f0dd1bae36ab8c7d51",
+          "nativeStillSha256": "87549c644f928b99eb7c9d637e108c33710923336a5483c6f9c4e6548854215d",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "aa06e7eb3649049461e93b0b7ca40d951d57e08e71408c0176f4cefcd2015198",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "918e6a8326828fe8000c8d93a334c9b335942fc7d4f2b24e50f3637b780f5356",
+          "nativeStillSha256": "6d271ed5a7970872732e30beae01df0836390d530fa9355336baa023324239ad",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "19138f81c2ba906a09a5250f55e168ab3e926fe4c304395e23e06e2f342a79a3",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "f32c7b463323267ca04a380641b3a63a81675587269a7361c28c64e16accb18e",
+          "nativeStillSha256": "1bcdd801b3e6aa170d195b03572d176574f3d15d5659ce98e92735feedf09d31",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "f5ae311de88451459e2804257e194dd6a04efe720499ac7dda850ebf6adbcbab",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "4348489789a48be5d3e56d44d18ac476bba6458c2b3f36b7cca236989ea2cdef",
+          "nativeStillSha256": "dda83234ba88eb5cc15bb719f5a7bebf874f24cef54a5135ea1e82a30e115eb4",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "3227cbfe21a6057f03a0fe2dbc7c52442b5f69277c5127e8b19976cbaa4cc02b",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "85e4da688bf17c5673224f5e08edc1806c44bdae4846c970a293bf53868d300c",
+          "nativeStillSha256": "7abd15645e429a661b60eccd59449560260f30473d66c2c226629c5f06f65a83",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "7c8b808472bced5bc6b0dafbba56d6293d6fff905579de9060a8e816ab982c14",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "034e98517d2a48af3556868c9ab70a85713b272e781d0eb5c3bbfcafba71573a",
+          "nativeStillSha256": "906c94b91d5d5284b914d511fd5baee69ec1f18b0c1b21ee3db90cdea7d8f7c7",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "0ded0e369288709628b2fed6ede9531864d3c0250d1301dd30ee7a73ca6673b5",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "695f3717adb34f85394aaa615fc19a6df32cb66c7e0013a82d31a7f0a4409dab",
+          "nativeStillSha256": "bda52e6e57ee05629fbff0d7e45ae4833552a2d66848927ae203f4e2c1c67784",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "d096ad7a3af4b9e13dd91dccfb15b9ff38d870ee2b5dcf8967a4b90d548c7fb0",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "fd01cbb22bfb41be6ead7bf46c7eee207335be8dc8e028917b18e61d25903ca1",
+          "nativeStillSha256": "05baf5c6737fbd20a7cab407abac2766d1dcf49d290df9e8c89f218919775acc",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "f3e03e925568cad884610c9d2ed6552ed6f1a2c406929d50522a50ab58d6e66d",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "abyss-jade-turtle/fifty-v1",
+      "binding": "b61f0ff6d3bdce5df8130ba42a77eec2a8c74a64a8ac3d6b4e083a615e593815",
+      "nativeCell": 128,
+      "currentKeepJob": "0b7b001b-cbd9-4ed1-8987-6fa41dc20cf3",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "fa0833f1809ee757b7da830bf6c0175a296e60d02560e7f9e3d57e84164a6803",
+          "nativeStillSha256": "0933dd52d4c09934de5c8c79e51f50032675a7ce729753c8d410b4b605314a73",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "e449244a703313b51500949facfb7cdb26050cb6958c67090d3f235e61f98dba",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "047c0e1cd3b5a3a196308cec5ab582228cf7a73f13d6d774b738a1f65581c83d",
+          "nativeStillSha256": "44c81e8aaf8ebe983c61d816be32fd8b481a49f8cb37aca98d37db531f3779c6",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "78d029d54ea346857196c189e83ec5eed6f09174f7c08b9b6ad67c732acf97d8",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "2d09180e32e85542a1a7e360e3438a798fe45ab04103cbc7e0cae069b22113d8",
+          "nativeStillSha256": "bf1441d2f995faf8a8fc84cb77ca6297fa841b12794968c4d748db386778fe5b",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "cf1c08db0fcbc4ef4f6f6e7ad35b926b035a1e1ac3f14b6270a72f512a624646",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "c0e748e1d1de492635e724af130f565f26a81cbb733a667cc46224fd31c2e798",
+          "nativeStillSha256": "a8b2a6ed8b14dca003c2409e93d94b55b06c1a81dd4ab9f6fa5b495c2e9f9fc7",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "505ed9286f77336fe1f4c27cb7c6e3d9cf350bdac0843a291ee3b4902c15c832",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "0e84aaf96085c17cf6a02714080f89080eb3329ed9b3a2d4cd447d65f6ead1d4",
+          "nativeStillSha256": "062f1310b7cef66a8921a8e9f42c9626c6ca99fcc9dac066fe2e0a062676727b",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "fb1f35bab2899f5bb1f88e79b889cacef7a21f7ee1370e7d51bfc69701d142be",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "3647d009e5d3fbf2e4909116b1007862faf0d7eba7619c4bfda2bb309efa87f8",
+          "nativeStillSha256": "fd2283bb80697d935386a229d6bfb3114cba8a844020dde45ca1bd3c78087218",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "40bb592a9845047c142ed200108cd55c697905f988baaac239357275891c0432",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "48c1cbc49e1fabe925c3a0bfad3c643cdd43fa6a51aada61bbb1790d59f63b82",
+          "nativeStillSha256": "6d147f6111c8912443f8ae2e7582ef6c7a40b0fb625dc6878c71d2bcd14f618d",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "f1151370183e3fc300a9153f44997a63ea58219d16096107dfcf2e9e13878885",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "92869f64f0a0786480049981c17e48584aeb5f52503a1e17a6d9d51af77c42cb",
+          "nativeStillSha256": "d0b56edaa3a14c7f285327d82546c43847baea10132b7b9a5cf5339de8c7b701",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "a83ba1791fdc55575c4a03f29021e8c8f47f98660197707565127c007b658ae2",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "red-armor-gatekeeper/fifty-v1",
+      "binding": "dd8aef50eaa5b5bbc1b10f28b7c65c8b50f43816f2122599569fe45f0173eb90",
+      "nativeCell": 128,
+      "currentKeepJob": "4b4441d9-5adf-4874-bde0-df38d0a44096",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "cc69fffa08c4f00adf34430022e225e762d6b00a7611b81c3881581667c2246c",
+          "nativeStillSha256": "245f6b7636593fc83bd3e5b318a6c34ea7f9be4deae7f8fe426b97d1eaf4e02c",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "c53b50faf69cf139d8063bd1c5644e4c632a24dd32052549a27fc9acef069440",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "accb8cd9c607d1ed3dceba545f071de19c4a9658194fec64fa0271b5cbb509bc",
+          "nativeStillSha256": "631403d0294e7cffc6290089af12e86d18f3f81b99c34ed7f79f6ba06d0b8f6a",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "0b71ba64f5131f97f3c5526396e9c0bcd20e8828294399dfe86734386ff2c5b5",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "864080954a1134b44fce040a87637867a5cf2e8fdf7c5c010764f01eaf93234a",
+          "nativeStillSha256": "9c0bfe67da4738062fafef98f2c90e744089a398d3d9f3b57ee6451842b673d8",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "6e66848193d0a1d674813909179be21180fa880cf201190e2b08a959096917eb",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "f21172d07584c0cd5ca054ecd192181f09a6170c659227fae7c8ffa11570ac25",
+          "nativeStillSha256": "f27cd431af933d8f27147df80f62b0d99d5e7b2fc92c50008b0e8b30f04c964e",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "556c0e8a2f4578cad873b009b9877393f6e865de7fa7344573973e7116d5004b",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "033ca160c2b9ad8c9add20d823e38b4db96fbab64edcfd230e09e68744442ea7",
+          "nativeStillSha256": "497e61a9e6368d21e6c08f2da186ffd19e0430054d0b3b0cf667e1ce3adc9707",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "1d3061a8d31fb414c86747ff792ef779e7d0409617d06e76f201e94f5b7e7117",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "2c30342a7c1666c503e13383d0136f9bb8ae01624c110878d98154aaa2bde2d5",
+          "nativeStillSha256": "f3d45c3b2655f31145719f8df2bd86537f48ac587f6f4db52a9ccc0d0e4f4234",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "91acef47674a31f58953fa6e9d703440455c76b2af32d6817c1c810d88361803",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "cc2592e2dd7008f516beb696418daec43a99ca735bc1d65baf0658bd71617a14",
+          "nativeStillSha256": "d767cb3f0dad3c309f9977f46aa043d1d8473bd7a44661f9aea2697c59e3912e",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "58e1d0a95215946b4ab6ae5990aed675a6db91301ebf731768775e38b5b85d31",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "ab6ae26c70714c0caff209110f1487c2126f627fae5378ab393775d4708d0234",
+          "nativeStillSha256": "b7ba44728b6c68c818fa9f41518b8bff51fc169a84eb2bc6a95d5f7043b2c236",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "bd553a31258dbcbde6228f822b452b04efa19d31bbeefc2c5e250cb24352bb19",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "abyss-nine-eye-spider/fifty-v1",
+      "binding": "3ea711565c71b0a77de675c4ce64b78e5ce602483a13a1867a0825621a064c3c",
+      "nativeCell": 128,
+      "currentKeepJob": "e14591ec-f110-4581-921e-58c137ffa829",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "09307b1865c09d59f6645b1396dbec8f2045fea9155d62f1068166cb84f2b7df",
+          "nativeStillSha256": "5dc504cde33cc8c3059b06bdc6cabfc1059a965f205bd15094ea77123f69b73d",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "7b54dab49a44e4820a6c7667da3079aaf980b394d210a667ea82b87d4a2fe563",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "385bb19fbb35704969e4ac325a673aec4d5e49c487b8e8050ccae415e7c9bcb1",
+          "nativeStillSha256": "2bdcc7b8fecc3415e1af191653bca0dd805c326206a685f0d7077520db236848",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "cfa0d3d4848a16f73a05cf5e7b17e4a8633faebe9da5a842a3f46a211962746f",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "b294c105cec0b442f9eac57b421994b5b3510e14b9459f3503d38eda8b893b0f",
+          "nativeStillSha256": "aa797614e58ea7549047a6f5c3143e1efde6a898452aa64ae67e9912079c86e1",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "1ad2de7ea10adf75fc166041d85499a9e8b0d6ee3df6b6fb8260752118bdf35b",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "33a4b36c42d584d28346e8f2480e161dfd6314aa9326b3ec1750dbd71a04aef4",
+          "nativeStillSha256": "e709e7f00035b43bbe5fb3f5c833774138b471511878cddeae1f16bb607f0fde",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "63bf5a3216b7814ec941aa6551826e12b26aa8f0c1c10ee3253394bd7190a969",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "4fb97ed888110fc3cee8c22587463da170ea6e949d8d10972b62ad89a9b9d03a",
+          "nativeStillSha256": "669fe599456e43d9715329e375f04bda01e07d6369ff4dbe4710bf44a50f096f",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "3fa92f37dd7e08f5ad928d956a627d12062af436ec48ecb0564f6c50b7180c0c",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "cd160cc2a2368b0047b4915713dadd536859f599b70b7df3d976006b99e63432",
+          "nativeStillSha256": "428bb7d7b47efabe40bf3550fa87aeca81a04bf7f254e477c7c2849358b6aaab",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "74c0f0dc5fc9a96568ce1a4f2671a5c6ed2b7c89d6041d35e1a626d9a5f15e58",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "b5423f426c32e6e405a056c90df01c1534975349ef582787fd53a1e04d3b6451",
+          "nativeStillSha256": "201d9fc781e05326206fd3dc3bf200b02b401acc6d96b9b21ad7523ee024e5e4",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "4f84d289a3b93784e86b72389ed67a26f4eb754ef1f089021928a954946a270b",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "6bbe35a840ac90e3259a58691eecb351d899fdcb0c8435bbd73b49d22c496a62",
+          "nativeStillSha256": "f4001d17437ce70743469f98a0536c94f679a9aa83d5c1f1ceb68aea3fa6c211",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "630005d0a08f8155159f1d49bf18261192d5b28a6e5c429b4c4ee81d722cbf7c",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "thousand-year-pine-king/fifty-v1",
+      "binding": "914c51afcb46f0e9605423d7e818bd0c019c29c6432e9b49a839ed02ec40b99b",
+      "nativeCell": 128,
+      "currentKeepJob": "01a9984f-e690-439f-8802-c746279a56a6",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "06a1818ff8d51a9b17ce0bf12c809bf57c82f27b22943d149676e9ae4a2a59f4",
+          "nativeStillSha256": "2ae88a592d928ef23713eda00de15fbdfcdb038d3d4e883d54f6ac9cab1d7e64",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "46a338c2ece9612218cd8fdd3b6579777d9f4c13829b8eba5d278f7d19cad407",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "629e2c13d6f29e19fa70628cada164d5f8acca4735d765245b496d4e90442437",
+          "nativeStillSha256": "474f70448923d0d9fac43d3d2a758b4c5a50257f1ecf89023530d6fa9e791bdb",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "1491b1a7e55fbf043626a90cc3491cd55b4871a27d6fee6b9c1d2f15069c111b",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "55814c69855c33206f9a73ecd17277dfec6d02ccee2ebc0079dca0cefdfb5914",
+          "nativeStillSha256": "792ed2433eeff7e0bbac28b5430aa57610b3ca16876e9344053d5f73d63a32db",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "27e6b98f5c3ca1ababaa3820bc81151261e0bc9b3511cab58b00b053d9410819",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "fecdff7ed84271a042e29c257f1b02ffcd94cf3c276cfa90a9e1bfadfbdd4728",
+          "nativeStillSha256": "8a8a408cb25d50e839aaa7b310c45ec2c41eb33950337c91cec846ddcdc6a859",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "e0a7ed8655ab2aab4d6d96dd44cccbecfb0d8958ff44f0ac49e9099dcd2146ec",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "2e3d2164f9ba59db78b80596dc5a9a2c5777fd8f786d41a90f85e6878cbf506a",
+          "nativeStillSha256": "817605c6e146299738d53433e56d330d12da1b8d99fe1fccde68b6565e48da7b",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "4b724e136377045ece4d6f8419e1ac6c1cb51b76d1b70b934c2aa5f0f7ebc32c",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "fa8886cd645f127651010732772103b67eb83fd6f0d493ce6abd8677725e6651",
+          "nativeStillSha256": "f84d4260beaa3638e13185297653752a0477a1905fdf232dd6c59fced684190c",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "78e8f652c2451d14a4b79bd45b65123703ea175bdb1917e9745b9120c2d4b4e6",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "75ea432bf7fa2fde93fac63778af8a9e01619b4498336e902d740040df713353",
+          "nativeStillSha256": "e5d05d1f9d0e791bce78d38aaa289851563263a0d15d0ac3afc1e91a2cb1a099",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "d8ecbc66f4eb336aebbc177ac61dcc1ac4abfc2ea0a30b26fc617c7a191fd6d1",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "d42ed2575e0ce1eb5fa116a5849ed7179457514fd4e4c5cd704c74d420600bb0",
+          "nativeStillSha256": "b1d33f87822539ce7c1695db8d5f9a8294be02c4dc51b0f4d36ab3279a50406c",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "2ec812d9f9371b30220ca0e1b1c5af4edc4526c45fc3989bc2d28497113f0819",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    },
+    {
+      "key": "bronze-cauldron-demon/fifty-v1",
+      "binding": "2fb5737771eb83fdf0bc54f9d3d619a92b402d11a2e0e88b4f316789e95e1ccc",
+      "nativeCell": 128,
+      "currentKeepJob": "71fceaed-f71d-46a1-bd5c-c9017e709b16",
+      "motions": {
+        "idle": {
+          "nativeGifSha256": "2e0d05798a36b9d5722cfc098a43e09548d004a4fdc2532f06a1ea337b0eda46",
+          "nativeStillSha256": "8d0b31d717a0ab4aa39b84fc9b65758c60ba5da4f9dd6363a815190110942e28",
+          "sequence": [
+            "idle_a",
+            "idle_b",
+            "idle_c",
+            "idle_b"
+          ],
+          "displayPosterSha256": "9fe94ceffff8332f1e00ad036b027002679c59b6997996a01cae008d757da5be",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "attack": {
+          "nativeGifSha256": "3c7c2fd75acffbfb536756f8d33d4e35052d892fe6f0312551850e8ff6aa71fe",
+          "nativeStillSha256": "d8fe137e9725ecc0f6fb4f27082b5c67f25478c81ec568e29540c94c7e462797",
+          "sequence": [
+            "idle_a",
+            "windup",
+            "move",
+            "attack",
+            "recover",
+            "idle_a"
+          ],
+          "displayPosterSha256": "cb793909a3db9e417547e671ec552216e5140d6d017d90e78d3f5087b17c2f35",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "hit": {
+          "nativeGifSha256": "46c0fe0f45a351af85720146531d3638b3649456345e42e081f20620867a9948",
+          "nativeStillSha256": "0793d202cbdc6128cad1202a31fa6ece450950c2d45a8c9a153658c3a1a4caa6",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "idle_a"
+          ],
+          "displayPosterSha256": "d6fe058ac9bbebe37a0b39bb3934e9e8e01183ec1f2f698ab261b363a26df63d",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "dead": {
+          "nativeGifSha256": "1e6c2f80c27870d3ba986dfe4dcfff54181f46602854465eece4b9ecc43b14f9",
+          "nativeStillSha256": "306f9e47fae5f3f85f347d4e4df87fb9522c88c04f0a7e8e64dd77efc8962f0f",
+          "sequence": [
+            "idle_a",
+            "hit",
+            "dead"
+          ],
+          "displayPosterSha256": "62de46b7ff1a8d104d67f3fb876f23153ff4e63c95f6d451206d9c0b5935d279",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "skill": {
+          "nativeGifSha256": "78d2808ffd4f361a518abfaed6747a23059114dc368406ade37466004bb85312",
+          "nativeStillSha256": "36bfb093173b0d624cc0bb115041a9eabf831f5b6ddb6a7ab6840207bdc4a16a",
+          "sequence": [
+            "idle_a",
+            "skill_a",
+            "skill_b",
+            "skill_c",
+            "idle_a"
+          ],
+          "displayPosterSha256": "18fb01c6c43856ec2e2fb9af2f7087848ad7945757d61978901aa721f9586cb2",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "poison": {
+          "nativeGifSha256": "02877a61f0c825f665087cb59f731b4bda86fc2ee6e18633e82eac1ff28471fb",
+          "nativeStillSha256": "8d7906695c7fae14bbf66b058e32aed850b6371000b05f87ccd28ad253357471",
+          "sequence": [
+            "poison_a",
+            "poison_b"
+          ],
+          "displayPosterSha256": "501dc26a2a67facce5695a1399ac134fd376e958730ba7ff689811ce8fe4ac63",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "stun": {
+          "nativeGifSha256": "035ae8f767d5fcce3bd3ad9701c5a19c6aa7c0903077800b440a41164d08299e",
+          "nativeStillSha256": "edd3445cf2a3bda47dcb88edfb1c847720397f50a7f39bcef65a42198473a163",
+          "sequence": [
+            "stun_a",
+            "stun_b"
+          ],
+          "displayPosterSha256": "55462e1995d5266e551aa756cacbed9ae30cda293db15534397159b155a5f0e9",
+          "displayPosterRgbaEqualsNative": true
+        },
+        "sleep": {
+          "nativeGifSha256": "6545e2390ebdf72eec5bfc8bdc5bd445f6e5c6e24033b47b8ff4525abb115bf6",
+          "nativeStillSha256": "54a564bec20f3039f40bf7e33149cadd24289a36c915593df7cd8899b0cd9f06",
+          "sequence": [
+            "sleep_a",
+            "sleep_b"
+          ],
+          "displayPosterSha256": "9556bfdd230d7e21848f259f4e060f412f4ede4ff861ca2d3c91d551daed11a8",
+          "displayPosterRgbaEqualsNative": true
+        }
+      }
+    }
+  ],
+  "presentationPostersLosslesslyRecompressed": true,
+  "noNativeSourceWrites": true,
+  "actualBrowser": {
+    "nativeGifViews": 64,
+    "motions": [
+      "idle",
+      "attack",
+      "hit",
+      "dead",
+      "skill",
+      "poison",
+      "stun",
+      "sleep"
+    ],
+    "pauseResumeEach": true,
+    "naturalCell": 128,
+    "renderPixelScale": 2,
+    "mobile": [
+      {
+        "width": 375,
+        "frameWidth": 343,
+        "overflow": false
+      },
+      {
+        "width": 320,
+        "frameWidth": 288,
+        "overflow": false
+      }
+    ],
+    "errors": [],
+    "noChoiceButtonsClicked": true
+  }
+}
