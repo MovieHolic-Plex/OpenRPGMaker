@@ -106,7 +106,7 @@ def wire(c, x0, x1, y0, y1, sag, col):
         c.P(x0 + i, int(round(y)), col)
 
 
-WIRE_SPANS = (5, 6, 8, 10, 12, 14)
+WIRE_SPANS = tuple(range(5, 21))
 for _L in WIRE_SPANS:
     def _mk(L):
         @prop(f'wire-{L}', f'전선(가로, 전봇대 사이 {L}칸)', L - 3, 3, tags=['전선', '4층'],

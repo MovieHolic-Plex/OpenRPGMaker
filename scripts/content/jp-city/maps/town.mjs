@@ -153,11 +153,11 @@ fillL1(0, 59, 25, 74, GRAVEL, "shrine");
 fillL1(30, 70, 69, 73, GRAVEL, "schoolyard");
 fillL1(74, 59, 95, 74, LAWN, "park");
 put("jp-bldg-shrine-haiden", 9, 65);
-const sandoX = 11;                                                     // 참배길 x11..14(拝殿 문 x 에 맞춰 아래에서 고친다)
+fillL1(12, 66, 13, 74, checker, "sando");                             // 참배길(판석) — 도리이 가운데 두 칸 → 拝殿 앞
 put("jp-torii", 11, 71, { tag: "torii" });
 put("jp-prop-stone-lantern", 10, 68, { tag: "lantern-l" }); put("jp-prop-stone-lantern", 15, 68, { tag: "lantern-r" });
-put("jp-prop-tree-sakura", 1, 66, { tag: "sakura-1" }); put("jp-prop-tree-zelkova", 19, 66, { tag: "zelkova-1" });
-put("jp-prop-tree-zelkova", 2, 73, { tag: "zelkova-2" }); put("jp-prop-tree-sakura", 19, 74, { tag: "sakura-2" });
+put("jp-prop-tree-sakura", 1, 66, { tag: "sakura-1" }); put("jp-prop-tree-zelkova", 21, 66, { tag: "zelkova-1" });
+put("jp-prop-tree-zelkova", 2, 73, { tag: "zelkova-2" }); put("jp-prop-tree-sakura", 22, 74, { tag: "sakura-2" });
 put("jp-keijiban", 6, 74, { tag: "keijiban-shrine" });
 put("jp-bldg-school", 31, 69);
 put("jp-bldg-school-gym", 54, 69);
@@ -165,8 +165,8 @@ put("jp-school-gate", 38, 74, { tag: "school-gate" });
 // 공원
 put("jp-prop-tree-sakura", 75, 64, { tag: "park-sakura-1" }); put("jp-prop-tree-sakura", 90, 64, { tag: "park-sakura-2" });
 put("jp-prop-tree-zelkova", 82, 63, { tag: "park-zelkova" });
-put("jp-prop-swing", 77, 70, { tag: "swing" }); put("jp-prop-slide", 82, 70, { tag: "slide" }); put("jp-prop-sandbox", 87, 70, { tag: "sandbox" });
-put("jp-prop-bench", 92, 70, { tag: "bench-1" }); put("jp-prop-bench", 79, 74, { tag: "bench-2" }); put("jp-keijiban", 92, 74, { tag: "keijiban-park" });
+put("jp-prop-swing", 78, 70, { tag: "swing" }); put("jp-prop-slide", 82, 70, { tag: "slide" }); put("jp-prop-sandbox", 85, 70, { tag: "sandbox" });
+put("jp-prop-bench", 83, 74, { tag: "bench-1" }); put("jp-prop-bench", 79, 74, { tag: "bench-2" }); put("jp-keijiban", 92, 74, { tag: "keijiban-park" });
 
 // ───────────────────────── 3. 생활도로·선로·철망(오토타일)
 const laneG = GRP["jp-lane-road"], railG = GRP["jp-rail-track"], fenceG = GRP["jp-fence-mesh"];
@@ -221,21 +221,6 @@ for (const [x, y0] of [[27, 47], [71, 61]]) {
   for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) { const t = k.rows[r].upperTiles[c]; if (t >= 0) L2[idx(x + c, y0 + r)] = t; }
 }
 
-// ───────────────────────── 5. 전봇대·전선(4층) — 생활도로 남쪽 가장자리, 키트 x 간격 10칸
-const POLE_ROWS = [LANE_EW[0][1], LANE_EW[1][1]];
-const poles = [];
-for (const fy of POLE_ROWS) {
-  const xs = [3, 13, 23, 33, 43, 53, 63, 73, 83];
-  for (const px of xs) { put("jp-pole", px, fy, { layer: 4, tag: `pole-${px}-${fy}` }); poles.push([px, fy]); }
-  for (let i = 0; i + 1 < xs.length; i++) {
-    const L = xs[i + 1] - xs[i];
-    if (!KIT["jp-wire-" + L]) { fail(`전선 키트 없음 ${L}`); continue; }
-    stamp("jp-wire-" + L, xs[i] + 3, fy - KIT["jp-pole"].height + 1, { layer: 4, tag: `wire-${xs[i]}-${fy}` });
-  }
-}
-// 생활도로 3: 나무 전봇대 몇 개(옛 동네)
-for (const px of [4, 46, 80]) put("jp-pole-wood", px, LANE_EW[2][1], { layer: 4, tag: `wood-pole-${px}` });
-
 // ───────────────────────── 6. 길가·간선 소품
 put("jp-bus-stop", 33, 13, { tag: "bus-stop" });
 put("jp-prop-bike-rack", 56, 13, { tag: "bike-rack-ekimae" });
@@ -243,6 +228,84 @@ put("jp-prop-bus-r", 48, AVE[1], { tag: "bus" });
 put("jp-prop-car-taxi", 18, AVE[1] - 2, { tag: "taxi" });
 for (const x of [6, 20, 62, 86]) put("jp-prop-lamp-post", x, 19, { tag: `lamp-${x}` });
 put("jp-hydrant-sign", 25, 53, { tag: "hydrant" });
+
+// ───────────────────────── 6b. 거리 표정(빈 자리에만) — 문·접근칸·길은 비운다. 놓지 못한 후보는 건너뛰고 수만 센다.
+const reserved = new Set();
+for (const d of doors) { reserved.add(idx(d.x, d.y)); reserved.add(idx(d.ax, d.ay)); reserved.add(idx(d.ax, d.ay + 1)); }
+const deco = { placed: 0, skipped: 0 };
+function tryPut(id, x, yFoot, tag, { layer = 3, onLane = false } = {}) {
+  const k = KIT[id], y0 = yFoot - k.height + 1, own = layer === 4 ? own4 : own3;
+  for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) {
+    if (k.rows[r].upperTiles[c] < 0) continue;
+    const xx = x + c, yy = y0 + r;
+    if (!inb(xx, yy) || own[idx(xx, yy)] || own3[idx(xx, yy)] || reserved.has(idx(xx, yy)) || (!onLane && laneSet.has(idx(xx, yy)))) {
+      deco.skipped++; if (process.env.TOWN_DEBUG) console.error("skip", tag, xx, yy, own3[idx(xx, yy)] || (reserved.has(idx(xx, yy)) ? "reserved" : laneSet.has(idx(xx, yy)) ? "lane" : "?")); return false;
+    }
+  }
+  stamp(id, x, y0, { layer, tag }); deco.placed++; return true;
+}
+// 상점가 판석 길: 노보리(가게 앞)·입간판·화분·자전거·벤치. 가운데 줄 y30 은 걸어 다니는 줄로 비운다.
+for (let x = 1; x < W - 1; x++) {
+  if (nsCol(x)) continue;
+  if (x % 7 === 3) tryPut(["jp-prop-nobori-aka", "jp-prop-nobori-sora", "jp-prop-nobori-midori"][x % 3], x, 31, `nobori-${x}`);
+  else if (x % 11 === 6) tryPut("jp-prop-a-frame", x, 29, `aframe-${x}`);
+  if (x % 13 === 1) tryPut(["jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori"][x % 3], x, 32, `bike-${x}`);
+  else if (x % 9 === 4) tryPut("jp-prop-planter", x, 32, `planter-${x}`);
+}
+tryPut("jp-prop-bench", 50, 32, "bench-shotengai"); tryPut("jp-prop-cat-loaf", 58, 31, "cat-shotengai");
+// 신사: 手水舎·석등 한 쌍 더·산울타리(북쪽)·고양이
+for (const [x, f] of [[16, 70]]) if (tryPut("jp-prop-chozuya", x, f, "chozuya")) break;
+for (let x = 0; x <= 24; x++) tryPut("jp-prop-wall-hedge", x, 60, `hedge-shrine-${x}`);
+tryPut("jp-prop-cat-sit", 13, 73, "cat-shrine");
+// 학교: 운동장 철망 안쪽 화분 줄·자전거 거치대
+for (let x = 31; x <= 68; x += 3) if (x < 37 || x > 44) tryPut("jp-prop-planter", x, 73, `planter-yard-${x}`);
+tryPut("jp-prop-bike-rack", 45, 73, "bike-rack-school"); tryPut("jp-prop-bike-rack", 47, 73, "bike-rack-school-2");
+// 공원: 북쪽 산울타리(입구 두 칸)·나무 더·벤치·자판기
+for (let x = 74; x <= 95; x++) if (x < 84 || x > 85) tryPut("jp-prop-wall-hedge", x, 60, `hedge-park-${x}`);
+const PARK_TREES = [["jp-prop-tree-zelkova", 74, 74], ["jp-prop-tree-ginkgo", 88, 73], ["jp-prop-tree-ginkgo", 92, 70]];
+for (const [id, x, f] of PARK_TREES) tryPut(id, x, f, `park-${id}-${x}-${f}`);
+for (const [x, f] of [[82, 66], [85, 66], [76, 66]]) tryPut("jp-prop-planter", x, f, `planter-park-${x}-${f}`);
+tryPut("jp-prop-vending-sora", 79, 66, "vend-park"); tryPut("jp-prop-bench", 88, 66, "bench-park-3"); tryPut("jp-prop-cat-wood", 81, 72, "cat-park");
+// 주택가: 실외기·쓰레기망·화분(집 옆 빈칸)
+for (const [id, x, f] of [["jp-ac-unit", 9, 53], ["jp-ac-unit", 30, 53], ["jp-prop-garbage-net", 44, 54], ["jp-gomi-box", 24, 54], ["jp-prop-pot", 61, 53], ["jp-ac-unit", 73, 53], ["jp-prop-pot", 83, 53]]) tryPut(id, x, f, `life-${id}-${x}`);
+// 둘째 줄 앞: 자전거·화분
+for (const [id, x, f] of [["jp-prop-bike-aka", 18, 41], ["jp-prop-planter", 57, 41], ["jp-prop-garbage-net", 66, 41], ["jp-prop-bike-sora", 88, 41]]) tryPut(id, x, f, `b-${id}-${x}`);
+
+// ───────────────────────── 5. 전봇대·전선(4층) — 생활도로 남쪽 가장자리. 전봇대는 건물 앞에 서므로 간판·창을 덜 가리는 x 를 고른다.
+// 비용 = 기둥 열(키트 x+1)이 덮는 건물 칸(기물은 ×0.6) + 완목 열(양옆) ×0.3 + 간격이 12칸에서 벗어난 정도. 간격은 전선 키트가 있는 5~20칸(실제 30~40m 보다 촘촘하게).
+const POLE = KIT["jp-pole"], SPANS = [...Array(16)].map((_, i) => i + 5).filter((L) => KIT["jp-wire-" + L]);
+const isBldg = (x, y) => (!inb(x, y) || !own3[idx(x, y)] || own3[idx(x, y)] === "fence" || own3[idx(x, y)] === "yard-fence" ? 0 : own3[idx(x, y)].startsWith("jp-bldg") ? 1 : 0.6);
+const poles = [];
+function poleRow(fy, { kit = "jp-pole" } = {}) {
+  const top = fy - POLE.height + 1;
+  const ok = (px) => {
+    if (px < 0 || px + 2 >= W || nsCol(px + 1) || own3[idx(px + 1, fy)]) return false;
+    for (let r = 0; r < POLE.height; r++) for (let c = 0; c < 3; c++) if (POLE.rows[r].upperTiles[c] >= 0 && own4[idx(px + c, top + r)]) return false;
+    return true;
+  };
+  const cost = (px) => { let v = 0; for (let y = top; y < fy; y++) { if (isBldg(px + 1, y)) v += 1; if (y < top + 3) v += 0.3 * (isBldg(px, y) + isBldg(px + 2, y)); } return v; };
+  const best = new Map();                                              // px → [총비용, 앞 px]
+  for (let px = 0; px <= 5; px++) if (ok(px)) best.set(px, [cost(px), -1]);
+  for (let px = 1; px < W - 2; px++) {
+    if (!ok(px)) continue;
+    for (const L of SPANS) {
+      const pv = best.get(px - L); if (!pv) continue;
+      const wireFree = (() => { const k = KIT["jp-wire-" + L]; for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) if (k.rows[r].upperTiles[c] >= 0 && own4[idx(px - L + 3 + c, top + r)]) return false; return true; })();
+      if (!wireFree) continue;
+      const v = pv[0] + cost(px) + 0.02 * (L - 12) ** 2;
+      if (!best.has(px) || v < best.get(px)[0]) best.set(px, [v, px - L]);
+    }
+  }
+  let end = -1;
+  for (let px = W - 3; px >= W - 9; px--) if (best.has(px) && (end < 0 || best.get(px)[0] < best.get(end)[0])) end = px;
+  if (end < 0) { fail(`전봇대 줄 ${fy}: 놓을 자리 없음`); return; }
+  const xs = []; for (let px = end; px >= 0; px = best.get(px)[1]) xs.unshift(px);
+  for (const px of xs) { put(kit, px, fy, { layer: 4, tag: `pole-${px}-${fy}` }); poles.push([px, fy]); }
+  for (let i = 0; i + 1 < xs.length; i++) stamp("jp-wire-" + (xs[i + 1] - xs[i]), xs[i] + 3, top, { layer: 4, tag: `wire-${xs[i]}-${fy}` });
+  report0.poles.push({ row: fy, xs, cover: +xs.reduce((v, px) => v + cost(px), 0).toFixed(1) });
+}
+const report0 = { poles: [] };
+for (const [, b] of LANE_EW) poleRow(b);
 
 // ───────────────────────── 7. 검사
 const project = createEmptyToolProject("jp-town");
@@ -262,7 +325,7 @@ while (q.length) {
     reach.add(idx(nx, ny)); q.push([nx, ny]);
   }
 }
-const report = { map: { id: MAP.id, size: [W, H] }, start: START };
+const report = { map: { id: MAP.id, size: [W, H] }, start: START, poles: report0.poles };
 const doorRes = doors.map((d) => ({ ...d, doorBlocked: !pass(d.x, d.y), accessPassable: pass(d.ax, d.ay), accessReached: reach.has(idx(d.ax, d.ay)) }));
 report.doors = { n: doors.length, allReached: doorRes.every((d) => d.doorBlocked && d.accessPassable && d.accessReached), failing: doorRes.filter((d) => !(d.doorBlocked && d.accessPassable && d.accessReached)) };
 const body = solidCells.map(([x, y, id]) => ({ x, y, id, passable: pass(x, y) }));
@@ -290,7 +353,7 @@ for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
 }
 report.emptiness = { worst17x13: +worst.toFixed(3), worstAt };
 report.reach = { reachable: reach.size, walkable: (() => { let n = 0; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (pass(x, y)) n++; return n; })() };
-report.placed = placed.length;
+report.placed = placed.length; report.deco = deco;
 const ok = issues.length === 0 && report.doors.allReached && report.solid.openByEngine === 0 && Object.values(report.autotiles).every((a) => a.mismatch === 0);
 report.ok = ok;
 fs.writeFileSync(join(OUT, "town.report.json"), JSON.stringify({ ...report, placedList: placed, doorList: doorRes }, null, 1));

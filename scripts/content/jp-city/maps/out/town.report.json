@@ -10,13 +10,55 @@
   41,
   12
  ],
+ "poles": [
+  {
+   "row": 45,
+   "xs": [
+    5,
+    19,
+    30,
+    44,
+    57,
+    73,
+    88
+   ],
+   "cover": 21.1
+  },
+  {
+   "row": 58,
+   "xs": [
+    0,
+    17,
+    29,
+    44,
+    52,
+    68,
+    87
+   ],
+   "cover": 25.9
+  },
+  {
+   "row": 78,
+   "xs": [
+    0,
+    14,
+    29,
+    40,
+    50,
+    68,
+    80,
+    93
+   ],
+   "cover": 7.9
+  }
+ ],
  "doors": {
   "n": 46,
   "allReached": true,
   "failing": []
  },
  "solid": {
-  "cells": 767,
+  "cells": 845,
   "openByEngine": 0,
   "open": []
  },
@@ -41,21 +83,25 @@
   "overlaps": 0,
   "issues": [],
   "l2": 726,
-  "l3": 3089,
-  "l4": 655
+  "l3": 3330,
+  "l4": 902
  },
  "emptiness": {
-  "worst17x13": 0.778,
+  "worst17x13": 0.566,
   "worstAt": [
-   79,
-   62
+   9,
+   23
   ]
  },
  "reach": {
-  "reachable": 6590,
-  "walkable": 6782
+  "reachable": 6483,
+  "walkable": 6675
  },
- "placed": 145,
+ "placed": 237,
+ "deco": {
+  "placed": 88,
+  "skipped": 28
+ },
  "ok": true,
  "placedList": [
   {
@@ -716,7 +762,7 @@
   },
   {
    "id": "jp-prop-tree-zelkova",
-   "x": 19,
+   "x": 21,
    "y": 61,
    "w": 4,
    "h": 6,
@@ -732,7 +778,7 @@
   },
   {
    "id": "jp-prop-tree-sakura",
-   "x": 19,
+   "x": 22,
    "y": 69,
    "w": 4,
    "h": 6,
@@ -796,7 +842,7 @@
   },
   {
    "id": "jp-prop-swing",
-   "x": 77,
+   "x": 78,
    "y": 68,
    "w": 3,
    "h": 3,
@@ -812,7 +858,7 @@
   },
   {
    "id": "jp-prop-sandbox",
-   "x": 87,
+   "x": 85,
    "y": 69,
    "w": 3,
    "h": 2,
@@ -820,8 +866,8 @@
   },
   {
    "id": "jp-prop-bench",
-   "x": 92,
-   "y": 70,
+   "x": 83,
+   "y": 74,
    "w": 2,
    "h": 1,
    "layer": 3
@@ -849,302 +895,6 @@
    "w": 6,
    "h": 4,
    "layer": 3
-  },
-  {
-   "id": "jp-pole",
-   "x": 3,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 13,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 23,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 33,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 43,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 53,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 63,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 73,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 83,
-   "y": 36,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 6,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 16,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 26,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 36,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 46,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 56,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 66,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 76,
-   "y": 36,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 3,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 13,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 23,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 33,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 43,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 53,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 63,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 73,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole",
-   "x": 83,
-   "y": 49,
-   "w": 3,
-   "h": 10,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 6,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 16,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 26,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 36,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 46,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 56,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 66,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-wire-10",
-   "x": 76,
-   "y": 49,
-   "w": 7,
-   "h": 3,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole-wood",
-   "x": 4,
-   "y": 70,
-   "w": 3,
-   "h": 9,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole-wood",
-   "x": 46,
-   "y": 70,
-   "w": 3,
-   "h": 9,
-   "layer": 4
-  },
-  {
-   "id": "jp-pole-wood",
-   "x": 80,
-   "y": 70,
-   "w": 3,
-   "h": 9,
-   "layer": 4
   },
   {
    "id": "jp-bus-stop",
@@ -1217,6 +967,1038 @@
    "w": 1,
    "h": 3,
    "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-aka",
+   "x": 1,
+   "y": 31,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 4,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-a-frame",
+   "x": 6,
+   "y": 29,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-sora",
+   "x": 10,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 13,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 22,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-aka",
+   "x": 24,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-sora",
+   "x": 31,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 31,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-midori",
+   "x": 38,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-a-frame",
+   "x": 39,
+   "y": 29,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-aka",
+   "x": 40,
+   "y": 31,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-aka",
+   "x": 45,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 49,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-a-frame",
+   "x": 50,
+   "y": 29,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-sora",
+   "x": 52,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-midori",
+   "x": 53,
+   "y": 31,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 58,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-midori",
+   "x": 59,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-a-frame",
+   "x": 61,
+   "y": 29,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-aka",
+   "x": 66,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 67,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 76,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-aka",
+   "x": 79,
+   "y": 31,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-a-frame",
+   "x": 83,
+   "y": 29,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 85,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-aka",
+   "x": 87,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-midori",
+   "x": 92,
+   "y": 31,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-nobori-sora",
+   "x": 94,
+   "y": 29,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 94,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-cat-loaf",
+   "x": 58,
+   "y": 31,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-chozuya",
+   "x": 16,
+   "y": 67,
+   "w": 6,
+   "h": 4,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 0,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 1,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 2,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 3,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 4,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 5,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 6,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 7,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 8,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 9,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 16,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 17,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 18,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 19,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 20,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 21,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 22,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 23,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 24,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-cat-sit",
+   "x": 13,
+   "y": 73,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 31,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 34,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 46,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 49,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 52,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 55,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 58,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 61,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 64,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 67,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 74,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 79,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 80,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 81,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 86,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 87,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 88,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 89,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 94,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-wall-hedge",
+   "x": 95,
+   "y": 59,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-zelkova",
+   "x": 74,
+   "y": 69,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-ginkgo",
+   "x": 88,
+   "y": 68,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-ginkgo",
+   "x": 92,
+   "y": 65,
+   "w": 4,
+   "h": 6,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 82,
+   "y": 66,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 85,
+   "y": 66,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 76,
+   "y": 66,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-vending-sora",
+   "x": 79,
+   "y": 65,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bench",
+   "x": 88,
+   "y": 66,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-cat-wood",
+   "x": 81,
+   "y": 72,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-ac-unit",
+   "x": 9,
+   "y": 53,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-ac-unit",
+   "x": 30,
+   "y": 53,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-garbage-net",
+   "x": 44,
+   "y": 54,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-gomi-box",
+   "x": 24,
+   "y": 54,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-pot",
+   "x": 61,
+   "y": 52,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-pot",
+   "x": 83,
+   "y": 52,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 57,
+   "y": 41,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-pole",
+   "x": 5,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 19,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 30,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 44,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 57,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 73,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 88,
+   "y": 36,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-14",
+   "x": 8,
+   "y": 36,
+   "w": 11,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-11",
+   "x": 22,
+   "y": 36,
+   "w": 8,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-14",
+   "x": 33,
+   "y": 36,
+   "w": 11,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-13",
+   "x": 47,
+   "y": 36,
+   "w": 10,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-16",
+   "x": 60,
+   "y": 36,
+   "w": 13,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-15",
+   "x": 76,
+   "y": 36,
+   "w": 12,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 0,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 17,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 29,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 44,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 52,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 68,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 87,
+   "y": 49,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-17",
+   "x": 3,
+   "y": 49,
+   "w": 14,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-12",
+   "x": 20,
+   "y": 49,
+   "w": 9,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-15",
+   "x": 32,
+   "y": 49,
+   "w": 12,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-8",
+   "x": 47,
+   "y": 49,
+   "w": 5,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-16",
+   "x": 55,
+   "y": 49,
+   "w": 13,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-19",
+   "x": 71,
+   "y": 49,
+   "w": 16,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 0,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 14,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 29,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 40,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 50,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 68,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 80,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-pole",
+   "x": 93,
+   "y": 69,
+   "w": 3,
+   "h": 10,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-14",
+   "x": 3,
+   "y": 69,
+   "w": 11,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-15",
+   "x": 17,
+   "y": 69,
+   "w": 12,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-11",
+   "x": 32,
+   "y": 69,
+   "w": 8,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-10",
+   "x": 43,
+   "y": 69,
+   "w": 7,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-18",
+   "x": 53,
+   "y": 69,
+   "w": 15,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-12",
+   "x": 71,
+   "y": 69,
+   "w": 9,
+   "h": 3,
+   "layer": 4
+  },
+  {
+   "id": "jp-wire-13",
+   "x": 83,
+   "y": 69,
+   "w": 10,
+   "h": 3,
+   "layer": 4
   }
  ],
  "doorList": [
